@@ -124,7 +124,17 @@
         <xsl:copy-of select="$brand.links"/>
       </head>
       <body bgcolor="ivory">
-        <xsl:copy-of select="$brand.header"/>
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="ivory">
+          <xsl:copy-of select="$brand.header"/>
+          <tr bgcolor="silver">
+            <td align="left">
+              <a href="/xtf/search">Search</a> | <a href="/xtf/search?relation=www.ucpress.edu&amp;sort=title">Browse</a>
+            </td>
+            <td align="right" colspan="2">
+              <a href="http://xtf.sourceforge.net/index.html#docs">Help</a>
+            </td>
+          </tr>
+        </table>          
         <table style="margin-top: 1%; margin-bottom: 1%" width="100%" cellpadding="0" cellspacing="2" border="0" bgcolor="ivory">
           <tr>
             <td align="right" width="10%">
@@ -206,7 +216,17 @@
         <xsl:copy-of select="$brand.links"/>
       </head>
       <body bgcolor="ivory">
-        <xsl:copy-of select="$brand.header"/>
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="ivory">
+          <xsl:copy-of select="$brand.header"/>
+          <tr bgcolor="silver">
+            <td align="left">
+              <a href="/xtf/search">Search</a> | <a href="/xtf/search?relation=www.ucpress.edu&amp;sort=title">Browse</a>
+            </td>
+            <td align="right" colspan="2">
+              <a href="http://xtf.sourceforge.net/index.html#docs">Help</a>
+            </td>
+          </tr>
+        </table>  
         <form method="get" action="{$servlet.path}">
           <table width="90%" cellpading="0" cellspacing="2" bgcolor="ivory" border="0">
             <tr>
@@ -497,6 +517,7 @@
             <xsl:if test="$sectionType">
               <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
             </xsl:if>
+            <xsl:value-of select="'&amp;brand=default'"/>
             <xsl:value-of select="'&amp;doc.view=frames'"/>
           </xsl:attribute>
           <xsl:apply-templates select="meta/title[1]"/>

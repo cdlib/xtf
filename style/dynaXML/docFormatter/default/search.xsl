@@ -103,6 +103,8 @@
           <xsl:value-of select="$doc.path"/>
           <xsl:text>&#038;chunk.id=</xsl:text>
           <xsl:value-of select="key('hit-num-dynamic', string($prev))/ancestor::div1/@id"/>
+          <xsl:text>&#038;brand=</xsl:text>
+          <xsl:value-of select="$brand"/>
           <xsl:value-of select="$search"/>
           <xsl:text>&#038;set.anchor=</xsl:text><xsl:value-of select="$prev"/>
         </xsl:attribute>
@@ -139,6 +141,8 @@
           <xsl:value-of select="$doc.path"/>
           <xsl:text>&#038;chunk.id=</xsl:text>
           <xsl:value-of select="key('hit-num-dynamic', string($next))/ancestor::div1/@id"/>
+          <xsl:text>&#038;brand=</xsl:text>
+          <xsl:value-of select="$brand"/>
           <xsl:value-of select="$search"/>
           <xsl:text>&#038;set.anchor=</xsl:text><xsl:value-of select="$next"/>
         </xsl:attribute>

@@ -174,7 +174,7 @@
   <xsl:param name="style"/>
   <xsl:param name="smode" select="'simple'"/>
   <xsl:param name="rmode" select="'none'"/>
-  <xsl:param name="brand"/>
+  <xsl:param name="brand" select="'default'"/>
   <xsl:param name="sort"/>
   
   <!-- XML Output Parameter -->

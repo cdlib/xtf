@@ -73,7 +73,7 @@
         <xsl:text> [</xsl:text>
         <a>
           <xsl:attribute name="href">
-            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/>
+            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/>&#038;brand=<xsl:value-of select="$brand"/>
           </xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <xsl:text>Clear Hits</xsl:text>
@@ -105,7 +105,7 @@
         <xsl:text> [</xsl:text>
         <a>
           <xsl:attribute name="href">
-            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/>
+            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/>&#038;brand=<xsl:value-of select="$brand"/>
           </xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <xsl:text>Clear Hits</xsl:text>
@@ -118,7 +118,7 @@
       <span class="expand-collapse">
         <a class="expand-collapse">
           <xsl:attribute name="href">
-            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="1"/><xsl:value-of select="$search"/>
+            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="1"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/>
           </xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <img src="{$icon.path}i_colpse.gif" border="0" alt="collapse section"/>
@@ -127,7 +127,7 @@
         <xsl:text> | </xsl:text>
         <a class="expand-collapse">
           <xsl:attribute name="href">
-            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="100"/><xsl:value-of select="$search"/>
+            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="100"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/>
           </xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <xsl:text>Expand All </xsl:text>
@@ -598,7 +598,7 @@
         <xsl:call-template name="divnum"/>
         <a>
           <xsl:attribute name="href">
-            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="ancestor::*[1]/@id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$local.toc.id"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/>
+            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="ancestor::*[1]/@id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$local.toc.id"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/>
           </xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <xsl:apply-templates select="." mode="text-only"/>
@@ -630,7 +630,7 @@
     <xsl:variable name="local.toc.id" select="@id"/>
     <a>
       <xsl:attribute name="href">
-        <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.id=<xsl:value-of select="$local.toc.id"/><xsl:value-of select="$search"/>
+        <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.id=<xsl:value-of select="$local.toc.id"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/>
       </xsl:attribute>
       <xsl:attribute name="target">_top</xsl:attribute>
       <img src="{$icon.path}i_expand.gif" border="0" alt="expand section"/>
@@ -651,7 +651,7 @@
     </xsl:variable>
     <a>
       <xsl:attribute name="href">
-        <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.id=<xsl:value-of select="$local.toc.id"/><xsl:value-of select="$search"/>
+        <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.id=<xsl:value-of select="$local.toc.id"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/>
       </xsl:attribute>
       <xsl:attribute name="target">_top</xsl:attribute>
       <img src="{$icon.path}i_colpse.gif" border="0" alt="collapse section"/>

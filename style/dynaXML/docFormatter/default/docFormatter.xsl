@@ -110,11 +110,11 @@
 
 <xsl:template name="frames">
 
-  <xsl:variable name="bbar.href"><xsl:value-of select="$query.string"/>&#038;doc.view=bbar&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/><xsl:value-of select="$search"/></xsl:variable>
+  <xsl:variable name="bbar.href"><xsl:value-of select="$query.string"/>&#038;doc.view=bbar&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/></xsl:variable>
 
-  <xsl:variable name="toc.href"><xsl:value-of select="$query.string"/>&#038;doc.view=toc&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/>#X</xsl:variable>
+  <xsl:variable name="toc.href"><xsl:value-of select="$query.string"/>&#038;doc.view=toc&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/>#X</xsl:variable>
 
-  <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>&#038;doc.view=content&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;anchor.id=<xsl:value-of select="$anchor.id"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/></xsl:variable>
+  <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>&#038;doc.view=content&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$anchor.id"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/></xsl:variable>
 
   <html>
     <head>
@@ -175,6 +175,7 @@
       <title>
         <xsl:value-of select="$doc.title"/>
       </title>
+      <xsl:copy-of select="$brand.links"/>
       <link rel="stylesheet" type="text/css" href="{$css.path}toc.css"/>
     </head>
     <body>
@@ -200,6 +201,7 @@
       <title>
         <xsl:value-of select="$doc.title"/> "<xsl:value-of select="$chunk.id"/>"
       </title>
+      <xsl:copy-of select="$brand.links"/>
       <link rel="stylesheet" type="text/css" href="{$css.path}{$content.css}"/>
     </head>
     <body>
@@ -285,6 +287,7 @@
       <title>
         <xsl:value-of select="$doc.title"/>
       </title>
+      <xsl:copy-of select="$brand.links"/>
       <link rel="stylesheet" type="text/css" href="{$css.path}{$content.css}"/>
     </head>
     <body bgcolor="white">
@@ -313,6 +316,7 @@
       <title>
         <xsl:value-of select="$doc.title"/>
       </title>
+      <xsl:copy-of select="$brand.links"/>
       <link rel="stylesheet" type="text/css" href="{$css.path}bbar.css"/>
     </head>
     <body>
@@ -328,26 +332,8 @@
   </xsl:variable>
 
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
-
-    <!-- BEGIN HEADER ROW -->
-    <tr width="100%">
-      <td class="header-left" width="33%" height="44" align="left">
-        <a href="http://xtf.sourceforge.net"  target="{$target}">
-          <img src="{$icon.path}spacer.gif" border="0" width="15"/>
-          <img src="{$icon.path}xtfMan.gif" border="0" height="44" alt="XTF"/>
-        </a>
-      </td>
-      <td class="header-right"  width="34%" height="44" align="center">
-        <h1 style="color: white">XTF Default Interface</h1>
-      </td>
-      <td class="header-right" width="33%" height="44" align="right">
-        <a href="http://www.sourceforge.net" target="{$target}">
-          <img src="{$icon.path}sflogo.php.png" border="0" alt="SourceForge"/>
-          <img src="{$icon.path}spacer.gif" border="0" width="15"/>
-        </a>
-      </td>
-    </tr>
-    <!-- END HEADER ROW -->
+    
+    <xsl:copy-of select="$brand.header.dynaxml.header"/>
 
     <!-- BEGIN TOPNAV ROW -->
     <tr  width="100%">
@@ -487,6 +473,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </title>
+      <xsl:copy-of select="$brand.links"/>
       <link rel="stylesheet" type="text/css" href="{$css.path}{$content.css}"/>
     </head>
     <body>
@@ -922,6 +909,8 @@
                             <xsl:value-of select="$prev"/>
                             <xsl:text>&#038;toc.id=</xsl:text>
                             <xsl:value-of select="$prev_toc"/>
+                            <xsl:text>&#038;brand=</xsl:text>
+                            <xsl:value-of select="$brand"/>
                             <xsl:value-of select="$search"/>
                           </xsl:attribute>
                           <xsl:attribute name="target"><xsl:value-of select="$target"/></xsl:attribute>
@@ -945,6 +934,8 @@
                           <xsl:value-of select="$prev"/>
                           <xsl:text>&#038;toc.id=</xsl:text>
                           <xsl:value-of select="$prev_toc"/>
+                          <xsl:text>&#038;brand=</xsl:text>
+                          <xsl:value-of select="$brand"/>
                           <xsl:value-of select="$search"/>
                         </xsl:attribute>
                         <xsl:attribute name="target"><xsl:value-of select="$target"/></xsl:attribute>
@@ -976,6 +967,8 @@
                           <xsl:value-of select="$next"/>
                           <xsl:text>&#038;toc.id=</xsl:text>
                           <xsl:value-of select="$next_toc"/>
+                          <xsl:text>&#038;brand=</xsl:text>
+                          <xsl:value-of select="$brand"/>
                           <xsl:value-of select="$search"/>
                         </xsl:attribute>
                         <xsl:attribute name="target"><xsl:value-of select="$target"/></xsl:attribute>
@@ -998,6 +991,8 @@
                             <xsl:value-of select="$next"/>
                             <xsl:text>&#038;toc.id=</xsl:text>
                             <xsl:value-of select="$next_toc"/>
+                            <xsl:text>&#038;brand=</xsl:text>
+                            <xsl:value-of select="$brand"/>
                             <xsl:value-of select="$search"/>
                           </xsl:attribute>
                           <xsl:attribute name="target"><xsl:value-of select="$target"/></xsl:attribute>

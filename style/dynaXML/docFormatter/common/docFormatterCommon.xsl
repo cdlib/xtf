@@ -131,20 +131,20 @@
   <!-- They haven't been encoded with the appropriate behaviorSec yet -->
   <xsl:variable name="brandMechURL" select="$METS//mets:behavior[@BTYPE='brand']/mets:mechanism/@*[local-name()='href']"/>
   <xsl:variable name="brandMech" select="document($brandMechURL)"/>
- 
-  <xsl:param name="brand">
+  
+  <xsl:variable name="brandName">
     <xsl:choose>
-      <xsl:when test="$brand != ''">
-        <xsl:value-of select="$brand"/>
-      </xsl:when>
       <xsl:when test="$brandMech//brand">
-        <xsl:value-of select="$brandMech//brand/@path"/>
+        <xsl:value-of select="$brandMech//brand/@name"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="$brand"/>
+        <xsl:value-of select="'default'"/>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:param>
+  </xsl:variable>
+  
+  <!-- This is populated by whatever value is used in the URL -->
+  <xsl:param name="brand" select="$brandName"/>
   
   <!-- Retrieve Branding Nodes -->
   <xsl:variable name="brand.file">

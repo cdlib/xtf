@@ -349,7 +349,7 @@
         <span class="down1">
         <xsl:text> [</xsl:text>
         <a>
-          <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk"/>&#038;toc.id=<xsl:value-of select="$toc"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/><xsl:value-of select="$search"/>&#038;anchor.id=<xsl:value-of select="$corresp"/>#X</xsl:attribute>
+          <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk"/>&#038;toc.id=<xsl:value-of select="$toc"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/>&#038;anchor.id=<xsl:value-of select="$corresp"/>#X</xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <xsl:text>BACK</xsl:text>
         </a>
@@ -644,7 +644,7 @@
         </xsl:attribute>
         <xsl:text>[</xsl:text>
           <a>
-            <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk"/>&#038;toc.id=<xsl:value-of select="$toc"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/><xsl:value-of select="$search"/>&#038;anchor.id=<xsl:value-of select="$target"/>#X</xsl:attribute>
+            <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk"/>&#038;toc.id=<xsl:value-of select="$toc"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/>&#038;anchor.id=<xsl:value-of select="$target"/>#X</xsl:attribute>
             <xsl:attribute name="target">_top</xsl:attribute>
             <xsl:apply-templates/>
           </a>
@@ -669,14 +669,14 @@
     </xsl:when>
     <xsl:when test="@type='pageref'">
       <a>
-        <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk"/>&#038;toc.id=<xsl:value-of select="$toc"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;anchor.id=<xsl:value-of select="$target"/>#X</xsl:attribute>
+        <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk"/>&#038;toc.id=<xsl:value-of select="$toc"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$target"/>#X</xsl:attribute>
         <xsl:attribute name="target">_top</xsl:attribute>
         <xsl:apply-templates/>
       </a>
     </xsl:when>
     <xsl:otherwise>
       <a>
-        <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk"/>&#038;toc.id=<xsl:value-of select="$toc"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;anchor.id=<xsl:value-of select="$target"/>#X</xsl:attribute>
+        <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk"/>&#038;toc.id=<xsl:value-of select="$toc"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$target"/>#X</xsl:attribute>
         <xsl:attribute name="target">_top</xsl:attribute>
         <xsl:apply-templates/>
       </a>
