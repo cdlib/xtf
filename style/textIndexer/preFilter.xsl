@@ -53,11 +53,17 @@
   <xsl:template match="/*">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
-      <xsl:call-template name="get-mets"/>
+      <xsl:call-template name="get-meta"/>
       <xsl:apply-templates/>
     </xsl:copy>
   </xsl:template>
 
+<!-- ====================================================================== -->
+<!-- TEI Indexing                                                           -->
+<!-- ====================================================================== -->
+
+  <!-- Ignored Elements -->
+  
   <xsl:template match="teiHeader">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
@@ -66,7 +72,8 @@
     </xsl:copy>
   </xsl:template>
 
-  <!-- Test implmentation of structural searching. KVH 8-30-04 -->
+  <!-- Structural Indexing -->
+  
   <xsl:template match="head[parent::*[self::div1 or self::div2 or self::div3 or self::div4 or self::div5 or self::div6 or self::div7]]">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
@@ -76,14 +83,20 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template name="get-mets">
+<!-- ====================================================================== -->
+<!-- Metadata Indexing                                                      -->
+<!-- ====================================================================== -->
+
+  <!-- Access Dublin Core Record -->
+  <xsl:template name="get-meta">
     <xsl:variable name="docpath" select="saxon:system-id()"/>
     <xsl:variable name="base" select="substring-before($docpath, '.xml')"/>
     <xsl:variable name="dcpath" select="concat($base, '.dc.xml')"/>
-    <xsl:apply-templates select="document($dcpath)" mode="inmets"/>
+    <xsl:apply-templates select="document($dcpath)" mode="inmeta"/>
   </xsl:template>
   
-  <xsl:template match="dc" mode="inmets">
+  <!-- Process DC -->
+  <xsl:template match="dc" mode="inmeta">
     <xsl:for-each select="*">
       <xsl:element name="{name()}">
         <xsl:attribute name="xtf:meta" select="'true'"/>
@@ -91,12 +104,26 @@
       </xsl:element>
     </xsl:for-each>
     
-    <xsl:apply-templates select="creator" mode="inmets"/>
-    <xsl:apply-templates select="date" mode="inmets"/>
+    <xsl:apply-templates select="title" mode="sort"/>    
+    <xsl:apply-templates select="creator" mode="sort"/>
+    <xsl:apply-templates select="date" mode="sort"/>
     
   </xsl:template>
 
-  <xsl:template match="creator" mode="inmets">
+  <!-- generate sort-title -->
+  <xsl:template match="title" mode="sort">
+    
+    <xsl:variable name="title" select="string(.)"/>
+ 
+    <sort-title>
+      <xsl:attribute name="xtf:meta" select="'true'"/>
+      <xsl:attribute name="xtf:tokenize" select="'no'"/>
+      <xsl:value-of select="parse:title($title)"/>
+    </sort-title>
+  </xsl:template>
+
+  <!-- generate sort-creator -->
+  <xsl:template match="creator" mode="sort">
     
     <xsl:variable name="creator" select="string(.)"/>
     
@@ -110,8 +137,9 @@
     
   </xsl:template>
   
-  
-  <xsl:template match="date" mode="inmets">
+  <!-- generate year and sort-year -->
+  <xsl:template match="date" mode="sort">
+
     <xsl:variable name="date" select="string(.)"/>
     <xsl:variable name="pos" select="number(position())"/>
     
@@ -119,39 +147,92 @@
     
   </xsl:template>
 
-  <!-- KVH: At some point we should probably 
-  ignore the dc normalized fields and use regular 
-  expressions in this stylesheet to create sorting 
-  metadata elements  -->
+  <!-- Year and sort-year templates used by date functions -->
   
-  <!-- KVH: To support title sorts -->
-  <xsl:template match="ntitle" mode="inmets">
-    <sort-title>
-      <xsl:attribute name="xtf:meta" select="'true'"/>
-      <xsl:attribute name="xtf:tokenize" select="'no'"/>
-      <xsl:value-of select="string()"/>
-    </sort-title>
+  <xsl:template name="year">
+    
+    <xsl:param name="year"/>
+    <xsl:variable name="string-year" select="string($year)"/>
+    
+    <year xtf:meta="true">
+      <xsl:value-of select="$year"/>
+    </year>
+
+  </xsl:template>
+  
+  <xsl:template name="sort-year">
+    
+    <xsl:param name="year"/>
+    <xsl:variable name="string-year" select="string($year)"/>
+   
+    <sort-year xtf:meta="true" xtf:tokenize="no">
+      <xsl:value-of select="replace($string-year, '.*([0-9]{4}).*', '$1')"/>
+    </sort-year>
+    
   </xsl:template>
 
-  <!-- Function to parse last names out of various creator formats -->  
+<!-- ====================================================================== -->
+<!-- Functions                                                              -->
+<!-- ====================================================================== -->
+  
+  <!-- Function to parse normalized titles out of dc:title -->  
+  
+  <xsl:function name="parse:title">
+    
+    <xsl:param name="title"/>
+    
+    <!-- Normalize Case -->
+    <!-- KVH: This should really handle accented characters as well -->
+    <xsl:variable name="lower-title">
+      <xsl:value-of select="translate($title, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+    </xsl:variable>
+    
+    <!-- Remove Punctuation -->
+    <xsl:variable name="parse-title">
+      <xsl:value-of select="translate($lower-title, '~!$()-:;,.?', '')"/>
+    </xsl:variable>
+    
+    <!-- Remove Leading Articles -->
+    <!-- KVH: Eventually this should handle French, German, and Spanish articles as well -->
+    <xsl:choose>
+      <xsl:when test="matches($parse-title, '^a ')">
+        <xsl:value-of select="replace($parse-title, 'a (.+)', '$1')"/>
+      </xsl:when>
+      <xsl:when test="matches($parse-title, 'an')">
+        <xsl:value-of select="replace($parse-title, 'an (.+)', '$1')"/>
+      </xsl:when>
+      <xsl:when test="matches($parse-title, 'the')">
+        <xsl:value-of select="replace($parse-title, 'the (.+)', '$1')"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$parse-title"/>
+      </xsl:otherwise>
+    </xsl:choose>
+
+  </xsl:function>
+  
+  <!-- Function to parse last names out of various dc:creator formats -->  
   
   <xsl:function name="parse:name">
+    
     <xsl:param name="creator"/>
     
+    <!-- Remove additional authors and information -->
     <xsl:variable name="parse-name">
       <xsl:choose>
+        <!-- Pattern:  NAME and NAME -->
         <xsl:when test="matches($creator, '[^,]+ and.+,')">
           <xsl:value-of select="replace($creator, '(.+?) and.+', '$1')"/>
         </xsl:when>
+        <!-- Pattern:  NAME, NAME and NAME -->
         <xsl:when test="matches($creator, ', .+ and')">
           <xsl:value-of select="replace($creator, '(.+?), .+', '$1')"/>
         </xsl:when>
-        <xsl:when test="matches($creator, ' and')">
-          <xsl:value-of select="replace($creator, '(.+?) and.+', '$1')"/>
-        </xsl:when>
+        <!-- Pattern:  NAME, NAME -->
         <xsl:when test="matches($creator, ', ')">
           <xsl:value-of select="replace($creator, '(.+?), .+', '$1')"/>
         </xsl:when>
+        <!-- Pattern:  NAME -->
         <xsl:otherwise>
           <xsl:value-of select="$creator"/>
         </xsl:otherwise>
@@ -159,9 +240,11 @@
     </xsl:variable>
 
     <xsl:choose>
+      <!-- Pattern:  'X. NAME' or ' NAME' -->
       <xsl:when test="matches($parse-name, '^.+\.? (\w{2,100})')">
         <xsl:value-of select="replace($parse-name, '^.+\.? (\w{2,100})', '$1')"/>
       </xsl:when>
+      <!-- Pattern:  Everything else -->
       <xsl:otherwise>
         <xsl:value-of select="$parse-name"/>
       </xsl:otherwise>
@@ -320,28 +403,4 @@
     
   </xsl:function>
 
-  <!-- Year and sort-year templates used by date parsers -->
-  
-  <xsl:template name="year">
-    
-    <xsl:param name="year"/>
-    <xsl:variable name="string-year" select="string($year)"/>
-    
-    <year xtf:meta="true">
-      <xsl:value-of select="$year"/>
-    </year>
-
-  </xsl:template>
-  
-  <xsl:template name="sort-year">
-    
-    <xsl:param name="year"/>
-    <xsl:variable name="string-year" select="string($year)"/>
-   
-    <sort-year xtf:meta="true" xtf:tokenize="no">
-      <xsl:value-of select="replace($string-year, '.*([0-9]{4}).*', '$1')"/>
-    </sort-year>
-    
-  </xsl:template>
-  
 </xsl:stylesheet>
