@@ -120,6 +120,12 @@
     <xsl:if test="ends-with(@fileName, '.pdf')">
 	  <indexFile fileName="{@fileName}" format="PDF"/>
     </xsl:if>
+    <xsl:if test="ends-with(@fileName, '.htm')">
+	  <indexFile fileName="{@fileName}" format="HTML"/>
+    </xsl:if>
+    <xsl:if test="ends-with(@fileName, '.html')">
+	  <indexFile fileName="{@fileName}" format="HTML"/>
+    </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>
