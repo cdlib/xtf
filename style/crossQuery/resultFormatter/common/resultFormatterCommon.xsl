@@ -1429,11 +1429,11 @@
       <xsl:choose>
         <xsl:when test="$rights = ''">
           <option value="" selected="selected">all books</option>
-          <option value="public">public access books</option> 
+          <option value="Public">public access books</option> 
         </xsl:when>
-        <xsl:when test="$rights = 'public'">
+        <xsl:when test="$rights = 'Public'">
           <option value="">all books</option>
-          <option value="public" selected="selected">public access books</option> 
+          <option value="Public" selected="selected">public access books</option> 
         </xsl:when>
       </xsl:choose>
     </select>
