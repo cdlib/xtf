@@ -255,15 +255,15 @@
         </xsl:otherwise>
       </xsl:choose>
       
-    </xsl:element>
-    
     <!-- If there is a sectionType parameter, process it -->
     <xsl:if test="matches($metaField, 'text|query') and (//param[@name='sectionType']/@value != '')">
       <sectionType>
-        <xsl:apply-templates select="//param[@name='sectionType']"/>
+        <xsl:apply-templates select="//param[@name='sectionType']/*"/>
       </sectionType>
     </xsl:if>
-    
+      
+    </xsl:element>
+
   </xsl:template>
 
 <!-- ====================================================================== -->
