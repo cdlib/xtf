@@ -118,7 +118,7 @@ public class DiskHashReader
         // Read the slot data (may be too much, but will always be enough).
         subfile.seek( slotOffset );
         subfile.readFully( slotBytes );
-        slotBuf.reset();
+        slotBuf.setBytes( slotBytes );
         
         // Now scan the entries
         while( true ) {
