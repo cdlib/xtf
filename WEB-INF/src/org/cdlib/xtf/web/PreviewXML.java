@@ -53,6 +53,9 @@ public class PreviewXML extends HttpServlet {
 	    if (style.equals("oac")) {
 		location = "dynaXML?docId=oac-preview&source=" + source;
 	    }
+	    if (style.equals("v1to02")) {
+		location = "dynaXML?docId=ead-v1to02-preview&source=" + source;
+	    }
 	}
 
         if (action.equals("BPC")) {
