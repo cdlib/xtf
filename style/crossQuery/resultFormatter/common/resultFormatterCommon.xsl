@@ -1134,8 +1134,8 @@
 
     <xsl:variable name="showPages" as="xs:integer">
       <xsl:choose>
-        <xsl:when test="$nPages >= 101">
-          <xsl:value-of select="100"/>
+        <xsl:when test="$nPages >= ($maxPages + 1)">
+          <xsl:value-of select="$maxPages"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="$nPages - 1"/>
@@ -1169,13 +1169,21 @@
       <!-- Figure out what page we're on -->
       <xsl:variable name="pageNum" as="xs:integer" select="position()"/>
       <xsl:variable name="pageStart" as="xs:integer" select="(($pageNum - 1) * $docsPerPage) + 1"/>
-      
-      <xsl:if test="($pageNum = 1) and ($pageStart != $startDoc)">
+
+      <!-- Paging by Blocks -->
+      <xsl:variable name="prevBlock" as="xs:integer" select="(($blockStart - $blockSize) * $docsPerPage) - ($docsPerPage - 1)"/>
+      <xsl:if test="($pageNum = 1) and ($prevBlock &gt;= 1)">
+        <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$prevBlock}">&lt;&lt;</a>
+        <xsl:text>&#160;&#160;</xsl:text>
+      </xsl:if>
+
+      <!-- Individual Paging -->
+      <!-- xsl:if test="($pageNum = 1) and ($pageStart != $startDoc)">
         <xsl:variable name="prevPage" as="xs:integer" select="$startDoc - $docsPerPage"/>
         <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$prevPage}">&lt;&lt;</a>
         <xsl:text>&#160;&#160;</xsl:text>
-      </xsl:if>
-      
+      </xsl:if -->
+                
       <!-- If there are hits on the page, show it -->
       <xsl:if test="(($pageNum &gt;= $blockStart) and ($pageNum &lt;= ($blockStart + ($blockSize - 1)))) and
                     (($nPages &gt; $pageNum) and ($nPages &gt; 2))">
@@ -1197,11 +1205,19 @@
           </xsl:when>
         </xsl:choose>
       </xsl:if>
-      
-      <xsl:if test="($pageNum = $showPages) and ($pageStart != $startDoc)">
+
+      <!-- Individual Paging -->      
+      <!-- xsl:if test="($pageNum = $showPages) and ($pageStart != $startDoc)">
         <xsl:variable name="nextPage" as="xs:integer" select="$startDoc + $docsPerPage"/>
         <xsl:text>&#160;&#160;</xsl:text>
         <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$nextPage}">&gt;&gt;</a>
+      </xsl:if -->
+
+      <!-- Paging by Blocks -->   
+      <xsl:variable name="nextBlock" as="xs:integer" select="(($blockStart + $blockSize) * $docsPerPage) - ($docsPerPage - 1)"/>
+      <xsl:if test="($pageNum = $showPages) and (($showPages * $docsPerPage) &gt; $nextBlock)">
+        <xsl:text>&#160;&#160;</xsl:text>
+        <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$nextBlock}">&gt;&gt;</a>
       </xsl:if>
 
     </xsl:for-each>
