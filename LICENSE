@@ -11,3 +11,5 @@ under the Apache License, Version 2.0. See LICENSE_LUCENE for details.
 Portions contain modified code from Michael Kay's Saxon project, distributed
 under the Mozilla Public License 1.1. See LICENSE_SAXON for details.
 
+The CQL parsing library "cql-java" is included, distributed under the
+Lesser Gnu Public License 2.1. See LICENSE_CQL for details.
