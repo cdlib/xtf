@@ -57,7 +57,7 @@
       
     <indexFiles>
         <indexFile fileName="{file name #1}"
-                   format="{XML|PDF|HTML|...}"
+                   type="{XML|PDF|HTML|...}"
                    preFilter="{path to input filter stylesheet}"
                    displayStyle="{path to display stylesheet}"/>
         <indexFile .../>
@@ -76,10 +76,10 @@
         information. Essentially, this should be one of the file names 
         from an input <file... /> tag.
       
-      - The other attributes ('format', 'preFilter' and 'displayStyle') are
+      - The other attributes ('type', 'preFilter' and 'displayStyle') are
         all optional.
         
-      - If the 'format' attribute is not specified, the textIndexer will 
+      - If the 'type' attribute is not specified, the textIndexer will 
         attempt to deduce the file's format based on its file name extension.
         
       - If 'preFilter' isn't specified, no pre-filtering will be performed
@@ -121,13 +121,13 @@
       </xsl:if>
     </xsl:if>
     <xsl:if test="ends-with(@fileName, '.pdf')">
-	  <indexFile fileName="{@fileName}" format="PDF"/>
+	  <indexFile fileName="{@fileName}" type="PDF"/>
     </xsl:if>
     <xsl:if test="ends-with(@fileName, '.htm')">
-	  <indexFile fileName="{@fileName}" format="HTML"/>
+	  <indexFile fileName="{@fileName}" type="HTML"/>
     </xsl:if>
     <xsl:if test="ends-with(@fileName, '.html')">
-	  <indexFile fileName="{@fileName}" format="HTML"/>
+	  <indexFile fileName="{@fileName}" type="HTML"/>
     </xsl:if>
   </xsl:template>
 
