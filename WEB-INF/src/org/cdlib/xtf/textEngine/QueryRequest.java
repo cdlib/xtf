@@ -262,7 +262,7 @@ public class QueryRequest implements Cloneable
         if( main.name().equals("query") &&
             Trace.getOutputLevel() >= Trace.debug )
         {
-            Trace.debug( "Lucene query as parsed: " + query.toString() );
+            Trace.debug( "Lucene query as parsed: " + query );
         }
         
         // Check that we got the required parameters.
@@ -936,12 +936,18 @@ public class QueryRequest implements Cloneable
             if( name.equals("lower") ) {
                 if( lower != null )
                     error( "'lower' only allowed once as child of 'range' element" );
-                lower = parseTerm( child, field, "lower" );
+                if( child.child("term") != null )
+                    lower = parseTerm( child.child("term"), field, "term" );
+                else
+                    lower = parseTerm( child, field, "lower" );
             }
             else if( name.equals("upper") ) {
                 if( upper != null )
                     error( "'upper' only allowed once as child of 'range' element" );
-                upper = parseTerm( child, field, "upper" );
+                if( child.child("term") != null )
+                    upper = parseTerm( child.child("term"), field, "term" );
+                else
+                    upper = parseTerm( child, field, "upper" );
             }
             else
                 error( "'range' element may only have 'lower' and/or 'upper' " +
@@ -1074,6 +1080,8 @@ public class QueryRequest implements Cloneable
                    "' element, but found '" + parent.name() + "'" );
         
         String termText  = getText( parent );
+        if( termText == null || termText.length() == 0 )
+            error( "Missing term text in element '" + parent.name() + "'" );
         
         // For now, convert text to lowercase. In the future, we might allow
         // case-sensitive searching.
