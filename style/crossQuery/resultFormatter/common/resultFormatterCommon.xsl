@@ -1223,8 +1223,12 @@
     </xsl:for-each>
 
   </xsl:template>
+    
+  <!-- ====================================================================== -->
+  <!-- Format Query for Display                                               -->
+  <!-- ====================================================================== -->
   
-  <xsl:template name="fix-query">
+  <xsl:template name="format-query">
     
     <xsl:param name="query"/>
     
@@ -1239,81 +1243,6 @@
       </xsl:non-matching-substring>
     </xsl:analyze-string>
     
-  </xsl:template>
-    
-  <!-- ====================================================================== -->
-  <!-- Help Page                                                              -->
-  <!-- ====================================================================== -->
-
-  <xsl:template name="help">
-    <br/>
-    <hr/>
-    <br/>
-    <h3>Sample Queries</h3>
-    <blockquote>
-      <h4>Keyword</h4>
-      <ul>
-        <li>
-          <font color="brown">south africa</font>&#160;<i>All keywords and'd together.</i>
-        </li>
-      </ul>
-      <h4>Phrase</h4>
-      <ul>
-        <li>
-          <font color="brown">"south africa"</font>&#160;<i>Full phrase only.</i>
-        </li>
-      </ul>
-      <h4>Wildcards</h4>
-      <ul>
-        <li>
-          <font color="brown">apar*</font>&#160;<i>0 or more characters following the string</i>
-        </li>
-        <li>
-          <font color="brown">apar?</font>&#160;<i>Each '?' stands for 1 character</i>
-        </li>
-      </ul>
-      <h4>Diacritics</h4>
-      <ul>
-        <li>
-          <font color="brown">S&#x00E9;gr&#x00E9;gation</font>&#160;<i>Note: Some
-            interface problems here.</i>
-        </li>
-      </ul>
-      <h4>Boolean Searches</h4>
-      <p>"and, "or", and "not" are supported.</p>
-      <ul>
-        <li>
-          <font color="brown">apartheid and race not africa</font>
-        </li>
-        <li>
-          <font color="brown">apartheid and race or south and africa</font>
-          <ul>
-            <li>Equivalent to: <font color="brown">(apartheid and race) or (south and africa)</font>
-            </li>
-            <li>Equivalent to: <font color="brown">(apartheid race) or (south africa)</font>
-            </li>
-          </ul>
-        </li>
-      </ul>
-      <h4>Proximity Searches</h4>
-      <ul>
-        <li>
-          <font color="brown">"famine food"~5</font>&#160;<i>Find 'famine' within 5 words of 'food'.</i>
-        </li>
-      </ul>
-      <h4>Metadata Searching</h4>
-      <ul>
-        <li>Search any of the dublin core fields indexed for an object (title, creator, subject,
-          description, date, and relation) using any of the search features listed above.</li>
-      </ul>
-      <h4>Date Range Searches</h4>
-      <ul>
-        <li>
-          <font color="brown">&gt;2004, &gt;=1999, &lt;1980, &lt;=2000, or
-            1999..2004</font>&#160;<i>Note: Some date normalization work remains to be done</i>
-        </li>
-      </ul>
-    </blockquote>
   </xsl:template>
 
   <!-- ====================================================================== -->
@@ -1424,31 +1353,34 @@
   </xsl:template>
     
   <!-- ====================================================================== -->
-  <!-- Alpha Anchors                                                          -->
+  <!-- dynaXML URL Template                                                   -->
   <!-- ====================================================================== -->
-
-  <xsl:template name="alpha.anchors">
-    
-    <xsl:param name="alpha-list"/>
-    <xsl:param name="anchor-list"/>
-    
-    <xsl:variable name="char" select="substring($alpha-list, 1, 1)"/>
-    
-    <xsl:if test="$alpha-list != ''">
-      <xsl:if test="contains($anchor-list, $char)">
-        <a href="#{$char}"><xsl:value-of select="$char"/></a>
-        <xsl:if test="replace($anchor-list, $char, '') != ''">
-          <xsl:text> | </xsl:text>
-        </xsl:if>
-      </xsl:if>
-      <xsl:call-template name="alpha.anchors">
-        <xsl:with-param name="alpha-list" select="substring-after($alpha-list, $char)"/>
-        <xsl:with-param name="anchor-list" select="replace($anchor-list, $char, '')"/>
-      </xsl:call-template>
-    </xsl:if>
-    
-  </xsl:template>
   
+  <xsl:template name="dynaxml.url">
+    
+    <xsl:variable name="fullark" select="meta/identifier[1]"/>
+    <xsl:variable name="ark" select="substring($fullark, string-length($fullark)-9)"/>
+    <xsl:variable name="subDir" select="substring($ark, 9, 2)"/>
+    
+    <xsl:value-of select="concat($dynaxml.path, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
+    <!-- -join & -prox are mutually exclusive -->
+    <xsl:choose>
+      <xsl:when test="$text-prox">
+        <xsl:value-of select="concat('&amp;query-prox=', $text-prox)"/>
+      </xsl:when>
+      <xsl:when test="$text-join">
+        <xsl:value-of select="concat('&amp;query-join=', $text-join)"/>
+      </xsl:when>            
+    </xsl:choose>
+    <xsl:if test="$text-exclude">
+      <xsl:value-of select="concat('&amp;query-exclude=', $text-exclude)"/>
+    </xsl:if>
+    <xsl:if test="$sectionType">
+      <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
+    </xsl:if>    
+
+  </xsl:template>
+
   <!-- ====================================================================== -->
   <!-- Generate ARK List for Testing                                          -->
   <!-- ====================================================================== -->
