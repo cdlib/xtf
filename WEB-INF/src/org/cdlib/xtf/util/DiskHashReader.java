@@ -44,7 +44,7 @@ public class DiskHashReader
     static final int headerSize = 12;
     
     /** SubStore to read the hash from */
-    private SubStore       subfile;
+    private SubStoreReader subfile;
     
     /** Number of hash slots in the subfile */
     private int           nSlots;
@@ -63,7 +63,7 @@ public class DiskHashReader
      * 
      * @param subfile   Must have been created by DiskHashWriter.outputTo()
      */
-    public DiskHashReader( SubStore subfile )
+    public DiskHashReader( SubStoreReader subfile )
         throws IOException
     {
         this.subfile = subfile;
@@ -117,7 +117,7 @@ public class DiskHashReader
         
         // Read the slot data (may be too much, but will always be enough).
         subfile.seek( slotOffset );
-        subfile.readFully( slotBytes );
+        subfile.read( slotBytes );
         slotBuf.setBytes( slotBytes );
         
         // Now scan the entries

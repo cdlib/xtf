@@ -58,7 +58,7 @@ public interface StructuredStore
      * @param name  Name of the sub-file to create. Must not exist.
      * @return      A sub-store to write to.
      */
-    SubStore createSubStore( String name )
+    SubStoreWriter createSubStore( String name )
         throws IOException;
 
     /**
@@ -73,7 +73,7 @@ public interface StructuredStore
      * 
      * @param name  Name of pre-existing sub-store to open.
      */
-    SubStore openSubStore( String name ) throws IOException;
+    SubStoreReader openSubStore( String name ) throws IOException;
     
     /** Gets the path, URI, or other unique identifier for this store */
     String getSystemId();

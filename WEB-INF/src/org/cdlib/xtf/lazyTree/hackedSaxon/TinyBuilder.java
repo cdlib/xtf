@@ -13,7 +13,7 @@ import net.sf.saxon.type.Type;
 
 import org.cdlib.xtf.util.PackedByteBuf;
 import org.cdlib.xtf.util.StructuredStore;
-import org.cdlib.xtf.util.SubStore;
+import org.cdlib.xtf.util.SubStoreWriter;
 
 
 /**
@@ -33,7 +33,7 @@ public class TinyBuilder extends Builder  {
     private int[] sizeParameters;       // estimate of number of nodes, attributes, namespaces, characters
     private PackedByteBuf textBuf = new PackedByteBuf( 1000 );
     private StructuredStore treeStore;
-    private SubStore textStore;
+    private SubStoreWriter textStore;
 
     public void setSizeParameters(int[] params) {
         sizeParameters = params;
@@ -47,11 +47,11 @@ public class TinyBuilder extends Builder  {
         return treeStore;
     }
 
-    public void setTextStore( SubStore textStore ) {
+    public void setTextStore( SubStoreWriter textStore ) {
         this.textStore = textStore;
     }
     
-    public SubStore getTextStore() {
+    public SubStoreWriter getTextStore() {
         return textStore;
     }
     
@@ -273,7 +273,7 @@ public class TinyBuilder extends Builder  {
             textBuf.reset();
             textBuf.writeCharSequence( chars );
             try {
-                startPos = textStore.getFilePointer();
+                startPos = textStore.length();
                 textBuf.output( textStore );
             }
             catch( IOException e ) {

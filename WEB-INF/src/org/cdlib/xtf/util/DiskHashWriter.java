@@ -62,7 +62,7 @@ public class DiskHashWriter
     } // put()
     
     /** Writes out the entire hash */
-    public void outputTo( SubStore out )
+    public void outputTo( SubStoreWriter out )
         throws IOException
     {
         // Calculate a good size for the hash. We want to have plenty of open
@@ -98,12 +98,12 @@ public class DiskHashWriter
         }
         
         // Now write the header and the slot offsets.
-        out.writeBytes( "hash" );
+        out.write( "hash".getBytes() );
         out.writeInt( hashSize );
         out.writeInt( maxSlotSize );
        
-        assert DiskHashReader.headerSize == (int) out.getFilePointer();
-        int startOffset = (int) out.getFilePointer() + (hashSize * 4);
+        assert DiskHashReader.headerSize == (int) out.length();
+        int startOffset = (int) out.length() + (hashSize * 4);
         int curOffset = startOffset;
         
         for( int i = 0; i < hashSize; i++ ) {
@@ -115,7 +115,7 @@ public class DiskHashWriter
             curOffset += slots[i].length();
             assert slots[i].length() <= maxSlotSize;
         } // for i
-        assert out.getFilePointer() == startOffset;
+        assert out.length() == startOffset;
         
         // Finally, write all the data.
         for( int i = 0; i < hashSize; i++ ) {
@@ -123,7 +123,7 @@ public class DiskHashWriter
                 continue;
             slots[i].output( out );
         }
-        assert out.getFilePointer() == curOffset;
+        assert out.length() == curOffset;
         
         // To make sure that the hash reader doesn't have to worry about
         // accidentally reading past the end of the sub-file, write an extra

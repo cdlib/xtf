@@ -48,7 +48,7 @@ class ElementImpl extends ParentNodeImpl {
         {
             // Read in the attributes.
             document.attrFile.seek( attrOffset );
-            document.attrFile.readFully( document.attrBytes );
+            document.attrFile.read( document.attrBytes );
             
             PackedByteBuf buf = document.attrBuf;
             buf.setBytes( document.attrBytes );

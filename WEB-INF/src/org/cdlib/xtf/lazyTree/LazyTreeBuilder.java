@@ -46,7 +46,7 @@ import org.cdlib.xtf.lazyTree.hackedSaxon.TinyTree;
 import org.cdlib.xtf.util.ConsecutiveMap;
 import org.cdlib.xtf.util.PackedByteBuf;
 import org.cdlib.xtf.util.StructuredStore;
-import org.cdlib.xtf.util.SubStore;
+import org.cdlib.xtf.util.SubStoreWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
 /**
@@ -164,7 +164,7 @@ public class LazyTreeBuilder
         
         treeStore.setUserVersion( curVersion );
         
-        SubStore textFile = treeStore.createSubStore( "text" );
+        SubStoreWriter textFile = treeStore.createSubStore( "text" );
         builder.setTextStore( textFile );
         
         // Done for now.
@@ -212,9 +212,9 @@ public class LazyTreeBuilder
         checkSupport();
          
         // Now make a structured file containing the entire tree's contents.
-        writeNames   ( treeStore.createSubStore("names") );
-        writeAttrs   ( treeStore.createSubStore("attributes") ); // must be before nodes
-        writeNodes   ( treeStore.createSubStore("nodes") );
+        writeNames( treeStore.createSubStore("names") );
+        writeAttrs( treeStore.createSubStore("attributes") ); // must be before nodes
+        writeNodes( treeStore.createSubStore("nodes") );
         
         // Close the store if requested.
         if( closeStore )
@@ -231,7 +231,7 @@ public class LazyTreeBuilder
      * 
      * @param out   SubStore to write to.
      */
-    private void writeNames( SubStore out )
+    private void writeNames( SubStoreWriter out )
         throws IOException
     {
         PackedByteBuf buf = new PackedByteBuf( 1000 );
@@ -277,7 +277,7 @@ public class LazyTreeBuilder
      * 
      * @param out   SubStore to write to.
      */
-    private void writeNodes( SubStore out )
+    private void writeNodes( SubStoreWriter out )
     throws IOException
     {
         // Write the root node's number
@@ -372,15 +372,48 @@ public class LazyTreeBuilder
      * 
      * @param out   SubStore to write to.
      */
-    private void writeAttrs( SubStore out )
+    private void writeAttrs( SubStoreWriter out )
         throws IOException
     {
-        // Write placeholder for the maximum size of any block.
-        out.writeInt( 0 );
-        
-        // Write out each attrib, and record their offsets and lengths.
+        // Do a dry run to figure out the max size of any entry.
         int maxSize = 0;
         PackedByteBuf buf = new PackedByteBuf( 100 );
+        for( int i = 0; i < tree.numberOfAttributes; ) 
+        {
+            // Figure out how many attributes for this parent.
+            int j;
+            for( j = i+1; j < tree.numberOfAttributes; j++ ) {
+                if( tree.attParent[j] != tree.attParent[i] )
+                    break;
+            }
+            
+            int nAttrs = j - i;
+            
+            // Pack them all up.
+            buf.reset();
+            buf.writeInt( nAttrs );
+            for( j = i; j < i+nAttrs; j++ ) {
+            
+                // Name code
+                int nameIdx = names.get( new Integer(tree.attCode[j]) );
+                assert nameIdx >= 0 : "A name was missed when writing name codes";
+                buf.writeInt( nameIdx );
+                
+                // Value
+                buf.writeString( tree.attValue[j].toString() );
+            }
+            
+            // Bump the max if necessary.
+            maxSize = Math.max( maxSize, buf.length() );
+            
+            // Next!
+            i += nAttrs;
+        } // for i
+        
+        // Write the max size of any block.
+        out.writeInt( maxSize );
+        
+        // Write out each attrib, and record their offsets and lengths.
         for( int i = 0; i < tree.numberOfAttributes; ) 
         {
             // Figure out how many attributes for this parent.
@@ -409,11 +442,10 @@ public class LazyTreeBuilder
             // Record the offset in the attribute file.
             int parent = tree.attParent[i];
             assert tree.nodeKind[parent] == Type.ELEMENT;
-            tree.alpha[parent] = (int) out.getFilePointer();
+            tree.alpha[parent] = (int) out.length();
             
-            // Write out the data, and bump the max if necessary.
+            // Write out the data.
             buf.output( out );
-            maxSize = Math.max( maxSize, buf.length() );
             
             // Next!
             i += nAttrs;
@@ -424,10 +456,6 @@ public class LazyTreeBuilder
         //
         byte[] tmp = new byte[maxSize];
         out.write( tmp );
-        
-        // Go back and write the max size.
-        out.seek( 0 );
-        out.writeInt( maxSize );
         
         // All done.
         out.close();

@@ -36,28 +36,19 @@ import java.io.IOException;
  */
 
 /**
- * Represents a single sub-store within a {@link StructuredStore}. A sub-store
+ * Writes to a single sub-store within a {@link StructuredStore}. A sub-store
  * provides most of the interface of a RandomAccessFile, and takes care of
  * writing to the correct subset of the main StructuredStore. 
  * 
  * @author Martin Haye
  */
-public interface SubStore 
+public interface SubStoreWriter 
 {
   void close() throws IOException;
-  long getFilePointer() throws IOException;
   long length() throws IOException;
-  int  read(byte[] b) throws IOException;
-  void readFully(byte[] b) throws IOException;
-  void readFully(byte[] b, int off, int len) throws IOException;
-  void seek(long pos) throws IOException;
   void write(byte[] b) throws IOException;
   void write(byte[] b, int off, int len) throws IOException;
-  byte readByte() throws IOException;
-  int  readInt() throws IOException;
-  void write(int b) throws IOException;
-  void writeByte(int v) throws IOException;
-  void writeBytes(String s) throws IOException;
+  void writeByte(int b) throws IOException;
   void writeChars(String s) throws IOException;
   void writeInt(int v) throws IOException;
 }

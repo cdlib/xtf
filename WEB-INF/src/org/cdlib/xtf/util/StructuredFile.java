@@ -67,7 +67,7 @@ public class StructuredFile implements StructuredStore
      * True when creating a sub-file; enforces the rule that only one sub-file
      * may be created at a time.
      */
-    private Subfile          creatingSubfile;
+    private SubFileWriter    creatingSubfile;
     
     /** 
      * Directory entry of the sub-file being created (if
@@ -84,7 +84,7 @@ public class StructuredFile implements StructuredStore
      * to be saved/restored. Package-private, since the Subfile class needs
      * access to it.
      */
-    Subfile curSubfile = null;
+    Object curSubFile = null;
             
     /** Number of currently open Structured files */  
     private int              openCount = 0;
@@ -213,7 +213,7 @@ public class StructuredFile implements StructuredStore
      * @param name  Name of the sub-file to create. Must not exist.
      * @return      A subfile to write to.
      */
-    public synchronized SubStore createSubStore( String name )
+    public synchronized SubStoreWriter createSubStore( String name )
         throws IOException
     {
         // Can only create one sub-file at a time.
@@ -236,7 +236,8 @@ public class StructuredFile implements StructuredStore
         dir.add( ent );
 
         // Finally create the Subfile and record that it's open now.
-        Subfile subfile = new Subfile( realFile, this, ent.segOffset, -1 );
+        SubFileWriter subfile = 
+            new SubFileWriter( realFile, this, ent.segOffset );
         creatingSubfile = subfile;
         creatingEnt     = ent;
         return subfile;
@@ -254,7 +255,7 @@ public class StructuredFile implements StructuredStore
      * 
      * @param name  Name of pre-existing subfile to open.
      */
-    public synchronized SubStore openSubStore( String name )
+    public synchronized SubStoreReader openSubStore( String name )
         throws IOException
     {
         // Find the directory entry.
@@ -267,19 +268,35 @@ public class StructuredFile implements StructuredStore
             throw new IOException( "Cannot open in-progress subfile" );
         
         // Make a sub-file instance to read it.
-        Subfile sub = new Subfile( realFile, this, 
-                                   ent.segOffset, ent.segLength );
+        SubFileReader sub = new SubFileReader( realFile, this, 
+                                               ent.segOffset, ent.segLength );
         openSubfiles.add( sub );
         return sub;
     } // openSubfile()
 
+    /**
+     * Called by a subfile reader when its close() method is called. 
+     * 
+     * @param subfile   The sub-file reader being closed.
+     */
+    synchronized void closeReader( SubFileReader subfile )
+        throws IOException
+    {
+        // Remove this from the list of open files.
+        if( !openSubfiles.remove(subfile) )
+            assert false : "Tried to close sub-file not in list";
+        
+        if( curSubFile == subfile )
+            curSubFile = null;
+    } // closeSubfile()
+    
     /**
      * Called by a subfile when its close() method is called. If the subfile is
      * newly created, we update the directory.
      * 
      * @param subfile   The sub-file being closed.
      */
-    synchronized void closeSubfile( Subfile subfile )
+    synchronized void closeWriter( SubFileWriter subfile )
         throws IOException
     {
         // If this is a newly created file, update the directory entry.
@@ -290,14 +307,8 @@ public class StructuredFile implements StructuredStore
             creatingSubfile = null;
             creatingEnt = null;
         }
-        else {
-            // Remove this from the list of open files.
-            if( !openSubfiles.remove(subfile) )
-                assert false : "Tried to close sub-file not in list";
-        }
-        
-        if( curSubfile == subfile )
-            curSubfile = null;
+        else
+            assert false : "Tried to close unknown sub-file writer";
     } // closeSubfile()
     
     /**
@@ -361,7 +372,7 @@ public class StructuredFile implements StructuredStore
             
             // If any subfiles are open, close them too.
             while( !openSubfiles.isEmpty() ) {
-                Subfile sub = (Subfile) openSubfiles.getFirst();
+                SubFileReader sub = (SubFileReader) openSubfiles.getFirst();
                 sub.close();
             } // while
             
@@ -591,64 +602,62 @@ public class StructuredFile implements StructuredStore
                 f = StructuredFile.open( testFile );
                 
                 // Add a couple sub-files.
-                SubStore sf1 = f.createSubStore( "foo" );
-                sf1.writeInt( 1 );
-                sf1.writeByte( 2 );
-                sf1.writeInt( 3 );
-                sf1.close();
+                SubStoreWriter sfw1 = f.createSubStore( "foo" );
+                sfw1.writeInt( 1 );
+                sfw1.writeByte( 2 );
+                sfw1.writeInt( 3 );
+                sfw1.close();
                 
-                SubStore sf2 = f.createSubStore( "foo2" );
-                sf2.writeByte( 8 );
-                sf2.writeInt( 9 );
-                sf2.close();
+                SubStoreWriter sfw2 = f.createSubStore( "foo2" );
+                sfw2.writeByte( 8 );
+                sfw2.writeInt( 9 );
+                sfw2.close();
                 
                 f.close();
                 
                 // Verify the sub-files.
                 f = StructuredFile.open( testFile );
-                sf2 = f.openSubStore( "foo2" );
-                sf1 = f.openSubStore( "foo" );
+                SubStoreReader sfr2 = f.openSubStore( "foo2" );
+                SubStoreReader sfr1 = f.openSubStore( "foo" );
                 
-                assert sf2.readByte() == 8;
-                assert sf1.readInt() == 1;
-                assert sf1.readByte() == 2;
-                assert sf2.readInt() == 9;
-                assert sf1.readInt() == 3;
+                assert sfr2.readByte() == 8;
+                assert sfr1.readInt() == 1;
+                assert sfr1.readByte() == 2;
+                assert sfr2.readInt() == 9;
+                assert sfr1.readInt() == 3;
                 
                 // Make sure we can't read past the end of either one.
                 boolean ok = false;
-                try { sf1.readInt(); } catch( EOFException e ) { ok = true; }
+                try { sfr1.readInt(); } catch( EOFException e ) { ok = true; }
                 assert ok;
                 
                 ok = false;
-                try { sf2.readByte(); } catch( EOFException e ) { ok = true; }
+                try { sfr2.readByte(); } catch( EOFException e ) { ok = true; }
                 assert ok;
                 
                 // Test seeking.
-                sf1.seek( 4 );
-                assert sf1.readByte() == 2;
-                sf1.seek( 0 );
-                assert sf1.readInt() == 1;
+                sfr1.seek( 4 );
+                assert sfr1.readByte() == 2;
+                sfr1.seek( 0 );
+                assert sfr1.readInt() == 1;
                 
                 ok = false;
-                try { sf1.seek(20); } catch( IOException e ) { ok = true; }
+                try { sfr1.seek(20); } catch( IOException e ) { ok = true; }
                 assert ok;
                 
                 // Make sure we can add another one.
-                SubStore sf3 = f.createSubStore( "foo3" );
-                sf3.writeInt( 10 );
-                sf3.seek( 0 );
-                assert sf3.readInt() == 10;
+                SubStoreWriter sfw3 = f.createSubStore( "foo3" );
+                sfw3.writeInt( 10 );
                 
                 // Can't create two at the same time
                 ok = false;
                 try { f.createSubStore("foo4"); } catch( IOException e ) { ok = true; }
                 assert ok;
                 
-                sf3.close();
+                sfw3.close();
                 
-                sf3 = f.openSubStore( "foo3" );
-                assert sf3.readInt() == 10;
+                SubStoreReader sfr3 = f.openSubStore( "foo3" );
+                assert sfr3.readInt() == 10;
                 
                 // Shouldn't be able to open a non-existent sub-file.
                 ok = false;

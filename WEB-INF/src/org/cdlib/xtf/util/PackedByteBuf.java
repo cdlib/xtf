@@ -97,11 +97,11 @@ public class PackedByteBuf
      * @param in    Source for data
      * @param len   How many bytes to read
      */
-    public PackedByteBuf( SubStore in, int len )
+    public PackedByteBuf( SubStoreReader in, int len )
         throws IOException
     {
         bytes = new byte[len];
-        in.readFully( bytes, 0, len );
+        in.read( bytes, 0, len );
         decompress();
     } // constructor
 
@@ -443,7 +443,7 @@ public class PackedByteBuf
      * 
      * @param out   Where to write the data to.
      */ 
-    public void output( SubStore out )
+    public void output( SubStoreWriter out )
         throws IOException
     {
         compress();
@@ -470,7 +470,7 @@ public class PackedByteBuf
      * @param out   Where to write the data to
      * @param len   How many bytes to write (okay to exceed buffer length)
      */
-    public void output( SubStore out, int len )
+    public void output( SubStoreWriter out, int len )
         throws IOException
     {
         assert pos > 0 : "Cannot output empty buffer";
@@ -480,15 +480,15 @@ public class PackedByteBuf
         //
         compress();
         if( compressed ) {
-            out.write( compressMarker );
+            out.writeByte( compressMarker );
             assert( (uncompLen>>16) == 0 ) : "Tried to compress too much data"; 
-            out.write( uncompLen & 0xff );
-            out.write( (uncompLen>>8) & 0xff );
-            out.write( bytes[0] );
+            out.writeByte( uncompLen & 0xff );
+            out.writeByte( (uncompLen>>8) & 0xff );
+            out.writeByte( bytes[0] );
             assert length() == pos + 3;
         }
         else {
-            out.write( bytes[0] );
+            out.writeByte( bytes[0] );
             if( bytes[0] == compressMarker ) {
                 out.writeByte( 0 );
                 out.writeByte( 0 );
