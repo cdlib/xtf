@@ -295,20 +295,22 @@ public class CrossQuery extends TextServlet
     {
         StringBuffer buf = new StringBuffer( 1000 );
         
-        buf.append( "<crossQueryResult " +
-                    "totalDocs=\"" + result.totalDocs + "\" " +
-                    "startDoc=\"" + 
+        buf.append( "<crossQueryResult" +
+                    " totalDocs=\"" + result.totalDocs + "\" " +
+                    " startDoc=\"" + 
                         (result.totalDocs > 0 ? result.startDoc+1 : 0) + "\" " + 
                         // Note above: 1-based start
-                    "endDoc=\"" + result.endDoc + "\">" );
+                    " endDoc=\"" + result.endDoc + "\">" );
         
         if( result.docHits != null ) {
             for( int i = 0; i < result.docHits.length; i++ ) {
                 DocHit docHit = result.docHits[i];
-                buf.append( "  <docHit rank=\"" + (i+result.startDoc+1) + 
-                            "\" " +
-                            "path=\"" + docHit.filePath() + "\" score=\"" +
-                            Math.round(docHit.score() * 100) + "\">\n" );
+                buf.append( "  <docHit" +
+                            " rank=\"" + (i+result.startDoc+1) + "\"" +
+                            " path=\"" + docHit.filePath() + "\"" +
+                            " score=\"" + Math.round(docHit.score() * 100) + "\"" +
+                            " totalHits=\"" + docHit.totalSnippets() + "\"" +
+                            ">\n" );
                 if( !docHit.metaData().isEmpty() ) {
                     buf.append( "    <meta>\n" );
                     for( Iterator atts = docHit.metaData().iterator(); atts.hasNext(); )
