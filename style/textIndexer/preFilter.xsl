@@ -176,40 +176,38 @@
 <!-- ====================================================================== -->
   
   <!-- Function to parse normalized titles out of dc:title -->  
-  
   <xsl:function name="parse:title">
     
     <xsl:param name="title"/>
     
     <!-- Normalize Case -->
-    <!-- KVH: This should really handle accented characters as well -->
     <xsl:variable name="lower-title">
       <xsl:value-of select="translate($title, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
     </xsl:variable>
     
     <!-- Remove Punctuation -->
     <xsl:variable name="parse-title">
-      <xsl:value-of select="translate($lower-title, '~!$()-:;,.?', '')"/>
+      <xsl:value-of select="replace($lower-title, '[^a-z0-9 ]', '')"/>
     </xsl:variable>
     
     <!-- Remove Leading Articles -->
     <!-- KVH: Eventually this should handle French, German, and Spanish articles as well -->
     <xsl:choose>
       <xsl:when test="matches($parse-title, '^a ')">
-        <xsl:value-of select="replace($parse-title, 'a (.+)', '$1')"/>
+        <xsl:value-of select="replace($parse-title, '^a (.+)', '$1')"/>
       </xsl:when>
-      <xsl:when test="matches($parse-title, 'an')">
-        <xsl:value-of select="replace($parse-title, 'an (.+)', '$1')"/>
+      <xsl:when test="matches($parse-title, '^an ')">
+        <xsl:value-of select="replace($parse-title, '^an (.+)', '$1')"/>
       </xsl:when>
-      <xsl:when test="matches($parse-title, 'the')">
-        <xsl:value-of select="replace($parse-title, 'the (.+)', '$1')"/>
+      <xsl:when test="matches($parse-title, '^the ')">
+        <xsl:value-of select="replace($parse-title, '^the (.+)', '$1')"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="$parse-title"/>
       </xsl:otherwise>
     </xsl:choose>
 
-  </xsl:function>
+  </xsl:function>  
   
   <!-- Function to parse last names out of various dc:creator formats -->  
   
