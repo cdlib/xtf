@@ -33,10 +33,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.Weight;
 import org.cdlib.xtf.textEngine.dedupeSpans.SpanQuery;
 import org.cdlib.xtf.textEngine.dedupeSpans.Spans;
 import org.cdlib.xtf.textEngine.dedupeSpans.TermMaskSet;
@@ -51,7 +48,7 @@ import org.cdlib.xtf.textEngine.dedupeSpans.TermMaskSet;
 public class SpanSectionTypeFilterQuery extends SpanQuery
 {
     /** Query on the 'sectionType' field, used to limit text query results */
-    private Query sectionTypeQuery;
+    private SpanQuery typeQuery;
     
     /** Text query to filter */
     private SpanQuery textQuery;
@@ -63,10 +60,10 @@ public class SpanSectionTypeFilterQuery extends SpanQuery
      * @param sectionTypeQuery  'sectionType' field query to filter with
      */
     public SpanSectionTypeFilterQuery( SpanQuery textQuery, 
-                                       Query     sectionTypeQuery )
+                                       SpanQuery sectionTypeQuery )
     {
         // Record the input parms
-        this.sectionTypeQuery = sectionTypeQuery;
+        this.typeQuery = sectionTypeQuery;
         this.textQuery = textQuery;
     } // constructor
     
@@ -79,13 +76,11 @@ public class SpanSectionTypeFilterQuery extends SpanQuery
     {
       
       return new Spans() {
-        private Weight  typeWeight = sectionTypeQuery.weight( searcher );
-        private Scorer  typeScorer = typeWeight.scorer( reader );
-        private boolean moreType = true;
-        private boolean typeCanSkip = true;
+        private Spans   typeSpans = typeQuery.getSpans( reader, searcher );
+        private boolean moreType  = true;
         
         private Spans   textSpans = textQuery.getSpans(reader, searcher);
-        private boolean moreText = true;
+        private boolean moreText  = true;
         
         private boolean firstTime = true;
 
@@ -93,7 +88,7 @@ public class SpanSectionTypeFilterQuery extends SpanQuery
           if (moreText)                        // move to next text
             moreText = textSpans.next();
           if( firstTime ) {
-            moreType = typeScorer.next();
+            moreType = typeSpans.next();
             firstTime = false;
           }
 
@@ -102,36 +97,24 @@ public class SpanSectionTypeFilterQuery extends SpanQuery
         
         public boolean skipTo( int target ) throws IOException {
           moreText = textSpans.skipTo( target );
-          skipType( target );
+          moreType = typeSpans.skipTo( target );
           return advance();
         }
         
-        private void skipType( int target ) throws IOException
-        {
-          if( typeCanSkip ) {
-            try {
-              moreType = typeScorer.skipTo( target );
-            } catch( UnsupportedOperationException e ) {
-              typeCanSkip = false;
-            }
-          }
-          
-          if( !typeCanSkip ) {
-            while( moreType && typeScorer.doc() < target )
-              moreType = typeScorer.next();
-          }
-        }
-
         private boolean advance() throws IOException {
           while( moreText && moreType ) {
-            // Advance text to type, or type to text
+            // Advance text to type, or type to text. Note that the type
+            // query MUST support skipTo(), that is, it must return documents
+            // in order. Otherwise, the logic below totally breaks. Note that
+            // BooleanQuery, in particular, does not meet this criterion.
+            //
             final int textChunk = textSpans.doc();
-            final int typeChunk = typeScorer.doc();
+            final int typeChunk = typeSpans.doc();
               
             if( textChunk < typeChunk )
               moreText = textSpans.skipTo( typeChunk );
             else if( textChunk > typeChunk )
-              skipType( textChunk );
+              moreType = typeSpans.skipTo( textChunk );
             else
               break;
           }

@@ -429,7 +429,7 @@ public class QueryProcessor
      * @throws IOException          If something goes wrong reading the index
      */
     private HashMap gatherTextHits( final Query         textQuery,
-                                    final Query         sectionTypeQuery,
+                                    final SpanQuery     sectionTypeQuery,
                                     final TermMap       termMap,
                                     final HashMap       docHitMap,
                                     final PriorityQueue docHitQueue,

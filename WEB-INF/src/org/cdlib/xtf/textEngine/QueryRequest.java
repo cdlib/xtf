@@ -835,9 +835,12 @@ public class QueryRequest
     
     
     /**
-     * Parse a 'sectionType' query element.
+     * Parse a 'sectionType' query element. Note that this query is parsed
+     * as a span query, because the query processing logic requires it to
+     * return documents in ascending ID order (something which the normal
+     * BooleanQuery does not do.)
      */
-    private Query parseSectionType( Element parent )
+    private SpanQuery parseSectionType( Element parent )
         throws QueryGenException
     {
         // Find the sectionType element (if any)
@@ -867,7 +870,8 @@ public class QueryRequest
             error( "'sectionType' element requires exactly " +
                    "one child element" );
         
-        return parseBoolean( child, "sectionType", MODE_META, false );
+        return (SpanQuery) 
+            parseBoolean( child, "sectionType", MODE_TEXT, false );
     } // parseSectionType()
     
     
@@ -960,21 +964,6 @@ public class QueryRequest
         // Range queries are pretty specialized.
         if( name.equals("range") )
             return parseRange( parent, field );
-        
-        // Old comment:
-        //      Lucene's handling of OR queries is screwy... it only seems to
-        //      pay attention to the last term. Use a near query instead.
-        //
-        // New comment:
-        //      I'm not sure what the old comment means. What I do know is
-        //      that we can't get away with using a 'near' query, since it
-        //      doesn't work across multiple meta-data fields (all clauses
-        //      to a span query must be from the same field.)
-        //
-        // Result: Do not comment in the following code!
-        //
-        //if( name.equals("or") )
-        //    return parseTextBoolean( parent, name, field, addTerms ); 
         
         // All other cases fall through to here: and, or. Handle the 'not'
         // sub-clauses along the way.

@@ -56,7 +56,7 @@ public class ComboQuery
     public SpanQuery  textQuery;
     
     /** Optional query to restrict full text results based on sectionType */
-    public Query      sectionTypeQuery;
+    public SpanQuery  sectionTypeQuery;
     
     /** Optional list of fields to sort documents by */
     public String     sortMetaFields;
