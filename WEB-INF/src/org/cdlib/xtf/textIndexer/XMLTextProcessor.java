@@ -674,6 +674,9 @@ public class XMLTextProcessor extends DefaultHandler
    * 
    *  @param srcInfo  The source XML text file to add to the queue of 
    *                  files to be indexed/reindexed. <br><br>
+   *                  
+   *  @param buildLazyFile  true to build a lazy version of the document
+   *                        during indexing, false to skip it. <br><br>
    *  
    *  @.notes
    *    For more about why source text files are queued, see the 
@@ -683,7 +686,8 @@ public class XMLTextProcessor extends DefaultHandler
    */
   public void checkAndQueueText(
       
-      SrcTextInfo srcInfo
+      SrcTextInfo srcInfo,
+      boolean     buildLazyFile
       
   ) throws ParserConfigurationException, 
            SAXException, 
@@ -698,7 +702,7 @@ public class XMLTextProcessor extends DefaultHandler
     if( ret == 1 ) return;
     
     // Figure out where to put the lazy tree file. If an old one already
-    // exists, toss it. Also make sure the directory exists.
+    // exists, toss it.
     //
     File srcFile = new File( srcInfo.source.getSystemId() );
     File lazyFile = IndexUtil.calcLazyPath( 
@@ -708,7 +712,15 @@ public class XMLTextProcessor extends DefaultHandler
             true );
     if( lazyFile.canRead() )
         lazyFile.delete();
-    srcInfo.lazyStore = new StructuredFileProxy( lazyFile );
+    
+    // If we've been asked to build a lazy file...
+    if( buildLazyFile )
+    {
+        // Use a file proxy so that we don't actually open the file handle
+        // until the queued file is actually indexed.
+        //
+        srcInfo.lazyStore = new StructuredFileProxy( lazyFile );
+    }
     
     // Otherwise, queue it to be indexed.
     queueText( srcInfo );

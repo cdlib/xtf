@@ -62,6 +62,13 @@ import org.cdlib.xtf.util.*;
  * (<code>-clean</code>) or should be updated (<code>-incremental</code>). If
  * this argument is not specified, the default behavior is incremental. <br><br>
  * 
+ * The <code>-buildlazy</code> / <code>-nobuildlazy</code> argument is an 
+ * optional argument that specifies whether the indexer should build a
+ * persistent ("lazy") version of each document during the indexing process.
+ * The lazy files are stored in the index directory, and they speed dynaXML 
+ * access later. If this argument is not specified, the default behavior is 
+ * to build lazy versions of the documents. <br><br>
+ * 
  * The <code>-optimize</code> / <code>-nooptimize</code> argument is an optional
  * argument that specifies whether the indexer should optimize the indexes after
  * they are built. Optimization improves query speed, but can take a very long
@@ -239,10 +246,11 @@ public class TextIndexer
               Trace.error( "  usage: " );
               Trace.tab();
               Trace.error( "TextIndexer {-config <configfile>}? "  +
-                           "{{-incremental|-clean}? "              +
-                           "{{-optimize|-nooptimize}? "            +
+                           "{-incremental|-clean}? "               +
+                           "{-optimize|-nooptimize}? "             +
                            "{-trace errors|warnings|info|debug}? " +
                            "{-dir <subdir>}? "                     +
+                           "{-buildlazy|-nobuildlazy}? "           +
                            "-index <indexname>}+ \n\n" );
               Trace.untab();
               

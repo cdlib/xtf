@@ -84,6 +84,14 @@ public class IndexerConfig
    */
   public boolean   mustClean;
   
+  /** Flag indicating whether to build lazy files during the indexing process.
+   *  <br><br>
+   *  
+   *  true  = Build lazy files. <br>
+   *  False = Do not build lazy files. <br><br>
+   */
+  public boolean   buildLazyFiles;
+  
   /** Flag indicating whether or not to optimize the index after building it.
    *  <br><br>
    *  
@@ -114,6 +122,9 @@ public class IndexerConfig
     
     // Default to incrementally updating the index. 
     clean = false;
+    
+    // Default to building lazy files during the run.
+    buildLazyFiles = true;
     
     // Default to always optimizing the index.
     optimize = true;
@@ -257,6 +268,14 @@ public class IndexerConfig
         // If the user asked for no optimization after build, flag it.
         else if( args[i].equalsIgnoreCase("-nooptimize") )
               optimize = false;
+        
+        // If the user asked for lazy files to be built, flag it.
+        else if( args[i].equalsIgnoreCase("-buildlazy") )
+              buildLazyFiles = true;
+        
+        // If the user asked for no lazy files to be built, flag it.
+        else if( args[i].equalsIgnoreCase("-nobuildlazy") )
+              buildLazyFiles = false;
         
         // If we found the -trace argument...
         else if( args[i].equalsIgnoreCase("-trace") ) {  

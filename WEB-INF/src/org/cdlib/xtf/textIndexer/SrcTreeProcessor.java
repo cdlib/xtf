@@ -646,7 +646,7 @@ public class SrcTreeProcessor
     info.key = key;
     
     // Call the XML text file processor to do the work.    
-    textProcessor.checkAndQueueText( info );
+    textProcessor.checkAndQueueText( info, cfgInfo.buildLazyFiles );
 
     // Let the caller know we didn't skip the file.
     return true;
