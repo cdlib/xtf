@@ -249,15 +249,8 @@
             <td width="100%" valign="top">
               <div class="title">
                 <xsl:value-of select="$doc.author"/><br/>
-                <a href="http://ark.cdlib.org/{/TEI.2/teiHeader/fileDesc/publicationStmt/idno[@type='ARK']}">
-                  <strong><xsl:value-of select="$doc.title"/></strong><br/>
-                </a>
+                <strong><xsl:value-of select="$doc.title"/></strong><br/>
                 <em><xsl:value-of select="$doc.subtitle"/></em><br/>
-                <xsl:if test="contains($brand, 'ucpress')">
-                  <a href="{$serverURL}cgi-bin/nph-ucpgo.pl?http://www.ucpress.edu/books/pages/{$bnum}.html">
-                    <img class="buy" src="{$icon.path}buy_this_book.gif" width="92" height="15" border="0" alt="Buy This Book"/>
-                  </a>
-                </xsl:if>
               </div>
             </td>
           </tr>
@@ -438,31 +431,27 @@
 
     <!-- BEGIN HEADER ROW -->
     <tr width="100%">
-      <td class="header-left" width="50%" align="left">
-        <a href="{$serverURL}escholarship/" target="{$target}">
-          <img src="{$icon.path}escholarship_editions.gif" border="0" width="272" height="44" alt="eScholarship Editions"/>
+      <td class="header-left" width="33%" height="44" align="left">
+        <a href="http://xtf.sourceforge.net"  target="{$target}">
+          <img src="{$icon.path}spacer.gif" border="0" width="15"/>
+          <img src="{$icon.path}xtfMan.gif" border="0" height="44" alt="XTF"/>
         </a>
       </td>
-      <td class="header-right" width="50%" height="44" align="right">
-        <xsl:choose>
-          <xsl:when test="contains($brand, 'ucpress')">
-            <a href="{$serverURL}ucpress/" target="{$target}">
-              <img class="co-brand" src="{$icon.path}uc_press_logo.gif" border="0" width="166" height="36" alt="UC Press"/>
-            </a>
-          </xsl:when>
-          <xsl:otherwise>
-            <a href="http://www.cdlib.org" target="{$target}">
-              <img class="cdl-logo" src="{$icon.path}cdl_logo.gif" border="0" width="36" height="36" alt="CDL"/>
-            </a>
-          </xsl:otherwise>
-        </xsl:choose>
+      <td class="header-right"  width="34%" height="44" align="center">
+        <h1 style="color: white">XTF Demonstration</h1>
+      </td>
+      <td class="header-right" width="33%" height="44" align="right">
+        <a href="http://www.cdlib.org" target="{$target}">
+          <img src="{$icon.path}cdl_logo.gif" border="0" height="44" alt="CDL"/>
+          <img src="{$icon.path}spacer.gif" border="0" width="15"/>
+        </a>
       </td>
     </tr>
     <!-- END HEADER ROW -->
 
     <!-- BEGIN TOPNAV ROW -->
     <tr  width="100%">
-      <td class="topnav-outer" colspan="2" width="100%" height="31" align="center" valign="middle">
+      <td class="topnav-outer" colspan="3" width="100%" height="31" align="center" valign="middle">
 
         <!-- BEGIN TOPNAV LEFT -->
         <table width="100%" height="27" border="0" cellpadding="0" cellspacing="0">
@@ -474,11 +463,11 @@
                 <tr align="left" valign="middle">
                   <td width="8" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="8"/></td>
                   <td width="15" nowrap="nowrap">
-                    <a href="{$serverURL}escholarship/" target="{$target}">
+                    <a href="http://xtf.sourceforge.net" target="{$target}">
                       <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
                     </a>
                   </td>
-                  <td nowrap="nowrap">&#160;<a class="topnav" href="{$serverURL}escholarship/" target="{$target}">Home</a></td>
+                  <td nowrap="nowrap">&#160;<a class="topnav" href="http://xtf.sourceforge.net" target="{$target}">Home</a></td>
                   <td width="10" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td>
 
                   <td width="15" nowrap="nowrap">
@@ -551,24 +540,18 @@
                   <xsl:value-of select="$toc.id"/>
                 </xsl:attribute>
               </input>
-
+              <input type="hidden" name="search.mode">
+                <xsl:attribute name="value">
+                  <xsl:value-of select="'thisbook'"/>
+                </xsl:attribute>
+              </input>
+              
               <td class="topnav-inner" width="50%" align="center" nowrap="nowrap">
 
                 <!-- BEGIN TOPNAV LEFT INNER TABLE -->
                 <table border="0" cellpadding="0" cellspacing="0">
                   <tr align="left" valign="middle">
-                    <td nowrap="nowrap"><span class="search-text">Search</span>&#160;</td>
-                    
-                    <td nowrap="nowrap">
-                      <select name="search.mode">
-                        <option value="thisbook">This Book</option>
-                        <option value="allbooks">All Books</option>
-                        <option disabled="disabled">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</option>
-                      </select>
-                    </td>
-                      
-                    <td nowrap="nowrap">&#160;<span class="search-text">for</span>&#160;</td>
-                      
+                    <td nowrap="nowrap"><span class="search-text">Search</span>&#160;</td>                      
                     <td nowrap="nowrap"><input name="query" type="text" size="15"/>&#160;<input type="submit" value="Go"/></td>
                   </tr>
                 </table>
@@ -586,55 +569,18 @@
               <!-- BEGIN TOPNAV RIGHT INNER TABLE -->
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr align="right" valign="middle">
+                  <td width="15" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td> 
+                  <td width="15" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td> 
+                  <td width="10" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td>
                   <td width="15" nowrap="nowrap">
-                    <xsl:choose>
-                      <xsl:when test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-                        <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
-                      </xsl:when>
-                      <xsl:otherwise>
-                        <a class="topnav">
-                          <xsl:attribute name="href">javascript://</xsl:attribute>
-                          <xsl:attribute name="onClick">
-                            <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
-                          </xsl:attribute>
-                          <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
-                        </a>
-                      </xsl:otherwise>
-                    </xsl:choose>
+                    <a class="topnav" href="http://xtf.sourceforge.net" target="{$target}">
+                      <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
+                    </a>
                   </td>
-
-                  <td nowrap="nowrap">&#160;
-                  <xsl:choose>
-                    <xsl:when test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content' or $chunk.id='0'">
-                      <span class="topnav">
-                        <xsl:text>Customize</xsl:text>
-                      </span>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <a class="topnav">
-                        <xsl:attribute name="href">javascript://</xsl:attribute>
-                        <xsl:attribute name="onClick">
-                          <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
-                        </xsl:attribute>
-                        <xsl:text>Customize</xsl:text>
-                      </a>
-                    </xsl:otherwise>
-                  </xsl:choose>
-                </td>
-                <td width="10" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td>
-                <xsl:choose>
-                  <xsl:when test="contains($brand, 'ucpress')">
-                    <td width="15" nowrap="nowrap"><a class="topnav" href="{$serverURL}ucpress/help.html" target="{$target}"><img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/></a></td>
-                    <td nowrap="nowrap">&#160;<a class="topnav" href="{$serverURL}ucpress/help.html" target="{$target}">Help</a></td>
-                  </xsl:when>
-                  <xsl:otherwise>
-                    <td width="15" nowrap="nowrap"><a class="topnav" href="{$serverURL}escholarship/help.html" target="{$target}"><img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/></a></td>
-                    <td nowrap="nowrap">&#160;<a class="topnav" href="{$serverURL}escholarship/help.html" target="{$target}">Help</a></td>
-                  </xsl:otherwise>
-                </xsl:choose>
-                <td width="8" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="8"/></td>
-              </tr>
-            </table>
+                  <td nowrap="nowrap">&#160;<a class="topnav" href="http://xtf.sourceforge.net" target="{$target}">Help</a></td>
+                  <td width="8" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="8"/></td>
+                </tr>
+              </table>
             <!-- END TOPNAV RIGHT INNER TABLE -->
             
           </td>

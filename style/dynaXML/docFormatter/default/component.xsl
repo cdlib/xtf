@@ -441,7 +441,7 @@
 </xsl:template>
 
 <xsl:template match="epigraph/bibl">
-  <p class="right"><xsl:apply-templates/><xsl:call-template name="elink"/></p>
+  <p class="right"><xsl:apply-templates/></p>
 </xsl:template>
 
 <xsl:template match="byline">
@@ -453,7 +453,7 @@
 </xsl:template>
 
 <xsl:template match="cit/bibl">
-  <p class="right"><xsl:apply-templates/><xsl:call-template name="elink"/></p>
+  <p class="right"><xsl:apply-templates/></p>
 </xsl:template>
 
 <xsl:template match="quote">
@@ -500,21 +500,18 @@
 	  <div class="bibl-hi">
 	    <p class="hang">
               <xsl:apply-templates/>
-              <xsl:call-template name="elink"/>
             </p>
           </div>
 	</xsl:when>
 	<xsl:otherwise>
 	  <p class="hang">
             <xsl:apply-templates/>
-            <xsl:call-template name="elink"/>
           </p>
 	</xsl:otherwise>
       </xsl:choose>
     </xsl:when>
     <xsl:otherwise>
       <xsl:apply-templates/>
-      <xsl:call-template name="elink"/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -954,347 +951,6 @@
     </div>
   </xsl:if>    
 
-</xsl:template>
-
-
-<!-- ====================================================================== -->
-<!-- UC Elink Templates                                                     -->
-<!-- ====================================================================== -->
-
-<xsl:template name="elink">
-
-  <xsl:variable name="author">
-    <xsl:value-of select="author"/>
-  </xsl:variable>
-
-  <xsl:choose>
-    <xsl:when test="title[@level='a'] and title[@level='m']">
-      <xsl:text> </xsl:text>
-      <a target="uc-elink">
-        <xsl:variable name="url">
-          <xsl:text>atitle=</xsl:text>
-          <xsl:value-of select="title[@level='a']"/>
-          <xsl:text>&amp;title=</xsl:text>
-          <xsl:value-of select="title[@level='m']"/>
-          <xsl:if test="date">
-            <xsl:text>&amp;date=</xsl:text>
-            <xsl:value-of select="date"/>
-          </xsl:if>
-          <xsl:if test="author">
-            <xsl:text>&amp;aulast=</xsl:text>
-            <xsl:value-of select="substring-before($author, ',')"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='issue']">
-            <xsl:text>&amp;issue=</xsl:text>
-            <xsl:value-of select="biblScope[@type='issue']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='part']">
-            <xsl:text>&amp;part=</xsl:text>
-            <xsl:value-of select="biblScope[@type='part']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='volume']">
-            <xsl:text>&amp;volume=</xsl:text>
-            <xsl:value-of select="biblScope[@type='volume']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='pages']">
-            <xsl:text>&amp;pages=</xsl:text>
-            <xsl:value-of select="biblScope[@type='pages']"/>
-          </xsl:if>
-        </xsl:variable>
-        <xsl:attribute name="href">
-          <xsl:text>http://ucelinks.cdlib.org:8888/sfx_local?sid=escholarship:ucpress&amp;genre=book&amp;</xsl:text>
-          <xsl:call-template name="url-encode">
-            <xsl:with-param name="url-string" select="$url"/>
-          </xsl:call-template>
-          <xsl:text>&amp;__char_set=utf8</xsl:text>
-        </xsl:attribute>
-        <img src="http://ucelinks.cdlib.org:8888/sfxmenu/sfx.12.gif" border="0" alt="uc-elink"/>
-      </a>
-    </xsl:when>
-    <xsl:when test="title[@level='a'] and title[@level='j']">
-      <xsl:text> </xsl:text>
-      <a target="uc-elink">
-        <xsl:variable name="url">
-          <xsl:text>atitle=</xsl:text>
-          <xsl:value-of select="title[@level='a']"/>
-          <xsl:text>&amp;title=</xsl:text>
-          <xsl:value-of select="title[@level='j']"/>
-          <xsl:if test="date">
-            <xsl:text>&amp;date=</xsl:text>
-            <xsl:value-of select="date"/>
-          </xsl:if>
-          <xsl:if test="author">
-            <xsl:text>&amp;aulast=</xsl:text>
-            <xsl:value-of select="substring-before($author, ',')"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='issue']">
-            <xsl:text>&amp;issue=</xsl:text>
-            <xsl:value-of select="biblScope[@type='issue']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='part']">
-            <xsl:text>&amp;part=</xsl:text>
-            <xsl:value-of select="biblScope[@type='part']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='volume']">
-            <xsl:text>&amp;volume=</xsl:text>
-            <xsl:value-of select="biblScope[@type='volume']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='pages']">
-            <xsl:text>&amp;pages=</xsl:text>
-            <xsl:value-of select="biblScope[@type='pages']"/>
-          </xsl:if>
-        </xsl:variable>
-        <xsl:attribute name="href">
-          <xsl:text>http://ucelinks.cdlib.org:8888/sfx_local?sid=escholarship:ucpress&amp;genre=book&amp;</xsl:text>
-          <xsl:call-template name="url-encode">
-            <xsl:with-param name="url-string" select="$url"/>
-          </xsl:call-template>
-          <xsl:text>&amp;__char_set=utf8</xsl:text>
-        </xsl:attribute>
-        <img src="http://ucelinks.cdlib.org:8888/sfxmenu/sfx.12.gif" border="0" alt="uc-elink"/>
-      </a>
-    </xsl:when>
-    <xsl:when test="title[@level='a'] and title[@level='s']">
-      <xsl:text> </xsl:text>
-      <a target="uc-elink">
-        <xsl:variable name="url">
-          <xsl:text>atitle=</xsl:text>
-          <xsl:value-of select="title[@level='a']"/>
-          <xsl:text>&amp;title=</xsl:text>
-          <xsl:value-of select="title[@level='s']"/>
-          <xsl:if test="date">
-            <xsl:text>&amp;date=</xsl:text>
-            <xsl:value-of select="date"/>
-          </xsl:if>
-          <xsl:if test="author">
-            <xsl:text>&amp;aulast=</xsl:text>
-            <xsl:value-of select="substring-before($author, ',')"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='issue']">
-            <xsl:text>&amp;issue=</xsl:text>
-            <xsl:value-of select="biblScope[@type='issue']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='part']">
-            <xsl:text>&amp;part=</xsl:text>
-            <xsl:value-of select="biblScope[@type='part']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='volume']">
-            <xsl:text>&amp;volume=</xsl:text>
-            <xsl:value-of select="biblScope[@type='volume']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='pages']">
-            <xsl:text>&amp;pages=</xsl:text>
-            <xsl:value-of select="biblScope[@type='pages']"/>
-          </xsl:if>
-        </xsl:variable>
-        <xsl:attribute name="href">
-          <xsl:text>http://ucelinks.cdlib.org:8888/sfx_local?sid=escholarship:ucpress&amp;genre=book&amp;</xsl:text>
-          <xsl:call-template name="url-encode">
-            <xsl:with-param name="url-string" select="$url"/>
-          </xsl:call-template>
-          <xsl:text>&amp;__char_set=utf8</xsl:text>
-        </xsl:attribute>
-        <img src="http://ucelinks.cdlib.org:8888/sfxmenu/sfx.12.gif" border="0" alt="uc-elink"/>
-      </a>
-    </xsl:when>
-    <xsl:when test="title[@level='a']">
-      <xsl:text> </xsl:text>
-      <a target="uc-elink">
-        <xsl:variable name="url">
-          <xsl:text>atitle=</xsl:text>
-          <xsl:value-of select="title[@level='a']"/>
-          <xsl:if test="date">
-            <xsl:text>&amp;date=</xsl:text>
-            <xsl:value-of select="date"/>
-          </xsl:if>
-          <xsl:if test="author">
-            <xsl:text>&amp;aulast=</xsl:text>
-            <xsl:value-of select="substring-before($author, ',')"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='issue']">
-            <xsl:text>&amp;issue=</xsl:text>
-            <xsl:value-of select="biblScope[@type='issue']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='part']">
-            <xsl:text>&amp;part=</xsl:text>
-            <xsl:value-of select="biblScope[@type='part']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='volume']">
-            <xsl:text>&amp;volume=</xsl:text>
-            <xsl:value-of select="biblScope[@type='volume']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='pages']">
-            <xsl:text>&amp;pages=</xsl:text>
-            <xsl:value-of select="biblScope[@type='pages']"/>
-          </xsl:if>
-        </xsl:variable>
-        <xsl:attribute name="href">
-          <xsl:text>http://ucelinks.cdlib.org:8888/sfx_local?sid=escholarship:ucpress&amp;genre=book&amp;</xsl:text>
-          <xsl:call-template name="url-encode">
-            <xsl:with-param name="url-string" select="$url"/>
-          </xsl:call-template>
-          <xsl:text>&amp;__char_set=utf8</xsl:text>
-        </xsl:attribute>
-        <img src="http://ucelinks.cdlib.org:8888/sfxmenu/sfx.12.gif" border="0" alt="uc-elink"/>
-      </a>
-    </xsl:when>
-    <xsl:when test="title[@level='m']">
-      <xsl:text> </xsl:text>
-      <a target="uc-elink">
-        <xsl:variable name="url">
-          <xsl:text>title=</xsl:text>
-          <xsl:value-of select="title[@level='m']"/>
-          <xsl:if test="date">
-            <xsl:text>&amp;date=</xsl:text>
-            <xsl:value-of select="date"/>
-          </xsl:if>
-          <xsl:if test="author">
-            <xsl:text>&amp;aulast=</xsl:text>
-            <xsl:value-of select="substring-before($author, ',')"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='issue']">
-            <xsl:text>&amp;issue=</xsl:text>
-            <xsl:value-of select="biblScope[@type='issue']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='part']">
-            <xsl:text>&amp;part=</xsl:text>
-            <xsl:value-of select="biblScope[@type='part']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='volume']">
-            <xsl:text>&amp;volume=</xsl:text>
-            <xsl:value-of select="biblScope[@type='volume']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='pages']">
-            <xsl:text>&amp;pages=</xsl:text>
-            <xsl:value-of select="biblScope[@type='pages']"/>
-          </xsl:if>
-        </xsl:variable>
-        <xsl:attribute name="href">
-          <xsl:text>http://ucelinks.cdlib.org:8888/sfx_local?sid=escholarship:ucpress&amp;genre=book&amp;</xsl:text>
-          <xsl:call-template name="url-encode">
-            <xsl:with-param name="url-string" select="$url"/>
-          </xsl:call-template>
-          <xsl:text>&amp;__char_set=utf8</xsl:text>
-        </xsl:attribute>
-        <img src="http://ucelinks.cdlib.org:8888/sfxmenu/sfx.12.gif" border="0" alt="uc-elink"/>
-      </a>
-    </xsl:when>
-    <xsl:when test="title[@level='j']">
-      <xsl:text> </xsl:text>
-      <a target="uc-elink">
-        <xsl:variable name="url">
-          <xsl:text>title=</xsl:text>
-          <xsl:value-of select="title[@level='j']"/>
-          <xsl:if test="date">
-            <xsl:text>&amp;date=</xsl:text>
-            <xsl:value-of select="date"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='issue']">
-            <xsl:text>&amp;issue=</xsl:text>
-            <xsl:value-of select="biblScope[@type='issue']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='part']">
-            <xsl:text>&amp;part=</xsl:text>
-            <xsl:value-of select="biblScope[@type='part']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='volume']">
-            <xsl:text>&amp;volume=</xsl:text>
-            <xsl:value-of select="biblScope[@type='volume']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='pages']">
-            <xsl:text>&amp;pages=</xsl:text>
-            <xsl:value-of select="biblScope[@type='pages']"/>
-          </xsl:if>
-        </xsl:variable>
-        <xsl:attribute name="href">
-          <xsl:text>http://ucelinks.cdlib.org:8888/sfx_local?sid=escholarship:ucpress&amp;genre=book&amp;</xsl:text>
-          <xsl:call-template name="url-encode">
-            <xsl:with-param name="url-string" select="$url"/>
-          </xsl:call-template>
-          <xsl:text>&amp;__char_set=utf8</xsl:text>
-        </xsl:attribute>
-        <img src="http://ucelinks.cdlib.org:8888/sfxmenu/sfx.12.gif" border="0" alt="uc-elink"/>
-      </a>
-    </xsl:when>
-    <xsl:when test="title[@level='s']">
-      <xsl:text> </xsl:text>
-      <a target="uc-elink">
-        <xsl:variable name="url">
-          <xsl:text>title=</xsl:text>
-          <xsl:value-of select="title[@level='s']"/>
-          <xsl:if test="date">
-            <xsl:text>&amp;date=</xsl:text>
-            <xsl:value-of select="date"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='issue']">
-            <xsl:text>&amp;issue=</xsl:text>
-            <xsl:value-of select="biblScope[@type='issue']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='part']">
-            <xsl:text>&amp;part=</xsl:text>
-            <xsl:value-of select="biblScope[@type='part']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='volume']">
-            <xsl:text>&amp;volume=</xsl:text>
-            <xsl:value-of select="biblScope[@type='volume']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='pages']">
-            <xsl:text>&amp;pages=</xsl:text>
-            <xsl:value-of select="biblScope[@type='pages']"/>
-          </xsl:if>
-        </xsl:variable>
-        <xsl:attribute name="href">
-          <xsl:text>http://ucelinks.cdlib.org:8888/sfx_local?sid=escholarship:ucpress&amp;genre=book&amp;</xsl:text>
-          <xsl:call-template name="url-encode">
-            <xsl:with-param name="url-string" select="$url"/>
-          </xsl:call-template>
-          <xsl:text>&amp;__char_set=utf8</xsl:text>
-        </xsl:attribute>
-        <img src="http://ucelinks.cdlib.org:8888/sfxmenu/sfx.12.gif" border="0" alt="uc-elink"/>
-      </a>
-    </xsl:when>
-    <xsl:when test="title[@level='u']">
-      <xsl:text> </xsl:text>
-      <a target="uc-elink">
-        <xsl:variable name="url">
-          <xsl:text>title=</xsl:text>
-          <xsl:value-of select="title[@level='u']"/>
-          <xsl:if test="date">
-            <xsl:text>&amp;date=</xsl:text>
-            <xsl:value-of select="date"/>
-          </xsl:if>
-          <xsl:if test="author">
-            <xsl:text>&amp;aulast=</xsl:text>
-            <xsl:value-of select="substring-before($author, ',')"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='issue']">
-            <xsl:text>&amp;issue=</xsl:text>
-            <xsl:value-of select="biblScope[@type='issue']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='part']">
-            <xsl:text>&amp;part=</xsl:text>
-            <xsl:value-of select="biblScope[@type='part']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='volume']">
-            <xsl:text>&amp;volume=</xsl:text>
-            <xsl:value-of select="biblScope[@type='volume']"/>
-          </xsl:if>
-          <xsl:if test="biblScope[@type='pages']">
-            <xsl:text>&amp;pages=</xsl:text>
-            <xsl:value-of select="biblScope[@type='pages']"/>
-          </xsl:if>
-        </xsl:variable>
-        <xsl:attribute name="href">
-          <xsl:text>http://ucelinks.cdlib.org:8888/sfx_local?sid=escholarship:ucpress&amp;genre=book&amp;</xsl:text>
-          <xsl:call-template name="url-encode">
-            <xsl:with-param name="url-string" select="$url"/>
-          </xsl:call-template>
-          <xsl:text>&amp;__char_set=utf8</xsl:text>
-        </xsl:attribute>
-        <img src="http://ucelinks.cdlib.org:8888/sfxmenu/sfx.12.gif" border="0" alt="uc-elink"/>
-      </a>
-    </xsl:when>
-  </xsl:choose>
 </xsl:template>
 
 </xsl:stylesheet>

@@ -64,15 +64,8 @@
             <td width="100%" valign="top">
               <div class="title">
                 <xsl:value-of select="$doc.author"/><br/>
-                <a href="http://ark.cdlib.org/{/TEI.2/teiHeader/fileDesc/publicationStmt/idno[@type='ARK']}">
-                  <strong><xsl:value-of select="$doc.title"/></strong><br/>
-                </a>
+                <strong><xsl:value-of select="$doc.title"/></strong><br/>
                 <em><xsl:value-of select="$doc.subtitle"/></em><br/>
-                <xsl:if test="contains($brand, 'ucpress')">
-                  <a href="{$serverURL}cgi-bin/nph-ucpgo.pl?http://www.ucpress.edu/books/pages/{$bnum}.html">
-                    <img class="buy" src="{$icon.path}buy_this_book.gif" width="92" height="15" border="0" alt="Buy This Book"/>
-                  </a>
-                </xsl:if>
               </div>
             </td>
           </tr>
@@ -83,10 +76,8 @@
           <tr>
             <td height="25">
               <b>
-                <a class="booktitle" href="http://ark.cdlib.org/{/TEI.2/teiHeader/fileDesc/publicationStmt/idno[@type='ARK']}">
-                  <xsl:attribute name="target">_top</xsl:attribute>
-                  <xsl:value-of select="/TEI.2/text/front/titlePage/titlePart[@type='main']"/>
-                </a>
+                <xsl:attribute name="target">_top</xsl:attribute>
+                <xsl:value-of select="/TEI.2/text/front/titlePage/titlePart[@type='main']"/>
               </b>
             </td>
           </tr>
