@@ -31,7 +31,7 @@ import org.apache.lucene.search.spans.Spans;
  * overlap between adjacent chunks in a chunked index. 
  * 
  * @author Martin Haye
- * @version $Id: SpanChunkedNotQuery.java,v 1.1 2005-02-08 23:19:08 mhaye Exp $
+ * @version $Id: SpanChunkedNotQuery.java,v 1.2 2005-02-15 01:42:27 mhaye Exp $
  */
 public class SpanChunkedNotQuery extends SpanQuery {
   private SpanQuery include;
@@ -155,10 +155,6 @@ public class SpanChunkedNotQuery extends SpanQuery {
         
         private int endPos( Spans spans ) {
             return ((spans.doc() - baseDoc()) * chunkBump) + spans.end(); 
-        }
-        
-        private int posToDoc( int pos ) {
-            return (pos / chunkBump) + baseDoc();
         }
         
         public boolean skipTo(int target) throws IOException {

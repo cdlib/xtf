@@ -64,12 +64,6 @@ public class StructuredFile
     private Directory        dir;
     
     /** 
-     * True if the directory has been changed and is different from the
-     * directory on disk.
-     */
-    private boolean          dirDirty;
-    
-    /** 
      * True when creating a sub-file; enforces the rule that only one sub-file
      * may be created at a time.
      */
@@ -421,8 +415,6 @@ public class StructuredFile
         // And update the directory position pointer at the start of the file.
         realFile.seek( 4 );
         realFile.writeInt( dirPos );
-        
-        dirDirty = false;
     } // writeDirectory()
     
     /**

@@ -46,7 +46,7 @@ import org.cdlib.xtf.util.Trace;
  * process, as n-gramming across NEAR and OR queries is complex.
  *
  * @author  Martin Haye
- * @version $Id: NgramQueryRewriter.java,v 1.1 2005-02-08 23:19:39 mhaye Exp $
+ * @version $Id: NgramQueryRewriter.java,v 1.2 2005-02-15 01:42:27 mhaye Exp $
  */
 public class NgramQueryRewriter {
   /** Set of stop-words (e.g. "the", "a", "and", etc.) to remove */
@@ -305,7 +305,6 @@ public class NgramQueryRewriter {
     // terms.
     //
     SpanQuery[] clauses = oq.getClauses();
-    Vector terms = new Vector();
     Vector newClauses = new Vector();
     boolean anyChanges = false;
 
@@ -1081,12 +1080,6 @@ public class NgramQueryRewriter {
       if (q3 != null)
         q.add(q3, require3, prohibit3);
       return q;
-    }
-
-    private Query bool(Query q1, boolean require1, boolean prohibit1, Query q2,
-        boolean require2, boolean prohibit2) {
-      return bool(q1, require1, prohibit1, q2, require2, prohibit2, null,
-          false, false);
     }
 
     private Query regTerm(String text) {

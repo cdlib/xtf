@@ -82,13 +82,6 @@ public class TestableDynaXML extends DynaXML
   private String       prevAnnotatedPath;
   private DocumentInfo prevAnnotatedTree;
   private String       searchTerm;
-  private int          contextWords;
-  
-  /** Default constructor */
-  public TestableDynaXML( int contextWords )
-  {
-    this.contextWords = contextWords;
-  }
   
   /**
    * Tells whether to use the annotated version or the SearchTree version.
@@ -171,7 +164,6 @@ public class TestableDynaXML extends DynaXML
                                    new FileOutputStream(file), "UTF-8" ) );
         
         String str = XMLWriter.toString(tree);
-        int len = str.length();
         str = str.replaceAll( " score=\"\\w+\"", "" );
         str = str.replaceAll( " rank=\"\\w+\"", "" );
         str = str.replaceAll( " more=\"\\w+\"", "" );

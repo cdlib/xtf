@@ -36,7 +36,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Source;
@@ -109,9 +108,6 @@ public class CrossQuery extends TextServlet
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws IOException
     {
-        // Record a reference to the output stream for ease of use.
-        ServletOutputStream out = res.getOutputStream();
-
         try {
 
             // Get the parameters out of the request structure.
@@ -197,8 +193,6 @@ public class CrossQuery extends TextServlet
                         HttpServletResponse res )
         throws Exception
     {
-        ServletOutputStream out = res.getOutputStream();
-        
         // Generate a query request.
         QueryRequest mq = generateQueryReq( req, attribs );
         

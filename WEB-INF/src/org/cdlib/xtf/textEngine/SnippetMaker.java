@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.chunk.ChunkMarkPos;
 import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.mark.BasicWordIter;
@@ -193,7 +192,7 @@ public class SnippetMaker
             
             public void beginSpan(MarkPos pos, Span span) {
               if( getText ) {
-                  copyUpTo( (ChunkMarkPos)pos );
+                  copyUpTo( pos );
                   buf.append( "<hit>" );
               }
               curSnippet = snippets[span.rank] = new Snippet();
@@ -207,7 +206,7 @@ public class SnippetMaker
             
             public void endSpan(MarkPos pos) {
               if( getText ) {
-                  copyUpTo( (ChunkMarkPos)pos );
+                  copyUpTo( pos );
                   buf.append( "</hit>" );
               }
               XtfChunkMarkPos xp = (XtfChunkMarkPos) pos;
@@ -217,7 +216,7 @@ public class SnippetMaker
   
             public void endContext(MarkPos pos) {
               if( getText ) {
-                  copyUpTo( (ChunkMarkPos)pos );
+                  copyUpTo( pos );
                   curSnippet.text = buf.toString();
               }
             }

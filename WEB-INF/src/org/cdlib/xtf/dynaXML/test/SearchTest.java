@@ -70,7 +70,7 @@ public class SearchTest
         throw new RuntimeException( "Assertions must be enabled." );
     
     // Create an instance of the servlet
-    dynaXML = new TestableDynaXML( 1 );
+    dynaXML = new TestableDynaXML();
     FakeServletContext context = new FakeServletContext();
     dynaXML.init( new FakeServletConfig(context, baseDir, "dynaXML") );
     

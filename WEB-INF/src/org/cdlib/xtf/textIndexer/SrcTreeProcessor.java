@@ -275,7 +275,6 @@ public class SrcTreeProcessor
     
             Element el      = (Element) node;
             String  tagName = el.getTagName();
-            String  strVal  = el.toString();
             
             if( tagName.equalsIgnoreCase("indexFiles") ) {
                 node = node.getFirstChild();

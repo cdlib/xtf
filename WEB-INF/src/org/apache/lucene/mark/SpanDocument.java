@@ -38,7 +38,7 @@ import org.apache.lucene.search.spans.SpanPosComparator;
  * <p>Created: Dec 9, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: SpanDocument.java,v 1.1 2005-02-08 23:19:38 mhaye Exp $
+ * @version $Id: SpanDocument.java,v 1.2 2005-02-15 01:42:27 mhaye Exp $
  */
 public class SpanDocument extends Document implements FieldSpansContainer
 {
@@ -97,7 +97,6 @@ public class SpanDocument extends Document implements FieldSpansContainer
    */
   public void markField(String field, MarkCollector collector)
   {
-    String value = get(field);
     BasicWordIter wordIter = new BasicWordIter();
     markField(fieldSpans, field, wordIter, 80, 
               MARK_SPAN_TERMS, null, collector);

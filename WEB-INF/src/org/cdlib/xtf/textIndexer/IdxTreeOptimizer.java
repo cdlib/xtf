@@ -133,10 +133,6 @@ public class IdxTreeOptimizer
   public void optimizeIndex( File idxDirToOptimize ) throws Exception 
   
   {
-    // Start with no Path fields encountered, and no documents culled.
-    int docCount  = 0;
-    int cullCount = 0;
-    
     // Tell what index we're working on...
     Trace.info( "Index: [" + 
                 Path.normalizePath( idxDirToOptimize.toString() ) +

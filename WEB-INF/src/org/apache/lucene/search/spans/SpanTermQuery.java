@@ -33,7 +33,6 @@ import org.apache.lucene.search.Similarity;
 public class SpanTermQuery extends SpanQuery {
   private Term term;
   protected Set stopSet;
-  private int coordBits;
 
   /** Construct a SpanTermQuery matching the named term's spans. */
   public SpanTermQuery(Term term) { 

@@ -87,7 +87,6 @@ public abstract class TextConfig
             Document doc = builder.parse( new File(path) );
             
             // Make sure the root tag is correct.
-            Element rootEl = (Element) doc.getDocumentElement();
             String rootTag = doc.getDocumentElement().getNodeName();
             if( !rootTag.equals(expectedRootTag) )
                 throw new GeneralException( "Config file \"" + path + "\" " +

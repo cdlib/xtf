@@ -136,7 +136,7 @@ public class FastTokenizer extends Tokenizer
      */
     public FastTokenizer( FastStringReader reader ) {
         super( reader );
-        String str = ((FastStringReader)reader).getString();
+        String str = reader.getString();
         source = str.toCharArray();
     }
     

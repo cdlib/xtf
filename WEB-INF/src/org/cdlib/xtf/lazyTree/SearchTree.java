@@ -1053,7 +1053,6 @@ public class SearchTree extends LazyDocument
      */
     private NodeImpl breakupText( String text, NodeImpl prev, boolean addAsChild )
     {
-        NodeImpl first = null;
         int startPos = 0;
 
         while( true ) {

@@ -66,13 +66,9 @@ class ProfilingListener implements TraceListener
     /** Saxon Controller used to control the transformation */
     private Controller   controller;
     
-    /** The document containing nodes to track */
-    private LazyDocument doc;
-    
     /** Default constructor; attaches to given controller and document */
-    public ProfilingListener( Controller controller, LazyDocument doc ) {
+    public ProfilingListener( Controller controller ) {
         this.controller = controller;
-        this.doc = doc;
     }
 
     /** Unused */
@@ -105,7 +101,6 @@ class ProfilingListener implements TraceListener
      */
     public void leave(InstructionInfo instruction)
     {
-        ProfileCount p = (ProfileCount) instructionStack.removeLast();
     }
 
     /** Unused */

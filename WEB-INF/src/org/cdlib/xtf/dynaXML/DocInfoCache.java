@@ -60,7 +60,6 @@ import org.cdlib.xtf.cache.GeneratingCache;
  */
 class DocInfoCache extends GeneratingCache
 {
-    private DynaXML servlet;
     private DynaXMLConfig  config;
 
     private ThreadLocal prevStylesheet  = new ThreadLocal();
@@ -76,7 +75,6 @@ class DocInfoCache extends GeneratingCache
     {
         super( ((DynaXMLConfig)servlet.getConfig()).docLookupCacheSize,
                ((DynaXMLConfig)servlet.getConfig()).docLookupCacheExpire );
-        this.servlet = servlet;
         this.config  = (DynaXMLConfig) servlet.getConfig();
     }
 
@@ -206,7 +204,6 @@ class DocInfoCache extends GeneratingCache
 
             Element el      = (Element) node;
             String  tagName = el.getTagName();
-            String  strVal  = el.toString();
 
             if( tagName.equals("style") )
                 info.style = DynaXML.getRealPath( el.getAttribute("path") );

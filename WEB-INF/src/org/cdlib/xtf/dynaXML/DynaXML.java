@@ -99,9 +99,6 @@ public class DynaXML extends TextServlet
     /** Holds global servlet configuration info */
     private static DynaXMLConfig config;
     
-    /** Used to process queries */
-    private QueryProcessor queryProcessor;
-
     /**
      * Gets a dependency on the docLookup cache for the given document.
      * Useful when making other cache entries that depend on the docLookup.
@@ -225,9 +222,6 @@ public class DynaXML extends TextServlet
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws IOException
     {
-        // Record a reference to the output stream for ease of use.
-        ServletOutputStream out = res.getOutputStream();
-
         try {
 
             // Get the parameters out of the request structure.
@@ -394,9 +388,6 @@ public class DynaXML extends TextServlet
         // stylesheet writer desires.
         //
         readBranding( docInfo.brand, req, transformer );
-        
-        // Record the start time
-        long startTime = System.currentTimeMillis();
         
         // Get the source document.
         Source sourceDoc = getSourceDoc( docInfo, transformer );

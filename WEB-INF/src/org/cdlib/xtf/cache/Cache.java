@@ -130,7 +130,6 @@ public abstract class Cache
             return false;
 
         Iterator i = ent.dependencies.iterator();
-        boolean ok = true;
         while( i.hasNext() ) {
             Dependency d = (Dependency) i.next();
             if( !d.validate() )

@@ -61,7 +61,7 @@ public class TreeAnnotater
   public void processDocument( Document doc, String term ) {
     this.doc = doc;
     this.searchTerm = term;
-    int nHits = processElement( (Element) doc.getDocumentElement(), 0 );
+    int nHits = processElement( doc.getDocumentElement(), 0 );
     assert( totalHitCount == nHits );
   }
   

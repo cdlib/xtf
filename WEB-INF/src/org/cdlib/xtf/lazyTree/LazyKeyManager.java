@@ -236,7 +236,6 @@ public class LazyKeyManager extends KeyManager {
         buf.append( '(' );
         
         // Trace all the fields of this class and its superclasses.
-        boolean first = true;
         while( c != Object.class )
         {
             Field[] fields = c.getDeclaredFields();
@@ -425,7 +424,7 @@ public class LazyKeyManager extends KeyManager {
             if( reader != null )
                 return reader;
 
-            if( ((LazyDocument)document).getDebug() ) {
+            if( document.getDebug() ) {
                 Trace.debug( "Building key index " +
                                     new File(doc.getSystemId()).getName() + ": '" + 
                                     fingerName + 
@@ -433,7 +432,7 @@ public class LazyKeyManager extends KeyManager {
             }
         } // if
         else {
-            if( ((LazyDocument)document).getDebug() ) {
+            if( document.getDebug() ) {
                 Trace.debug( "Building dynamic (non-stored) index " +
                                 new File(doc.getSystemId()).getName() + 
                                 ": '" + fingerName + ":" + itemType + "'" );
@@ -462,7 +461,7 @@ public class LazyKeyManager extends KeyManager {
                 return hashMap;
             }
 
-            if( ((LazyDocument)document).getDebug() )
+            if( document.getDebug() )
                 Trace.debug( "...done" );
             
             return document.getIndex( indexName );

@@ -89,9 +89,6 @@ public class IndexStats
       int     startArg  = 0;
       boolean showUsage = false;
       
-      boolean firstIndex = true;
-      
-
       // Regardless of whether we succeed or fail, say our name.
       Trace.info( "IndexStats v" + 1.0 );
       Trace.info( "" );
@@ -183,8 +180,6 @@ public class IndexStats
            
           try {
                 
-              File xtfHomeFile = new File( cfgInfo.xtfHomePath );
-
               // Say what index we're working on.
               Trace.info( "Index: \"" + cfgInfo.indexInfo.indexName +"\"" );
               Trace.tab();

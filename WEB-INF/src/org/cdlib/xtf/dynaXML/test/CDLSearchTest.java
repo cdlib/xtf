@@ -214,24 +214,6 @@ public class CDLSearchTest extends SearchTest
   } // pushUrls()
   
   /**
-   * Attempts to parse out a chunk ID from a URL.
-   * 
-   * @param url   URL to scan
-   * @return      Chunk ID, or "" if none.
-   */
-  private String urlToChunkId( String url )
-  {
-    int pos1 = url.indexOf( "chunk.id=" );
-    if( pos1 < 0 )
-        return "";
-    int pos2 = url.indexOf( "&", pos1 );
-    if( pos2 < 0 )
-        pos2 = url.length();
-    
-    return url.substring( pos1 + "chunk.id=".length(), pos2 );
-  } // urlToChunkId()
-
-  /**
    * Transforms parts of the text that are okay to mismatch into matching text.
    */
   private String normalizeResult( String result ) {

@@ -121,7 +121,6 @@ class XtfChunkSource extends ChunkSource
     int totalWordOffset = chunk.minWordPos - 1;
     int tokenWordOffset = chunk.minWordPos - 1;
     int prevCharPos = 0;
-    int nCharsRemoved = 0;
     
     StringBuffer buf = new StringBuffer( chunk.text.length() );
     

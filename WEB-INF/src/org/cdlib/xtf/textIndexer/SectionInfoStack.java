@@ -640,7 +640,7 @@ public class SectionInfoStack
    *  instance.
    * 
    */
-  private void push( SectionInfo info ) { infoStack.push( (Object)info ); }
+  private void push( SectionInfo info ) { infoStack.push( info ); }
 
   //////////////////////////////////////////////////////////////////////////////
   

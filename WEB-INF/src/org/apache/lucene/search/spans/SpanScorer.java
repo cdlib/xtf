@@ -26,7 +26,6 @@ import org.apache.lucene.search.Weight;
 
 class SpanScorer extends Scorer {
   private Spans spans;
-  private Weight weight;
   private float value;
 
   private boolean firstTime = true;
@@ -39,7 +38,6 @@ class SpanScorer extends Scorer {
     throws IOException {
     super(similarity);
     this.spans = spans;
-    this.weight = weight;
     this.value = weight.getValue();
   }
 

@@ -56,16 +56,8 @@ public class DocHit extends ScoreDoc
     /** Used to load and format snippets */
     SnippetMaker snippetMaker;
     
-    private static final String FIELD = "text";
-    
     /** Spans per field */
     private FieldSpans fieldSpans;
-    
-    /** 
-     * Number of snippets found in the document (not just those that scored
-     * high enough to report.
-     */
-    private int totalSnippets; // >= number of snippets
     
     /** Array of pre-built snippets */
     private Snippet[] snippets;
@@ -116,9 +108,6 @@ public class DocHit extends ScoreDoc
 
         // Adjust our score.
         score *= docScoreNorm;
-
-        // Get the span hits.
-        totalSnippets = fieldSpans != null ? fieldSpans.getSpanTotal(FIELD) : 0;
     } // finish()
     
     /**
@@ -181,12 +170,6 @@ public class DocHit extends ScoreDoc
                     if( Character.isWhitespace(markedValue.charAt(startPos)) )
                         startPos++; 
                 }
-                
-                String fixedName;
-                if( name.indexOf('~') >= 0 )
-                    fixedName = name.substring( 0, name.indexOf('~') );
-                else
-                    fixedName = name;
             }
         }
         

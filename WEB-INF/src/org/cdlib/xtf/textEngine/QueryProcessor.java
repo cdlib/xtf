@@ -84,12 +84,6 @@ public class QueryProcessor
     /** Stop-words to remove (e.g. "the", "a", "and", etc.) */
     private Set            stopSet;
     
-    /** 
-     * Keeps track of the maximum score for any span, used to normalize 
-     * them at the end. 
-     */
-    private float          maxSpanScore = 0.0f;
-    
     /** Total number of documents hit (not just those that scored high) */
     private int            nDocsHit = 0;
     

@@ -39,7 +39,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.w3c.dom.DOMConfiguration;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
@@ -776,7 +779,7 @@ public class LazyDocument extends ParentNodeImpl
             NodeImpl node = getNode( i );
             if( (node.getNameCode() & 0xfffff) != fingerprint )
                 continue;
-            nodes.add( (Item)node );
+            nodes.add( node );
             nodeNums.add( new Integer(node.nodeNum) );
         }
         
@@ -852,7 +855,7 @@ public class LazyDocument extends ParentNodeImpl
      */
     public void enableProfiling( Controller controller )
     {
-        profileListener = new ProfilingListener( controller, this );
+        profileListener = new ProfilingListener( controller );
         controller.addTraceListener( profileListener );
     } // enableProfiling()
     
@@ -896,4 +899,74 @@ public class LazyDocument extends ParentNodeImpl
         profileListener = null;
     }    
     
+    /**
+     * The following methods are defined in DOM Level 3, and we include 
+     * nominal implementations of these methods so that the code will 
+     * compile when DOM Level 3 interfaces are installed.
+     */
+
+    public String getInputEncoding() {
+        return null;
+    }
+
+    public String getXmlEncoding() {
+        return null;
+    }
+
+    public boolean getXmlStandalone() {
+        return false;
+    }
+
+    public void setXmlStandalone(boolean xmlStandalone)
+                                  throws DOMException {
+        disallowUpdate();
+    }
+
+    public String getXmlVersion() {
+        return "1.0";
+    }
+    public void setXmlVersion(String xmlVersion)
+                                  throws DOMException {
+        disallowUpdate();
+    }
+
+    public boolean getStrictErrorChecking() {
+        return false;
+    }
+
+    public void setStrictErrorChecking(boolean strictErrorChecking) {
+        disallowUpdate();
+    }
+
+    public String getDocumentURI() {
+        return getSystemId();
+    }
+
+    public void setDocumentURI(String documentURI) {
+        disallowUpdate();
+    }
+
+    public Node adoptNode(Node source)
+                          throws DOMException {
+        disallowUpdate();
+        return null;
+    }
+
+//    DOM LEVEL 3 METHOD
+    public DOMConfiguration getDomConfig() {
+        return null;
+    }
+
+    public void normalizeDocument() {
+        disallowUpdate();
+    }
+
+    public Node renameNode(Node n,
+                           String namespaceURI,
+                           String qualifiedName)
+                           throws DOMException {
+        disallowUpdate();
+        return null;
+    }
+
 } // class DocumentImpl

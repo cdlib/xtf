@@ -32,22 +32,17 @@ package org.cdlib.xtf.textEngine;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
@@ -343,7 +338,6 @@ public class QueryRequest implements Cloneable
         
         // Otherwise, use a tokenizer to break up the string.
         try {
-            StringBuffer buf = new StringBuffer( str );
             XTFTextAnalyzer analyzer = new XTFTextAnalyzer( null, -1 );
             TokenStream toks = analyzer.tokenStream( "text", new StringReader(str) );
             int prevEnd = 0;
@@ -1222,7 +1216,7 @@ public class QueryRequest implements Cloneable
         SpanQuery q = new SpanNearQuery( 
                                   (SpanQuery[]) terms.toArray(new SpanQuery[0]), 
                                   slop,
-                                  false );
+                                  inOrder );
         q.setSpanRecording( maxSnippets );
         
         // And we're done.
@@ -1296,30 +1290,6 @@ public class QueryRequest implements Cloneable
         
         return text;
     } // getText()
-    
-    /**
-     * Prints the node, in XML format, to System.err
-     */
-    private void debugNode( Source node )
-    {
-        try {
-            StringWriter writer = new StringWriter();
-            StreamResult tmp = new StreamResult( writer );
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer trans = factory.newTransformer();
-            Properties props = trans.getOutputProperties();
-            props.put( "indent", "yes" );
-            props.put( "method", "xml" );
-            trans.setOutputProperties( props ); 
-            trans.transform( node, tmp );
-            Trace.error( writer.toString() );
-        
-        }
-        catch( Exception e ) {
-            Trace.error( "Error in debugNode(): " + e );
-        } 
-    } // debugNode()
-    
     
     /**
      * Exception class used to report errors from the query generator.

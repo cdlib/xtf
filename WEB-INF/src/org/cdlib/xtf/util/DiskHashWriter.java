@@ -115,7 +115,7 @@ public class DiskHashWriter
             curOffset += slots[i].length();
             assert slots[i].length() <= maxSlotSize;
         } // for i
-        assert out.getFilePointer() == (long)startOffset;
+        assert out.getFilePointer() == startOffset;
         
         // Finally, write all the data.
         for( int i = 0; i < hashSize; i++ ) {
@@ -123,7 +123,7 @@ public class DiskHashWriter
                 continue;
             slots[i].output( out );
         }
-        assert out.getFilePointer() == (long)curOffset;
+        assert out.getFilePointer() == curOffset;
         
         // To make sure that the hash reader doesn't have to worry about
         // accidentally reading past the end of the sub-file, write an extra

@@ -19,7 +19,6 @@ final class NamespaceEnumeration extends AxisIteratorImpl {
     private LazyDocument document;
     private ElementImpl element;
     private NamePool pool;
-    private int owner;
     private ElementImpl currentElement;
     private int index;
     private ArrayList list = new ArrayList();
