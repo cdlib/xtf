@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <displayMech ID="default">
-   <style path="style/dynaXML/docFormatter/default/dynaxml.xsl"/>
+   <style path="style/dynaXML/docFormatter/default/docFormatter.xsl"/>
 </displayMech>
