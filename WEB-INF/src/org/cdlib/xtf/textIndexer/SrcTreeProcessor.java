@@ -45,6 +45,7 @@ import net.sf.saxon.om.NamePool;
 
 import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.servletBase.StylesheetCache;
+import org.cdlib.xtf.textEngine.IdxConfigUtil;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
@@ -123,8 +124,19 @@ public class SrcTreeProcessor
     // Hang on to a reference to the config info.
     this.cfgInfo = cfgInfo;
     
+    // If no XTF home directory specified, assume it is the same
+    // directory as the config file.
+    //
+    if( cfgInfo.xtfHomePath == null ) {
+        cfgInfo.xtfHomePath = 
+            new File(cfgInfo.cfgFilePath).getParentFile().toString();
+    }
+
     // Open the Lucene index specified by the config info.
-    textProcessor.open( cfgInfo );
+    textProcessor.open( cfgInfo.xtfHomePath, 
+                        cfgInfo.indexInfo,
+                        cfgInfo.clean );
+    cfgInfo.clean = false;
 
     // We need to make sure to use a special name pool that records all
     // possible name codes. We can use it later to iterate through and
@@ -360,6 +372,8 @@ public class SrcTreeProcessor
             info.format = "PDF";
         else if( lcFileName.endsWith(".htm") || lcFileName.endsWith(".html") )
             info.format = "HTML";
+        else if( lcFileName.endsWith(".txt") )
+            info.format = "Text";
         else {
             Trace.warning( "Warning: cannot deduce format from extension on file '" +
                            info.source.getSystemId() );
@@ -374,12 +388,24 @@ public class SrcTreeProcessor
             info.format = "PDF";
         else if( info.format.equalsIgnoreCase("HTML") )
             info.format = "HTML";
+        else if( info.format.equalsIgnoreCase("Text") )
+            info.format = "Text";
         else {
             Trace.error( "Error: docSelector returned unknown format: '" +
                          info.format + "'" );
             return false;
         }
     }
+    
+    // We need to refer to the file in a way that isn't dependent on the
+    // particular location the index is at right now. So calculate a key
+    // that just contains the index name and the part of the path after that
+    // index's data directory.
+    //
+    File srcFile = new File( info.source.getSystemId() );
+    String key = IdxConfigUtil.calcDocKey( new File(cfgInfo.xtfHomePath),
+                                           cfgInfo.indexInfo, srcFile );
+    info.key = key;
     
     // Print out dots as we process large amounts of files, just so the
     // user knows something is happening.
@@ -388,7 +414,7 @@ public class SrcTreeProcessor
         Trace.more( "." );
 
     // Call the XML text file processor to do the work.    
-    textProcessor.queueText( info );
+    textProcessor.checkAndQueueText( info );
     
     // Let the caller know we didn't skip the file.
     return true;

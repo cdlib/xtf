@@ -29,10 +29,14 @@ package org.cdlib.xtf.textIndexer;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 
 import java.util.Iterator;
@@ -274,10 +278,12 @@ public class XMLTextProcessor extends DefaultHandler
   private boolean forcedChunk = false;
   
   /** A reference to the configuration information for the current index being
-   *  updated. See the {@link IndexerConfig} and {@link XMLConfigParser} class 
-   *  descriptions for more details.
+   *  updated. See the {@link IndexInfo} class description for more details.
    */
-  private IndexerConfig configInfo;
+  private IndexInfo indexInfo;
+  
+  /** The base directory from which to resolve relative paths (if any) */
+  private String xtfHomePath;
   
   /** List of files to process. For an explanation of file queuing, see the
    *  {@link XMLTextProcessor#processQueuedTexts() processQueuedTexts()} method.
@@ -294,7 +300,7 @@ public class XMLTextProcessor extends DefaultHandler
    *  {@link XMLTextProcessor#configInfo configInfo} member.
    */ 
   private String indexPath;
- 
+  
   /** Used to cache the input filter stylesheet, and any xslKeysFrom
    *  stylesheets, so we don't have to parse them over and over.
    */
@@ -435,9 +441,14 @@ public class XMLTextProcessor extends DefaultHandler
    * for writing is performed by the method 
    * {@link XMLTextProcessor#openIdxForWriting() openIdxForWriting()}
    * only when the index is being updated with new document information. <br><br> 
+   *
+   * @param  homePath Path from which to resolve relative path names.<br>
    * 
-   * @param  cfgInfo  A config structure containing information about the index
-   *                  to open. <br><br>
+   * @param  idxInfo  A config structure containing information about the index
+   *                  to open. <br>
+   * 
+   * @param  clean    true to truncate any existing index; false to add to it.
+   *                  <br><br>
    *  
    * @.notes
    *   This method will create an index if it doesn't exist, or truncate an index
@@ -455,7 +466,14 @@ public class XMLTextProcessor extends DefaultHandler
    * 
    */
 
-  public void open( IndexerConfig cfgInfo ) throws IOException
+  public void open( 
+      
+      String    homePath, 
+      IndexInfo idxInfo,
+      boolean   clean
+      
+  ) throws IOException
+  
   {
   
       fileQueue = new LinkedList();
@@ -465,32 +483,24 @@ public class XMLTextProcessor extends DefaultHandler
           // Get a reference to the passed in configuration that all the
           // methods can access.
           //
-          configInfo = cfgInfo;
+          this.indexInfo   = idxInfo;
+          this.xtfHomePath = homePath;
           
-          // If no XTF home directory specified, assume it is the same
-          // directory as the config file.
-          //
-          if( configInfo.xtfHomePath == null ) {
-              configInfo.xtfHomePath = 
-                  new File(configInfo.cfgFilePath).getParentFile().toString();
-          }
-    
           // Determine where the index database is located.
           indexPath = getIndexPath();
             
           // Determine the set of stop words to remove (if any)
-          if( configInfo.indexInfo.stopWords != null )
-              stopSet = NgramStopFilter.makeStopSet( configInfo.indexInfo.stopWords );
+          if( indexInfo.stopWords != null )
+              stopSet = NgramStopFilter.makeStopSet( indexInfo.stopWords );
           
           // If we were told to create a clean index...
-          if( configInfo.clean ) {
+          if( clean ) {
               
               // Create the index db Path in case it doesn't exist yet.
               Path.createPath( indexPath );
           
               // And then create the index.
               createIndex( indexPath );
-              configInfo.clean = false;
           }
           
           // Otherwise...
@@ -527,25 +537,25 @@ public class XMLTextProcessor extends DefaultHandler
           
           // Ensure that the chunk size and overlap are the same.
           if( Integer.parseInt( doc.get("chunkSize") ) !=
-              configInfo.indexInfo.getChunkSize() ) 
+              indexInfo.getChunkSize() ) 
           {
               throw new RuntimeException( 
                          "Index chunk size (" + doc.get("chunkSize") +
                          ") doesn't match config (" + 
-                         configInfo.indexInfo.getChunkSize() + ")" );
+                         indexInfo.getChunkSize() + ")" );
           }
           
           if( Integer.parseInt(doc.get("chunkOvlp")) !=
-              configInfo.indexInfo.getChunkOvlp() ) {
+              indexInfo.getChunkOvlp() ) {
                 
               throw new RuntimeException( 
                          "Index chunk overlap (" + doc.get("chunkOvlp") +
                          ") doesn't match config (" + 
-                         configInfo.indexInfo.getChunkOvlp() + ")" );
+                         indexInfo.getChunkOvlp() + ")" );
           }
           
           // Ensure that the stop-word settings are the same.
-          String stopWords = configInfo.indexInfo.stopWords;
+          String stopWords = indexInfo.stopWords;
           if( stopWords == null )
               stopWords = "";
           if( !doc.get("stopWords").equals(stopWords) ) {
@@ -553,7 +563,7 @@ public class XMLTextProcessor extends DefaultHandler
               throw new RuntimeException( 
                          "Index stop words (" + doc.get("stopWords") +
                          ") doesn't match config (" + 
-                         configInfo.indexInfo.stopWords + ")" );
+                         indexInfo.stopWords + ")" );
           }
           
       } // try
@@ -645,7 +655,7 @@ public class XMLTextProcessor extends DefaultHandler
         indexWriter = new IndexWriter( 
                      indexPath, 
                      new XTFTextAnalyzer( stopSet, 
-                                          configInfo.indexInfo.getChunkSize(),
+                                          indexInfo.getChunkSize(),
                                           compactedAccumText ), 
                      true );
         
@@ -653,11 +663,11 @@ public class XMLTextProcessor extends DefaultHandler
         Document doc = new Document();
         doc.add( Field.Keyword( "indexInfo", "1" ) );
         doc.add( Field.UnIndexed( "chunkSize", 
-                                  configInfo.indexInfo.getChunkSizeStr()) );
+                                  indexInfo.getChunkSizeStr()) );
         doc.add( Field.UnIndexed( "chunkOvlp", 
-                                  configInfo.indexInfo.getChunkOvlpStr()) );
+                                  indexInfo.getChunkOvlpStr()) );
         
-        String stopWords = configInfo.indexInfo.stopWords;
+        String stopWords = indexInfo.stopWords;
         if( stopWords == null )
             stopWords = "";
         doc.add( Field.UnIndexed( "stopWords", stopWords ) );
@@ -680,10 +690,11 @@ public class XMLTextProcessor extends DefaultHandler
   
   ////////////////////////////////////////////////////////////////////////////
 
-  /** Queue a source text file for (re)indexing. <br><br>
+  /** Check and conditionally queue a source text file for 
+   *  (re)indexing. <br><br>
    * 
-   *  This method generates a relocatable path identifier for the specified XML 
-   *  source file and then adds it to a queue of files to be (re)indexed. 
+   *  This method first checks if the given source file is already in the
+   *  index. If not, it adds it to a queue of files to be (re)indexed. 
    * 
    *  @param xmlTextFile  The source XML text file to add to the queue of 
    *                      files to be indexed/reindexed. <br><br>
@@ -694,7 +705,7 @@ public class XMLTextProcessor extends DefaultHandler
    *    method. <br><br>
    *     
    */
-  public void queueText(
+  public void checkAndQueueText(
       
       SrcTextInfo srcInfo
       
@@ -704,79 +715,36 @@ public class XMLTextProcessor extends DefaultHandler
 
   {
     
-    // We need to refer to the file in a way that isn't dependent on the
-    // particular location the index is at right now. So calculate a key
-    // that just contains the index name and the part of the path after that
-    // index's data directory.
+    // Check the status of this file. If the index is already up to date, 
+    // we're done.
     //
-    File srcFile = new File( srcInfo.source.getSystemId() );
-    String key = IdxConfigUtil.calcDocKey( new File(configInfo.xtfHomePath),
-                                           configInfo.indexInfo, srcFile );
-    
-    // Make a pretty version of the path for display purposes. It's basically
-    // just the key, without the index name on it.
-    //
-    srcInfo.prettyPath = key.substring( key.indexOf(':') + 1 );
-
-    // Pack all the information regarding this file into a handy unit that we
-    // can check and queue.
-    //
-    srcInfo.key = key;
-    this.srcText = srcInfo;
-    
-    // Check the status of this file.
-    int ret = checkFile();
-    
-    // If the index is already up to date, we're done.
+    int ret = checkFile( srcInfo );
     if( ret == 1 ) return;
     
     // Otherwise, queue it to be indexed.
-    fileQueue.add( srcText );
+    queueText( srcInfo );
 
-  } // queueText()
+  } // checkAndQueueText()
   
   
-  ////////////////////////////////////////////////////////////////////////////
-
-  /** Index a single source file in one step, no queueing necessary.
-   *  If a document with the same key already exists, it is first
-   *  deleted.<br><br>
+  /** Queue a source text file for (re)indexing. <br><br>
    * 
-   *  Note that this is inefficient if adding many documents to the
-   *  index, but serves well for a single document.<br><br>
-   * 
-   *  @param inStream   An XML byte stream representing the document
-   *                    to index.<br><br>
-   *  @param key        The key to associate the document with in the
-   *                    index.<br><br>
+   *  @param xmlTextFile  The source XML text file to add to the queue of 
+   *                      files to be indexed/reindexed. <br><br>
    *  
+   *  @.notes
+   *    For more about why source text files are queued, see the 
+   *    {@link XMLTextProcessor#processQueuedTexts() processQueuedTexts()} 
+   *    method. <br><br>
+   *     
    */
-  public void indexSingleStream(
-      
-      InputStream   inStream,
-      String        key
-      
-  ) throws ParserConfigurationException, 
-           SAXException, 
-           IOException
+  public void queueText( SrcTextInfo srcInfo )
 
   {
-    // If any old version of this document exists, delete it.
-    indexReader.delete( new Term( "key", key ) );
-      
-    // Pack all the information regarding this doc into a handy unit 
-    // that we queue, and queue it.
-    //
-    srcText = new SrcTextInfo();
-    srcText.source = new InputSource( inStream );
-    srcText.key = key;
-    srcText.format = "XML";
-    fileQueue.add( srcText );
 
-    // And finally, process our queue of length one.
-    processQueuedTexts();
-    
-  } // indexSingleStream()
+    fileQueue.add( srcInfo );
+
+  } // queueText()
   
   
   ////////////////////////////////////////////////////////////////////////////
@@ -813,8 +781,8 @@ public class XMLTextProcessor extends DefaultHandler
         // empty parent directories as well.
         //
         lazyFile = IdxConfigUtil.calcLazyPath(
-                                         new File(configInfo.xtfHomePath),
-                                         configInfo.indexInfo, 
+                                         new File(xtfHomePath),
+                                         indexInfo, 
                                          srcFile,
                                          false );
         Path.deletePath( lazyFile.toString() );
@@ -1003,7 +971,10 @@ public class XMLTextProcessor extends DefaultHandler
     String msg = "";
     if( percent >= 0 )
         msg = "(" + percent + "%) ";
-    Trace.info( msg + "Indexing [" + file.prettyPath + "] ... " );
+    String prettyKey = (file.key.indexOf(':') >= 0) ? 
+                            file.key.substring(file.key.indexOf(':') + 1) :
+                            file.key;
+    Trace.info( msg + "Indexing [" + prettyKey + "] ... " );
     
     // Figure out where to put the lazy tree file. If an old one already exists,
     // toss it. Also make sure the directory exists.
@@ -1011,8 +982,8 @@ public class XMLTextProcessor extends DefaultHandler
     if( srcText.source.getSystemId() != null ) {
         File srcFile = new File( srcText.source.getSystemId() );
         lazyFile = IdxConfigUtil.calcLazyPath( 
-                new File(configInfo.xtfHomePath),
-                configInfo.indexInfo,
+                new File(xtfHomePath),
+                indexInfo,
                 srcFile,
                 true );
         if( lazyFile.canRead() )
@@ -1044,12 +1015,12 @@ public class XMLTextProcessor extends DefaultHandler
     }
           
     // Determine how many words should be in each chunk.
-    chunkWordSize = configInfo.indexInfo.getChunkSize();
+    chunkWordSize = indexInfo.getChunkSize();
     
     // Determine the first word in each chunk that the next overlapping
     // chunk should start at.
     //
-    chunkWordOvlp      = configInfo.indexInfo.getChunkOvlp();
+    chunkWordOvlp      = indexInfo.getChunkOvlp();
     chunkWordOvlpStart = chunkWordSize - chunkWordOvlp;
     
     // Reset the node tracking info to the first node in the document.
@@ -1194,76 +1165,92 @@ public class XMLTextProcessor extends DefaultHandler
     
         InputSource inSrc = null;
 
+        // Convert the input source to an input stream if it isn't one already.
+        InputStream inStream;
+        if( file.source.getByteStream() != null )
+            inStream = file.source.getByteStream();
+        else if( file.source.getSystemId() != null &&
+                 file.source.getSystemId().length() > 0 )
+        {
+            // Make sure we can read the file.
+            String path = Path.normalizeFileName( file.source.getSystemId() );
+            if( !(new File(path).canRead()) )
+                throw new FileNotFoundException( file.source.getSystemId() );
+            inStream = new FileInputStream( path );
+        }
+        else
+            throw new IOException( "Must pass an input stream or system ID to index" );
+        
         // If the file format is HTML...
-        if( file.format == "HTML" ){
+        if( file.format.equals("HTML") ) {
             
-            // Convert the PDF file into an XML string that we can index.
-            String HtmlXmlStr = HTMLToString.convert( file.source.getSystemId() );
-              
+            // Convert the HTML file into an XML string that we can index.
+            String HtmlXmlStr = HTMLToString.convert( inStream );
             inSrc = new InputSource( new StringReader(HtmlXmlStr) );          
-                
-            // If there no XSLT input filter defined for this index, just 
-            // parse the source XML file directly, and return early.
-            //
-            if( srcText.inputFilter == null ) {
-                xmlParser.parse( inSrc, this );
-                return 0;
-            }
         }
   
         // If the current file is a PDF file...
-        else if( file.format == "PDF" ){
-            
-              // Convert the PDF file into an XML string that we can index.
-              String pdfXMLStr = PDFToString.convert( file.source.getSystemId() );
-              
-              inSrc = new InputSource( new StringReader(pdfXMLStr) );          
-                
-              // If there no XSLT input filter defined for this index, just 
-              // parse the source XML file directly, and return early.
-              //
-              if( srcText.inputFilter == null ) {
-                  xmlParser.parse( inSrc, this );
-                  return 0;
-              }
-          }
+        else if( file.format.equals("PDF") ) {
           
-          // If the file is an XML file...
-          else if( file.format == "XML") {
-            
-              // Convert our XML text file into a SAXON input source.
-              InputStream inStream;
-              if( file.source.getByteStream() == null )
-                  inStream = new FileInputStream( file.source.getSystemId() );
-              else
-                  inStream = file.source.getByteStream();
-              
-              // Remove DOCTYPE declarations, since the XML reader will barf if it
-              // can't resolve the entity reference, and we really don't care.
-              //
-              inStream = new DocTypeDeclRemover( inStream );
+            // Convert the PDF file into an XML string that we can index.
+            String pdfXMLStr = PDFToString.convert( inStream );
+            inSrc = new InputSource( new StringReader(pdfXMLStr) );          
+        }
+        
+        // If the file is an XML file...
+        else if( file.format.equals("XML") ) {
           
-              // If there no XSLT input filter defined for this index, just 
-              // parse the source XML file directly, and return early.
-              //
-              if( srcText.inputFilter == null ) {
-                  xmlParser.parse( inStream, this );
-                  return 0;
-              }
+            // Remove DOCTYPE declarations, since the XML reader will barf if it
+            // can't resolve the entity reference, and we really don't care.
+            //
+            inSrc = new InputSource( new DocTypeDeclRemover(inStream) );
+        }
+        
+        // If the file is plain text...
+        else if( file.format.equals("Text") ) {
+          
+            // Map XML special characters in the text, and add a dummy
+            // top-level element.
+            //
+            Reader reader = new BufferedReader(new InputStreamReader(inStream));
+            char[] tmp = new char[1000];
+            StringBuffer buf = new StringBuffer( 1000 );
+            while( true ) {
+                int nRead = reader.read( tmp );
+                if( nRead <= 0 )
+                    break;
+                buf.append( tmp, 0, nRead );
+            }
+            String str = "<doc>" + buf.toString() + "</doc>";
+            str.replaceAll( "&", "&amp;" );
+            str.replaceAll( "<", "&lt;" );
+            str.replaceAll( ">", "&gt;" );
             
-            // Now make an input source.
-            inSrc = new InputSource( inStream );
+            inSrc = new InputSource( new StringReader(str) );
         }
         
         // Hmmm... what should we do if it's not a recognized type? Well, for
         // now we simply give up.
         //
         else {
+            Trace.info( "Unrecognized format: '" + file.format + "'" );
             return 0;
         }
         
-        // If we got to this point, there is an XSLT filter specified. So 
-        // set up to use it, and process the resulting filtered XML text.
+        // Put a proper system ID onto the InputSource.
+        if( file.source.getSystemId() != null )
+            inSrc.setSystemId( file.source.getSystemId() );
+        
+        // If there no XSLT input filter defined for this index, just 
+        // parse the source XML file directly, and return early.
+        //
+        if( srcText.inputFilter == null ) {
+            xmlParser.parse( inSrc, this );
+            return 0;
+        }
+        
+        // There is an XSLT filter specified. So set up to use it, and 
+        // process the resulting filtered XML text.
         //
         Templates stylesheet = srcText.inputFilter;
               
@@ -1272,10 +1259,6 @@ public class XMLTextProcessor extends DefaultHandler
         //
         Transformer filter = stylesheet.newTransformer();
             
-        // Put a proper system ID on it.
-        if( file.source.getSystemId() != null )
-            inSrc.setSystemId( file.source.getSystemId() );
-        
         // And finally, make a SAX source that combines the XML reader with
         // the filtered input source.
         //
@@ -3217,8 +3200,8 @@ public class XMLTextProcessor extends DefaultHandler
   
   {
 
-    String idxPath = Path.resolveRelOrAbs(configInfo.xtfHomePath, 
-                                          configInfo.indexInfo.indexPath);
+    String idxPath = Path.resolveRelOrAbs(xtfHomePath, 
+                                          indexInfo.indexPath);
     return Path.normalizePath( idxPath );
 
   } // private getIndexPath()
@@ -3248,7 +3231,7 @@ public class XMLTextProcessor extends DefaultHandler
    *     differs from the modification date stored in the summary info chunk
    *     the last time it was indexed. <br><br>
    */
-  private int checkFile() throws IOException
+  private int checkFile( SrcTextInfo srcInfo ) throws IOException
   
   {
       // We need to find the docInfo chunk that contains the specified
@@ -3258,7 +3241,7 @@ public class XMLTextProcessor extends DefaultHandler
       //
       BooleanQuery query = new BooleanQuery();
       Term docInfo = new Term( "docInfo", "1" );
-      Term srcPath = new Term( "key", srcText.key );
+      Term srcPath = new Term( "key", srcInfo.key );
       query.add( new TermQuery( docInfo ), true, false );
       query.add( new TermQuery( srcPath ), true, false );
       
@@ -3277,21 +3260,21 @@ public class XMLTextProcessor extends DefaultHandler
         String indexDateStr = doc.get( "fileDate" );
         
         // See what the date is on the actual source file right now.
-        File srcFile = new File( srcText.source.getSystemId() );
+        File srcFile = new File( srcInfo.source.getSystemId() );
         String fileDateStr = DateField.timeToString( srcFile.lastModified() );
         
         // If the dates are different...
         if( fileDateStr.compareTo(indexDateStr) != 0 ) {                    
             
             // Delete the old chunks.
-            indexReader.delete( new Term( "key", srcText.key ) );
+            indexReader.delete( new Term( "key", srcInfo.key ) );
             
             // Delete the old lazy file, if any. Might as well delete any
             // empty parent directories as well.
             //
             File lazyFile = IdxConfigUtil.calcLazyPath(
-                                             new File(configInfo.xtfHomePath),
-                                             configInfo.indexInfo, 
+                                             new File(xtfHomePath),
+                                             indexInfo, 
                                              srcFile,
                                              false );
             Path.deletePath( lazyFile.toString() );
@@ -3385,7 +3368,7 @@ public class XMLTextProcessor extends DefaultHandler
     indexWriter = new IndexWriter( 
                      indexPath,
                      new XTFTextAnalyzer( stopSet, 
-                                          configInfo.indexInfo.getChunkSize(),
+                                          indexInfo.getChunkSize(),
                                           compactedAccumText ), 
                                           false );
       
