@@ -156,13 +156,17 @@ public abstract class TextConfig
         boolean bad = false;
         
         if( tagName.equals("logging") ) {
-            if( strVal.equals("0") )
-                strVal = "silent";
-            else if( strVal.equals("1") )
-                strVal = "info";
-            else if( strVal.equals("2") )
-                strVal = "debug";
-            logLevel = strVal;
+            if( attrName.equals("level") ) {
+                if( strVal.equals("0") )
+                    strVal = "silent";
+                else if( strVal.equals("1") )
+                    strVal = "info";
+                else if( strVal.equals("2") )
+                    strVal = "debug";
+                logLevel = strVal;
+            }
+            else
+                bad = true;
         }
 
         else if( tagName.equals("stylesheetCache") ) {
