@@ -73,7 +73,7 @@ class ElementImpl extends ParentNodeImpl {
     public final int getNodeKind() {
         return Type.ELEMENT;
     }
-
+    
     /**
     * Get the base URI of this element node. This will be the same as the System ID unless
     * xml:base has been used.
@@ -170,17 +170,6 @@ class ElementImpl extends ParentNodeImpl {
     }
 
     /**
-     * Returns whether this node (if it is an element) has any attributes.
-     * @return <code>true</code> if this node has any attributes,
-     *   <code>false</code> otherwise.
-     * @since DOM Level 2
-     */
-
-    public boolean hasAttributes() {
-        return attrNames != null;
-    }
-
-    /**
      * Get the value of a given attribute of this node
      * @param fingerprint The fingerprint of the attribute name
      * @return the attribute value if it exists or null if not
@@ -195,20 +184,6 @@ class ElementImpl extends ParentNodeImpl {
                 return attrValues[i];
         } // for i
         return null;
-    }
-
-    /**
-     * Find the value of a given attribute of this node. <BR>
-     * This method is defined on all nodes to meet XSL requirements, but for 
-     * nodes other than elements it will always return null.
-     * 
-     * @param uri the namespace uri of an attribute
-     * @param localName the local name of an attribute
-     * @return the value of the attribute, if it exists, otherwise null
-     */
-    public String getAttributeValue( String uri, String localName ) {
-        int f = document.getNamePool().getFingerprint( uri, localName );
-        return getAttributeValue( f );
     }
 
     /**
