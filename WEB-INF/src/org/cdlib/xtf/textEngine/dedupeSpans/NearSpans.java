@@ -34,7 +34,7 @@ class NearSpans implements Spans {
   private SpanNearQuery query;
 
   private Similarity similarity;
-  
+
   private List ordered = new ArrayList();         // spans in query order
   private int slop;                               // from query
 
@@ -51,12 +51,12 @@ class NearSpans implements Spans {
 
   private boolean more = true;                    // true iff not done
   private boolean firstTime = true;               // true before first next()
-  
+
   private class CellQueue extends PriorityQueue {
     public CellQueue(int size) {
       initialize(size);
     }
-    
+
     protected final boolean lessThan(Object o1, Object o2) {
       SpansCell spans1 = (SpansCell)o1;
       SpansCell spans2 = (SpansCell)o2;
@@ -104,7 +104,7 @@ class NearSpans implements Spans {
         score = spans.score();
         totalScore += score;
         totalCoord |= spans.coordBits();
-        
+
         if (max == null || doc() > max.doc() ||   // maintain max
             (doc() == max.doc() && end() > max.end()))
           max = this;
@@ -139,10 +139,10 @@ class NearSpans implements Spans {
     public int doc() { return spans.doc(); }
     public int start() { return spans.start(); }
     public int end() { return spans.end(); }
-    public float score() { throw new UnsupportedOperationException(); } 
+    public float score() { throw new UnsupportedOperationException(); }
     public int coordBits() { throw new UnsupportedOperationException(); }
-    public Collection allTerms() { throw new UnsupportedOperationException(); } 
-    
+    public Collection allTerms() { throw new UnsupportedOperationException(); }
+
     public String toString() { return spans.toString() + "#" + index; }
   }
 
@@ -158,7 +158,7 @@ class NearSpans implements Spans {
         new SpansCell(clauses[i].getSpans(reader, searcher), i);
       ordered.add(cell);                          // add to ordered
     }
-    
+
     similarity = searcher.getSimilarity();
   }
 
@@ -175,7 +175,7 @@ class NearSpans implements Spans {
 
     // Get rid of cached slop value.
     totalSlop = -1;
-    
+
     while (more) {
 
       boolean queueStale = false;
@@ -202,7 +202,7 @@ class NearSpans implements Spans {
         listToQueue();
         queueStale = false;
       }
-      
+
       if (atMatch())
         return true;
 
@@ -230,10 +230,10 @@ class NearSpans implements Spans {
           queue.adjustTop();
       }
     }
-    
+
     // Get rid of cached slop value.
     totalSlop = -1;
-    
+
     if (more) {
 
       if (atMatch())                              // at a match?
@@ -250,8 +250,8 @@ class NearSpans implements Spans {
   public int doc() { return min().doc(); }
   public int start() { return min().start(); }
   public int end() { return max.end(); }
-  public float score() { return totalScore * 
-                                similarity.sloppyFreq(totalSlop()); 
+  public float score() { return totalScore *
+                                similarity.sloppyFreq(totalSlop());
   }
   public int coordBits() { return totalCoord; }
 
@@ -315,43 +315,43 @@ class NearSpans implements Spans {
   }
 
   private int totalSlop() {
-      
+
     // If cached value is still valid, just return it.
     if (totalSlop >= 0)
       return totalSlop;
-    
+
     // Need to recalculate.
     int matchSlop = 0;
     int lastStart = -1;
     int lastEnd = -1;
-    for (int i = 0; i < ordered.size(); i++) 
+    for (int i = 0; i < ordered.size(); i++)
     {
       SpansCell cell = (SpansCell)ordered.get(i);
       int start = cell.start();
       int end = cell.end();
-      
-      // First cell, just record the start and end. Subsequent cells, 
+
+      // First cell, just record the start and end. Subsequent cells,
       // calculate the slop.
       //
-      if (i > 0) 
+      if (i > 0)
       {
-        // Is the new cell before the old?
+        // Is the new cell before the old? If so, penalize out-of-order.
         if (end <= lastStart)
-          matchSlop += (lastStart - end);
-          
+          matchSlop += (lastStart - end) + 1;
+
         // Is it after?
         else if (start >= lastEnd)
           matchSlop += (start - lastEnd);
-          
+
         // Overlapping... zero slop
         else
           ; // do nothing
       } // if
-      
+
       lastStart = start;
       lastEnd   = end;
     } // for i
-    
+
     return totalSlop = matchSlop;
   }
 
