@@ -555,8 +555,8 @@ public abstract class TextServlet extends HttpServlet
         }
         catch( ClassCastException e ) {
             Trace.error( "Error: Class '" + className + "' specified by " +
-                "the '" + propName + "' property does not support the " +
-                QueryProcessor.class.getName() + " interface" );
+                "the '" + propName + "' property is not an instance of " +
+                QueryProcessor.class.getName() );
             throw new RuntimeException( e );
         }
         catch( Exception e ) {
