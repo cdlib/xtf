@@ -35,9 +35,9 @@
 
   <xsl:param name="bnum" select="/TEI.2/teiHeader/fileDesc/publicationStmt/idno[@type='LOCAL']"/>
 
-  <xsl:param name="icon.path" select="concat($serverURL, 'xtf/icons/oac/')"/>
+  <xsl:param name="icon.path" select="concat($serverURL, 'xtf/icons/default/')"/>
 
-  <xsl:param name="css.path" select="concat($serverURL, 'xtf/css/oac/')"/>
+  <xsl:param name="css.path" select="concat($serverURL, 'xtf/css/default/')"/>
 
   <xsl:param name="content.css" select="'content.css'"/>
 
