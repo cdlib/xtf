@@ -484,7 +484,7 @@ abstract public class NodeImpl extends AbstractNode {
 
     /**
      * Get the next node in document order
-    * @param anchor: the scan stops when it reaches a node that is not a descendant of the specified
+    * @param anchor the scan stops when it reaches a node that is not a descendant of the specified
     * anchor node
      * @return the next node in the document, or null if there is no such node
      */

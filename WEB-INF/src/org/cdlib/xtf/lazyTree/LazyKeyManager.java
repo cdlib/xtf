@@ -804,10 +804,10 @@ public class LazyKeyManager extends KeyManager {
      * Iterates through all registered keys, and builds the associated
      * disk-based key indexes on the given tree.
      * 
-     * @param doc           The LazyTree to work on.
-     * @param controller    Controller used for name pool, etc.
+     * @param doc        The LazyTree to work on.
+     * @param context    Context used for name pool, etc.
      * 
-     * @return int          The number of keys created
+     * @return int       The number of keys created
      */
     
     public int createAllKeys( LazyDocument doc, XPathContext context )
