@@ -1363,7 +1363,7 @@
   
   <xsl:template name="dynaxml.url">
     
-    <xsl:variable name="fullark" select="meta/identifier[1]"/>
+    <xsl:param name="fullark"/>
     <xsl:variable name="ark" select="substring($fullark, string-length($fullark)-9)"/>
     <xsl:variable name="subDir" select="substring($ark, 9, 2)"/>
     
