@@ -58,6 +58,12 @@ public class Path
    *  - Removes any double slash characters that may have been created
    *    when two partial path strings were concatenated. <br><br>
    * 
+   *  - Converts drive letters to uppercase (in Windows)
+   * 
+   *  - Removes any occurrences of "./"
+   * 
+   *  - Removes any occurrences of "xxx/../"
+   * 
    *  - Finally, if the resulting path is not an empty string, this function
    *    guarantees that the path ends in a slash character, in anticipation
    *    of a filename being tacked on to the end. <br><br>
@@ -79,25 +85,69 @@ public class Path
     
     // Determine the length of the Path.
     int len = trimPath.length();
+    int lastSlash = -1;
+    int lastLastSlash = -1;
     
-    for( int i = 0; i < len-1; i++ ) {
+    for( int i = 0; i < len; i++ ) {
 
+      assert len == trimPath.length();
+      
       // Normalize Path to use forward instead of back slashes.
-      if( trimPath.charAt(i)   == '\\' ) trimPath.setCharAt(i,'/');
-      if( trimPath.charAt(i+1) == '\\' ) trimPath.setCharAt(i+1,'/');
+      if( trimPath.charAt(i)   == '\\' ) 
+          trimPath.setCharAt(i,'/');
+      if( i < len-1 && trimPath.charAt(i+1) == '\\' ) 
+          trimPath.setCharAt(i+1,'/');
 
       // Remove any double slashes created by concatenating partial
       // normalized paths together.
       //
-      if( trimPath.charAt(i) == '/' && trimPath.charAt(i+1) == '/' ) {
-        trimPath.deleteCharAt(i);
-        len--;
-        i--;
+      if( i < len-1 &&
+          trimPath.charAt(i) == '/' && 
+          trimPath.charAt(i+1) == '/' ) 
+      {
+          trimPath.deleteCharAt(i);
+          len--;
+          i--;
+      }
+      
+      // Remove ./
+      if( i < len-1 &&
+          i == lastSlash+1 && 
+          trimPath.charAt(i) == '.' && 
+          trimPath.charAt(i+1) == '/' )
+      {
+          trimPath.delete( i, i+2 );
+          len -= 2;
+      }
+      
+      // Remove xxx/../
+      if( i < len-2 &&
+          i == lastSlash+1 &&
+          lastLastSlash >= 0 &&
+          trimPath.charAt(i) == '.' && 
+          trimPath.charAt(i+1) == '.' &&
+          trimPath.charAt(i+2) == '/' )
+      {
+          trimPath.delete( lastLastSlash, i+2 );
+          len -= (i+2 - lastLastSlash);
+          i = lastLastSlash;
+          lastSlash = trimPath.lastIndexOf("/", lastLastSlash-1);
+      }
+      
+      if( trimPath.charAt(i) == '/' ) {
+          lastLastSlash = lastSlash;
+          lastSlash = i;
       }
     }
     
+    assert len == trimPath.length();
+    
     // If the normalized  Path is empty, return an empty string.
     if( len  == 0 ) return "";
+    
+    // Change drive letters to upper-case.
+    if( len >= 3 && trimPath.charAt(1) == ':' && trimPath.charAt(2) == '/' )
+        trimPath.setCharAt( 0, Character.toUpperCase(trimPath.charAt(0)) );
     
     // If the Path did not end in a forward slash, add one.
     if( trimPath.charAt(len-1) != '/' ) trimPath.append( "/" );
@@ -143,6 +193,38 @@ public class Path
 
   } // private normalizeFileName()
 
+  
+  //////////////////////////////////////////////////////////////////////////////
+  
+  /** Normalize a path or file name. <br><br>
+   * 
+   *  This function performs a number of "cleanup" operations to create 
+   *  a standardized (or normalized) file name. <br><br>
+   * 
+   *  @param  pathOrFileName  The path or file name (optionally preceeded by 
+   *                          a path) to normalize. <br><br>
+   * 
+   *  @return
+   *    A normalized version of the original file name string passed. 
+   * 
+   *  @.notes
+   *    This function does its work by calling the
+   *    {@link Path#normalizePath(String) normalizePath() }
+   *    function to normalize the filename and path (if any). If the original
+   *    path ended with a slash, the new one will also. If not, the new one
+   *    will not.
+   */
+  public final static String normalize( String pathOrFileName )
+  
+  {
+    
+    if( pathOrFileName.endsWith("/") || pathOrFileName.endsWith("\\") )
+        return normalizePath( pathOrFileName );
+    else
+        return normalizeFileName( pathOrFileName );
+    
+  } // public normalize()
+  
   
   //////////////////////////////////////////////////////////////////////////////
   
@@ -310,19 +392,61 @@ public class Path
    *                    resolve against <code>parentFile</code>. 
    * @return - The resulting fully resolved path.
    */
-  public static File resolveRelOrAbs( File parentDir, String childPath ) 
+  public static String resolveRelOrAbs( File parentDir, String childPath ) 
   
   {
+      return resolveRelOrAbs( parentDir.toString(), childPath );
+  } // resolveRelOrAbs()
+
+  /**
+   * Utility function to resolve a child path against a parent path. Unlike
+   * the File(File,String) constructor, this first checks if the child
+   * path is absolute. If it is, the parent file is completely ignored.
+   *
+   * @param parentDir - Directory against which to resolve the child,
+   *                     <b>if</b> the child is a relative path.
+   * @param childPath - An absolute path, or else a relative path to
+   *                    resolve against <code>parentFile</code>. 
+   * @return - The resulting fully resolved path.
+   */
+  public static String resolveRelOrAbs( String parentDir, String childPath ) 
+  
+  {
+      parentDir = normalizePath( parentDir );
+      childPath = normalize( childPath );
+      
       // If the child path is absolute, just return it.
-      File childFile = new File(childPath).getAbsoluteFile();;
-      if( childPath.startsWith("\\") || childPath.startsWith("/") )
-          return childFile;
+      if( childPath.startsWith("/") )
+          return childPath;
       if( childPath.length() > 1 && childPath.charAt(1) == ':' )
-          return childFile;
+          return childPath;
       
       // Otherwise, resolve against the parent.
-      return new File( parentDir, childPath ); 
+      return parentDir + childPath;
       
-  } // deleteDir()
+  } // resolveRelOrAbs()
 
+  // Perform a basic regression test on the Path routines.
+  public static final Tester tester = new Tester("Path") {
+      protected void testImpl() throws Exception
+      {
+          String x;
+          
+          x = Path.normalizePath( "c:\\tmp\\foo" );
+          assert x.equals( "C:/tmp/foo/" );
+          
+          x = Path.normalizeFileName( "xyz/./foo.txt/" );
+          assert x.equals( "xyz/foo.txt" );
+          
+          x = Path.normalizeFileName( "./foo/bar.txt" );
+          assert x.equals( "foo/bar.txt" );
+          
+          x = Path.normalize( "/usr/tmp/../foo/bar.txt" );
+          assert x.equals( "/usr/foo/bar.txt" );
+          
+          x = Path.normalize( "/usr/local/tmp/../../foo/bar/" );
+          assert x.equals( "/usr/foo/bar/" );
+      } // testImpl()
+  };
+  
 } // class Path
