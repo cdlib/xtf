@@ -31,16 +31,15 @@ package org.cdlib.xtf.servletBase;
 
 import java.io.File;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.Configuration;
+import net.sf.saxon.om.AllElementStripper;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tinytree.TinyBuilder;
+import net.sf.saxon.trans.XPathException;
 
 import org.cdlib.xtf.util.*;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Attr;
 
 
 /** Common members and methods for servlet configuration classes */
@@ -69,6 +68,9 @@ public abstract class TextConfig
 
     /** All the configuration attributes in the form of name/value pairs */
     public AttribList attribs = new AttribList();
+    
+    /** Configuration used for parsing XML files */
+    private Configuration config = new Configuration();
 
     /**
      * Constructor - Reads and parses the global configuration file (XML) for 
@@ -82,33 +84,40 @@ public abstract class TextConfig
     {
         try {
             // Read in the document (it's in XML format)
-            DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = fac.newDocumentBuilder();
-            Document doc = builder.parse( new File(path) );
+            StreamSource src = new StreamSource( new File(path) );
+            NodeInfo doc = null;
+            try {
+                doc = TinyBuilder.build( src, 
+                              AllElementStripper.getInstance(), config );
+            }
+            catch( XPathException e ) {
+                throw new RuntimeException( e );
+            }
             
             // Make sure the root tag is correct.
-            String rootTag = doc.getDocumentElement().getNodeName();
+            EasyNode root = new EasyNode( doc );
+            String rootTag = root.name();
+            if( rootTag.equals("") && root.nChildren() == 1 ) {
+                root = root.child( 0 );
+                rootTag = root.name();
+            }
+            
             if( !rootTag.equals(expectedRootTag) )
                 throw new GeneralException( "Config file \"" + path + "\" " +
                         "should contain <" + expectedRootTag + ">" );
             
             // Pick out the elements
-            NodeList elements = doc.getDocumentElement().getChildNodes();
-            for( int i = 0; i < elements.getLength(); i++ ) {
-                Node node = elements.item( i );
-                if( node.getNodeType() != Node.ELEMENT_NODE )
+            for( int i = 0; i < root.nChildren(); i++ ) {
+                EasyNode el = root.child( i );
+                if( !el.isElement() )
                     continue;
 
-                Element el      = (Element) node;
-                String  tagName = el.getTagName();
+                String tagName = el.name();
                 
                 // Scan each attribute of each element.
-                NamedNodeMap attrs = el.getAttributes();
-                for( int j = 0; j < attrs.getLength(); j++ ) {
-                    Attr attrNode = (Attr) attrs.item(j);
-                    String attrName = attrNode.getNodeName();
-                    
-                    String  strVal  = attrNode.getNodeValue();
+                for( int j = 0; j < el.nAttrs(); j++ ) {
+                    String attrName = el.attrName( j );
+                    String  strVal  = el.attrValue( j );
                     int     intVal  = -1;
                     try { 
                         intVal = Integer.parseInt( strVal );

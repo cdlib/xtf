@@ -46,22 +46,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.tree.TreeBuilder;
 import net.sf.saxon.value.StringValue;
 
 import org.apache.lucene.limit.ExcessiveWorkException;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
+import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * Base class for the crossQuery and dynaXML servlets. Handles first-time
@@ -90,21 +88,19 @@ public abstract class TextServlet extends HttpServlet
 
 
     /** 
-     * Extracts all of the text data from a DOM tree element node.
+     * Extracts all of the text data from a tree element node.
      *
-     * @param element   DOM element to get text from
+     * @param element   element to get text from
      * @return          Concatenated text from the element.
      */
-    public static String getText( Node element )
-        throws DOMException
+    public static String getText( EasyNode element )
     {
-        Node n;
         String text = "";
-        for( n = element.getFirstChild(); n != null; n = n.getNextSibling() )
-        {
-            if( n.getNodeType() != Node.TEXT_NODE )
+        for( int i = 0; i < element.nChildren(); i++ ) {
+            EasyNode n = element.child( i );
+            if( !n.isText() )
                 continue;
-            text = text + n.getNodeValue();
+            text = text + n.toString();
         }
 
         return text.trim();
@@ -440,20 +436,17 @@ public abstract class TextServlet extends HttpServlet
             trans.setErrorListener( new XTFSaxonErrorListener() );
 
         // Now request it to give us the info we crave.
-        DOMResult result = new DOMResult();
+        TreeBuilder result = new TreeBuilder();
         trans.transform( src, result );
 
         // Process all the tags.
-        Node node;
-        for( node = result.getNode().getFirstChild();
-             node != null;
-             node = node.getNextSibling() )
-        {
-            if( node.getNodeType() != Node.ELEMENT_NODE )
+        EasyNode root = new EasyNode( result.getCurrentRoot() );
+        for( int i = 0; i < root.nChildren(); i++ ) {
+            EasyNode el = root.child( i );
+            if( !el.isElement() )
                 continue;
 
-            Element el      = (Element) node;
-            String  tagName = el.getTagName();
+            String  tagName = el.name();
             String  strVal  = getText( el );
 
             targetTrans.setParameter( tagName, new StringValue(strVal) );

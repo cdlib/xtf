@@ -42,7 +42,6 @@ import javax.xml.transform.TransformerException;
 
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
-import net.sf.saxon.type.Type;
 
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
@@ -1235,15 +1234,14 @@ public class QueryRequest implements Cloneable
         int count = 0;
         String text = null;
         for( int i = 0; i < el.nChildren(); i++ ) {
-            NodeInfo n = el.child(i).getWrappedNode();
-            if( n.getNodeKind() != Type.ATTRIBUTE &&
-                n.getNodeKind() != Type.TEXT )
+            EasyNode n = el.child(i);
+            if( !n.isElement() && !n.isText() )
             {
                 count = -1;
                 break;
             }
-            if( n.getNodeKind() == Type.TEXT )
-                text = n.getStringValue();
+            if( n.isText() )
+                text = n.toString();
             count++;
         }
         

@@ -184,6 +184,24 @@ public class EasyNode
     return wrapped.getLocalPart();
   } // getName()
   
+  /** Checks if this is an element node */
+  public boolean isElement()
+  {
+    return wrapped.getNodeKind() == Type.ELEMENT;
+  }
+  
+  /** Checks if this is a text node */
+  public boolean isText()
+  {
+    return wrapped.getNodeKind() == Type.TEXT;
+  }
+  
+  /** Get the string value of this node */
+  public String toString()
+  {
+    return wrapped.getStringValue();
+  }
+  
   /** Get the actual node we're wrapping */
   public NodeInfo getWrappedNode()
   {

@@ -43,7 +43,6 @@ import javax.xml.transform.sax.SAXSource;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
-import net.sf.saxon.type.Type;
 
 import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.servletBase.StylesheetCache;
@@ -270,7 +269,7 @@ public class SrcTreeProcessor
         EasyNode root = new EasyNode( result );
         for( int i = 0; i < root.nChildren(); i++ ) {
             EasyNode node = root.child( i );
-            if( node.getWrappedNode().getNodeKind() != Type.ELEMENT )
+            if( !node.isElement() )
                 continue;
     
             String  tagName = node.name();
