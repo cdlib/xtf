@@ -313,7 +313,7 @@
 
             <div class="Sample">
               <span class="Code">$ chmod +x textIndexer</span><br>
-              <span class="Code">$ ./textIndexer -index texts</span>
+              <span class="Code">$ ./textIndexer -index default</span>
             </div>
           </li>
 
@@ -605,7 +605,7 @@
           A simple example of command line parameters for a text indexer run might look like this: <br><br>
 
           <div class="Sample">
-            <span class="Code">$ TextIndexer -config conf/myTextIndexer.conf -clean -index texts</span>
+            <span class="Code">$ TextIndexer -config conf/myTextIndexer.conf -clean -index default</span>
           </div> <br>
 
           This example assumes that the config file is called<span class="Code"> myTextIndexer.conf</span>, and that it
@@ -620,7 +620,7 @@
           times to update multiple indexes. For example: <br><br>
 
 <pre class="Sample"><b>TextIndexer -config conf/textIndexer.conf
-            -clean -index texts
+            -clean -index default
             -incremental -nooptimize -index abstracts</b></pre>
 
           In this example, the <code>textIndexer.conf</code>, file defines two indexes called <b>texts</b> and
