@@ -76,7 +76,7 @@
         information. Essentially, this should be one of the file names 
         from an input <file... /> tag.
       
-      - The other attributes ('format', 'inputFilter' and 'displayStyle') are
+      - The other attributes ('format', 'preFilter' and 'displayStyle') are
         all optional.
         
       - If the 'format' attribute is not specified, the textIndexer will 
