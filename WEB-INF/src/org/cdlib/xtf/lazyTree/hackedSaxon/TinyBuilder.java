@@ -12,8 +12,8 @@ import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
 
 import org.cdlib.xtf.util.PackedByteBuf;
-import org.cdlib.xtf.util.StructuredFile;
-import org.cdlib.xtf.util.Subfile;
+import org.cdlib.xtf.util.StructuredStore;
+import org.cdlib.xtf.util.SubStore;
 
 
 /**
@@ -32,27 +32,27 @@ public class TinyBuilder extends Builder  {
     private boolean ended = false;
     private int[] sizeParameters;       // estimate of number of nodes, attributes, namespaces, characters
     private PackedByteBuf textBuf = new PackedByteBuf( 1000 );
-    private StructuredFile treeFile;
-    private Subfile textFile;
+    private StructuredStore treeStore;
+    private SubStore textStore;
 
     public void setSizeParameters(int[] params) {
         sizeParameters = params;
     }
     
-    public void setTreeFile( StructuredFile treeFile ) {
-        this.treeFile = treeFile;
+    public void setTreeStore( StructuredStore treeStore ) {
+        this.treeStore = treeStore;
     }
     
-    public StructuredFile getTreeFile() {
-        return treeFile;
+    public StructuredStore getTreeStore() {
+        return treeStore;
     }
 
-    public void setTextFile( Subfile textFile ) {
-        this.textFile = textFile;
+    public void setTextStore( SubStore textStore ) {
+        this.textStore = textStore;
     }
     
-    public Subfile getTextFile() {
-        return textFile;
+    public SubStore getTextStore() {
+        return textStore;
     }
     
     private int[] prevAtDepth = new int[100];
@@ -273,8 +273,8 @@ public class TinyBuilder extends Builder  {
             textBuf.reset();
             textBuf.writeCharSequence( chars );
             try {
-                startPos = textFile.getFilePointer();
-                textBuf.output( textFile );
+                startPos = textStore.getFilePointer();
+                textBuf.output( textStore );
             }
             catch( IOException e ) {
                 throw new DynamicError( e );

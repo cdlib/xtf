@@ -67,6 +67,7 @@ import org.cdlib.xtf.util.DiskHashWriter;
 import org.cdlib.xtf.util.IntHash;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
+import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
 
@@ -339,7 +340,8 @@ public class RegressTest
                                                new File(configPath),
                                                "all",
                                                new File(docPath) );
-                SearchTree tree = new SearchTree( docKey, lazyFile ); 
+                StructuredStore treeStore = StructuredFile.open( lazyFile );
+                SearchTree tree = new SearchTree( docKey, treeStore ); 
                 tree.suppressScores( true );
                 tree.search( processor, request );
                 

@@ -45,8 +45,8 @@ import org.cdlib.xtf.lazyTree.hackedSaxon.TinyNodeImpl;
 import org.cdlib.xtf.lazyTree.hackedSaxon.TinyTree;
 import org.cdlib.xtf.util.ConsecutiveMap;
 import org.cdlib.xtf.util.PackedByteBuf;
-import org.cdlib.xtf.util.StructuredFile;
-import org.cdlib.xtf.util.Subfile;
+import org.cdlib.xtf.util.StructuredStore;
+import org.cdlib.xtf.util.SubStore;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
 /**
@@ -107,11 +107,11 @@ public class LazyTreeBuilder
      * 
      * @return The root node of the document (which implements DocumentInfo)
      */
-    public NodeInfo load( File persistFile )
+    public NodeInfo load( StructuredStore treeStore )
         throws FileNotFoundException, IOException
     {
         LazyDocument targetDoc = new LazyDocument();
-        load( persistFile, targetDoc );
+        load( treeStore, targetDoc );
         return targetDoc;
     } // load()
 
@@ -123,29 +123,26 @@ public class LazyTreeBuilder
      * @param persistFile   The file to load from
      * @param emptyDoc      An empty document object to initialize
      */
-    public void load( File persistFile, LazyDocument emptyDoc )
+    public void load( StructuredStore treeStore, LazyDocument emptyDoc )
         throws FileNotFoundException, IOException
     {
-        // Open the structured file.
-        StructuredFile file = StructuredFile.open( persistFile );
-        
         // Don't use it if the version number is old.
-        String fileVer = file.getUserVersion();
+        String fileVer = treeStore.getUserVersion();
         if( fileVer.compareTo(curVersion) < 0 )
             throw new IOException( "Cannot use old version of LazyTree file" ); 
         
         // Now init the document (which loads the root node.)
-        emptyDoc.init( namePool, file );
-        emptyDoc.setSystemId( persistFile.getAbsolutePath() );
+        emptyDoc.init( namePool, treeStore );
+        emptyDoc.setSystemId( treeStore.getSystemId() );
     }
-
+    
     /**
      * Alternate way of constructing a lazy tree. First, begin() is called,
      * returning a Receiver that should receive all the SAX events from the
      * input. When all events have been sent, then call 
      * {@link #finish(Receiver)}.
      */
-    public Receiver begin( File persistFile )
+    public Receiver begin( StructuredStore treeStore )
         throws IOException
     {
         // A great way to read the tree in just the form we need it is to
@@ -163,13 +160,12 @@ public class LazyTreeBuilder
         // To save memory, we'll write the character data directly to it
         // rather than buffer it up.
         //
-        StructuredFile treeFile = StructuredFile.create( persistFile );
-        builder.setTreeFile( treeFile );
+        builder.setTreeStore( treeStore );
         
-        treeFile.setUserVersion( curVersion );
+        treeStore.setUserVersion( curVersion );
         
-        Subfile textFile = treeFile.createSubfile( "text" );
-        builder.setTextFile( textFile );
+        SubStore textFile = treeStore.createSubStore( "text" );
+        builder.setTextStore( textFile );
         
         // Done for now.
         return builder;
@@ -198,18 +194,17 @@ public class LazyTreeBuilder
         throws IOException
     {
         TinyBuilder builder = (TinyBuilder)inBuilder;
-        StructuredFile treeFile = builder.getTreeFile();
-        File persistFile = treeFile.getFile();
+        StructuredStore treeStore = builder.getTreeStore();
         
         tree = builder.getTree();
          
         // Done with the text file now.
-        builder.getTextFile().close();
+        builder.getTextStore().close();
         
         // If the build failed, delete the file.
         if( tree == null ) {
-            treeFile.close();
-            persistFile.delete();
+            treeStore.close();
+            treeStore.delete();
             return;
         }
          
@@ -217,12 +212,12 @@ public class LazyTreeBuilder
         checkSupport();
          
         // Now make a structured file containing the entire tree's contents.
-        writeNames   ( treeFile.createSubfile("names") );
-        writeAttrs   ( treeFile.createSubfile("attributes") ); // must be before nodes
-        writeNodes   ( treeFile.createSubfile("nodes") );
+        writeNames   ( treeStore.createSubStore("names") );
+        writeAttrs   ( treeStore.createSubStore("attributes") ); // must be before nodes
+        writeNodes   ( treeStore.createSubStore("nodes") );
          
         // All done!
-        treeFile.close();
+        treeStore.close();
         tree      = null;
         names    = null;
     }
@@ -231,9 +226,9 @@ public class LazyTreeBuilder
      * Build and write out the table of names referenced by the tree. Also
      * includes the namespaces.
      * 
-     * @param out   Subfile to write to.
+     * @param out   SubStore to write to.
      */
-    private void writeNames( Subfile out )
+    private void writeNames( SubStore out )
         throws IOException
     {
         PackedByteBuf buf = new PackedByteBuf( 1000 );
@@ -277,9 +272,9 @@ public class LazyTreeBuilder
      * Build and write out all the nodes in the tree. The resulting table has
      * fixed-sized entries, sized to fit the largest node.
      * 
-     * @param out   Subfile to write to.
+     * @param out   SubStore to write to.
      */
-    private void writeNodes( Subfile out )
+    private void writeNodes( SubStore out )
     throws IOException
     {
         // Write the root node's number
@@ -372,9 +367,9 @@ public class LazyTreeBuilder
      * Build and write out all the attributes in the tree. The resulting table
      * has variable-sized entries. 
      * 
-     * @param out   Subfile to write to.
+     * @param out   SubStore to write to.
      */
-    private void writeAttrs( Subfile out )
+    private void writeAttrs( SubStore out )
         throws IOException
     {
         // Write placeholder for the maximum size of any block.

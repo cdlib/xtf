@@ -25,8 +25,8 @@ import net.sf.saxon.type.Type;
 import org.cdlib.xtf.util.DiskHashReader;
 import org.cdlib.xtf.util.DiskHashWriter;
 import org.cdlib.xtf.util.PackedByteBuf;
-import org.cdlib.xtf.util.StructuredFile;
-import org.cdlib.xtf.util.Subfile;
+import org.cdlib.xtf.util.StructuredStore;
+import org.cdlib.xtf.util.SubStore;
 import org.cdlib.xtf.util.Trace;
 
 /**
@@ -73,13 +73,13 @@ public class LazyDocument extends ParentNodeImpl
     protected boolean debug = false;
     
     /** The structured file that contains all our subfiles */
-    protected StructuredFile mainFile;
+    protected StructuredStore mainStore;
 
     /** Contains all the text, processing instructions, and comments */
-    protected Subfile textFile;
+    protected SubStore textFile;
     
     /** Contains all the nodes */
-    protected Subfile nodeFile;
+    protected SubStore nodeFile;
     
     /** How many nodes, excluding attributes and namespaces. */
     protected int numberOfNodes;
@@ -97,7 +97,7 @@ public class LazyDocument extends ParentNodeImpl
     protected PackedByteBuf nodeBuf;
     
     /** Contains all the attributes */
-    protected Subfile attrFile;
+    protected SubStore attrFile;
     
     /** The max size of any attribute block */
     protected int maxAttrSize;
@@ -144,12 +144,12 @@ public class LazyDocument extends ParentNodeImpl
      * Open a lazy tree and read in the root node.
      * 
      * @param pool  The name pool to map namecodes with
-     * @param file  The file to open
+     * @param store  The file to open
      */
-    public void init( NamePool pool, StructuredFile file )
+    public void init( NamePool pool, StructuredStore store )
         throws IOException
     {
-        this.mainFile = file;
+        this.mainStore = store;
         
         nodeNum = 0;
         document = this;
@@ -159,19 +159,19 @@ public class LazyDocument extends ParentNodeImpl
         documentNumber = pool.allocateDocumentNumber( this );
         
         // First, read in the names.
-        synchronized( mainFile ) {
-            readNames( file.openSubfile("names") );
+        synchronized( mainStore ) {
+            readNames( store.openSubStore("names") );
     
             // Now open the other files and read their headers.
-            nodeFile = file.openSubfile( "nodes" );
+            nodeFile = store.openSubStore( "nodes" );
             rootNodeNum   = nodeFile.readInt();
             numberOfNodes = nodeFile.readInt();
             maxNodeSize   = nodeFile.readInt();
             
-            attrFile = file.openSubfile( "attributes" );
+            attrFile = store.openSubStore( "attributes" );
             maxAttrSize = attrFile.readInt();
             
-            textFile = file.openSubfile( "text" );
+            textFile = store.openSubStore( "text" );
             
             // Allocate the buffer for reading nodes.
             nodeBytes = new byte[maxNodeSize];
@@ -230,7 +230,7 @@ public class LazyDocument extends ParentNodeImpl
             textFile.close();
             nodeFile.close();
             attrFile.close();
-            mainFile.close();
+            mainStore.close();
         }
         catch( IOException e ) {
             // Not a big deal if we can't close... ignore the error.
@@ -242,7 +242,7 @@ public class LazyDocument extends ParentNodeImpl
      * 
      * @param in The subfile to load from
      */
-    private void readNames( Subfile in )
+    private void readNames( SubStore in )
         throws IOException
     {
         // Read in the packed data.
@@ -313,7 +313,7 @@ public class LazyDocument extends ParentNodeImpl
         } // for iter
             
         // Now write out the full hash.
-        writer.outputTo( mainFile.createSubfile(indexName) );
+        writer.outputTo( mainStore.createSubStore(indexName) );
     } // putIndex()
     
     /**
@@ -327,7 +327,7 @@ public class LazyDocument extends ParentNodeImpl
     public DiskHashReader getIndex( String indexName )
     {
         try {
-            Subfile indexFile = mainFile.openSubfile( indexName );
+            SubStore indexFile = mainStore.openSubStore( indexName );
             return new DiskHashReader( indexFile );
         }
         catch( Exception e ) {
@@ -429,7 +429,7 @@ public class LazyDocument extends ParentNodeImpl
                 profileListener.bumpCount( num );
             
             // Read the most data it could be.
-            synchronized( mainFile ) {
+            synchronized( mainStore ) {
                 nodeFile.seek( NODE_FILE_HEADER_SIZE + (num * maxNodeSize) );
                 nodeFile.readFully( nodeBytes );
             }
@@ -714,7 +714,7 @@ public class LazyDocument extends ParentNodeImpl
         // See if there's already a subfile for this name.
         String subName = "all-" + namePool.getDisplayName(fingerprint);
         try {
-            Subfile indexFile = mainFile.openSubfile( subName );
+            SubStore indexFile = mainStore.openSubStore( subName );
             PackedByteBuf buf = new PackedByteBuf( indexFile, (int)indexFile.length() );
             int nNodes = buf.readInt();
             Item[] nodes = new Item[nNodes];
@@ -758,7 +758,7 @@ public class LazyDocument extends ParentNodeImpl
         
         try {
             // Now write a new sub-file.
-            Subfile indexFile = mainFile.createSubfile( subName );
+            SubStore indexFile = mainStore.createSubStore( subName );
             buf.output( indexFile );
             indexFile.close();
         }

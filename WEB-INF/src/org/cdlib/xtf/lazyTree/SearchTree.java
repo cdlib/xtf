@@ -69,6 +69,7 @@ import org.cdlib.xtf.textEngine.Snippet;
 import org.cdlib.xtf.util.CheckingTokenStream;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
+import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
 
 
@@ -252,14 +253,14 @@ public class SearchTree extends LazyDocument
      * the actual search, use the {@link #search(QueryProcessor, QueryRequest)}
      * method.
      */
-    public SearchTree( String sourceKey, File persistFile ) 
+    public SearchTree( String sourceKey, StructuredStore treeStore )
         throws FileNotFoundException, IOException 
     {
         this.sourceKey   = sourceKey;
 
         LazyTreeBuilder builder = new LazyTreeBuilder();
         builder.setNamePool( NamePool.getDefaultNamePool() );
-        builder.load( persistFile, this );
+        builder.load( treeStore, this );
         
         // We'll be using a special namespace.
         addXTFNamespace();
