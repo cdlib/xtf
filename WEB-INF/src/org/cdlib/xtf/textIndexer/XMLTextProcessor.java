@@ -1221,10 +1221,12 @@ public class XMLTextProcessor extends DefaultHandler
                     break;
                 buf.append( tmp, 0, nRead );
             }
-            String str = "<doc>" + buf.toString() + "</doc>";
-            str.replaceAll( "&", "&amp;" );
-            str.replaceAll( "<", "&lt;" );
-            str.replaceAll( ">", "&gt;" );
+            
+            String str = buf.toString();
+            str = str.replaceAll( "&", "&amp;" );
+            str = str.replaceAll( "<", "&lt;" );
+            str = str.replaceAll( ">", "&gt;" );
+            str = "<doc>" + str + "</doc>";
             
             inSrc = new InputSource( new StringReader(str) );
         }
