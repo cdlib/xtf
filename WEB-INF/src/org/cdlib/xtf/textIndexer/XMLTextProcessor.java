@@ -2050,27 +2050,31 @@ public class XMLTextProcessor extends DefaultHandler
   
   {
     
-    // Index whatever is left in the accumulated text buffer.
-    indexText( sectionType, wordBoost );
-  
-    // Make the next chunk current.
-    chunkStartNode  = nextChunkStartNode;
-    chunkWordOffset = nextChunkWordOffset;
-    chunkWordCount  = nextChunkWordCount;
-
-    // Remove the text from the buffer that was in the previous
-    // chunk but not in the next one.
-    //
-    accumText.delete( 0, nextChunkStartIdx );
-                    
-    // Make sure that the next word added doesn't bump up against
-    // the last one accumulated.
-    //
-    trimAccumText( true );
-
-    // Reset the start index for the next chunk.
-    nextChunkStartIdx = 0;
-    nextChunkWordCount = 0;
+    // If there is a full chunk that hasn't been written yet, do it
+    // now.
+    if( nextChunkStartIdx > 0 ) 
+    {
+        indexText( sectionType, wordBoost );
+      
+        // Make the next chunk current.
+        chunkStartNode  = nextChunkStartNode;
+        chunkWordOffset = nextChunkWordOffset;
+        chunkWordCount  = nextChunkWordCount;
+    
+        // Remove the text from the buffer that was in the previous
+        // chunk but not in the next one.
+        //
+        accumText.delete( 0, nextChunkStartIdx );
+                        
+        // Make sure that the next word added doesn't bump up against
+        // the last one accumulated.
+        //
+        trimAccumText( true );
+        
+        // Reset the start index for the next chunk.
+        nextChunkStartIdx = 0;
+        nextChunkWordCount = 0;
+    }
     
     // Index whatever is left in the accumulated text buffer.
     indexText( sectionType, wordBoost );
@@ -2086,6 +2090,9 @@ public class XMLTextProcessor extends DefaultHandler
     nextChunkWordOffset =  0;
     accumText.setLength( 0 );
 
+    // Subsequent data might start in a new node.
+    chunkStartNode = -1;
+    
     // Indicate that the next chunk is being forced.
     forcedChunk = true;
            
@@ -2630,8 +2637,8 @@ public class XMLTextProcessor extends DefaultHandler
     Trace.tab();
     Trace.debug( "node " + nodeStr + ", offset = " + wordOffsetStr );
     Trace.more( " text = [" + textStr + "]" );
-    Trace.untab(); 
-
+    Trace.untab();
+    
     // Add the node number for this chunk. Store, but don't index or tokenize.
     doc.add( new Field( "node", nodeStr, true, false, false ) );
     
