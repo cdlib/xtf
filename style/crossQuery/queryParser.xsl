@@ -57,6 +57,9 @@
 <!-- ====================================================================== -->
 <!-- Global parameters (specified in the URL)                               -->
 <!-- ====================================================================== -->
+    
+  <!-- style param -->
+  <xsl:param name="style"/>
   
   <!-- search mode -->
   <xsl:param name="smode"/>
@@ -143,7 +146,7 @@
     <xsl:variable name="textParam" select="$queryParams[matches(@name, 'text|query')]"/>
     
     <!-- Find the meta-data queries, if any -->
-    <xsl:variable name="metaParams" select="$queryParams[not(matches(@name, 'text*|query*|smode|rmode|brand|sort|startDoc|docsPerPages|sectionType|fieldList|.*-ignore'))]"/>
+    <xsl:variable name="metaParams" select="$queryParams[not(matches(@name, 'text*|query*|style|smode|rmode|brand|sort|startDoc|docsPerPages|sectionType|fieldList|.*-ignore'))]"/>
  
     <and>
       <!-- Process the meta-data queries, if any -->
