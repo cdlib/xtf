@@ -1,7 +1,14 @@
 package org.cdlib.xtf.util;
 
-import net.sf.saxon.instruct.Instruction;
+import net.sf.saxon.expr.XPathContext;
+import net.sf.saxon.style.StandardNames;
+import net.sf.saxon.trace.InstructionInfo;
+import net.sf.saxon.trace.InstructionInfoProvider;
+import net.sf.saxon.trace.Location;
 import net.sf.saxon.type.ValidationException;
+import net.sf.saxon.xpath.DynamicError;
+import net.sf.saxon.xpath.XPathException;
+
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.ErrorListener;
@@ -63,10 +70,10 @@ public class XTFSaxonErrorListener implements ErrorListener {
      * @param exception The error information encapsulated in a
      *                  transformer exception.
      *
-     * @throws javax.xml.transform.TransformerException if the application
+     * @throws TransformerException if the application
      * chooses to discontinue the transformation.
      *
-     * @see javax.xml.transform.TransformerException
+     * @see TransformerException
      */
 
     public void error(TransformerException exception) throws TransformerException {
@@ -108,34 +115,54 @@ public class XTFSaxonErrorListener implements ErrorListener {
 
     public static String getLocationMessage(TransformerException err) {
         SourceLocator loc = err.getLocator();
-        if (loc==null) {
+        while (loc == null) {
             if (err.getException() instanceof TransformerException) {
-                return getLocationMessage((TransformerException)err.getException());
+                err = (TransformerException)err.getException();
+                loc = err.getLocator();
             } else if (err.getCause() instanceof TransformerException) {
-                return getLocationMessage((TransformerException)err.getCause());
+                err = (TransformerException)err.getCause();
+                loc = err.getLocator();
             } else {
                 return "";
             }
-        } else {
-            String locmessage = "";
-            if (loc instanceof DOMLocator) {
-                locmessage += "at " + ((DOMLocator)loc).getOriginatingNode().getNodeName() + " ";
-            } else if (loc instanceof Instruction) {
-                locmessage += "at " + ((Instruction)loc).getInstructionName() + " ";
-                //String elname = (String)((Instruction)loc).getProperty("name");
-                //if (elname != null) {
-                //    locmessage += elname + " ";
-                //}
-            }
-            locmessage += "on line " + loc.getLineNumber() + " ";
-            if (loc.getColumnNumber() != -1) {
-                locmessage += "column " + loc.getColumnNumber() + " ";
-            }
-            if (loc.getSystemId() != null) {
-                locmessage += "of " + loc.getSystemId() + ":";
-            }
-            return locmessage;
         }
+        XPathContext context = null;
+        if (err instanceof DynamicError) {
+            context = ((DynamicError)err).getXPathContext();
+        }
+        return getLocationMessage(loc, context);
+    }
+
+    private static String getLocationMessage(SourceLocator loc, XPathContext context) {
+            String locmessage = "";
+        String systemId = null;
+        int lineNumber = -1;
+            if (loc instanceof DOMLocator) {
+            locmessage += "at " + ((DOMLocator)loc).getOriginatingNode().getNodeName() + ' ';
+        } else if (loc instanceof InstructionInfoProvider) {
+            String instructionName = getInstructionName(((InstructionInfoProvider)loc), context);
+            if (!"".equals(instructionName)) {
+                locmessage += "at " + instructionName + ' ';
+            }
+            systemId = ((InstructionInfoProvider)loc).getInstructionInfo().getSystemId();
+            lineNumber = ((InstructionInfoProvider)loc).getInstructionInfo().getLineNumber();
+        }
+        if (lineNumber == -1) {
+            lineNumber = loc.getLineNumber();
+        }
+        if (lineNumber != -1) {
+            locmessage += "on line " + lineNumber + ' ';
+            }
+            if (loc.getColumnNumber() != -1) {
+            locmessage += "column " + loc.getColumnNumber() + ' ';
+            }
+        if (systemId == null) {
+            systemId = loc.getSystemId();
+            }
+        if (systemId != null) {
+            locmessage += "of " + systemId + ':';
+        }
+        return locmessage;
     }
 
     /**
@@ -144,6 +171,14 @@ public class XTFSaxonErrorListener implements ErrorListener {
 
     public static String getExpandedMessage(TransformerException err) {
         String message = "";
+
+        if (err instanceof XPathException) {
+            String code = ((XPathException)err).getErrorCode();
+            if (code != null) {
+                message = code;
+            }
+        }
+
         Throwable e = err;
         while (true) {
             if (e == null) {
@@ -151,8 +186,8 @@ public class XTFSaxonErrorListener implements ErrorListener {
             }
             String next = e.getMessage();
             if (next==null) next="";
-            if (!next.equals("TRaX Transform Exception") && !message.endsWith(next)) {
-                if (!message.equals("")) {
+            if (!("TRaX Transform Exception".equals(next) || message.endsWith(next))) {
+                if (!"".equals(message)) {
                     message += ": ";
                 }
                 message += e.getMessage();
@@ -168,6 +203,65 @@ public class XTFSaxonErrorListener implements ErrorListener {
         }
 
         return message;
+    }
+
+    /**
+     * Extract a name identifying the instruction at which an error occurred
+     */
+
+    private static String getInstructionName(InstructionInfoProvider inst, XPathContext context) {
+        if (context==null) {
+            return "";
+        }
+        try {
+            InstructionInfo info = inst.getInstructionInfo();
+            int construct = info.getConstructType();
+            if (construct < 1024 &&
+                    construct != StandardNames.XSL_FUNCTION &&
+                    construct != StandardNames.XSL_TEMPLATE) {
+                // it's a standard name
+                return StandardNames.getDisplayName(construct);
+            }
+            switch (construct) {
+                case Location.LITERAL_RESULT_ELEMENT: {
+                    int fp = info.getObjectNameCode();
+                    String name = "element constructor";
+                    if (context != null) {
+                        name += " <" + context.getController().getNamePool().getDisplayName(fp) + '>';
+                    }
+                    return name;
+                }
+                case Location.LITERAL_RESULT_ATTRIBUTE: {
+                    int fp = info.getObjectNameCode();
+                    String name = "attribute constructor";
+                    if (context != null) {
+                        name += ' ' + context.getController().getNamePool().getDisplayName(fp) + "=\"{...}\"";
+                    }
+                    return name;
+                }
+                case StandardNames.XSL_FUNCTION: {
+                    int fp = info.getObjectNameCode();
+                    String name = "function";
+                    if (context != null) {
+                        name += ' ' + context.getController().getNamePool().getDisplayName(fp) + "()";
+                    }
+                    return name;
+                }
+                case StandardNames.XSL_TEMPLATE: {
+                    int fp = info.getObjectNameCode();
+                    String name = "template";
+                    if (context != null && fp != -1) {
+                        name += " name=\"" + context.getController().getNamePool().getDisplayName(fp) + '\"';
+                    }
+                    return name;
+                }
+                default:
+                    return "";
+            }
+
+        } catch (Exception err) {
+            return "";
+        }
     }
 
     /**
@@ -193,6 +287,7 @@ public class XTFSaxonErrorListener implements ErrorListener {
             return message;
         }
     }
+
 
 }
 
