@@ -196,7 +196,7 @@
   
   <xsl:param name="queryString">
     <xsl:call-template name="queryString">
-      <xsl:with-param name="textParams" select="'text text-join text-prox text-exclude text-max title title-join title-prox title-exclude title-max creator creator-join creator-prox creator-exclude creator-max subject subject-join subject-prox subject-exclude subject-max description description-join description-prox description-exclude description-max publisher publisher-join publisher-prox publisher-exclude publisher-max contributor contributor-join contributor-prox contributor-exclude contributor-max date date-join date-prox date-exclude date-max type type-join type-prox type-exclude type-max format format-join format-prox format-exclude format-max identifier identifier-join identifier-prox identifier-exclude identifier-max source source-join source-prox source-exclude source-max language language-join language-prox language-exclude language-max relation relation-join relation-prox relation-exclude relation-max coverage coverage-join coverage-prox coverage-exclude coverage-max rights rights-join rights-prox rights-exclude rights-max year year-join year-prox year-exclude year-max profile profile-join profile-prox profile-exclude profile-max sectionType rmode '"/>
+      <xsl:with-param name="textParams" select="'text text-join text-prox text-exclude text-max title title-join title-prox title-exclude title-max creator creator-join creator-prox creator-exclude creator-max subject subject-join subject-prox subject-exclude subject-max description description-join description-prox description-exclude description-max publisher publisher-join publisher-prox publisher-exclude publisher-max contributor contributor-join contributor-prox contributor-exclude contributor-max date date-join date-prox date-exclude date-max type type-join type-prox type-exclude type-max format format-join format-prox format-exclude format-max identifier identifier-join identifier-prox identifier-exclude identifier-max source source-join source-prox source-exclude source-max language language-join language-prox language-exclude language-max relation relation-join relation-prox relation-exclude relation-max coverage coverage-join coverage-prox coverage-exclude coverage-max rights rights-join rights-prox rights-exclude rights-max year year-join year-prox year-exclude year-max profile profile-join profile-prox profile-exclude profile-max sectionType rmode sort '"/>
       <xsl:with-param name="count" select="1"/>
     </xsl:call-template>
   </xsl:param>
@@ -853,6 +853,13 @@
           <xsl:text>rmode=</xsl:text>
           <xsl:value-of select="$rmode"/>
         </xsl:when>
+        <xsl:when test="$param = 'sort' and $sort">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>sort=</xsl:text>
+          <xsl:value-of select="$sort"/>
+        </xsl:when>
       </xsl:choose>
       <xsl:call-template name="queryString">
         <xsl:with-param name="textParams" select="replace(substring-after($textParams, $param), '^ ', '')"/>
@@ -1490,6 +1497,54 @@
           <option>
             <xsl:attribute name="value">"<xsl:value-of select="$option"/>"</xsl:attribute>
             <xsl:if test="contains($subject,$option)">
+              <xsl:attribute name="selected" select="'yes'"/>
+            </xsl:if>
+            <xsl:value-of select="$option"/>
+          </option>    
+          <xsl:call-template name="selectBuilder">
+            <xsl:with-param name="selectType" select="$selectType"/>
+            <xsl:with-param name="optionList" select="replace(substring-after($optionList, $option), '^::', '')"/>
+            <xsl:with-param name="count" select="$count + 1"/>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:when>
+      <xsl:when test="$selectType='text-prox'">    
+        <xsl:if test="$option != ''"> 
+          <option>
+            <xsl:attribute name="value"><xsl:value-of select="$option"/></xsl:attribute>
+            <xsl:if test="$text-prox = $option">
+              <xsl:attribute name="selected" select="'yes'"/>
+            </xsl:if>
+            <xsl:value-of select="$option"/>
+          </option>    
+          <xsl:call-template name="selectBuilder">
+            <xsl:with-param name="selectType" select="$selectType"/>
+            <xsl:with-param name="optionList" select="replace(substring-after($optionList, $option), '^::', '')"/>
+            <xsl:with-param name="count" select="$count + 1"/>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:when>      
+      <xsl:when test="$selectType='year'">    
+        <xsl:if test="$option != ''"> 
+          <option>
+            <xsl:attribute name="value"><xsl:value-of select="$option"/></xsl:attribute>
+            <xsl:if test="$year = $option">
+              <xsl:attribute name="selected" select="'yes'"/>
+            </xsl:if>
+            <xsl:value-of select="$option"/>
+          </option>    
+          <xsl:call-template name="selectBuilder">
+            <xsl:with-param name="selectType" select="$selectType"/>
+            <xsl:with-param name="optionList" select="replace(substring-after($optionList, $option), '^::', '')"/>
+            <xsl:with-param name="count" select="$count + 1"/>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:when> 
+      <xsl:when test="$selectType='year-max'">    
+        <xsl:if test="$option != ''"> 
+          <option>
+            <xsl:attribute name="value"><xsl:value-of select="$option"/></xsl:attribute>
+            <xsl:if test="$year-max = $option">
               <xsl:attribute name="selected" select="'yes'"/>
             </xsl:if>
             <xsl:value-of select="$option"/>
