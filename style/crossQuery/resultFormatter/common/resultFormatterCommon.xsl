@@ -1213,6 +1213,8 @@
   <!-- Summarize Results -->
   <xsl:template name="page-summary">
     
+    <xsl:param name="object-type"/>
+    
     <xsl:variable name="totalDocs" as="xs:integer" select="@totalDocs"/>
     
     <xsl:variable name="lastOnPage" as="xs:integer">
@@ -1234,7 +1236,8 @@
     <strong>
       <xsl:value-of select="@totalDocs"/>
     </strong>
-    <xsl:text> books</xsl:text>
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="$object-type"/>
     
   </xsl:template>
 
