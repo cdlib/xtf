@@ -138,8 +138,8 @@ public class SparseStringComparator implements SortComparatorSource
     /**
      * Compares two ScoreDoc objects and returns a result indicating their
      * sort order.
-     * @param i First ScoreDoc
-     * @param j Second ScoreDoc
+     * @param d1 First ScoreDoc
+     * @param d2 Second ScoreDoc
      * @return <code>-1</code> if <code>i</code> should come before <code>j</code><br><code>1</code> if <code>i</code> should come after <code>j</code><br><code>0</code> if they are equal
      * @see java.util.Comparator
      */

@@ -27,8 +27,7 @@ import java.util.Locale;
  *
  * @author  Tim Jones (Nacimiento Software)
  * @since   lucene 1.4
- * @version $Id: SortField.java,v 1.1.1.1 2004-10-08 19:53:11 mhaye Exp $
- * @see Sort
+ * @version $Id: SortField.java,v 1.2 2004-10-11 15:36:12 mhaye Exp $
  */
 public class SortField
 implements Serializable {
