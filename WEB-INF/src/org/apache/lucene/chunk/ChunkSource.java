@@ -33,7 +33,7 @@ import org.apache.lucene.index.IndexReader;
  * <p>Created: Jan 15, 2005</p>
  *
  * @author  Martin Haye
- * @version $Id: ChunkSource.java,v 1.1 2005-02-08 23:19:08 mhaye Exp $
+ * @version $Id: ChunkSource.java,v 1.2 2005-03-02 21:07:12 mhaye Exp $
  */
 public class ChunkSource 
 {
@@ -102,6 +102,21 @@ public class ChunkSource
     return new Chunk(this, chunkNum);
   }
 
+  /**
+   * Check if the given chunk is contained within the main document for this
+   * chunk source. Essentially, if the chunk number is beyond the first or
+   * last chunks, or is deleted, it's not in the main doc.
+   */
+  public boolean inMainDoc(int chunkNum) {
+    if (chunkNum < firstChunk)
+      return false;
+    if (chunkNum > lastChunk)
+      return false;
+    if (reader.isDeleted(chunkNum))
+      return false;
+    return true;
+  }
+  
   /** 
    * Read the text for the given chunk (derived classes may 
    * wish to override) 

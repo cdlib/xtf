@@ -27,7 +27,7 @@ import org.apache.lucene.mark.WordIter;
  * simply setting the 'force' parameter.)
  *
  * @author  Martin Haye
- * @version $Id: ChunkedWordIter.java,v 1.2 2005-02-23 05:16:15 mhaye Exp $
+ * @version $Id: ChunkedWordIter.java,v 1.3 2005-03-02 21:07:12 mhaye Exp $
  */
 public class ChunkedWordIter extends BasicWordIter implements Cloneable {
   
@@ -55,7 +55,7 @@ public class ChunkedWordIter extends BasicWordIter implements Cloneable {
       while( true ) 
       {
           // If we're at the very end, don't go further.
-          if (chunk.chunkNum + 1 > chunkSource.lastChunk)
+          if (!chunkSource.inMainDoc(chunk.chunkNum + 1))
             return false;
     
           // Don't skip past a section boundary unless requested to.
@@ -85,7 +85,7 @@ public class ChunkedWordIter extends BasicWordIter implements Cloneable {
 
       while( true ) {
           // If we're at the very beginning, don't go further.
-          if (chunk.chunkNum - 1 < chunkSource.firstChunk)
+          if (!chunkSource.inMainDoc(chunk.chunkNum - 1))
             return false;
     
           // Don't back over a section boundary unless requested to.
