@@ -29,30 +29,26 @@ package org.cdlib.xtf.zing;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.cdlib.xtf.crossQuery.CrossQueryConfig;
 import org.cdlib.xtf.util.GeneralException;
 
-
-/** Holds global configuration information for the SRU servlet. */
-class SRUConfig extends CrossQueryConfig
+/**
+ * This exception is thrown when the request contains an invalid query
+ * string.
+ */
+class CQLParseException extends GeneralException
 {
     /**
-     * Constructor - Reads and parses the global configuration file (XML) for 
-     * the SRU servlet.
+     * Constructor that only takes a 'message'.
      *
-     * @param  path               Filesystem path to the config file.
-     * @throws GeneralException   If a read or parse error occurs.
+     * @param message     Message describing cause of this exception.
      */
-    public SRUConfig( String path )
-        throws GeneralException
+    public CQLParseException( String message )
     {
-        super.read( "SRU-config", path );
-        
-        // Make sure required things were specified.
-        requireOrElse( queryParserSheet, 
-            "Config file error: queryParser path not specified" );
+        super( message );
     }
 
-} // class SRUConfig
+    /** This particular exception isn't really severe enough to log */
+    public boolean isSevere() { return false; }
 
+} // class SRUCQLParseException
 
