@@ -115,6 +115,13 @@
       </fileset>
     </copy>
 
+    <!-- Copy sample files (some will overwrite) -->
+    <copy todir="build-tmp">
+      <fileset dir="../sample">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+
     <!-- Now make the main distribution WAR file -->
     <delete file="${dist}/xtf-dev-${DSTAMP}.war" quiet="true"/>
     <jar jarfile="${dist}/xtf-dev-${DSTAMP}.war">
