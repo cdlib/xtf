@@ -34,7 +34,7 @@ import org.cdlib.xtf.textEngine.TermLimitException;
  * Matches spans containing terms within a specified range. 
  * 
  * @author  Martin Haye
- * @version $Id: SpanRangeQuery.java,v 1.1 2005-02-08 23:20:41 mhaye Exp $
+ * @version $Id: SpanRangeQuery.java,v 1.2 2005-02-23 05:14:09 mhaye Exp $
  */
 public class SpanRangeQuery extends SpanQuery {
 
@@ -44,6 +44,9 @@ public class SpanRangeQuery extends SpanQuery {
   private boolean inclusive;
   private Set stopSet;
 
+  /** Limit on the number of terms to report on an error */
+  private static final int TERMS_TO_REPORT = 50;
+  
   /** Constructs a span query selecting all terms greater than
    * <code>lowerTerm</code> but less than <code>upperTerm</code>.
    * There must be at least one term and either term may be null,
@@ -101,6 +104,7 @@ public class SpanRangeQuery extends SpanQuery {
     Vector clauses = new Vector();
     TermEnum enumerator = reader.terms(lowerTerm);
     int nTerms = 0;
+    StringBuffer termReport = new StringBuffer(100);
 
     try {
 
@@ -134,11 +138,18 @@ public class SpanRangeQuery extends SpanQuery {
                 continue;
             }
             
+            if (nTerms < TERMS_TO_REPORT ) {
+                termReport.append( term.text() );
+                termReport.append( " " );
+            }
+            
             nTerms++;
             if (nTerms == termLimit) {
               throw new TermLimitException(
                  "Range query on '" + lowerTerm.field() +
-                 "' matched too many terms (more than " + termLimit + ")");
+                 "' matched too many terms (more than " + termLimit + "). " +
+                 "First " + TERMS_TO_REPORT + " matches: " +
+                 termReport.toString() );
             }
             
             SpanTermQuery tq = new SpanTermQuery(term); // found a match

@@ -31,12 +31,15 @@ import org.cdlib.xtf.textEngine.TermLimitException;
 /** Matches spans containing a wildcard term.
  * 
  * @author  Martin Haye
- * @version $Id: SpanWildcardQuery.java,v 1.1 2005-02-08 23:20:54 mhaye Exp $
+ * @version $Id: SpanWildcardQuery.java,v 1.2 2005-02-23 05:14:09 mhaye Exp $
  */
 public class SpanWildcardQuery extends SpanTermQuery {
 
   /** Limit on the total number of terms matched */
   private int termLimit;
+  
+  /** Limit on the number of terms to report on an error */
+  private static final int TERMS_TO_REPORT = 50;
   
   /** Construct a SpanWildcardTermQuery matching expanded terms */
   public SpanWildcardQuery(Term term) { 
@@ -57,6 +60,8 @@ public class SpanWildcardQuery extends SpanTermQuery {
    */
   public Query rewrite(IndexReader reader) throws IOException 
   {
+    StringBuffer termReport = new StringBuffer(100);
+    
     // Enumerate all the matching terms, and make a term query for each one.
     WildcardTermEnum enumerator = new WildcardTermEnum(reader, getTerm());
     Vector termQueries = new Vector();
@@ -81,11 +86,18 @@ public class SpanWildcardQuery extends SpanTermQuery {
           SpanTermQuery tq = new SpanTermQuery(t);
           tq.setBoost(getBoost() * enumerator.difference()); // set the boost
           termQueries.add( tq );
+          
+          if (nTerms < TERMS_TO_REPORT ) {
+              termReport.append( t.text() );
+              termReport.append( " " );
+          }
+          
           if (nTerms++ == termLimit)
               throw new TermLimitException( 
                    "Wildcard query on '" + getTerm().field() +
                    "' matched too many terms (more than " + 
-                   termLimit + ")");
+                   termLimit + "). First " + TERMS_TO_REPORT + " matches: " +
+                   termReport.toString() );
         }
       } while (enumerator.next());
     } finally {
