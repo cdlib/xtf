@@ -267,8 +267,9 @@ public class FormatXML {
    *  @param tagAtts        A string of attributes to tadd to the tag.
    *      
    *  @.notes
-   *       Use the {@link FormatXML#attr() attr() } simplify constructing
-   *       attribute name/value pairs.      
+   *       Use the {@link FormatXML#attr(String, String) attr() } method
+   *       and its cousins to simplify constructing attribute name/value 
+   *       pairs.      
    */
   public static final String beginTag( 
   

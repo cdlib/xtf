@@ -43,7 +43,7 @@ import org.apache.log4j.BasicConfigurator;
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-/** This class provides a single static {@link PFDToString#convert(string) convert() }
+/** This class provides a single static {@link PDFToString#convert(InputStream) convert() }
  *  method that converts the text in a PDF file into an XML string that can be
  *  pre-filtered and added to a Lucene database by the 
  *  {@link XMLTextProcessor#parseText(SrcTextInfo) parseText() } method of the 
@@ -68,7 +68,8 @@ public class PDFToString {
   
   /** Convert a PDF file into an XML string.
    * 
-   *  @param PDFFileName  The name of the PDF file to convert to an XML string.
+   *  @param PDFInputStream  The stream of PDF data to convert to an 
+   *                         XML string.
    * 
    *  @return 
    *      If successful, a string containing the XML equivalent of the source

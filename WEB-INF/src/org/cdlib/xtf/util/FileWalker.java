@@ -43,7 +43,7 @@ import org.cdlib.xtf.util.Trace;
  *  To use this class, create a derived class that implements the abstract
  *  method {@link FileWalker#processFile(String,String,String,String) processFile() }.
  *  Then, create an instance of the derived class and call the 
- *  {@link FileWalker#processFile(String,boolean) processFiles() } method. <br><br> 
+ *  {@link FileWalker#processFiles(String, boolean) processFiles() } method. <br><br> 
  */
 
 public abstract class FileWalker 
@@ -230,7 +230,7 @@ public abstract class FileWalker
 
   /** Flag indicating whether file processing should continue or stop (set by
    *  the value returned from the derived 
-   *  {@link FileWalker#processFile(String,String,StringString) processFile() }
+   *  {@link FileWalker#processFile(String, String, String, String)}
    *  method.)
    */
   private boolean mContinueProcessing = true;
