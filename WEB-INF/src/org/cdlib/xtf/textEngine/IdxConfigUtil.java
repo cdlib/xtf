@@ -88,13 +88,20 @@ public class IdxConfigUtil
                                    String  idxName,
                                    File    srcTextFile,
                                    boolean createDir )
-    throws Exception
+    throws IOException
   {
     // First, load the particular index info from the config file (though if
     // we've already loaded it, the cache will just return it.)
     //
-    IndexerConfig idxCfg = 
-        configCache.find(idxConfigFile, idxName);
+    IndexerConfig idxCfg;
+    try {
+        idxCfg = configCache.find(idxConfigFile, idxName);
+    }
+    catch( Exception e ) {
+        if( e instanceof IOException )
+            throw (IOException) e;
+        throw new RuntimeException( e );
+    }
     
     // Use the other form of calcLazyPath() to do the rest of the work.
     return calcLazyPath( xtfHome, idxCfg.indexInfo,
@@ -178,12 +185,20 @@ public class IdxConfigUtil
                                    File    idxConfigFile,
                                    String  idxName,
                                    File    srcTextFile )
-    throws Exception
+    throws IOException
   {
     // First, load the particular index info from the config file (though if
     // we've already loaded it, the cache will just return it.)
     //
-    IndexerConfig config = configCache.find(idxConfigFile, idxName);
+    IndexerConfig config;
+    try {
+        config = configCache.find(idxConfigFile, idxName);
+    }
+    catch( Exception e ) {
+        if( e instanceof IOException )
+            throw (IOException) e;
+        throw new RuntimeException( e );
+    }
     
     // Use the other form of calcDocKey() to do the rest of the work.
     return calcDocKey( xtfHome,
