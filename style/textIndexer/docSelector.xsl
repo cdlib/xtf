@@ -116,7 +116,7 @@
       <xsl:if test="not(ends-with(@fileName, '.mets.xml')) and
                     not(ends-with(@fileName, '.dc.xml'))">
         <indexFile fileName="{@fileName}"
-                   preFilter="style/textIndexer/default/prefilter.xsl"
+                   preFilter="style/textIndexer/default/preFilter.xsl"
                    displayStyle="style/dynaXML/docFormatter/default/docFormatter.xsl"/>
       </xsl:if>
     </xsl:if>
