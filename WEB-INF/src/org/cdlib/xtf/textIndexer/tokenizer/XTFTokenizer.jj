@@ -114,15 +114,88 @@ TOKEN : {					  // token patterns
        | <HAS_DIGIT> (<P> <ALPHANUM> <P> <HAS_DIGIT>)+
        | <ALPHANUM> <P> <HAS_DIGIT> (<P> <ALPHANUM> <P> <HAS_DIGIT>)+
        | <HAS_DIGIT> <P> <ALPHANUM> (<P> <HAS_DIGIT> <P> <ALPHANUM>)+
-        )
+       )
   >
-| <#P: ("_"|"-"|"/"|"."|",") >
+
+| <SYMBOL:
+     [
+      // Monetary symbols
+      "\u0024", // Dollar
+      "\u00a2", // Cent
+      "\u00a3", // Pound Sterling
+      "\u00a4", // currency symbol
+      "\u00a5", // Yen
+      "\u0192", // Florin currency symbol (Dutch)
+      "\u20a3", // Franc
+      "\u20a4", // Lira
+      "\u20a7", // Peseta
+      "\u20ac", // Euro
+      
+      // Fractions
+      "\u00bc", // one quarter
+      "\u00bd", // one half
+      "\u00be", // three quarters
+      "\u2153", // one third
+      "\u2154", // two thirds
+      "\u2155", // one fifth
+      "\u2156", // two fifths
+      "\u2157", // three fifths
+      "\u2158", // four fifths
+      "\u2159", // one sixth
+      "\u215a", // five sixths
+      "\u215b", // one eighth
+      "\u215c", // three eighths
+      "\u215d", // five eighths
+      "\u215e", // seven eighths
+      
+      // Math symbols
+      "\u002b", // plus
+      "\u2212", // minus
+      "\u003d", // equals
+      "\u2260", // not equal
+      "\u003c", // less than
+      "\u003e", // greater than
+      "\u2264", // less than or equal
+      "\u2265", // greater than or equal
+      "\u00b1", // plus/minus
+      "\u00d7", // multiply
+      "\u2219", // period-centered bullet operator
+      "\u00b7", // mid-dot (same as period-centered bullet operator)
+      "\u007e", // tilde
+      "\u005e", // circumflex
+      "\u00b0", // degree
+      "\u00ac", // logical not
+      "\u2248", // approximately equal
+      "\u00b5", // micro
+      "\u221e", // infinity
+      "\u2202", // partial differential
+      "\u220f", // product
+      "\u03c0", // lower-case greek pi
+      "\u222b", // integral
+      "\u2126", // ohm
+      "\u221a", // radical
+      "\u2206", // increment
+      "\u2211", // summation
+      "\u25ca", // lozenge
+      "\u212e", // estimate
+      "\u2032", // single prime
+      "\u2033", // double prime
+      "\u2116", // numero
+      
+      // Other
+      "\u00ae", // registered trademark
+      "\u00a9", // copyright
+      "\u2122"  // trademark
+     ]
+  >
+    	
+| <#P: ("_"|"/"|"."|",") >
 | <#HAS_DIGIT:					  // at least one digit
     (<LETTER>|<DIGIT>)*
     <DIGIT>
     (<LETTER>|<DIGIT>)*
   >
-
+  
 | < #ALPHA: (<LETTER>)+>
 | < #LETTER:					  // unicode letters
       [

@@ -18,8 +18,8 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
   }
 
 /** Returns the next token in the stream, or null at EOS.
- * <p>The returned token's type is set to an element of 
- * StandardTokenizerConstants.tokenImage.
+ * <p>The returned token's type is set to an element of {@link
+ * StandardTokenizerConstants#tokenImage}.
  */
   final public org.apache.lucene.analysis.Token next() throws ParseException, java.io.IOException {
   Token token = null;
