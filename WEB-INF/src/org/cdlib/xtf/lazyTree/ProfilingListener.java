@@ -188,7 +188,9 @@ class ProfilingListener implements TraceListener
         
         /** Obtain a hash code so that ProfileCounts can be stored in a map */
         public int hashCode() {
-            return lineNum ^ systemId.hashCode();
+            if( systemId != null )
+                return lineNum ^ systemId.hashCode();
+            return lineNum;
         }
         
         /** Determine if this ProfileCount is the same as another */
