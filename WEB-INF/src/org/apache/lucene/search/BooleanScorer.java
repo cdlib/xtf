@@ -18,6 +18,9 @@ package org.apache.lucene.search;
 
 import java.io.IOException;
 
+import org.apache.lucene.mark.FieldSpans;
+import org.apache.lucene.mark.SpanHitCollector;
+
 final class BooleanScorer extends Scorer {
   private SubScorer scorers = null;
   private BucketTable bucketTable = new BucketTable(this);
@@ -38,11 +41,12 @@ final class BooleanScorer extends Scorer {
     public boolean done;
     public boolean required = false;
     public boolean prohibited = false;
-    public HitCollector collector;
+    public boolean skipRecording = false;
+    public SpanHitCollector collector;
     public SubScorer next;
 
     public SubScorer(Scorer scorer, boolean required, boolean prohibited,
-		     HitCollector collector, SubScorer next)
+		     SpanHitCollector collector, SubScorer next)
       throws IOException {
       this.scorer = scorer;
       this.done = !scorer.next();
@@ -108,7 +112,18 @@ final class BooleanScorer extends Scorer {
       for (SubScorer sub = scorers; sub != null; sub = sub.next) {
         Scorer scorer = sub.scorer;
         while (!sub.done && scorer.doc() < end) {
-          sub.collector.collect(scorer.doc(), scorer.score());
+	  if (sub.skipRecording)
+            sub.collector.collect(scorer.doc(), scorer.score());
+	  else {
+	    FieldSpans fieldSpans = new FieldSpans();
+	    sub.scorer.recordSpans(fieldSpans);
+	    if (fieldSpans.isEmpty()) {
+	      sub.skipRecording = true;
+              sub.collector.collect(scorer.doc(), scorer.score());
+	    }
+	    else
+	      sub.collector.collect(scorer.doc(), scorer.score(), fieldSpans);
+	  }
           sub.done = !scorer.next();
         }
         if (!sub.done) {
@@ -129,6 +144,7 @@ final class BooleanScorer extends Scorer {
   static final class Bucket {
     int	doc = -1;				  // tells if bucket is valid
     float	score;				  // incremental score
+    FieldSpans	spans;				  // matching spans for doc 
     int	bits;					  // used for bool constraints
     int	coord;					  // count of terms in score
     Bucket 	next;				  // next valid bucket
@@ -150,12 +166,12 @@ final class BooleanScorer extends Scorer {
 
     public final int size() { return SIZE; }
 
-    public HitCollector newCollector(int mask) {
+    public SpanHitCollector newCollector(int mask) {
       return new Collector(mask, this);
     }
   }
 
-  static final class Collector extends HitCollector {
+  static final class Collector extends SpanHitCollector {
     private BucketTable bucketTable;
     private int mask;
     public Collector(int mask, BucketTable bucketTable) {
@@ -183,12 +199,40 @@ final class BooleanScorer extends Scorer {
 	bucket.coord++;				  // increment coord
       }
     }
+    public final void collect(final int doc, final float score, final FieldSpans spans) {
+      final BucketTable table = bucketTable;
+      final int i = doc & BucketTable.MASK;
+      Bucket bucket = table.buckets[i];
+      if (bucket == null)
+        table.buckets[i] = bucket = new Bucket();
+      
+      if (bucket.doc != doc) {                    // invalid bucket
+        bucket.doc = doc;                         // set doc
+        bucket.score = score;                     // initialize score
+        bucket.spans = spans;                     // initialize spans
+        bucket.bits = mask;                       // initialize mask
+        bucket.coord = 1;                         // initialize coord
+
+        bucket.next = table.first;                // push onto valid list
+        table.first = bucket;
+      } else {                                    // valid bucket
+        bucket.score += score;                    // increment score
+        bucket.spans.addSpans(spans);             // add spans
+        bucket.bits |= mask;                      // add bits in mask
+        bucket.coord++;                           // increment coord
+      }
+    }
   }
 
   public boolean skipTo(int target) throws IOException {
     throw new UnsupportedOperationException();
   }
 
+  public void recordSpans(FieldSpans fieldSpans) {
+    if (current.spans != null)
+      fieldSpans.addSpans(current.spans);
+  }
+ 
   public Explanation explain(int doc) throws IOException {
     throw new UnsupportedOperationException();
   }
