@@ -133,8 +133,8 @@ public class TestableDynaXML extends DynaXML
     // For speed of transformation, we need to make it into a NodeImpl
     // tree.
     //
-    DocumentWrapper docWrapper = new DocumentWrapper(doc, sourcePath);
     Configuration config = new Configuration();
+    DocumentWrapper docWrapper = new DocumentWrapper(doc, sourcePath, config);
     config.setErrorListener( new XTFSaxonErrorListener() );
     prevAnnotatedTree = (DocumentInfo)
         TreeBuilder.build( docWrapper, null, config );
