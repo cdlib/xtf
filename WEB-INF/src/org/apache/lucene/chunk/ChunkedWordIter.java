@@ -27,7 +27,7 @@ import org.apache.lucene.mark.WordIter;
  * simply setting the 'force' parameter.)
  *
  * @author  Martin Haye
- * @version $Id: ChunkedWordIter.java,v 1.1 2005-02-08 23:19:08 mhaye Exp $
+ * @version $Id: ChunkedWordIter.java,v 1.2 2005-02-23 05:16:15 mhaye Exp $
  */
 public class ChunkedWordIter extends BasicWordIter implements Cloneable {
   
@@ -52,18 +52,25 @@ public class ChunkedWordIter extends BasicWordIter implements Cloneable {
       reseek(0);
     else if (tokNum == tokens.length - 1) {
 
-      // If we're at the very end, don't go further.
-      if (chunk.chunkNum + 1 > chunkSource.lastChunk)
-        return false;
-
-      // Don't skip past a section boundary unless requested to.
-      Chunk next = chunkSource.loadChunk(chunk.chunkNum + 1);
-      if (!force && next.tokens.length == 0)
-        return false;
-
-      // Go to the next chunk.
-      reseek(next);
-      return true;
+      while( true ) 
+      {
+          // If we're at the very end, don't go further.
+          if (chunk.chunkNum + 1 > chunkSource.lastChunk)
+            return false;
+    
+          // Don't skip past a section boundary unless requested to.
+          Chunk next = chunkSource.loadChunk(chunk.chunkNum + 1);
+          if (next.tokens.length == 0) {
+              if( !force)
+                  return false;
+              chunk = next;
+              continue;
+          }
+    
+          // Go to the next chunk.
+          reseek(next);
+          return true;
+      }
     }
 
     // Now do the normal work next() always does.
@@ -76,24 +83,30 @@ public class ChunkedWordIter extends BasicWordIter implements Cloneable {
       return false;
     else if (tokNum == 0) {
 
-      // If we're at the very beginning, don't go further.
-      if (chunk.chunkNum - 1 < chunkSource.firstChunk)
-        return false;
-
-      // Don't back over a section boundary unless requested to.
-      Chunk prev = chunkSource.loadChunk(chunk.chunkNum - 1);
-      if (!force && prev.tokens.length == 0)
-        return false;
-
-      // Go to the previous chunk.
-      reseek(prev);
-
-      // Skip to the end of it.
-      while (wordPos < chunk.maxWordPos)
-        super.next(true);
-
-      // All done.
-      return true;
+      while( true ) {
+          // If we're at the very beginning, don't go further.
+          if (chunk.chunkNum - 1 < chunkSource.firstChunk)
+            return false;
+    
+          // Don't back over a section boundary unless requested to.
+          Chunk prev = chunkSource.loadChunk(chunk.chunkNum - 1);
+          if( prev.tokens.length == 0 ) {
+              if( !force )
+                  return false;
+              chunk = prev;
+              continue;
+          }
+    
+          // Go to the previous chunk.
+          reseek(prev);
+    
+          // Skip to the end of it.
+          while (wordPos < chunk.maxWordPos)
+            super.next(true);
+    
+          // All done.
+          return true;
+      }
     }
 
     // Now do the normal work prev() always does.
