@@ -34,7 +34,7 @@
 
 <xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xtf="http://xtf.sourceforge.net">
+                xmlns:xtf="http://cdlib.org/xtf">
 
 <xsl:output method="html"
             indent="yes"
@@ -444,7 +444,7 @@
       </td>
       <td class="header-right" width="33%" height="44" align="right">
         <a href="http://www.sourceforge.net" target="{$target}">
-          <img src="{$icon.path}sflogo.php.png" border="0" height="44" alt="SourceForge"/>
+          <img src="{$icon.path}sflogo.php.png" border="0" alt="SourceForge"/>
           <img src="{$icon.path}spacer.gif" border="0" width="15"/>
         </a>
       </td>

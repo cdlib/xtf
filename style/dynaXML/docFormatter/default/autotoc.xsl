@@ -1,5 +1,5 @@
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                              xmlns:xtf="http://xtf.sourceforge.net">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                              xmlns:xtf="http://cdlib.org/xtf">
 
 <!--
    Copyright (c) 2004, Regents of the University of California
@@ -43,7 +43,7 @@
   <xsl:variable name="sum">
     <xsl:choose>
       <xsl:when test="($query != '0') and ($query != '')">
-        <xsl:value-of select="/TEI.2/@xtf:hitCount"/>
+        <xsl:value-of select="number(/TEI.2/@xtf:hitCount)"/>
       </xsl:when>
       <xsl:otherwise>0</xsl:otherwise>
     </xsl:choose>
