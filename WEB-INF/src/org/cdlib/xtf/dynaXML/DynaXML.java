@@ -62,7 +62,6 @@ import net.sf.saxon.trans.KeyManager;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.IdxConfigUtil;
-import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.util.DocTypeDeclRemover;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
@@ -550,7 +549,7 @@ public class DynaXML extends TextServlet
                                               docInfo.indexName,
                                               new File(docInfo.source) );
                     SearchTree tree = new SearchTree( docKey, lazyFile );
-                    tree.search( new QueryProcessor(), docInfo.query );
+                    tree.search( createQueryProcessor(), docInfo.query );
                     sourceDoc = tree;
                 }
                 else {

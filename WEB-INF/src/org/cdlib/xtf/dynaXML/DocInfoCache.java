@@ -154,7 +154,7 @@ class DocInfoCache extends GeneratingCache
         // Make a document containing the tokenized and untokenized versions
         // of the parameters (typically useful for queries.)
         //
-        NodeInfo paramDoc = QueryRequest.tokenizeParams( attrList );
+        NodeInfo paramDoc = TextServlet.tokenizeParams( attrList );
 
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** docReqParser input ***" );

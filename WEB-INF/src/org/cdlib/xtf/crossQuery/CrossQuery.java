@@ -46,16 +46,19 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tree.TreeBuilder;
+
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.DocHit;
-import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.textEngine.QueryProcessor;
-import org.cdlib.xtf.textEngine.QueryRequest;
+import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.textEngine.Snippet;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
 /**
@@ -195,15 +198,16 @@ public class CrossQuery extends TextServlet
                         HttpServletResponse res )
         throws Exception
     {
-        // Generate a query request.
-        QueryRequest mq = generateQueryReq( req, attribs );
+        // Generate a query request document from the queryParser stylesheet.
+        Source queryReqDoc = generateQueryReq( req, attribs );
         
         // Process it to generate result document hits
-        QueryProcessor proc = new QueryProcessor();
-        QueryResult result = proc.processReq(mq);
+        QueryProcessor proc = createQueryProcessor();
+        QueryResult result = proc.processReq( queryReqDoc, 
+                                              new File(getRealPath("")) );
         
         // Format the hits for the output document.
-        formatHits( req, res, attribs, result, mq.displayStyle );
+        formatHits( req, res, attribs, result );
         
     } // apply()
 
@@ -215,8 +219,8 @@ public class CrossQuery extends TextServlet
      * @param req        The original HTTP request
      * @param attribs    Attributes to pass to the stylesheet.
      */
-    private QueryRequest generateQueryReq( HttpServletRequest req, 
-                                           AttribList attribs )
+    private Source generateQueryReq( HttpServletRequest req, 
+                                     AttribList attribs )
         throws Exception
     {
         // Locate the query formatting stylesheet.
@@ -238,8 +242,23 @@ public class CrossQuery extends TextServlet
         // Add the special computed attributes.
         stuffSpecialAttribs( req, trans );
         
-        // Finally we can generate the query... it will do the rest of the work.
-        return new QueryRequest( trans, attribs, new File(getRealPath("")) );
+        NodeInfo    input  = tokenizeParams( attribs );
+        TreeBuilder output = new TreeBuilder();
+        
+        if( Trace.getOutputLevel() >= Trace.debug ) {
+            Trace.debug( "*** queryParser input ***" );
+            Trace.debug( XMLWriter.toString(input) );
+        }
+        
+        // Make sure errors get directed to the right place.
+        if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
+            trans.setErrorListener( new XTFSaxonErrorListener() );
+
+        // Now perform the transformation.
+        trans.transform( input, output );
+        
+        // And return the output tree.
+        return output.getCurrentRoot();
     } // generateQueryReq()
     
     /**
@@ -254,12 +273,11 @@ public class CrossQuery extends TextServlet
     private void formatHits( HttpServletRequest  req,
                              HttpServletResponse res,
                              AttribList          attribs,
-                             QueryResult         result,
-                             String              displayStyle )
+                             QueryResult         result )
         throws Exception
     {
         // Locate the display stylesheet.
-        Templates displaySheet = stylesheetCache.find( displayStyle );
+        Templates displaySheet = stylesheetCache.find( result.formatter );
         
         // Make a transformer for this specific query.
         Transformer trans = displaySheet.newTransformer();
