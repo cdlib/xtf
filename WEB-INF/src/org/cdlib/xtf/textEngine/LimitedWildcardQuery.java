@@ -104,7 +104,6 @@ public class LimitedWildcardQuery extends WildcardQuery
     /** Takes care of enumerating all matching terms */
     class LimitedWildcardTermEnum extends WildcardTermEnum
     {
-        private Set  stopWords;
         private Term curTerm;
         
         LimitedWildcardTermEnum( IndexReader reader, Term term )
@@ -142,6 +141,9 @@ public class LimitedWildcardQuery extends WildcardQuery
                 // Skip n-grams containing stop words.
                 if( NgramQueryRewriter.isNgram(stopWords, curTerm.text()) )
                     continue;
+                
+                // This is the term we want.
+                break;
             }
             
             nTerms++;
@@ -152,8 +154,6 @@ public class LimitedWildcardQuery extends WildcardQuery
                         termLimit + ")");
             }
             termMap.put( curTerm );
-            
-            System.out.println( "Wildcard term: " + curTerm );
             
             return true;
         }
