@@ -185,7 +185,7 @@ public class QueryRequest
         this.baseDir = baseDir;
         
         if( Trace.getOutputLevel() >= Trace.debug ) {
-            Trace.debug( "*** queryParser output ***" );
+            Trace.debug( "*** query request ***" );
             Trace.debug( XMLWriter.toString(queryDoc) );
         }
 
