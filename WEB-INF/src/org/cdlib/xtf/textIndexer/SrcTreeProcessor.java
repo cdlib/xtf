@@ -134,8 +134,9 @@ public class SrcTreeProcessor
         NamePool.setDefaultNamePool( new RecordingNamePool() );
 
     // Make a transformer for the docSelector stylesheet.
-    Templates templates = stylesheetCache.find( 
-                                        cfgInfo.indexInfo.docSelectorPath );
+    File docSelFile = Path.resolveRelOrAbs(new File(cfgInfo.xtfHomePath),
+                                  cfgInfo.indexInfo.docSelectorPath);
+    Templates templates = stylesheetCache.find( docSelFile.getCanonicalPath() );
     docSelector = templates.newTransformer();
   
     // Give some feedback.
