@@ -182,6 +182,13 @@ public class StylesheetCache extends GeneratingCache
         public Source resolve( String href, String base )
             throws TransformerException
         {
+    
+            if( href.indexOf(' ') >= 0 )
+               href = href.replaceAll( " ", "%20" );
+
+            if( base.indexOf(' ') >= 0 )
+                base = base.replaceAll( " ", "%20" );
+             
             // First, do the real resolution.
             Source src = realResolver.resolve( href, base );
 
