@@ -48,88 +48,105 @@
   <xsl:param name="text-join"/>
   <xsl:param name="text-prox"/>
   <xsl:param name="text-exclude"/>
+  <xsl:param name="text-max"/>
   
   <!-- Dublin Core Metadata Elements -->
   <xsl:param name="title"/>
   <xsl:param name="title-join"/>
   <xsl:param name="title-prox"/>
   <xsl:param name="title-exclude"/>
+  <xsl:param name="title-max"/>
   
   <xsl:param name="creator"/>
   <xsl:param name="creator-join"/>
   <xsl:param name="creator-prox"/>
   <xsl:param name="creator-exclude"/>
+  <xsl:param name="creator-max"/>
   
   <xsl:param name="subject"/>
   <xsl:param name="subject-join"/>
   <xsl:param name="subject-prox"/>
   <xsl:param name="subject-exclude"/>
+  <xsl:param name="subject-max"/>
   
   <xsl:param name="description"/>
   <xsl:param name="description-join"/>
   <xsl:param name="description-prox"/>
   <xsl:param name="description-exclude"/>
+  <xsl:param name="description-max"/>
 
   <xsl:param name="publisher"/>
   <xsl:param name="publisher-join"/>
   <xsl:param name="publisher-prox"/>
   <xsl:param name="publisher-exclude"/>
+  <xsl:param name="publisher-max"/>
 
   <xsl:param name="contributor"/>
   <xsl:param name="contributor-join"/>
   <xsl:param name="contributor-prox"/>
   <xsl:param name="contributor-exclude"/>
+  <xsl:param name="contributor-max"/>
 
   <xsl:param name="date"/>
   <xsl:param name="date-join"/>
   <xsl:param name="date-prox"/>
   <xsl:param name="date-exclude"/>
+  <xsl:param name="date-max"/>
 
   <xsl:param name="type"/>
   <xsl:param name="type-join"/>
   <xsl:param name="type-prox"/>
   <xsl:param name="type-exclude"/>
+  <xsl:param name="type-max"/>
 
   <xsl:param name="format"/>
   <xsl:param name="format-join"/>
   <xsl:param name="format-prox"/>
   <xsl:param name="format-exclude"/>
+  <xsl:param name="format-max"/>
 
   <xsl:param name="identifier"/>
   <xsl:param name="identifier-join"/>
   <xsl:param name="identifier-prox"/>
   <xsl:param name="identifier-exclude"/>
+  <xsl:param name="identifier-max"/>
 
   <xsl:param name="source"/>
   <xsl:param name="source-join"/>
   <xsl:param name="source-prox"/>
   <xsl:param name="source-exclude"/>
+  <xsl:param name="source-max"/>
 
   <xsl:param name="language"/>
   <xsl:param name="language-join"/>
   <xsl:param name="language-prox"/>
   <xsl:param name="language-exclude"/>
+  <xsl:param name="language-max"/>
  
   <xsl:param name="relation"/>
   <xsl:param name="relation-join"/>
   <xsl:param name="relation-prox"/>
   <xsl:param name="relation-exclude"/>
+  <xsl:param name="relation-max"/>
  
   <xsl:param name="coverage"/>
   <xsl:param name="coverage-join"/>
   <xsl:param name="coverage-prox"/>
   <xsl:param name="coverage-exclude"/>
+  <xsl:param name="coverage-max"/>
   
   <xsl:param name="rights"/>
   <xsl:param name="rights-join"/>
   <xsl:param name="rights-prox"/>
   <xsl:param name="rights-exclude"/>
+  <xsl:param name="rights-max"/>
 
   <!-- Special XTF Metadata Field based on Date -->
   <xsl:param name="year"/>
   <xsl:param name="year-join"/>
   <xsl:param name="year-prox"/>
   <xsl:param name="year-exclude"/>
+  <xsl:param name="year-max"/>
 
   <!-- Structural Search -->
   <xsl:param name="sectionType"/>
@@ -161,7 +178,7 @@
   
   <xsl:param name="queryString">
     <xsl:call-template name="queryString">
-      <xsl:with-param name="textParams" select="'text text-join text-exclude text-prox title title-join title-prox title-exclude creator creator-join creator-prox creator-exclude subject subject-join subject-prox subject-exclude description description-join description-prox description-exclude publisher publisher-join publisher-prox publisher-exclude contributor contributor-join contributor-prox contributor-exclude date date-join date-prox date-exclude type type-join type-prox type-exclude format format-join format-prox format-exclude identifier identifier-join identifier-prox identifier-exclude source source-join source-prox source-exclude language language-join language-prox language-exclude relation relation-join relation-prox relation-exclude coverage coverage-join coverage-prox coverage-exclude rights rights-join rights-prox rights-exclude year year-join year-prox year-exclude sectionType rmode '"/>
+      <xsl:with-param name="textParams" select="'text text-join text-prox text-exclude text-max title title-join title-prox title-exclude title-max creator creator-join creator-prox creator-exclude creator-max subject subject-join subject-prox subject-exclude subject-max description description-join description-prox description-exclude description-max publisher publisher-join publisher-prox publisher-exclude publisher-max contributor contributor-join contributor-prox contributor-exclude contributor-max date date-join date-prox date-exclude date-max type type-join type-prox type-exclude type-max format format-join format-prox format-exclude format-max identifier identifier-join identifier-prox identifier-exclude identifier-max source source-join source-prox source-exclude source-max language language-join language-prox language-exclude language-max relation relation-join relation-prox relation-exclude relation-max coverage coverage-join coverage-prox coverage-exclude coverage-max rights rights-join rights-prox rights-exclude rights-max year year-join year-prox year-exclude year-max sectionType rmode '"/>
       <xsl:with-param name="count" select="1"/>
     </xsl:call-template>
   </xsl:param>
@@ -188,6 +205,13 @@
           <xsl:text>text-join=</xsl:text>
           <xsl:value-of select="$text-join"/>
         </xsl:when>
+        <xsl:when test="$param = 'text-prox' and $text-prox">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>text-prox=</xsl:text>
+          <xsl:value-of select="$text-prox"/>
+        </xsl:when>
         <xsl:when test="$param = 'text-exclude' and $text-exclude">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -195,12 +219,12 @@
           <xsl:text>text-exclude=</xsl:text>
           <xsl:value-of select="$text-exclude"/>
         </xsl:when>
-        <xsl:when test="$param = 'text-prox' and $text-prox">
+        <xsl:when test="$param = 'text-max' and $text-max">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
           </xsl:if>
-          <xsl:text>text-prox=</xsl:text>
-          <xsl:value-of select="$text-prox"/>
+          <xsl:text>text-max=</xsl:text>
+          <xsl:value-of select="$text-max"/>
         </xsl:when>
         <xsl:when test="$param = 'title' and $title">
           <xsl:if test="$count > 1">
@@ -230,6 +254,13 @@
           <xsl:text>title-exclude=</xsl:text>
           <xsl:value-of select="$title-exclude"/>
         </xsl:when>
+        <xsl:when test="$param = 'title-max' and $title-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>title-max=</xsl:text>
+          <xsl:value-of select="$title-max"/>
+        </xsl:when>
         <xsl:when test="$param = 'creator' and $creator">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -257,6 +288,13 @@
           </xsl:if>
           <xsl:text>creator-exclude=</xsl:text>
           <xsl:value-of select="$creator-exclude"/>
+        </xsl:when>
+        <xsl:when test="$param = 'creator-max' and $creator-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>creator-max=</xsl:text>
+          <xsl:value-of select="$creator-max"/>
         </xsl:when>
         <xsl:when test="$param = 'subject' and $subject">
           <xsl:if test="$count > 1">
@@ -286,6 +324,13 @@
           <xsl:text>subject-exclude=</xsl:text>
           <xsl:value-of select="$subject-exclude"/>
         </xsl:when>
+        <xsl:when test="$param = 'subject-max' and $subject-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>subject-max=</xsl:text>
+          <xsl:value-of select="$subject-max"/>
+        </xsl:when>
         <xsl:when test="$param = 'description' and $description">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -313,6 +358,13 @@
           </xsl:if>
           <xsl:text>description-exclude=</xsl:text>
           <xsl:value-of select="$description-exclude"/>
+        </xsl:when>
+        <xsl:when test="$param = 'description-max' and $description-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>description-max=</xsl:text>
+          <xsl:value-of select="$description-max"/>
         </xsl:when>
         <xsl:when test="$param = 'publisher' and $publisher">
           <xsl:if test="$count > 1">
@@ -342,6 +394,13 @@
           <xsl:text>publisher-exclude=</xsl:text>
           <xsl:value-of select="$publisher-exclude"/>
         </xsl:when>
+        <xsl:when test="$param = 'publisher-max' and $publisher-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>publisher-max=</xsl:text>
+          <xsl:value-of select="$publisher-max"/>
+        </xsl:when>
         <xsl:when test="$param = 'contributor' and $contributor">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -369,6 +428,13 @@
           </xsl:if>
           <xsl:text>contributor-exclude=</xsl:text>
           <xsl:value-of select="$contributor-exclude"/>
+        </xsl:when>
+        <xsl:when test="$param = 'contributor-max' and $contributor-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>contributor-max=</xsl:text>
+          <xsl:value-of select="$contributor-max"/>
         </xsl:when>
         <xsl:when test="$param = 'date' and $date">
           <xsl:if test="$count > 1">
@@ -398,6 +464,13 @@
           <xsl:text>date-exclude=</xsl:text>
           <xsl:value-of select="$date-exclude"/>
         </xsl:when>
+        <xsl:when test="$param = 'date-max' and $date-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>date-max=</xsl:text>
+          <xsl:value-of select="$date-max"/>
+        </xsl:when>
         <xsl:when test="$param = 'type' and $type">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -425,6 +498,13 @@
           </xsl:if>
           <xsl:text>type-exclude=</xsl:text>
           <xsl:value-of select="$type-exclude"/>
+        </xsl:when>
+        <xsl:when test="$param = 'type-max' and $type-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>type-max=</xsl:text>
+          <xsl:value-of select="$type-max"/>
         </xsl:when>
         <xsl:when test="$param = 'format' and $format">
           <xsl:if test="$count > 1">
@@ -454,6 +534,13 @@
           <xsl:text>format-exclude=</xsl:text>
           <xsl:value-of select="$format-exclude"/>
         </xsl:when>
+        <xsl:when test="$param = 'format-max' and $format-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>format-max=</xsl:text>
+          <xsl:value-of select="$format-max"/>
+        </xsl:when>
         <xsl:when test="$param = 'identifier' and $identifier">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -481,6 +568,13 @@
           </xsl:if>
           <xsl:text>identifier-exclude=</xsl:text>
           <xsl:value-of select="$identifier-exclude"/>
+        </xsl:when>
+        <xsl:when test="$param = 'identifier-max' and $identifier-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>identifier-max=</xsl:text>
+          <xsl:value-of select="$identifier-max"/>
         </xsl:when>
         <xsl:when test="$param = 'source' and $source">
           <xsl:if test="$count > 1">
@@ -510,6 +604,13 @@
           <xsl:text>source-exclude=</xsl:text>
           <xsl:value-of select="$source-exclude"/>
         </xsl:when>
+        <xsl:when test="$param = 'source-max' and $source-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>source-max=</xsl:text>
+          <xsl:value-of select="$source-max"/>
+        </xsl:when>
         <xsl:when test="$param = 'language' and $language">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -537,6 +638,13 @@
           </xsl:if>
           <xsl:text>language-exclude=</xsl:text>
           <xsl:value-of select="$language-exclude"/>
+        </xsl:when>
+        <xsl:when test="$param = 'language-max' and $language-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>language-max=</xsl:text>
+          <xsl:value-of select="$language-max"/>
         </xsl:when>
         <xsl:when test="$param = 'relation' and $relation">
           <xsl:if test="$count > 1">
@@ -566,6 +674,13 @@
           <xsl:text>relation-exclude=</xsl:text>
           <xsl:value-of select="$relation-exclude"/>
         </xsl:when>
+        <xsl:when test="$param = 'relation-max' and $relation-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>relation-max=</xsl:text>
+          <xsl:value-of select="$relation-max"/>
+        </xsl:when>
         <xsl:when test="$param = 'coverage' and $coverage">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -593,6 +708,13 @@
           </xsl:if>
           <xsl:text>coverage-exclude=</xsl:text>
           <xsl:value-of select="$coverage-exclude"/>
+        </xsl:when>
+        <xsl:when test="$param = 'coverage-max' and $coverage-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>coverage-max=</xsl:text>
+          <xsl:value-of select="$coverage-max"/>
         </xsl:when>
         <xsl:when test="$param = 'rights' and $rights">
           <xsl:if test="$count > 1">
@@ -622,6 +744,13 @@
           <xsl:text>rights-exclude=</xsl:text>
           <xsl:value-of select="$rights-exclude"/>
         </xsl:when>
+        <xsl:when test="$param = 'rights-max' and $rights-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>rights-max=</xsl:text>
+          <xsl:value-of select="$rights-max"/>
+        </xsl:when>
         <xsl:when test="$param = 'year' and $year">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -649,6 +778,13 @@
           </xsl:if>
           <xsl:text>year-exclude=</xsl:text>
           <xsl:value-of select="$year-exclude"/>
+        </xsl:when>
+        <xsl:when test="$param = 'year-max' and $year-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>year-max=</xsl:text>
+          <xsl:value-of select="$year-max"/>
         </xsl:when>
         <xsl:when test="$param = 'sectionType' and $sectionType">
           <xsl:if test="$count > 1">
