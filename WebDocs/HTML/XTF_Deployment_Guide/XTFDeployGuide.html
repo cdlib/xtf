@@ -256,32 +256,39 @@
     <p align="left">Receiving a <b>Document Not Found </b>error indicates that 
       the dynaXML servlet is running, but that it cannot find any documents (which 
       makes sense, since we haven't installed the <b>Sample Document Library</b> 
-      yet.) If you get any other type of error, including <b>File Not Found</b> 
-      or<b> Page Not Found</b>, then the dynaXML servlet is not properly installed, 
-      and you should go back and double-check that you have correctly performed 
-      the steps described in the previous section..</p>
+      yet.) Accessing this URL also causes the servlet container to unpack the 
+      web archive file, creating an <span class="Code">xtf</span> sub-directory 
+      below the container's <span class="Code">webapps</span> directory, which 
+      in turn automatically installs the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> 
+      servlets, the <b><i>textIndexer</i></b> tool, and a sample configuration 
+      that allows you to work with the default Sample Document Library. </p>
+    <p align="left">If you get any other type of error, including <b>File Not 
+      Found</b> or<b> Page Not Found</b>, then the dynaXML servlet is not properly 
+      installed, and you should go back and double-check that you have correctly 
+      performed the steps described in the previous section.</p>
     
     <p class="Heading2">Install the Sample Document Library<a name="QuickInstallSamples"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     Once the dynaXML servlet is up and running, its time to install the sample 
     document library. To do so, perform the following steps:
     
-  <div class="IndentL"> 
-    <ul>
-      <li> Download the <b>sample</b> package (<span class="Code">xtf-sample.zip</span>) 
-        from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>. <br>
-        <br>
-      </li>
-      <li> Switch to the <span class="Code"><span class="MacroCode">servlet-container-directory</span>/webapps/xtf</span> 
-        directory and extract the Sample Document Library using your favorite 
-        ZIP file utility. <br>
-        <br>
-      </li>
-      <li> Copy the<span class="Code"> sample/data </span>sub-directory up to 
-        the<span class="Code"> XTF_HOME </span>directory so that the sample source 
-        documents are located where the default XTF configuration expects to see 
-        it. </li>
-    </ul>
+    <div class="IndentL"> 
+      <ul>
+        <li> Download the <b>sample</b> package (<span class="Code">xtf-sample.zip</span>) 
+          from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>. 
+          <br>
+          <br>
+        </li>
+        <li> Switch to the<span class="Code"> <span class="MacroCode">servlet-container-directory</span>/webapps/xtf 
+          </span>directory and extract the Sample Document Library using your 
+          favorite ZIP file utility. <br>
+          <br>
+        </li>
+        <li> Copy the<span class="Code"> sample/data </span>sub-directory up to 
+          the<span class="Code"><span class="MacroCode"><span class="Code"> </span>servlet-container-directory</span>/webapps/xtf 
+          </span>directory so that the sample source documents are located where 
+          the default XTF configuration expects to see it. </li>
+      </ul>
   </div>
 
     <p class="Heading2"> Verify that Document Retrieval Works<a name="QuickVerifyDocRet"></a> 
@@ -299,13 +306,6 @@
     <br>
     <div align="center"> <img src="Art/Book.jpg"> <br>
       Figure 2: Result of Document Retrieval with <i><b>dynaXML</b></i> </div>
-    <br>
-    Accessing this URL should cause the servlet container to unpack the web archive 
-    file, creating an <span class="Code">xtf</span> sub-directory below the container's 
-    <span class="Code">webapps</span> directory. This automatically installs the 
-    <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, the <b><i>textIndexer</i></b> 
-    tool, a sample document library, and a sample configuration that allows you 
-    to index, search for, and retrieve documents from the the sample library. 
     <br>
     <br>
     To play with the sample setup, simply follow the steps outlined in the following 
@@ -1583,7 +1583,7 @@
     Request Parser</b> to generate External <span class="Code">&lt;auth&gt;</span> 
     tags, see the <a href="../XTF_Programming_Guide/XTFProgGuide.html">XTF Programming 
     Guide</a>. </div>
-  <!-- Authentication --> </div>
+  <!-- Authentication --> 
 <!-- BaseStyle -->
 
   </body>
