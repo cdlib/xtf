@@ -67,12 +67,14 @@ public class StructuredFileProxy implements StructuredStore
   }
   
   public void close() throws IOException {
-    realStore().close();
+    if( realStore != null )
+        realStore.close();
     realStore = null;
   }
   
   public void delete() throws IOException {
-    realStore().delete();
+    if( realStore != null )
+        realStore.delete();
     realStore = null;
   }
   
