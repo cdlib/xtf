@@ -279,13 +279,17 @@ public class QueryProcessor
         //
         int nFound = docHitQueue.size();
         DocHit[] hitArray = new DocHit[nFound];
-        for( int i = 0; i < nFound; i++ )
-            hitArray[nFound - i - 1] = (DocHit) docHitQueue.pop();
+        float maxDocScore = 0.0f;
+        for( int i = 0; i < nFound; i++ ) {
+            int index = nFound - i - 1;
+            hitArray[index] = (DocHit) docHitQueue.pop();
+            maxDocScore = Math.max( maxDocScore, hitArray[index].score );
+        }
 
         // Calculate the document score normalization factor.
         float docScoreNorm = 1.0f;
-        if( skip < nFound && nFound > 0 )  
-            docScoreNorm = 1.0f / hitArray[0].score;
+        if( skip < nFound && nFound > 0 && maxDocScore > 0.0f )  
+            docScoreNorm = 1.0f / maxDocScore;
 
         // Calculate the chunk score norm factor as well.
         float chunkScoreNorm = 1.0f;
@@ -335,11 +339,24 @@ public class QueryProcessor
         // is added so that documents which match in all other respects
         // will come out ordered by score.
         //
+        // Each name can be optionally prefixed with "-" to sort in reverse,
+        // or "+" to sort in normal order (but "+" is unnecessary, since
+        // normal order is the default.)
+        //
         SortField[] fields = new SortField[fieldNames.size() + 1];
         for( int i = 0; i < fieldNames.size(); i++ ) {
             String name = (String) fieldNames.elementAt(i);
-            fields[i] = new SortField( (String) fieldNames.elementAt(i), 
-                                       sparseStringComparator );
+            boolean reverse = false;
+            if( name.startsWith("-") ) {
+                reverse = true;
+                name = name.substring( 1 );
+            }
+            else if( name.startsWith("+") ) {
+                reverse = false;
+                name = name.substring( 1 );
+            }
+            
+            fields[i] = new SortField( name, sparseStringComparator, reverse );
         }
         fields[fieldNames.size()] = SortField.FIELD_SCORE;
         
