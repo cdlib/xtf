@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="3" startDoc="1" endDoc="3">
+   <docHit file="doc3.pdf">
+      <snippet>OF CONTENTS Page 1 of 1XTF Deployment Guide 1/27/2005file://C:\UCOP\<hit>
+            <term>xtf</term>
+         </hit>- sf\</snippet>
+      <snippet>WebDocs\HTML\<hit>
+            <term>XTF</term>
+         </hit>_Deployment_Guide\XTFDeployGuide.html</snippet>
+      <snippet>Run-Time Environment Install the <hit>
+            <term>XTF</term>
+         </hit> Package Verify that Document Retrieval (</snippet>
+   </docHit>
+   <docHit file="doc1.html">
+      <snippet>
+         <hit>
+            <term>Emergency</term>
+         </hit> Broadcasting System Test This</snippet>
+      <snippet>is a test of the <hit>
+            <term>emergency</term>
+         </hit> broadcasting system. Anything you say can and will be</snippet>
+      <snippet>of law. If this had been a real <hit>
+            <term>emergency</term>
+         </hit> you would have been told where to go</snippet>
+   </docHit>
+   <docHit file="doc5.txt">
+      <snippet>license. You may obtain more information and the entire <hit>
+            <term>XTF</term>
+         </hit> distribution by</snippet>
+      <snippet>visiting: http://www.cdlib.org/<hit>
+            <term>xtf</term>
+         </hit> Copyright (c) 2004, Regents of the University</snippet>
+   </docHit>
+</crossQueryResult>

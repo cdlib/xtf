@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<textIndexer-config>
+
+  <index name="all">
+       <db path="./IndexDB"/>
+       <src path="./data"/>
+       <docSelector path="../Common/docSelector.xsl"/>
+       <chunk size="40" overlap="20"/>
+  </index>
+
+</textIndexer-config>
