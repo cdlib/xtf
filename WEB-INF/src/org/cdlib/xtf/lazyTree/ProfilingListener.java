@@ -24,21 +24,48 @@ public class ProfilingListener implements TraceListener
 {
     /** 
      * Stack of instructions, used to keep track of what XSLT instruction is
-     * being processed.
+     * being processed. Must be thread-local, since the same stylesheet may
+     * be in use by multiple threads at one time.
      */
-    private LinkedList   instructionStack = new LinkedList();
+    private ThreadLocal tlInstructionStack = new ThreadLocal();
     
     /** Dummy used for counting nodes when no instruction is specified */
-    private ProfileCount emptyInstr = new ProfileCount();
+    private static final ProfileCount emptyInstr = new ProfileCount();
 
-    /** Keeps a count of how many nodes are accessed by each instruction. */
-    private HashMap      countMap = new HashMap();
+    /** 
+     * Keeps a count of how many nodes are accessed by each instruction. 
+     * Must be thread-local, since the same stylesheet may be in use by
+     * multiple threads at one time.
+     */
+    private ThreadLocal tlCountMap = new ThreadLocal();
     
     /** Unused */
     public void open() { }
 
     /** Unused */
     public void close() { }
+    
+    /** Get a thread-local instruction stack */
+    private LinkedList getInstructionStack()
+    {
+        LinkedList stack = (LinkedList) tlInstructionStack.get();
+        if( stack == null ) {
+            stack = new LinkedList();
+            tlInstructionStack.set( stack );
+        }
+        return stack;
+    } // getInstructionStack()
+
+    /** Get a thread-local count map */
+    private HashMap getCountMap()
+    {
+        HashMap map = (HashMap) tlCountMap.get();
+        if( map == null ) {
+            map = new HashMap();
+            tlCountMap.set( map );
+        }
+        return map;
+    } // getCountMap()
 
     /**
      * Record the instruction being entered, so that subsequent counts can
@@ -46,14 +73,15 @@ public class ProfilingListener implements TraceListener
      */
     public void enter(InstructionInfo instruction, XPathContext context)
     {
-        if( false ) {
+        LinkedList instructionStack = getInstructionStack();
+        /*
             for( int i = 0; i < instructionStack.size(); i++ )
                 Trace.debug( "  " );
             String s = instruction.getSystemId();
             s = s.substring( s.lastIndexOf('/') + 1 );
             Trace.debug( s + ":" + instruction.getLineNumber() );
         }
-        
+        */
         instructionStack.addLast( new ProfileCount(instruction.getSystemId(),
                                                    instruction.getLineNumber()) );
     }
@@ -77,6 +105,9 @@ public class ProfilingListener implements TraceListener
      */
     public void bumpCount( int nodeNum )
     {
+        LinkedList instructionStack = getInstructionStack();
+        HashMap    countMap         = getCountMap();
+        
         ProfileCount instr;
         if( instructionStack.isEmpty() )
             instr = emptyInstr;
@@ -96,10 +127,15 @@ public class ProfilingListener implements TraceListener
     } // bumpCount()
 
     /**
-     * Gets a list of all the counts, sorted by ascending count.
+     * Gets a list of all the counts, sorted by ascending count. The act of
+     * getting the counts clears out the table, so that a fresh profile can
+     * be made of the next run.
      */
     public ProfileCount[] getCounts()
     {
+        HashMap countMap = getCountMap();
+        
+        // Make a list of all the values.
         ArrayList list = new ArrayList( countMap.values() );
         Collections.sort( list, new Comparator() {
             public int compare( Object o1, Object o2 ) {
@@ -113,15 +149,21 @@ public class ProfilingListener implements TraceListener
             }
         } );
         
+        // Sort the list
         ProfileCount[] array = new ProfileCount[ list.size() ];
         list.toArray( array );
+        
+        // Clear out the map for the next profiling run.
+        countMap.clear();
+        
+        // And we're done.
         return array;
     } // getCounts()
 
     /**
      * Simple data structure to keep track of counts.
      */
-    public class ProfileCount
+    public static class ProfileCount
     {
         /** ID representing the XSLT file of the instruction */
         public String  systemId;
