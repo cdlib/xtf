@@ -171,11 +171,12 @@
 </xsl:template>
 
 
-<!-- For a TermLimit exception, the message is relevant. -->
+<!-- For a TermLimit exception, the message contains the first 50 matches. -->
 <xsl:template match="TermLimit">
     <h1>Term limit exceeded</h1>
     <p>Your query matched too many terms. Try using a smaller range, 
        eliminating wildcards, or making them more specific.</p>
+    <xsl:apply-templates/>
 </xsl:template>
 
 
