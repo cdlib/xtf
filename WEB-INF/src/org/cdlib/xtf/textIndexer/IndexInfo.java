@@ -198,6 +198,37 @@ public class IndexInfo
   } //public IndexInfo()
   
   
+  //////////////////////////////////////////////////////////////////////////// 
+  
+  /**
+   * Alternate constructor. <br><br>
+   * 
+   * Initializes the fields needed to use InputStream-based indexing (that is,
+   * all fields except subDir, sourcePath, and docSelectorPath.)
+   * 
+   * Uses default values for chunk size/overlap, and for the stop word list.
+   * After construction, these may of course be altered if desired.
+   */
+  public IndexInfo( String indexName, String indexPath )
+  
+  {
+    // Record the input parameters
+    this.indexName = indexName;
+    this.indexPath = indexPath;
+    
+    // Create the chunk attribute array.
+    chunkAtt = new int[2];
+    
+    // Set the default chunk size and overlap.
+    chunkAtt[chunkSize] = defaultChunkSize;
+    chunkAtt[chunkOvlp] = defaultChunkOvlp;
+    
+    // Use a default stop-word list.
+    stopWords = defaultStopWords;
+      
+  } //public IndexInfo()
+  
+  
   ////////////////////////////////////////////////////////////////////////////    
   
   /** Return the size of a text chunk for the current index. <br><br>
