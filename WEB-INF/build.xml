@@ -16,6 +16,7 @@
   <property name="servlet" location="${lib}/servlet.jar"/>
   <property name="pdfbox"  location="${lib}/PDFBox-0.6.7a.jar"/>
   <property name="log4j"   location="${lib}/log4j-1.2.9.jar"/>
+  <property name="tidy"    location="${lib}/Tidy.jar"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -31,7 +32,7 @@
     <javac target="1.4" 
            source="1.4" 
            debug="true"
-           classpath="${saxon}:${lucene}:${servlet}:${pdfbox}:${log4j}"
+           classpath="${saxon}:${lucene}:${servlet}:${pdfbox}:${log4j}:${tidy}"
            srcdir="${src}" 
            excludes="**/.sf/**/*,**/.cdl/**/*"
            destdir="${build}"/>
@@ -142,7 +143,7 @@
              private="true" 
              breakiterator="yes"
              source="1.4"
-             classpath="${lucene}:${saxon}:${servlet}:${pdfbox}:${log4j}"
+             classpath="${lucene}:${saxon}:${servlet}:${pdfbox}:${log4j}:${tidy}"
              sourcepath="${src}"
     		 noqualifier="all">
       <tag name=".notes" description="Notes:"/>
