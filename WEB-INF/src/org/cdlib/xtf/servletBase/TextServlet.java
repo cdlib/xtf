@@ -332,11 +332,15 @@ public abstract class TextServlet extends HttpServlet
         Enumeration p = req.getParameterNames();
         while( p.hasMoreElements() ) {
             String name = (String) p.nextElement();
+            String value = req.getParameter( name );
+            
+            // Skip parameters with empty values.
+            if( value == null || value.length() == 0 )
+                continue;
             
             // Deal with screwy URL encoding of Unicode strings on
             // many browsers. Someday we'll do this more robustly.
             //
-            String value = req.getParameter( name );
             if( value.indexOf('\u00c2') >= 0 ||
                 value.indexOf('\u00c3') >= 0) 
             {
@@ -365,6 +369,8 @@ public abstract class TextServlet extends HttpServlet
     {
         for( Iterator i = list.iterator(); i.hasNext(); ) {
             Attrib a = (Attrib) i.next();
+            if( a.value == null || a.value.length() == 0 )
+                continue;
             trans.setParameter( a.key, new StringValue(a.value) );
         }
     } // stuffAttribs()
@@ -382,7 +388,9 @@ public abstract class TextServlet extends HttpServlet
         // can call itself in new URLs by simply using this path. Some servlet
         // containers include the parameters, so strip those if present.
         //
-        String uri = req.getRequestURI();
+        String uri = req.getRequestURL().toString();
+        if( !uri.startsWith("http") )
+            uri = req.getRequestURI();
         if( uri.indexOf('?') >= 0 )
             uri = uri.substring(0, uri.indexOf('?') );
         trans.setParameter( "servlet.path", new StringValue(uri) );
@@ -571,7 +579,7 @@ public abstract class TextServlet extends HttpServlet
      * Creates a document containing tokenized and untokenized versions of each
      * parameter.
      */
-    public static NodeInfo tokenizeParams( AttribList atts )
+    public NodeInfo tokenizeParams( AttribList atts )
     {
         XMLFormatter fmt = new XMLFormatter();
         
@@ -591,6 +599,12 @@ public abstract class TextServlet extends HttpServlet
                 continue;
             if( att.key.equals("raw") )
                 continue;
+            
+            // Don't tokenize empty attributes.
+            if( att.value == null || att.value.length() == 0 )
+                continue;
+            
+            // Got one. Let's tokenize it.
             addParam( fmt, att.key, att.value );
         }
         
@@ -609,8 +623,7 @@ public abstract class TextServlet extends HttpServlet
      * @param name Name of the URL parameter
      * @param val String value of the URL parameter
      */
-    private static void addParam( XMLFormatter fmt,
-                                  String name, String val )
+    protected void addParam( XMLFormatter fmt, String name, String val )
     {
         // Create the parameter node and assign its name and value.
         fmt.beginTag( "param" );
@@ -618,7 +631,7 @@ public abstract class TextServlet extends HttpServlet
         fmt.attr( "value", val );
         
         // Now tokenize it.
-        tokenize( fmt, val );
+        tokenize( fmt, name, val );
         
         // All done.
         fmt.endTag();
@@ -629,9 +642,10 @@ public abstract class TextServlet extends HttpServlet
      * Break 'val' up into its component tokens and add elements for them.
      * 
      * @param fmt formatter to add to
+     * @param name Name of the URL parameter
      * @param val value to tokenize
      */
-    private static void tokenize( XMLFormatter fmt, String val )
+    protected void tokenize( XMLFormatter fmt, String name, String val )
     {
         char[] chars   = val.toCharArray();
         char   inQuote = 0;
@@ -680,15 +694,13 @@ public abstract class TextServlet extends HttpServlet
      * @param fmt formatter to add to
      * @param str The token value
      */
-    private static void addTokens( char         inQuote,  
-                                   XMLFormatter fmt,
-                                   String       str )
+    protected void addTokens( char inQuote, XMLFormatter fmt, String str )
     {
         // If this is a quoted phrase, tokenize the words within it.
         if( inQuote != 0 ) {
             fmt.beginTag( "phrase" );
             fmt.attr( "value", str );
-            tokenize( fmt, str );
+            tokenize( fmt, "phrase", str );
             fmt.endTag();
             return;
         }
@@ -731,9 +743,7 @@ public abstract class TextServlet extends HttpServlet
      * @param str The token value
      * @param isWord true if  token is a real word, false if only punctuation
      */
-    private static void addToken( XMLFormatter fmt,
-                                  String str,
-                                  boolean isWord )
+    protected void addToken( XMLFormatter fmt, String str, boolean isWord )
     {
         // Remove spaces. If nothing is left, don't bother making a token.
         str = str.trim();
@@ -756,7 +766,7 @@ public abstract class TextServlet extends HttpServlet
      * occur in real text, so the standard tokenizer will keep them part of
      * words. Resurrect using {@link #restoreWildcards(String)}.
      */
-    private static String saveWildcards( String s )
+    protected static String saveWildcards( String s )
     {
         // Early out if no wildcards found.
         if( s.indexOf('*') < 0 && s.indexOf('?') < 0 )
@@ -772,7 +782,7 @@ public abstract class TextServlet extends HttpServlet
     /**
      * Restores wildcards saved by {@link #saveWildcards(String)}.
      */
-    private static String restoreWildcards( String s )
+    protected static String restoreWildcards( String s )
     {
         // Early out if no wildcards found.
         if( s.indexOf(SAVE_WILD_STAR) < 0 && s.indexOf(SAVE_WILD_QMARK) < 0 )
