@@ -139,6 +139,9 @@
     <!-- Need to build METS abd display mechanisms for preview modes -->
 
     <xsl:choose>
+      <xsl:when test="$docId='bpg-checker'">
+        <style path="style/dynaXML/docFormatter/bpg/bpg.xsl"/>
+      </xsl:when>
       <xsl:when test="$docId='default-preview'">
         <style path="style/dynaXML/docFormatter/default/dynaxml.xsl"/>
       </xsl:when>
@@ -334,6 +337,9 @@
 
     <xsl:choose>
       <xsl:when test="contains($docId, 'preview')">
+        <auth access="allow" type="all"/>
+      </xsl:when>
+      <xsl:when test="contains($docId, 'bpg-checker')">
         <auth access="allow" type="all"/>
       </xsl:when>
       <xsl:otherwise>
