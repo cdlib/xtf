@@ -117,15 +117,18 @@ public class QueryRequest implements Cloneable
     
     /**
      * Produce a Lucene query from the intermediate format that is normally
-     * produced by the formatting stylesheet.
+     * produced by the formatting stylesheet. Includes setting a default
+     * indexPath, so the query doesn't have to contain one internally.
      * 
      * @param queryDoc A document containing the query.
      */
     public QueryRequest( Source queryDoc,
-                         File   baseDir )
+                         File   baseDir,
+                         String defaultIndexPath )
         throws QueryGenException, QueryFormatError
     {
         this.baseDir = baseDir;
+        this.indexPath = defaultIndexPath;
         
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** query request ***" );
@@ -145,6 +148,20 @@ public class QueryRequest implements Cloneable
                 throw new RuntimeException( e );
             }
         }
+    } // constructor
+    
+    
+    /**
+     * Produce a Lucene query from the intermediate format that is normally
+     * produced by the formatting stylesheet.
+     * 
+     * @param queryDoc A document containing the query.
+     */
+    public QueryRequest( Source queryDoc,
+                         File   baseDir )
+        throws QueryGenException, QueryFormatError
+    {
+        this( queryDoc, baseDir, null );
     } // constructor
     
     
