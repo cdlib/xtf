@@ -128,14 +128,16 @@
       </head>
       <body>
         <xsl:call-template name="header"/>
-        <table width="100%" cellpadding="0" cellspacing="2">
+        <table width="100%" cellpadding="0" cellspacing="2" border="0">
           <tr>
-            <td align="right">
+            <td align="right" width="10%">
               <span class="heading">Search:</span>
             </td>
-            <td width="20"/>
-            <td align="left" colspan="2">
-              <xsl:value-of select="$query"/>
+            <td width="1%"/>
+            <td align="left">
+              <xsl:call-template name="format-query">
+                <xsl:with-param name="query" select="$query"/>
+              </xsl:call-template>
               <xsl:text>&#160;&#160;</xsl:text>
               <a class="highlight" href="{$servlet.path}?{$queryString}&amp;smode=modify">
                 <xsl:text>Modify Search</xsl:text>
@@ -150,27 +152,33 @@
             <td align="right" width="10%">
               <span class="heading">Results:</span>
             </td>
-            <td width="20"/>
-            <td align="left" width="60%">
+            <td width="1%"/>
+            <td align="left">
               <xsl:value-of select="@totalDocs"/>
               <xsl:text> Item(s)</xsl:text>
             </td>
-            <td>
-              <span class="heading">Display:</span>
-              <!-- PLACEHOLDER -->
-              <xsl:text>Brief | List</xsl:text>
+          </tr>
+          <tr>
+            <td align="right" width="10%">
+              <span class="heading">Sorted by:</span>
+            </td>
+            <td width="1%"/>
+            <td align="left" valign="bottom">
+              <form class="search-form" method="get" action="{$servlet.path}">
+                <select size="1" name="sort">
+                  <xsl:call-template name="sort.options"/>
+                </select>
+                <xsl:call-template name="hidden.query"/>
+                <input type="submit" value="Go!" />         
+              </form>
             </td>
           </tr>
           <tr>
             <td align="right">
-              <span class="heading">Sorted by:</span>
-            </td>
-            <td width="20"/>
-            <td align="left">
-              <xsl:call-template name="sort.options"/>
-            </td>
-            <td>
               <span class="heading">Page: </span>
+            </td>
+            <td width="1%"/>
+            <td align="left">
               <xsl:call-template name="pages"/>
             </td>
           </tr>
@@ -367,62 +375,34 @@
                 <!-- need to make sure that the chosen subject is retained in modify -->
                 <select size="1" name="subject">
                   <option value="">Select</option>
-                  <option value="African American Studies">African American Studies</option>
                   <option value="African History">African History</option>
                   <option value="African Studies">African Studies</option>
                   <option value="American Literature">American Literature</option>
                   <option value="American Studies">American Studies</option>
-                  <option value="Ancient History">Ancient History</option>
                   <option value="Anthropology">Anthropology</option>
-                  <option value="Architecture">Architecture</option>
-                  <option value="Art History">Art History</option>
-                  <option value="Asian History">Asian History</option>
                   <option value="Asian Studies">Asian Studies</option>
-                  <option value="Autobiographies and Biographies">Autobiographies and Biographies</option>
-                  <option value="Autobiography">Autobiography</option>
                   <option value="Cinema and Performance Arts">Cinema and Performance Arts</option>
-                  <option value="Classical Philosophy">Classical Philosophy</option>
-                  <option value="Classics">Classics</option>
                   <option value="Cultural Anthropology">Cultural Anthropology</option>
-                  <option value="East Asia Other">East Asia Other</option>
-                  <option value="Education">Education</option>
                   <option value="English Literature">English Literature</option>
                   <option value="Ethnic Studies">Ethnic Studies</option>
-                  <option value="European History">European History</option>
-                  <option value="European Studies">European Studies</option>
-                  <option value="French Studies">French Studies</option>
                   <option value="Gender Studies">Gender Studies</option>
-                  <option value="History">History</option>
-                  <option value="Indigenous Religions ">Indigenous Religions </option>
                   <option value="Intellectual History">Intellectual History</option>
-                  <option value="Language and Linguistics">Language and Linguistics</option>
                   <option value="Law">Law</option>
                   <option value="Literary Theory and Criticism">Literary Theory and Criticism</option>
                   <option value="Literature">Literature</option>
                   <option value="Media Studies">Media Studies</option>
-                  <option value="Medical Anthropology">Medical Anthropology</option>
                   <option value="Middle Eastern History">Middle Eastern History</option>
                   <option value="Middle Eastern Studies">Middle Eastern Studies</option>
                   <option value="Music">Music</option>
                   <option value="Native American Studies">Native American Studies</option>
-                  <option value="Philosophy">Philosophy</option>
-                  <option value="Political Theory">Political Theory</option>
                   <option value="Politics">Politics</option>
                   <option value="Postcolonial Studies">Postcolonial Studies</option>
-                  <option value="Psychology">Psychology</option>
                   <option value="Public Policy">Public Policy</option>
                   <option value="Renaissance Literature">Renaissance Literature</option>
                   <option value="Science">Science</option>
-                  <option value="Social and Political Thought">Social and Political Thought</option>
                   <option value="Social Problems">Social Problems</option>
-                  <option value="Social Science">Social Science</option>
                   <option value="Sociology">Sociology</option>
-                  <option value="South Asia">South Asia</option>
-                  <option value="Travel">Travel</option>
-                  <option value="United States History">United States History</option>
                   <option value="Urban Studies">Urban Studies</option>
-                  <option value="Victorian History">Victorian History</option>
-                  <option value="Women's Studies">Women's Studies</option>
                 </select>
               </td>
             </tr>
@@ -717,7 +697,7 @@
           <a href="{$servlet.path}?relation=www.ucpress.edu&amp;sort=title">Browse</a>
         </td>
         <td align="right">
-          <a href="{$servlet.path}?smode=help">Help</a>
+          <a href="http://xtf.sourceforge.net/index.html#docs">Help</a>
         </td>
       </tr>
     </table>
@@ -727,7 +707,7 @@
     <table width="100%" cellpading="0" cellspacing="2">        
       <tr>
         <td>
-          <a href="mailto:kirk.hastings@ucop.edu">Comments? Questions?</a>
+          <a href="https://sourceforge.net/tracker/?func=add&amp;group_id=119724&amp;atid=684779">Questions?</a>
         </td>
       </tr>
       <tr>
