@@ -43,7 +43,7 @@ import org.apache.lucene.search.spans.Spans;
  * span query, and <u>never</u> as part of another span query.
  * 
  * @author  Martin Haye
- * @version $Id: SpanDechunkingQuery.java,v 1.2 2005-02-09 04:05:24 mhaye Exp $
+ * @version $Id: SpanDechunkingQuery.java,v 1.3 2005-03-12 00:33:02 mhaye Exp $
  */
 public class SpanDechunkingQuery extends SpanQuery {
   private SpanQuery wrapped;
@@ -90,6 +90,8 @@ public class SpanDechunkingQuery extends SpanQuery {
     StringBuffer buffer = new StringBuffer();
     buffer.append("spanDechunk(");
     buffer.append(wrapped.toString(field));
+    buffer.append(", spanRecording=");
+    buffer.append(getSpanRecording());
     buffer.append(")");
     return buffer.toString();
   }
