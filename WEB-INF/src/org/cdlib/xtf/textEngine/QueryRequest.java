@@ -1024,7 +1024,7 @@ public class QueryRequest
         
         // And we're done.
         return new LimitedRangeQuery( lower, upper, inclusive, 
-                                      curCombo.termLimit );
+                                      curCombo.termLimit, curCombo.terms );
     } // parseRange()
 
     /**

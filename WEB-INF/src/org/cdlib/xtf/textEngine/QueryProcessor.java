@@ -232,10 +232,8 @@ public class QueryProcessor
         if( maxDocs < 0 )
             maxDocs = docNumMap.getDocCount();
 
-        // Since the query might be used over and over, we have to make our
-        // own copy of the term map that we can modify.
-        //
-        TermMap terms = (TermMap) combo.terms.clone();
+        // Get a handy reference to the term map.
+        TermMap terms = combo.terms;
         
         // Make a queue that will accumulate the hits and pick the first
         // load of them for us. If there is a sort field specification,

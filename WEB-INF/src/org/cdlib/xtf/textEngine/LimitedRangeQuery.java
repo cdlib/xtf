@@ -50,6 +50,9 @@ public class LimitedRangeQuery extends Query
     /** Limit on the total number of terms */
     private int termLimit;
     
+    /** Map to add all terms to */
+    private TermMap termMap;
+    
     /** Set of stop-words (e.g. "the", "a", "and", etc.) */
     private Set stopWords;
 
@@ -60,7 +63,8 @@ public class LimitedRangeQuery extends Query
      * two terms, both terms <b>must</b> be for the same field.
      */
     public LimitedRangeQuery( Term lowerTerm, Term upperTerm, 
-                              boolean inclusive, int termLimit )
+                              boolean inclusive, int termLimit,
+                              TermMap termMap )
     {
         if( lowerTerm == null && upperTerm == null )
             throw new IllegalArgumentException(
@@ -81,6 +85,7 @@ public class LimitedRangeQuery extends Query
         this.upperTerm = upperTerm;
         this.inclusive = inclusive;
         this.termLimit = termLimit;
+        this.termMap   = termMap;
     }
     
     /** Establishes the list of stop-words to remove */
@@ -131,6 +136,8 @@ public class LimitedRangeQuery extends Query
                                 "Range query on '" + getField() + 
                                 "' matched too many terms (more than " + 
                                 termLimit + ")");
+                        if( termMap != null )
+                            termMap.put( term );
                     }
                 }
                 else {
