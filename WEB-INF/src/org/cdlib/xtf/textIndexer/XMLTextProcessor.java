@@ -1195,14 +1195,14 @@ public class XMLTextProcessor extends DefaultHandler
     
         InputSource inSrc = null;
 
-        // If the file format is PDF...
-        if( file.format == "PDF" ){
-          
-            // Convert the PDF file into an XML string that we can index.
-            String pdfXMLStr = PDFToString.convert( file.source.getSystemId() );
+        // If the file format is HTML...
+        if( file.format == "HTML" ){
             
-            inSrc = new InputSource( new StringReader(pdfXMLStr) );          
+            // Convert the PDF file into an XML string that we can index.
+            String HtmlXmlStr = HTMLToString.convert( file.source.getSystemId() );
               
+            inSrc = new InputSource( new StringReader(HtmlXmlStr) );          
+                
             // If there no XSLT input filter defined for this index, just 
             // parse the source XML file directly, and return early.
             //
@@ -1211,32 +1211,58 @@ public class XMLTextProcessor extends DefaultHandler
                 return 0;
             }
         }
-        else {
-          
-            // Convert our XML text file into a SAXON input source.
-            InputStream inStream;
-            if( file.source.getByteStream() == null )
-                inStream = new FileInputStream( file.source.getSystemId() );
-            else
-                inStream = file.source.getByteStream();
+  
+        // If the current file is a PDF file...
+        else if( file.format == "PDF" ){
             
-            // Remove DOCTYPE declarations, since the XML reader will barf if it
-            // can't resolve the entity reference, and we really don't care.
-            //
-            inStream = new DocTypeDeclRemover( inStream );
-        
-            // If there no XSLT input filter defined for this index, just 
-            // parse the source XML file directly, and return early.
-            //
-            if( srcText.inputFilter == null ) {
-                xmlParser.parse( inStream, this );
-                return 0;
-            }
+              // Convert the PDF file into an XML string that we can index.
+              String pdfXMLStr = PDFToString.convert( file.source.getSystemId() );
+              
+              inSrc = new InputSource( new StringReader(pdfXMLStr) );          
+                
+              // If there no XSLT input filter defined for this index, just 
+              // parse the source XML file directly, and return early.
+              //
+              if( srcText.inputFilter == null ) {
+                  xmlParser.parse( inSrc, this );
+                  return 0;
+              }
+          }
+          
+          // If the file is an XML file...
+          else if( file.format == "XML") {
+            
+              // Convert our XML text file into a SAXON input source.
+              InputStream inStream;
+              if( file.source.getByteStream() == null )
+                  inStream = new FileInputStream( file.source.getSystemId() );
+              else
+                  inStream = file.source.getByteStream();
+              
+              // Remove DOCTYPE declarations, since the XML reader will barf if it
+              // can't resolve the entity reference, and we really don't care.
+              //
+              inStream = new DocTypeDeclRemover( inStream );
+          
+              // If there no XSLT input filter defined for this index, just 
+              // parse the source XML file directly, and return early.
+              //
+              if( srcText.inputFilter == null ) {
+                  xmlParser.parse( inStream, this );
+                  return 0;
+              }
             
             // Now make an input source.
             inSrc = new InputSource( inStream );
         }
-    
+        
+        // Hmmm... what should we do if it's not a recognized type? Well, for
+        // now we simply give up.
+        //
+        else {
+            return 0;
+        }
+        
         // If we got to this point, there is an XSLT filter specified. So 
         // set up to use it, and process the resulting filtered XML text.
         //
