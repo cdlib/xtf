@@ -434,6 +434,11 @@ public class QueryRequest implements Cloneable
     private void parseOutputTop( EasyNode output )
         throws QueryGenException, QueryFormatError
     {
+        if( "query".equals(output.name()) || "error".equals(output.name()) ) {
+            parseOutput( output );
+            return;
+        }
+        
         for( int i = 0; i < output.nChildren(); i++ ) {
             EasyNode main = output.child( i );
             String   name = main.name();
