@@ -41,7 +41,7 @@
   <!-- Import Common Templates                                                -->
   <!-- ====================================================================== -->
 
-  <xsl:import href="../common/common.xsl"/>
+  <xsl:import href="../common/resultFormatterCommon.xsl"/>
   
   <!-- ====================================================================== -->
   <!-- Output Parameters                                                      -->

@@ -82,43 +82,11 @@
 
 <xsl:variable name="METS" select="document(concat('../../', $sourceDir, $docId, '.mets.xml'))"/>
 
-<xsl:variable name="relation">
-  <xsl:choose>
-    <xsl:when test="$METS//mods:relatedItem/mods:identifier">
-      <xsl:choose>
-        <xsl:when test="$METS//mods:relatedItem/mods:identifier[. = 'http://scilib.ucsd.edu/sio/guide/siopublns.html']">
-          <xsl:value-of select="'http://scilib.ucsd.edu/sio/guide/siopublns.html'"/>
-        </xsl:when>
-        <xsl:when test="$METS//mods:relatedItem/mods:identifier[. = 'http://www.ucpress.edu']">
-          <xsl:value-of select="'http://www.ucpress.edu'"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$METS//mods:relatedItem/mods:identifier"/>
-        </xsl:otherwise>
-      </xsl:choose>      
-    </xsl:when>
-    <xsl:when test="$METS//dc:relation">
-      <xsl:choose>
-        <xsl:when test="$METS//dc:relation[. = 'http://scilib.ucsd.edu/sio/guide/siopublns.html']">
-          <xsl:value-of select="'http://scilib.ucsd.edu/sio/guide/siopublns.html'"/>
-        </xsl:when>
-        <xsl:when test="$METS//dc:relation[. = 'http://www.ucpress.edu']">
-          <xsl:value-of select="'http://www.ucpress.edu'"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$METS//dc:relation"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:when>
-  </xsl:choose>
-</xsl:variable>
-
-<!-- need a mechanism here by which I can override the default display behavior through the URL -->
+<xsl:variable name="relation" select="$METS//dc:relation"/>
 
 <xsl:variable name="displayMechURL" select="$METS//mets:behavior[@BTYPE='display']/mets:mechanism/@xlink:href"/>
 
 <xsl:variable name="displayMech" select="document($displayMechURL)"/>
-
 
 <xsl:variable name="authMechURL" select="$METS//mets:behavior[@BTYPE='authentication']/mets:mechanism/@xlink:href"/>
 <xsl:variable name="morphed" select="replace($authMechURL, '.+/profiles', '../../profiles')"/>
@@ -136,52 +104,7 @@
         into an HTML page
     -->
 
-    <!-- Need to build METS abd display mechanisms for preview modes -->
-
-    <xsl:choose>
-      <xsl:when test="$docId='bpg-checker'">
-        <style path="style/dynaXML/docFormatter/bpg/bpg.xsl"/>
-      </xsl:when>
-      <xsl:when test="$docId='default-preview'">
-        <style path="style/dynaXML/docFormatter/default/dynaxml.xsl"/>
-      </xsl:when>
-      <xsl:when test="$docId='ead-preview'">
-        <style path="style/dynaXML/docFormatter/ead/oac-ead.xslt"/>
-      </xsl:when>
-      <xsl:when test="$docId='eschol-preview'">
-        <style path="style/dynaXML/docFormatter/eschol/dynaxml.xsl"/>
-      </xsl:when>
-      <xsl:when test="$docId='oac-preview'">
-        <style path="style/dynaXML/docFormatter/oac/dynaxml.xsl"/>
-      </xsl:when>
-      <xsl:when test="contains($displayMech//style/@path, 'style/dynaxml')">
-        <xsl:variable name="dispStyle" select="$displayMech//style/@path"/>
-        <xsl:variable name="morphed" select="replace($dispStyle, 'style/dynaxml', 'style/dynaXML/docFormatter/default')"/>
-        <style path="{$morphed}"/>
-      </xsl:when>
-      <xsl:when test="contains($displayMech//style/@path, 'style/eschol')">
-        <xsl:variable name="dispStyle" select="$displayMech//style/@path"/>
-        <xsl:variable name="morphed" select="replace($dispStyle, 'style/', 'style/dynaXML/docFormatter/')"/>
-        <style path="{$morphed}"/>
-      </xsl:when>
-      <xsl:when test="contains($displayMech//style/@path, 'style/oac')">
-        <xsl:variable name="dispStyle" select="$displayMech//style/@path"/>
-        <xsl:variable name="morphed" select="replace($dispStyle, 'style/', 'style/dynaXML/docFormatter/')"/>
-        <style path="{$morphed}"/>
-      </xsl:when>
-     <xsl:when test="contains($displayMech//style/@path, 'style/ead')">
-        <xsl:variable name="dispStyle" select="$displayMech//style/@path"/>
-        <xsl:variable name="morphed" select="replace($dispStyle, 'style/', 'style/dynaXML/docFormatter/')"/>
-        <style path="{$morphed}"/>
-      </xsl:when>
-      <xsl:when test="$displayMech//style">
-        <xsl:variable name="dispStyle" select="$displayMech//style/@path"/>
-        <style path="{$dispStyle}"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <style path="style/dynaXML/docFormatter/default/dynaxml.xsl"/>
-      </xsl:otherwise>
-    </xsl:choose>
+    <style path="style/dynaXML/docFormatter/default/docFormatter.xsl"/>
 
     <!-- ==================================================================
         The "source" tag specifies a filesystem path (relative to the servlet
@@ -207,15 +130,14 @@
 
         <!-- Need to create a brand choosing structure here based on $relation -->
         
-        <brand path="brand/default.xsl"/>        
+    <brand path="brand/default.xsl"/>        
 
     <!-- ==================================================================
         For speed, a persistent or "lazy" version of each document is
         stored in the index. The servlet needs to be able to get back to
         that place to fetch the persistent version.
     -->
-    <index configPath="conf/textIndexer.conf" name="texts"/>
-    
+    <index configPath="conf/textIndexer.conf" name="default"/>
     
     <!-- ==================================================================
         If the user specifies a text query, it needs to be parsed into the

@@ -85,22 +85,7 @@
   
   <xsl:template match="/">
     
-    <xsl:variable name="stylesheet">
-      <xsl:choose>
-        <xsl:when test="$rmode = 'ead'">
-          <xsl:value-of select="'style/crossQuery/resultFormatter/ead/resultFormatter.xsl'"/>
-        </xsl:when>
-        <xsl:when test="$rmode = 'eschol'">
-          <xsl:value-of select="'style/crossQuery/resultFormatter/eschol/resultFormatter.xsl'"/>
-        </xsl:when>
-        <xsl:when test="$rmode = 'oac'">
-          <xsl:value-of select="'style/crossQuery/resultFormatter/oac/resultFormatter.xsl'"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="'style/crossQuery/resultFormatter/default/resultFormatter.xsl'"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
+    <xsl:variable name="stylesheet" select="'style/crossQuery/resultFormatter/default/resultFormatter.xsl'"/>
 
     <!-- The top-level output element tells what stylesheet will be used to
        format the results, which document to start on, and how many documents

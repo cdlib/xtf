@@ -52,6 +52,8 @@
 <!-- Included Stylesheets                                                   -->
 <!-- ====================================================================== -->
 
+<xsl:include href="../common/docFormatterCommon.xsl"/>
+
 <xsl:include href="autotoc.xsl"/>
 <xsl:include href="component.xsl"/>
 <xsl:include href="search.xsl"/>
