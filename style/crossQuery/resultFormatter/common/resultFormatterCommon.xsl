@@ -1144,7 +1144,7 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString, 
+    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString, 
                           '&amp;rmode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;smode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;relation=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
@@ -1153,6 +1153,7 @@
                           'year=([0-9]+)&amp;year-max=([0-9]+)', 'year=$1-$2'),    
                           'text=([A-Za-z0-9&quot;\-\.\*\+ ]+)&amp;text-prox=([0-9]+)', '$1 within $2 words'), 
                           'text=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'keywords=$1'), 
+                          'creator=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'author=$1'), 
                           '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'XX $2 in $1 XX'),
                           '&amp;', ' and '),
                           '^ and ', '')"/>
