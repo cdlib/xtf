@@ -41,7 +41,8 @@
 
   <xsl:output method="xhtml" indent="yes" encoding="UTF-8" media-type="text/html" 
               doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
-              doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
+              doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" 
+              omit-xml-declaration="yes"/>
 
   <!-- ====================================================================== -->
   <!-- Parameters                                                             -->
@@ -1143,7 +1144,7 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString, 
+    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString, 
                           '&amp;rmode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;smode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;relation=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
@@ -1153,7 +1154,8 @@
                           'text=([A-Za-z0-9&quot;\-\.\*\+ ]+)&amp;text-prox=([0-9]+)', '$1 within $2 words'), 
                           'text=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'keywords=$1'), 
                           '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'XX $2 in $1 XX'),
-                          '&amp;', ' and ')"/>
+                          '&amp;', ' and '),
+                          '^ and ', '')"/>
   </xsl:param>
     
   <!-- ====================================================================== -->
