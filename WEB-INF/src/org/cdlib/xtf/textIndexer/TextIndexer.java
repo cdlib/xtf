@@ -157,14 +157,14 @@ public class TextIndexer
       cfgInfo.xtfHomePath = System.getProperty( "xtf.home" );
       if( cfgInfo.xtfHomePath == null || cfgInfo.xtfHomePath.length() == 0 ) {
           Trace.error( "Error: xtf.home property not found" );
-          return;
+          System.exit( 1 );
       }
       
       cfgInfo.xtfHomePath = Path.normalizePath( cfgInfo.xtfHomePath );
       if( !new File(cfgInfo.xtfHomePath).isDirectory() ) {
           Trace.error( "Error: xtf.home directory \"" + cfgInfo.xtfHomePath + 
                        "\" does not exist or cannot be read." );
-          return;
+          System.exit( 1 );
       }
 
       // Perform indexing for each index specified.
@@ -213,7 +213,7 @@ public class TextIndexer
                       Trace.error( "Error: index '" +
                                    cfgInfo.indexInfo.indexName + 
                                    "' not found\n" );
-                      return;
+                      System.exit( 1 );
                   }
 
                   // Since we're starting a new index, reset the 'must
@@ -247,7 +247,7 @@ public class TextIndexer
               Trace.untab();
               
               // And then bail.
-              return;
+              System.exit( 1 );
               
           } // if( showUsage )    
            
@@ -346,7 +346,7 @@ public class TextIndexer
               
               srcTreeProcessor.close();
 
-              return;
+              System.exit( 1 );
           }
           catch( Throwable t ) {
               
@@ -357,7 +357,7 @@ public class TextIndexer
               
               srcTreeProcessor.close();
 
-              return;
+              System.exit( 1 );
           }
                     
       } // for(;;)
