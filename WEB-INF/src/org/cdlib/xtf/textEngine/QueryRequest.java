@@ -499,7 +499,8 @@ public class QueryRequest implements Cloneable
         
         if( attVal.length() == 0 )
             error( "'field' attribute cannot be empty" );
-        if( attVal.equals("sectionType") && !parentField.equals("sectionType") )
+        if( attVal.equals("sectionType") &&
+            (parentField == null || !parentField.equals("sectionType")) )
             error( "'sectionType' is not valid for the 'field' attribute" );
         if( parentField != null && !parentField.equals(attVal) )
             error( "Cannot override ancestor 'field' attribute" );
