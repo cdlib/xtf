@@ -2,11 +2,17 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
                 xmlns:xtf="http://cdlib.org/xtf">
   
-  <xsl:output method="xml" encoding="UTF-8" indent="yes" media-type="text/xml"/>
+  <xsl:output name="xml" method="xml" encoding="UTF-8" indent="yes" media-type="text/xml"/>
   
   <!-- ====================================================================== -->
   <!-- Debug Template                                                         -->
   <!-- ====================================================================== -->
+  
+  <xsl:template name="debug">
+    <xsl:result-document format="xml">
+      <xsl:apply-templates mode="debug"/>
+    </xsl:result-document>
+  </xsl:template>
   
   <!-- Produces raw XML -->
   
