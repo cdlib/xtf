@@ -163,7 +163,8 @@ public class IdxTreeOptimizer
     } //  try( to open the specified index )
     
     catch ( Exception e ) {      
-        Trace.error( "***Optimization Halted Due to Errors." );  
+        Trace.error( "*** Optimization Halted Due to Error:" + e );
+        throw e;
     }
   
     Trace.untab();

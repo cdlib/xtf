@@ -251,115 +251,87 @@ public class TextIndexer
               
           } // if( showUsage )    
            
-          try {
-                
-              File xtfHomeFile = new File( cfgInfo.xtfHomePath );
+          File xtfHomeFile = new File( cfgInfo.xtfHomePath );
 
-              // If this is our first time through, purge any incomplete
-              // documents from the indices, and tell the user what 
-              // we're doing.
-              //
-              if( firstIndex ) {
+          // If this is our first time through, purge any incomplete
+          // documents from the indices, and tell the user what 
+          // we're doing.
+          //
+          if( firstIndex ) {
 
-                  if( !cfgInfo.mustClean ) {
+              if( !cfgInfo.mustClean ) {
+              
+                  // Clean all indices below the root index directory. 
+                  File idxRootDir = new File(Path.resolveRelOrAbs( 
+                                                xtfHomeFile,
+                                                cfgInfo.indexInfo.indexPath) );
                   
-                      // Clean all indices below the root index directory. 
-                      File idxRootDir = new File(Path.resolveRelOrAbs( 
-                                                    xtfHomeFile,
-                                                    cfgInfo.indexInfo.indexPath) );
-                      
-                      Trace.info("");
-                      Trace.info( "Purging Incomplete Documents From Indexes:" );
-                      Trace.tab();
-            
-                      indexCleaner.processDir( idxRootDir );
-            
-                      Trace.untab();
-                      Trace.info( "Done." );
-                  }
-                        
                   Trace.info("");
-                  Trace.info( "Indexing New/Updated Documents:" );
+                  Trace.info( "Purging Incomplete Documents From Indexes:" );
                   Trace.tab();
-                  
-                  // Indicate that the next pass through this loop is not 
-                  // the first one.
-                  //
-                  firstIndex = false;         
+        
+                  indexCleaner.processDir( idxRootDir );
+        
+                  Trace.untab();
+                  Trace.info( "Done." );
               }
-              
-              // Say what index we're working on.
-              Trace.info( "Index: \"" + cfgInfo.indexInfo.indexName +"\"" );
-              
-              // And if we're debugging, say some more about the index.
-              if( Trace.getOutputLevel() == Trace.debug )
-                  Trace.more( " [ Chunk Size = "             +
-                              cfgInfo.indexInfo.getChunkSize() +
-                              ", Overlap = "                   +
-                              cfgInfo.indexInfo.getChunkOvlp() +
-                              " ]" );
-              Trace.tab();
-              
-
-              // Start at the root directory specified by the config file. 
-              String srcRootDir = Path.resolveRelOrAbs( xtfHomeFile,
-                                          cfgInfo.indexInfo.sourcePath );
-                
-              // If a sub-directory was specified, limit to just that.
-              if( cfgInfo.indexInfo.subDir != null ) {
-                  srcRootDir = Path.resolveRelOrAbs( 
-                            srcRootDir, 
-                            Path.normalizePath(cfgInfo.indexInfo.subDir) );
-              }
-
-              // Process everything below it.
-              srcTreeProcessor.open( cfgInfo );
-              srcTreeProcessor.processDir( new File(srcRootDir) );
-              srcTreeProcessor.close();
-
-              // Cull files which are present in the index but missing
-              // from the filesystem.
-              //
-              IdxTreeCuller culler = new IdxTreeCuller();
-          
-              Trace.info( "Removing Missing Documents From Index:" );
-              Trace.tab();
-            
-              culler.cullIndex( new File(cfgInfo.xtfHomePath), 
-                                cfgInfo.indexInfo );
-            
-              Trace.untab();
-              Trace.info( "Done." );
-              
-              Trace.untab();
-              Trace.info( "Done." );
-              
-          } // try to index a document
-            
-          catch( Exception e ) {
-              
-              Trace.clearTabs();
-              Trace.error( "*** Last Chance Exception: " + e.getClass() );
-              Trace.error( "             With message: " + e.getMessage() );
-              Trace.error( "" );
-              e.printStackTrace( System.out );
-              
-              srcTreeProcessor.close();
-
-              System.exit( 1 );
-          }
-          catch( Throwable t ) {
-              
-              Trace.clearTabs();
-              Trace.error( "*** Last Chance Exception: " + t.getClass() );
-              Trace.error( "" );
-              t.printStackTrace( System.out );
-              
-              srcTreeProcessor.close();
-
-              System.exit( 1 );
-          }
                     
+              Trace.info("");
+              Trace.info( "Indexing New/Updated Documents:" );
+              Trace.tab();
+              
+              // Indicate that the next pass through this loop is not 
+              // the first one.
+              //
+              firstIndex = false;         
+          }
+          
+          // Say what index we're working on.
+          Trace.info( "Index: \"" + cfgInfo.indexInfo.indexName +"\"" );
+          
+          // And if we're debugging, say some more about the index.
+          if( Trace.getOutputLevel() == Trace.debug )
+              Trace.more( " [ Chunk Size = "             +
+                          cfgInfo.indexInfo.getChunkSize() +
+                          ", Overlap = "                   +
+                          cfgInfo.indexInfo.getChunkOvlp() +
+                          " ]" );
+          Trace.tab();
+          
+
+          // Start at the root directory specified by the config file. 
+          String srcRootDir = Path.resolveRelOrAbs( xtfHomeFile,
+                                      cfgInfo.indexInfo.sourcePath );
+            
+          // If a sub-directory was specified, limit to just that.
+          if( cfgInfo.indexInfo.subDir != null ) {
+              srcRootDir = Path.resolveRelOrAbs( 
+                        srcRootDir, 
+                        Path.normalizePath(cfgInfo.indexInfo.subDir) );
+          }
+
+          // Process everything below it.
+          srcTreeProcessor.open( cfgInfo );
+          srcTreeProcessor.processDir( new File(srcRootDir) );
+          srcTreeProcessor.close();
+
+          // Cull files which are present in the index but missing
+          // from the filesystem.
+          //
+          IdxTreeCuller culler = new IdxTreeCuller();
+      
+          Trace.info( "Removing Missing Documents From Index:" );
+          Trace.tab();
+        
+          culler.cullIndex( new File(cfgInfo.xtfHomePath), 
+                            cfgInfo.indexInfo );
+        
+          Trace.untab();
+          Trace.info( "Done." );
+          
+          Trace.untab();
+          Trace.info( "Done." );
+          
       } // for(;;)
       
       Trace.untab();
@@ -397,8 +369,13 @@ public class TextIndexer
     
     // Log any unhandled exceptions.    
     catch( Throwable t ) {
-        Trace.error( "*** Last Chance Exception: " + t.getClass() );
-        Trace.error( "             With message: " + t.getMessage() );
+        Trace.clearTabs();
+        Trace.error( "*** Error: " + t.getClass() );
+        Trace.error( "" );
+        t.printStackTrace( System.out );
+        Trace.error( "Indexing Process Aborted." );
+
+        System.exit( 1 );
     }
       
     // Exit successfully.

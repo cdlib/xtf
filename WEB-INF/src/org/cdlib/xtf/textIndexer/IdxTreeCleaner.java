@@ -307,9 +307,9 @@ public class IdxTreeCleaner
             catch( Throwable t ) {
             
                 Trace.tab();
-                Trace.info( "*** Warning: Unable to delete empty "       +
-                            "index directory [" + dir.getAbsolutePath() +
-                            "]." );
+                Trace.warning( "*** Warning: Unable to delete empty "       +
+                               "index directory [" + dir.getAbsolutePath() +
+                               "]." );
                 Trace.untab();
                 return;
           

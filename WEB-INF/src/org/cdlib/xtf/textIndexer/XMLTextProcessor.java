@@ -872,27 +872,20 @@ public class XMLTextProcessor extends DefaultHandler
       accumText          = new StringBuffer( bufStartSize );
       compactedAccumText = new StringBuffer( bufStartSize );
       
-      try {
-          // Open the index writer.
-          openIdxForWriting();
-          
-          int nFiles  = fileQueue.size();
-          int fileNum = 0;
-          
-          // Process each queued file.
-          while( !fileQueue.isEmpty() ) 
-          {
-              SrcTextInfo idxFile = (SrcTextInfo) fileQueue.removeFirst();
-              int percent = (nFiles <= 1) ? -1 :
-                            ((fileNum+1) * 100 / nFiles);
-              processText( idxFile, percent );
-              fileNum++;
-          }
-      }
-      catch( IOException e ) {
-          Trace.tab();
-          Trace.error( "*** Exception Processing Queued Texts: " + e );
-          Trace.untab();
+      // Open the index writer.
+      openIdxForWriting();
+      
+      int nFiles  = fileQueue.size();
+      int fileNum = 0;
+      
+      // Process each queued file.
+      while( !fileQueue.isEmpty() ) 
+      {
+          SrcTextInfo idxFile = (SrcTextInfo) fileQueue.removeFirst();
+          int percent = (nFiles <= 1) ? -1 :
+                        ((fileNum+1) * 100 / nFiles);
+          processText( idxFile, percent );
+          fileNum++;
       }
       
   } // processQueuedTexts()
@@ -1044,12 +1037,26 @@ public class XMLTextProcessor extends DefaultHandler
                     precacheXSLKeys( displayStyle );
                 }
                 catch( IOException e ) {
+                    Trace.tab();
+                    Trace.error( "Error pre-caching XSL keys from " +
+                        "display stylesheet \"" + displayStyle + "\": " + e );
+                    Trace.untab();
+                    
                     throw e;
                 }
                 catch( Throwable t ) {
-                    throw new IOException( 
-                        "Error pre-caching XSL keys from " +
+                    Trace.tab();
+                    Trace.error( "Error pre-caching XSL keys from " +
                         "display stylesheet \"" + displayStyle + "\": " + t );
+                    Trace.untab();
+                    
+                    if( t instanceof RuntimeException )
+                        throw (RuntimeException) t;
+                    else
+                        throw new IOException( 
+                            "Error pre-caching XSL keys from " +
+                            "display stylesheet \"" + displayStyle + 
+                            "\": " + t );
                 }
             }
         }
@@ -1278,7 +1285,7 @@ public class XMLTextProcessor extends DefaultHandler
     catch( Throwable t ) {
       
         // Tell the caller (and the user) that ther was an error..      
-        Trace.more( Trace.info, "Skipping Due to Errors." );
+        Trace.more( Trace.info, "Skipping Due to Errors" );
 
         Trace.info( "*** XML Parser Exception: " + 
             t.getClass() + "\n"  +
@@ -2010,12 +2017,28 @@ public class XMLTextProcessor extends DefaultHandler
             
         } // try( to process next word in token list )
         
+        catch( Exception e ) {
+          
+            // Log the error caught. There's no good reason to fail here, so
+            // throw the exception on up.
+            //
+            Trace.tab();
+            Trace.error( "*** Exception Processing text: " + e );
+            Trace.untab();
+            
+            throw new SAXException( e );
+        }
+      
         catch( Throwable t ) {
           
-            // Log the error caught.
+            // Log the error caught. There's no good reason to fail here, so
+            // throw the exception on up.
+            //
             Trace.tab();
-            Trace.error( "*** Exception (Ignored) Processing text: " + t );
+            Trace.error( "*** Exception Processing text: " + t );
             Trace.untab();
+            
+            throw new RuntimeException( t );
         }
       
     } // for(;;)
@@ -2600,7 +2623,9 @@ public class XMLTextProcessor extends DefaultHandler
         compactVirtualWords();    
     }
     
-    // If anything went wrong...
+    // There's no good reason for something to go wrong here, and no good
+    // way to recover.
+    //
     catch( Throwable t ) {
         
         // Log the error.
@@ -2608,8 +2633,11 @@ public class XMLTextProcessor extends DefaultHandler
         Trace.error( "*** Exception Compacting Virtual Words: " + t );
         Trace.untab();
         
-        // And exit early.
-        return;
+        // Throw the exception on up.
+        if( t instanceof RuntimeException )
+            throw (RuntimeException) t;
+        else
+            throw new RuntimeException( t );
     }
     
     // If after compaction there's nothing to index, we're done.
@@ -2676,7 +2704,10 @@ public class XMLTextProcessor extends DefaultHandler
         Trace.untab();
           
         // And bail.
-        return;
+        if( t instanceof RuntimeException )
+            throw (RuntimeException) t;
+        else
+            throw new RuntimeException( t );
    }
     
   } // indexText()
@@ -3241,6 +3272,11 @@ public class XMLTextProcessor extends DefaultHandler
         Trace.tab();
         Trace.error( "*** Exception Adding docInfo to Index: " + t );
         Trace.untab();
+        
+        if( t instanceof RuntimeException )
+            throw (RuntimeException) t;
+        else
+            throw new RuntimeException( t );
     }
     
   } // saveDocInfo()
@@ -3389,6 +3425,8 @@ public class XMLTextProcessor extends DefaultHandler
           Trace.tab();
           Trace.error( "*** Exception Optimizing Index: " + e );
           Trace.untab();
+          
+          throw e;
       }
       
       finally {
