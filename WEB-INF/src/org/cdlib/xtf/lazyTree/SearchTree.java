@@ -340,7 +340,12 @@ public class SearchTree extends LazyDocument
         bq.add( new TermQuery(t), true, false );
         bq.add( req.query, true, false );
         
-        req.query = bq;
+        // Don't modify the original query request, since it might be in use
+        // by another thread at the same time. Rather, make a clone and then
+        // modify that with our restricted query.
+        //
+        QueryRequest newReq = (QueryRequest) req.clone();
+        newReq.query = bq;
 
         // Run the query and get the results.
         QueryResult result = processor.processReq( req );
