@@ -783,7 +783,7 @@ public class QueryRequest implements Cloneable
                     prevProhibited = subClauses[j].prohibited;
                     
                     // Detect any boosting.
-                    if( clauses[j].query.getBoost() != 1.0f )
+                    if( subClauses[j].query.getBoost() != 1.0f )
                         anyBoosting = true;
                 } // for j
                 
