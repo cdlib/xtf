@@ -72,7 +72,7 @@
 <xsl:key name="div-id" match="div1|div2|div3|div4|div5|div6" use="@id"/>
 <xsl:key name="hit-num-dynamic" match="xtf:hit" use="@hitNum"/>
 <xsl:key name="hit-rank-dynamic" match="xtf:hit" use="@rank"/>
-<xsl:key name="generic-id" match="note[not(@type='footnote' or @place='foot' or @type='endnote' or @place='end')]|figure|bibl" use="@id"/>
+<xsl:key name="generic-id" match="note[not(@type='footnote' or @place='foot' or @type='endnote' or @place='end')]|figure|bibl|table" use="@id"/>
 
 <!-- ====================================================================== -->
 <!-- Root Template                                                          -->
