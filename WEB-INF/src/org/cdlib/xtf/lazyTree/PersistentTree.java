@@ -1,5 +1,7 @@
 package org.cdlib.xtf.lazyTree;
 
+import java.io.IOException;
+
 /**
  * Copyright (c) 2004, Regents of the University of California
  * All rights reserved.
@@ -29,13 +31,9 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.IOException;
-
-import net.sf.saxon.Controller;
-
 /**
  * General interface for a tree that is disk-based, and should be closed 
- * after use. Also capable of gathering and outputting profiling information.
+ * after use.
  * 
  * @author Martin Haye
  */
@@ -44,17 +42,9 @@ public interface PersistentTree
     /** This should be called when done using the tree, to close disk files */
     void close();
     
-    /** Enables node-counted profiling */
-    void enableProfiling( Controller controller );
-    
-    /** Disables node-counted profiling */
-    void disableProfiling();
-    
-    /** Prints out a profile gathered after {@link #enableProfiling(Controller)}
-     *  is called. Output is sent to Trace.info().
-     */
+    /** Print out a profile (if one was collected) */
     void printProfile() throws IOException;
-
+    
     /** Establishes whether nodes should be held in RAM, or only held by
      *  soft references.
      * 

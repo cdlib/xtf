@@ -38,10 +38,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.sax.SAXSource;
 
+import net.sf.saxon.FeatureKeys;
+
 import org.xml.sax.InputSource;
 
 import org.cdlib.xtf.cache.FileDependency;
 import org.cdlib.xtf.cache.GeneratingCache;
+import org.cdlib.xtf.lazyTree.ProfilingListener;
 import org.cdlib.xtf.util.*;
 
 /**
@@ -50,8 +53,9 @@ import org.cdlib.xtf.util.*;
  */
 public class StylesheetCache extends GeneratingCache
 {
-    private boolean dependencyChecking;
+    private boolean dependencyChecking = false;
     private GeneratingCache dependencyReceiver = null;
+    private boolean enableProfiling = false;
     
     /**
      * Constructor.
@@ -83,6 +87,15 @@ public class StylesheetCache extends GeneratingCache
         throws Exception
     {
         return (Templates) super.find( path );
+    }
+    
+    /** 
+     * Enable or disable profiling (only affects stylesheets that are
+     * not already cached)
+     */
+    public void enableProfiling( boolean flag )
+    {
+        enableProfiling = flag;
     }
     
     /** 
@@ -124,6 +137,17 @@ public class StylesheetCache extends GeneratingCache
             TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
             if( !(factory.getErrorListener() instanceof XTFSaxonErrorListener) )
                 factory.setErrorListener( new XTFSaxonErrorListener() );
+            
+            if( enableProfiling ) {
+                ProfilingListener profilingListener = new ProfilingListener();
+                factory.setAttribute(
+                        FeatureKeys.TRACE_LISTENER,
+                        profilingListener);
+                factory.setAttribute(
+                        FeatureKeys.LINE_NUMBERING,
+                        Boolean.TRUE);
+            }
+            
             if( dependencyChecking ) {
                 factory.setURIResolver( 
                     new DepResolver(this, factory.getURIResolver()) );

@@ -3,15 +3,11 @@ package org.cdlib.xtf.lazyTree;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import net.sf.saxon.Configuration;
-import net.sf.saxon.Controller;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.ArrayIterator;
 import net.sf.saxon.om.ListIterator;
@@ -20,7 +16,6 @@ import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
-import net.sf.saxon.om.Navigator;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.StrippedNode;
 import net.sf.saxon.trans.XPathException;
@@ -162,7 +157,7 @@ public class LazyDocument extends ParentNodeImpl
         // Record the name pool, and allocate our document number.
         namePool = pool;
         documentNumber = pool.allocateDocumentNumber( this );
-
+        
         // First, read in the names.
         synchronized( mainFile ) {
             readNames( file.openSubfile("names") );
@@ -215,6 +210,12 @@ public class LazyDocument extends ParentNodeImpl
     /** Find out whether debug lines are printed during key index creation */
     public boolean getDebug( ) {
         return debug;
+    }
+    
+    /** Print out the profile (if one was collected) */
+    public void printProfile() throws IOException {
+        if( profileListener != null )
+            profileListener.printProfile();
     }
     
     /**
@@ -342,6 +343,10 @@ public class LazyDocument extends ParentNodeImpl
         this.config = config;
         NamePool pool = config.getNamePool();
         documentNumber = pool.allocateDocumentNumber(this);
+
+        // Check if we're being profiled.
+        if( config.getTraceListener() instanceof ProfilingListener )
+            profileListener = (ProfilingListener) config.getTraceListener();
     }
     
     /**
@@ -807,55 +812,6 @@ public class LazyDocument extends ParentNodeImpl
             child.copy(out, whichNamespaces, copyAnnotations, locationId);
         }
     }
-    
-    /**
-     * Turns on tracking for profiling purposes.
-     */
-    public void enableProfiling( Controller controller )
-    {
-        profileListener = new ProfilingListener( controller );
-        controller.addTraceListener( profileListener );
-    } // enableProfiling()
-    
-    /**
-     * Prints the results of a trace run, to Trace.info().
-     */
-    public void printProfile()
-        throws IOException
-    {
-        // Get a sorted array of the counts.
-        ProfilingListener.ProfileCount[] counts = profileListener.getCounts();
-        
-        // Print it out.
-        for( int i = counts.length-1; i >= 0; i-- ) {
-            Trace.info( counts[i].count    + " " +
-                        counts[i].systemId + ":" + 
-                        counts[i].lineNum  );
-            if( false ) {
-                // For fun, print out all the nodes too.
-                Set keys = counts[i].nodes.keySet();
-                List list = new ArrayList(keys);
-                Collections.sort( list );
-                for( Iterator iter = list.iterator(); iter.hasNext(); ) {
-                    int nodeNum = ((Integer)iter.next()).intValue();
-                    NodeImpl node = getNode( nodeNum );
-                    String path = Navigator.getPath( node );
-                    Trace.info( "    " + path );
-                }
-            }
-        }
-    } // printProfile()
-    
-    /**
-     * Shut off profiling... this is required if the same controller will
-     * be used for another profiling session later.
-     */
-    public void disableProfiling()
-    {
-        assert profileListener != null : "Cannot disable profiling before enabling it";
-        profileListener.getController().removeTraceListener( profileListener );
-        profileListener = null;
-    }    
     
 } // class DocumentImpl
 

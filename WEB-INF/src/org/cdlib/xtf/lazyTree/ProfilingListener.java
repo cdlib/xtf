@@ -1,5 +1,6 @@
 package org.cdlib.xtf.lazyTree;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,7 +9,6 @@ import java.util.LinkedList;
 
 import org.cdlib.xtf.util.Trace;
 
-import net.sf.saxon.Controller;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.trace.InstructionInfo;
@@ -20,7 +20,7 @@ import net.sf.saxon.trace.TraceListener;
  * 
  * @author Martin Haye
  */
-class ProfilingListener implements TraceListener
+public class ProfilingListener implements TraceListener
 {
     /** 
      * Stack of instructions, used to keep track of what XSLT instruction is
@@ -34,14 +34,6 @@ class ProfilingListener implements TraceListener
     /** Keeps a count of how many nodes are accessed by each instruction. */
     private HashMap      countMap = new HashMap();
     
-    /** Saxon Controller used to control the transformation */
-    private Controller   controller;
-    
-    /** Default constructor; attaches to given controller and document */
-    public ProfilingListener( Controller controller ) {
-        this.controller = controller;
-    }
-
     /** Unused */
     public void open() { }
 
@@ -170,13 +162,34 @@ class ProfilingListener implements TraceListener
     } // class ProfileCount
         
     /**
-     * Returns the controller used for the transformation.
+     * Prints the results of a trace run, to Trace.info().
      */
-    public Controller getController()
+    public void printProfile()
+        throws IOException
     {
-        return controller;
-    }
-
+        // Get a sorted array of the counts.
+        ProfileCount[] counts = getCounts();
+        
+        // Print it out.
+        for( int i = counts.length-1; i >= 0; i-- ) {
+            Trace.info( counts[i].count    + " " +
+                        counts[i].systemId + ":" + 
+                        counts[i].lineNum  );
+            /*
+            // For fun, print out all the nodes too.
+            Set keys = counts[i].nodes.keySet();
+            List list = new ArrayList(keys);
+            Collections.sort( list );
+            for( Iterator iter = list.iterator(); iter.hasNext(); ) {
+                int nodeNum = ((Integer)iter.next()).intValue();
+                NodeImpl node = getNode( nodeNum );
+                String path = Navigator.getPath( node );
+                Trace.info( "    " + path );
+            }
+            */
+        }
+    } // printProfile()
+    
 } // class ProfilingListener
 
 

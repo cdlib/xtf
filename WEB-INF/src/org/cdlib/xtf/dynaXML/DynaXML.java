@@ -234,6 +234,11 @@ public class DynaXML extends TextServlet
             //
             // If not initialized yet, do it now.
             firstTimeInit( "yes".equals(clearCaches) );
+            
+            // If profiling is enabled, we have to notify the stylesheet
+            // cache.
+            //
+            stylesheetCache.enableProfiling( config.stylesheetProfiling );
 
             // Set the default output content type
             res.setContentType("text/html");
@@ -399,7 +404,7 @@ public class DynaXML extends TextServlet
         String raw = req.getParameter("raw");
         if( "yes".equals(raw) || "true".equals(raw) || "1".equals(raw) ) 
         {
-            res.setContentType("text/xml");
+            res.setContentType("text/html");
             
             TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
             transformer = factory.newTransformer();
@@ -412,9 +417,6 @@ public class DynaXML extends TextServlet
         // Modify as necessary
         if( dump && sourceDoc instanceof PersistentTree )
             ((PersistentTree)sourceDoc).setAllPermanent( true );
-
-        if( config.stylesheetProfiling && sourceDoc instanceof PersistentTree )
-            ((PersistentTree)sourceDoc).enableProfiling( (Controller)transformer );
 
         // Make sure errors get directed to the right place.
         if( !(transformer.getErrorListener() instanceof XTFSaxonErrorListener) )
@@ -440,7 +442,7 @@ public class DynaXML extends TextServlet
         }
         
         // Clean up.
-        if( config.stylesheetProfiling && sourceDoc instanceof PersistentTree ) 
+        if( config.stylesheetProfiling )
         {
             Trace.info( "Profile for request: " + 
                         req.getRequestURL().toString() + "?" + 
@@ -449,8 +451,6 @@ public class DynaXML extends TextServlet
             ((PersistentTree)sourceDoc).printProfile();
             Trace.untab();
             Trace.info( "End of profile." );
-            
-            ((PersistentTree)sourceDoc).disableProfiling();
         }
         
         // Debugging: dump search tree.
