@@ -110,12 +110,10 @@ public class DefaultQueryProcessor extends QueryProcessor
      
     
     /**
-     * This is the main entry point. Takes a query request and handles
-     * searching the index and forming the results.
+     * This is an alternate entry point. Takes a pre-parsed query request 
+     * and handles searching the index and forming the results.
      * 
-     * @param queryReqDoc   The request to process, in XML format
-     * @param baseDir       Directory to use for resolving relative paths
-     *                      (if any)
+     * @param queryReq      The pre-parsed request to process
      * @return              Zero or more document hits
      */
     public QueryResult processReq( QueryRequest req )
