@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="WEB-INF/src"/>
-    <classpathentry kind="lib" path="WEB-INF/lib/lucene-1.4.1.jar" sourcepath="WEB-INF/lib/source/lucene-1.4.1"/>
-    <classpathentry kind="lib" path="WEB-INF/lib/servlet.jar"/>
-    <classpathentry kind="lib" path="WEB-INF/lib/winstone.jar"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="lib" path="WEB-INF/lib/PDFBox-0.6.7a.jar" sourcepath="WEB-INF/lib/source/PDFBox-0.6.7a/"/>
-    <classpathentry kind="lib" path="WEB-INF/lib/saxonb-8.1.1.jar" sourcepath="WEB-INF/lib/source/saxonb-8.1.1"/>
-    <classpathentry kind="lib" path="WEB-INF/lib/log4j-1.2.9.jar"/>
-    <classpathentry kind="lib" path="WEB-INF/lib/Tidy.jar"/>
-    <classpathentry kind="output" path="WEB-INF/classes"/>
+	<classpathentry kind="src" path="WEB-INF/src"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/servlet.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/winstone.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry sourcepath="WEB-INF/lib/source/PDFBox-0.6.7a/" kind="lib" path="WEB-INF/lib/PDFBox-0.6.7a.jar"/>
+	<classpathentry sourcepath="WEB-INF/lib/source/saxonb-8.1.1" kind="lib" path="WEB-INF/lib/saxonb-8.1.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/log4j-1.2.9.jar"/>
+	<classpathentry sourcepath="WEB-INF/lib/source/jtidy-04aug2000r7-dev" kind="lib" path="WEB-INF/lib/Tidy.jar"/>
+	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
