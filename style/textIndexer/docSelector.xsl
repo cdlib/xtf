@@ -117,6 +117,9 @@
                    displayStyle="style/dynaXML/docFormatter/default/docFormatter.xsl"/>
       </xsl:if>
     </xsl:if>
+    <xsl:if test="ends-with(@fileName, '.pdf')">
+	  <indexFile fileName="{@fileName}" format="PDF"/>
+    </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>
