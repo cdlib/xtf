@@ -1,0 +1,308 @@
+<?xml version="1.0"?>
+<!-- ?xml-stylesheet type="text/xsl" href="../xslt/UCPress-netlib.xslt"? -->
+<mets xmlns="http://www.loc.gov/METS/" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/TR/xlink" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd" OBJID="ark:/13030/ft958009k3" LABEL="The Velvet Glove: Paternalism and Conflict in Gender, Class, and Race Relations" TYPE="text" PROFILE="http://ark.cdlib.org/ark:/13030/kt3v19p5bk">
+
+   <metsHdr>
+      <agent ROLE="EDITOR" TYPE="ORGANIZATION">
+         <name>California Digital Library</name>
+         <note>record created in batch mergining of MARC and UCPress records</note>
+      </agent>
+            <altRecordID TYPE="isbn-c">0-520-08113-7</altRecordID>      <altRecordID TYPE="isbn-p">0-520-20702-5</altRecordID>      <altRecordID TYPE="ucp-bnum">6117</altRecordID>
+   </metsHdr>
+
+   <dmdSec ID="mods">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <mods xmlns="http://www.loc.gov/mods/" xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/ http://www.loc.gov/standards/mods/mods.xsd">
+<titleInfo>
+<nonSort>The </nonSort>
+<title>velvet glove :</title>
+<subTitle>paternalism and conflict in gender, class, and race relations</subTitle>
+</titleInfo>
+<name type="personal">
+<namePart>Jackman, Mary R</namePart>
+<role>
+<text>creator</text>
+</role>
+</name>
+<typeOfResource>text</typeOfResource>
+<genre authority="marc">bibliography</genre>
+<originInfo>
+<place>
+<code authority="marc">cau</code>
+<text>Berkeley</text>
+</place>
+<publisher>University of California Press</publisher>
+<dateIssued>c1994</dateIssued>
+<dateIssued encoding="marc">1994</dateIssued>
+<issuance>monographic</issuance>
+</originInfo>
+<language authority="iso639-2b">eng</language>
+<physicalDescription>
+<form xmlns="http://www.loc.gov/mods/" authority="marcform">print</form>
+<extent xmlns="http://www.loc.gov/mods/">xvi, 425 p. ; 24 cm.</extent>
+</physicalDescription>
+<tableOfContents>The Expropriative Basis of Social Inequality. The Pursuit of Resources. Long-term Relations of Social Inequality. The Ideological Pressures of Long-term Inequalities. The Sweetest Persuasion: Paternalism. Paternalism versus Benevolence. Mastering the Illusion of Benevolence. The Wages of Love. Outline of the Book -- Pt. I. The Wind and the Sun. 1. The Search for Conflict. Class and Class Conflict. Racial Prejudice as Irrational Antagonism. Political Tolerance as Hostility Defused. Gender Relations as Hostility Revealed. 2. Ideology and Social Control. The Limits of Force. Implicit Power and Ideology. Coercive Love and Reasoned Persuasion -- Pt. II. Three Cases of Inequality. 3. Expressions of Inequality: Class, Race, Gender. The Three Cases: Definitional Parameters. A Comparative Case-Study Analysis. 4. The Structure of Intergroup Contact. Role Segregation and Spatial Segregation. Data: Intergroup Contact in the Three Cases -- Pt. III. Dialogues of Dominance and Subordination.</tableOfContents>
+<tableOfContents>5. Intergroup Feelings and the Definition of Group Interests. The Issues. Data: Intergroup Feelings. Data: The Definition of Group Interests. 6. The Articulation of Policy Goals. The Issues. Data: Abstract Policy Principles. Data: Specific Policy Goals. 7. The Ideological Molds of Paternalism and Conflict. The Issues. Data. 8. The Cognitive Embroidery of Intergroup Relations. The Issues. Data: Trait Attribution to Groups. Data: Popular Explanations of Group Differences -- Pt. IV. Threads of Paternalism and Conflict. 9. Ideology and Coercion. The Politics of Intergroup Ideology. Strategy of Inquiry. The Pattern of Evidence. Love and Enmity.</tableOfContents>
+<note type="statement of responsibility">Mary R. Jackman.</note>
+<note>&quot;A Centennial Book&quot; --P. preceding t.p.</note>
+<note>Includes bibliographical references (p. 385-408) and indexes.</note>
+<subject authority="lcsh">
+<topic>Equality</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Social conflict</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Paternalism</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Intergroup relations</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Ideology</topic>
+</subject>
+<subject>
+<topic>Inequality</topic>
+</subject>
+<subject>
+<topic>United States</topic>
+</subject>
+<classification authority="lcc">HM146 .J33 1994</classification>
+<classification authority="ddc" edition="20">305</classification>
+<identifier type="isbn">0520081137 (cloth : alk. paper)</identifier>
+<identifier type="lccn">93006064</identifier>
+<location>SBXL MAIN</location>
+<extension xmlns:dc="http://purl.org/dc/elements/1.1/">
+<dc:relation>http://escholarship.cdlib.org</dc:relation>
+<dc:relation>http://www.ucpress.edu</dc:relation>
+</extension>
+<recordInfo>
+<recordContentSource>DLC</recordContentSource>
+<recordCreationDate encoding="marc">930727</recordCreationDate>
+<recordChangeDate encoding="iso8601">20020719032213.0</recordChangeDate>
+<recordIdentifier>SBXL001882910</recordIdentifier>
+</recordInfo>
+</mods>
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+
+   <dmdSec ID="ucpress">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <ROW xmlns="http://www.cdlib.org/schemas/xmldata" xsi:schemaLocation="http://www.cdlib.org/schemas/xmldata http://ark.cdlib.org/schemas/xmldata/xmldata.xsd" MODID="10" RECORDID="33916">
+<UCPnum>6117</UCPnum>
+<NLnum>42414</NLnum>
+<UCPnum.LC_number><DATA/></UCPnum.LC_number>
+<UCPnum.ISBN_cl><DATA>0-520-08113-7</DATA></UCPnum.ISBN_cl>
+<UCPnum.ISBN_pa><DATA>0-520-20702-5</DATA></UCPnum.ISBN_pa>
+<UCPnum.AUTHOR_CITATION><DATA>Jackman, Mary R.</DATA></UCPnum.AUTHOR_CITATION>
+<UCPnum.AUTHOR_CITATION_FWD><DATA>Mary Jackman</DATA></UCPnum.AUTHOR_CITATION_FWD>
+<UCPnum.Auth1LastName><DATA>Jackman</DATA></UCPnum.Auth1LastName>
+<UCPnum.Title><DATA>The Velvet Glove: Paternalism and Conflict in Gender, Class, and Race Relations</DATA></UCPnum.Title>
+<UCPnum.TitleMain><DATA>The Velvet Glove</DATA></UCPnum.TitleMain>
+<UCPnum.TitleSub><DATA>Paternalism and Conflict in Gender, Class, and Race Relations</DATA></UCPnum.TitleSub>
+<UCPnum.TitleMainClean><DATA>The Velvet Glove</DATA></UCPnum.TitleMainClean>
+<UCPnum.TitleSubClean><DATA>Paternalism and Conflict in Gender, Class, and Race Relations</DATA></UCPnum.TitleSubClean>
+<UCPnum.AuthorBioInCatalog><DATA><b>Mary R. Jackman</b> is Professor of Sociology at the University of California, Davis, and co-author of <i>Class Awareness in the United States</i> (California, 1983).</DATA></UCPnum.AuthorBioInCatalog>
+<UCPnum.AuthorsXtraCit.TranslsIllustrsEds><DATA>(A Centennial Book)</DATA></UCPnum.AuthorsXtraCit.TranslsIllustrsEds>
+<UCPnum.Blurbs><DATA>&quot;With an enviable elegance of prose, penetrating theoretical reasoning, and a careful analysis of truly well designed survey data, <i>The Velvet Glove</i> delivers a powerful statement on the dynamics of race, class, and gender.&quot; - Lawrence Bobo, University of California, Los Angeles&quot;An explosive, powerful book - laying bare the uselessness of individualism as a solution to today's racial problems, while simultaneously exposing its dominative origins.&quot; - Nancy Denton, State University of New York, Albany</DATA></UCPnum.Blurbs>
+<UCPnum.Copy><DATA>This landmark study analyzes and compares the ideologies that develop among unequal social groups. Mary Jackman employs a unique national survey to investigate all three of the most prominent relations of inequality in the United States: gender, class, and race. Where other scholars have emphasized conflict as the emblem of intergroup oppression, Jackman proposes a theory in which both dominant and subordinate groups maneuver to avoid open hostility as they strive to control resources within the confines of their mutual relationship.Hostility, Jackman points out, creates resistance in a relationship. Dominant groups therefore try to preempt the use of force by following a velvet-glove strategy of &quot;sweet persuasion.&quot; They are drawn especially to the ideological mold of paternalism, in which the coercion of subordinates is grounded in love rather than hate. Dominant-group members pronounce authoritatively on the needs and welfare of all and then profess to &quot;provide&quot; for those needs. Love, affection, and praise are offered to subordinates on strict condition that they comply with the terms of the unequal relationship. Whether in the home or in the arena of class or race relations, paternalism wraps control and authority in an ideological cocoon in which discriminatory actions are defined as benevolent and affection is made contingent on compliance.Jackman's emphasis on the practice of coercive love in race, class, and gender relations is sure to generate controversy and further research. Sociologists, psychologists, political scientists, and anyone interested in group ideology will find here a provocative challenge to conventional views.</DATA></UCPnum.Copy>
+<UCPnum.Illustrations><DATA/></UCPnum.Illustrations>
+<UCPnum.PageCount><DATA>432</DATA></UCPnum.PageCount>
+<UCPnum.Pub_Date><DATA>4/11/1994</DATA></UCPnum.Pub_Date>
+<UCPnum.Series_name><DATA/></UCPnum.Series_name>
+<UCPnum.Series_No.Vol><DATA/></UCPnum.Series_No.Vol>
+<UCPnum.Subjects><DATA>Sociology; Social Problems; American Studies; Ethnic Studies; Gender Studies</DATA></UCPnum.Subjects>
+<SubDescs1>Sociology</SubDescs1>
+<SubDescs2>Social Problems</SubDescs2>
+<SubDescs3>American Studies</SubDescs3>
+<SubDescs4>Ethnic Studies</SubDescs4>
+<SubDescs5>Gender Studies</SubDescs5>
+<SubDescs6/>
+<SubDescs7/>
+<SubDescs8/>
+<SubDescs9/>
+<SubDescs10/>
+<Access_Level>3</Access_Level>
+<OPstatus>X</OPstatus>
+<public_nonPublic>Public</public_nonPublic>
+<ARK.ARK><DATA>ark:/13030/ft958009k3</DATA></ARK.ARK></ROW>
+
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+   
+   <amdSec>
+      <rightsMD ID="rights">
+         <mdWrap MIMETYPE="text/xml" MDTYPE="OTHER" LABEL="METS Extension Rights Schema">
+            <xmlData>
+               <RightsDeclarationMD xmlns="" xsi:noNamespaceSchemaLocation="http://www.loc.gov/standards/rights/METSRights.xsd" RIGHTSCATEGORY="COPYRIGHTED">
+                  <RightsDeclaration>Copyright U.C. Regents. All Rights Reserved.</RightsDeclaration>
+                  <RightsHolder>
+                     <RightsHolderName>Regents of the University of California</RightsHolderName>
+                  </RightsHolder>
+                  <Context CONTEXTCLASS="GENERAL PUBLIC">
+                     <Permissions DISCOVER="true" DISPLAY="true"/>
+                     <Constraints CONSTRAINTTYPE="TRANSFERPERMISSIONS">
+                        <ConstraintDescription>Any file or element contained herein may be displayed or transmitted across a network by anyone who has signed a license agreement with the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                     <Constraints CONSTRAINTTYPE="RE-USE">
+                        <ConstraintDescription>Copy and distribution of any element or file is prohibited without the express written permission of the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                  </Context>
+               </RightsDeclarationMD>
+            </xmlData>
+         </mdWrap>
+      </rightsMD>
+   </amdSec>
+
+   <fileSec>
+   <fileGrp>
+      <file ID="top">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3"/>
+      </file>
+      <file ID="ded1">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;doc.view=popup&amp;chunk.id=ded1"/>
+      </file>
+      <file ID="d0e1271">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e1271"/>
+      </file>
+      <file ID="d0e1322">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e1322"/>
+      </file>
+      <file ID="d0e1703">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e1703"/>
+      </file>
+      <file ID="d0e1712">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e1712"/>
+      </file>
+      <file ID="d0e2439">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e2439"/>
+      </file>
+      <file ID="d0e3116">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e3116"/>
+      </file>
+      <file ID="d0e3125">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e3125"/>
+      </file>
+      <file ID="d0e3719">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e3719"/>
+      </file>
+      <file ID="d0e6602">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e6602"/>
+      </file>
+      <file ID="d0e6611">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e6611"/>
+      </file>
+      <file ID="d0e9906">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e9906"/>
+      </file>
+      <file ID="d0e13557">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e13557"/>
+      </file>
+      <file ID="d0e15134">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e15134"/>
+      </file>
+      <file ID="d0e18437">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e18437"/>
+      </file>
+      <file ID="d0e18446">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e18446"/>
+      </file>
+      <file ID="d0e19003">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e19003"/>
+      </file>
+      <file ID="d0e21564">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e21564"/>
+      </file>
+      <file ID="d0e27937">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009k3&amp;chunk.id=d0e27937"/>
+      </file>
+   </fileGrp>
+</fileSec>
+
+   <structMap>
+   <div TYPE="TEI.2" LABEL="The Velvet Glove">
+      <fptr FILEID="top"/>
+      <div TYPE="text">
+         <div TYPE="front">
+            <div LABEL="Dedication" TYPE="dedication">
+               <fptr FILEID="ded1"/>
+            </div>
+            <div LABEL="ACKNOWLEDGMENTS" TYPE="fmsec">
+               <fptr FILEID="d0e1271"/>
+            </div>
+         </div>
+         <div TYPE="body">
+            <div LABEL="PROLOGUE" TYPE="chapter">
+               <fptr FILEID="d0e1322"/>
+            </div>
+            <div LABEL="PART I&#x2014;&#xA0; THE WIND AND THE SUN" TYPE="part">
+               <fptr FILEID="d0e1703"/>
+               <div LABEL="Chapter One&#x2014;&#xA0; The Search for Conflict" TYPE="chapter">
+                  <fptr FILEID="d0e1712"/>
+               </div>
+               <div LABEL="Chapter Two&#x2014;&#xA0; Ideology and Social Control" TYPE="chapter">
+                  <fptr FILEID="d0e2439"/>
+               </div>
+            </div>
+            <div LABEL="PART II&#x2014;&#xA0; THREE CASES OF INEQUALITY" TYPE="part">
+               <fptr FILEID="d0e3116"/>
+               <div LABEL="Chapter Three&#x2014;&#xA0; Expressions of Inequality:&#xA0; Class, Race, Gender" TYPE="chapter">
+                  <fptr FILEID="d0e3125"/>
+               </div>
+               <div LABEL="Chapter Four&#x2014;&#xA0; The Structure of Intergroup Contact" TYPE="chapter">
+                  <fptr FILEID="d0e3719"/>
+               </div>
+            </div>
+            <div LABEL="PART III&#x2014;&#xA0; DIALOGUES OF DOMINANCE AND SUBORDINATION" TYPE="part">
+               <fptr FILEID="d0e6602"/>
+               <div LABEL="Chapter Five&#x2014;&#xA0; Intergroup Feelings and the Definition of Group Interests" TYPE="chapter">
+                  <fptr FILEID="d0e6611"/>
+               </div>
+               <div LABEL="Chapter Six&#x2014;&#xA0; The Articulation of Policy Goals" TYPE="chapter">
+                  <fptr FILEID="d0e9906"/>
+               </div>
+               <div LABEL="Chapter Seven&#x2014;&#xA0; The Ideological Molds of Paternalism and Conflict" TYPE="chapter">
+                  <fptr FILEID="d0e13557"/>
+               </div>
+               <div LABEL="Chapter Eight&#x2014;&#xA0; The Cognitive Embroidery of Intergroup Relations" TYPE="chapter">
+                  <fptr FILEID="d0e15134"/>
+               </div>
+            </div>
+            <div LABEL="PART IV&#x2014;&#xA0; THREADS OF PATERNALISM AND CONFLICT" TYPE="part">
+               <fptr FILEID="d0e18437"/>
+               <div LABEL="Chapter Nine&#x2014;&#xA0; Ideology and Coercion" TYPE="chapter">
+                  <fptr FILEID="d0e18446"/>
+               </div>
+            </div>
+         </div>
+         <div TYPE="back">
+            <div LABEL="REFERENCES" TYPE="bibliography">
+               <fptr FILEID="d0e19003"/>
+            </div>
+            <div LABEL="SUBJECT INDEX" TYPE="index">
+               <fptr FILEID="d0e21564"/>
+            </div>
+            <div LABEL="AUTHOR INDEX" TYPE="index">
+               <fptr FILEID="d0e27937"/>
+            </div>
+         </div>
+      </div>
+   </div>
+</structMap>
+
+   <behaviorSec>
+      <behavior ID="disp1" STRUCTID="top" BTYPE="display" LABEL="Display Behavior">
+         <interfaceDef LABEL="Default Display Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/displaydefaultDisplayDef.txt"/>
+         <mechanism LABEL="Default Display Mechanism" LOCTYPE="URN" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/defaultDisplayMech.xml"/>
+      </behavior>
+      <behavior ID="auth1" STRUCTID="top" BTYPE="authentication" LABEL="Authentication Behavior">
+         <interfaceDef LABEL="General Public Authentication Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/publicAuthDef.txt"/>
+         <mechanism LABEL="General Public Authentication Mechanism" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/authentication/publicAuthMech.xml"/>
+      </behavior>
+   </behaviorSec>
+
+</mets>

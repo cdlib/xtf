@@ -1,0 +1,303 @@
+<?xml version="1.0"?>
+<!-- ?xml-stylesheet type="text/xsl" href="../xslt/UCPress-netlib.xslt"? -->
+<mets xmlns="http://www.loc.gov/METS/" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/TR/xlink" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd" OBJID="ark:/13030/ft958009mm" LABEL="The Opening of the Apartheid Mind: Options for the New South Africa" TYPE="text" PROFILE="http://ark.cdlib.org/ark:/13030/kt3v19p5bk">
+
+   <metsHdr>
+      <agent ROLE="EDITOR" TYPE="ORGANIZATION">
+         <name>California Digital Library</name>
+         <note>record created in batch mergining of MARC and UCPress records</note>
+      </agent>
+            <altRecordID TYPE="isbn-c">0-520-08199-4</altRecordID>      <altRecordID TYPE="ucp-bnum">6178</altRecordID>
+   </metsHdr>
+
+   <dmdSec ID="mods">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <mods xmlns="http://www.loc.gov/mods/" xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/ http://www.loc.gov/standards/mods/mods.xsd">
+<titleInfo>
+<nonSort>The </nonSort>
+<title>opening of the Apartheid mind :</title>
+<subTitle>options for the new South Africa</subTitle>
+</titleInfo>
+<name type="personal">
+<namePart>Adam, Heribert</namePart>
+<role>
+<text>creator</text>
+</role>
+</name>
+<name type="personal">
+<namePart>Moodley, Kogila</namePart>
+</name>
+<typeOfResource>text</typeOfResource>
+<genre authority="marc">bibliography</genre>
+<originInfo>
+<place>
+<code authority="marc">cau</code>
+<text>Berkeley</text>
+</place>
+<publisher>University of California Press</publisher>
+<dateIssued>c1993</dateIssued>
+<dateIssued encoding="marc">1993</dateIssued>
+<issuance>monographic</issuance>
+</originInfo>
+<language authority="iso639-2b">eng</language>
+<physicalDescription>
+<form xmlns="http://www.loc.gov/mods/" authority="marcform">print</form>
+<extent xmlns="http://www.loc.gov/mods/">xvi, 277 p. : map ; 23 cm.</extent>
+</physicalDescription>
+<tableOfContents>1. Colonialism, Communalism, and Democracy: South Africa in Comparative Perspective. The Global Relevance of South Africa. Transforming Military Regimes and Settler States. South Africa as a Communal Conflict. Constitutional and Economic Options -- 2. From Confrontation to Negotiation. Redefining the Enemy. Insurrectionism and the Myth of Victory. The Impact of Sanctions -- 3. Prospects for a Historic Compromise -- 4. Dilemmas and Contradictions in the ANC Alliance. Liberation, Cohesion, and Heterogeneity. Questioning the ANC-SACP Alliance. Stalinism Reconsidered. Wavering Social Democrats. The Fallacy of the Leipzig Option -- 5. Psychological Liberation: Black Consciousness and Africanism. Internalized Colonialism and the Psychology of Liberation. Forms of Protest. Africanism in the Postapartheid Era -- 6. Political Violence, &quot;Tribalism,&quot; and Inkatha. The State, Inkatha, and the &quot;Third Force&quot; &quot;Tribalism&quot; in Perspective. Intergenerational and Urban-Rural Cleavages.</tableOfContents>
+<tableOfContents>Isolated Migrants in Single-Men Hostels. Clientelism as Secessionism -- 7. The Right Wing: The Option of Secession, Civil War, and Social Disintegration -- 8. International Intervention: From Anti-Apartheid to Development. A Post-Cold War Foreign Policy on Southern Africa. Training a New Managerial Class. Foreign Assistance for What? Neglected Areas of Foreign Development Assistance -- 9. Regional Relations and Development Policies. Human Rights. Mozambique. The Causes of Failure -- 10. The Future of South Africa. Another Zimbabwe? Another Yugoslavia? Another Germany? -- Conclusion: Democracy or Elite Cartel?</tableOfContents>
+<note type="statement of responsibility">Heribert Adam and Kogila Moodley.</note>
+<note>Includes bibliographical references (237-249) and index.</note>
+<subject authority="lcsh">
+<topic>Apartheid</topic>
+<geographic>South Africa.</geographic>
+</subject>
+<subject authority="lcsh">
+<geographic>South Africa</geographic>
+<topic>Politics and government</topic>
+<temporal>1989-1994.</temporal>
+</subject>
+<classification authority="lcc">DT1757 .A33 1993</classification>
+<classification authority="ddc" edition="20">968.06/4</classification>
+<relatedItem type="series">
+<titleInfo>
+<title>Perspectives on Southern Africa ; 50</title>
+</titleInfo>
+</relatedItem>
+<identifier type="isbn">0520081994 (alk. paper)</identifier>
+<identifier type="lccn">92036443</identifier>
+<location>SBXL EGBL</location>
+<extension xmlns:dc="http://purl.org/dc/elements/1.1/">
+<dc:relation>http://escholarship.cdlib.org</dc:relation>
+<dc:relation>http://www.ucpress.edu</dc:relation>
+</extension>
+<recordInfo>
+<recordContentSource>DLC</recordContentSource>
+<recordCreationDate encoding="marc">931104</recordCreationDate>
+<recordChangeDate encoding="iso8601">20020718050414.0</recordChangeDate>
+<recordIdentifier>SBXL001575070</recordIdentifier>
+</recordInfo>
+</mods>
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+
+   <dmdSec ID="ucpress">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <ROW xmlns="http://www.cdlib.org/schemas/xmldata" xsi:schemaLocation="http://www.cdlib.org/schemas/xmldata http://ark.cdlib.org/schemas/xmldata/xmldata.xsd" MODID="11" RECORDID="34249">
+<UCPnum>6178</UCPnum>
+<NLnum>00000</NLnum>
+<UCPnum.LC_number><DATA/></UCPnum.LC_number>
+<UCPnum.ISBN_cl><DATA>0-520-08199-4</DATA></UCPnum.ISBN_cl>
+<UCPnum.ISBN_pa><DATA/></UCPnum.ISBN_pa>
+<UCPnum.AUTHOR_CITATION><DATA>Adam, Heribert, and Kogila Moodley</DATA></UCPnum.AUTHOR_CITATION>
+<UCPnum.AUTHOR_CITATION_FWD><DATA>Heribert Adam and Kogila Moodley</DATA></UCPnum.AUTHOR_CITATION_FWD>
+<UCPnum.Auth1LastName><DATA>Adam</DATA></UCPnum.Auth1LastName>
+<UCPnum.Title><DATA>The Opening of the Apartheid Mind: Options for the New South Africa</DATA></UCPnum.Title>
+<UCPnum.TitleMain><DATA>The Opening of the Apartheid Mind</DATA></UCPnum.TitleMain>
+<UCPnum.TitleSub><DATA>Options for the New South Africa</DATA></UCPnum.TitleSub>
+<UCPnum.TitleMainClean><DATA>The Opening of the Apartheid Mind</DATA></UCPnum.TitleMainClean>
+<UCPnum.TitleSubClean><DATA>Options for the New South Africa</DATA></UCPnum.TitleSubClean>
+<UCPnum.AuthorBioInCatalog><DATA><b>Heribert Adam</b> is Professor of Sociology at Simon Fraser University in Vancouver. His books include <i>Modernizing Racial Domination</i> (California, 1971) and also with Kogila Moodley, <i>South Africa Without Apartheid</i> (California, 1986). <b>Kogila Moodley</b> is Associate Professor in the Department of Social and Educational Studies at the University of British Columbia. She is editor and co-author of <i>Race Relations and Multicultural Education</i> (1984).</DATA></UCPnum.AuthorBioInCatalog>
+<UCPnum.AuthorsXtraCit.TranslsIllustrsEds><DATA/></UCPnum.AuthorsXtraCit.TranslsIllustrsEds>
+<UCPnum.Blurbs><DATA/></UCPnum.Blurbs>
+<UCPnum.Copy><DATA>Refusing to be governed by what is fashionable or inoffensive, Heribert Adam and Kogila Moodley frankly address the passions and rationalities that drive politics in post-apartheid South Africa. They argue that the country's quest for democracy is widely misunderstood and that public opinion abroad relies on stereotypes of violent tribalism and false colonial analogies.Adam and Moodley criticize the personality cult surrounding Nelson Mandela and the accolades accorded F. W. de Klerk. They reject the black-versus-white conflict and substitute sober analysis and strategic pragmatism for the moral outrage that typifies so much writing about South Africa. Believing that the best expression of solidarity emanates from sympathetic but candid criticism, they pose challenging questions for the African National Congress and Nelson Mandela. They give in-depth coverage to political violence, the ANC-South African Communist Party alliance, Inkatha, and other controversial topics as well.The authors do not propose a solution that will guarantee a genuinely democratic South Africa. What they offer is an understanding of the country's social conditions and political constraints, and they sketch options for both a new South Africa and a new post-Cold War foreign policy for the whole of southern Africa. The importance of this book is as immediate as today's headlines.</DATA></UCPnum.Copy>
+<UCPnum.Illustrations><DATA/></UCPnum.Illustrations>
+<UCPnum.PageCount><DATA>277</DATA></UCPnum.PageCount>
+<UCPnum.Pub_Date><DATA>6/28/1993</DATA></UCPnum.Pub_Date>
+<UCPnum.Series_name><DATA>Perspectives on Southern Africa</DATA></UCPnum.Series_name>
+<UCPnum.Series_No.Vol><DATA>50</DATA></UCPnum.Series_No.Vol>
+<UCPnum.Subjects><DATA>African Studies; Politics; African History</DATA></UCPnum.Subjects>
+<SubDescs1>African Studies</SubDescs1>
+<SubDescs2>Politics</SubDescs2>
+<SubDescs3>African History</SubDescs3>
+<SubDescs4/>
+<SubDescs5/>
+<SubDescs6/>
+<SubDescs7/>
+<SubDescs8/>
+<SubDescs9/>
+<SubDescs10/>
+<Access_Level>3</Access_Level>
+<OPstatus/>
+<public_nonPublic>Public</public_nonPublic>
+<ARK.ARK><DATA>ark:/13030/ft958009mm</DATA></ARK.ARK></ROW>
+
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+   
+   <amdSec>
+      <rightsMD ID="rights">
+         <mdWrap MIMETYPE="text/xml" MDTYPE="OTHER" LABEL="METS Extension Rights Schema">
+            <xmlData>
+               <RightsDeclarationMD xmlns="" xsi:noNamespaceSchemaLocation="http://www.loc.gov/standards/rights/METSRights.xsd" RIGHTSCATEGORY="COPYRIGHTED">
+                  <RightsDeclaration>Copyright U.C. Regents. All Rights Reserved.</RightsDeclaration>
+                  <RightsHolder>
+                     <RightsHolderName>Regents of the University of California</RightsHolderName>
+                  </RightsHolder>
+                  <Context CONTEXTCLASS="GENERAL PUBLIC">
+                     <Permissions DISCOVER="true" DISPLAY="true"/>
+                     <Constraints CONSTRAINTTYPE="TRANSFERPERMISSIONS">
+                        <ConstraintDescription>Any file or element contained herein may be displayed or transmitted across a network by anyone who has signed a license agreement with the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                     <Constraints CONSTRAINTTYPE="RE-USE">
+                        <ConstraintDescription>Copy and distribution of any element or file is prohibited without the express written permission of the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                  </Context>
+               </RightsDeclarationMD>
+            </xmlData>
+         </mdWrap>
+      </rightsMD>
+   </amdSec>
+
+   <fileSec>
+   <fileGrp>
+      <file ID="top">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm"/>
+      </file>
+      <file ID="ded1">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;doc.view=popup&amp;chunk.id=ded1"/>
+      </file>
+      <file ID="ack">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ack"/>
+      </file>
+      <file ID="abb">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=abb"/>
+      </file>
+      <file ID="introduction">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=introduction"/>
+      </file>
+      <file ID="ch1">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ch1"/>
+      </file>
+      <file ID="ch2">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ch2"/>
+      </file>
+      <file ID="ch3">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ch3"/>
+      </file>
+      <file ID="ch4">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ch4"/>
+      </file>
+      <file ID="ch5">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ch5"/>
+      </file>
+      <file ID="ch6">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ch6"/>
+      </file>
+      <file ID="ch7">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ch7"/>
+      </file>
+      <file ID="ch8">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ch8"/>
+      </file>
+      <file ID="ch9">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ch9"/>
+      </file>
+      <file ID="ch10">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=ch10"/>
+      </file>
+      <file ID="conclusion">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=conclusion"/>
+      </file>
+      <file ID="bib">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=bib"/>
+      </file>
+      <file ID="jour">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=jour"/>
+      </file>
+      <file ID="per">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=per"/>
+      </file>
+      <file ID="auth">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft958009mm&amp;chunk.id=auth"/>
+      </file>
+   </fileGrp>
+</fileSec>
+
+   <structMap>
+   <div TYPE="TEI.2" LABEL="The Opening of the Apartheid Mind">
+      <fptr FILEID="top"/>
+      <div TYPE="text">
+         <div TYPE="front">
+            <div LABEL="Dedication" TYPE="dedication">
+               <fptr FILEID="ded1"/>
+            </div>
+            <div LABEL="Acknowledgments" TYPE="fmsec">
+               <fptr FILEID="ack"/>
+            </div>
+            <div LABEL="Abbreviations and Acronyms" TYPE="fmsec">
+               <fptr FILEID="abb"/>
+            </div>
+         </div>
+         <div TYPE="body">
+            <div LABEL="Methodological Approaches and Political Values" TYPE="chapter">
+               <fptr FILEID="introduction"/>
+            </div>
+            <div LABEL="1.&#xA0;Colonialism, Communalism, and Democracy" TYPE="chapter">
+               <fptr FILEID="ch1"/>
+            </div>
+            <div LABEL="2.&#xA0;From Confrontation to Negotiation" TYPE="chapter">
+               <fptr FILEID="ch2"/>
+            </div>
+            <div LABEL="3.&#xA0;Prospects for a Historic Compromise" TYPE="chapter">
+               <fptr FILEID="ch3"/>
+            </div>
+            <div LABEL="4.&#xA0;Dilemmas and Contradictions in the ANC Alliance" TYPE="chapter">
+               <fptr FILEID="ch4"/>
+            </div>
+            <div LABEL="5.&#xA0;Psychological Liberation" TYPE="chapter">
+               <fptr FILEID="ch5"/>
+            </div>
+            <div LABEL="6.&#xA0;Political Violence, &#x201C;Tribalism,&#x201D; and Inkatha" TYPE="chapter">
+               <fptr FILEID="ch6"/>
+            </div>
+            <div LABEL="7.&#xA0;The Right Wing" TYPE="chapter">
+               <fptr FILEID="ch7"/>
+            </div>
+            <div LABEL="8.&#xA0;International Intervention" TYPE="chapter">
+               <fptr FILEID="ch8"/>
+            </div>
+            <div LABEL="9.&#xA0;Regional Relations and Development Policies" TYPE="chapter">
+               <fptr FILEID="ch9"/>
+            </div>
+            <div LABEL="10.&#xA0;The Future of South Africa" TYPE="chapter">
+               <fptr FILEID="ch10"/>
+            </div>
+            <div LABEL="Conclusion" TYPE="chapter">
+               <fptr FILEID="conclusion"/>
+            </div>
+         </div>
+         <div TYPE="back">
+            <div LABEL="Select Bibliography" TYPE="bmsec">
+               <fptr FILEID="bib"/>
+            </div>
+            <div LABEL="Selected Southern African Journals and Newsletters" TYPE="bmsec">
+               <fptr FILEID="jour"/>
+            </div>
+            <div LABEL="Perspectives on Southern Africa" TYPE="bmsec">
+               <fptr FILEID="per"/>
+            </div>
+            <div LABEL="About the Authors" TYPE="bmsec">
+               <fptr FILEID="auth"/>
+            </div>
+         </div>
+      </div>
+   </div>
+</structMap>
+
+   <behaviorSec>
+      <behavior ID="disp1" STRUCTID="top" BTYPE="display" LABEL="Display Behavior">
+         <interfaceDef LABEL="Default Display Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/displaydefaultDisplayDef.txt"/>
+         <mechanism LABEL="Default Display Mechanism" LOCTYPE="URN" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/defaultDisplayMech.xml"/>
+      </behavior>
+      <behavior ID="auth1" STRUCTID="top" BTYPE="authentication" LABEL="Authentication Behavior">
+         <interfaceDef LABEL="General Public Authentication Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/publicAuthDef.txt"/>
+         <mechanism LABEL="General Public Authentication Mechanism" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/authentication/publicAuthMech.xml"/>
+      </behavior>
+   </behaviorSec>
+
+</mets>

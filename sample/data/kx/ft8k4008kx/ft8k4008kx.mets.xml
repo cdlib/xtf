@@ -1,0 +1,283 @@
+<?xml version="1.0"?>
+<!-- ?xml-stylesheet type="text/xsl" href="../xslt/UCPress-netlib.xslt"? -->
+<mets xmlns="http://www.loc.gov/METS/" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/TR/xlink" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd" OBJID="ark:/13030/ft8k4008kx" LABEL="Mass Mediations: New Approaches to Popular Culture in the Middle East and Beyond" TYPE="text" PROFILE="http://ark.cdlib.org/ark:/13030/kt3v19p5bk">
+
+   <metsHdr>
+      <agent ROLE="EDITOR" TYPE="ORGANIZATION">
+         <name>California Digital Library</name>
+         <note>record created in batch mergining of MARC and UCPress records</note>
+      </agent>
+            <altRecordID TYPE="isbn-c">0-520-21925-2</altRecordID>      <altRecordID TYPE="isbn-p">0-520-21926-0</altRecordID>      <altRecordID TYPE="ucp-bnum">8484</altRecordID>
+   </metsHdr>
+
+   <dmdSec ID="mods">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <mods xmlns="http://www.loc.gov/mods/" xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/ http://www.loc.gov/standards/mods/mods.xsd">
+<titleInfo>
+<title>Mass mediations :</title>
+<subTitle>new approaches to popular culture in the Middle East and beyond</subTitle>
+</titleInfo>
+<name type="personal">
+<namePart>Armbrust, Walter</namePart>
+</name>
+<name type="corporate">
+<namePart>eScholarship (Online service)</namePart>
+</name>
+<typeOfResource>text</typeOfResource>
+<genre authority="marc">bibliography</genre>
+<genre authority="local">Online resources.</genre>
+<originInfo>
+<place>
+<code authority="marc">cau</code>
+<text>Berkeley</text>
+</place>
+<publisher>University of California Press</publisher>
+<dateIssued>c2000</dateIssued>
+<dateIssued encoding="marc">2000</dateIssued>
+<issuance>monographic</issuance>
+</originInfo>
+<language authority="iso639-2b">eng</language>
+<physicalDescription>
+<form xmlns="http://www.loc.gov/mods/" authority="marcform">print</form>
+<extent xmlns="http://www.loc.gov/mods/">xi, 378 p. ; 23 cm</extent>
+</physicalDescription>
+<tableOfContents>Introduction: anxieties of scale / Walter Armbrust -- Public culture in Arab Detroit: creating Arab/American identities in a transnational domain / Andrew Shryock -- The 6/8 beat goes on: Persian popular music from Bazm-e Qujariyyeh to Beverly Hills garden parties / Anthony Shay -- Sa'ida Sultan/Danna International: transgender pop and polysemiotics of sex, nation, and ethnicity on the Israeli-Egyptian border / Ted Swedenburg -- Playing it both ways: local Egyptian performers between regional identity and international markets / Katherine E. Zirbel -- Joujouka/Jajouka/Zahjoukah: Moroccan music and Euro-American imagination / Philip Schuyler -- Nasser 56/Cairo 96: reimaging Egypt's lost community / Joel Gordon -- Consuming Damascus: public culture and the construction of social identity / Christa Salamandra -- The hairbrush and the dagger: mediating modernity in Lahore / Richard McGill Murphy -- &quot;Beloved Istanbul&quot;: realism and the transnational imaginary in Turkish popular culture / Martin Stokes -- Badi'a Masabni, artiste and modernist: the Egyptian print media's carnival of national identity / Roberta L. Dougherty -- American ambassador in technicolor and cinemascope: Hollywood and revolution on the Nile / Robert Vitalis -- The golden age before the golden age: commercial Egyptian cinema before the 1960s / Walter Armbrust</tableOfContents>
+<note type="statement of responsibility">edited by Walter Armbrust</note>
+<note>Includes bibliographical references (p. 329-353) and index</note>
+<note>Also available on the World Wide Web</note>
+<subject authority="lcsh">
+<topic>Mass media</topic>
+<geographic>Middle East</geographic>
+</subject>
+<subject authority="lcsh">
+<topic>Popular culture</topic>
+<geographic>Middle East</geographic>
+</subject>
+<classification authority="lcc">P94.65.M628 M37 2000</classification>
+<identifier type="isbn">0520219252 (cloth : alk. paper)</identifier>
+<identifier type="isbn">0520219260 (pbk : alk. paper)</identifier>
+<identifier type="lccn">99043224</identifier>
+<identifier type="uri">http://ark.cdlib.org/ark:/13030/ft8k4008kx/</identifier>
+<location>SDB ck</location>
+<location>SDB nnet</location>
+<extension xmlns:dc="http://purl.org/dc/elements/1.1/">
+<dc:relation>http://escholarship.cdlib.org</dc:relation>
+<dc:relation>http://www.ucpress.edu</dc:relation>
+</extension>
+<recordInfo>
+<recordContentSource>DLC</recordContentSource>
+<recordCreationDate encoding="marc">990729</recordCreationDate>
+<recordChangeDate encoding="iso8601">20030618000000.0</recordChangeDate>
+</recordInfo>
+</mods>
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+
+   <dmdSec ID="ucpress">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <ROW xmlns="http://www.cdlib.org/schemas/xmldata" xsi:schemaLocation="http://www.cdlib.org/schemas/xmldata http://ark.cdlib.org/schemas/xmldata/xmldata.xsd" MODID="11" RECORDID="34117">
+<UCPnum>8484</UCPnum>
+<NLnum>63859</NLnum>
+<UCPnum.LC_number><DATA>99-43224</DATA></UCPnum.LC_number>
+<UCPnum.ISBN_cl><DATA>0-520-21925-2</DATA></UCPnum.ISBN_cl>
+<UCPnum.ISBN_pa><DATA>0-520-21926-0</DATA></UCPnum.ISBN_pa>
+<UCPnum.AUTHOR_CITATION><DATA>Armbrust, Walter, editor</DATA></UCPnum.AUTHOR_CITATION>
+<UCPnum.AUTHOR_CITATION_FWD><DATA>Walter Armbrust, editor</DATA></UCPnum.AUTHOR_CITATION_FWD>
+<UCPnum.Auth1LastName><DATA>Armbrust</DATA></UCPnum.Auth1LastName>
+<UCPnum.Title><DATA>Mass Mediations: New Approaches to Popular Culture in the Middle East and Beyond</DATA></UCPnum.Title>
+<UCPnum.TitleMain><DATA>Mass Mediations</DATA></UCPnum.TitleMain>
+<UCPnum.TitleSub><DATA>New Approaches to Popular Culture in the Middle East and Beyond</DATA></UCPnum.TitleSub>
+<UCPnum.TitleMainClean><DATA>Mass Mediations</DATA></UCPnum.TitleMainClean>
+<UCPnum.TitleSubClean><DATA>New Approaches to Popular Culture in the Middle East and Beyond</DATA></UCPnum.TitleSubClean>
+<UCPnum.AuthorBioInCatalog><DATA><b>Walter Armbrust</b> is Visiting Assistant Professor at the Center for Contemporary Arab Studies, Georgetown University. He is the author of <i>Mass Culture and Modernism in Egypt</i> (1996) and editor of <i>The Seen and the Unseeable: Visual Culture in the Middle East</i> (1998).</DATA></UCPnum.AuthorBioInCatalog>
+<UCPnum.AuthorsXtraCit.TranslsIllustrsEds><DATA/></UCPnum.AuthorsXtraCit.TranslsIllustrsEds>
+<UCPnum.Blurbs><DATA/></UCPnum.Blurbs>
+<UCPnum.Copy><DATA>Offering a stimulating diversity of perspectives, this collection examines how popular culture through mass media defines the scale and character of social interaction in the Middle East. The contributors approach popular culture broadly, with an interest in how it creates new scales of communication and new dimensions of identity that affect economics, politics, aesthetics, and performance.	Reflected in these essays is the fact that mass media are as ubiquitous in Cairo and Karachi as in Los Angeles and Detroit. From Persian popular music in Beverly Hills to Egyptians' reaction to a recent film on Gamal Abdel Nasser; from postmodern Turkish novels to the music of an Israeli transsexual singer, the essays illustrate the multiple contexts of modern cultural production. 	The unfolding of modernity in colonial and postcolonial societies has been little analyzed until now. In addressing transnational aspects of Middle Eastern societies, the contributors also challenge conventional assumptions about the region and its relation to the West. The volume will have wide appeal both to Middle Eastern scholars and to readers interested in global and cultural studies.</DATA></UCPnum.Copy>
+<UCPnum.Illustrations><DATA>21 b/w photographs</DATA></UCPnum.Illustrations>
+<UCPnum.PageCount><DATA>389</DATA></UCPnum.PageCount>
+<UCPnum.Pub_Date><DATA>9/19/2000</DATA></UCPnum.Pub_Date>
+<UCPnum.Series_name><DATA/></UCPnum.Series_name>
+<UCPnum.Series_No.Vol><DATA/></UCPnum.Series_No.Vol>
+<UCPnum.Subjects><DATA>Middle Eastern Studies; Anthropology; Cultural Anthropology; Media Studies; Music; Cinema and Performance Arts</DATA></UCPnum.Subjects>
+<SubDescs1>Middle Eastern Studies</SubDescs1>
+<SubDescs2>Anthropology</SubDescs2>
+<SubDescs3>Cultural Anthropology</SubDescs3>
+<SubDescs4>Media Studies</SubDescs4>
+<SubDescs5>Music</SubDescs5>
+<SubDescs6>Cinema and Performance Arts</SubDescs6>
+<SubDescs7/>
+<SubDescs8/>
+<SubDescs9/>
+<SubDescs10/>
+<Access_Level>3</Access_Level>
+<OPstatus/>
+<public_nonPublic>Public</public_nonPublic>
+<ARK.ARK><DATA>ark:/13030/ft8k4008kx</DATA></ARK.ARK></ROW>
+
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+   
+   <amdSec>
+      <rightsMD ID="rights">
+         <mdWrap MIMETYPE="text/xml" MDTYPE="OTHER" LABEL="METS Extension Rights Schema">
+            <xmlData>
+               <RightsDeclarationMD xmlns="" xsi:noNamespaceSchemaLocation="http://www.loc.gov/standards/rights/METSRights.xsd" RIGHTSCATEGORY="COPYRIGHTED">
+                  <RightsDeclaration>Copyright U.C. Regents. All Rights Reserved.</RightsDeclaration>
+                  <RightsHolder>
+                     <RightsHolderName>Regents of the University of California</RightsHolderName>
+                  </RightsHolder>
+                  <Context CONTEXTCLASS="GENERAL PUBLIC">
+                     <Permissions DISCOVER="true" DISPLAY="true"/>
+                     <Constraints CONSTRAINTTYPE="TRANSFERPERMISSIONS">
+                        <ConstraintDescription>Any file or element contained herein may be displayed or transmitted across a network by anyone who has signed a license agreement with the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                     <Constraints CONSTRAINTTYPE="RE-USE">
+                        <ConstraintDescription>Copy and distribution of any element or file is prohibited without the express written permission of the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                  </Context>
+               </RightsDeclarationMD>
+            </xmlData>
+         </mdWrap>
+      </rightsMD>
+   </amdSec>
+
+   <fileSec>
+   <fileGrp>
+      <file ID="top">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx"/>
+      </file>
+      <file ID="preface">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=preface"/>
+      </file>
+      <file ID="translit">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=translit"/>
+      </file>
+      <file ID="ch1">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch1"/>
+      </file>
+      <file ID="ch2">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch2"/>
+      </file>
+      <file ID="ch3">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch3"/>
+      </file>
+      <file ID="ch4">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch4"/>
+      </file>
+      <file ID="ch5">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch5"/>
+      </file>
+      <file ID="ch6">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch6"/>
+      </file>
+      <file ID="ch7">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch7"/>
+      </file>
+      <file ID="ch8">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch8"/>
+      </file>
+      <file ID="ch9">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch9"/>
+      </file>
+      <file ID="ch10">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch10"/>
+      </file>
+      <file ID="ch11">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch11"/>
+      </file>
+      <file ID="ch12">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch12"/>
+      </file>
+      <file ID="ch13">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=ch13"/>
+      </file>
+      <file ID="bmsec1">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=bmsec1"/>
+      </file>
+      <file ID="bmsec2">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft8k4008kx&amp;chunk.id=bmsec2"/>
+      </file>
+   </fileGrp>
+</fileSec>
+
+   <structMap>
+   <div TYPE="TEI.2" LABEL="Mass Mediations">
+      <fptr FILEID="top"/>
+      <div TYPE="text">
+         <div TYPE="front">
+            <div LABEL="Preface " TYPE="fmsec">
+               <fptr FILEID="preface"/>
+            </div>
+            <div LABEL="Note on Transliteration " TYPE="fmsec">
+               <fptr FILEID="translit"/>
+            </div>
+         </div>
+         <div TYPE="body">
+            <div LABEL="1.&#xA0;Introduction " TYPE="chapter">
+               <fptr FILEID="ch1"/>
+            </div>
+            <div LABEL="2.&#xA0;Public Culture in Arab Detroit" TYPE="chapter">
+               <fptr FILEID="ch2"/>
+            </div>
+            <div LABEL="3.&#xA0;The 6/8 Beat Goes On " TYPE="chapter">
+               <fptr FILEID="ch3"/>
+            </div>
+            <div LABEL="4.&#xA0;Sa&#x2018;ida Sultan/Danna International " TYPE="chapter">
+               <fptr FILEID="ch4"/>
+            </div>
+            <div LABEL="5.&#xA0;Playing It Both Ways " TYPE="chapter">
+               <fptr FILEID="ch5"/>
+            </div>
+            <div LABEL="6.&#xA0;Joujouka/Jajouka/Zahjoukah " TYPE="chapter">
+               <fptr FILEID="ch6"/>
+            </div>
+            <div LABEL="7.&#xA0;&#10;               Nasser 56/Cairo 96 " TYPE="chapter">
+               <fptr FILEID="ch7"/>
+            </div>
+            <div LABEL="8.&#xA0;Consuming Damascus " TYPE="chapter">
+               <fptr FILEID="ch8"/>
+            </div>
+            <div LABEL="9.&#xA0;The Hairbrush and the Dagger " TYPE="chapter">
+               <fptr FILEID="ch9"/>
+            </div>
+            <div LABEL="10.&#xA0;&#x201C;Beloved Istanbul&#x201D; " TYPE="chapter">
+               <fptr FILEID="ch10"/>
+            </div>
+            <div LABEL="11.&#xA0;Badi&#x2018;a Masabni, Artiste and Modernist " TYPE="chapter">
+               <fptr FILEID="ch11"/>
+            </div>
+            <div LABEL="12.&#xA0;American Ambassador in Technicolor and Cinemascope " TYPE="chapter">
+               <fptr FILEID="ch12"/>
+            </div>
+            <div LABEL="13.&#xA0;The Golden Age bxefore the Golden Age " TYPE="chapter">
+               <fptr FILEID="ch13"/>
+            </div>
+         </div>
+         <div TYPE="back">
+            <div LABEL="References " TYPE="bmsec">
+               <fptr FILEID="bmsec1"/>
+            </div>
+            <div LABEL="Contributors " TYPE="bmsec">
+               <fptr FILEID="bmsec2"/>
+            </div>
+         </div>
+      </div>
+   </div>
+</structMap>
+
+   <behaviorSec>
+      <behavior ID="disp1" STRUCTID="top" BTYPE="display" LABEL="Display Behavior">
+         <interfaceDef LABEL="Default Display Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/displaydefaultDisplayDef.txt"/>
+         <mechanism LABEL="Default Display Mechanism" LOCTYPE="URN" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/defaultDisplayMech.xml"/>
+      </behavior>
+      <behavior ID="auth1" STRUCTID="top" BTYPE="authentication" LABEL="Authentication Behavior">
+         <interfaceDef LABEL="General Public Authentication Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/publicAuthDef.txt"/>
+         <mechanism LABEL="General Public Authentication Mechanism" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/authentication/publicAuthMech.xml"/>
+      </behavior>
+   </behaviorSec>
+
+</mets>

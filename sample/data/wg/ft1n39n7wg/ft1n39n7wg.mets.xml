@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<!-- ?xml-stylesheet type="text/xsl" href="../xslt/UCPress-netlib.xslt"? -->
+<mets xmlns="http://www.loc.gov/METS/" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/TR/xlink" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd" OBJID="ark:/13030/ft1n39n7wg" LABEL="The Nuclear Seduction: Why the Arms Race Doesn't Matter--And What Does" TYPE="text" PROFILE="http://ark.cdlib.org/ark:/13030/kt3v19p5bk">
+
+   <metsHdr>
+      <agent ROLE="EDITOR" TYPE="ORGANIZATION">
+         <name>California Digital Library</name>
+         <note>record created in batch mergining of MARC and UCPress records</note>
+      </agent>
+            <altRecordID TYPE="isbn-c">0-520-06134-9</altRecordID>      <altRecordID TYPE="isbn-p">0-520-08283-4</altRecordID>      <altRecordID TYPE="ucp-bnum">4916</altRecordID>
+   </metsHdr>
+
+   <dmdSec ID="mods">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <mods xmlns="http://www.loc.gov/mods/" xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/ http://www.loc.gov/standards/mods/mods.xsd">
+<titleInfo>
+<nonSort>The </nonSort>
+<title>nuclear seduction :</title>
+<subTitle>why the arms race doesn't matter and what does</subTitle>
+</titleInfo>
+<name type="personal">
+<namePart>Schwartz, William A</namePart>
+<role>
+<text>creator</text>
+</role>
+</name>
+<name type="personal">
+<namePart>Derber, Charles</namePart>
+</name>
+<name type="personal">
+<namePart>Fellman, Gordon</namePart>
+</name>
+<name type="corporate">
+<namePart>eScholarship (Online service)</namePart>
+</name>
+<typeOfResource>text</typeOfResource>
+<genre authority="marc">bibliography</genre>
+<genre authority="local">Online resources.</genre>
+<originInfo>
+<place>
+<code authority="marc">cau</code>
+<text>Berkeley</text>
+</place>
+<publisher>University of California Press</publisher>
+<dateIssued>c1990</dateIssued>
+<dateIssued encoding="marc">1990</dateIssued>
+<issuance>monographic</issuance>
+</originInfo>
+<language authority="iso639-2b">eng</language>
+<physicalDescription>
+<form xmlns="http://www.loc.gov/mods/" authority="marcform">print</form>
+<extent xmlns="http://www.loc.gov/mods/">294 p. ; 24 cm</extent>
+</physicalDescription>
+<note type="statement of responsibility">William A. Schwartz and Charles Derber with Gordon Fellman ... [et al.]</note>
+<note>Includes bibliographical references and index</note>
+<note>Also available via the World Wide Web</note>
+<subject authority="lcsh">
+<topic>Nuclear weapons</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Arms race</topic>
+<topic>History</topic>
+<temporal>20th century</temporal>
+</subject>
+<subject authority="lcsh">
+<topic>Nuclear warfare</topic>
+</subject>
+<subject authority="lcsh">
+<topic>World politics</topic>
+<temporal>1945-</temporal>
+</subject>
+<identifier type="isbn">0520061349 (alk. paper)</identifier>
+<identifier type="lccn">89-5028</identifier>
+<identifier type="uri">http://ark.cdlib.org/ark:/13030/ft1n39n7wg/</identifier>
+<location>SDB ck</location>
+<location>SDB nnet</location>
+<extension xmlns:dc="http://purl.org/dc/elements/1.1/">
+<dc:relation>http://escholarship.cdlib.org</dc:relation>
+<dc:relation>http://www.ucpress.edu</dc:relation>
+</extension>
+<recordInfo>
+<recordContentSource>DLC</recordContentSource>
+<recordCreationDate encoding="marc">890510</recordCreationDate>
+<recordChangeDate encoding="iso8601">20030627000000.0</recordChangeDate>
+</recordInfo>
+</mods>
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+
+   <dmdSec ID="ucpress">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <ROW xmlns="http://www.cdlib.org/schemas/xmldata" xsi:schemaLocation="http://www.cdlib.org/schemas/xmldata http://ark.cdlib.org/schemas/xmldata/xmldata.xsd" MODID="14" RECORDID="106">
+<UCPnum>4916</UCPnum>
+<NLnum>5810</NLnum>
+<UCPnum.LC_number><DATA/></UCPnum.LC_number>
+<UCPnum.ISBN_cl><DATA>0-520-06134-9</DATA></UCPnum.ISBN_cl>
+<UCPnum.ISBN_pa><DATA>0-520-08283-4</DATA></UCPnum.ISBN_pa>
+<UCPnum.AUTHOR_CITATION><DATA>Schwartz, William A., and Charles Derber, et al</DATA></UCPnum.AUTHOR_CITATION>
+<UCPnum.AUTHOR_CITATION_FWD><DATA>William A. Schwartz and Charles Derber, et al</DATA></UCPnum.AUTHOR_CITATION_FWD>
+<UCPnum.Auth1LastName><DATA>Schwartz</DATA></UCPnum.Auth1LastName>
+<UCPnum.Title><DATA>The Nuclear Seduction: Why the Arms Race Doesn't Matter--And What Does</DATA></UCPnum.Title>
+<UCPnum.TitleMain><DATA>The Nuclear Seduction</DATA></UCPnum.TitleMain>
+<UCPnum.TitleSub><DATA>Why the Arms Race Doesn't Matter--And What Does</DATA></UCPnum.TitleSub>
+<UCPnum.TitleMainClean><DATA>The Nuclear Seduction</DATA></UCPnum.TitleMainClean>
+<UCPnum.TitleSubClean><DATA>Why the Arms Race Doesn't Matter--And What Does</DATA></UCPnum.TitleSubClean>
+<UCPnum.AuthorBioInCatalog><DATA/></UCPnum.AuthorBioInCatalog>
+<UCPnum.AuthorsXtraCit.TranslsIllustrsEds><DATA/></UCPnum.AuthorsXtraCit.TranslsIllustrsEds>
+<UCPnum.Blurbs><DATA/></UCPnum.Blurbs>
+<UCPnum.Copy><DATA/></UCPnum.Copy>
+<UCPnum.Illustrations><DATA/></UCPnum.Illustrations>
+<UCPnum.PageCount><DATA/></UCPnum.PageCount>
+<UCPnum.Pub_Date><DATA>11/27/1989</DATA></UCPnum.Pub_Date>
+<UCPnum.Series_name><DATA/></UCPnum.Series_name>
+<UCPnum.Series_No.Vol><DATA/></UCPnum.Series_No.Vol>
+<UCPnum.Subjects><DATA>Politics; Sociology; Social Problems; Public Policy; Science</DATA></UCPnum.Subjects>
+<SubDescs1>Politics</SubDescs1>
+<SubDescs2>Sociology</SubDescs2>
+<SubDescs3>Social Problems</SubDescs3>
+<SubDescs4>Public Policy</SubDescs4>
+<SubDescs5>Science</SubDescs5>
+<SubDescs6/>
+<SubDescs7/>
+<SubDescs8/>
+<SubDescs9/>
+<SubDescs10/>
+<Access_Level>3</Access_Level>
+<OPstatus>X</OPstatus>
+<public_nonPublic>Public</public_nonPublic>
+<ARK.ARK><DATA>ark:/13030/ft1n39n7wg</DATA></ARK.ARK></ROW>
+
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+   
+   <amdSec>
+      <rightsMD ID="rights">
+         <mdWrap MIMETYPE="text/xml" MDTYPE="OTHER" LABEL="METS Extension Rights Schema">
+            <xmlData>
+               <RightsDeclarationMD xmlns="" xsi:noNamespaceSchemaLocation="http://www.loc.gov/standards/rights/METSRights.xsd" RIGHTSCATEGORY="COPYRIGHTED">
+                  <RightsDeclaration>Copyright U.C. Regents. All Rights Reserved.</RightsDeclaration>
+                  <RightsHolder>
+                     <RightsHolderName>Regents of the University of California</RightsHolderName>
+                  </RightsHolder>
+                  <Context CONTEXTCLASS="GENERAL PUBLIC">
+                     <Permissions DISCOVER="true" DISPLAY="true"/>
+                     <Constraints CONSTRAINTTYPE="TRANSFERPERMISSIONS">
+                        <ConstraintDescription>Any file or element contained herein may be displayed or transmitted across a network by anyone who has signed a license agreement with the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                     <Constraints CONSTRAINTTYPE="RE-USE">
+                        <ConstraintDescription>Copy and distribution of any element or file is prohibited without the express written permission of the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                  </Context>
+               </RightsDeclarationMD>
+            </xmlData>
+         </mdWrap>
+      </rightsMD>
+   </amdSec>
+
+   <fileSec>
+   <fileGrp>
+      <file ID="top">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg"/>
+      </file>
+      <file ID="d0e41">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;doc.view=popup&amp;chunk.id=d0e41"/>
+      </file>
+      <file ID="d0e51">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e51"/>
+      </file>
+      <file ID="d0e140">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e140"/>
+      </file>
+      <file ID="d0e180">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e180"/>
+      </file>
+      <file ID="d0e385">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e385"/>
+      </file>
+      <file ID="d0e396">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e396"/>
+      </file>
+      <file ID="d0e547">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e547"/>
+      </file>
+      <file ID="d0e796">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e796"/>
+      </file>
+      <file ID="d0e1186">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e1186"/>
+      </file>
+      <file ID="d0e1606">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e1606"/>
+      </file>
+      <file ID="d0e1863">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e1863"/>
+      </file>
+      <file ID="d0e1874">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e1874"/>
+      </file>
+      <file ID="d0e2862">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e2862"/>
+      </file>
+      <file ID="d0e3228">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e3228"/>
+      </file>
+      <file ID="d0e3716">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e3716"/>
+      </file>
+      <file ID="d0e3729">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e3729"/>
+      </file>
+      <file ID="d0e4568">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e4568"/>
+      </file>
+      <file ID="endnotes">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=endnotes"/>
+      </file>
+      <file ID="d0e8525">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft1n39n7wg&amp;chunk.id=d0e8525"/>
+      </file>
+   </fileGrp>
+</fileSec>
+
+   <structMap>
+   <div TYPE="TEI.2" LABEL="The Nuclear Seduction">
+      <fptr FILEID="top"/>
+      <div TYPE="text">
+         <div TYPE="front">
+            <div LABEL="Dedication" TYPE="dedication">
+               <fptr FILEID="d0e41"/>
+            </div>
+            <div LABEL="PREFACE TO THE PAPERBACK EDITION" TYPE="fmsec">
+               <fptr FILEID="d0e51"/>
+            </div>
+            <div LABEL="PREFACE" TYPE="fmsec">
+               <fptr FILEID="d0e140"/>
+            </div>
+         </div>
+         <div TYPE="body">
+            <div LABEL="INTRODUCTION" TYPE="chapter">
+               <fptr FILEID="d0e180"/>
+            </div>
+            <div LABEL="PART I&#xA0; WHY THE ARMS RACE DOESN'T MATTER" TYPE="part">
+               <fptr FILEID="d0e385"/>
+               <div LABEL="Chapter One&#xA0; Why the Arms Race Doesn't Matter" TYPE="chapter">
+                  <fptr FILEID="d0e396"/>
+               </div>
+               <div LABEL="Chapter Two&#xA0; What About First Strike?" TYPE="chapter">
+                  <fptr FILEID="d0e547"/>
+               </div>
+               <div LABEL="Chapter Three&#xA0; What about Credibility and the Firebreak?" TYPE="chapter">
+                  <fptr FILEID="d0e796"/>
+               </div>
+               <div LABEL="Chapter Four&#xA0; What about Misperceptions?" TYPE="chapter">
+                  <fptr FILEID="d0e1186"/>
+               </div>
+               <div LABEL="Chapter Five&#xA0; What about Star Wars?" TYPE="chapter">
+                  <fptr FILEID="d0e1606"/>
+               </div>
+            </div>
+            <div LABEL="PART II&#xA0; HOW THE SUPERPOWERS ROLL THE NUCLEAR DICE" TYPE="part">
+               <fptr FILEID="d0e1863"/>
+               <div LABEL="Chapter Six&#xA0; The Real History of the Nuclear Age" TYPE="chapter">
+                  <fptr FILEID="d0e1874"/>
+               </div>
+               <div LABEL="Chapter Seven&#xA0; Third World Violence, Nuclear Danger" TYPE="chapter">
+                  <fptr FILEID="d0e2862"/>
+               </div>
+               <div LABEL="Chapter Eight&#xA0; What about the Cuban Missile Crisis?" TYPE="chapter">
+                  <fptr FILEID="d0e3228"/>
+               </div>
+            </div>
+            <div LABEL="PART III&#xA0; THE POLITICS OF SURVIVAL" TYPE="part">
+               <fptr FILEID="d0e3716"/>
+               <div LABEL="Chapter Nine&#xA0; What About Arms Control?" TYPE="chapter">
+                  <fptr FILEID="d0e3729"/>
+               </div>
+               <div LABEL="Chapter Ten&#xA0; U.S. Foreign Policy and Nuclear War" TYPE="chapter">
+                  <fptr FILEID="d0e4568"/>
+               </div>
+            </div>
+         </div>
+         <div TYPE="back">
+            <div LABEL="Notes" TYPE="bmsec">
+               <fptr FILEID="endnotes"/>
+            </div>
+            <div LABEL="INDEX" TYPE="index">
+               <fptr FILEID="d0e8525"/>
+            </div>
+         </div>
+      </div>
+   </div>
+</structMap>
+
+   <behaviorSec>
+      <behavior ID="disp1" STRUCTID="top" BTYPE="display" LABEL="Display Behavior">
+         <interfaceDef LABEL="Default Display Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/displaydefaultDisplayDef.txt"/>
+         <mechanism LABEL="Default Display Mechanism" LOCTYPE="URN" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/defaultDisplayMech.xml"/>
+      </behavior>
+      <behavior ID="auth1" STRUCTID="top" BTYPE="authentication" LABEL="Authentication Behavior">
+         <interfaceDef LABEL="General Public Authentication Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/publicAuthDef.txt"/>
+         <mechanism LABEL="General Public Authentication Mechanism" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/authentication/publicAuthMech.xml"/>
+      </behavior>
+   </behaviorSec>
+
+</mets>

@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<!-- ?xml-stylesheet type="text/xsl" href="../xslt/UCPress-netlib.xslt"? -->
+<mets xmlns="http://www.loc.gov/METS/" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/TR/xlink" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd" OBJID="ark:/13030/ft5x0nb3tg" LABEL="South Africa: A Study in Conflict" TYPE="text" PROFILE="http://ark.cdlib.org/ark:/13030/kt3v19p5bk">
+
+   <metsHdr>
+      <agent ROLE="EDITOR" TYPE="ORGANIZATION">
+         <name>California Digital Library</name>
+         <note>record created in batch mergining of MARC and UCPress records</note>
+      </agent>
+            <altRecordID TYPE="isbn-p">0-520-01294-1</altRecordID>      <altRecordID TYPE="ucp-bnum">1123</altRecordID>
+   </metsHdr>
+
+   <dmdSec ID="mods">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <mods xmlns="http://www.loc.gov/mods/" xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/ http://www.loc.gov/standards/mods/mods.xsd">
+<titleInfo>
+<title>South Africa, a study in conflict [electronic resource]</title>
+</titleInfo>
+<name type="personal">
+<namePart>Van den Berghe, Pierre L</namePart>
+<role>
+<text>creator</text>
+</role>
+</name>
+<name type="corporate">
+<namePart>eScholarship (Online service)</namePart>
+</name>
+<typeOfResource>text</typeOfResource>
+<genre authority="marc">bibliography</genre>
+<genre authority="local">Online resources.</genre>
+<originInfo>
+<place>
+<code authority="marc">cau</code>
+<text>Berekley</text>
+</place>
+<publisher>University of California Press</publisher>
+<dateIssued>1967 [c1965]</dateIssued>
+<dateIssued encoding="marc">1967</dateIssued>
+<edition>[1st paper-bound ed.]</edition>
+<issuance>monographic</issuance>
+</originInfo>
+<language authority="iso639-2b">eng</language>
+<physicalDescription>
+<form xmlns="http://www.loc.gov/mods/" authority="marcform">electronic</form>
+<extent xmlns="http://www.loc.gov/mods/">371 p. : ill., maps ; 21 cm</extent>
+</physicalDescription>
+<note>&quot;Selected bibliography&quot;: p. [315]-357</note>
+<note>Also available in print</note>
+<note>Electronic reproduction. Mode of access: World Wide Web</note>
+<subject authority="lcsh">
+<topic>Social classes</topic>
+<geographic>South Africa</geographic>
+</subject>
+<subject authority="lcsh">
+<geographic>South Africa</geographic>
+<topic>Race relations</topic>
+</subject>
+<subject authority="lcsh">
+<geographic>South Africa</geographic>
+<topic>Social conditions</topic>
+</subject>
+<relatedItem type="otherFormat">
+
+<identifier type="local">(OCoLC)268416</identifier>
+</relatedItem>
+<identifier type="lccn" invalid="yes"/>
+<identifier type="uri">http://ark.cdlib.org/ark:/13030/ft5x0nb3tg/</identifier>
+<location>SCB nnet</location>
+<extension xmlns:dc="http://purl.org/dc/elements/1.1/">
+<dc:relation>http://escholarship.cdlib.org</dc:relation>
+<dc:relation>http://www.ucpress.edu</dc:relation>
+</extension>
+<recordInfo>
+<recordContentSource>WSU</recordContentSource>
+<recordCreationDate encoding="marc">720321</recordCreationDate>
+<recordChangeDate encoding="iso8601">20030715000000.0</recordChangeDate>
+</recordInfo>
+</mods>
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+
+   <dmdSec ID="ucpress">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <ROW xmlns="http://www.cdlib.org/schemas/xmldata" xsi:schemaLocation="http://www.cdlib.org/schemas/xmldata http://ark.cdlib.org/schemas/xmldata/xmldata.xsd" MODID="9" RECORDID="33995">
+<UCPnum>1123</UCPnum>
+<NLnum>44703</NLnum>
+<UCPnum.LC_number><DATA/></UCPnum.LC_number>
+<UCPnum.ISBN_cl><DATA/></UCPnum.ISBN_cl>
+<UCPnum.ISBN_pa><DATA>0-520-01294-1</DATA></UCPnum.ISBN_pa>
+<UCPnum.AUTHOR_CITATION><DATA>van den Berghe, Pierre </DATA></UCPnum.AUTHOR_CITATION>
+<UCPnum.AUTHOR_CITATION_FWD><DATA>Pierre L. van den Berghe</DATA></UCPnum.AUTHOR_CITATION_FWD>
+<UCPnum.Auth1LastName><DATA>van den Berghe</DATA></UCPnum.Auth1LastName>
+<UCPnum.Title><DATA>South Africa: A Study in Conflict</DATA></UCPnum.Title>
+<UCPnum.TitleMain><DATA>South Africa</DATA></UCPnum.TitleMain>
+<UCPnum.TitleSub><DATA>A Study in Conflict</DATA></UCPnum.TitleSub>
+<UCPnum.TitleMainClean><DATA>South Africa</DATA></UCPnum.TitleMainClean>
+<UCPnum.TitleSubClean><DATA>A Study in Conflict</DATA></UCPnum.TitleSubClean>
+<UCPnum.AuthorBioInCatalog><DATA/></UCPnum.AuthorBioInCatalog>
+<UCPnum.AuthorsXtraCit.TranslsIllustrsEds><DATA/></UCPnum.AuthorsXtraCit.TranslsIllustrsEds>
+<UCPnum.Blurbs><DATA/></UCPnum.Blurbs>
+<UCPnum.Copy><DATA/></UCPnum.Copy>
+<UCPnum.Illustrations><DATA/></UCPnum.Illustrations>
+<UCPnum.PageCount><DATA/></UCPnum.PageCount>
+<UCPnum.Pub_Date><DATA>10/1/1967</DATA></UCPnum.Pub_Date>
+<UCPnum.Series_name><DATA/></UCPnum.Series_name>
+<UCPnum.Series_No.Vol><DATA/></UCPnum.Series_No.Vol>
+<UCPnum.Subjects><DATA>African Studies</DATA></UCPnum.Subjects>
+<SubDescs1>African Studies</SubDescs1>
+<SubDescs2/>
+<SubDescs3/>
+<SubDescs4/>
+<SubDescs5/>
+<SubDescs6/>
+<SubDescs7/>
+<SubDescs8/>
+<SubDescs9/>
+<SubDescs10/>
+<Access_Level>3</Access_Level>
+<OPstatus>X</OPstatus>
+<public_nonPublic>Public</public_nonPublic>
+<ARK.ARK><DATA>ark:/13030/ft5x0nb3tg</DATA></ARK.ARK></ROW>
+
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+   
+   <amdSec>
+      <rightsMD ID="rights">
+         <mdWrap MIMETYPE="text/xml" MDTYPE="OTHER" LABEL="METS Extension Rights Schema">
+            <xmlData>
+               <RightsDeclarationMD xmlns="" xsi:noNamespaceSchemaLocation="http://www.loc.gov/standards/rights/METSRights.xsd" RIGHTSCATEGORY="COPYRIGHTED">
+                  <RightsDeclaration>Copyright U.C. Regents. All Rights Reserved.</RightsDeclaration>
+                  <RightsHolder>
+                     <RightsHolderName>Regents of the University of California</RightsHolderName>
+                  </RightsHolder>
+                  <Context CONTEXTCLASS="GENERAL PUBLIC">
+                     <Permissions DISCOVER="true" DISPLAY="true"/>
+                     <Constraints CONSTRAINTTYPE="TRANSFERPERMISSIONS">
+                        <ConstraintDescription>Any file or element contained herein may be displayed or transmitted across a network by anyone who has signed a license agreement with the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                     <Constraints CONSTRAINTTYPE="RE-USE">
+                        <ConstraintDescription>Copy and distribution of any element or file is prohibited without the express written permission of the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                  </Context>
+               </RightsDeclarationMD>
+            </xmlData>
+         </mdWrap>
+      </rightsMD>
+   </amdSec>
+
+   <fileSec>
+   <fileGrp>
+      <file ID="top">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg"/>
+      </file>
+      <file ID="ded1">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;doc.view=popup&amp;chunk.id=ded1"/>
+      </file>
+      <file ID="d0e92">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e92"/>
+      </file>
+      <file ID="d0e120">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e120"/>
+      </file>
+      <file ID="d0e333">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e333"/>
+      </file>
+      <file ID="d0e613">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e613"/>
+      </file>
+      <file ID="d0e1310">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e1310"/>
+      </file>
+      <file ID="d0e2151">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e2151"/>
+      </file>
+      <file ID="d0e2684">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e2684"/>
+      </file>
+      <file ID="d0e2961">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e2961"/>
+      </file>
+      <file ID="d0e4419">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e4419"/>
+      </file>
+      <file ID="d0e5014">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e5014"/>
+      </file>
+      <file ID="d0e5772">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e5772"/>
+      </file>
+      <file ID="d0e6491">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e6491"/>
+      </file>
+      <file ID="d0e6914">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e6914"/>
+      </file>
+      <file ID="d0e7363">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e7363"/>
+      </file>
+      <file ID="d0e7920">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e7920"/>
+      </file>
+      <file ID="d0e14599">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e14599"/>
+      </file>
+      <file ID="d0e14810">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e14810"/>
+      </file>
+      <file ID="d0e19808">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e19808"/>
+      </file>
+      <file ID="d0e28944">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft5x0nb3tg&amp;chunk.id=d0e28944"/>
+      </file>
+   </fileGrp>
+</fileSec>
+
+   <structMap>
+   <div TYPE="TEI.2" LABEL="South Africa,">
+      <fptr FILEID="top"/>
+      <div TYPE="text">
+         <div TYPE="front">
+            <div LABEL="Dedication" TYPE="dedication">
+               <fptr FILEID="ded1"/>
+            </div>
+            <div LABEL="Preface to the Paper-Bound Book" TYPE="fmsec">
+               <fptr FILEID="d0e92"/>
+            </div>
+            <div LABEL="Acknowledgments" TYPE="fmsec">
+               <fptr FILEID="d0e120"/>
+            </div>
+         </div>
+         <div TYPE="body">
+            <div LABEL="Chapter One&#x2014;&#xA0; Introduction" TYPE="chapter">
+               <fptr FILEID="d0e333"/>
+            </div>
+            <div LABEL="Chapter Two&#x2014;&#xA0; The Historical Background" TYPE="chapter">
+               <fptr FILEID="d0e613"/>
+            </div>
+            <div LABEL="Chapter Three&#x2014;&#xA0; The Social Structure of Modern South Africa: Culture and Status" TYPE="chapter">
+               <fptr FILEID="d0e1310"/>
+            </div>
+            <div LABEL="Chapter Four&#x2014;&#xA0; The Social Structure of Modern South Africa:&#xA0; Polity and Economy" TYPE="chapter">
+               <fptr FILEID="d0e2151"/>
+            </div>
+            <div LABEL="Chapter Five&#x2014;&#xA0; Socio-Political Conflicts: Afrikaners Versus English" TYPE="chapter">
+               <fptr FILEID="d0e2684"/>
+            </div>
+            <div LABEL="Chapter Six&#x2014;&#xA0; Socio-Political Conflicts: &quot;Native Policy&quot;" TYPE="chapter">
+               <fptr FILEID="d0e2961"/>
+            </div>
+            <div LABEL="Chapter Seven&#x2014;&#xA0; Socio-Political Conflicts: The Non-White&#xA0; Opposition and the Internal Power Balance" TYPE="chapter">
+               <fptr FILEID="d0e4419"/>
+            </div>
+            <div LABEL="Chapter Eight&#x2014;&#xA0; The Economic System and Its Dysfunctions" TYPE="chapter">
+               <fptr FILEID="d0e5014"/>
+            </div>
+            <div LABEL="Chapter Nine&#x2014;&#xA0; Value Conflicts" TYPE="chapter">
+               <fptr FILEID="d0e5772"/>
+            </div>
+            <div LABEL="Chapter Ten&#x2014;&#xA0; External Pressures" TYPE="chapter">
+               <fptr FILEID="d0e6491"/>
+            </div>
+            <div LABEL="Chapter Eleven&#x2014;&#xA0; Some Theoretical Considerations" TYPE="chapter">
+               <fptr FILEID="d0e6914"/>
+            </div>
+         </div>
+         <div TYPE="back">
+            <div LABEL="Appendix A&#x2014;&#xA0; Chronology of South African Events*&#10;            " TYPE="appendix">
+               <fptr FILEID="d0e7363"/>
+            </div>
+            <div LABEL="Appendix B&#x2014;&#xA0; Statistics" TYPE="appendix">
+               <fptr FILEID="d0e7920"/>
+            </div>
+            <div LABEL="Appendix C&#x2014;&#xA0; International Resolutions Concerning Human Rights in South Africa*&#10;            " TYPE="appendix">
+               <fptr FILEID="d0e14599"/>
+            </div>
+            <div LABEL="Selected Bibliography" TYPE="bibliography">
+               <fptr FILEID="d0e14810"/>
+            </div>
+            <div LABEL="Index" TYPE="index">
+               <fptr FILEID="d0e19808"/>
+            </div>
+            <div LABEL="Publisher's Note" TYPE="bmsec">
+               <fptr FILEID="d0e28944"/>
+            </div>
+         </div>
+      </div>
+   </div>
+</structMap>
+
+   <behaviorSec>
+      <behavior ID="disp1" STRUCTID="top" BTYPE="display" LABEL="Display Behavior">
+         <interfaceDef LABEL="Default Display Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/displaydefaultDisplayDef.txt"/>
+         <mechanism LABEL="Default Display Mechanism" LOCTYPE="URN" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/defaultDisplayMech.xml"/>
+      </behavior>
+      <behavior ID="auth1" STRUCTID="top" BTYPE="authentication" LABEL="Authentication Behavior">
+         <interfaceDef LABEL="General Public Authentication Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/publicAuthDef.txt"/>
+         <mechanism LABEL="General Public Authentication Mechanism" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/authentication/publicAuthMech.xml"/>
+      </behavior>
+   </behaviorSec>
+
+</mets>

@@ -1,0 +1,17 @@
+Sample IP list
+
+This file specifies ranges of IP addresses to include (default) or
+exclude. Any line that doesn't start with an IP address is considered
+to be a comment. Some samples follow (these are a subset of the UC system 
+IP addresses.)
+
+207.105.203.134
+207.212.132.158
+128.32.0.* - 128.32.4.*
+128.32.159.0 - 128.32.159.17
+128.32.201.*
+128.32.202.* - 128.32.220.*
+169.237.*.*
+137.110.*.*
+   exclude 137.110.250.* - 137.110.255.*
+67.119.222.34

@@ -1,0 +1,308 @@
+<?xml version="1.0"?>
+<!-- ?xml-stylesheet type="text/xsl" href="../xslt/UCPress-netlib.xslt"? -->
+<mets xmlns="http://www.loc.gov/METS/" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/TR/xlink" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd" OBJID="ark:/13030/ft7m3nb4n1" LABEL="The Rest Is Silence: Death as Annihilation in the English Renaissance" TYPE="text" PROFILE="http://ark.cdlib.org/ark:/13030/kt3v19p5bk">
+
+   <metsHdr>
+      <agent ROLE="EDITOR" TYPE="ORGANIZATION">
+         <name>California Digital Library</name>
+         <note>record created in batch mergining of MARC and UCPress records</note>
+      </agent>
+            <altRecordID TYPE="isbn-c">0-520-08494-2</altRecordID>      <altRecordID TYPE="isbn-p">0-520-21963-5</altRecordID>      <altRecordID TYPE="ucp-bnum">6341</altRecordID>
+   </metsHdr>
+
+   <dmdSec ID="mods">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <mods xmlns="http://www.loc.gov/mods/" xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/ http://www.loc.gov/standards/mods/mods.xsd">
+<titleInfo>
+<nonSort>The </nonSort>
+<title>rest is silence [electronic resource] :</title>
+<subTitle>death as annihilation in the English Renaissance</subTitle>
+</titleInfo>
+<name type="personal">
+<namePart>Watson, Robert N</namePart>
+<role>
+<text>creator</text>
+</role>
+</name>
+<name type="corporate">
+<namePart>eScholarship (Online service)</namePart>
+</name>
+<typeOfResource>text</typeOfResource>
+<genre authority="marc">bibliography</genre>
+<genre authority="local">Online resources.</genre>
+<originInfo>
+<place>
+<code authority="marc">cau</code>
+<text>Berkeley</text>
+</place>
+<publisher>University of California Press</publisher>
+<dateIssued>c1994</dateIssued>
+<dateIssued encoding="marc">1994</dateIssued>
+<issuance>monographic</issuance>
+</originInfo>
+<language authority="iso639-2b">eng</language>
+<physicalDescription>
+<form xmlns="http://www.loc.gov/mods/" authority="marcform">print</form>
+<extent xmlns="http://www.loc.gov/mods/">xiv, 416 p. : ill. ; 24 cm</extent>
+</physicalDescription>
+<note type="statement of responsibility">Robert N. Watson</note>
+<note>Includes bibliographical references and index</note>
+<note>Also available in print</note>
+<note>Electronic reproduction. Mode of access: World Wide Web. Restricted to UC campuses</note>
+<subject authority="lcsh">
+<name type="personal">
+<namePart>Shakespeare, William</namePart>
+<namePart type="date">1564-1616</namePart>
+</name>
+<topic>Criticism and interpretation</topic>
+</subject>
+<subject authority="lcsh">
+<name type="personal">
+<namePart>Donne, John</namePart>
+<namePart type="date">1572-1631</namePart>
+</name>
+<topic>Criticism and interpretation</topic>
+</subject>
+<subject authority="lcsh">
+<name type="personal">
+<namePart>Kyd, Thomas</namePart>
+<namePart type="date">1558-1594</namePart>
+</name>
+</subject>
+<subject authority="lcsh">
+<name type="personal">
+<namePart>Herbert, George</namePart>
+<namePart type="date">1593-1633</namePart>
+</name>
+</subject>
+<subject authority="lcsh">
+<topic>English literature</topic>
+<temporal>Early modern, 1500-1700</temporal>
+<topic>History and criticism</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Death in literature</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Annihilationism in literature</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Renaissance</topic>
+<geographic>England</geographic>
+</subject>
+<relatedItem type="otherFormat">
+
+<identifier type="local">(OCoLC)29427741</identifier>
+</relatedItem>
+<identifier type="lccn" invalid="yes"/>
+<identifier type="uri">http://ark.cdlib.org/ark:/13030/ft7m3nb4n1</identifier>
+<location>SCB nnet</location>
+<extension xmlns:dc="http://purl.org/dc/elements/1.1/">
+<dc:relation>http://escholarship.cdlib.org</dc:relation>
+<dc:relation>http://www.ucpress.edu</dc:relation>
+</extension>
+<recordInfo>
+<recordContentSource>DLC</recordContentSource>
+<recordCreationDate encoding="marc">931110</recordCreationDate>
+<recordChangeDate encoding="iso8601">20030715000000.0</recordChangeDate>
+</recordInfo>
+</mods>
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+
+   <dmdSec ID="ucpress">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <ROW xmlns="http://www.cdlib.org/schemas/xmldata" xsi:schemaLocation="http://www.cdlib.org/schemas/xmldata http://ark.cdlib.org/schemas/xmldata/xmldata.xsd" MODID="6" RECORDID="33604">
+<UCPnum>6341</UCPnum>
+<NLnum>32747</NLnum>
+<UCPnum.LC_number><DATA/></UCPnum.LC_number>
+<UCPnum.ISBN_cl><DATA>0-520-08494-2</DATA></UCPnum.ISBN_cl>
+<UCPnum.ISBN_pa><DATA>0-520-21963-5</DATA></UCPnum.ISBN_pa>
+<UCPnum.AUTHOR_CITATION><DATA>Watson, Robert N.</DATA></UCPnum.AUTHOR_CITATION>
+<UCPnum.AUTHOR_CITATION_FWD><DATA>Robert Watson</DATA></UCPnum.AUTHOR_CITATION_FWD>
+<UCPnum.Auth1LastName><DATA>Watson</DATA></UCPnum.Auth1LastName>
+<UCPnum.Title><DATA>The Rest Is Silence: Death as Annihilation in the English Renaissance</DATA></UCPnum.Title>
+<UCPnum.TitleMain><DATA>The Rest Is Silence</DATA></UCPnum.TitleMain>
+<UCPnum.TitleSub><DATA>Death as Annihilation in the English Renaissance</DATA></UCPnum.TitleSub>
+<UCPnum.TitleMainClean><DATA>The Rest Is Silence</DATA></UCPnum.TitleMainClean>
+<UCPnum.TitleSubClean><DATA>Death as Annihilation in the English Renaissance</DATA></UCPnum.TitleSubClean>
+<UCPnum.AuthorBioInCatalog><DATA><b>Robert N. Watson</b> is Professor of English and Chair of the Letters and Science Faculty at the University of California, Los Angeles. He is the editor of <i>Critical Essays on Ben Jonson</i> (1997) and the author of <i>Shakespeare and the Hazards of Ambition</i> (1984), among other works.</DATA></UCPnum.AuthorBioInCatalog>
+<UCPnum.AuthorsXtraCit.TranslsIllustrsEds><DATA/></UCPnum.AuthorsXtraCit.TranslsIllustrsEds>
+<UCPnum.Blurbs><DATA>&quot;Analytical and personal, this book appeals to its readers' emotions even as it engages their critical intelligence. It also breathes new life into some of the older, but still crucial, conventions of literary history.&quot; - Ronald Levao, author of <i>Renaissance Minds and Their Fictions</i>&quot;Loaded with fresh and sometimes startling insights, and it is bracingly skeptical of reigning New Historicist certainties about the hegemonic Christianity of the English Renaissance.&quot; - Christopher Hodgkins, <i>George Herbert Journal</i></DATA></UCPnum.Blurbs>
+<UCPnum.Copy><DATA>How did the fear of death coexist with the promise of Christian afterlife in the culture and literature of the English Renaissance? Robert Watson exposes a sharp edge of blasphemous protest against mortality that runs through revenge plays such as <i>The Spanish Tragedy</i> and <i>Hamlet</i>, and through plays of procreation such as <i>Measure for Measure</i> and <i>Macbeth</i>. Tactics of denial appear in the vengefulness that John Donne directs toward female bodies for failing to bestow immortality, and in the promise of renewal that George Herbert sets against the threat of closure.Placing these literary manifestations in the context of specific Jacobean deathbed crises and modern cultural distortions, Watson explores the psychological roots and political consequences of denying that death permanently erases sensation and consciousness.</DATA></UCPnum.Copy>
+<UCPnum.Illustrations><DATA>2 b/w photographs</DATA></UCPnum.Illustrations>
+<UCPnum.PageCount><DATA>430</DATA></UCPnum.PageCount>
+<UCPnum.Pub_Date><DATA>2/8/1995</DATA></UCPnum.Pub_Date>
+<UCPnum.Series_name><DATA/></UCPnum.Series_name>
+<UCPnum.Series_No.Vol><DATA/></UCPnum.Series_No.Vol>
+<UCPnum.Subjects><DATA>Literature; English Literature; Literary Theory and Criticism; Renaissance Literature</DATA></UCPnum.Subjects>
+<SubDescs1>Literature</SubDescs1>
+<SubDescs2>English Literature</SubDescs2>
+<SubDescs3>Literary Theory and Criticism</SubDescs3>
+<SubDescs4>Renaissance Literature</SubDescs4>
+<SubDescs5/>
+<SubDescs6/>
+<SubDescs7/>
+<SubDescs8/>
+<SubDescs9/>
+<SubDescs10/>
+<Access_Level>3</Access_Level>
+<OPstatus>X</OPstatus>
+<public_nonPublic>Public</public_nonPublic>
+<ARK.ARK><DATA>ark:/13030/ft7m3nb4n1</DATA></ARK.ARK></ROW>
+
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+   
+   <amdSec>
+      <rightsMD ID="rights">
+         <mdWrap MIMETYPE="text/xml" MDTYPE="OTHER" LABEL="METS Extension Rights Schema">
+            <xmlData>
+               <RightsDeclarationMD xmlns="" xsi:noNamespaceSchemaLocation="http://www.loc.gov/standards/rights/METSRights.xsd" RIGHTSCATEGORY="COPYRIGHTED">
+                  <RightsDeclaration>Copyright U.C. Regents. All Rights Reserved.</RightsDeclaration>
+                  <RightsHolder>
+                     <RightsHolderName>Regents of the University of California</RightsHolderName>
+                  </RightsHolder>
+                  <Context CONTEXTCLASS="GENERAL PUBLIC">
+                     <Permissions DISCOVER="true" DISPLAY="true"/>
+                     <Constraints CONSTRAINTTYPE="TRANSFERPERMISSIONS">
+                        <ConstraintDescription>Any file or element contained herein may be displayed or transmitted across a network by anyone who has signed a license agreement with the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                     <Constraints CONSTRAINTTYPE="RE-USE">
+                        <ConstraintDescription>Copy and distribution of any element or file is prohibited without the express written permission of the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                  </Context>
+               </RightsDeclarationMD>
+            </xmlData>
+         </mdWrap>
+      </rightsMD>
+   </amdSec>
+
+   <fileSec>
+   <fileGrp>
+      <file ID="top">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1"/>
+      </file>
+      <file ID="d0e27">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;doc.view=popup&amp;chunk.id=d0e27"/>
+      </file>
+      <file ID="d0e32">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e32"/>
+      </file>
+      <file ID="d0e53">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e53"/>
+      </file>
+      <file ID="d0e137">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e137"/>
+      </file>
+      <file ID="d0e1689">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e1689"/>
+      </file>
+      <file ID="d0e2295">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e2295"/>
+      </file>
+      <file ID="d0e2996">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e2996"/>
+      </file>
+      <file ID="d0e3773">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e3773"/>
+      </file>
+      <file ID="d0e4473">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e4473"/>
+      </file>
+      <file ID="d0e7957">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e7957"/>
+      </file>
+      <file ID="d0e9778">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e9778"/>
+      </file>
+      <file ID="d0e10148">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e10148"/>
+      </file>
+      <file ID="endnotes">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=endnotes"/>
+      </file>
+      <file ID="d0e14402">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e14402"/>
+      </file>
+      <file ID="d0e16091">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft7m3nb4n1&amp;chunk.id=d0e16091"/>
+      </file>
+   </fileGrp>
+</fileSec>
+
+   <structMap>
+   <div TYPE="TEI.2" LABEL="The Rest Is Silence">
+      <fptr FILEID="top"/>
+      <div TYPE="text">
+         <div TYPE="front">
+            <div LABEL="Dedication" TYPE="dedication">
+               <fptr FILEID="d0e27"/>
+            </div>
+            <div LABEL="Acknowledgments" TYPE="fmsec">
+               <fptr FILEID="d0e32"/>
+            </div>
+            <div LABEL="A Note on Texts" TYPE="fmsec">
+               <fptr FILEID="d0e53"/>
+            </div>
+         </div>
+         <div TYPE="body">
+            <div LABEL="Introduction" TYPE="chapter">
+               <fptr FILEID="d0e137"/>
+            </div>
+            <div LABEL="1&#x2014;&#xA0;&#10;               Religio Vindicis :&#xA0; Substitution and Immortality in The Spanish Tragedy&#10;            " TYPE="chapter">
+               <fptr FILEID="d0e1689"/>
+            </div>
+            <div LABEL="2&#x2014;&#xA0; Giving up the Ghost:&#xA0;&#10;               Hamlet , Revenge, and Denial" TYPE="chapter">
+               <fptr FILEID="d0e2295"/>
+            </div>
+            <div LABEL="3&#x2014;&#xA0; Comic Means, Tragic Ends:&#xA0; False Immortality in Measure for Measure&#10;            " TYPE="chapter">
+               <fptr FILEID="d0e2996"/>
+            </div>
+            <div LABEL="4&#x2014;&#xA0; Another Day, &quot;Another Golgotha&quot;:&#xA0;&#10;               Macbeth and the Tyranny of Nature" TYPE="chapter">
+               <fptr FILEID="d0e3773"/>
+            </div>
+            <div LABEL="5&#x2014;&#xA0; Duelling Death in the Lyrics of Love:&#xA0; John Donne's Poetics of Immortality" TYPE="chapter">
+               <fptr FILEID="d0e4473"/>
+            </div>
+            <div LABEL="6&#x2014;&#xA0; Word without End:&#xA0; The Comforts of George Herbert's Temple&#10;            " TYPE="chapter">
+               <fptr FILEID="d0e7957"/>
+            </div>
+         </div>
+         <div TYPE="back">
+            <div LABEL="Epilogue&#x2014;&#xA0; The Deaths of Two Women" TYPE="bmsec">
+               <fptr FILEID="d0e9778"/>
+            </div>
+            <div LABEL="Retraction" TYPE="bmsec">
+               <fptr FILEID="d0e10148"/>
+            </div>
+            <div LABEL="Notes" TYPE="bmsec">
+               <fptr FILEID="endnotes"/>
+            </div>
+            <div LABEL="Works Cited" TYPE="bibliography">
+               <fptr FILEID="d0e14402"/>
+            </div>
+            <div LABEL="Index" TYPE="index">
+               <fptr FILEID="d0e16091"/>
+            </div>
+         </div>
+      </div>
+   </div>
+</structMap>
+
+   <behaviorSec>
+      <behavior ID="disp1" STRUCTID="top" BTYPE="display" LABEL="Display Behavior">
+         <interfaceDef LABEL="Default Display Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/displaydefaultDisplayDef.txt"/>
+         <mechanism LABEL="Default Display Mechanism" LOCTYPE="URN" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/defaultDisplayMech.xml"/>
+      </behavior>
+      <behavior ID="auth1" STRUCTID="top" BTYPE="authentication" LABEL="Authentication Behavior">
+         <interfaceDef LABEL="General Public Authentication Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/publicAuthDef.txt"/>
+         <mechanism LABEL="General Public Authentication Mechanism" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/authentication/publicAuthMech.xml"/>
+      </behavior>
+   </behaviorSec>
+
+</mets>

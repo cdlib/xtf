@@ -1,0 +1,252 @@
+<?xml version="1.0"?>
+<!-- ?xml-stylesheet type="text/xsl" href="../xslt/UCPress-netlib.xslt"? -->
+<mets xmlns="http://www.loc.gov/METS/" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/TR/xlink" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd" OBJID="ark:/13030/ft2g5004sk" LABEL="The Voice in the Margin: Native American Literature and the Canon" TYPE="text" PROFILE="http://ark.cdlib.org/ark:/13030/kt3v19p5bk">
+
+   <metsHdr>
+      <agent ROLE="EDITOR" TYPE="ORGANIZATION">
+         <name>California Digital Library</name>
+         <note>record created in batch mergining of MARC and UCPress records</note>
+      </agent>
+            <altRecordID TYPE="isbn-p">0-520-06827-0</altRecordID>      <altRecordID TYPE="ucp-bnum">2425</altRecordID>
+   </metsHdr>
+
+   <dmdSec ID="mods">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <mods xmlns="http://www.loc.gov/mods/" xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/ http://www.loc.gov/standards/mods/mods.xsd">
+<titleInfo>
+<nonSort>The </nonSort>
+<title>voice in the margin :</title>
+<subTitle>Native American literature and the canon</subTitle>
+</titleInfo>
+<name type="personal">
+<namePart>Krupat, Arnold</namePart>
+<role>
+<text>creator</text>
+</role>
+</name>
+<name type="corporate">
+<namePart>eScholarship (Online service)</namePart>
+</name>
+<typeOfResource>text</typeOfResource>
+<genre authority="marc">bibliography</genre>
+<genre authority="local">Online resources.</genre>
+<originInfo>
+<place>
+<code authority="marc">cau</code>
+<text>Berkeley</text>
+</place>
+<publisher>University of California Press</publisher>
+<dateIssued>c1989</dateIssued>
+<dateIssued encoding="marc">1989</dateIssued>
+<issuance>monographic</issuance>
+</originInfo>
+<language authority="iso639-2b">eng</language>
+<physicalDescription>
+<form xmlns="http://www.loc.gov/mods/" authority="marcform">print</form>
+<extent xmlns="http://www.loc.gov/mods/">259 p. ; 22 cm</extent>
+</physicalDescription>
+<note type="statement of responsibility">Arnold Krupat</note>
+<note>Includes index</note>
+<note>Bibliography: p. [241]-252</note>
+<note>Also available via the World Wide Web</note>
+<subject authority="lcsh">
+<topic>American literature</topic>
+<topic>Indian authors</topic>
+<topic>History and criticism</topic>
+<topic>Theory, etc</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Indian literature</topic>
+<topic>History and criticism</topic>
+<topic>Theory, etc</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Indians in literature</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Canon (Literature)</topic>
+</subject>
+<identifier type="isbn">0520066693 (alk. paper)</identifier>
+<identifier type="lccn">89-4966</identifier>
+<identifier type="uri">http://ark.cdlib.org/ark:/13030/ft2g5004sk/</identifier>
+<location>SDB ck</location>
+<location>SDB nnet</location>
+<extension xmlns:dc="http://purl.org/dc/elements/1.1/">
+<dc:relation>http://escholarship.cdlib.org</dc:relation>
+<dc:relation>http://www.ucpress.edu</dc:relation>
+</extension>
+<recordInfo>
+<recordContentSource>DLC</recordContentSource>
+<recordCreationDate encoding="marc">890418</recordCreationDate>
+<recordChangeDate encoding="iso8601">20030630000000.0</recordChangeDate>
+</recordInfo>
+</mods>
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+
+   <dmdSec ID="ucpress">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <ROW xmlns="http://www.cdlib.org/schemas/xmldata" xsi:schemaLocation="http://www.cdlib.org/schemas/xmldata http://ark.cdlib.org/schemas/xmldata/xmldata.xsd" MODID="11" RECORDID="33586">
+<UCPnum>2425</UCPnum>
+<NLnum>32717</NLnum>
+<UCPnum.LC_number><DATA/></UCPnum.LC_number>
+<UCPnum.ISBN_cl><DATA/></UCPnum.ISBN_cl>
+<UCPnum.ISBN_pa><DATA>0-520-06827-0</DATA></UCPnum.ISBN_pa>
+<UCPnum.AUTHOR_CITATION><DATA>Krupat, Arnold</DATA></UCPnum.AUTHOR_CITATION>
+<UCPnum.AUTHOR_CITATION_FWD><DATA>Arnold Krupat </DATA></UCPnum.AUTHOR_CITATION_FWD>
+<UCPnum.Auth1LastName><DATA>Krupat</DATA></UCPnum.Auth1LastName>
+<UCPnum.Title><DATA>The Voice in the Margin: Native American Literature and the Canon</DATA></UCPnum.Title>
+<UCPnum.TitleMain><DATA>The Voice in the Margin</DATA></UCPnum.TitleMain>
+<UCPnum.TitleSub><DATA>Native American Literature and the Canon</DATA></UCPnum.TitleSub>
+<UCPnum.TitleMainClean><DATA>The Voice in the Margin</DATA></UCPnum.TitleMainClean>
+<UCPnum.TitleSubClean><DATA>Native American Literature and the Canon</DATA></UCPnum.TitleSubClean>
+<UCPnum.AuthorBioInCatalog><DATA><b>Arnold Krupat</b> is on the Literature Faculty of Sarah Lawrence College, and has written extensively on Native American literature.</DATA></UCPnum.AuthorBioInCatalog>
+<UCPnum.AuthorsXtraCit.TranslsIllustrsEds><DATA/></UCPnum.AuthorsXtraCit.TranslsIllustrsEds>
+<UCPnum.Blurbs><DATA> &quot;Arnold Krupat's book is immensely exciting, provocative, and introduces to the study of American literature(s) a bold new critical Cultural studies perspective that undermines radically the conceptual segregation and institutional isolation of Native American literary and cultural texts. . . . His dialectically rigorous work will help set the parameters for any future discussion of Native American texts and their relation to questions of canon formation, identity creation, 'the Collective (non-schizophrenic) subject,' and cultural resistance.&quot; - Jos&#xE9; David Sald&#xED;var, University of California, Santa Cruz</DATA></UCPnum.Blurbs>
+<UCPnum.Copy><DATA>In its consideration of American Indian literature as a rich and exciting body of work, <i>The Voice in the Margin</i> invites us to broaden our notion of what a truly inclusive American literature might be, and of how it might be placed in relation to an international - a &quot;cosmopolitan&quot; - literary canon. The book comes at a time when the most influential national media have focused attention on the subject of the literary canon. They have made it an issue not merely of academic but of general public concern, expressing strong opinions on the subject of what the American student should or should not read as essential or core texts. Is the literary canon simply a given of tradition and history, or is it, and must it be, constantly under construction? The question remains hotly contested to the present moment.Arnold Krupat argues that the literary expression of the indigenous peoples of the United States has claims on us to more than marginal attention. Demonstrating a firm grasp of both literary history and contemporary critical theory, he situates Indian literature, traditional and modern, in a variety of contexts and categories. His extensive knowledge of the history and current theory of ethnography recommends the book to anthropologists and folklorists as well as to students and teachers of literature, both canonical and noncanonical. The materials covered, the perspectives considered, and the learning displayed all make <i>The Voice in the Margin</i> a major contribution to the exciting field of contemporary cultural studies.</DATA></UCPnum.Copy>
+<UCPnum.Illustrations><DATA/></UCPnum.Illustrations>
+<UCPnum.PageCount><DATA/></UCPnum.PageCount>
+<UCPnum.Pub_Date><DATA>11/15/1989</DATA></UCPnum.Pub_Date>
+<UCPnum.Series_name><DATA/></UCPnum.Series_name>
+<UCPnum.Series_No.Vol><DATA/></UCPnum.Series_No.Vol>
+<UCPnum.Subjects><DATA>Native American Studies; American Literature</DATA></UCPnum.Subjects>
+<SubDescs1>Native American Studies</SubDescs1>
+<SubDescs2>American Literature</SubDescs2>
+<SubDescs3/>
+<SubDescs4/>
+<SubDescs5/>
+<SubDescs6/>
+<SubDescs7/>
+<SubDescs8/>
+<SubDescs9/>
+<SubDescs10/>
+<Access_Level>3</Access_Level>
+<OPstatus>X</OPstatus>
+<public_nonPublic>Public</public_nonPublic>
+<ARK.ARK><DATA>ark:/13030/ft2g5004sk</DATA></ARK.ARK></ROW>
+
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+   
+   <amdSec>
+      <rightsMD ID="rights">
+         <mdWrap MIMETYPE="text/xml" MDTYPE="OTHER" LABEL="METS Extension Rights Schema">
+            <xmlData>
+               <RightsDeclarationMD xmlns="" xsi:noNamespaceSchemaLocation="http://www.loc.gov/standards/rights/METSRights.xsd" RIGHTSCATEGORY="COPYRIGHTED">
+                  <RightsDeclaration>Copyright U.C. Regents. All Rights Reserved.</RightsDeclaration>
+                  <RightsHolder>
+                     <RightsHolderName>Regents of the University of California</RightsHolderName>
+                  </RightsHolder>
+                  <Context CONTEXTCLASS="GENERAL PUBLIC">
+                     <Permissions DISCOVER="true" DISPLAY="true"/>
+                     <Constraints CONSTRAINTTYPE="TRANSFERPERMISSIONS">
+                        <ConstraintDescription>Any file or element contained herein may be displayed or transmitted across a network by anyone who has signed a license agreement with the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                     <Constraints CONSTRAINTTYPE="RE-USE">
+                        <ConstraintDescription>Copy and distribution of any element or file is prohibited without the express written permission of the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                  </Context>
+               </RightsDeclarationMD>
+            </xmlData>
+         </mdWrap>
+      </rightsMD>
+   </amdSec>
+
+   <fileSec>
+   <fileGrp>
+      <file ID="top">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk"/>
+      </file>
+      <file ID="d0e27">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk&amp;doc.view=popup&amp;chunk.id=d0e27"/>
+      </file>
+      <file ID="d0e31">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk&amp;chunk.id=d0e31"/>
+      </file>
+      <file ID="d0e393">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk&amp;chunk.id=d0e393"/>
+      </file>
+      <file ID="d0e989">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk&amp;chunk.id=d0e989"/>
+      </file>
+      <file ID="d0e1769">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk&amp;chunk.id=d0e1769"/>
+      </file>
+      <file ID="d0e2619">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk&amp;chunk.id=d0e2619"/>
+      </file>
+      <file ID="d0e4092">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk&amp;chunk.id=d0e4092"/>
+      </file>
+      <file ID="d0e4849">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk&amp;chunk.id=d0e4849"/>
+      </file>
+      <file ID="d0e4923">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk&amp;chunk.id=d0e4923"/>
+      </file>
+      <file ID="d0e6151">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft2g5004sk&amp;chunk.id=d0e6151"/>
+      </file>
+   </fileGrp>
+</fileSec>
+
+   <structMap>
+   <div TYPE="TEI.2" LABEL="The Voice in the Margin">
+      <fptr FILEID="top"/>
+      <div TYPE="text">
+         <div TYPE="front">
+            <div LABEL="Dedication" TYPE="dedication">
+               <fptr FILEID="d0e27"/>
+            </div>
+         </div>
+         <div TYPE="body">
+            <div LABEL="Introduction" TYPE="chapter">
+               <fptr FILEID="d0e31"/>
+            </div>
+            <div LABEL="1&#x2014;&#xA0; The Concept of the Canon" TYPE="chapter">
+               <fptr FILEID="d0e393"/>
+            </div>
+            <div LABEL="2&#x2014;&#xA0; Criticism and the Canon" TYPE="chapter">
+               <fptr FILEID="d0e989"/>
+            </div>
+            <div LABEL="3&#x2014;&#xA0; Native American Literature and the Canon" TYPE="chapter">
+               <fptr FILEID="d0e1769"/>
+            </div>
+            <div LABEL="4&#x2014;&#xA0; Monologue and Dialogue in Native American Autobiography" TYPE="chapter">
+               <fptr FILEID="d0e2619"/>
+            </div>
+            <div LABEL="5&#x2014;&#xA0; Local, National, Cosmopolitan Literature" TYPE="chapter">
+               <fptr FILEID="d0e4092"/>
+            </div>
+            <div LABEL="Conclusion" TYPE="chapter">
+               <fptr FILEID="d0e4849"/>
+            </div>
+         </div>
+         <div TYPE="back">
+            <div LABEL="Works Cited" TYPE="bibliography">
+               <fptr FILEID="d0e4923"/>
+            </div>
+            <div LABEL="Index" TYPE="index">
+               <fptr FILEID="d0e6151"/>
+            </div>
+         </div>
+      </div>
+   </div>
+</structMap>
+
+   <behaviorSec>
+      <behavior ID="disp1" STRUCTID="top" BTYPE="display" LABEL="Display Behavior">
+         <interfaceDef LABEL="Default Display Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/displaydefaultDisplayDef.txt"/>
+         <mechanism LABEL="Default Display Mechanism" LOCTYPE="URN" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/defaultDisplayMech.xml"/>
+      </behavior>
+      <behavior ID="auth1" STRUCTID="top" BTYPE="authentication" LABEL="Authentication Behavior">
+         <interfaceDef LABEL="General Public Authentication Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/publicAuthDef.txt"/>
+         <mechanism LABEL="General Public Authentication Mechanism" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/authentication/publicAuthMech.xml"/>
+      </behavior>
+   </behaviorSec>
+
+</mets>

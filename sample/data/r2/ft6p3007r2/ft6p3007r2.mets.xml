@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+<!-- ?xml-stylesheet type="text/xsl" href="../xslt/UCPress-netlib.xslt"? -->
+<mets xmlns="http://www.loc.gov/METS/" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/TR/xlink" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd" OBJID="ark:/13030/ft6p3007r2" LABEL="Fifteen Jugglers, Five Believers: Literary  Politics and the Poetics of American Social Movements" TYPE="text" PROFILE="http://ark.cdlib.org/ark:/13030/kt3v19p5bk">
+
+   <metsHdr>
+      <agent ROLE="EDITOR" TYPE="ORGANIZATION">
+         <name>California Digital Library</name>
+         <note>record created in batch mergining of MARC and UCPress records</note>
+      </agent>
+            <altRecordID TYPE="isbn-c">0-520-07521-8</altRecordID>      <altRecordID TYPE="isbn-p">0-520-07522-6</altRecordID>      <altRecordID TYPE="ucp-bnum">5804</altRecordID>
+   </metsHdr>
+
+   <dmdSec ID="mods">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <mods xmlns="http://www.loc.gov/mods/" xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/ http://www.loc.gov/standards/mods/mods.xsd">
+<titleInfo>
+<title>Fifteen jugglers, five believers :</title>
+<subTitle>literary politics and the poetics of American social movements</subTitle>
+</titleInfo>
+<name type="personal">
+<namePart>Reed, T. V. (Thomas Vernon)</namePart>
+<role>
+<text>creator</text>
+</role>
+</name>
+<typeOfResource>text</typeOfResource>
+<genre authority="marc">bibliography</genre>
+<originInfo>
+<place>
+<code authority="marc">cau</code>
+<text>Berkeley</text>
+</place>
+<publisher>University of California Press</publisher>
+<dateIssued>1992</dateIssued>
+<issuance>monographic</issuance>
+</originInfo>
+<language authority="iso639-2b">eng</language>
+<physicalDescription>
+<form xmlns="http://www.loc.gov/mods/" authority="marcform">print</form>
+<extent xmlns="http://www.loc.gov/mods/">xvi, 218 p. : ill. ; 24 cm.</extent>
+</physicalDescription>
+<tableOfContents>1: Literary Politics and the Poetics of Social Movements. Reading Theory. Literary-Textual-Cultural Studies. The Poetics of Social Movements. The Fiction of Postmodernist Realism -- 2: Aesthetics and the Overprivileged: The Politics and Ethics of Representation in Let Us Now Praise Famous Men. Allegories. Themes and Variations. The Subject of Disciplines. Beginning to End the Book. Fict or Faction? Cubist Sociology. Real Photographs. Reading Relations and Democratic Conventions. Sonata for Class Struggle -- 3: Invisible Movements, Black Powers: Double Vision and Trickster Politics in Invisible Man. White Canons, Black Masks. Wearing White Face. Eloquence, Audience, and Rhetorics of Liberation. Tricksters, Trappers, and Tropesters -- 4: Disrupting the Theater of War: Armies of the Night and the New Left Siege of the Pentagon. Doubled Jeopardy. Hermeneutical Surroundings. Novel/History/Epic. Carnival/Time. The Cutting Edge of Radical Style. Prefiguring a New Left Aesthetic.</tableOfContents>
+<tableOfContents>5: Dramatic Ecofeminism: The Women's Pentagon Action as Theater and Theory. A New Stage of the Movement. Mobilizing Emotion. Forging (Collective) Identities. Strategic Rage. Defying Consensus. Dramatic Theories -- 6: Toward Some Postmodernist Populisms: A Prescriptive Postscript. W(h)ither Intellectuals? Formalisms and Their (dis)Contents. Through a Glass Building Darkly. We Shall Not Be Mauved. Of Cyborgs and Salt Eaters. Pop Goes the Avant-Garde. Beyond Actually Existing Populisms.</tableOfContents>
+<note type="statement of responsibility">T.V. Reed.</note>
+<note>Includes bibliographical references and index.</note>
+<subject authority="lcsh">
+<topic>American literature</topic>
+<temporal>20th century</temporal>
+<topic>History and criticism</topic>
+<topic>Theory, etc</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Politics and literature</topic>
+<geographic>United States</geographic>
+<topic>History</topic>
+<temporal>20th century.</temporal>
+</subject>
+<subject authority="lcsh">
+<topic>Literature and society</topic>
+<geographic>United States</geographic>
+<topic>History</topic>
+<temporal>20th century.</temporal>
+</subject>
+<subject authority="lcsh">
+<topic>Social movements</topic>
+<geographic>United States</geographic>
+<topic>History</topic>
+<temporal>20th century.</temporal>
+</subject>
+<subject authority="lcsh">
+<geographic>United States</geographic>
+<topic>Civilization</topic>
+<temporal>20th century.</temporal>
+</subject>
+<subject authority="lcsh">
+<topic>Social problems in literature</topic>
+</subject>
+<classification authority="lcc">PS228.P6 R44 1992</classification>
+<classification authority="ddc" edition="20">810.9/358</classification>
+<relatedItem type="series">
+<titleInfo>
+<title>New historicism ; 22</title>
+</titleInfo>
+</relatedItem>
+<identifier type="isbn">0520075218 (alk. paper)</identifier>
+<identifier type="lccn">91033396</identifier>
+<location>SBXL EGWM</location>
+<extension xmlns:dc="http://purl.org/dc/elements/1.1/">
+<dc:relation>http://escholarship.cdlib.org</dc:relation>
+<dc:relation>http://www.ucpress.edu</dc:relation>
+</extension>
+<recordInfo>
+<recordContentSource>DLC</recordContentSource>
+<recordCreationDate encoding="marc">930211</recordCreationDate>
+<recordChangeDate encoding="iso8601">20020718044252.0</recordChangeDate>
+<recordIdentifier>SBXL001505995</recordIdentifier>
+</recordInfo>
+</mods>
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+
+   <dmdSec ID="ucpress">
+      <mdWrap MDTYPE="OTHER">
+         <xmlData>
+            <ROW xmlns="http://www.cdlib.org/schemas/xmldata" xsi:schemaLocation="http://www.cdlib.org/schemas/xmldata http://ark.cdlib.org/schemas/xmldata/xmldata.xsd" MODID="11" RECORDID="33969">
+<UCPnum>5804</UCPnum>
+<NLnum>44294</NLnum>
+<UCPnum.LC_number><DATA/></UCPnum.LC_number>
+<UCPnum.ISBN_cl><DATA>0-520-07521-8</DATA></UCPnum.ISBN_cl>
+<UCPnum.ISBN_pa><DATA>0-520-07522-6</DATA></UCPnum.ISBN_pa>
+<UCPnum.AUTHOR_CITATION><DATA>Reed, T.V.</DATA></UCPnum.AUTHOR_CITATION>
+<UCPnum.AUTHOR_CITATION_FWD><DATA>T.V. Reed</DATA></UCPnum.AUTHOR_CITATION_FWD>
+<UCPnum.Auth1LastName><DATA>Reed</DATA></UCPnum.Auth1LastName>
+<UCPnum.Title><DATA>Fifteen Jugglers, Five Believers: Literary  Politics and the Poetics of American Social Movements</DATA></UCPnum.Title>
+<UCPnum.TitleMain><DATA>Fifteen Jugglers, Five Believers</DATA></UCPnum.TitleMain>
+<UCPnum.TitleSub><DATA>Literary  Politics and the Poetics of American Social Movements</DATA></UCPnum.TitleSub>
+<UCPnum.TitleMainClean><DATA>Fifteen Jugglers, Five Believers</DATA></UCPnum.TitleMainClean>
+<UCPnum.TitleSubClean><DATA>Literary  Politics and the Poetics of American Social Movements</DATA></UCPnum.TitleSubClean>
+<UCPnum.AuthorBioInCatalog><DATA><b>T.V. Reed</b> is Assistant Professor of American Studies and English at Washington State University.</DATA></UCPnum.AuthorBioInCatalog>
+<UCPnum.AuthorsXtraCit.TranslsIllustrsEds><DATA/></UCPnum.AuthorsXtraCit.TranslsIllustrsEds>
+<UCPnum.Blurbs><DATA>&quot;An extraordinarily ambitious effort of synthesis, worthy of comparison with the synthesis attempted a decade ago by Fredric Jameson's <i>The Political Unconscious</i>. This book speaks in a fresh voice, a voice that clearly knows all of the most interesting thinking on the politics of culture over the past few years yet is stimulated rather than burdened by its knowledge. It will be welcomed with exhilaration by the large and ever-increasing audience for the theory and practice of cultural studies as well as, I'm convinced, by an unusually broad general readership. No one thinking about the complex relations between aesthetics and politics will be able to ignore it.&quot; - Bruce Robbins, editor of <i>Intellectuals: Aesthetics, Politics, Academics</i></DATA></UCPnum.Blurbs>
+<UCPnum.Copy><DATA>T.V. Reed urges an affiliation between literary theory and political action - and between political action and literary theory. What can the &quot;new literary theory&quot; learn from &quot;new social movements&quot;; and what can social activists learn from poststructuralism, new historicism, feminist theory, and neomarxism?In strikingly new interpretations of texts in four different genres - Agee and Evans's <i>Let Us Now Praise Famous Men</i>, Ellison's <i>Invisible Man, </i> Mailer's <i>Armies of the Night</i>, and the ecofeminist <i>Women's Pentagon Actions</i> of the early 1980s - Reed shows how reading literary texts for their political strategies and reading political movements as texts can help us overcome certain rhetorical traps that have undermined American efforts to combat racism, sexism, and economic inequality.</DATA></UCPnum.Copy>
+<UCPnum.Illustrations><DATA/></UCPnum.Illustrations>
+<UCPnum.PageCount><DATA/></UCPnum.PageCount>
+<UCPnum.Pub_Date><DATA>12/24/1992</DATA></UCPnum.Pub_Date>
+<UCPnum.Series_name><DATA>The New Historicism: Studies in Cultural Poetics</DATA></UCPnum.Series_name>
+<UCPnum.Series_No.Vol><DATA>22</DATA></UCPnum.Series_No.Vol>
+<UCPnum.Subjects><DATA>Literature; American Literature; Literary Theory and Criticism</DATA></UCPnum.Subjects>
+<SubDescs1>Literature</SubDescs1>
+<SubDescs2>American Literature</SubDescs2>
+<SubDescs3>Literary Theory and Criticism</SubDescs3>
+<SubDescs4/>
+<SubDescs5/>
+<SubDescs6/>
+<SubDescs7/>
+<SubDescs8/>
+<SubDescs9/>
+<SubDescs10/>
+<Access_Level>3</Access_Level>
+<OPstatus>X</OPstatus>
+<public_nonPublic>Public</public_nonPublic>
+<ARK.ARK><DATA>ark:/13030/ft6p3007r2</DATA></ARK.ARK></ROW>
+
+         </xmlData>
+      </mdWrap>
+   </dmdSec>
+   
+   <amdSec>
+      <rightsMD ID="rights">
+         <mdWrap MIMETYPE="text/xml" MDTYPE="OTHER" LABEL="METS Extension Rights Schema">
+            <xmlData>
+               <RightsDeclarationMD xmlns="" xsi:noNamespaceSchemaLocation="http://www.loc.gov/standards/rights/METSRights.xsd" RIGHTSCATEGORY="COPYRIGHTED">
+                  <RightsDeclaration>Copyright U.C. Regents. All Rights Reserved.</RightsDeclaration>
+                  <RightsHolder>
+                     <RightsHolderName>Regents of the University of California</RightsHolderName>
+                  </RightsHolder>
+                  <Context CONTEXTCLASS="GENERAL PUBLIC">
+                     <Permissions DISCOVER="true" DISPLAY="true"/>
+                     <Constraints CONSTRAINTTYPE="TRANSFERPERMISSIONS">
+                        <ConstraintDescription>Any file or element contained herein may be displayed or transmitted across a network by anyone who has signed a license agreement with the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                     <Constraints CONSTRAINTTYPE="RE-USE">
+                        <ConstraintDescription>Copy and distribution of any element or file is prohibited without the express written permission of the U.C. Regents.</ConstraintDescription>
+                     </Constraints>
+                  </Context>
+               </RightsDeclarationMD>
+            </xmlData>
+         </mdWrap>
+      </rightsMD>
+   </amdSec>
+
+   <fileSec>
+   <fileGrp>
+      <file ID="top">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2"/>
+      </file>
+      <file ID="d0e27">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;doc.view=popup&amp;chunk.id=d0e27"/>
+      </file>
+      <file ID="d0e30">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=d0e30"/>
+      </file>
+      <file ID="d0e110">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=d0e110"/>
+      </file>
+      <file ID="d0e398">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=d0e398"/>
+      </file>
+      <file ID="d0e1266">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=d0e1266"/>
+      </file>
+      <file ID="d0e1822">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=d0e1822"/>
+      </file>
+      <file ID="d0e2432">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=d0e2432"/>
+      </file>
+      <file ID="d0e2817">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=d0e2817"/>
+      </file>
+      <file ID="endnotes">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=endnotes"/>
+      </file>
+      <file ID="d0e3293">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=d0e3293"/>
+      </file>
+      <file ID="d0e4918">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=d0e4918"/>
+      </file>
+      <file ID="d0e4942">
+         <FLocat LOCTYPE="URL" xlink:href="?docId=ft6p3007r2&amp;chunk.id=d0e4942"/>
+      </file>
+   </fileGrp>
+</fileSec>
+
+   <structMap>
+   <div TYPE="TEI.2" LABEL="Fifteen Jugglers, Five Believers">
+      <fptr FILEID="top"/>
+      <div TYPE="text">
+         <div TYPE="front">
+            <div LABEL="Dedication" TYPE="dedication">
+               <fptr FILEID="d0e27"/>
+            </div>
+            <div LABEL="Preface" TYPE="fmsec">
+               <fptr FILEID="d0e30"/>
+            </div>
+         </div>
+         <div TYPE="body">
+            <div LABEL="One&#x2014;&#xA0; Literary Politics and the Poetics of Social Movements" TYPE="chapter">
+               <fptr FILEID="d0e110"/>
+            </div>
+            <div LABEL="Two&#x2014;&#xA0; Aesthetics and the Overprivileged:&#xA0; The Politics and Ethics of Representation in Let Us Now Praise Famous Men" TYPE="chapter">
+               <fptr FILEID="d0e398"/>
+            </div>
+            <div LABEL="Three&#x2014;&#xA0; Invisible Movements, Black Powers:&#xA0; Double Vision and Trickster Politics in Invisible Man" TYPE="chapter">
+               <fptr FILEID="d0e1266"/>
+            </div>
+            <div LABEL="Four&#x2014;&#xA0; Disrupting the Theater of War:&#xA0; Armies of the Night and the New Left Siege of the Pentagon" TYPE="chapter">
+               <fptr FILEID="d0e1822"/>
+            </div>
+            <div LABEL="Five&#x2014;&#xA0; Dramatic Ecofeminism:&#xA0; The Women's Pentagon Action as Theater and Theory" TYPE="chapter">
+               <fptr FILEID="d0e2432"/>
+            </div>
+            <div LABEL="Six&#x2014;&#xA0; Toward Some Postmodernist Populisms:&#xA0; A Prescriptive Postscript" TYPE="chapter">
+               <fptr FILEID="d0e2817"/>
+            </div>
+         </div>
+         <div TYPE="back">
+            <div LABEL="Notes" TYPE="bmsec">
+               <fptr FILEID="endnotes"/>
+            </div>
+            <div LABEL="Works Cited" TYPE="bibliography">
+               <fptr FILEID="d0e3293"/>
+            </div>
+            <div LABEL="Photo Section" TYPE="bmsec">
+               <fptr FILEID="d0e4918"/>
+            </div>
+            <div LABEL="Index" TYPE="index">
+               <fptr FILEID="d0e4942"/>
+            </div>
+         </div>
+      </div>
+   </div>
+</structMap>
+
+   <behaviorSec>
+      <behavior ID="disp1" STRUCTID="top" BTYPE="display" LABEL="Display Behavior">
+         <interfaceDef LABEL="Default Display Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/displaydefaultDisplayDef.txt"/>
+         <mechanism LABEL="Default Display Mechanism" LOCTYPE="URN" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/defaultDisplayMech.xml"/>
+      </behavior>
+      <behavior ID="auth1" STRUCTID="top" BTYPE="authentication" LABEL="Authentication Behavior">
+         <interfaceDef LABEL="General Public Authentication Definition" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/display/publicAuthDef.txt"/>
+         <mechanism LABEL="General Public Authentication Mechanism" LOCTYPE="URL" xlink:href="http://texts.cdlib.org/dynaxml/profiles/authentication/publicAuthMech.xml"/>
+      </behavior>
+   </behaviorSec>
+
+</mets>
