@@ -77,20 +77,7 @@
 <!-- ====================================================================== -->
 
 <xsl:variable name="subDir" select="substring($docId, 9, 2)"/>
-
 <xsl:variable name="sourceDir" select="concat('data/', $subDir, '/', $docId, '/')"/>
-
-<xsl:variable name="METS" select="document(concat('../../', $sourceDir, $docId, '.mets.xml'))"/>
-
-<xsl:variable name="relation" select="$METS//dc:relation"/>
-
-<xsl:variable name="displayMechURL" select="$METS//mets:behavior[@BTYPE='display']/mets:mechanism/@xlink:href"/>
-
-<xsl:variable name="displayMech" select="document($displayMechURL)"/>
-
-<xsl:variable name="authMechURL" select="$METS//mets:behavior[@BTYPE='authentication']/mets:mechanism/@xlink:href"/>
-<xsl:variable name="morphed" select="replace($authMechURL, '.+/profiles', '../../profiles')"/>
-<xsl:variable name="authMech" select="document($morphed)"/>
 
 <!-- ====================================================================== -->
 <!-- Root Template                                                          -->
@@ -127,8 +114,6 @@
         This can be quite useful for instance if you want to have two or more
         color schemes for different sets of documents.
     -->
-
-        <!-- Need to create a brand choosing structure here based on $relation -->
         
     <brand path="brand/default.xsl"/>        
 
@@ -154,11 +139,6 @@
         <text indexPath="index" termLimit="1000" workLimit="500000"
               maxSnippets="-1" maxContext="80">
           <xsl:apply-templates select="$query"/>
-          <!--<xsl:if test="$sectionType">
-            <sectionType>
-              <xsl:apply-templates select="$sectionType"/>
-            </sectionType>
-          </xsl:if>-->
         </text>
       </query>
     </xsl:if>
@@ -257,17 +237,7 @@
          If not found, allow access. This is for testing only!
     -->
 
-    <xsl:choose>
-      <xsl:when test="contains($docId, 'preview')">
-        <auth access="allow" type="all"/>
-      </xsl:when>
-      <xsl:when test="contains($docId, 'bpg-checker')">
-        <auth access="allow" type="all"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:copy-of select="$authMech//auth"/>
-      </xsl:otherwise>
-    </xsl:choose>
+    <auth access="allow" type="all"/>
 
 </xsl:template>
 
