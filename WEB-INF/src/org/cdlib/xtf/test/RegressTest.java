@@ -47,16 +47,16 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.lucene.ngram.NgramQueryRewriter;
+import org.apache.lucene.ngram.NgramStopFilter;
 import org.cdlib.xtf.crossQuery.CrossQuery;
 import org.cdlib.xtf.lazyTree.SearchTree;
 import org.cdlib.xtf.textEngine.DocHit;
 import org.cdlib.xtf.textEngine.IdxConfigUtil;
-import org.cdlib.xtf.textEngine.NgramQueryRewriter;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.textEngine.Snippet;
-import org.cdlib.xtf.textIndexer.NgramStopFilter;
 import org.cdlib.xtf.textIndexer.TextIndexer;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.CircularQueue;
@@ -366,6 +366,7 @@ public class RegressTest
         catch( Exception e ) {
             Trace.error( "Unexpected exception processing " +
                          chopPath(inFilePath) + ":\n" + e );
+            failedTests.add( chopPath(inFilePath) );
             return;
         }
 

@@ -50,7 +50,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.cdlib.xtf.textEngine.workLimiter.ExcessiveWorkException;
+import org.apache.lucene.limit.ExcessiveWorkException;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.GeneralException;
