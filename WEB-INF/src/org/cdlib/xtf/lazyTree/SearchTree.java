@@ -313,9 +313,15 @@ public class SearchTree extends LazyDocument
      * @throws IOException  If anything goes wrong reading from the Lucene
      *                      index or the lazy tree file.
      */
-    public void search( QueryProcessor processor, QueryRequest req )
+    public void search( QueryProcessor processor, QueryRequest origReq )
         throws IOException
     {
+        // Don't modify the original query request, since it might be in use
+        // by another thread at the same time. Rather, make a clone and then
+        // modify that with our restricted query.
+        //
+        QueryRequest req = (QueryRequest) origReq.clone();
+        
         // Make sure the input request is reasonable
         if( req.query instanceof SpanQuery ) {
             // -1, or some pos int OK.
@@ -339,13 +345,7 @@ public class SearchTree extends LazyDocument
         Term t = new Term( "key", sourceKey );
         bq.add( new TermQuery(t), true, false );
         bq.add( req.query, true, false );
-        
-        // Don't modify the original query request, since it might be in use
-        // by another thread at the same time. Rather, make a clone and then
-        // modify that with our restricted query.
-        //
-        QueryRequest newReq = (QueryRequest) req.clone();
-        newReq.query = bq;
+        req.query = bq;
 
         // Run the query and get the results.
         QueryResult result = processor.processReq( req );
