@@ -43,6 +43,7 @@ import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -157,6 +158,13 @@ class DocInfoCache extends GeneratingCache
         //
         Document paramDoc = QueryRequest.tokenizeParams( attrList );
         DOMSource src = new DOMSource( paramDoc );
+
+        if( Trace.getOutputLevel() >= Trace.debug ) {
+            Trace.debug( "*** docReqParser input ***" );
+            Trace.tab();
+            Trace.debug( XMLWriter.toString(paramDoc) );
+            Trace.untab();
+        }
         
         // Now request it to give us the info for this document. The stylesheet
         // might load additional files based on the document ID. Add those
@@ -172,6 +180,13 @@ class DocInfoCache extends GeneratingCache
             finally {
                 TextServlet.stylesheetCache.setDependencyReceiver( null );
             }
+        }
+
+        if( Trace.getOutputLevel() >= Trace.debug ) {
+            Trace.debug( "*** docReqParser output ***" );
+            Trace.tab();
+            Trace.debug( XMLWriter.toString(result.getNode()) );
+            Trace.untab();
         }
         
         // Also, add a dependency on the stylesheet cache entry.
