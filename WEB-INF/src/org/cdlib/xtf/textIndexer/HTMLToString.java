@@ -37,19 +37,47 @@ import org.cdlib.xtf.util.*;
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+/** This class provides a single static {@link HTMLToString#convert(string) convert() }
+ *  method that converts an HTML file into an XML string that can be
+ *  pre-filtered and added to a Lucene database by the 
+ *  {@link XMLTextProcessor#parseText(SrcTextInfo) parseText() } method of the 
+ *  {@link XMLTextProcessor } class. <br><br>
+ * 
+ *  Internally, the HTML to XML file conversion is performed by the jTidy
+ *  library, which is a variant of the HTMLTidy converter. 
+ */
 public class HTMLToString {
 
+  /** Create the HTMLTidy object that will do the work. */
   static Tidy tidy = new Tidy();  
  
   //////////////////////////////////////////////////////////////////////////////
   
+  /** Convert an HTML file into an HTMLTidy style XML string.
+   * 
+   *  @param HTMLFileName  The name of the HTML file to convert to an XML string.
+   * 
+   *  @return 
+   *      If successful, a string containing the XML equivalent of the source
+   *      HTML file. If an error occurred, this method returns <code>null</code>.
+   * 
+   */
   static public String convert( String HTMLFileName )
  
   {
+
+    // Tell Tidy to supress warning and other output messsages.
+    tidy.setQuiet( true );   
+    tidy.setShowWarnings( false );
   
     // Tell Tidy to make XML as it output.
     tidy.setXmlOut( true );
     
+    // Output non-breaking spaces as "&nbsp;" so we can easily detect them
+    // replace them with &#160; below to avoid problems parsing the XML.
+    //
+    tidy.setQuoteNbsp( true );
+        
     try {
         
         // Get hold of the source file.
