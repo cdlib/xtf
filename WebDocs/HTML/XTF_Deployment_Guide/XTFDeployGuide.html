@@ -941,14 +941,14 @@
     <br>
     <br>
     <div class="IndentL"> <b><u>The dynaXML.conf Configuration File</u></b> <br>
-      The <span class="Code">dynaXML.conf</span> configuration file is used by 
-      the <b><i>dynaXML</i></b> servlet to locate its <b>Document Request Parser</b> 
-      and <b>Error Page Generator</b> XSLT templates. It is also used to adjust 
-      the behavior of the the servlet itself. Each tag and its associated attributes 
-      are discussed here, and a sample <span class="Code">dynaXML.conf</span> 
-      can be found in the <span class="Code">conf</span> subdirectory below the 
-      servlet base directory (i.e., the <span class="Code">XTF_HOME</span> directory.) 
-      <pre class="Sample"><b>&lt;?xml version="1.0" encoding="utf-8"?>&lt;dynaXML-config&gt;
+    The <span class="Code">dynaXML.conf</span> configuration file is used by the 
+    <b><i>dynaXML</i></b> servlet to locate its <b>Document Request Parser</b> 
+    and <b>Error Page Generator</b> XSLT templates. It is also used to adjust 
+    the behavior of the the servlet itself. Each tag and its associated attributes 
+    are discussed here, and a sample <span class="Code">dynaXML.conf</span> can 
+    be found in the <span class="Code">conf</span> subdirectory below the servlet 
+    base directory (i.e., the <span class="Code">XTF_HOME</span> directory.) 
+    <pre class="Sample"><b>&lt;?xml version="1.0" encoding="utf-8"?>&lt;dynaXML-config&gt;
 
     &lt;logging level="<span class="MacroCode">LoggingLevel</span>"/&gt;
 
@@ -965,6 +965,8 @@
 
     &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt;
 
+    &lt;stylesheetProfiling profile="<span class="MacroCode">YesOrNo</span>"/&gt;
+ 
     &lt;!-- Your tags go here --&gt;
 
 &lt;/dynaXML-config&gt;</b></pre>
@@ -976,32 +978,29 @@
           of logging output by the <i><b>dynaXML</b></i> servlet. The possible 
           output levels are defined as follows:<br>
           <br>
-          <table>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code">errors</td>
-              <td width="10">&nbsp;</td>
-              <td><span class="BaseStyle">Only error messages are displayed.</span></td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code">warnings</td>
-              <td width="10">&nbsp;</td>
-              <td><span class="BaseStyle">Both error and warning messages are 
-                displayed.</span></td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code">info</td>
-              <td width="10">&nbsp;</td>
-              <td><span class="BaseStyle">Error, warning, and informational messages 
-                are displayed</span></td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code">debug</td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> Low level debug output is displayed 
-                in addition to error, warning, and informational messages. </span> 
-              </td>
-            </tr>
-          </table>
+          
+        <table cellpadding="0" cellspacing="8">
+          <tr> 
+            <td width="54" align="right" valign="top" class="Code">errors</td>
+            <td width="521"><span class="BaseStyle">Only error messages are displayed.</span></td>
+          </tr>
+          <tr> 
+            <td width="54" align="right" valign="top" class="Code">warnings</td>
+            <td width="521"><span class="BaseStyle">Both error and warning messages 
+              are displayed.</span></td>
+          </tr>
+          <tr> 
+            <td width="54" align="right" valign="top" class="Code">info</td>
+            <td width="521"><span class="BaseStyle">Error, warning, and informational 
+              messages are displayed</span></td>
+          </tr>
+          <tr> 
+            <td width="54" align="right" valign="top" class="Code">debug</td>
+            <td width="521"> <span class="BaseStyle"> Low level debug output is 
+              displayed in addition to error, warning, and informational messages. 
+              </span> </td>
+          </tr>
+        </table>
           <br>
           If this argument is not specified, the <i><b>dynaXML</b></i> servlet 
           defaults to displaying informational (<span class="Code">info</span>) 
@@ -1017,8 +1016,8 @@
             the <span class="Code">X-Forwarded-For</span> marker in the HTTP Request 
             Header. </div>
           <br>
-          <span class="Code">reverseProxy IP="<span class="MacroCode">ddd.ddd.ddd.ddd</span>"</span> 
-          <br>
+        <span class="Code">reverseProxy IP="<span class="MacroCode">ddd.ddd.ddd.ddd</span>"</span> 
+        <br>
           Set this attribute to the IP address for the reverse proxy server. <br>
           <br>
           <span class="Code">marker="<span class="MacroCode">MarkerString</span>"</span> 
@@ -1027,8 +1026,10 @@
           to use a forwarding marker other than the default <span class="Code">X-Forwarded-For</span> 
           marker. </div>
       </div>
-      <div class="GreyList"> <span class="Code"> &lt;docReqParser path="<span class="MacroCode">LocationOfDocReqestParser</span>" 
-        params="<span class="MacroCode">DocReqParserParams</span>"/&gt; </span><br>
+      
+    <div class="GreyList"> <span class="Code"> &lt;docReqParser path="<span class="MacroCode">LocationOfDocReqestParser</span>" 
+      params="<span class="MacroCode">DocReqParserParams</span>"/&gt;<br>
+      </span><br>
         <div class="IndentLR"> <span class="Code">params="<span class="MacroCode">LocationOfDocReqestParser</span>"</span> 
           <br>
           This attribute specifies the name and path to the XSLT template used 
@@ -1077,59 +1078,72 @@
           changed. The five distinct caches used by the <b><i>dynaXML</i></b> 
           servlet are as follows:<br>
           <br>
-          <table>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code">styleSheetCache</td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> Compiled versions of stylesheets (request 
-                parser, doc formatter, etc.) </span> </td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code">reqParserCache</td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> Parsed requests for specific URLs, 
-                to avoid running the request parser stylesheet over and over. 
-                </span> </td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code">ipListCache</td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> Compiled versions of IP lists (used 
-                only for IP-address based authentication.) </span> </td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code">authCache</td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> Session IDs of successful authentication 
-                attempts (LDAP or external.) When expired, the user will be forced 
-                to log in again. </span> <br>
-              </td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code">loginCache</td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> Security info for external logins, 
-                to verify authentication when user returns from the external page. 
-                If it expires while user is logging in, they will be forced to 
-                try again. </span> </td>
-            </tr>
-          </table>
+          
+        <table cellpadding="0" cellspacing="10" width="896">
+          <tr> 
+            <td width="137" align="right" valign="top" class="Code">styleSheetCache</td>
+            <td width="722"> <span class="BaseStyle"> Compiled versions of stylesheets 
+              (request parser, doc formatter, etc.) </span> </td>
+          </tr>
+          <tr> 
+            <td width="137" align="right" valign="top" class="Code">reqParserCache</td>
+            <td width="722"> <span class="BaseStyle"> Parsed requests for specific 
+              URLs, to avoid running the request parser stylesheet over and over. 
+              </span> </td>
+          </tr>
+          <tr> 
+            <td width="137" align="right" valign="top" class="Code">ipListCache</td>
+            <td width="722"> <span class="BaseStyle"> Compiled versions of IP 
+              lists (used only for IP-address based authentication.) </span> </td>
+          </tr>
+          <tr> 
+            <td width="137" align="right" valign="top" class="Code" height="13">authCache</td>
+            <td width="722" height="13"> <span class="BaseStyle"> Session IDs 
+              of successful authentication attempts (LDAP or external.) When expired, 
+              the user will be forced to log in again. </span> </td>
+          </tr>
+          <tr> 
+            <td width="137" align="right" valign="top" class="Code">loginCache</td>
+            <td width="722"> <span class="BaseStyle"> Security info for external 
+              logins, to verify authentication when user returns from the external 
+              page. If it expires while user is logging in, they will be forced 
+              to try again. </span> </td>
+          </tr>
+        </table>
         </div>
       </div>
       <div class="GreyList"> <span class="Code"> &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt; 
         </span><br>
-        <div class="IndentLR"> Whenever consulting one of its internal caches, 
-          the <b><i>dynaXML</i></b> servlet can optionally check if the source 
-          file(s) have been changed and if so ignore the cache entry and reload 
-          the file(s). This hurts performance slightly, but makes testing and 
-          development much easier. <br>
+        
+      <div class="IndentLR">
+        Whenever consulting one of its internal caches, the <b><i>dynaXML</i></b> 
+        servlet can optionally check if the source file(s) have been changed and 
+        if so ignore the cache entry and reload the file(s). This hurts performance 
+        slightly, but makes testing and development much easier. <br>
           <br>
-          Set this to "no" for a production system where every last little bit 
-          of speed is critical. Otherwise, set it to "yes". </div>
+        Set this to<b class="Code"> no </b> for a production system where every 
+        last little bit of speed is critical. Otherwise, set it to <b class="Code">yes</b>. 
       </div>
-      <br>
-      <br>
-      <br>
+      </div>
+      
+    <div class="GreyList"> <span class="Code"> &lt;<b>stylesheetProfiling profile="<span class="MacroCode">YesOrNo</span>"</b>&gt; 
+      </span><br>
+      <div class="IndentLR">
+          Controls whether a profile is generated for each document request. A 
+          profile identifies the stylesheet and line number of each XSLT command 
+          that was executed for the query, and a relative count that identifes 
+          roughly how long it took to execute that command. Within the profile, 
+          the executed commands are ordered such that the most used commands appear 
+          first, and the least used commands appear last. This provides clues 
+          as to where the stylesheet is spending its time and thus could possibly 
+          be optimized. When enabled, profiles ar written to the dynaXML servlet's 
+          activity log. <br><br>
+        Set this to<b class="Code"> no </b> for general use, since collecting 
+          the profile information can be time-consuming.
+      </div>
+    </div>
+      
+    <br>
       <b><u>The docReqParser.xsl Request Parser</u></b> <br>
       The <span class="Code">docReqParser.xsl</span> template describes how the 
       <b><i>dynaXML</i></b> servlet should translate external document request 
