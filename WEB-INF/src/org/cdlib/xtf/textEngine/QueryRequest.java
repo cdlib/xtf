@@ -555,6 +555,8 @@ public class QueryRequest implements Cloneable
         // Old stuff, for compatability.
         if( name.equals("text") )
             field = "text";
+        else
+            field = parseField( parent, field );
 
         // 'not' queries are handled at the level above.
         assert( !name.equals("not") );
