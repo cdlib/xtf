@@ -33,14 +33,7 @@ final class AttributeImpl extends NodeImpl {
         this.index = index;
         parentNum = element.nodeNum;
         this.element = element;
-    }
-
-    /**
-    * Get the name code, which enables the name to be located in the name pool
-    */
-
-    public int getNameCode() {
-        return element.attrNames[index];
+        nameCode = element.attrNames[index];
     }
 
     /**
