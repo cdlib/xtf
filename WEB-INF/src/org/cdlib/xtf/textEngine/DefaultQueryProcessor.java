@@ -199,7 +199,8 @@ public class DefaultQueryProcessor extends QueryProcessor
                     return;
                 
                 // Make sure this is really a document, not a chunk.
-                assert docNumMap.getFirstChunk(doc) >= 0;
+                if( docNumMap.getFirstChunk(doc) < 0 )
+                    return;
                 
                 // Queue the hit.
                 DocHit docHit = new DocHit( doc, score, fieldSpans );

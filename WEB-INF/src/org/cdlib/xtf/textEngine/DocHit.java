@@ -119,6 +119,7 @@ public class DocHit extends ScoreDoc
         // Read in our fields
         SpanDocument spanDoc;
         try {
+            assert !snippetMaker.reader.isDeleted( doc );
             spanDoc = new SpanDocument( snippetMaker.reader.document(doc),
                                         fieldSpans );
         }
