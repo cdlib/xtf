@@ -130,7 +130,8 @@ class SpanScorer extends Scorer {
   }
 
   public boolean skipTo(int target) throws IOException {
-    more = spans.skipTo(target);
+    if (doc == 0 || target > spans.doc())
+      more = spans.skipTo(target);
     return advance();
   }
 
