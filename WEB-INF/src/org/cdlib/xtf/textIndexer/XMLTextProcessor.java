@@ -84,7 +84,6 @@ import org.cdlib.xtf.lazyTree.LazyDocument;
 import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
 import org.cdlib.xtf.lazyTree.RecordingNamePool;
-import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IdxConfigUtil;
 import org.cdlib.xtf.util.DocTypeDeclRemover;
 import org.cdlib.xtf.util.FastStringReader;
@@ -267,11 +266,6 @@ public class XMLTextProcessor extends DefaultHandler
    */
   private Set stopSet = null;
   
-  /** Maximum number of adjacent stop words to combine. See
-   *  {@link IndexInfo#stopWords} for details.
-   */
-  private int stopCombine = 0;
-  
   /** Flag indicating that a new chunk needs to be created. Set to <code>true</code>
    *  when a node's section name changes or a <code>proximitybreak</code> attribute
    *  is encountered.
@@ -299,12 +293,6 @@ public class XMLTextProcessor extends DefaultHandler
   
   /** The base directory for the current Lucene database. */
   private String indexPath;
-  
-  /** Used to cache the input filter stylesheet, and any xslKeysFrom
-   *  stylesheets, so we don't have to parse them over and over.
-   */
-  private static StylesheetCache stylesheetCache = 
-                                          new StylesheetCache( 50, 0, true );
   
   /** Object used to construct a "lazy tree" representation of the XML source
    *  file being processed. <br><br>
@@ -823,9 +811,6 @@ public class XMLTextProcessor extends DefaultHandler
       query.add( new TermQuery( srcPath ), true, false );
       
       // Use the query to see if the document is in the index..
-      boolean docInIndex = false;
-      boolean docChanged = false;
-
       Hits match = indexSearcher.search( query );
       
       // Let the caller know if we found a match.
@@ -1129,8 +1114,24 @@ public class XMLTextProcessor extends DefaultHandler
     System.setProperty( "javax.xml.parsers.TransformerFactory",
                         "net.sf.saxon.TransformerFactoryImpl" );
     
-    //System.setProperty( "javax.xml.parsers.SAXParserFactory",
-    //                    "org.apache.crimson.jaxp.SAXParserFactoryImpl" );
+    // Our first choice is the new parser supplied by Java 1.5.
+    // Second choice is the older (but reliable) Crimson parser.
+    //
+    try {
+        Class.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
+        System.setProperty( "javax.xml.parsers.SAXParserFactory",
+                            "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl" );
+    }
+    catch( ClassNotFoundException e ) {
+        try {
+            Class.forName("org.apache.crimson.jaxp.SAXParserFactoryImpl");
+            System.setProperty( "javax.xml.parsers.SAXParserFactory",
+                                "org.apache.crimson.jaxp.SAXParserFactoryImpl" );
+        }
+        catch( ClassNotFoundException e2 ) {
+            ; // Okay, accept whatever the default is.
+        }
+    }
     
     // Create a SAX parser factory.
     SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -1143,7 +1144,7 @@ public class XMLTextProcessor extends DefaultHandler
         xmlReader.setFeature( 
                   "http://xml.org/sax/features/namespaces", true );
         xmlReader.setFeature( 
-                  "http://xml.org/sax/features/namespace-prefixes", true );
+                  "http://xml.org/sax/features/namespace-prefixes", false );
         
     
         InputSource inSrc = null;
@@ -1193,7 +1194,8 @@ public class XMLTextProcessor extends DefaultHandler
             // and that is preceded by a '>' character then it crashes. The 
             // following filter inserts a space in such cases.
             //
-            inStream = new CrimsonBugWorkaround( inStream );
+            if( xmlParser.getClass().getName().equals("org.apache.crimson.jaxp.SAXParserImpl") )
+                inStream = new CrimsonBugWorkaround( inStream );
             
             // Now we're ready to make the InputSource out of the InputStream
             inSrc = new InputSource( inStream );
@@ -2849,8 +2851,6 @@ public class XMLTextProcessor extends DefaultHandler
     // unwanted spaces left over from the original insertion of the 
     // virtual words.
     //
-    boolean inSpecialToken    = false;
-    int     startSpecialToken = 0; 
     for( i = 0; i < compactedAccumText.length()-1; ) {
         
         // Get the current and next characters.

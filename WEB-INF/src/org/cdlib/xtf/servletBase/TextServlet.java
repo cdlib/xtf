@@ -211,8 +211,24 @@ public abstract class TextServlet extends HttpServlet
             System.setProperty( "javax.xml.parsers.TransformerFactory",
                                 "net.sf.saxon.TransformerFactoryImpl" );
             
-            System.setProperty( "javax.xml.parsers.SAXParserFactory",
-                                "org.apache.crimson.jaxp.SAXParserFactoryImpl" );
+            // Our first choice is the new parser supplied by Java 1.5.
+            // Second choice is the older (but reliable) Crimson parser.
+            //
+            try {
+                Class.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
+                System.setProperty( "javax.xml.parsers.SAXParserFactory",
+                                    "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl" );
+            }
+            catch( ClassNotFoundException e ) {
+                try {
+                    Class.forName("org.apache.crimson.jaxp.SAXParserFactoryImpl");
+                    System.setProperty( "javax.xml.parsers.SAXParserFactory",
+                                        "org.apache.crimson.jaxp.SAXParserFactoryImpl" );
+                }
+                catch( ClassNotFoundException e2 ) {
+                    ; // Okay, accept whatever the default is.
+                }
+            }
             
             // Read in the configuration file.
             TextConfig config = readConfig( configPath );
@@ -544,7 +560,6 @@ public abstract class TextServlet extends HttpServlet
             stuffAttribs( trans, config.attribs );
 
             // Figure out just the last part of the exception class name.
-            String fullClassName = exc.getClass().getName();
             String className = exc.getClass().getName().
                 replaceAll( ".*\\.", "" ).
                 replaceAll( ".*\\$", "" ).
