@@ -119,8 +119,10 @@ public class FakeServletRequest implements HttpServletRequest
   }
   public Enumeration getHeaderNames()
   {
-    assert false;
-    return null;
+    return new Enumeration() { 
+      public boolean hasMoreElements() { return false; }
+      public Object nextElement() { assert false; return null; }
+    };
   }
   public Enumeration getHeaders( String name )
   {
