@@ -255,6 +255,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         // And we're done. Pack up the results into a tidy array.
         QueryResult result = new QueryResult();
+        result.formatter = req.displayStyle;
         if( hitVec.isEmpty() ) {
             result.docHits = new DocHit[0];
             return result;
@@ -264,7 +265,6 @@ public class DefaultQueryProcessor extends QueryProcessor
         result.startDoc  = req.startDoc;
         result.endDoc    = req.startDoc + hitVec.size();
         result.docHits   = (DocHit[]) hitVec.toArray( new DocHit[hitVec.size()] );
-        result.formatter = req.displayStyle;
         
         return result;
     } // processReq()
