@@ -1170,7 +1170,7 @@
       <xsl:matching-substring>
         <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
         <xsl:text> in </xsl:text>
-        <em><xsl:value-of select="regex-group(2)"/></em>
+        <span class="search-type"><xsl:value-of select="regex-group(2)"/></span>
       </xsl:matching-substring>
       <xsl:non-matching-substring>
         <xsl:value-of select="."/>
@@ -1188,7 +1188,7 @@
       <xsl:matching-substring>
         <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
         <xsl:text> within </xsl:text>
-        <em><xsl:value-of select="regex-group(2)"/></em>
+        <span class="search-type"><xsl:value-of select="regex-group(2)"/></span>
         <xsl:text> words</xsl:text>
       </xsl:matching-substring>
       <xsl:non-matching-substring>
