@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit file="doc1.xml">
+      <meta>
+         <testMeta>x</testMeta>
+      </meta>
+      <snippet>X Book of the year. Weird men. Moon man too. <hit>
+            <term>Hat</term>
+         </hit> on the cat. Problem it is not.</snippet>
+      <snippet>of war. Man on the moon. A cat in a <hit>
+            <term>hat</term>
+         </hit>. It is not a problem. X X X X X X X X X</snippet>
+   </docHit>
+</crossQueryResult>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit file="doc1.xml">
+      <meta>
+         <testMeta>"Some test data"</testMeta>
+      </meta>
+      <snippet>Anything you say <hit>
+            <term>can</term> 
+            <term>and</term> 
+            <term>will</term>
+         </hit> be used against you in a court of law. If <term>this</term> had</snippet>
+      <snippet>one is missing from <term>this</term> document, but if you like you <term>can</term> use <hit>
+            <term>your</term>
+         </hit> imagination.</snippet>
+      <snippet>Never lose <hit>
+            <term>your</term>
+         </hit> imagination. A loss is a terrible thing to mind. <term>This</term> is the</snippet>
+      <snippet>
+         <hit>
+            <term>This</term> is a <term>test</term>
+         </hit> of the emergency broadcasting system.</snippet>
+   </docHit>
+</crossQueryResult>

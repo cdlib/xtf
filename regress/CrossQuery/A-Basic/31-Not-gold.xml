@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit file="doc1.xml">
+      <meta>
+         <testMeta>"Some test data"</testMeta>
+      </meta>
+      <snippet>full of examples. This particular one is missing from this document, but if <hit>
+            <term>you</term>
+         </hit>
+      </snippet>
+      <snippet>like <hit>
+            <term>you</term>
+         </hit> can use your imagination. Never lose your imagination. A loss is a</snippet>
+      <snippet>This is a test of the emergency broadcasting system. Anything <hit>
+            <term>you</term>
+         </hit> say can and</snippet>
+      <snippet>will be used against <hit>
+            <term>you</term>
+         </hit> in a court of law.</snippet>
+      <snippet>If this had been a real emergency <hit>
+            <term>you</term>
+         </hit> would have been told where to go and what</snippet>
+   </docHit>
+</crossQueryResult>

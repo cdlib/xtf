@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+  <text indexPath="IndexDB" maxSnippets="100" contextChars="80" termMode="context">
+    <or>
+       <!-- To test boosting of the phrase query, un-boost it (since it's normally on top) -->
+       <phrase boost="0.2">
+         <term>can</term>
+         <term>and</term>
+         <term>will</term>
+       </phrase>
+       <and>
+         <term>this</term>
+         <term>test</term>
+       </and>
+       <term boost="5">your</term>
+    </or>
+  </text>
+</query>

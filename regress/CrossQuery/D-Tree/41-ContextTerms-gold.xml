@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xtf="http://cdlib.org/xtf" xmlns:xtf="http://cdlib.org/xtf" xtf:hitCount="1" xtf:firstHit="1">
+   <xtf:snippets totalHitCount="1" hitCount="1">
+      <xtf:snippet rank="1" hitNum="1">missing from this document, but if <xtf:hit>
+            <xtf:term>you</xtf:term> 
+            <xtf:term>like</xtf:term>
+         </xtf:hit> 
+         <xtf:term>you</xtf:term> can use your imagination. Never</xtf:snippet>
+   </xtf:snippets>
+   <testMeta xtf:meta="yes">Some test data</testMeta>
+   <p>
+    This is a test of the emergency <foo> (broadcasting) system. Anything </foo> you say can and will be used against
+    you in a court of law. If this had been a real emergency you would have been told where to go and
+    what to do.
+    </p>
+   <p xtf:hitCount="1" xtf:firstHit="1">
+    The animal world is full of examples. This particular one is missing from this document, but if
+    <xtf:hit rank="1" hitNum="1" more="no">
+         <xtf:term>you</xtf:term> 
+         <xtf:term>like</xtf:term>
+      </xtf:hit> you can use your imagination. Never lose your imagination. 
+    A loss is a terrible thing to mind. This is the end.
+    </p>
+   <p>
+    You just gotta love it!
+    </p>
+   <p>
+    Cats don't care about man's inhumanity to man.
+    </p>
+</document>
