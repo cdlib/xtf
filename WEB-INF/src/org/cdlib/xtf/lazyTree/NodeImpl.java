@@ -295,7 +295,8 @@ public abstract class NodeImpl
     public String getLocalPart() {
         if( nameCode < 0 ) 
             return "";
-        return document.getNamePool().getLocalName(nameCode);
+        String localPart = document.getNamePool().getLocalName(nameCode);
+        return localPart;
     }
 
     /**

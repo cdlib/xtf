@@ -169,10 +169,6 @@ public final class ProxyElement
         return real().getURI();
     }
     /** Loads the real node and defers to it */
-    public boolean hasAttributes() {
-        return real().hasAttributes();
-    }
-    /** Loads the real node and defers to it */
     public boolean hasChildNodes() {
         return real().hasChildNodes();
     }
