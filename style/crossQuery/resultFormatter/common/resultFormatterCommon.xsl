@@ -1170,7 +1170,7 @@
       <xsl:matching-substring>
         <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
         <xsl:text> in </xsl:text>
-        <strong><xsl:value-of select="regex-group(2)"/></strong>
+        <em><xsl:value-of select="regex-group(2)"/></em>
       </xsl:matching-substring>
       <xsl:non-matching-substring>
         <xsl:value-of select="."/>
@@ -1188,7 +1188,7 @@
       <xsl:matching-substring>
         <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
         <xsl:text> within </xsl:text>
-        <strong><xsl:value-of select="regex-group(2)"/></strong>
+        <em><xsl:value-of select="regex-group(2)"/></em>
         <xsl:text> words</xsl:text>
       </xsl:matching-substring>
       <xsl:non-matching-substring>
@@ -1227,9 +1227,6 @@
       <xsl:value-of select="@totalDocs"/>
     </strong>
     <xsl:text> books</xsl:text>
-    <xsl:if test="$totalDocs > $docsPerPage">
-      <xsl:text>: </xsl:text>
-    </xsl:if>
     
   </xsl:template>
 
