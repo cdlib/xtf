@@ -1235,7 +1235,7 @@
     
     <xsl:analyze-string select="$query" regex="([A-Za-z0-9\-]+) in ([A-Za-z0-9\-]+)">
       <xsl:matching-substring>
-        <span class="search-item"><xsl:value-of select="regex-group(1)"/></span>
+        <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
         <xsl:text> in </xsl:text>
         <em><xsl:value-of select="regex-group(2)"/></em>
       </xsl:matching-substring>
