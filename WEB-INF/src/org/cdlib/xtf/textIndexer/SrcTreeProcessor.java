@@ -77,7 +77,7 @@ public class SrcTreeProcessor
   private XMLTextProcessor textProcessor;
   private StylesheetCache  stylesheetCache = 
                                   new StylesheetCache( 100, 0, true );
-  private Transformer      docSelector;
+  private Templates        docSelector;
   private int              nScanned = 0;
   
   ////////////////////////////////////////////////////////////////////////////
@@ -148,8 +148,7 @@ public class SrcTreeProcessor
     // Make a transformer for the docSelector stylesheet.
     String docSelPath = Path.resolveRelOrAbs( cfgInfo.xtfHomePath,
                                               cfgInfo.indexInfo.docSelectorPath);
-    Templates templates = stylesheetCache.find( docSelPath );
-    docSelector = templates.newTransformer();
+    docSelector = stylesheetCache.find( docSelPath );
   
     // Give some feedback.
     Trace.info( "Scanning Data Directories..." );
@@ -233,6 +232,12 @@ public class SrcTreeProcessor
             docBuf.append( "  <file fileName=\"" + 
                            subFile.getName() + "\"/>\n" );
             ++nFiles;
+
+            // Print out dots as we process large amounts of files, just so 
+            // the user knows something is happening.
+            //
+            if( ((nScanned++) % 200) == 0 )
+                Trace.more( Trace.info, "." );
         }
     }
     docBuf.append( "</directory>\n" );
@@ -250,7 +255,8 @@ public class SrcTreeProcessor
         }
         
         DOMResult result = new DOMResult();
-        docSelector.transform( new SAXSource(docSelectorInput), result );
+        Transformer docSelectorTrans = docSelector.newTransformer();
+        docSelectorTrans.transform( new SAXSource(docSelectorInput), result );
         
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** docSelector output ***\n" + 
@@ -407,12 +413,6 @@ public class SrcTreeProcessor
                                            cfgInfo.indexInfo, srcFile );
     info.key = key;
     
-    // Print out dots as we process large amounts of files, just so the
-    // user knows something is happening.
-    //
-    if( ((nScanned++) % 200) == 0 )
-        Trace.more( "." );
-
     // Call the XML text file processor to do the work.    
     textProcessor.checkAndQueueText( info );
     
