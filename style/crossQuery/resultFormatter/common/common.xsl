@@ -698,6 +698,17 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    
+    <xsl:variable name="pageQueryString">
+      <xsl:choose>
+        <xsl:when test="$sort != ''">
+          <xsl:value-of select="concat($queryString, '&amp;sort=', $sort)"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$queryString"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
 
     <xsl:for-each select="(1 to 10)">
       <!-- Figure out what page we're on -->
@@ -706,7 +717,7 @@
   
       <xsl:if test="($pageNum = 1) and ($pageStart != number($startDoc))">
          <xsl:variable name="prevPage" select="number($startDoc) - number($docsPerPage)"/>
-        <a href="{$servlet.path}?{$queryString}&amp;startDoc={$prevPage}">prev</a>
+        <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$prevPage}">prev</a>
         <xsl:text>&#160;&#160;</xsl:text>
       </xsl:if>
             
@@ -715,7 +726,7 @@
         <xsl:choose>
           <!-- Make a hyperlink if it's not the page we're currently on. -->
           <xsl:when test="($pageStart != number($startDoc))">
-            <a href="{$servlet.path}?{$queryString}&amp;startDoc={$pageStart}">
+            <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$pageStart}">
               <xsl:value-of select="$pageNum"/>
             </a>
             <xsl:if test="$pageNum &lt; $showPages">
@@ -734,7 +745,7 @@
     <xsl:if test="($pageNum = $showPages) and ($pageStart != number($startDoc))">
       <xsl:variable name="nextPage" select="number($startDoc) + number($docsPerPage)"/>
       <xsl:text>&#160;&#160;</xsl:text>
-      <a href="{$servlet.path}?{$queryString}&amp;startDoc={$nextPage}">next</a>
+      <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$nextPage}">next</a>
     </xsl:if>
 
     </xsl:for-each>
