@@ -1312,6 +1312,44 @@
       <xsl:text> | </xsl:text>
     </xsl:if>
   </xsl:template>
+   
+  <!-- ====================================================================== -->
+  <!-- "More" Blocks                                                            -->
+  <!-- ====================================================================== -->
+      
+  <xsl:template name="moreBlock">
+  
+    <xsl:param name="block"/>    
+    <xsl:variable name="hideString" select="replace($queryString, '(rmode=[A-Za-z0-9]+)-show', '$1')"/>
+
+    <xsl:choose>
+      <xsl:when test="(contains($rmode, 'show')) and (matches(string() , '.{500}'))">
+        <xsl:apply-templates select="$block"/>
+        <xsl:text>&#160;&#160;&#160;</xsl:text>
+        <a href="{$servlet.path}?{$hideString}">[hide]</a>         
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates select="$block" mode="crop"/>        
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <!-- Cropped blocks are not going to show search results. Not sure there is a way around this... -->
+  <xsl:template match="node()" mode="crop">
+    
+    <xsl:variable name="moreString" select="replace($queryString, '(rmode=[A-Za-z0-9]+)', '$1-show')"/>
+    
+    <xsl:choose>
+      <xsl:when test="matches(string(.) , '.{500}')">
+        <xsl:value-of select="replace(., '(.{500}).+', '$1')"/>
+        <xsl:text> . . . </xsl:text>
+        <a href="{$servlet.path}?{$moreString}">[more]</a>                
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
     
   <!-- ====================================================================== -->
   <!-- Sort Options                                                           -->
