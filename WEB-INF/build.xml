@@ -9,6 +9,7 @@
   <property name="build"   location="classes"/>
   <property name="dist"    location="dist"/>
   <property name="lib"     location="lib"/>
+  <property name="bin"     location="bin"/>
   <property name="doc"     location="javadoc"/>
   <property name="saxon"   location="${lib}/saxon-8.0.jar"/>
   <property name="lucene"  location="${lib}/lucene-1.4.1.jar"/>
@@ -83,12 +84,11 @@
         <exclude name="**/backup/**/*"/>
         <exclude name="**/.*"/>
         <exclude name="**/.*/**/*"/>
-        <exclude name="**/*.psd"/>
-        <exclude name="**/*.sdr"/>
-        <exclude name="conf/textIndexer.conf"/>
+        <exclude name="**/CVS/**/*"/>
         <exclude name="style/crossQuery/complexQueryParser.xsl"/>
 
         <include name="bin/textIndexer"/>
+        <include name="bin/indexStats"/>
 
         <include name="brand/default.xsl"/>
 
@@ -101,33 +101,17 @@
         <include name="profiles/**/public*"/>
         <include name="profiles/**/default*"/>
 
-        <include name="style/crossQuery/*.xsl"/>
-        <include name="style/crossQuery/resultFormatter/default/*.xsl"/>
-        <include name="style/crossQuery/resultFormatter/common/*.xsl"/>
-
-        <include name="style/dynaXML/*.xsl"/>
-        <include name="style/dynaXML/docFormatter/default/*.xsl"/>
-
-        <include name="style/textIndexer/**/*"/>
+        <include name="style/**/*"/>
 
         <include name="INSTALL"/>
 
         <include name="LICENSE*"/>
 
         <include name="WebDocs/HTML/**/*"/>
-        <exclude name="WebDocs/**/Art/**/*"/>
 
-        <include name="WEB-INF/lib/*.jar"/>
-        <exclude name="WEB-INF/lib/winstone.jar"/>
-        <exclude name="WEB-INF/lib/servlet.jar"/>
+        <include name="WEB-INF/lib/lucene-*.jar"/>
+        <include name="WEB-INF/lib/saxon-*.jar"/>
 
-      </fileset>
-    </copy>
-
-    <!-- Copy sample files (some will overwrite) -->
-    <copy todir="build-tmp">
-      <fileset dir="../sample">
-        <include name="**/*"/>
       </fileset>
     </copy>
 
