@@ -43,7 +43,7 @@ import org.apache.lucene.search.spans.Spans;
  * span query, and <u>never</u> as part of another span query.
  * 
  * @author  Martin Haye
- * @version $Id: SpanDechunkingQuery.java,v 1.1 2005-02-08 23:19:09 mhaye Exp $
+ * @version $Id: SpanDechunkingQuery.java,v 1.2 2005-02-09 04:05:24 mhaye Exp $
  */
 public class SpanDechunkingQuery extends SpanQuery {
   private SpanQuery wrapped;
@@ -112,10 +112,12 @@ public class SpanDechunkingQuery extends SpanQuery {
       public boolean next() throws IOException {
         if (!spans.next())
           return false;
-        return advance();
+        
+        update();
+        return true;
       }
       
-      private boolean advance()
+      private void update()
       {
         // See if we have started a new main document.
         int chunk = spans.doc();
@@ -128,18 +130,18 @@ public class SpanDechunkingQuery extends SpanQuery {
         
         // Now calculate an appropriate offset for the current chunk.
         chunkOffset = (chunk - firstChunk) * chunkBump;
-        return true;
       }
 
       public boolean skipTo(int target) throws IOException {
-        int last = docNumMap.getLastChunk(target);
-        if (last < 0)
-          last = target;
-        else
-          last++; // skip *past* last chunk in doc.
-        if (!spans.skipTo(last))
+        int first = docNumMap.getFirstChunk(target);
+        if (first < 0 || target < first)
+          first = target;
+        
+        if (!spans.skipTo(first))
           return false;
-        return advance();
+        
+        update();
+        return true;
       }
 
       public int doc() { return mainDoc; }
