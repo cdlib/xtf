@@ -678,7 +678,7 @@
         </td>
         <td width="33%" height="44" align="right">
           <a href="http://www.sourceforge.net" target="_top">
-            <img src="/xtf/icons/default/sflogo.php.png" border="0" height="44" alt="SourceForge"/>
+            <img src="/xtf/icons/default/sflogo.php.png" border="0" alt="SourceForge"/>
             <img src="/xtf/icons/default/spacer.gif" border="0" width="15"/>
           </a>
         </td>
