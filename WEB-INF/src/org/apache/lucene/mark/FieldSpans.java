@@ -26,7 +26,7 @@ import java.util.Set;
  * <p>Created: Dec 6, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: FieldSpans.java,v 1.1 2005-02-08 23:19:38 mhaye Exp $
+ * @version $Id: FieldSpans.java,v 1.2 2005-02-24 05:15:27 mhaye Exp $
  */
 public class FieldSpans
 {
@@ -45,8 +45,18 @@ public class FieldSpans
    */
   public void recordSpans(String field, int spanTotal, 
                           ArrayList spans, Set terms) 
-  { 
+  {
     entries.put(field, new Entry(spanTotal, spans, terms)); 
+  }
+  
+  /**
+   * Add matching spans for one or more fields.
+   *
+   * @param other     set of matching spans
+   */
+  public void addSpans(FieldSpans other)
+  {
+    entries.putAll(other.entries);
   }
   
   /** Retrieve the total number of spans which matched the field */
