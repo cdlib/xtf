@@ -59,6 +59,7 @@ import org.cdlib.xtf.cache.GeneratingCache;
 class DocInfoCache extends GeneratingCache
 {
     private DynaXMLConfig  config;
+    private DynaXML        servlet;
 
     private ThreadLocal prevStylesheet  = new ThreadLocal();
     private ThreadLocal prevTransformer = new ThreadLocal();
@@ -74,6 +75,7 @@ class DocInfoCache extends GeneratingCache
         super( ((DynaXMLConfig)servlet.getConfig()).docLookupCacheSize,
                ((DynaXMLConfig)servlet.getConfig()).docLookupCacheExpire );
         this.config  = (DynaXMLConfig) servlet.getConfig();
+        this.servlet = servlet;
     }
 
     /** 
@@ -154,7 +156,7 @@ class DocInfoCache extends GeneratingCache
         // Make a document containing the tokenized and untokenized versions
         // of the parameters (typically useful for queries.)
         //
-        NodeInfo paramDoc = TextServlet.tokenizeParams( attrList );
+        NodeInfo paramDoc = servlet.tokenizeParams( attrList );
 
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** docReqParser input ***" );
