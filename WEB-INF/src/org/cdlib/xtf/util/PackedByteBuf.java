@@ -71,7 +71,12 @@ public class PackedByteBuf
     /** Minimum buffer size to compress (below this, it's probably not
      *  worth even trying). Initial value: 100.
      */
-    private static final int  compressLimit = 100; 
+    private static final int  compressLimitMin = 100; 
+    
+    /** Maximum buffer size to compress (above this, we wouldn't have
+     *  enough bytes to store the length.) Initial value: 65000
+     */
+    private static final int  compressLimitMax = 65000; 
     
     /** 
      * Construct a byte buffer for writing into.
@@ -157,11 +162,11 @@ public class PackedByteBuf
         if( info.inflater == null )
             info.inflater = new Inflater( true ); // no header info
             
-        // Make a buffer big enough to hold the decompressed data. Leave an
-        // extra byte at the end so we can catch errors resulting from too
+        // Make a buffer big enough to hold the decompressed data. Leave some
+        // extra bytes at the end so we can catch errors resulting from too
         // much inflation.
         //
-        byte[] outBuf = new byte[size+1];
+        byte[] outBuf = new byte[size+5];
         info.inflater.reset();
         info.inflater.setInput( bytes, 3, bytes.length - 3 );
         try {
@@ -354,7 +359,7 @@ public class PackedByteBuf
         // If already done, get out. Also, if buffer is small, we're very
         // unlikely to get a good savings, so skip it.
         //
-        if( compressTried || pos < compressLimit )
+        if( compressTried || pos < compressLimitMin || pos > compressLimitMax )
             return;
         compressTried = true;
         
@@ -449,6 +454,7 @@ public class PackedByteBuf
         compress();
         if( compressed ) {
             out.write( compressMarker );
+            assert( (uncompLen>>16) == 0 ) : "Tried to compress too much data"; 
             out.write( uncompLen & 0xff );
             out.write( (uncompLen>>8) & 0xff );
             out.write( bytes[0] );
