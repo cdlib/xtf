@@ -3,19 +3,47 @@
 <brand owner="steve.toub@ucop.edu">
   
   <links>
-    <link href="x"/>
+    <link rel="stylesheet" href="/xtf/css/default/results.css" type="text/css"/>
   </links>
   
   <header>
-    <div>
-      <p>header</p>
-    </div>
+    <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="ivory">     
+      <tr bgcolor="#62708D">
+        <td width="33%" height="44" align="left">
+          <a href="http://xtf.sourceforge.net" target="_top">
+            <img src="/xtf/icons/default/spacer.gif" border="0" width="15"/>
+            <img src="/xtf/icons/default/xtfMan.gif" border="0" height="44" alt="XTF"/>
+          </a>
+        </td>
+        <td width="34%" height="44" align="center">
+          <h1 style="color: white">XTF Default Interface</h1>
+        </td>
+        <td width="33%" height="44" align="right">
+          <a href="http://www.sourceforge.net" target="_top">
+            <img src="/xtf/icons/default/sflogo.php.png" border="0" alt="SourceForge"/>
+            <img src="/xtf/icons/default/spacer.gif" border="0" width="15"/>
+          </a>
+        </td>
+      </tr>
+      <tr bgcolor="silver">
+        <td align="left">
+          <a href="/xtf/search">Search</a> | <a href="/xtf/search?relation=www.ucpress.edu&amp;sort=title">Browse</a>
+        </td>
+        <td align="right" colspan="2">
+          <a href="http://xtf.sourceforge.net/index.html#docs">Help</a>
+        </td>
+      </tr>
+    </table>
   </header>
   
   <footer>
-    <div>
-      <p>footer</p>
-    </div>
+    <table width="100%" cellpading="0" cellspacing="2" bgcolor="ivory">        
+      <tr>
+        <td>
+          <a href="https://sourceforge.net/tracker/?func=add&amp;group_id=119724&amp;atid=684779">Comments? Questions?</a>
+        </td>
+      </tr>
+    </table>    
   </footer>
   
 </brand>
