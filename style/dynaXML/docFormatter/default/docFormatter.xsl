@@ -32,9 +32,9 @@
    POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xtf="http://cdlib.org/xtf">
+                xmlns:xtf="http://xtf.sourceforge.net">
 
 <xsl:output method="html"
             indent="yes"
@@ -443,8 +443,8 @@
         <h1 style="color: white">XTF Demonstration</h1>
       </td>
       <td class="header-right" width="33%" height="44" align="right">
-        <a href="http://www.cdlib.org" target="{$target}">
-          <img src="{$icon.path}cdl_logo.gif" border="0" height="44" alt="CDL"/>
+        <a href="http://www.sourceforge.net" target="{$target}">
+          <img src="{$icon.path}sflogo.php.png" border="0" height="44" alt="SourceForge"/>
           <img src="{$icon.path}spacer.gif" border="0" width="15"/>
         </a>
       </td>
@@ -516,7 +516,7 @@
             <td width="2"><img src="{$icon.path}spacer.gif" width="2"/></td>
 
             <!-- BEGIN TOPNAV CENTER -->
-            <form action="{$serverURL}xtf/servlet/org.cdlib.xtf.web.DirectSearch" target="{$target}" method="GET">
+            <form action="{$serverURL}xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML" target="{$target}" method="GET">
               <input type="hidden" name="doc.path">
                 <xsl:attribute name="value">
                   <xsl:value-of select="$doc.path"/>

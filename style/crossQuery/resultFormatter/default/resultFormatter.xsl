@@ -486,30 +486,23 @@
       <td align="left">
         <a>
           <xsl:attribute name="href">
+            <xsl:value-of select="concat($dynaxml.path, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
+            <!-- -join & -prox are mutually exclusive -->
             <xsl:choose>
-              <xsl:when test="matches($collection, 'findaid.oac')">
-                <xsl:value-of select="concat('http://findaid.oac.cdlib.org/findaid/ark:', substring-after($fullark, 'ark:'))"/>
+              <xsl:when test="$text-prox">
+                <xsl:value-of select="concat('&amp;query-prox=', $text-prox)"/>
               </xsl:when>
-              <xsl:otherwise>
-                <xsl:value-of select="concat($dynaxml.path, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
-                <!-- -join & -prox are mutually exclusive -->
-                <xsl:choose>
-                  <xsl:when test="$text-prox">
-                    <xsl:value-of select="concat('&amp;query-prox=', $text-prox)"/>
-                  </xsl:when>
-                  <xsl:when test="$text-join">
-                    <xsl:value-of select="concat('&amp;query-join=', $text-join)"/>
-                  </xsl:when>            
-                </xsl:choose>
-                <xsl:if test="$text-exclude">
-                  <xsl:value-of select="concat('&amp;query-exclude=', $text-exclude)"/>
-                </xsl:if>
-                <xsl:if test="$sectionType">
-                  <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
-                </xsl:if>
-                <xsl:value-of select="'&amp;doc.view=frames'"/>
-              </xsl:otherwise>
+              <xsl:when test="$text-join">
+                <xsl:value-of select="concat('&amp;query-join=', $text-join)"/>
+              </xsl:when>            
             </xsl:choose>
+            <xsl:if test="$text-exclude">
+              <xsl:value-of select="concat('&amp;query-exclude=', $text-exclude)"/>
+            </xsl:if>
+            <xsl:if test="$sectionType">
+              <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
+            </xsl:if>
+            <xsl:value-of select="'&amp;doc.view=frames'"/>
           </xsl:attribute>
           <xsl:apply-templates select="meta/title[1]"/>
         </a>
@@ -632,31 +625,24 @@
     <xsl:variable name="collection" select="string(meta/collection)"/>
     <xsl:variable name="hit.rank"><xsl:value-of select="ancestor::snippet/@rank"/></xsl:variable>
     <xsl:variable name="snippet.link">
+      <xsl:value-of select="concat($dynaxml.path, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
+      <!-- -join & -prox are mutually exclusive -->
       <xsl:choose>
-        <xsl:when test="matches($collection, 'findaid.oac')">
-          <xsl:value-of select="concat('http://findaid.oac.cdlib.org/findaid/ark:', substring-after($fullark, 'ark:'))"/>
+        <xsl:when test="$text-prox">
+          <xsl:value-of select="concat('&amp;query-prox=', $text-prox)"/>
         </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="concat($dynaxml.path, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
-          <!-- -join & -prox are mutually exclusive -->
-          <xsl:choose>
-            <xsl:when test="$text-prox">
-              <xsl:value-of select="concat('&amp;query-prox=', $text-prox)"/>
-            </xsl:when>
-            <xsl:when test="$text-join">
-              <xsl:value-of select="concat('&amp;query-join=', $text-join)"/>
-            </xsl:when>            
-          </xsl:choose>
-          <xsl:if test="$text-exclude">
-            <xsl:value-of select="concat('&amp;query-exclude=', $text-exclude)"/>
-          </xsl:if>
-          <xsl:if test="$sectionType">
-            <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
-          </xsl:if>
-          <xsl:value-of select="concat('&amp;hit.rank=', $hit.rank)"/>
-          <xsl:value-of select="'&amp;doc.view=frames'"/>
-        </xsl:otherwise>
+        <xsl:when test="$text-join">
+          <xsl:value-of select="concat('&amp;query-join=', $text-join)"/>
+        </xsl:when>            
       </xsl:choose>
+      <xsl:if test="$text-exclude">
+        <xsl:value-of select="concat('&amp;query-exclude=', $text-exclude)"/>
+      </xsl:if>
+      <xsl:if test="$sectionType">
+        <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
+      </xsl:if>
+      <xsl:value-of select="concat('&amp;hit.rank=', $hit.rank)"/>
+      <xsl:value-of select="'&amp;doc.view=frames'"/>
     </xsl:variable>
     
     <xsl:choose>
@@ -691,8 +677,8 @@
           <h1 style="color: white">XTF Demonstration</h1>
         </td>
         <td width="33%" height="44" align="right">
-          <a href="http://www.cdlib.org" target="_top">
-            <img src="/xtf/icons/default/cdl_logo.gif" border="0" height="44" alt="CDL"/>
+          <a href="http://www.sourceforge.net" target="_top">
+            <img src="/xtf/icons/default/sflogo.php.png" border="0" height="44" alt="SourceForge"/>
             <img src="/xtf/icons/default/spacer.gif" border="0" width="15"/>
           </a>
         </td>
@@ -714,12 +700,7 @@
     <table width="100%" cellpading="0" cellspacing="2" bgcolor="ivory">        
       <tr>
         <td>
-          <a href="https://sourceforge.net/tracker/?func=add&amp;group_id=119724&amp;atid=684779">Questions?</a>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <xsl:text>&#169; 2004 The Regents of the University of California</xsl:text>
+          <a href="https://sourceforge.net/tracker/?func=add&amp;group_id=119724&amp;atid=684779">Comments? Questions?</a>
         </td>
       </tr>
     </table>

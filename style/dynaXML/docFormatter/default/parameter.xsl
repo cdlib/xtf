@@ -31,7 +31,7 @@
 
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                              xmlns:cdl="http://www.cdlib.org">
+                              xmlns:xtf="http://xtf.sourceforge.net">
 
   <xsl:param name="bnum" select="/TEI.2/teiHeader/fileDesc/publicationStmt/idno[@type='LOCAL']"/>
 

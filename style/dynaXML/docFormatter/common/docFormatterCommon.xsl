@@ -30,8 +30,8 @@
 -->
 
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                              xmlns:cdl="http://www.cdlib.org">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                              xmlns:xtf="http://xtf.sourceforge.net">
 
   <xsl:param name="servlet.path"/>
 
@@ -120,45 +120,45 @@
 
   <!-- URL Encoding Map -->
 
-  <cdl:encoding-map>
-    <cdl:regex>
-      <cdl:find>%</cdl:find>    <!-- % must be done first! -->
-      <cdl:replace>%25</cdl:replace>
-    </cdl:regex>
-    <cdl:regex>
-      <cdl:find>SPACE</cdl:find>
-      <cdl:replace>%20</cdl:replace>
-    </cdl:regex>
-    <cdl:regex>
-      <cdl:find>"</cdl:find>
-      <cdl:replace>%22</cdl:replace>
-    </cdl:regex>
-    <cdl:regex>
-      <cdl:find>'</cdl:find>
-      <cdl:replace>%27</cdl:replace>
-    </cdl:regex>
-    <cdl:regex>
-      <cdl:find>&lt;</cdl:find>
-      <cdl:replace>%3C</cdl:replace>
-    </cdl:regex>
-    <cdl:regex>
-      <cdl:find>&gt;</cdl:find>
-      <cdl:replace>%3E</cdl:replace>
-    </cdl:regex>
-    <cdl:regex>
-      <cdl:find>#</cdl:find>
-      <cdl:replace>%23</cdl:replace>
-    </cdl:regex>
- </cdl:encoding-map>
+  <xtf:encoding-map>
+    <xtf:regex>
+      <xtf:find>%</xtf:find>    <!-- % must be done first! -->
+      <xtf:replace>%25</xtf:replace>
+    </xtf:regex>
+    <xtf:regex>
+      <xtf:find>SPACE</xtf:find>
+      <xtf:replace>%20</xtf:replace>
+    </xtf:regex>
+    <xtf:regex>
+      <xtf:find>"</xtf:find>
+      <xtf:replace>%22</xtf:replace>
+    </xtf:regex>
+    <xtf:regex>
+      <xtf:find>'</xtf:find>
+      <xtf:replace>%27</xtf:replace>
+    </xtf:regex>
+    <xtf:regex>
+      <xtf:find>&lt;</xtf:find>
+      <xtf:replace>%3C</xtf:replace>
+    </xtf:regex>
+    <xtf:regex>
+      <xtf:find>&gt;</xtf:find>
+      <xtf:replace>%3E</xtf:replace>
+    </xtf:regex>
+    <xtf:regex>
+      <xtf:find>#</xtf:find>
+      <xtf:replace>%23</xtf:replace>
+    </xtf:regex>
+ </xtf:encoding-map>
 
   <xsl:template name="url-encode">
     <xsl:param name="url-string"/>
-    <xsl:param name="regex" select="document('')/*/cdl:encoding-map/cdl:regex"/>
+    <xsl:param name="regex" select="document('')/*/xtf:encoding-map/xtf:regex"/>
     <xsl:variable name="encoded-string">
       <xsl:call-template name="regex-replace">
         <xsl:with-param name="string" select="$url-string"/>
-        <xsl:with-param name="find" select="$regex[1]/cdl:find"/>
-        <xsl:with-param name="replace" select="$regex[1]/cdl:replace"/>
+        <xsl:with-param name="find" select="$regex[1]/xtf:find"/>
+        <xsl:with-param name="replace" select="$regex[1]/xtf:replace"/>
       </xsl:call-template>
     </xsl:variable>
     <xsl:choose>

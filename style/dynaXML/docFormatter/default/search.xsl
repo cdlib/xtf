@@ -31,7 +31,7 @@
 
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                              xmlns:xtf="http://cdlib.org/xtf">
+                              xmlns:xtf="http://xtf.sourceforge.net">
 
 <!-- Search Hits -->
 
