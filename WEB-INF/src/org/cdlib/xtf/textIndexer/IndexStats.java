@@ -205,10 +205,6 @@ public class IndexStats
               Trace.info( "Data Path  = " + 
                           fiddlePath(cfgInfo, cfgInfo.indexInfo.sourcePath) );
               
-              Trace.info( "Prefilter  = " + fiddlePath(cfgInfo,
-                      cfgInfo.indexInfo.inputFilterPath != null ?
-                      cfgInfo.indexInfo.inputFilterPath : "<none>") );
-              
               Trace.info( "Stop Words = " + cfgInfo.indexInfo.stopWords );
               
               Trace.untab();

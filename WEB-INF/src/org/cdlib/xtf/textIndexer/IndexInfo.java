@@ -29,8 +29,6 @@ package org.cdlib.xtf.textIndexer;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.regex.Pattern;
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -69,13 +67,8 @@ public class IndexInfo
   /** Path to the source text for the current index. */
   public String sourcePath;
   
-  /** Path to any XSLT pre-filters to be applied to the text for the current 
-   *  index.
-   */
-  public String inputFilterPath;
-  
-  /** A list of source file names to skip when indexing. */
-  public Pattern[] skipFiles;
+  /** Path to stylesheet used to determine which documents to index */
+  public String docSelectorPath;
   
   /** Set of stop words to remove. Stop words are common words such as "the",
    *  "and", etc. which are so ubiquitous as to add little value to queries.
@@ -104,21 +97,6 @@ public class IndexInfo
    *  semicolons.
    */
   public String stopWords;
-  
-  /** Stylesheet from which to gather XSLT key definitions to be computed
-   *  and cached on disk. If not an absolute path name, this is interpreted
-   *  as a relative path from the XTF_HOME directory. Typically, one would
-   *  use the actual display stylesheet for this purpose, guaranteeing that
-   *  all of its keys will be pre-cached.<br><br>
-   * 
-   *  Background: stylesheet processing can be optimized by using XSLT 'keys', 
-   *  which are declared with an &lt;xsl:key&gt; tag. The first time a key 
-   *  is used in a given source document, it must be calculated and its values 
-   *  stored on disk. The text indexer can optionally pre-compute the keys so 
-   *  they need not be calculated later during the display process.
-   */
-  public String displayStyle;
-  
   
   /** Text chunk attribute array. Currently this array consists of two entries:
    *  <br><br>

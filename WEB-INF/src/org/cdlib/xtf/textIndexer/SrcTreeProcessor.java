@@ -31,12 +31,23 @@ package org.cdlib.xtf.textIndexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.regex.Pattern;
 
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXSource;
+
+import org.cdlib.xtf.servletBase.StylesheetCache;
+import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.XMLWriter;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,6 +71,9 @@ public class SrcTreeProcessor
   
   private IndexerConfig    cfgInfo;
   private XMLTextProcessor textProcessor;
+  private StylesheetCache  stylesheetCache = 
+                                  new StylesheetCache( 100, 0, false );
+  private Transformer      docSelector;
   private int              nScanned = 0;
   
   ////////////////////////////////////////////////////////////////////////////
@@ -68,6 +82,8 @@ public class SrcTreeProcessor
    * 
    *  Instantiates the {@link org.cdlib.xtf.textIndexer.XMLTextProcessor} 
    *  used internally to process individual XML source files. <br><br>
+   * 
+   *  @throws Exception  if the docSelector stylesheet cannot be loaded.
    */
   public SrcTreeProcessor()
   
@@ -77,7 +93,7 @@ public class SrcTreeProcessor
     // encountered in the file tree.
     //
     textProcessor = new XMLTextProcessor();
-  
+    
   } // SrcTreeProcessor()
   
   
@@ -98,7 +114,7 @@ public class SrcTreeProcessor
    *                       {@link org.cdlib.xtf.textIndexer.XMLTextProcessor#open(IndexerConfig) open()}
    *                       method. <br><br>
    */
-  public void open( IndexerConfig cfgInfo ) throws IOException
+  public void open( IndexerConfig cfgInfo ) throws Exception
   {
       
     // Hang on to a reference to the config info.
@@ -107,6 +123,11 @@ public class SrcTreeProcessor
     // Open the Lucene index specified by the config info.
     textProcessor.open( cfgInfo );
 
+    // Make a transformer for the docSelector stylesheet.
+    Templates templates = stylesheetCache.find( 
+                                        cfgInfo.indexInfo.docSelectorPath );
+    docSelector = templates.newTransformer();
+  
     // Give some feedback.
     Trace.info( "Scanning Data Directories..." );
       
@@ -169,12 +190,6 @@ public class SrcTreeProcessor
   
   { 
     
-    // If we weren't passed a directory, process as a regular file.
-    if( !currFile.getCanonicalFile().isDirectory() ) {
-        processFile( currFile );
-        return;
-    }
-    
     // We're looking at a directory. Get the list of files it contains.
     String[] fileStrs = currFile.getCanonicalFile().list();
     ArrayList list = new ArrayList( fileStrs.length );
@@ -182,16 +197,76 @@ public class SrcTreeProcessor
         list.add( fileStrs[i] );
     Collections.sort( list );
 
-    // Process all of the non-directory files first.
-    boolean anyProcessed = false;
+    // Process all of the non-directory files first. Form a document 
+    // representing the directory and all its files.
+    //
+    StringBuffer docBuf = new StringBuffer( 1024 );
+    String dirPath = Path.normalizePath( currFile.toString() );
+    docBuf.append( "<directory dirPath=\"" + dirPath + "\">\n" );
+    int nFiles = 0;
     for( Iterator i = list.iterator(); i.hasNext(); ) {
         File subFile = new File( currFile, (String) i.next() );
         if( !subFile.getCanonicalFile().isDirectory() ) {
-            if( processFile(subFile) )
-                anyProcessed = true;
+            docBuf.append( "  <file fileName=\"" + 
+                           subFile.getName() + "\"/>\n" );
+            ++nFiles;
         }
     }
+    docBuf.append( "</directory>\n" );
+    
+    // Now process the document using the docSelector stylesheet.
+    boolean anyProcessed = false;
+    if( nFiles > 0 ) {
+        String inStr = docBuf.toString();
+        InputSource docSelectorInput = new InputSource( 
+                                                 new StringReader(inStr) );
 
+        if( Trace.getOutputLevel() >= Trace.debug ) {
+            Trace.debug( "*** docSelector input ***\n" + inStr );
+            Trace.debug( "" );
+        }
+        
+        DOMResult result = new DOMResult();
+        docSelector.transform( new SAXSource(docSelectorInput), result );
+        
+        if( Trace.getOutputLevel() >= Trace.debug ) {
+            Trace.debug( "*** docSelector output ***\n" + 
+                         XMLWriter.toString(result.getNode()) );
+            Trace.debug( "" );
+        }
+        
+        // Iterate the result, and queue any files to index.
+        Node node;
+        for( node = result.getNode().getFirstChild();
+             node != null;
+             node = node.getNextSibling() )
+        {
+            if( node.getNodeType() != Node.ELEMENT_NODE )
+                continue;
+    
+            Element el      = (Element) node;
+            String  tagName = el.getTagName();
+            String  strVal  = el.toString();
+            
+            if( tagName.equalsIgnoreCase("indexFiles") ) {
+                node = node.getFirstChild();
+                continue;
+            }
+    
+            if( tagName.equalsIgnoreCase("indexFile") ) {
+                if( processFile(dirPath, el) )
+                    anyProcessed = true;
+            }
+            else {
+                Trace.error( "Error: docSelector returned unknown element '" + 
+                             tagName + "'" );
+                return;
+            }
+            
+        } // for node
+        
+    } // if nFiles > 0
+    
     // If we found any files to process, the convention is that subdirectories
     // contain file related to the ones we processed, and that they shouldn't
     // be processed individually.
@@ -213,45 +288,88 @@ public class SrcTreeProcessor
 
   /** Process file. <br><br>
    * 
-   * This method processes a source file, including source text XML files, and 
-   * files to be ignored. <br><br>
+   * This method processes a source file, including source text XML files, 
+   * PDF files, etc. <br><br>
    * 
-   * @param fileToProcess  The current file to be processed. This may be a 
-   *                       source XML file or a file to be skipped. <br><br>
+   * @param parentEl       DOM element representing the current file to be 
+   *                       processed. This may be a source XML file, PDF file,
+   *                       etc. <br><br>
    * 
    * @return               true if the document was processed, false if it was
    *                       skipped due to skipping rules.<br><br>
    * 
-   *  @throws   Exception   Any exceptions generated internally by the <code>File</code>
-   *                        class or the {@link org.cdlib.xtf.textIndexer.XMLTextProcessor} 
-   *                        class. <br><br>
-   * 
-   * 
-   *  @.warnings  This method only accepts actual file names. Do not pass 
-   *              a directory name to this method. <br><br>
+   * @throws   Exception   Any exceptions generated internally by the <code>File</code>
+   *                       class or the {@link org.cdlib.xtf.textIndexer.XMLTextProcessor} 
+   *                       class. <br><br>
    * 
    */
-  public boolean processFile( File fileToProcess ) throws Exception 
+  public boolean processFile( String dir, Element parentEl ) throws Exception 
   
   {
-    // If this file is not an XML file, skip it.
-    if( !fileToProcess.toString().endsWith(".xml") ) return false;
+    File xtfHome = new File(cfgInfo.xtfHomePath);
+
+    // Gather all the info from the element's attributes.
+    SrcTextInfo info = new SrcTextInfo();
     
-    // Get the Path string for the file.
-    String path = fileToProcess.getCanonicalPath();
+    // First, get the file name and check it.
+    String fileName = parentEl.getAttribute( "fileName" );
+    if( fileName != null && fileName.length() > 0 ) {
+        File srcFile = new File(dir+fileName).getCanonicalFile();
+        info.source  = new InputSource( Path.normalizeFileName(srcFile.toString()) );
+        if( !srcFile.canRead() ) {
+            Trace.error( "Error: cannot read input document '" + srcFile.toString() + "'" );
+            return false;
+        }
+    }
+    else {
+        Trace.error( "Error: docSelector must return 'fileName' attribute" );
+        return false;
+    }
     
-    // If the file matches a skip specification, skip it.
-    Pattern[] skipFiles = cfgInfo.indexInfo.skipFiles;
+    // Optional attributes come after. Is there an input filter specified?
+    String strVal = parentEl.getAttribute( "inputFilter" );
+    if( strVal != null && strVal.length() > 0 ) {
+        File inFilterFile = Path.resolveRelOrAbs(xtfHome, strVal).getCanonicalFile();
+        info.inputFilter  = stylesheetCache.find( inFilterFile.toString() );
+    }
     
-    if( skipFiles != null ) {
-      
-        for( int i = 0; i < skipFiles.length; i++ ) {
-            
-            if( skipFiles[i].matcher(path).matches() ) return false;
-        
-        } // for( int i = 0; i < skipFiles.length; i++ )
+    // If there a display stylesheet specified?
+    strVal = parentEl.getAttribute( "displayStyle" );
+    if( strVal != null && strVal.length() > 0 ) {
+        File displayFile  = Path.resolveRelOrAbs(xtfHome, strVal).getCanonicalFile();
+        info.displayStyle = stylesheetCache.find( displayFile.toString() );
+    }
     
-    } // if( skipFiles != null )
+    // Is there a format specified?
+    strVal = parentEl.getAttribute( "format" );
+    if( strVal == null || strVal.length() == 0 ) {
+        String lcFileName = fileName.toLowerCase();
+        if( lcFileName.endsWith(".xml") )
+            info.format = "XML";
+        else if( lcFileName.endsWith(".pdf") )
+            info.format = "PDF";
+        else if( lcFileName.endsWith(".htm") || lcFileName.endsWith(".html") )
+            info.format = "HTML";
+        else {
+            Trace.warning( "Warning: cannot deduce format from extension on file '" +
+                           info.source.getSystemId() );
+            return false;
+        }
+    }
+    else {
+        info.format = strVal;
+        if( info.format.equalsIgnoreCase("XML") )
+            info.format = "XML";
+        else if( info.format.equalsIgnoreCase("PDF") )
+            info.format = "PDF";
+        else if( info.format.equalsIgnoreCase("HTML") )
+            info.format = "HTML";
+        else {
+            Trace.error( "Error: docSelector returned unknown format: '" +
+                         info.format + "'" );
+            return false;
+        }
+    }
     
     // Print out dots as we process large amounts of files, just so the
     // user knows something is happening.
@@ -260,7 +378,7 @@ public class SrcTreeProcessor
         Trace.more( "." );
 
     // Call the XML text file processor to do the work.    
-    textProcessor.queueText( fileToProcess );
+    textProcessor.queueText( info );
     
     // Let the caller know we didn't skip the file.
     return true;

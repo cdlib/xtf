@@ -696,7 +696,7 @@ public class XMLTextProcessor extends DefaultHandler
    */
   public void queueText(
       
-      File xmlTextFile
+      SrcTextInfo srcInfo
       
   ) throws ParserConfigurationException, 
            SAXException, 
@@ -709,18 +709,20 @@ public class XMLTextProcessor extends DefaultHandler
     // that just contains the index name and the part of the path after that
     // index's data directory.
     //
+    File srcFile = new File( srcInfo.source.getSystemId() );
     String key = IdxConfigUtil.calcDocKey( new File(configInfo.xtfHomePath),
-                                           configInfo.indexInfo, xmlTextFile );
+                                           configInfo.indexInfo, srcFile );
     
     // Make a pretty version of the path for display purposes. It's basically
     // just the key, without the index name on it.
     //
-    String prettyPath = key.substring( key.indexOf(':') + 1 );
+    srcInfo.prettyPath = key.substring( key.indexOf(':') + 1 );
 
     // Pack all the information regarding this file into a handy unit that we
     // can check and queue.
     //
-    srcText = new SrcTextInfo( xmlTextFile, prettyPath, key );
+    srcInfo.key = key;
+    this.srcText = srcInfo;
     
     // Check the status of this file.
     int ret = checkFile();
@@ -765,7 +767,10 @@ public class XMLTextProcessor extends DefaultHandler
     // Pack all the information regarding this doc into a handy unit 
     // that we queue, and queue it.
     //
-    srcText = new SrcTextInfo( inStream, key );
+    srcText = new SrcTextInfo();
+    srcText.source = new InputSource( inStream );
+    srcText.key = key;
+    srcText.format = "XML";
     fileQueue.add( srcText );
 
     // And finally, process our queue of length one.
@@ -1003,11 +1008,12 @@ public class XMLTextProcessor extends DefaultHandler
     // Figure out where to put the lazy tree file. If an old one already exists,
     // toss it. Also make sure the directory exists.
     //
-    if( srcText.file != null ) {
+    if( srcText.source.getSystemId() != null ) {
+        File srcFile = new File( srcText.source.getSystemId() );
         lazyFile = IdxConfigUtil.calcLazyPath( 
                 new File(configInfo.xtfHomePath),
                 configInfo.indexInfo,
-                srcText.file, 
+                srcFile,
                 true );
         if( lazyFile.canRead() )
             lazyFile.delete();
@@ -1016,8 +1022,11 @@ public class XMLTextProcessor extends DefaultHandler
         // possible name codes. We can use it later to iterate through and
         // find all the registered keys (it's the only way.)
         //
-        if( !(NamePool.getDefaultNamePool() instanceof RecordingNamePool) )
-            NamePool.setDefaultNamePool( new RecordingNamePool() );
+        NamePool namePool = NamePool.getDefaultNamePool();
+        if( !(namePool instanceof RecordingNamePool) ) {
+            namePool = new RecordingNamePool();
+            NamePool.setDefaultNamePool( namePool );
+        }
         
         // While we parse the source document, we're going to also build up a tree
         // that will be written to the lazy file.
@@ -1025,7 +1034,6 @@ public class XMLTextProcessor extends DefaultHandler
         lazyBuilder = new LazyTreeBuilder();
         lazyReceiver = lazyBuilder.begin( lazyFile );
         
-        NamePool namePool = NamePool.getDefaultNamePool();
         lazyBuilder.setNamePool( namePool );
         
         lazyHandler = new ReceivingContentHandler();
@@ -1094,13 +1102,10 @@ public class XMLTextProcessor extends DefaultHandler
         // to apply to the lazy tree, do so now.
         //
         if( result == 0 ) {
-            String displayStyle = configInfo.indexInfo.displayStyle;
-            if( displayStyle != null && displayStyle.length() > 0 ) {
-                File xtfHome = new File(configInfo.xtfHomePath);
-                File keysFromFile = Path.resolveRelOrAbs(xtfHome, 
-                                                         displayStyle);
+            Templates displayStyle = srcText.displayStyle;
+            if( displayStyle != null ) {
                 try {
-                    precacheXSLKeys( keysFromFile.toString() );
+                    precacheXSLKeys( displayStyle );
                 }
                 catch( IOException e ) {
                     throw e;
@@ -1191,10 +1196,10 @@ public class XMLTextProcessor extends DefaultHandler
         
         // Convert our XML text file into a SAXON input source.
         InputStream inStream;
-        if( file.file != null )
-            inStream = new FileInputStream( file.file );
+        if( file.source.getByteStream() == null )
+            inStream = new FileInputStream( file.source.getSystemId() );
         else
-            inStream = file.inStream;
+            inStream = file.source.getByteStream();
         
         // Remove DOCTYPE declarations, since the XML reader will barf if it
         // can't resolve the entity reference, and we really don't care.
@@ -1204,7 +1209,7 @@ public class XMLTextProcessor extends DefaultHandler
         // If there no XSLT input filter defined for this index, just 
         // parse the source XML file directly, and return early.
         //
-        if( configInfo.indexInfo.inputFilterPath == null ) {
+        if( srcText.inputFilter == null ) {
             xmlParser.parse( inStream, this );
             return 0;
         }
@@ -1212,22 +1217,19 @@ public class XMLTextProcessor extends DefaultHandler
         // If we got to this point, there is an XSLT filter specified. So 
         // set up to use it, and process the resulting filtered XML text.
         //
-        // Load the specified XSLT filter stylesheet.
-        //
-        File xtfHome = new File(configInfo.xtfHomePath);
-        File xslFile = Path.resolveRelOrAbs(xtfHome, 
-                            configInfo.indexInfo.inputFilterPath);
-        Templates stylesheet = stylesheetCache.find( xslFile.toString() );
+        Templates stylesheet = srcText.inputFilter;
         
         // Create an actual transform filter from the stylesheet for this
         // particular document we're indexing.
         //
         Transformer filter = stylesheet.newTransformer();
       
-        // Now make an input source with the proper system ID if possible.
+        // Now make an input source.
         InputSource inSrc = new InputSource( inStream );
-        if( file.file != null )
-            inSrc.setSystemId( file.file.toURL().toString() );
+        
+        // Put a proper system ID on it.
+        if( file.source.getSystemId() != null )
+            inSrc.setSystemId( file.source.getSystemId() );
         
         // And finally, make a SAX source that combines the XML reader with
         // the filtered input source.
@@ -1279,19 +1281,15 @@ public class XMLTextProcessor extends DefaultHandler
    *  declarations that will be used. It then generates each key and stores
    *  it in the lazy file.
    * 
-   * @param stylesheetPath  path (relative to XTF_HOME) of the stylesheet
-   *                        containing xsl:key declarations.
+   * @param stylesheet      The stylesheet containing xsl:key declarations.
    * 
    * @throws Exception      If anything goes awry.
    */
-  private void precacheXSLKeys( String stylesheetPath )
+  private void precacheXSLKeys( Templates stylesheet )
       throws Exception
   
   {
       
-    // Load the stylesheet if we haven't already.
-    Templates stylesheet = stylesheetCache.find( stylesheetPath );
-
     // Register a lazy key manager
     PreparedStylesheet pss = (PreparedStylesheet) stylesheet;
     Executable exec = pss.getExecutable();
@@ -3104,10 +3102,10 @@ public class XMLTextProcessor extends DefaultHandler
     doc.add( new Field( "key", srcText.key, true, true, false ) );
     
     // Determine when the file was last modified.
-    if( srcText.file != null ) 
+    if( srcText.source.getSystemId() != null ) 
     {
-        String fileDateStr = DateField.timeToString( 
-                                               srcText.file.lastModified() );
+        File srcFile = new File( srcText.source.getSystemId() );
+        String fileDateStr = DateField.timeToString( srcFile.lastModified() );
         
         // Add the XML file modification date as a stored, non-indexed, 
         // non-tokenized field.
@@ -3237,10 +3235,9 @@ public class XMLTextProcessor extends DefaultHandler
         Document doc = match.doc( 0 );           
         String indexDateStr = doc.get( "fileDate" );
         
-        // See what the date is on the actual source file right now. 
-        String fileDateStr = DateField.timeToString( 
-                                 srcText.file.lastModified() 
-                             );
+        // See what the date is on the actual source file right now.
+        File srcFile = new File( srcText.source.getSystemId() );
+        String fileDateStr = DateField.timeToString( srcFile.lastModified() );
         
         // If the dates are different...
         if( fileDateStr.compareTo(indexDateStr) != 0 ) {                    
@@ -3254,7 +3251,7 @@ public class XMLTextProcessor extends DefaultHandler
             File lazyFile = IdxConfigUtil.calcLazyPath(
                                              new File(configInfo.xtfHomePath),
                                              configInfo.indexInfo, 
-                                             srcText.file,
+                                             srcFile,
                                              false );
             Path.deletePath( lazyFile.toString() );
             
@@ -3378,35 +3375,5 @@ public class XMLTextProcessor extends DefaultHandler
     }
 
   } // private class MetaField
-
-
-  ////////////////////////////////////////////////////////////////////////////
-
-  private class SrcTextInfo {
-    
-    public File        file;
-    public InputStream inStream;
-    public String      prettyPath;
-    public String      key;
-    
-    /////////////////////////////////////////////////////////////////////
-
-    public SrcTextInfo( File file, String prettyPath, String key ) 
-    {
-      this.file       = file;
-      this.prettyPath = prettyPath;
-      this.key        = key;
-    }
-
-    /////////////////////////////////////////////////////////////////////
-
-    public SrcTextInfo( InputStream inStream, String key ) 
-    {
-      this.inStream   = inStream;
-      this.key        = key;
-      this.prettyPath = key;
-    }
-
-  } // private class IndexFile
 
 } // class XMLTextProcessor

@@ -33,9 +33,6 @@ package org.cdlib.xtf.textIndexer;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Vector;
-import java.util.regex.Pattern;
-import java.util.StringTokenizer;
 
 // import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -194,13 +191,13 @@ public class XMLConfigParser extends DefaultHandler
         SAXParserFactory spf = SAXParserFactory.newInstance();
             
         // Instantiate a new SAX parser instance.
-            SAXParser xmlParser = spf.newSAXParser();
+        SAXParser xmlParser = spf.newSAXParser();
             
         // Call the XML parser to process the config file, using 
         // this object as the tag handler.
         //
         xmlParser.parse( cfgInfo.cfgFilePath, this );
-    
+        
     } // try
     
     catch( Exception e ) {
@@ -218,6 +215,28 @@ public class XMLConfigParser extends DefaultHandler
     // If we failed to read the config file 
     if( !(isConfigFile && indexNameFound ) ) return -1;
       
+    // Make sure all the required items were specified.
+    if( cfgInfo.indexInfo.indexPath == null ||
+        cfgInfo.indexInfo.indexPath.equals("") )
+    {
+        Trace.error( "Error: Index configuration file failed to specify 'db' element" );
+        return -1;
+    }
+    
+    if( cfgInfo.indexInfo.sourcePath == null ||
+        cfgInfo.indexInfo.sourcePath.equals("") )
+    {
+        Trace.error( "Error: Index configuration file failed to specify 'sourcePath' element" );
+        return -1;
+    }
+    
+    if( cfgInfo.indexInfo.docSelectorPath == null ||
+        cfgInfo.indexInfo.docSelectorPath.equals("") )
+    {
+        Trace.error( "Error: Index configuration file failed to specify 'docSelectorPath' element" );
+        return -1;
+    }
+    
     return 0;
       
   } // public configure() 
@@ -333,6 +352,16 @@ public class XMLConfigParser extends DefaultHandler
         return;
     }
           
+    // If the current tag is a docSelector stylesheet path...
+    if( qName.compareToIgnoreCase("docSelector") == 0 ) {
+      
+        // Save it away
+        configInfo.indexInfo.docSelectorPath = 
+            Path.normalizePath( atts.getValue("path") );
+        
+        return;
+    }
+    
     // If the current tag is the chunk size info...
     if( qName.compareToIgnoreCase( "chunk") == 0 ) {
       
@@ -375,25 +404,6 @@ public class XMLConfigParser extends DefaultHandler
     
     } // if( qName.compareToIgnoreCase( "chunk") == 0 )
     
-    // If the current tag is an input filter Path...
-    if( qName.compareToIgnoreCase("inputfilter") == 0 ) {
-      
-        // Save it away for use by others. 
-        configInfo.indexInfo.inputFilterPath = 
-            Path.normalizePath( atts.getValue("path") );
-        
-        return;
-    }
-    
-    // If the current tag is a specification of files to skip...
-    if( qName.compareToIgnoreCase("skip") == 0 ) {
-        
-        // Convert it to an array of patterns.
-        configInfo.indexInfo.skipFiles = 
-            parseSkipFiles( atts.getValue("files") );
-        return;
-    }
-    
     // If the current tag tells us to do stop-word removal...
     if( qName.compareToIgnoreCase("stopwords") == 0 ) {
 
@@ -427,18 +437,6 @@ public class XMLConfigParser extends DefaultHandler
         else
             configInfo.indexInfo.stopWords = IndexInfo.defaultStopWords;
 
-        return;
-    }
-    
-    // If the current tag is a specification of a display stylesheet...
-    if( qName.compareToIgnoreCase("displayStyle") == 0 ) {
-        
-        // Get the path to use, and record it.
-        String value = atts.getValue("path");
-        
-        if( value != null && value.length() > 0 )
-            configInfo.indexInfo.displayStyle = value;
-        
         return;
     }
     
@@ -501,60 +499,4 @@ public class XMLConfigParser extends DefaultHandler
   } // public endElement()
   
   
-  ////////////////////////////////////////////////////////////////////////////
-
-  /** Methed called to process any <code>skip files</code> tags encountered in 
-    * the config file. <br><br>
-    *
-    * @param specList   The list of file specifications to skip as a string of
-    *                   comma separated items. <br><br>
-    * 
-    * @.notes
-    *  For an explanation of the config file format, see the main description 
-    *  for the {@link XMLConfigParser} class. <br><br>
-    */
-
-  private Pattern[] parseSkipFiles( String specList )
-
-  {
-      
-      // A place to store them as we accumulate them
-      Vector patterns = new Vector();
-      
-      // The list is comma or space separated. Find each piece.
-      StringTokenizer tokenizer = 
-          new StringTokenizer( specList, ",\t\n\r\f " );
-
-      // While there are more file specifications in the list, process them.
-      while( tokenizer.hasMoreTokens() ) {
-
-          String rawSpec = tokenizer.nextToken();
-          StringBuffer newSpec = new StringBuffer();
-          
-          // Convert typical "*.foo" or "*.xl?" format to regular expression
-          // format (in this case, ".*\.foo" and ".*\.xl." respectively.)
-          //
-          for( int i = 0; i < rawSpec.length(); i++ ) {
-              char c = rawSpec.charAt(i);
-              if( c == '*' )
-                  newSpec.append( ".*" );
-              else if( c == '?' )
-                  newSpec.append( "." );
-              else if( Character.isLetterOrDigit(c) )
-                  newSpec.append( c );
-              else
-                  newSpec.append( "\\" + c );
-          } // for i
-          
-          // Now compile the regular expression into a pattern.
-          String regex = newSpec.toString();
-          patterns.add( Pattern.compile(regex, Pattern.CASE_INSENSITIVE) );
-      
-      } // while hasMoreTokens
-      
-      // Return the resulting list of files to skip to the caller.
-      return (Pattern[]) patterns.toArray( new Pattern[patterns.size()] );
-      
-  } // private parseSkipFiles()
-
 }
