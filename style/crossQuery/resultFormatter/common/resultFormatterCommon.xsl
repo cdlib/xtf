@@ -1078,7 +1078,7 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replacereplace((replace(replace(replace($queryString, 
+    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace($queryString, 
                           '&amp;rmode=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
                           '&amp;relation=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
                           '&amp;relation-join=([A-Za-z0-9&quot;\-\.\* ]+)', ''),  
