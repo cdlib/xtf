@@ -961,11 +961,20 @@ public class QueryRequest
         if( name.equals("range") )
             return parseRange( parent, field );
         
-        // Lucene's handling of OR queries is screwy... it only seems to
-        // pay attention to the last term. Use a near query instead.
+        // Old comment:
+        //      Lucene's handling of OR queries is screwy... it only seems to
+        //      pay attention to the last term. Use a near query instead.
         //
-        if( name.equals("or") )
-            return parseTextBoolean( parent, name, field, addTerms ); 
+        // New comment:
+        //      I'm not sure what the old comment means. What I do know is
+        //      that we can't get away with using a 'near' query, since it
+        //      doesn't work across multiple meta-data fields (all clauses
+        //      to a span query must be from the same field.)
+        //
+        // Result: Do not comment in the following code!
+        //
+        //if( name.equals("or") )
+        //    return parseTextBoolean( parent, name, field, addTerms ); 
         
         // All other cases fall through to here: and, or. Handle the 'not'
         // sub-clauses along the way.
