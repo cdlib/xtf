@@ -31,14 +31,6 @@
   -->
   
   <xsl:template name="book.autotoc">
-    <xsl:variable name="view">
-      <xsl:choose>
-        <xsl:when
-          test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'"
-          >frames</xsl:when>
-        <xsl:otherwise>0</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
     <xsl:variable name="sum">
       <xsl:choose>
         <xsl:when test="($query != '0') and ($query != '')">
@@ -53,41 +45,16 @@
         <xsl:otherwise>occurrence</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:choose>
-      <xsl:when test="$doc.view='0'">
-        <table width="100%" border="0" cellpadding="0" cellspacing="0">
-          <!-- BEGIN TITLE ROW -->
-          <tr width="100%">
-            <td width="100%" valign="top">
-              <div class="title">
-                <xsl:value-of select="$doc.author"/>
-                <br/>
-                <strong>
-                  <xsl:value-of select="$doc.title"/>
-                </strong>
-                <br/>
-                <em>
-                  <xsl:value-of select="$doc.subtitle"/>
-                </em>
-                <br/>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </xsl:when>
-      <xsl:otherwise>
-        <table>
-          <tr>
-            <td height="25">
-              <b>
-                <xsl:attribute name="target">_top</xsl:attribute>
-                <xsl:value-of select="/TEI.2/text/front/titlePage/titlePart[@type='main']"/>
-              </b>
-            </td>
-          </tr>
-        </table>
-      </xsl:otherwise>
-    </xsl:choose>
+    <table>
+      <tr>
+        <td height="25">
+          <b>
+            <xsl:attribute name="target">_top</xsl:attribute>
+            <xsl:value-of select="/TEI.2/text/front/titlePage/titlePart[@type='main']"/>
+          </b>
+        </td>
+      </tr>
+    </table>
     <xsl:if test="($query != '0') and ($query != '')">
       <hr/>
       <div align="center">
@@ -106,10 +73,7 @@
         <xsl:text> [</xsl:text>
         <a>
           <xsl:attribute name="href">
-            <xsl:value-of select="$doc.path"/>&#038;doc.view=<xsl:value-of select="$view"
-              />&#038;chunk.id=<xsl:value-of select="$chunk.id"
-              />&#038;toc.depth=<xsl:value-of select="$toc.depth"
-              />&#038;toc.id=<xsl:value-of select="$toc.id"/>
+            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/>
           </xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <xsl:text>Clear Hits</xsl:text>
@@ -141,10 +105,7 @@
         <xsl:text> [</xsl:text>
         <a>
           <xsl:attribute name="href">
-            <xsl:value-of select="$doc.path"/>&#038;doc.view=<xsl:value-of select="$view"
-              />&#038;chunk.id=<xsl:value-of select="$chunk.id"
-              />&#038;toc.depth=<xsl:value-of select="$toc.depth"
-              />&#038;toc.id=<xsl:value-of select="$toc.id"/>
+            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/>
           </xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <xsl:text>Clear Hits</xsl:text>
@@ -157,10 +118,7 @@
       <span class="expand-collapse">
         <a class="expand-collapse">
           <xsl:attribute name="href">
-            <xsl:value-of select="$doc.path"/>&#038;doc.view=<xsl:value-of select="$view"
-              />&#038;chunk.id=<xsl:value-of select="$chunk.id"
-              />&#038;toc.depth=<xsl:value-of select="1"/>
-            <xsl:value-of select="$search"/>
+            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="1"/><xsl:value-of select="$search"/>
           </xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <img src="{$icon.path}i_colpse.gif" border="0" alt="collapse section"/>
@@ -169,10 +127,7 @@
         <xsl:text> | </xsl:text>
         <a class="expand-collapse">
           <xsl:attribute name="href">
-            <xsl:value-of select="$doc.path"/>&#038;doc.view=<xsl:value-of select="$view"
-              />&#038;chunk.id=<xsl:value-of select="$chunk.id"
-              />&#038;toc.depth=<xsl:value-of select="100"/>
-            <xsl:value-of select="$search"/>
+            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="100"/><xsl:value-of select="$search"/>
           </xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <xsl:text>Expand All </xsl:text>
@@ -610,14 +565,6 @@
   </xsl:template>
   
   <xsl:template match="head" mode="toc">
-    <xsl:variable name="view">
-      <xsl:choose>
-        <xsl:when
-          test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'"
-          >frames</xsl:when>
-        <xsl:otherwise>0</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
     <!-- Mechanism by which the proper TOC branch is expanded -->
     <!-- Remember we are processing the head element, so we have to check the parent's status as a node. -->
     <xsl:variable name="local.toc.id">
@@ -651,12 +598,7 @@
         <xsl:call-template name="divnum"/>
         <a>
           <xsl:attribute name="href">
-            <xsl:value-of select="$doc.path"/>&#038;doc.view=<xsl:value-of select="$view"
-              />&#038;chunk.id=<xsl:value-of select="ancestor::*[1]/@id"
-              />&#038;toc.depth=<xsl:value-of select="$toc.depth"
-              />&#038;toc.id=<xsl:value-of select="$local.toc.id"/>
-            <xsl:value-of select="$search"/>
-            <xsl:call-template name="create.anchor"/>
+            <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="ancestor::*[1]/@id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$local.toc.id"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/>
           </xsl:attribute>
           <xsl:attribute name="target">_top</xsl:attribute>
           <xsl:apply-templates select="." mode="text-only"/>
@@ -685,21 +627,10 @@
   
   <!-- Expand and Collapse Templates -->
   <xsl:template name="expand">
-    <xsl:variable name="view">
-      <xsl:choose>
-        <xsl:when
-          test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'"
-          >frames</xsl:when>
-        <xsl:otherwise>0</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
     <xsl:variable name="local.toc.id" select="@id"/>
     <a>
       <xsl:attribute name="href">
-        <xsl:value-of select="$doc.path"/>&#038;doc.view=<xsl:value-of select="$view"
-          />&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.id=<xsl:value-of
-          select="$local.toc.id"/>
-        <xsl:value-of select="$search"/>
+        <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.id=<xsl:value-of select="$local.toc.id"/><xsl:value-of select="$search"/>
       </xsl:attribute>
       <xsl:attribute name="target">_top</xsl:attribute>
       <img src="{$icon.path}i_expand.gif" border="0" alt="expand section"/>
@@ -707,14 +638,6 @@
   </xsl:template>
   
   <xsl:template name="collapse">
-    <xsl:variable name="view">
-      <xsl:choose>
-        <xsl:when
-          test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'"
-          >frames</xsl:when>
-        <xsl:otherwise>0</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
     <!-- This is probably another point of inefficiency, but how else do you check if there are child nodes if the name is unknown? -->
     <xsl:variable name="local.toc.id">
       <xsl:choose>
@@ -728,10 +651,7 @@
     </xsl:variable>
     <a>
       <xsl:attribute name="href">
-        <xsl:value-of select="$doc.path"/>&#038;doc.view=<xsl:value-of select="$view"
-          />&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.id=<xsl:value-of
-          select="$local.toc.id"/>
-        <xsl:value-of select="$search"/>
+        <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.id=<xsl:value-of select="$local.toc.id"/><xsl:value-of select="$search"/>
       </xsl:attribute>
       <xsl:attribute name="target">_top</xsl:attribute>
       <img src="{$icon.path}i_colpse.gif" border="0" alt="collapse section"/>

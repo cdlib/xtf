@@ -101,20 +101,10 @@
       <a>
         <xsl:attribute name="href">
           <xsl:value-of select="$doc.path"/>
-          <xsl:if test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-            <xsl:text>&#038;doc.view=frames</xsl:text>
-          </xsl:if>
           <xsl:text>&#038;chunk.id=</xsl:text>
           <xsl:value-of select="key('hit-num-dynamic', string($prev))/ancestor::div1/@id"/>
           <xsl:value-of select="$search"/>
-          <xsl:choose>
-            <xsl:when test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-              <xsl:text>&#038;set.anchor=</xsl:text><xsl:value-of select="$prev"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:text>#</xsl:text><xsl:value-of select="$prev"/>
-            </xsl:otherwise>
-          </xsl:choose>
+          <xsl:text>&#038;set.anchor=</xsl:text><xsl:value-of select="$prev"/>
         </xsl:attribute>
         <xsl:attribute name="target">_top</xsl:attribute>
         <img src="{$icon.path}b_inprev.gif" border="0" alt="previous hit"/>
@@ -147,20 +137,10 @@
       <a>
         <xsl:attribute name="href">
           <xsl:value-of select="$doc.path"/>
-          <xsl:if test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-            <xsl:text>&#038;doc.view=frames</xsl:text>
-          </xsl:if>
           <xsl:text>&#038;chunk.id=</xsl:text>
           <xsl:value-of select="key('hit-num-dynamic', string($next))/ancestor::div1/@id"/>
           <xsl:value-of select="$search"/>
-          <xsl:choose>
-            <xsl:when test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-              <xsl:text>&#038;set.anchor=</xsl:text><xsl:value-of select="$next"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:text>#</xsl:text><xsl:value-of select="$next"/>
-            </xsl:otherwise>
-          </xsl:choose>
+          <xsl:text>&#038;set.anchor=</xsl:text><xsl:value-of select="$next"/>
         </xsl:attribute>
         <xsl:attribute name="target">_top</xsl:attribute>
         <img src="{$icon.path}b_innext.gif" border="0" alt="next hit"/>

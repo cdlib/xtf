@@ -95,29 +95,11 @@
     <xsl:when test="$doc.view='popup'">
       <xsl:call-template name="popup"/>
     </xsl:when>
-    <xsl:when test="$doc.view='frames'">
-      <xsl:call-template name="frames"/>
-    </xsl:when>
     <xsl:when test="$doc.view='print'">
       <xsl:call-template name="print"/>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:call-template name="noframes"/>
-    </xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
-<!-- ====================================================================== -->
-<!-- No Frames Template                                                     -->
-<!-- ====================================================================== -->
-
-<xsl:template name="noframes">
-  <xsl:choose>
-    <xsl:when test="$chunk.id = '0'">
-      <xsl:call-template name="toc"/>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:call-template name="content"/>
+      <xsl:call-template name="frames"/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -171,9 +153,6 @@
     <xsl:when test="($query != '0' and $query != '') and $hit.rank != '0'">
       <xsl:text>#</xsl:text><xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/@hitNum"/>
     </xsl:when>
-    <xsl:when test="($query != '0' and $query != '') and $doc.view = '0'">
-      <xsl:text>#</xsl:text><xsl:value-of select="parent::*/@xtf:firstHit"/>
-    </xsl:when>
     <xsl:when test="($query != '0' and $query != '') and $set.anchor != '0'">
       <xsl:text>#</xsl:text><xsl:value-of select="$set.anchor"/>
     </xsl:when>
@@ -199,27 +178,9 @@
       <link rel="stylesheet" type="text/css" href="{$css.path}toc.css"/>
     </head>
     <body>
-      <xsl:choose>
-        <xsl:when test="$doc.view='0'">
-          <xsl:call-template name="bbar.table"/>
-          <table width="100%" border="0" cellpadding="0" cellspacing="0">
-            <!-- BEGIN TOC ROW -->
-            <tr>
-              <td align="left" valign="top">
-                <div class="toc">
-                  <!-- BEGIN TOC -->
-                  <xsl:call-template name="book.autotoc"/>
-                </div>
-              </td>
-            </tr>
-          </table>
-        </xsl:when>
-        <xsl:otherwise>
-          <div class="toc">
-            <xsl:call-template name="book.autotoc"/>
-          </div>
-        </xsl:otherwise>
-      </xsl:choose>
+      <div class="toc">
+        <xsl:call-template name="book.autotoc"/>
+      </div>
     </body>
   </html>
 </xsl:template>
@@ -243,23 +204,6 @@
     </head>
     <body>
 
-      <xsl:if test="$doc.view = '0'">
-        <xsl:call-template name="bbar.table"/>
-        <table width="100%" border="0" cellpadding="0" cellspacing="0">
-          <!-- BEGIN TITLE ROW -->
-          <tr width="100%">
-            <td width="100%" valign="top">
-              <div class="title">
-                <xsl:value-of select="$doc.author"/><br/>
-                <strong><xsl:value-of select="$doc.title"/></strong><br/>
-                <em><xsl:value-of select="$doc.subtitle"/></em><br/>
-              </div>
-            </td>
-          </tr>
-        </table>
-        <!-- END TITLE ROW -->
-      </xsl:if>
-
       <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <!-- BEGIN MIDNAV ROW -->
         <tr width="100%">
@@ -268,14 +212,7 @@
             <table width="94%" border="0" cellpadding="0" cellspacing="0">
               <tr>
                 <td colspan="3">
-                  <xsl:choose>
-                    <xsl:when test="$doc.view = '0'">
-                      <hr class="hr-title"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      &#160;
-                    </xsl:otherwise>
-                  </xsl:choose>
+                  <xsl:text>&#160;</xsl:text>
                 </td>
               </tr>
               <xsl:copy-of select="$navbar"/>
@@ -324,14 +261,7 @@
               <xsl:copy-of select="$navbar"/>
               <tr>
                 <td colspan="3" >
-                  <xsl:choose>
-                    <xsl:when test="$doc.view = '0'">
-                      <hr class="hr-title"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      &#160;
-                    </xsl:otherwise>
-                  </xsl:choose>
+                  <xsl:text>&#160;</xsl:text>
                 </td>
               </tr>
             </table>
@@ -359,14 +289,14 @@
     </head>
     <body bgcolor="white">
       <hr class="hr-title"/>
-      <div align="left">
-        <xsl:apply-templates select="/TEI.2/text/front/div1" mode="toc"/>
-        <br/>
-        <xsl:apply-templates select="/TEI.2/text/body/div1" mode="toc"/>
-        <br/>
-        <xsl:apply-templates select="/TEI.2/text/back/div1" mode="toc"/>
-        <hr class="hr-title"/>
-        <xsl:apply-templates select="/TEI.2/text"/>
+      <div align="center">
+        <table width="95%">
+          <tr>
+            <td>
+              <xsl:apply-templates select="/TEI.2/text"/>
+            </td>
+          </tr>
+        </table>
       </div>
       <hr class="hr-title"/>
     </body>
@@ -394,39 +324,7 @@
 <xsl:template name="bbar.table">
 
   <xsl:variable name="target">
-    <xsl:choose>
-      <xsl:when test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-        <xsl:text>_top</xsl:text>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:text>_self</xsl:text>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-
-  <xsl:variable name="text">
-    <xsl:choose>
-      <xsl:when test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-        <xsl:choose>
-          <xsl:when test="$chunk.id = '0'">
-            <xsl:text>Table of Contents Only</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>Hide Table of Contents</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:choose>
-          <xsl:when test="$chunk.id = '0'">
-            <xsl:text>Split Window</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>Show Table of Contents</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:text>_top</xsl:text>
   </xsl:variable>
 
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -474,36 +372,17 @@
 
                   <td width="15" nowrap="nowrap">
                     <a class="topnav" target="{$target}">
-                      <xsl:choose>
-                        <xsl:when test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-                            <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;doc.view=0&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/></xsl:attribute>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;doc.view=frames&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/></xsl:attribute>
-                        </xsl:otherwise>
-                      </xsl:choose>
+                      <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;doc.view=print&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/></xsl:attribute>
                       <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
                     </a>
                   </td>
 
                   <td nowrap="nowrap">
                     <xsl:text>&#160;</xsl:text>
-                    <xsl:choose>
-                      <xsl:when test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-                        <a class="topnav">
-                          <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;doc.view=0&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/></xsl:attribute>
-                          <xsl:attribute name="target"><xsl:value-of select="$target"/></xsl:attribute>
-                          <xsl:value-of select="$text"/>
-                        </a>
-                      </xsl:when>
-                      <xsl:otherwise>
-                        <a class="topnav">
-                          <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;doc.view=frames&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/></xsl:attribute>
-                          <xsl:attribute name="target"><xsl:value-of select="$target"/></xsl:attribute>
-                          <xsl:value-of select="$text"/>
-                        </a>
-                      </xsl:otherwise>
-                    </xsl:choose>
+                    <a class="topnav" target="{$target}">
+                      <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;doc.view=print&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/></xsl:attribute>
+                      <xsl:text>Print View</xsl:text>
+                    </a>
                     <xsl:text>&#160;</xsl:text>
                   </td>
                 </tr>
@@ -527,11 +406,6 @@
                   <xsl:value-of select="$chunk.id"/>
                 </xsl:attribute>
               </input>              
-              <input type="hidden" name="doc.view">
-                <xsl:attribute name="value">
-                  <xsl:value-of select="'frames'"/>
-                </xsl:attribute>
-              </input>
               
               <td class="topnav-inner" width="50%" align="center" nowrap="nowrap">
 
@@ -683,14 +557,7 @@
 <xsl:template name="navbar">
 
   <xsl:variable name="target">
-    <xsl:choose>
-      <xsl:when test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-        <xsl:text>_top</xsl:text>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:text>_self</xsl:text>
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:text>_top</xsl:text>
   </xsl:variable>
 
   <xsl:variable name="div" select="name(key('div-id', $chunk.id))"/>
@@ -1051,9 +918,6 @@
                         <xsl:when test="$prev != '0'">
                           <xsl:attribute name="href">
                             <xsl:value-of select="$doc.path"/>
-                            <xsl:if test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-                              <xsl:text>&#038;doc.view=frames</xsl:text>
-                            </xsl:if>
                             <xsl:text>&#038;chunk.id=</xsl:text>
                             <xsl:value-of select="$prev"/>
                             <xsl:text>&#038;toc.id=</xsl:text>
@@ -1077,9 +941,6 @@
                       <a class="midnav">
                         <xsl:attribute name="href">
                           <xsl:value-of select="$doc.path"/>
-                          <xsl:if test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-                            <xsl:text>&#038;doc.view=frames</xsl:text>
-                          </xsl:if>
                           <xsl:text>&#038;chunk.id=</xsl:text>
                           <xsl:value-of select="$prev"/>
                           <xsl:text>&#038;toc.id=</xsl:text>
@@ -1111,9 +972,6 @@
                       <a class="midnav">
                         <xsl:attribute name="href">
                           <xsl:value-of select="$doc.path"/>
-                          <xsl:if test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-                            <xsl:text>&#038;doc.view=frames</xsl:text>
-                          </xsl:if>
                           <xsl:text>&#038;chunk.id=</xsl:text>
                           <xsl:value-of select="$next"/>
                           <xsl:text>&#038;toc.id=</xsl:text>
@@ -1136,9 +994,6 @@
                         <xsl:when test="$next != '0'">
                           <xsl:attribute name="href">
                             <xsl:value-of select="$doc.path"/>
-                            <xsl:if test="$doc.view='frames' or $doc.view='bbar' or $doc.view='toc' or $doc.view='content'">
-                              <xsl:text>&#038;doc.view=frames</xsl:text>
-                            </xsl:if>
                             <xsl:text>&#038;chunk.id=</xsl:text>
                             <xsl:value-of select="$next"/>
                             <xsl:text>&#038;toc.id=</xsl:text>

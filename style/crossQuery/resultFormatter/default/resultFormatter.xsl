@@ -211,217 +211,215 @@
       <body bgcolor="ivory">
         <xsl:call-template name="header"/>
         <form method="get" action="{$servlet.path}">
-          <div align="center">
-            <table width="90%" cellpading="0" cellspacing="2" bgcolor="ivory" border="0">
-              <tr>
-                <td colspan="3"><h4>Full Text</h4></td>
-              </tr>
-              <tr>
-                <td width="200">
+          <table width="90%" cellpading="0" cellspacing="2" bgcolor="ivory" border="0">
+            <tr>
+              <td colspan="3"><h4>Full Text</h4></td>
+            </tr>
+            <tr>
+              <td width="200">
+                <xsl:choose>
+                  <xsl:when test="$text-join = 'or'">
+                    <b>all</b>
+                    <xsl:text> or </xsl:text>
+                    <b>any</b><input type="checkbox" name="text-join" value="or" checked="yes"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <b>all</b>
+                    <xsl:text> or </xsl:text>
+                    <b>any</b><input type="checkbox" name="text-join" value="or"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+                <xsl:text>of the words</xsl:text>
+              </td>
+              <td width="40"/>
+              <td>
+                <input type="text" name="text" size="40" value="{$text}"/>
+              </td>
+            </tr>
+            <tr>
+              <td width="200"><b>without</b> the words</td>
+              <td width="40"/>
+              <td>
+                <input type="text" name="text-exclude" size="40" value="{$text-exclude}"/>
+              </td>
+            </tr>
+            <tr>
+              <td width="200"><b>Proximity</b></td>
+              <td width="40"/>
+              <td>
+                <select size="1" name="text-prox">
                   <xsl:choose>
-                    <xsl:when test="$text-join = 'or'">
-                      <b>all</b>
-                      <xsl:text> or </xsl:text>
-                      <b>any</b><input type="checkbox" name="text-join" value="or" checked="yes"/>
+                    <xsl:when test="$text-prox = '1'">
+                      <option value=""></option>
+                      <option value="1" selected="yes">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                    </xsl:when>
+                    <xsl:when test="$text-prox = '2'">
+                      <option value=""></option>
+                      <option value="1">1</option>
+                      <option value="2" selected="yes">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                    </xsl:when>
+                    <xsl:when test="$text-prox = '3'">
+                      <option value=""></option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3" selected="yes">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                    </xsl:when>
+                    <xsl:when test="$text-prox = '4'">
+                      <option value=""></option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4" selected="yes">4</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                    </xsl:when>
+                    <xsl:when test="$text-prox = '5'">
+                      <option value=""></option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5" selected="yes">5</option>
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                    </xsl:when>
+                    <xsl:when test="$text-prox = '10'">
+                      <option value=""></option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="10" selected="yes">10</option>
+                      <option value="20">20</option>
+                    </xsl:when>
+                    <xsl:when test="$text-prox = '20'">
+                      <option value=""></option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="20" selected="yes">20</option>
                     </xsl:when>
                     <xsl:otherwise>
-                      <b>all</b>
-                      <xsl:text> or </xsl:text>
-                      <b>any</b><input type="checkbox" name="text-join" value="or"/>
+                      <option value="" selected="yes"></option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="20">20</option>
                     </xsl:otherwise>
                   </xsl:choose>
-                  <xsl:text>of the words</xsl:text>
-                </td>
-                <td width="40"/>
-                <td>
-                  <input type="text" name="text" size="40" value="{$text}"/>
-                </td>
-              </tr>
-              <tr>
-                <td width="200"><b>without</b> the words</td>
-                <td width="40"/>
-                <td>
-                  <input type="text" name="text-exclude" size="40" value="{$text-exclude}"/>
-                </td>
-              </tr>
-              <tr>
-                <td width="200"><b>Proximity</b></td>
-                <td width="40"/>
-                <td>
-                  <select size="1" name="text-prox">
-                    <xsl:choose>
-                      <xsl:when test="$text-prox = '1'">
-                        <option value=""></option>
-                        <option value="1" selected="yes">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                      </xsl:when>
-                      <xsl:when test="$text-prox = '2'">
-                        <option value=""></option>
-                        <option value="1">1</option>
-                        <option value="2" selected="yes">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                      </xsl:when>
-                      <xsl:when test="$text-prox = '3'">
-                        <option value=""></option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3" selected="yes">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                      </xsl:when>
-                      <xsl:when test="$text-prox = '4'">
-                        <option value=""></option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4" selected="yes">4</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                      </xsl:when>
-                      <xsl:when test="$text-prox = '5'">
-                        <option value=""></option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5" selected="yes">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                      </xsl:when>
-                      <xsl:when test="$text-prox = '10'">
-                        <option value=""></option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="10" selected="yes">10</option>
-                        <option value="20">20</option>
-                      </xsl:when>
-                      <xsl:when test="$text-prox = '20'">
-                        <option value=""></option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20" selected="yes">20</option>
-                      </xsl:when>
-                      <xsl:otherwise>
-                        <option value="" selected="yes"></option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                      </xsl:otherwise>
-                    </xsl:choose>
-                  </select>
-                  <xsl:text> word(s)</xsl:text>
-                </td>
-              </tr>           
-              <tr>
-                <td width="200"><b>Search Area(s)</b></td>
-                <td width="40"/>
-                <td>
-                  <xsl:choose>
-                    <xsl:when test="$sectionType = 'head'">
-                      <xsl:text>All</xsl:text><input type="radio" name="sectionType" value=""/> 
-                      <xsl:text>Titles</xsl:text><input type="radio" name="sectionType" value="head" checked="yes"/> 
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:text>All</xsl:text><input type="radio" name="sectionType" value="" checked="yes"/> 
-                      <xsl:text>Titles</xsl:text><input type="radio" name="sectionType" value="head"/> 
-                    </xsl:otherwise>
-                  </xsl:choose>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="3"><h4>Metadata</h4></td>
-              </tr>
-              <tr>
-                <td width="200"><b>Title</b></td>
-                <td width="40"/>
-                <td>
-                  <input type="text" name="title" size="40" value="{$title}"/>
-                </td>
-              </tr>
-              <tr>
-                <td width="200"><b>Author</b></td>
-                <td width="40"/>
-                <td>
-                  <input type="text" name="creator" size="40" value="{$creator}"/>
-                </td>
-              </tr>
-              <tr>
-                <td width="200"><b>Subject</b></td>
-                <td width="40"/>
-                <td>
-                  <!-- need to make sure that the chosen subject is retained in modify -->
-                  <select size="1" name="subject">
-                    <option value="">Select</option>
-                    <option value="African History">African History</option>
-                    <option value="African Studies">African Studies</option>
-                    <option value="American Literature">American Literature</option>
-                    <option value="American Studies">American Studies</option>
-                    <option value="Anthropology">Anthropology</option>
-                    <option value="Asian Studies">Asian Studies</option>
-                    <option value="Cinema and Performance Arts">Cinema and Performance Arts</option>
-                    <option value="Cultural Anthropology">Cultural Anthropology</option>
-                    <option value="English Literature">English Literature</option>
-                    <option value="Ethnic Studies">Ethnic Studies</option>
-                    <option value="Gender Studies">Gender Studies</option>
-                    <option value="Intellectual History">Intellectual History</option>
-                    <option value="Law">Law</option>
-                    <option value="Literary Theory and Criticism">Literary Theory and Criticism</option>
-                    <option value="Literature">Literature</option>
-                    <option value="Media Studies">Media Studies</option>
-                    <option value="Middle Eastern History">Middle Eastern History</option>
-                    <option value="Middle Eastern Studies">Middle Eastern Studies</option>
-                    <option value="Music">Music</option>
-                    <option value="Native American Studies">Native American Studies</option>
-                    <option value="Politics">Politics</option>
-                    <option value="Postcolonial Studies">Postcolonial Studies</option>
-                    <option value="Public Policy">Public Policy</option>
-                    <option value="Renaissance Literature">Renaissance Literature</option>
-                    <option value="Science">Science</option>
-                    <option value="Social Problems">Social Problems</option>
-                    <option value="Sociology">Sociology</option>
-                    <option value="Urban Studies">Urban Studies</option>
-                  </select>
-                </td>
-              </tr>
-              <tr>
-                <td width="200"><b>Year</b></td>
-                <td width="40"/>
-                <td>
-                  <input type="text" name="year" size="40" value="{$year}"/>
-                </td>
-              </tr>
-              <tr>
-                <td width="120" colspan="2"/>
-                <td height="40">
-                  <input type="submit" value="Search"/>
-                  <input type="reset" OnClick="location.href='{$servlet.path}'" value="Clear"/>
-                </td>
-              </tr>
-            </table>
-          </div>
+                </select>
+                <xsl:text> word(s)</xsl:text>
+              </td>
+            </tr>           
+            <tr>
+              <td width="200"><b>Search Area(s)</b></td>
+              <td width="40"/>
+              <td>
+                <xsl:choose>
+                  <xsl:when test="$sectionType = 'head'">
+                    <xsl:text>All</xsl:text><input type="radio" name="sectionType" value=""/> 
+                    <xsl:text>Titles</xsl:text><input type="radio" name="sectionType" value="head" checked="yes"/> 
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:text>All</xsl:text><input type="radio" name="sectionType" value="" checked="yes"/> 
+                    <xsl:text>Titles</xsl:text><input type="radio" name="sectionType" value="head"/> 
+                  </xsl:otherwise>
+                </xsl:choose>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3"><h4>Metadata</h4></td>
+            </tr>
+            <tr>
+              <td width="200"><b>Title</b></td>
+              <td width="40"/>
+              <td>
+                <input type="text" name="title" size="40" value="{$title}"/>
+              </td>
+            </tr>
+            <tr>
+              <td width="200"><b>Author</b></td>
+              <td width="40"/>
+              <td>
+                <input type="text" name="creator" size="40" value="{$creator}"/>
+              </td>
+            </tr>
+            <tr>
+              <td width="200"><b>Subject</b></td>
+              <td width="40"/>
+              <td>
+                <!-- need to make sure that the chosen subject is retained in modify -->
+                <select size="1" name="subject">
+                  <option value="">Select</option>
+                  <option value="African History">African History</option>
+                  <option value="African Studies">African Studies</option>
+                  <option value="American Literature">American Literature</option>
+                  <option value="American Studies">American Studies</option>
+                  <option value="Anthropology">Anthropology</option>
+                  <option value="Asian Studies">Asian Studies</option>
+                  <option value="Cinema and Performance Arts">Cinema and Performance Arts</option>
+                  <option value="Cultural Anthropology">Cultural Anthropology</option>
+                  <option value="English Literature">English Literature</option>
+                  <option value="Ethnic Studies">Ethnic Studies</option>
+                  <option value="Gender Studies">Gender Studies</option>
+                  <option value="Intellectual History">Intellectual History</option>
+                  <option value="Law">Law</option>
+                  <option value="Literary Theory and Criticism">Literary Theory and Criticism</option>
+                  <option value="Literature">Literature</option>
+                  <option value="Media Studies">Media Studies</option>
+                  <option value="Middle Eastern History">Middle Eastern History</option>
+                  <option value="Middle Eastern Studies">Middle Eastern Studies</option>
+                  <option value="Music">Music</option>
+                  <option value="Native American Studies">Native American Studies</option>
+                  <option value="Politics">Politics</option>
+                  <option value="Postcolonial Studies">Postcolonial Studies</option>
+                  <option value="Public Policy">Public Policy</option>
+                  <option value="Renaissance Literature">Renaissance Literature</option>
+                  <option value="Science">Science</option>
+                  <option value="Social Problems">Social Problems</option>
+                  <option value="Sociology">Sociology</option>
+                  <option value="Urban Studies">Urban Studies</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td width="200"><b>Year</b></td>
+              <td width="40"/>
+              <td>
+                <input type="text" name="year" size="40" value="{$year}"/>
+              </td>
+            </tr>
+            <tr>
+              <td width="120" colspan="2"/>
+              <td height="40">
+                <input type="submit" value="Search"/>
+                <input type="reset" OnClick="location.href='{$servlet.path}'" value="Clear"/>
+              </td>
+            </tr>
+          </table>
         </form>
         <xsl:call-template name="footer"/>
       </body>
