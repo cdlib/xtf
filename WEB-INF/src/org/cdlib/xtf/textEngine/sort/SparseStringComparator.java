@@ -148,8 +148,8 @@ public class SparseStringComparator implements SortComparatorSource
         Entry e1 = findEntry( d1.doc );
         Entry e2 = findEntry( d2.doc );
         
-        int o1 = (e1 != null) ? e1.order : -1;
-        int o2 = (e2 != null) ? e2.order : -1;
+        int o1 = (e1 != null) ? e1.order : Integer.MAX_VALUE;
+        int o2 = (e2 != null) ? e2.order : Integer.MAX_VALUE;
         
         if( o1 < o2 )
             return -1;
