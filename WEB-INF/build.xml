@@ -30,6 +30,7 @@
            debug="true"
            classpath="${saxon}:${lucene}:${servlet}"
            srcdir="${src}" 
+           excludes="**/.sf/**/*,**/.cdl/**/*"
            destdir="${build}"/>
   </target>
 	
