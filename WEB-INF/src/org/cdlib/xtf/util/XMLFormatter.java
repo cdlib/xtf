@@ -194,7 +194,7 @@ public class XMLFormatter {
   {
 
     // Close any previous tag that's hanging open.
-    closeTag();
+    closeTagStart();
     
     // If no tag name was specified, simply return.
     if( tagName == null || tagName.length() == 0 ) return;
@@ -207,7 +207,7 @@ public class XMLFormatter {
     // Remember that we have a tag currently open. It will be closed by
     // any operation except adding an attribute.
     //
-    tagOpen = true;
+    tagStartOpen = true;
 
     // Add the tag name to the current nesting stack so that the
     // endTag() method can properly close the tag when called.
@@ -226,12 +226,12 @@ public class XMLFormatter {
    * If there has been a beginTag(), we need to be sure and add the closing
    * ">" before doing anything else.
    */
-  private void closeTag()
+  private void closeTagStart()
   
   {
     
     // If there's no tag open, simply return.
-    if( !tagOpen ) return;
+    if( !tagStartOpen ) return;
     
     // Emit the closing bracket.
     buf.append( ">" );
@@ -240,7 +240,7 @@ public class XMLFormatter {
     if( mBlankLineAfterTag ) buf.append( "\n" );
     
     // All done.
-    tagOpen = false;
+    tagStartOpen = false;
     
   } // private closeTag()
 
@@ -312,7 +312,7 @@ public class XMLFormatter {
   {
 
     // Close any previous tag that's hanging open.
-    closeTag();
+    closeTagStart();
     
     // If no tag name was specified, simply return.
     if( tagName == null || tagName.length() == 0 ) return;
@@ -365,7 +365,7 @@ public class XMLFormatter {
   {
 
     // Close any previous tag that's hanging open.
-    closeTag();
+    closeTagStart();
     
     // If there are no open tags left, simply return;
     if( tagStack.isEmpty() ) return;
@@ -395,7 +395,7 @@ public class XMLFormatter {
   {
 
     // Close any previous tag that's hanging open.
-    closeTag();
+    closeTagStart();
     
     // Start with no accumulated end tags.
     String outStr = "";
@@ -417,7 +417,7 @@ public class XMLFormatter {
   {
 
     // Close any previous tag that's hanging open.
-    closeTag();
+    closeTagStart();
     
     // Indent and assemble the specified tag.
     buf.append( spaces.substring( 0, tabCount ) );
@@ -442,7 +442,7 @@ public class XMLFormatter {
   {
 
     // Close any previous tag that's hanging open.
-    closeTag();
+    closeTagStart();
     
      // Format up the processing instruction tag.
      buf.append( spaces.substring(0, tabCount) );
@@ -467,7 +467,7 @@ public class XMLFormatter {
   {
 
     // Close any previous tag that's hanging open.
-    closeTag();
+    closeTagStart();
     
     // If no text was passed by the caller, simply return.
     if( str == null || str.length() == 0 ) return;
@@ -496,7 +496,7 @@ public class XMLFormatter {
   {
 
     // Close any previous tag that's hanging open.
-    closeTag();
+    closeTagStart();
     
     // Escape any special characters.
     str = escapeText( str );
@@ -594,6 +594,26 @@ public class XMLFormatter {
 
   //////////////////////////////////////////////////////////////////////////////
 
+  /** Adds a text string, unformatted and unescaped, directly to the buffer.
+   *  <br><br>
+   *
+   *   @param  str        The string to add to the buffer.
+   */
+  public void rawText( String str )
+
+  {
+    
+    // Close any previous tag that's hanging open.
+    closeTagStart();
+
+    // And add the string, with no escaping, formatting, etc.
+    buf.append( str );
+    
+  } // public rawText( String str )
+  
+  
+  //////////////////////////////////////////////////////////////////////////////
+
   /** Add a single new-line.
    * 
    */
@@ -633,6 +653,16 @@ public class XMLFormatter {
     newLine( mBlankLineAfterTag ? 2 : 1 );
     
   } // public newLineAfterText()
+  
+  
+  //////////////////////////////////////////////////////////////////////////////
+
+  /** Get the current tab indent level (in spaces). */
+  public int tabCount()
+
+  {
+    return tabCount;
+  }  
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -737,7 +767,8 @@ public class XMLFormatter {
     if( config == null )
         config = new Configuration();
     
-    StreamSource src = new StreamSource( new StringReader(buf.toString()) );
+    String strVersion = buf.toString();
+    StreamSource src = new StreamSource( new StringReader(strVersion) );
     try {
         return TinyBuilder.build( src, AllElementStripper.getInstance(), config );
     }
@@ -780,7 +811,7 @@ public class XMLFormatter {
   private int tabCount = 0;
   
   /** Is there currently a begin tag open? */
-  private boolean tagOpen = false;
+  private boolean tagStartOpen = false;
 
   /** Automatically insert blank lines after tags */
   private boolean mBlankLineAfterTag = true;
