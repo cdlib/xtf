@@ -106,16 +106,16 @@
         <xsl:attribute name="sortMetaFields">
           <xsl:choose>
             <xsl:when test="$sort='title'">
-              <xsl:value-of select="'sort-title,sort-creator,sort-publisher,-sort-year'"/>
+              <xsl:value-of select="'sort-title,sort-creator,sort-publisher,sort-year'"/>
             </xsl:when>
             <xsl:when test="$sort='year'">
-              <xsl:value-of select="'-sort-year,sort-title,sort-creator,sort-publisher'"/>
+              <xsl:value-of select="'sort-year,sort-title,sort-creator,sort-publisher'"/>
             </xsl:when>              
             <xsl:when test="$sort='creator'">
-              <xsl:value-of select="'sort-creator,-sort-year,sort-title'"/>
+              <xsl:value-of select="'sort-creator,sort-year,sort-title'"/>
             </xsl:when>
             <xsl:when test="$sort='publisher'">
-              <xsl:value-of select="'sort-publisher,sort-title,-sort-year'"/>
+              <xsl:value-of select="'sort-publisher,sort-title,sort-year'"/>
             </xsl:when>              
           </xsl:choose>
         </xsl:attribute>
