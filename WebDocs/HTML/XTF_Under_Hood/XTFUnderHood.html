@@ -297,70 +297,63 @@
       fair effort at identifying terms in the source text regardless of language. 
       For the most part, a single term consists of one or more of the following 
       characters:</p>
-    <ul>
-      <li> 
-        <div class="BaseStyle"> 
-          <div class="IndentL">Western alphabetic characters such as <b>A</b>, 
-            <b>B</b>, <b>C</b>, <b>Ö</b>, <b>Ç </b>,...</div>
-        </div>
-      </li>
-      <li> 
-        <div class="BaseStyle"> 
-          <div class="IndentL">Arabic numerals such as <b>1</b>, <b>2</b>, <b>3</b>, 
-            ...</div>
-        </div>
-      </li>
-      <li> 
-        <div class="BaseStyle"> 
-          <div class="IndentL">Non-breaking symbols, such as <b>&amp;</b>, <b>@</b>, 
-            and <b>'</b> (apostrophe)</div>
-        </div>
-      </li>
-      <li>The underscore character (<b> _</b> )</li>
-    </ul>
+    
+     <div class="IndentL">
+       <ul>
+         <li> 
+           Western alphabetic characters such as <b>A</b>, 
+           <b>B</b>, <b>C</b>, <b>d</b>, <b>e</b>, <b>f</b>, <b>Ö</b>, <b>Ç </b>,...
+         </li>
+         <li> 
+           Arabic numerals such as <b>1</b>, <b>2</b>, <b>3</b>, 
+           ...
+         </li>
+         <li> 
+           Non-breaking symbols, such as <b>&amp;</b>, <b>@</b>, 
+           and <b>'</b> (apostrophe)
+         </li>
+         <li>
+           The underscore character (<b> _</b> )
+         </li>
+       </ul>
+     </div>
+
     <p>By contrast, the XTF system considers all traditional Chinese, Japanese, 
       and Korean characters to be <i><b>logograms </b></i> (complete words in 
       and of themselves) and treats each separate character as a term. Some Western 
       symbols are also treated as logograms by the XTF system and are treated 
       as separate terms. These symbols include:</p>
-    <ul>
-  <li> 
-    <div class="BaseStyle"> 
-      <div class="IndentL">Fractions symbols, such as <b>¼</b>, <b>½</b>, <b>¾</b>, 
-        ...</div>
+  
+    <div class="IndentL">
+      <ul>
+        <li> 
+          Fractions symbols, such as <b>¼</b>, <b>½</b>, <b>¾</b>, ...
+        </li>
+        <li> 
+          Monetary symbols, such as <b>$</b>, <b>£</b>, <b>¥</b>, ...
+        </li>
+        <li> 
+          Mathematical symbols, such as <b>+</b>, <b>&gt;</b>, 
+          <b>=</b>, ...
+        </li>
+        <li> 
+          Trademark or copyright symbology, such as <b>©</b>, 
+          <b>®</b>, and <b>™</b>
+        </li>
+      </ul>
     </div>
-  </li>
-  <li> 
-    <div class="BaseStyle"> 
-      <div class="IndentL">Monetary symbols, such as <b>$</b>, <b>£</b>, <b>¥</b>, 
-        ...</div>
-    </div>
-  </li>
-  <li> 
-    <div class="BaseStyle"> 
-      <div class="IndentL">Mathematical symbols, such as <b>+</b>, <b>&gt;</b>, 
-        <b>=</b>, ...</div>
-    </div>
-  </li>
-  <li> 
-    <div class="BaseStyle"> 
-      <div class="IndentL">Trademark or copyright symbology, such as <b>©</b>, 
-        <b>®</b>, and <b>™</b></div>
-    </div>
-  </li>
-</ul>
-
       
     <p>Three other western symbols, the period (<b> .</b> ), forward slash ( <b>/</b> 
       ), and dash (<b> -</b> ) are treated differently depending on the context 
       in which they are used. For example, if these characters appear in an acronym 
-      like U.S.A or in a serial or model number like v1.2-a they will be treated 
-      as part of the word rather than as separate punctuation.</p>
+      like<b> U.S.A</b> or in a serial or model number like <b>v1.2-a</b> they 
+      will be treated as part of the word rather than as separate punctuation.</p>
     <p> The following table gives examples of character strings that the tokenizer 
       recognizes as terms. The exact specification is somewhat complex; for details 
       see <b> XTFTokenizer.jj</b> from the Lucene Distribution (reproduced <a href=
         "Library/XTFTokenizer.jj.txt">here</a> for your convenience.)<br>
     </p>
+
     <div class="Sample"> 
       <table cellpadding="0" cellspacing="12" width="617">
         <tr> 
@@ -376,7 +369,7 @@
         </tr>
         <tr> 
           <td width="50%" align="right"> <span class="BaseStyle">Acronyms <i>(internal 
-            dots are removed)</i></span></td>
+            dots are removed) </i></span></td>
           <td width="61%"><span class="Code">U.S.A &nbsp; I.B.M.</span></td>
         </tr>
         <tr> 
@@ -398,22 +391,24 @@
           <td width="61%"><span class="Code">3.14159 &nbsp; .6 &nbsp; 7,23</span></td>
         </tr>
         <tr> 
-          <td width="50%" align="right"> <span class="BaseStyle">Dates and year 
-            ranges.</span></td>
-          <td width="61%"><span class="Code">12/3/89 &nbsp; 3-Jan-02 &nbsp; 1856-1889</span></td>
+          <td width="50%" align="right"> <span class="BaseStyle">Dates </span></td>
+          <td width="61%"><span class="Code">12/3/89 &nbsp; 3-Jan-02</span></td>
         </tr>
         <tr> 
           <td width="50%" align="right"> <span class="BaseStyle">Serial and model 
-            numbers</span></td>
+            numbers </span></td>
           <td width="61%"><span class="Code">12-6A &nbsp; 127.0.1.1 &nbsp; 270_ES 
             &nbsp; FX/7</span></td>
         </tr>
       </table>
     </div>
+    
     <br>
     As a final step, all upper-case letters within tokens are converted to lower-case, 
     which allows queries to be case-insensitive. </div>
 </div>
+
+<div class="IndentL">
 
     <p class="Heading2">Proximity and "Slop"<a name="Documents_Proximity"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
@@ -676,7 +671,7 @@
       OR <b>need</b>) </div>
     <br>
     In summary, transforming stop words into n-grams speeds up query processing, 
-    while retaining the ability to include stop words in a query. </div>
+    while retaining the ability to include stop words in a query. 
   <br>
   <!-- IndentL --> 
   <p class="Heading1">Query Operations and What They Do<a name="QueryOps"></a></p>
