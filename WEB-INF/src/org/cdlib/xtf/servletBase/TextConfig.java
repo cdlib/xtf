@@ -119,10 +119,13 @@ public abstract class TextConfig
                     String attrName = el.attrName( j );
                     String  strVal  = el.attrValue( j );
                     int     intVal  = -1;
-                    try { 
-                        intVal = Integer.parseInt( strVal );
+                    char firstChar = (strVal.length() > 0) ? strVal.charAt(0) : ' ';
+                    if( Character.isDigit(firstChar) || firstChar == '.' || firstChar == '-' ) {
+                        try { 
+                            intVal = Integer.parseInt( strVal );
+                        }
+                        catch( Exception e ) { }
                     }
-                    catch( Exception e ) { }
                     
                     // See if we recognize handle it
                     handleProperty(tagName, attrName, strVal, intVal);
