@@ -209,4 +209,19 @@ public class SearchElementImpl extends ElementImpl implements SearchElement
         return 0;
     } // getSequenceNumber()
     
+    /**
+    * Output all namespace nodes associated with this element.
+    * @param out The relevant outputter
+    * @param includeAncestors True if namespaces associated with ancestor
+    */
+    public void sendNamespaceDeclarations(Receiver out, boolean includeAncestors)
+                throws XPathException 
+    {
+        super.sendNamespaceDeclarations( out, includeAncestors );
+        
+        // Be sure to output the XTF namespace at the top level.
+        if( nodeNum <= 1 )
+            out.namespace( ((SearchTree)document).xtfNamespaceCode, 0 );
+    } // sendNamespaceDeclarations()
+    
 } // class SearchElementImpl

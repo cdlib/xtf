@@ -213,10 +213,14 @@ public class QueryRequest implements Cloneable
         for( Iterator iter = atts.iterator(); iter.hasNext(); ) {
             Attrib att = (Attrib) iter.next();
             
-            // Don't tokenize the servlet path! It's built-in, not part
-            // of the URL.
-            //
+            // Don't tokenize build-in attributes.
             if( att.key.equals("servlet.path") )
+                continue;
+            if( att.key.equals("root.path") )
+                continue;
+            if( att.key.startsWith("http.") )
+                continue;
+            if( att.key.equals("raw") )
                 continue;
             addParam( fmt, att.key, att.value );
         }

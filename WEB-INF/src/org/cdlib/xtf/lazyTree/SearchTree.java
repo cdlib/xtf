@@ -186,6 +186,9 @@ public class SearchTree extends LazyDocument
      * namespace, given by this URI: "http://cdlib.org/xtf"
      */
     static final String xtfURI = "http://cdlib.org/xtf";
+    
+    /** Namespace code for the XTF namespace */
+    int xtfNamespaceCode;
 
     /** Name fingerprint for &lt;xtf:hit&gt; elements (includes namespace) */
     int hitElementFingerprint;
@@ -508,7 +511,7 @@ public class SearchTree extends LazyDocument
         System.arraycopy( namespaceParent, 0, parents2, 0, numberOfNamespaces-1 );
         namespaceParent = parents2;
         
-        namespaceCode[numberOfNamespaces-1] = 
+        namespaceCode[numberOfNamespaces-1] = xtfNamespaceCode =
             namePool.allocateNamespaceCode( "xtf", xtfURI );
         namespaceParent[numberOfNamespaces-1] = 1;
         
