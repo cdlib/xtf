@@ -35,7 +35,8 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
                               xmlns:dc="http://purl.org/dc/elements/1.1/" 
                               xmlns:mets="http://www.loc.gov/METS/" 
-                              xmlns:xlink="http://www.w3.org/TR/xlink">
+                              xmlns:xlink="http://www.w3.org/TR/xlink"
+                              xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
   <xsl:output method="html" indent="yes" encoding="UTF-8" media-type="text/html" doctype-public="-//W3C//DTD HTML 4.0//EN"/>
   
@@ -156,10 +157,10 @@
   <xsl:param name="rmode"/>
   <xsl:param name="sort"/>
 
-  <xsl:param name="startDoc" select="1"/>
-
+  <!-- Paging Parameters-->  
+  <xsl:param name="startDoc" as="xs:integer" select="1"/>
   <!-- Documents per Page -->
-  <xsl:param name="docsPerPage">
+  <xsl:param name="docsPerPage" as="xs:integer">
     <xsl:choose>
       <xsl:when test="$smode = 'test' or $smode = 'debug'">
         <xsl:value-of select="10000"/>
@@ -169,6 +170,12 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:param>
+  <!-- Page Block Size -->
+  <xsl:param name="blockSize" as="xs:integer" select="10"/>
+  <!-- Maximum number of hits allowed -->
+  <xsl:param name="maxHits" as="xs:integer" select="1000"/>  
+  <!-- Maximum Pages -->
+  <xsl:param name="maxPages" as="xs:integer" select="100"/>
 
   <!-- Path Parameters -->
   <xsl:param name="servlet.path"/>
@@ -809,25 +816,326 @@
     
   </xsl:template>
   
+  <!-- Hidden Query String -->
+
+  <xsl:template name="hidden.query">    
+    <xsl:if test="$text">
+      <input type="hidden" name="text" value="{$text}"/>
+    </xsl:if>
+    <xsl:if test="$text-join">
+      <input type="hidden" name="text-join" value="{$text-join}"/>
+    </xsl:if>
+    <xsl:if test="$text-prox">
+      <input type="hidden" name="text-prox" value="{$text-prox}"/>
+    </xsl:if>
+    <xsl:if test="$text-exclude">
+      <input type="hidden" name="text-exclude" value="{$text-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$text-max">
+      <input type="hidden" name="text-max" value="{$text-max}"/>
+    </xsl:if>
+    <xsl:if test="$title">
+      <input type="hidden" name="title" value="{$title}"/>
+    </xsl:if>
+    <xsl:if test="$title-join">
+      <input type="hidden" name="title-join" value="{$title-join}"/>
+    </xsl:if>
+    <xsl:if test="$title-prox">
+      <input type="hidden" name="title-prox" value="{$title-prox}"/>
+    </xsl:if>
+    <xsl:if test="$title-exclude">
+      <input type="hidden" name="title-exclude" value="{$title-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$title-max">
+      <input type="hidden" name="title-max" value="{$title-max}"/>
+    </xsl:if>
+    <xsl:if test="$creator">
+      <input type="hidden" name="creator" value="{$creator}"/>
+    </xsl:if>
+    <xsl:if test="$creator-join">
+      <input type="hidden" name="creator-join" value="{$creator-join}"/>
+    </xsl:if>
+    <xsl:if test="$creator-prox">
+      <input type="hidden" name="creator-prox" value="{$creator-prox}"/>
+    </xsl:if>
+    <xsl:if test="$creator-exclude">
+      <input type="hidden" name="creator-exclude" value="{$creator-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$creator-max">
+      <input type="hidden" name="creator-max" value="{$creator-max}"/>
+    </xsl:if>
+    <xsl:if test="$subject">
+      <input type="hidden" name="subject" value="{$subject}"/>
+    </xsl:if>
+    <xsl:if test="$subject-join">
+      <input type="hidden" name="subject-join" value="{$subject-join}"/>
+    </xsl:if>
+    <xsl:if test="$subject-prox">
+      <input type="hidden" name="subject-prox" value="{$subject-prox}"/>
+    </xsl:if>
+    <xsl:if test="$subject-exclude">
+      <input type="hidden" name="subject-exclude" value="{$subject-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$subject-max">
+      <input type="hidden" name="subject-max" value="{$subject-max}"/>
+    </xsl:if>
+    <xsl:if test="$description">
+      <input type="hidden" name="description" value="{$description}"/>
+    </xsl:if>
+    <xsl:if test="$description-join">
+      <input type="hidden" name="description-join" value="{$description-join}"/>
+    </xsl:if>
+    <xsl:if test="$description-prox">
+      <input type="hidden" name="description-prox" value="{$description-prox}"/>
+    </xsl:if>
+    <xsl:if test="$description-exclude">
+      <input type="hidden" name="description-exclude" value="{$description-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$description-max">
+      <input type="hidden" name="description-max" value="{$description-max}"/>
+    </xsl:if>
+    <xsl:if test="$publisher">
+      <input type="hidden" name="publisher" value="{$publisher}"/>
+    </xsl:if>
+    <xsl:if test="$publisher-join">
+      <input type="hidden" name="publisher-join" value="{$publisher-join}"/>
+    </xsl:if>
+    <xsl:if test="$publisher-prox">
+      <input type="hidden" name="publisher-prox" value="{$publisher-prox}"/>
+    </xsl:if>
+    <xsl:if test="$publisher-exclude">
+      <input type="hidden" name="publisher-exclude" value="{$publisher-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$publisher-max">
+      <input type="hidden" name="publisher-max" value="{$publisher-max}"/>
+    </xsl:if>
+    <xsl:if test="$contributor">
+      <input type="hidden" name="contributor" value="{$contributor}"/>
+    </xsl:if>
+    <xsl:if test="$contributor-join">
+      <input type="hidden" name="contributor-join" value="{$contributor-join}"/>
+    </xsl:if>
+    <xsl:if test="$contributor-prox">
+      <input type="hidden" name="contributor-prox" value="{$contributor-prox}"/>
+    </xsl:if>
+    <xsl:if test="$contributor-exclude">
+      <input type="hidden" name="contributor-exclude" value="{$contributor-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$contributor-max">
+      <input type="hidden" name="contributor-max" value="{$contributor-max}"/>
+    </xsl:if>
+    <xsl:if test="$date">
+      <input type="hidden" name="date" value="{$date}"/>
+    </xsl:if>
+    <xsl:if test="$date-join">
+      <input type="hidden" name="date-join" value="{$date-join}"/>
+    </xsl:if>
+    <xsl:if test="$date-prox">
+      <input type="hidden" name="date-prox" value="{$date-prox}"/>
+    </xsl:if>
+    <xsl:if test="$date-exclude">
+      <input type="hidden" name="date-exclude" value="{$date-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$date-max">
+      <input type="hidden" name="date-max" value="{$date-max}"/>
+    </xsl:if>
+    <xsl:if test="$type">
+      <input type="hidden" name="type" value="{$type}"/>
+    </xsl:if>
+    <xsl:if test="$type-join">
+      <input type="hidden" name="type-join" value="{$type-join}"/>
+    </xsl:if>
+    <xsl:if test="$type-prox">
+      <input type="hidden" name="type-prox" value="{$type-prox}"/>
+    </xsl:if>
+    <xsl:if test="$type-exclude">
+      <input type="hidden" name="type-exclude" value="{$type-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$type-max">
+      <input type="hidden" name="type-max" value="{$type-max}"/>
+    </xsl:if>
+    <xsl:if test="$format">
+      <input type="hidden" name="format" value="{$format}"/>
+    </xsl:if>
+    <xsl:if test="$format-join">
+      <input type="hidden" name="format-join" value="{$format-join}"/>
+    </xsl:if>
+    <xsl:if test="$format-prox">
+      <input type="hidden" name="format-prox" value="{$format-prox}"/>
+    </xsl:if>
+    <xsl:if test="$format-exclude">
+      <input type="hidden" name="format-exclude" value="{$format-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$format-max">
+      <input type="hidden" name="format-max" value="{$format-max}"/>
+    </xsl:if>
+    <xsl:if test="$identifier">
+      <input type="hidden" name="identifier" value="{$identifier}"/>
+    </xsl:if>
+    <xsl:if test="$identifier-join">
+      <input type="hidden" name="identifier-join" value="{$identifier-join}"/>
+    </xsl:if>
+    <xsl:if test="$identifier-prox">
+      <input type="hidden" name="identifier-prox" value="{$identifier-prox}"/>
+    </xsl:if>
+    <xsl:if test="$identifier-exclude">
+      <input type="hidden" name="identifier-exclude" value="{$identifier-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$identifier-max">
+      <input type="hidden" name="identifier-max" value="{$identifier-max}"/>
+    </xsl:if>
+    <xsl:if test="$source">
+      <input type="hidden" name="source" value="{$source}"/>
+    </xsl:if>
+    <xsl:if test="$source-join">
+      <input type="hidden" name="source-join" value="{$source-join}"/>
+    </xsl:if>
+    <xsl:if test="$source-prox">
+      <input type="hidden" name="source-prox" value="{$source-prox}"/>
+    </xsl:if>
+    <xsl:if test="$source-exclude">
+      <input type="hidden" name="source-exclude" value="{$source-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$source-max">
+      <input type="hidden" name="source-max" value="{$source-max}"/>
+    </xsl:if>
+    <xsl:if test="$language">
+      <input type="hidden" name="language" value="{$language}"/>
+    </xsl:if>
+    <xsl:if test="$language-join">
+      <input type="hidden" name="language-join" value="{$language-join}"/>
+    </xsl:if>
+    <xsl:if test="$language-prox">
+      <input type="hidden" name="language-prox" value="{$language-prox}"/>
+    </xsl:if>
+    <xsl:if test="$language-exclude">
+      <input type="hidden" name="language-exclude" value="{$language-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$language-max">
+      <input type="hidden" name="language-max" value="{$language-max}"/>
+    </xsl:if>
+    <xsl:if test="$relation">
+      <input type="hidden" name="relation" value="{$relation}"/>
+    </xsl:if>
+    <xsl:if test="$relation-join">
+      <input type="hidden" name="relation-join" value="{$relation-join}"/>
+    </xsl:if>
+    <xsl:if test="$relation-prox">
+      <input type="hidden" name="relation-prox" value="{$relation-prox}"/>
+    </xsl:if>
+    <xsl:if test="$relation-exclude">
+      <input type="hidden" name="relation-exclude" value="{$relation-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$relation-max">
+      <input type="hidden" name="relation-max" value="{$relation-max}"/>
+    </xsl:if>
+    <xsl:if test="$coverage">
+      <input type="hidden" name="coverage" value="{$coverage}"/>
+    </xsl:if>
+    <xsl:if test="$coverage-join">
+      <input type="hidden" name="coverage-join" value="{$coverage-join}"/>
+    </xsl:if>
+    <xsl:if test="$coverage-prox">
+      <input type="hidden" name="coverage-prox" value="{$coverage-prox}"/>
+    </xsl:if>
+    <xsl:if test="$coverage-exclude">
+      <input type="hidden" name="coverage-exclude" value="{$coverage-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$coverage-max">
+      <input type="hidden" name="coverage-max" value="{$coverage-max}"/>
+    </xsl:if>
+    <!-- Do we need this? -->
+    <!-- xsl:if test="$rights">
+    <input type="hidden" name="rights" value="{$rights}"/>
+    </xsl:if>
+    <xsl:if test="$rights-join">
+    <input type="hidden" name="rights-join" value="{$rights-join}"/>
+    </xsl:if>
+    <xsl:if test="$rights-prox">
+    <input type="hidden" name="rights-prox" value="{$rights-prox}"/>
+    </xsl:if>
+    <xsl:if test="$rights-exclude">
+    <input type="hidden" name="rights-exclude" value="{$rights-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$rights-max">
+    <input type="hidden" name="rights-max" value="{$rights-max}"/>
+    </xsl:if -->
+    <xsl:if test="$year">
+      <input type="hidden" name="year" value="{$year}"/>
+    </xsl:if>
+    <xsl:if test="$year-join">
+      <input type="hidden" name="year-join" value="{$year-join}"/>
+    </xsl:if>
+    <xsl:if test="$year-prox">
+      <input type="hidden" name="year-prox" value="{$year-prox}"/>
+    </xsl:if>
+    <xsl:if test="$year-exclude">
+      <input type="hidden" name="year-exclude" value="{$year-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$year-max">
+      <input type="hidden" name="year-max" value="{$year-max}"/>
+    </xsl:if>
+    <xsl:if test="$sectionType">
+      <input type="hidden" name="sectionType" value="{$sectionType}"/>
+    </xsl:if>
+  </xsl:template>
+  
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <!-- Will have to do some regex cleanup of string here. -->
-    <xsl:value-of select="$queryString"/>
+    <xsl:copy-of select="replace(replace(replace(replace(replace($queryString, 
+                          '&amp;rmode=([A-Za-z0-9&quot;\-\. ]+)', ''), 
+                          '&amp;relation=([A-Za-z0-9&quot;\-\. ]+)', ''), 
+                          'year=([0-9]+)&amp;year-max=([0-9]+)', 'year=$1-$2'), 
+                          '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\. ]+)', '$2 in $1'),
+                          '&amp;', ' and ')"/>
   </xsl:param>
     
   <!-- ====================================================================== -->
   <!-- Result Paging                                                          -->
   <!-- ====================================================================== -->
 
-  <xsl:template name="pages">
-
-    <xsl:variable name="nPages" select="floor(((@totalDocs+number($docsPerPage))-1) div number($docsPerPage))+1"/>
-
-    <xsl:variable name="showPages">
+  <!-- Summarize Results -->
+  <xsl:template name="page-summary">
+    
+    <xsl:variable name="totalDocs" as="xs:integer" select="@totalDocs"/>
+    
+    <xsl:variable name="lastOnPage" as="xs:integer">
       <xsl:choose>
-        <xsl:when test="$nPages >= 11">
-          <xsl:value-of select="number(10)"/>
+        <xsl:when test="(($startDoc + $docsPerPage)-1) > $totalDocs">
+          <xsl:value-of select="$totalDocs"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="($startDoc + $docsPerPage)-1"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>    
+    
+    <span class="heading">
+      <xsl:text>Displaying </xsl:text>
+      <xsl:value-of select="$startDoc"/>
+      <xsl:text> - </xsl:text>
+      <xsl:value-of select="$lastOnPage"/>
+      <xsl:text> of </xsl:text>
+      <xsl:value-of select="@totalDocs"/>
+      <xsl:text> book(s)</xsl:text>
+      <xsl:if test="$totalDocs > $docsPerPage">
+        <xsl:text>: </xsl:text>
+      </xsl:if>
+    </span>  
+    
+  </xsl:template>
+
+  <!-- Page Linking -->  
+  <xsl:template name="pages">
+    
+    <xsl:variable name="totalDocs" as="xs:integer" select="@totalDocs"/>
+    <xsl:variable name="nPages" as="xs:double" select="floor((($totalDocs+$docsPerPage)-1) div $docsPerPage)+1"/>
+
+    <xsl:variable name="showPages" as="xs:integer">
+      <xsl:choose>
+        <xsl:when test="$nPages >= 101">
+          <xsl:value-of select="100"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="$nPages - 1"/>
@@ -846,46 +1154,75 @@
       </xsl:choose>
     </xsl:variable>
 
-    <xsl:for-each select="(1 to 10)">
+    <xsl:for-each select="(1 to $maxPages)">
+      <!-- Figure out which block you need to be in -->
+      <xsl:variable name="blockStart" as="xs:integer">
+        <xsl:choose>
+          <xsl:when test="$startDoc &lt;= ($docsPerPage * $blockSize)">
+            <xsl:value-of select="1"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="((floor($startDoc div ($docsPerPage * $blockSize))) * $blockSize) + 1"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
       <!-- Figure out what page we're on -->
-      <xsl:variable name="pageNum" select="position()"/>
-      <xsl:variable name="pageStart" select="(($pageNum - 1) * number($docsPerPage)) + 1"/>
-  
-      <xsl:if test="($pageNum = 1) and ($pageStart != number($startDoc))">
-         <xsl:variable name="prevPage" select="number($startDoc) - number($docsPerPage)"/>
-        <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$prevPage}">prev</a>
+      <xsl:variable name="pageNum" as="xs:integer" select="position()"/>
+      <xsl:variable name="pageStart" as="xs:integer" select="(($pageNum - 1) * $docsPerPage) + 1"/>
+      
+      <xsl:if test="($pageNum = 1) and ($pageStart != $startDoc)">
+        <xsl:variable name="prevPage" as="xs:integer" select="$startDoc - $docsPerPage"/>
+        <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$prevPage}">&lt;&lt;</a>
         <xsl:text>&#160;&#160;</xsl:text>
       </xsl:if>
-            
+      
       <!-- If there are hits on the page, show it -->
-      <xsl:if test="$nPages &gt; number(.)">
+      <xsl:if test="(($pageNum &gt;= $blockStart) and ($pageNum &lt;= ($blockStart + ($blockSize - 1)))) and
+                    (($nPages &gt; $pageNum) and ($nPages &gt; 2))">
         <xsl:choose>
           <!-- Make a hyperlink if it's not the page we're currently on. -->
-          <xsl:when test="($pageStart != number($startDoc))">
+          <xsl:when test="($pageStart != $startDoc)">
             <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$pageStart}">
               <xsl:value-of select="$pageNum"/>
             </a>
             <xsl:if test="$pageNum &lt; $showPages">
-              <xsl:text>, </xsl:text>
+              <xsl:text>&#160;</xsl:text>
             </xsl:if>
           </xsl:when>
-          <xsl:when test="($pageStart = number($startDoc))">
+          <xsl:when test="($pageStart = $startDoc)">
             <xsl:value-of select="$pageNum"/>
             <xsl:if test="$pageNum &lt; $showPages">
-              <xsl:text>, </xsl:text>
+              <xsl:text>&#160;</xsl:text>
             </xsl:if>
           </xsl:when>
         </xsl:choose>
       </xsl:if>
-    
-    <xsl:if test="($pageNum = $showPages) and ($pageStart != number($startDoc))">
-      <xsl:variable name="nextPage" select="number($startDoc) + number($docsPerPage)"/>
-      <xsl:text>&#160;&#160;</xsl:text>
-      <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$nextPage}">next</a>
-    </xsl:if>
+      
+      <xsl:if test="($pageNum = $showPages) and ($pageStart != $startDoc)">
+        <xsl:variable name="nextPage" as="xs:integer" select="$startDoc + $docsPerPage"/>
+        <xsl:text>&#160;&#160;</xsl:text>
+        <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$nextPage}">&gt;&gt;</a>
+      </xsl:if>
 
     </xsl:for-each>
 
+  </xsl:template>
+  
+  <xsl:template name="fix-query">
+    
+    <xsl:param name="query"/>
+    
+    <xsl:analyze-string select="$query" regex="([A-Za-z0-9\-]+) in ([A-Za-z0-9\-]+)">
+      <xsl:matching-substring>
+        <b><i><xsl:value-of select="regex-group(1)"/></i></b>
+        <xsl:text> in </xsl:text>
+        <b><xsl:value-of select="regex-group(2)"/></b>
+      </xsl:matching-substring>
+      <xsl:non-matching-substring>
+        <xsl:value-of select="."/>
+      </xsl:non-matching-substring>
+    </xsl:analyze-string>
+    
   </xsl:template>
     
   <!-- ====================================================================== -->
@@ -981,44 +1318,34 @@
   <!-- ====================================================================== -->
    
   <xsl:template name="sort.options">
-    <xsl:choose>
-      <xsl:when test="$sort = ''">
-        <span class="select">Relevance</span>
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;sort=title">Title</a> 
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;sort=creator">Author</a>
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;sort=year">Year</a>
-      </xsl:when>
-      <xsl:when test="$sort = 'title'">
-        <a href="{$servlet.path}?{$queryString}">Relevance</a> 
-        <xsl:text> | </xsl:text>
-        <span class="select">Title</span>
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;sort=creator">Author</a>
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;sort=year">Year</a>
-      </xsl:when>
-      <xsl:when test="$sort = 'creator'">
-        <a href="{$servlet.path}?{$queryString}">Relevance</a> 
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;sort=title">Title</a>
-        <xsl:text> | </xsl:text>
-        <span class="select">Author</span>
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;sort=year">Year</a>
-      </xsl:when>
-      <xsl:when test="$sort = 'year'">
-        <a href="{$servlet.path}?{$queryString}">Relevance</a> 
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;sort=title">Title</a>
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;sort=creator">Author</a>
-        <xsl:text> | </xsl:text>
-        <span class="select">Year</span>
-      </xsl:when>
-    </xsl:choose>
+    <select size="1" name="sort">
+      <xsl:choose>
+        <xsl:when test="$sort = ''">
+          <option value="" selected="selected">Relevance</option>
+          <option value="title">Title</option>
+          <option value="creator">Author</option>
+          <option value="year">Year</option>
+        </xsl:when>
+        <xsl:when test="$sort = 'title'">
+          <option value="">Relevance</option>
+          <option value="title" selected="selected">Title</option>
+          <option value="creator">Author</option>
+          <option value="year">Year</option>
+        </xsl:when>
+        <xsl:when test="$sort = 'creator'">
+          <option value="">Relevance</option>
+          <option value="title">Title</option>
+          <option value="creator" selected="selected">Author</option>
+          <option value="year">Year</option>
+        </xsl:when>
+        <xsl:when test="$sort = 'year'">
+          <option value="">Relevance</option>
+          <option value="title">Title</option>
+          <option value="creator">Author</option>
+          <option value="year" selected="selected">Year</option>
+        </xsl:when>
+      </xsl:choose>
+    </select>
   </xsl:template>
     
   <!-- ====================================================================== -->
@@ -1026,30 +1353,20 @@
   <!-- ====================================================================== -->
    
   <xsl:template name="access.options">
-    <xsl:variable name="queryString" select="replace($queryString, 'rights=[a-z]+&amp;', '')"/>
-    <xsl:choose>
-      <xsl:when test="$rights = ''">
-        <span class="select">All</span>
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;rights=public">Public</a> 
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;rights=uconly">UC Only</a>
-      </xsl:when>
-      <xsl:when test="$rights = 'public'">
-        <a href="{$servlet.path}?{$queryString}">All</a> 
-        <xsl:text> | </xsl:text>
-        <span class="select">Public</span>
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;rights=uconly">UC Only</a>    
-      </xsl:when>
-      <xsl:when test="$rights = 'uconly'">
-        <a href="{$servlet.path}?{$queryString}">All</a> 
-        <xsl:text> | </xsl:text>
-        <a href="{$servlet.path}?{$queryString}&amp;rights=public">Public</a>
-        <xsl:text> | </xsl:text>
-        <span class="select">UC Only</span>
-      </xsl:when>
-    </xsl:choose>
+ 
+    <select size="1" name="rights">
+      <xsl:choose>
+        <xsl:when test="$rights = ''">
+          <option value="" selected="selected">All</option>
+          <option value="public">Public</option> 
+        </xsl:when>
+        <xsl:when test="$rights = 'public'">
+          <option value="">All</option>
+          <option value="public" selected="selected">Public</option> 
+        </xsl:when>
+      </xsl:choose>
+    </select>
+    
   </xsl:template>
     
   <!-- ====================================================================== -->
