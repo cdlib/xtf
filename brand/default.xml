@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<brand owner="steve.toub@ucop.edu">
+  
+  <links>
+    <link href="x"/>
+  </links>
+  
+  <header>
+    <div>
+      <p>header</p>
+    </div>
+  </header>
+  
+  <footer>
+    <div>
+      <p>footer</p>
+    </div>
+  </footer>
+  
+</brand>
