@@ -383,9 +383,15 @@ public class SrcTreeProcessor
   public void processDir( File currFile, int level ) throws Exception
   
   { 
-    
+
     // We're looking at a directory. Get the list of files it contains.
     String[] fileStrs = currFile.getAbsoluteFile().list();
+    if( fileStrs == null ) {
+        Trace.warning( "Warning: error retrieving file list for directory: " + 
+                       currFile );
+        return;
+    }
+
     ArrayList list = new ArrayList( fileStrs.length );
     for( int i = 0; i < fileStrs.length; i++ )
         list.add( fileStrs[i] );
