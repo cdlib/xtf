@@ -60,10 +60,7 @@
 
   <xsl:param name="doc.view" select="'0'"/>
 
-  <!-- Work around Saxon 7.8 bug: in backward compatability mode, it should 
-       allow comparing a number to a string, but doesn't. Since we use 
-       toc.depth everywhere as a number, we have to ensure that it is so. -->
-  <xsl:variable name="toc.depth" select="1"/>
+  <xsl:param name="toc.depth" select="1"/>
 
   <xsl:param name="anchor.id" select="'0'"/>
 
