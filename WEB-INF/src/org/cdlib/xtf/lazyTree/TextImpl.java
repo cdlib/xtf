@@ -32,14 +32,13 @@ package org.cdlib.xtf.lazyTree;
 import java.io.IOException;
 import java.nio.CharBuffer;
 
-import javax.xml.transform.TransformerException;
-
 import org.w3c.dom.Text;
 
 import org.cdlib.xtf.util.PackedByteBuf;
 
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.type.Type;
+import net.sf.saxon.xpath.XPathException;
 
 /**
  * A simple text node, which knows how to load its text from the persistent
@@ -88,9 +87,9 @@ class TextImpl extends NodeImpl implements Text
      * Copy this node to a given outputter
      */
 
-    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations) 
-        throws TransformerException 
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) 
+        throws XPathException 
     {
-        out.characters( CharBuffer.wrap(text), 0 );
+        out.characters( CharBuffer.wrap(text), locationId, 0 );
     }    
 } // class TextImpl

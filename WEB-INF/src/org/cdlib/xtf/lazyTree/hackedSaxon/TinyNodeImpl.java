@@ -7,7 +7,7 @@ import net.sf.saxon.event.Receiver;
 import net.sf.saxon.type.Type;
 
 import org.w3c.dom.Node;
-import javax.xml.transform.TransformerException;
+import net.sf.saxon.xpath.XPathException;
 
 
 /**
@@ -15,7 +15,7 @@ import javax.xml.transform.TransformerException;
   * This is the top-level class in the implementation class hierarchy; it essentially contains
   * all those methods that can be defined using other primitive methods, without direct access
   * to data.
-  * @author <A HREF="mailto:michael.h.kay@ntlworld.com>Michael H. Kay</A>
+  * @author Michael H. Kay
   */
 
 public abstract class TinyNodeImpl extends AbstractNode {
@@ -59,7 +59,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
     * same node in the tree.
     */
 
-    public boolean isSameNode(NodeInfo other) {
+    public boolean isSameNodeInfo(NodeInfo other) {
         if (this==other) return true;
         if (!(other instanceof TinyNodeImpl)) return false;
         if (this.document != ((TinyNodeImpl)other).document) return false;
@@ -85,9 +85,9 @@ public abstract class TinyNodeImpl extends AbstractNode {
         return (getParent()).getBaseURI();
     }
 
-    /**
-    * Get the node corresponding to this javax.xml.transform.dom.DOMLocator
-    */
+	/**
+	* Get the node corresponding to this javax.xml.transform.dom.DOMLocator
+	*/
 
     public Node getOriginatingNode() {
         return this;
@@ -131,24 +131,24 @@ public abstract class TinyNodeImpl extends AbstractNode {
         return 0;
     }
 
-    /**
-    * Get the fingerprint of the node, used for matching names
-    */
+	/**
+	* Get the fingerprint of the node, used for matching names
+	*/
 
-    public int getFingerprint() {
-        int nc = getNameCode();
-        if (nc==-1) return -1;
-        return nc & 0xfffff;
-    }
+	public int getFingerprint() {
+	    int nc = getNameCode();
+	    if (nc==-1) return -1;
+		return nc & 0xfffff;
+	}
 
-    /**
-    * Get the name code of the node, used for matching names
-    */
+	/**
+	* Get the name code of the node, used for matching names
+	*/
 
-    public int getNameCode() {
-        // overridden for attributes and namespace nodes.
-        return document.nameCode[nodeNr];
-    }
+	public int getNameCode() {
+	    // overridden for attributes and namespace nodes.
+		return document.nameCode[nodeNr];
+	}
 
     /**
     * Get the prefix part of the name of this node. This is the name before the ":" if any.
@@ -269,7 +269,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
             case Axis.DESCENDANT:
                 if (type==Type.DOCUMENT &&
                         nodeTest instanceof NameTest &&
-                        nodeTest.getNodeKind()==Type.ELEMENT) {
+                        nodeTest.getPrimitiveType()==Type.ELEMENT) {
                     return ((TinyDocumentImpl)this).getAllElements(
                                 nodeTest.getFingerprint());
                 } else if (hasChildNodes()) {
@@ -441,7 +441,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
 
     public String getAttributeValue(int fingerprint) {
         // overridden in TElementImpl
-        return null;
+    	return null;
     }
 
     /**
@@ -480,7 +480,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
     */
 
     public void outputNamespaceNodes(Receiver out, boolean includeAncestors)
-        throws TransformerException
+        throws XPathException
     {}
 
     /**

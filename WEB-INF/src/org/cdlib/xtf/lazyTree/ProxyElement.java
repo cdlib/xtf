@@ -29,8 +29,6 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import javax.xml.transform.TransformerException;
-
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.AbstractNode;
 import net.sf.saxon.om.Axis;
@@ -38,6 +36,7 @@ import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.pattern.NodeTest;
+import net.sf.saxon.xpath.XPathException;
 
 /**
  * A very lazy element. It assumes the attributes of the element can be known
@@ -169,8 +168,8 @@ public final class ProxyElement extends AbstractNode implements SearchElement
         return real().hasChildNodes();
     }
     /** Loads the real node and defers to it */
-    public boolean isSameNode( NodeInfo other ) {
-        return real().isSameNode( other );
+    public boolean isSameNodeInfo( NodeInfo other ) {
+        return real().isSameNodeInfo( other );
     }
     /** 
      * If only the attributes are accessed, uses ProxyAttributeEnumeration
@@ -188,10 +187,10 @@ public final class ProxyElement extends AbstractNode implements SearchElement
         return real().getPrefix();
     }
     /** Loads the real node and defers to it */
-    public void copy( Receiver out, int whichNamespaces, boolean copyAnnotations )
-        throws TransformerException
+    public void copy( Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId )
+        throws XPathException
     {
-        real().copy( out, whichNamespaces, copyAnnotations );
+        real().copy( out, whichNamespaces, copyAnnotations, locationId );
     }
     /** Loads the real node and defers to it */
     public NamePool getNamePool() {

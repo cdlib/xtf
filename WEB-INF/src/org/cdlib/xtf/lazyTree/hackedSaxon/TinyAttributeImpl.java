@@ -5,7 +5,7 @@ import net.sf.saxon.type.Type;
 
 import org.w3c.dom.Attr;
 
-import javax.xml.transform.TransformerException;
+import net.sf.saxon.xpath.XPathException;
 
 
 /**
@@ -65,21 +65,21 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
         return document.attValue[nodeNr].toString();
     }
 
-    /**
-    * Get the fingerprint of the node, used for matching names
-    */
+	/**
+	* Get the fingerprint of the node, used for matching names
+	*/
 
-    public int getFingerprint() {
-        return document.attCode[nodeNr] & 0xfffff;
-    }
+	public int getFingerprint() {
+		return document.attCode[nodeNr] & 0xfffff;
+	}
 
-    /**
-    * Get the name code of the node, used for finding names in the name pool
-    */
+	/**
+	* Get the name code of the node, used for finding names in the name pool
+	*/
 
-    public int getNameCode() {
-        return document.attCode[nodeNr];
-    }
+	public int getNameCode() {
+		return document.attCode[nodeNr];
+	}
 
     /**
     * Get the prefix part of the name of this node. This is the name before the ":" if any.
@@ -87,9 +87,9 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     */
 
     public String getPrefix() {
-        int code = document.attCode[nodeNr];
-        if ((code>>20 & 0xff) == 0) return "";
-        return document.getNamePool().getPrefix(code);
+    	int code = document.attCode[nodeNr];
+    	if ((code>>20 & 0xff) == 0) return "";
+    	return document.getNamePool().getPrefix(code);
     }
 
     /**
@@ -148,10 +148,10 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     * Copy this node to a given outputter
     */
 
-    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations) throws TransformerException {
-        int nameCode = document.attCode[nodeNr];
-        int typeCode = (copyAnnotations ? getTypeAnnotation() : -1);
-        out.attribute(nameCode, typeCode, getStringValue(), 0);
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
+		int nameCode = document.attCode[nodeNr];
+		int typeCode = (copyAnnotations ? getTypeAnnotation() : -1);
+        out.attribute(nameCode, typeCode, getStringValue(), 0, 0);
     }
 
     /**

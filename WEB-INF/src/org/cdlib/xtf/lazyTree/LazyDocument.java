@@ -39,10 +39,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.xml.transform.TransformerException;
-
 import org.w3c.dom.Document;
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.ArrayIterator;
@@ -57,6 +56,7 @@ import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.StrippedNode;
 import net.sf.saxon.tree.SystemIdMap;
 import net.sf.saxon.type.Type;
+import net.sf.saxon.xpath.XPathException;
 
 import org.cdlib.xtf.util.DiskHashReader;
 import org.cdlib.xtf.util.DiskHashWriter;
@@ -82,6 +82,9 @@ import org.cdlib.xtf.util.Trace;
 public class LazyDocument extends ParentNodeImpl
     implements DocumentInfo, Document, PersistentTree
 {
+    /** Saxon configuration info */
+    protected Configuration config;
+    
     /** Name pool used to look up namecodes */
     protected NamePool namePool;
     
@@ -363,10 +366,21 @@ public class LazyDocument extends ParentNodeImpl
     } // getIndex()
 
     /**
-     * Set the name pool used for all names in this document
+    * Set the Configuration that contains this document
+    */
+
+    public void setConfiguration(Configuration config) {
+        this.config = config;
+        NamePool pool = config.getNamePool();
+        documentNumber = pool.allocateDocumentNumber(this);
+    }
+    
+    /**
+     * Get the configuration previously set using setConfiguration
      */
-    public void setNamePool( NamePool pool ) {
-        assert false : "Cannot reset LazyTree's name pool";
+
+    public Configuration getConfiguration() {
+        return config;
     }
 
     /**
@@ -818,8 +832,8 @@ public class LazyDocument extends ParentNodeImpl
     /**
      * Copy this node to a given outputter
      */
-    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations)
-        throws TransformerException 
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId)
+        throws XPathException 
     {
 
         // output the children
@@ -829,7 +843,7 @@ public class LazyDocument extends ParentNodeImpl
             NodeInfo child = (NodeInfo) children.next();
             if( child == null )
                 break;
-            child.copy(out, whichNamespaces, copyAnnotations);
+            child.copy(out, whichNamespaces, copyAnnotations, locationId);
         }
     }
     

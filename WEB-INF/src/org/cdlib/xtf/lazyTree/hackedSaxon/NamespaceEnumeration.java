@@ -4,7 +4,6 @@ import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.pattern.NodeKindTest;
-import net.sf.saxon.om.NamespaceConstant;
 import net.sf.saxon.om.AxisIteratorImpl;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.type.Type;
@@ -54,11 +53,11 @@ final class NamespaceEnumeration extends AxisIteratorImpl {
 
                 int nsCode = document.namespaceCode[index];
 
-                // don't return a namespace undeclaration (xmlns=""), but add it to the list
+                // don't return a namespace undeclaration (xmlns="" or xmlns:p=""), but add it to the list
                 // of prefixes encountered, to suppress outer xmlns="xyz" declarations
 
-                if (nsCode == NamespaceConstant.NULL_CODE) {
-                    list.add(new Short((short)0));
+                if ((nsCode & 0xffff) == 0) {
+                    list.add(new Short((short)(nsCode>>16)));
                 } else {
                     if (matches(nsCode)) {
                         short prefixCode = (short)(nsCode>>16);
@@ -101,7 +100,7 @@ final class NamespaceEnumeration extends AxisIteratorImpl {
     }
 
     private boolean matches(int nsCode) {
-        if (nodeTest instanceof NodeKindTest && nodeTest.getNodeKind()==Type.NAMESPACE) {
+        if (nodeTest instanceof NodeKindTest && nodeTest.getPrimitiveType()==Type.NAMESPACE) {
             // fast path when selecting namespace::*
             return true;
         } else {

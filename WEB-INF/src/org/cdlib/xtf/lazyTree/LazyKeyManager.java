@@ -29,7 +29,6 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import net.sf.saxon.Controller;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.style.StandardNames;
 import net.sf.saxon.expr.Expression;
@@ -46,15 +45,17 @@ import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.SingletonIterator;
 import net.sf.saxon.om.StrippedNode;
-import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.pattern.Pattern;
 import net.sf.saxon.sort.LocalOrderComparer;
+import net.sf.saxon.expr.*;
+import net.sf.saxon.instruct.SlotManager;
+import net.sf.saxon.pattern.*;
+import net.sf.saxon.type.Type;
 import net.sf.saxon.value.AtomicValue;
-import net.sf.saxon.value.DoubleValue;
+import net.sf.saxon.value.NumericValue;
 import net.sf.saxon.value.StringValue;
 import net.sf.saxon.value.Value;
-import net.sf.saxon.value.FloatValue;
-import net.sf.saxon.type.*;
+import net.sf.saxon.xpath.DynamicError;
 import net.sf.saxon.xpath.XPathException;
 import net.sf.saxon.trans.KeyDefinition;
 import net.sf.saxon.trans.KeyManager;
@@ -97,16 +98,22 @@ import org.cdlib.xtf.util.Trace;
   * list of indexes used for each document, so that indexes remain in memory for the duration
   * of a transformation even if the documents themselves are garbage collected.</p>
   *
+  * <p>Potentially there is a need for more than one index for a given key name, depending
+  * on the primitive type of the value provided to the key() function. An index is built
+  * corresponding to the type of the requested value; if subsequently the key() function is
+  * called with the same name and a different type of value, then a new index is built.</p>
+  *
   * @author Michael H. Kay, Martin Haye
   */
 
 public class LazyKeyManager extends KeyManager {
     private HashMap keyList;         // one entry for each named key; the entry contains
-    // a list of key definitions with that name
+                                     // a list of key definitions with that name
     private transient WeakHashMap docIndexes;
                                      // one entry for each document that is in memory;
                                      // the entry contains a HashMap mapping the fingerprint of
-                                     // the key name to the HashMap that is the actual index
+                                     // the key name plus the primitive item type
+                                     // to the HashMap that is the actual index
                                      // of key/value pairs.
     
     private KeyManager wrapped;
@@ -380,7 +387,7 @@ public class LazyKeyManager extends KeyManager {
      * Build the index for a particular document for a named key
      * @param fingerprint The fingerprint of the name of the required key
      * @param doc The source document in question
-     * @param controller The controller
+     * @param context The dynamic context
      * @return the index in question, either as a DiskHashMap (for persistent
      *         indexes) or as a HashMap (for dynamic indexes). Each maps a key
      *         value onto an ArrayList of nodes.
@@ -389,13 +396,16 @@ public class LazyKeyManager extends KeyManager {
     private synchronized Object buildIndex(int fingerprint,
                                            int itemType,
                                            DocumentInfo doc,
-                                           Controller controller) throws XPathException {
+                                           XPathContext context) throws XPathException {
 
         List definitions = getKeyDefinitions(fingerprint);
         if (definitions==null) {
-            throw new XPathException.Dynamic("Key " +
-                    controller.getNamePool().getDisplayName(fingerprint) +
-            " has not been defined");
+            DynamicError de = new DynamicError("Key " +
+            		context.getController().getNamePool().getDisplayName(fingerprint) +
+            							" has not been defined");
+            de.setXPathContext(context);
+            de.setErrorCode("XT1260");
+            throw de;
         }
 
         // If the key name has 'dynamic' in it, this is a signal that we
@@ -403,7 +413,7 @@ public class LazyKeyManager extends KeyManager {
         //
         String       indexName  = null;
         LazyDocument document   = getDocumentImpl( doc );
-        NamePool     pool       = controller.getNamePool();
+        NamePool     pool       = context.getController().getNamePool();
         String       fingerName = pool.getDisplayName(fingerprint);
         if( fingerName.indexOf("dynamic") < 0 ) 
         {
@@ -437,7 +447,7 @@ public class LazyKeyManager extends KeyManager {
                             hashMap,
                             (KeyDefinition)definitions.get(k),
                             itemType,
-                            controller,
+                            context,
                             k==0);
         } // for k
         
@@ -470,7 +480,7 @@ public class LazyKeyManager extends KeyManager {
                                     HashMap index,
                                     KeyDefinition keydef,
                                     int soughtItemType,
-                                    Controller controller,
+                                    XPathContext context,
                                     boolean isFirst) throws XPathException {
 
         Pattern match = keydef.getMatch();
@@ -478,24 +488,20 @@ public class LazyKeyManager extends KeyManager {
         Collator collator = keydef.getCollation();
         NodeInfo sourceRoot = doc;
         NodeInfo curr = sourceRoot;
-        SequenceIterator save = controller.getCurrentIterator();
-        Object[] savedContext = controller.saveContext();
-        XPathContext xc = controller.newXPathContext();
+        XPathContextMajor xc = context.newContext();
+        xc.setOrigin(keydef);
 
-        // If the static type of the use expression is not comparable with the sought item type, then
-        // don't bother processing this key definition: the index will be empty anyway
-
-        AtomicType staticUseType = use.getItemType().getAtomizedItemType();
-        int prim = staticUseType.getPrimitiveType();
-        if (!Type.isComparable(prim, soughtItemType)) {
-            return;
+        // The use expression (or sequence constructor) may contain local variables.
+        SlotManager map = keydef.getStackFrameMap();
+        if (map != null) {
+            xc.openStackFrame(map);
         }
 
         int nodeType = match.getNodeKind();
 
         if (nodeType==Type.ATTRIBUTE || nodeType==Type.NODE || nodeType==Type.DOCUMENT) {
             // If the match pattern allows attributes to appear, we must visit them.
-            // We also take this path in the ridiculous event that the pattern can match
+            // We also take this path in the pathological case where the pattern can match
             // document nodes.
             SequenceIterator all = doc.iterateAxis(Axis.DESCENDANT_OR_SELF);
             while(true) {
@@ -504,27 +510,26 @@ public class LazyKeyManager extends KeyManager {
                     break;
                 }
                 if (curr.getNodeKind()==Type.ELEMENT) {
-                    SequenceIterator atts =
-                        curr.iterateAxis(Axis.ATTRIBUTE);
+                    SequenceIterator atts = curr.iterateAxis(Axis.ATTRIBUTE);
                     while (true) {
                         NodeInfo att = (NodeInfo)atts.next();
                         if (att == null) {
                             break;
                         }
-                        if (match.matches(att, controller)) {
+                        if (match.matches(att, xc)) {
                             processKeyNode(att, use, soughtItemType,
                                             collator, index, xc, isFirst);
                         }
                     }
                     if (nodeType==Type.NODE) {
                         // index the element as well as its attributes
-                        if (match.matches(curr, controller)) {
+                        if (match.matches(curr, xc)) {
                             processKeyNode(curr, use, soughtItemType,
                                         collator, index, xc, isFirst);
                         }
                     }
                 } else {
-                    if (match.matches(curr, controller)) {
+                    if (match.matches(curr, xc)) {
                         processKeyNode(curr, use, soughtItemType,
                                      collator, index, xc, isFirst);
                     }
@@ -541,15 +546,15 @@ public class LazyKeyManager extends KeyManager {
                 if (curr == null) {
                     break;
                 }
-                if (match instanceof NodeTest || match.matches(curr, controller)) {
+                if (match instanceof NodeTestPattern || match.matches(curr, xc)) {
                     processKeyNode(curr, use, soughtItemType,
                                 collator, index, xc, isFirst);
                 }
             }
         }
-        // reset the Controller's context
-        controller.setCurrentIterator(save);
-        controller.restoreContext(savedContext);
+        //if (map != null) {
+        //  b.closeStackFrame();
+        //}
     }
 
     /**
@@ -581,7 +586,7 @@ public class LazyKeyManager extends KeyManager {
         si.next();    // need to position iterator at first node
 
         xc.setCurrentIterator(si);
-        xc.getController().setCurrentIterator(si);
+        //xc.getController().setCurrentIterator(si);                                        X
 
         // Evaluate the "use" expression against this context node
 
@@ -616,13 +621,11 @@ public class LazyKeyManager extends KeyManager {
                 }
             } else {
                 // Ignore NaN values
-                if (item instanceof DoubleValue && Double.isNaN(((DoubleValue)item).getValue())) {
-                    break;
-                } else if (item instanceof FloatValue && Float.isNaN(((FloatValue)item).getValue())) {
+                if (item instanceof NumericValue && ((NumericValue)item).isNaN()) {
                     break;
                 }
                 try {
-                    val = item.convert(soughtItemType);
+                    val = item.convert(soughtItemType, xc);
                 } catch (XPathException err) {
                     // ignore values that can't be converted to the required type
                     break;
@@ -673,13 +676,12 @@ public class LazyKeyManager extends KeyManager {
 
     }
 
-
     /**
     * Get the nodes with a given key value
     * @param fingerprint The fingerprint of the name of the required key
     * @param doc The source document in question
     * @param value The required key value
-    * @param controller The controller, needed only the first time when the key is being built
+    * @param context The dynamic context, needed only the first time when the key is being built
     * @return an enumeration of nodes, always in document order
     */
 
@@ -687,17 +689,19 @@ public class LazyKeyManager extends KeyManager {
                                 int fingerprint,
                                 DocumentInfo doc,
                                 AtomicValue value,
-                                Controller controller) throws XPathException {
+                                XPathContext context) throws XPathException {
 
         if( getDocumentImpl(doc) == null )
-            return wrapped.selectByKey( fingerprint, doc, value, controller );
+            return wrapped.selectByKey( fingerprint, doc, value, context );
+
+        // If the key value is numeric, promote it to a double
 
         int itemType = value.getItemType().getPrimitiveType();
         if (itemType == StandardNames.XS_INTEGER ||
                 itemType == StandardNames.XS_DECIMAL ||
                 itemType == StandardNames.XS_FLOAT) {
             itemType = StandardNames.XS_DOUBLE;
-            value = value.convert(itemType);
+            value = value.convert(itemType, context);
         }
         
         // Alert! since our indexes on disk are always string, convert to
@@ -708,7 +712,10 @@ public class LazyKeyManager extends KeyManager {
         Object indexObject = getIndex(doc, fingerprint, itemType);
         if (indexObject instanceof String) {
             // index is under construction
-            throw new XPathException.Dynamic("Key definition is circular");
+            DynamicError de = new DynamicError("Key definition is circular");
+            de.setXPathContext(context);
+            de.setErrorCode("XT0640");
+            throw de;
         }
         if (indexObject==null) 
         {
@@ -717,15 +724,15 @@ public class LazyKeyManager extends KeyManager {
             // when key indexes are being built. We serialize to guarantee
             // that the same key doesn't get built twice.
             //
-            String keyName = controller.getNamePool().
+            String keyName = context.getController().getNamePool().
                                             getDisplayName(fingerprint);
             synchronized( keyName.intern() )
             {
                 indexObject = getIndex(doc, fingerprint, itemType);
                 if( indexObject == null ) {
-                    putIndex(doc, fingerprint, itemType, "Under Construction", controller);
-                    indexObject = buildIndex(fingerprint, itemType, doc, controller);
-                    putIndex(doc, fingerprint, itemType, indexObject, controller);
+                    putIndex(doc, fingerprint, itemType, "Under Construction", context);
+                    indexObject = buildIndex(fingerprint, itemType, doc, context);
+                    putIndex(doc, fingerprint, itemType, indexObject, context);
                 }
             }
         }
@@ -777,7 +784,10 @@ public class LazyKeyManager extends KeyManager {
         } // try
         catch( IOException e ) {
             assert false : "Error reading from persistent hash";
-            throw new XPathException.Dynamic( "Error reading from persistent hash" ); 
+            DynamicError de = new DynamicError("Error reading from persistent hash");
+            de.setXPathContext(context);
+            de.setErrorCode("XTF0001");
+            throw de;
         }
     }
     
@@ -800,13 +810,14 @@ public class LazyKeyManager extends KeyManager {
      * @return int          The number of keys created
      */
     
-    public int createAllKeys( LazyDocument doc, Controller controller )
+    public int createAllKeys( LazyDocument doc, XPathContext context )
         throws XPathException
     {
         StringValue val = new StringValue( "1" );
         
         // Try every namecode, creating every key we find.
-        RecordingNamePool pool = (RecordingNamePool) controller.getNamePool();
+        RecordingNamePool pool = (RecordingNamePool) 
+            context.getController().getNamePool();
         int nKeysCreated = 0;
         for( Iterator iter = pool.fingerprints.iterator(); iter.hasNext(); ) {
             int fingerprint = ((Integer)iter.next()).intValue();
@@ -816,7 +827,7 @@ public class LazyKeyManager extends KeyManager {
             // Do a fake lookup on this fingerprint, and ignore the results.
             // This will have the effect of building the on-disk hash.
             //
-            selectByKey( fingerprint, doc, val, controller );
+            selectByKey( fingerprint, doc, val, context );
             nKeysCreated++;
         }
         
@@ -835,7 +846,8 @@ public class LazyKeyManager extends KeyManager {
     * time.
     */
 
-    private synchronized void putIndex(DocumentInfo doc, int keyFingerprint, int itemType, Object index, Controller controller) {
+    private synchronized void putIndex(DocumentInfo doc, int keyFingerprint,
+                                       int itemType, Object index, XPathContext context) {
         if (docIndexes==null) {
             // it's transient, so it will be null when reloading a compiled stylesheet
             docIndexes = new WeakHashMap();
@@ -845,7 +857,7 @@ public class LazyKeyManager extends KeyManager {
         if (indexRef==null || indexRef.get()==null) {
             indexList = new HashMap();
             // ensure there is a firm reference to the indexList for the duration of a transformation
-            controller.setUserData(doc, "key-index-list", indexList);
+            context.getController().setUserData(doc, "key-index-list", indexList);
             docIndexes.put(doc, new WeakReference(indexList));
         } else {
             indexList = (HashMap)indexRef.get();
@@ -869,7 +881,6 @@ public class LazyKeyManager extends KeyManager {
         if (indexList==null) return null;
         return indexList.get(new Long(((long)keyFingerprint)<<32 | itemType));
     }
-
 }
 
 //

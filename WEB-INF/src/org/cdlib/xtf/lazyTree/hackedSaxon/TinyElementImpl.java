@@ -1,15 +1,12 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.event.Receiver;
-import net.sf.saxon.event.ReceiverOptions;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.style.StandardNames;
 import net.sf.saxon.tree.DOMExceptionImpl;
 import net.sf.saxon.type.Type;
+import net.sf.saxon.xpath.XPathException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
-
-import javax.xml.transform.TransformerException;
-import java.nio.CharBuffer;
 
 /**
   * A node in the XML parse tree representing an XML element.<P>
@@ -80,7 +77,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
     */
 
     public void outputNamespaceNodes(Receiver out, boolean includeAncestors)
-                throws TransformerException {
+                throws XPathException {
 
         int ns = document.beta[nodeNr]; // by convention
         if (ns>0 ) {
@@ -114,20 +111,6 @@ final class TinyElementImpl extends TinyParentNodeImpl
     public boolean hasAttributes() {
         return document.alpha[nodeNr] >= 0;
     }
-
-    /**
-     * Find the value of a given attribute of this node. <BR>
-     * This method is defined on all nodes to meet XSL requirements, but for nodes
-     * other than elements it will always return null.
-     * @param uri the namespace uri of an attribute
-     * @param localName the local name of an attribute
-     * @return the value of the attribute, if it exists, otherwise null
-     */
-
-//    public String getAttributeValue( String uri, String localName ) {
-//        int f = document.getNamePool().getFingerprint(uri, localName);
-//        return getAttributeValue(f);
-//    }
 
     /**
     * Get the value of a given attribute of this node
@@ -165,53 +148,54 @@ final class TinyElementImpl extends TinyParentNodeImpl
     * or local (i.e., those not declared on a parent element)
     */
 
-    public void copy(Receiver receiver, int whichNamespaces, boolean copyAnnotations) throws TransformerException {
+    public void copy(Receiver receiver, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
 
         // Based on an algorithm supplied by Ruud Diterwich
 
         // Performance measurements show that this achieves no speed-up over the OLD version
         // (in 7.4). So might as well switch back.
 
-        // control vars
-        short level = -1;
-        boolean closePending = false;
-        short startLevel = document.depth[nodeNr];
-        boolean first = true;
-        int next = nodeNr;
+		// control vars
+		short level = -1;
+		boolean closePending = false;
+		short startLevel = document.depth[nodeNr];
+		boolean first = true;
+		int next = nodeNr;
 
-        // document.diagnosticDump();
+		// document.diagnosticDump();
 
         do {
 
-            // determine node depth
-            short nodeLevel = document.depth[next];
+			// determine node depth
+			short nodeLevel = document.depth[next];
 
-            // extra close required?
-            if (closePending) {
-                level++;
-            }
+			// extra close required?
+			if (closePending) {
+				level++;
+			}
 
-            // close former elements
-            for (; level > nodeLevel; level--) {
-                receiver.endElement();
-            }
+			// close former elements
+			for (; level > nodeLevel; level--) {
+				receiver.endElement();
+			}
 
-            // new node level
-            level = nodeLevel;
+			// new node level
+			level = nodeLevel;
 
-            // output depends on node type
-            switch (document.nodeKind[next]) {
-                case Type.ELEMENT :
+			// output depends on node type
+			switch (document.nodeKind[next]) {
+				case Type.ELEMENT : {
 
-                    // start element
-                    receiver.startElement(document.nameCode[next],
-                                            (copyAnnotations ? document.getElementAnnotation(next): -1),
-                                            (first ? ReceiverOptions.DISINHERIT_NAMESPACES : 0));
+					// start element
+					receiver.startElement(document.nameCode[next],
+					                        (copyAnnotations ? document.getElementAnnotation(next): -1),
+                            locationId, 0);
+					                        //(first ? ReceiverOptions.DISINHERIT_NAMESPACES : 0));
 
-                    // there is an element to close
-                    closePending = true;
+					// there is an element to close
+					closePending = true;
 
-                    // output namespaces
+					// output namespaces
                     if (whichNamespaces != NO_NAMESPACES) {
                         if (first) {
                             outputNamespaceNodes(receiver, whichNamespaces==ALL_NAMESPACES);
@@ -227,226 +211,111 @@ final class TinyElementImpl extends TinyParentNodeImpl
                             }
                         }
                     }
-                    first = false;
+					first = false;
 
-                    // output attributes
+					// output attributes
 
-                    int att = document.alpha[next];
-                    if (att >= 0) {
+					int att = document.alpha[next];
+					if (att >= 0) {
                         while (att < document.numberOfAttributes && document.attParent[att] == next ) {
                             int attCode = document.attCode[att];
                             int attType = (copyAnnotations ? document.getAttributeAnnotation(att) : -1);
-                            receiver.attribute(attCode, attType, document.attValue[att], 0);
+                            receiver.attribute(attCode, attType, document.attValue[att], locationId, 0);
                             att++;
                         }
                     }
 
-                    // start content
-                    receiver.startContent();
-                    break;
+					// start content
+					receiver.startContent();
+					break;
+                }
+				case Type.TEXT : {
 
-                case Type.TEXT :
+					// don't close text nodes
+					closePending = false;
 
-                    // don't close text nodes
-                    closePending = false;
-
-                    // output characters
+					// output characters
                     int start = document.alpha[next];
                     int len = document.beta[next];
-                    receiver.characters(CharBuffer.wrap(document.charBuffer, start, len), 0);
-                        // document.charBuffer is a char[], so the third argument is the length
-                    break;
+                    receiver.characters(new CharSlice(document.charBuffer, start, len), locationId, 0);
+					break;
+                }
+				case Type.COMMENT : {
 
-                case Type.COMMENT :
+					// don't close text nodes
+					closePending = false;
 
-                    // don't close text nodes
-                    closePending = false;
-
-                    // output copy of comment
-                    start = document.alpha[next];
-                    len = document.beta[next];
+					// output copy of comment
+                    int start = document.alpha[next];
+                    int len = document.beta[next];
                     if (len>0) {
-                        receiver.comment(CharBuffer.wrap(document.commentBuffer, start, start+len), 0);
-                             // document.commentBuffer is a StringBuffer, so the third argument is the end position!
+                        receiver.comment(document.commentBuffer.substring(start, start+len), locationId, 0);
                     } else {
-                        receiver.comment("", 0);
+                        receiver.comment("", 0, 0);
                     }
-                    break;
+					break;
+                }
+				case Type.PROCESSING_INSTRUCTION : {
 
-                case Type.PROCESSING_INSTRUCTION :
+					// don't close text nodes
+					closePending = false;
 
-                    // don't close text nodes
-                    closePending = false;
+					// output copy of PI
+					NodeInfo pi = document.getNode(next);
+					receiver.processingInstruction(pi.getLocalPart(), pi.getStringValue(), locationId, 0);
+					break;
+                }
+			}
 
-                    // output copy of PI
-                    NodeInfo pi = document.getNode(next);
-                    receiver.processingInstruction(pi.getLocalPart(), pi.getStringValue(), 0);
-                    break;
-            }
+			next++;
 
-            next++;
+		} while (next < document.numberOfNodes && document.depth[next] > startLevel);
 
-        } while (next < document.numberOfNodes && document.depth[next] > startLevel);
-
-        // close all remaining elements
-        if (closePending) {
-            level++;
-        }
-        for (; level > startLevel; level--) {
-            receiver.endElement();
-        }
+		// close all remaining elements
+		if (closePending) {
+			level++;
+		}
+		for (; level > startLevel; level--) {
+			receiver.endElement();
+		}
     }
 
-// --Recycle Bin START (22/04/04 21:12):
-//    public void copyRUUD(Receiver receiver, int whichNamespaces, boolean copyAnnotations) throws TransformerException {
+//    public void copyOLD(Receiver out, int whichNamespaces, boolean copyAnnotations) throws XPathException {
 //
-//        // New code supplied by Ruud Diterwich
+//        int nc = getNameCode();
+//        int typeCode = (copyAnnotations ? getTypeAnnotation() : 0);
+//        out.startElement(nc, typeCode, 0, 0);
 //
-//        // control vars
-//        short level = -1;
-//        boolean closePending = false;
-//        boolean first = true;
-//        short startLevel = -1;
+//        // output the namespaces
 //
-//        // traverse all nodes
-//        AxisIterator descendants = iterateAxis(Axis.DESCENDANT_OR_SELF);
+//        if (whichNamespaces != NO_NAMESPACES) {
+//            outputNamespaceNodes(out, whichNamespaces==ALL_NAMESPACES);
+//        }
+//
+//        // output the attributes
+//
+//        int a = document.alpha[nodeNr];
+//        if (a >= 0) {
+//            while (a < document.numberOfAttributes && document.attParent[a] == nodeNr) {
+//            	document.getAttributeNode(a).copy(out, NO_NAMESPACES, copyAnnotations, locationId);
+//                a++;
+//            }
+//        }
+//
+//        // output the children
+//
+//        AxisIterator children =
+//            iterateAxis(Axis.CHILD, AnyNodeTest.getInstance());
+//
+//        int childNamespaces = (whichNamespaces==NO_NAMESPACES ? NO_NAMESPACES : LOCAL_NAMESPACES);
 //        while (true) {
-//
-//            // get node
-//            NodeInfo node = (NodeInfo) descendants.next();
-//            if (node == null) {
-//                break;
-//            }
-//
-//            // determine node depth
-//            short nodeLevel = document.depth[((TinyNodeImpl)node).nodeNr];
-//            if (first) {
-//                startLevel = nodeLevel;
-//            }
-//
-//            // extra close required?
-//            if (closePending) {
-//                level++;
-//            }
-//
-//            // close former elements
-//            for (; level > nodeLevel; level--) {
-//                receiver.endElement();
-//            }
-//
-//            // new node level
-//            level = nodeLevel;
-//
-//            // output depends on node type
-//            switch (node.getNodeKind()) {
-//                case Type.ELEMENT :
-//
-//                    // start element
-//                    receiver.startElement(node.getNameCode(),
-//                                            (copyAnnotations ? node.getTypeAnnotation(): -1),
-//                                            0);
-//
-//                    // there is an element to close
-//                    closePending = true;
-//
-//                    // output namespaces
-//                    if (whichNamespaces != NO_NAMESPACES) {
-//                        node.outputNamespaceNodes(receiver, first && whichNamespaces==ALL_NAMESPACES);
-//                    }
-//                    first = false;
-//
-//                    // output attributes
-//                    AxisIterator atts = node.iterateAxis(Axis.ATTRIBUTE);
-//                    while (true) {
-//                        NodeInfo att = (NodeInfo) atts.next();
-//                        if (att == null) {
-//                            break;
-//                        }
-//                        receiver.attribute(att.getNameCode(),
-//                                           (copyAnnotations ? att.getTypeAnnotation(): -1),
-//                                           att.getStringValue(),
-//                                           0);
-//                    }
-//
-//                    // start content
-//                    receiver.startContent();
-//                    break;
-//
-//                case Type.TEXT :
-//
-//                    // don't close text nodes
-//                    closePending = false;
-//
-//                    // output characters
-//                    receiver.characters(node.getStringValue(), 0);
-//                    break;
-//
-//                case Type.COMMENT :
-//
-//                    // don't close text nodes
-//                    closePending = false;
-//
-//                    // output characters
-//                    receiver.comment(node.getStringValue(), 0);
-//                    break;
-//
-//                case Type.PROCESSING_INSTRUCTION :
-//
-//                    // don't close text nodes
-//                    closePending = false;
-//
-//                    // output characters
-//                    receiver.processingInstruction(node.getLocalPart(), node.getStringValue(), 0);
-//                    break;
-//            }
+//            NodeInfo next = (NodeInfo)children.next();
+//            if (next==null) break;
+//            next.copy(out, childNamespaces, copyAnnotations, locationId);
 //        }
-//
-//        // close all remaining elements
-//        if (closePending) {
-//            level++;
-//        }
-//        for (; level > startLevel; level--) {
-//            receiver.endElement();
-//        }
+//        out.endElement();
 //    }
-// --Recycle Bin STOP (22/04/04 21:12)
 
-/*
-    public void copyOLD(Receiver out, int whichNamespaces, boolean copyAnnotations) throws TransformerException {
-
-        int nc = getNameCode();
-        int typeCode = (copyAnnotations ? getTypeAnnotation() : 0);
-        out.startElement(nc, typeCode, 0);
-
-        // output the namespaces
-
-        if (whichNamespaces != NO_NAMESPACES) {
-            outputNamespaceNodes(out, whichNamespaces==ALL_NAMESPACES);
-        }
-
-        // output the attributes
-
-        int a = document.alpha[nodeNr];
-        if (a >= 0) {
-            while (a < document.numberOfAttributes && document.attParent[a] == nodeNr) {
-                document.getAttributeNode(a).copy(out, NO_NAMESPACES, copyAnnotations);
-                a++;
-            }
-        }
-
-        // output the children
-
-        AxisIterator children =
-            getEnumeration(Axis.CHILD, AnyNodeTest.getInstance());
-
-        int childNamespaces = (whichNamespaces==NO_NAMESPACES ? NO_NAMESPACES : LOCAL_NAMESPACES);
-        while (children.hasNext()) {
-            NodeInfo next = (NodeInfo)children.next();
-            next.copy(out, childNamespaces, copyAnnotations);
-        }
-        out.endElement();
-    }
-  */
 }
 
 //

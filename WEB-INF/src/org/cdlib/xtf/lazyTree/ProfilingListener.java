@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import org.cdlib.xtf.util.Trace;
 
 import net.sf.saxon.Controller;
+import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.trace.InstructionInfo;
 import net.sf.saxon.trace.TraceListener;
@@ -84,7 +85,7 @@ class ProfilingListener implements TraceListener
      * Record the instruction being entered, so that subsequent counts can
      * be attributed to it.
      */
-    public void enter(InstructionInfo instruction)
+    public void enter(InstructionInfo instruction, XPathContext context)
     {
         if( false ) {
             for( int i = 0; i < instructionStack.size(); i++ )

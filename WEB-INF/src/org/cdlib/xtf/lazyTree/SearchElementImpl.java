@@ -29,13 +29,12 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import javax.xml.transform.TransformerException;
-
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.EmptyIterator;
 import net.sf.saxon.pattern.NodeTest;
+import net.sf.saxon.xpath.XPathException;
 
 /**
  * Represents an element that has been (possibly) modified to reflect search
@@ -145,14 +144,14 @@ public class SearchElementImpl extends ElementImpl implements SearchElement
     } // getAttributeValue()
     
     public void copy( Receiver out, int whichNamespaces, 
-                      boolean copyAnnotations) 
-        throws TransformerException 
+                      boolean copyAnnotations, int locationId ) 
+        throws XPathException 
     {
         // Make sure our special attribute has been added before allowing access
         // to the attributes.
         //
         addSpecialAttrib();
-        super.copy( out, whichNamespaces, copyAnnotations );
+        super.copy( out, whichNamespaces, copyAnnotations, locationId );
     } // copy()
     
     // If the 'hitCount' attribute hasn't been added yet, this code does it.

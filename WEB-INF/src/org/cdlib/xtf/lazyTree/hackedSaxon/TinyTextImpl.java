@@ -1,14 +1,13 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.type.Type;
-import javax.xml.transform.TransformerException;
-import java.nio.CharBuffer;
+import net.sf.saxon.xpath.XPathException;
 
 import org.w3c.dom.*;
 
 /**
   * A node in the XML parse tree representing character content<P>
-  * @author <A HREF="mailto:michael.h.kay@ntlworld.com>Michael H. Kay</A>
+  * @author Michael H. Kay
   */
 
 final class TinyTextImpl extends TinyNodeImpl implements Text {
@@ -42,17 +41,17 @@ final class TinyTextImpl extends TinyNodeImpl implements Text {
     * Copy this node to a given outputter
     */
 
-    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations) throws TransformerException {
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
         int start = document.alpha[nodeNr];
         int len = document.beta[nodeNr];
-        out.characters(CharBuffer.wrap(document.charBuffer, start, len), 0);
+        out.characters(new CharSlice(document.charBuffer, start, len), 0, 0);
     }
 
     /**
     * Copy the string-value of this node to a given outputter
     */
 /*
-    public void copyStringValue(Receiver out) throws TransformerException {
+    public void copyStringValue(Receiver out) throws XPathException {
         int start = document.offset[nodeNr];
         int len = document.length[nodeNr];
         out.characters(CharBuffer.wrap(document.charBuffer, start, len), 0);

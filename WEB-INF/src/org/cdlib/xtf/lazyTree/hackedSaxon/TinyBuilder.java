@@ -1,11 +1,12 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
+
 import java.io.IOException;
 
 import net.sf.saxon.event.Builder;
 import net.sf.saxon.event.ReceiverOptions;
 import net.sf.saxon.type.Type;
-
-import javax.xml.transform.TransformerException;
+import net.sf.saxon.xpath.DynamicError;
+import net.sf.saxon.xpath.XPathException;
 
 import org.cdlib.xtf.util.PackedByteBuf;
 import org.cdlib.xtf.util.StructuredFile;
@@ -62,14 +63,14 @@ public class TinyBuilder extends Builder  {
         }
         TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
         doc.setSystemId(getSystemId());
-        doc.setNamePool(namePool);
+        doc.setConfiguration(config);
     }
 
     /**
     * Callback interface for SAX: not for application use
     */
 
-    public void startDocument () throws TransformerException
+    public void open () throws XPathException
     {
         // System.err.println("Builder: " + this + " Start document");
         //failed = false;
@@ -85,12 +86,12 @@ public class TinyBuilder extends Builder  {
         } else {
             // document node supplied by user
             if (!(currentDocument instanceof TinyDocumentImpl)) {
-                throw new TransformerException("Root node supplied is of wrong type");
+                throw new DynamicError("Root node supplied is of wrong type");
             }
             if (currentDocument.hasChildNodes()) {
-                throw new TransformerException("Supplied document is not empty");
+                throw new DynamicError("Supplied document is not empty");
             }
-            currentDocument.setNamePool(namePool);
+            currentDocument.setConfiguration(config);
         }
 
         //currentNode = currentDocument;
@@ -108,7 +109,7 @@ public class TinyBuilder extends Builder  {
 
         currentDepth++;
 
-        super.startDocument();
+        super.open();
 
     }
 
@@ -116,7 +117,7 @@ public class TinyBuilder extends Builder  {
     * Callback interface for SAX: not for application use
     */
 
-    public void endDocument () throws TransformerException
+    public void close () throws XPathException
     {
              // System.err.println("TinyBuilder: " + this + " End document");
 
@@ -126,27 +127,25 @@ public class TinyBuilder extends Builder  {
         prevAtDepth[currentDepth] = -1;
 
         ((TinyDocumentImpl)currentDocument).condense();
-        // namePool.diagnosticDump();
-        // doc.diagnosticDump();
 
-        super.endDocument();
+        super.close();
     }
 
     /**
     * Notify the start tag of an element
     */
 
-    public void startElement (int nameCode, int typeCode, int properties) throws TransformerException
+    public void startElement (int nameCode, int typeCode, int locationId, int properties) throws XPathException
     {
         //System.err.println("TinyBuilder Start element (" + nameCode + "," + typeCode + ")");
 
         TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
 
-        nodeNr = doc.addNode(Type.ELEMENT, currentDepth, -1, -1, nameCode);
+		nodeNr = doc.addNode(Type.ELEMENT, currentDepth, -1, -1, nameCode);
 
-        if (typeCode != -1) {
-            doc.setElementAnnotation(nodeNr, typeCode);
-        }
+		if (typeCode != -1) {
+		    doc.setElementAnnotation(nodeNr, typeCode);
+		}
 
         int prev = prevAtDepth[currentDepth];
         if (prev > 0) {
@@ -163,30 +162,30 @@ public class TinyBuilder extends Builder  {
         }
         prevAtDepth[currentDepth] = -1;
 
-        if (locator!=null) {
-            doc.setSystemId(nodeNr, locator.getSystemId());
+        if (locator != null) {
+            doc.setSystemId(nodeNr, locator.getSystemId(locationId));
             if (lineNumbering) {
-                doc.setLineNumber(nodeNr, locator.getLineNumber());
+                doc.setLineNumber(nodeNr, locator.getLineNumber(locationId));
             }
         }
     }
 
-    public void namespace(int namespaceCode, int properties) throws TransformerException {
+    public void namespace(int namespaceCode, int properties) throws XPathException {
         ((TinyDocumentImpl)currentDocument).addNamespace( nodeNr, namespaceCode );
     }
 
-    public void attribute(int nameCode, int typeCode, CharSequence value, int properties)
-    throws TransformerException {
+    public void attribute(int nameCode, int typeCode, CharSequence value, int locationId, int properties)
+    throws XPathException {
         // System.err.println("attribute " + nameCode + "=" + value);
 
         if ((properties & ReceiverOptions.DISABLE_ESCAPING) != 0) {
-            throw new TransformerException("Cannot disable output escaping when writing a tree");
+            DynamicError err = new DynamicError("Cannot disable output escaping when writing a tree");
+            err.setErrorCode("XT1610");
+            throw err;
         }
 
-        ((TinyDocumentImpl)currentDocument).addAttribute(   nodeNr,
-                                                            nameCode,
-                                                            typeCode,
-                                                            value );
+        ((TinyDocumentImpl)currentDocument).addAttribute(
+                nodeNr, nameCode, typeCode, value, properties);
     }
 
     public void startContent() {
@@ -197,7 +196,7 @@ public class TinyBuilder extends Builder  {
     * Callback interface for SAX: not for application use
     */
 
-    public void endElement () throws TransformerException
+    public void endElement () throws XPathException
     {
         //System.err.println("End element ()");
 
@@ -209,13 +208,15 @@ public class TinyBuilder extends Builder  {
     * Callback interface for SAX: not for application use
     */
 
-    public void characters (CharSequence chars, int properties) throws TransformerException
+    public void characters (CharSequence chars, int locationId, int properties) throws XPathException
     {
          // System.err.println("Characters: " + chars.toString());
         TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
         if (chars.length()>0) {
             if ((properties & ReceiverOptions.DISABLE_ESCAPING) != 0) {
-                throw new TransformerException("Cannot disable output escaping when writing a tree");
+                DynamicError err = new DynamicError("Cannot disable output escaping when writing a tree");
+                err.setErrorCode("XT1610");
+                throw err;
             }
             
             long startPos;
@@ -226,7 +227,7 @@ public class TinyBuilder extends Builder  {
                 textBuf.output( textFile );
             }
             catch( IOException e ) {
-                throw new TransformerException( e );
+                throw new DynamicError( e );
             }
             
             nodeNr = doc.addNode(Type.TEXT, currentDepth, 
@@ -246,9 +247,9 @@ public class TinyBuilder extends Builder  {
     * Callback interface for SAX: not for application use<BR>
     */
 
-    public void processingInstruction (String piname, CharSequence remainder, int properties) throws TransformerException
+    public void processingInstruction (String piname, CharSequence remainder, int locationId, int properties) throws XPathException
     {
-        // System.err.println("Builder: PI " + piname);
+    	// System.err.println("Builder: PI " + piname);
 
         TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
         if (doc.commentBuffer==null) {
@@ -259,7 +260,7 @@ public class TinyBuilder extends Builder  {
         int nameCode = namePool.allocate("", "", piname);
 
         nodeNr = doc.addNode(Type.PROCESSING_INSTRUCTION, currentDepth, s, remainder.length(),
-                     nameCode);
+        			 nameCode);
 
         int prev = prevAtDepth[currentDepth];
         if (prev > 0) {
@@ -278,7 +279,7 @@ public class TinyBuilder extends Builder  {
     * Callback interface for SAX: not for application use
     */
 
-    public void comment (CharSequence chars, int properties) throws TransformerException {
+    public void comment (CharSequence chars, int locationId, int properties) throws XPathException {
         TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
         if (doc.commentBuffer==null) {
             doc.commentBuffer = new StringBuffer();

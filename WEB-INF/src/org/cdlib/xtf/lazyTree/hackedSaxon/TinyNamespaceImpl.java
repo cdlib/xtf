@@ -4,7 +4,7 @@ import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceiverOptions;
 import net.sf.saxon.type.Type;
 
-import javax.xml.transform.TransformerException;
+import net.sf.saxon.xpath.XPathException;
 /**
   * A node in the XML parse tree representing a Namespace. Note that this is
   * generated only "on demand", when the namespace axis is expanded.<P>
@@ -19,10 +19,10 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
                                 // namespace node for each ancestor element. Therefore
                                 // the namespace node needs to contain a reference to the
                                 // actual parent element.
-    private int nameCode;        // the name code of the name of the namespace node.
-                                // The name of the namespace node is the prefix: the
-                                // namecode is NOT the same as the namespace code, which
-                                // identifies the prefix/uri pair
+	private int nameCode;		// the name code of the name of the namespace node.
+								// The name of the namespace node is the prefix: the
+								// namecode is NOT the same as the namespace code, which
+								// identifies the prefix/uri pair
 
     public TinyNamespaceImpl(TinyDocumentImpl doc, int nodeNr) {
         document = doc;
@@ -54,13 +54,13 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
         parentNode = nodeNr;
     }
 
-    /**
-    * Get the nameCode, for name matching
-    */
+	/**
+	* Get the nameCode, for name matching
+	*/
 
-    public int getNameCode() {
-        return nameCode;
-    }
+	public int getNameCode() {
+		return nameCode;
+	}
 
     /**
     * Get the prefix part of the name of this node. This is the name before the ":" if any.
@@ -88,7 +88,7 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
 
     public String getLocalPart() {
         return document.getNamePool().getPrefixFromNamespaceCode(
-                        document.namespaceCode[nodeNr]);
+        				document.namespaceCode[nodeNr]);
     }
 
     /**
@@ -114,7 +114,7 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
     * same node in the tree.
     */
 
-    public final boolean isSameNode(NodeInfo other) {
+    public final boolean isSameNodeInfo(NodeInfo other) {
         if (!(other instanceof TinyNamespaceImpl)) return false;
         if (this==other) return true;
         TinyNamespaceImpl otherN = (TinyNamespaceImpl)other;
@@ -139,7 +139,7 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
 
     public final String getStringValue() {
         return document.getNamePool().getURIFromNamespaceCode(
-                        document.namespaceCode[nodeNr]);
+        				document.namespaceCode[nodeNr]);
     }
 
     /**
@@ -166,8 +166,8 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
     * Copy this node to a given outputter
     */
 
-    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations) throws TransformerException {
-        out.namespace(getNamespaceCode(), ReceiverOptions.REJECT_DUPLICATES);
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
+		out.namespace(getNamespaceCode(), ReceiverOptions.REJECT_DUPLICATES);
     }
 
     /**

@@ -2,7 +2,7 @@ package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.type.Type;
 
-import javax.xml.transform.TransformerException;
+import net.sf.saxon.xpath.XPathException;
 import org.w3c.dom.Comment;
 
 
@@ -45,8 +45,8 @@ final class TinyCommentImpl extends TinyNodeImpl implements Comment {
     * Copy this node to a given outputter
     */
 
-    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations) throws TransformerException {
-        out.comment(getStringValue(), 0);
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
+        out.comment(getStringValue(), 0, 0);
     }
 
 }

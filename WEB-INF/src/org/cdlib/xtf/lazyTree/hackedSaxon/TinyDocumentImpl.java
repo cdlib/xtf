@@ -1,13 +1,18 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.event.ReceiverOptions;
 import net.sf.saxon.om.*;
 import net.sf.saxon.tree.LineNumberMap;
 import net.sf.saxon.tree.SystemIdMap;
 import net.sf.saxon.type.Type;
 import net.sf.saxon.value.UntypedAtomicValue;
 import org.w3c.dom.Document;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Node;
 
-import javax.xml.transform.TransformerException;
+import net.sf.saxon.xpath.XPathException;
+import net.sf.saxon.Configuration;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,13 +24,14 @@ import java.util.HashMap;
   * @version 26 April 1999
   */
 
-public class TinyDocumentImpl extends TinyParentNodeImpl
+public final class TinyDocumentImpl extends TinyParentNodeImpl
     implements DocumentInfo, Document {
 
     // CDL-HACK: All private and protected members changed to public, so that
     //           the contents of this structure can be re-used.
     //
     public HashMap idTable = null;
+    public Configuration config;
     public NamePool namePool;
     public int documentNumber;
     public HashMap elementList = null;
@@ -47,7 +53,6 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     public StringBuffer commentBuffer = null; // created when needed
 
     public int numberOfNodes = 0;    // excluding attributes and namespaces
-//    protected int lastLevelOneNode = -1;
 
     // The following arrays contain one entry for each node other than attribute
     // and namespace nodes, arranged in document order.
@@ -146,34 +151,43 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     }
 
     /**
-    * Set the name pool used for all names in this document
+    * Set the Configuration that contains this document
     */
 
-    public void setNamePool(NamePool pool) {
-        namePool = pool;
-        addNamespace(0, pool.getNamespaceCode("xml", NamespaceConstant.XML));
-        documentNumber = pool.allocateDocumentNumber(this);
+    public void setConfiguration(Configuration config) {
+        this.config = config;
+        NamePool pool = config.getNamePool();
+		addNamespace(0, pool.getNamespaceCode("xml", NamespaceConstant.XML));
+		documentNumber = pool.allocateDocumentNumber(this);
         IDtype = pool.allocate("xs", NamespaceConstant.SCHEMA, "ID") & 0xfffff;
     }
 
     /**
-    * Get the name pool used for the names in this document
-    */
+     * Get the configuration previously set using setConfiguration
+     */
 
-    public NamePool getNamePool() {
-        return namePool;
+    public Configuration getConfiguration() {
+        return config;
     }
 
     /**
-    * Get the unique document number
-    */
+	* Get the name pool used for the names in this document
+	*/
 
-    public int getDocumentNumber() {
-        return documentNumber;
-    }
+	public NamePool getNamePool() {
+		return config.getNamePool();
+	}
+
+	/**
+	* Get the unique document number
+	*/
+
+	public int getDocumentNumber() {
+	    return documentNumber;
+	}
 
 
-    protected void ensureNodeCapacity() {
+    void ensureNodeCapacity() {
         if (nodeKind.length < numberOfNodes+1) {
             //System.err.println("Number of nodes = " + numberOfNodes);
             int k = numberOfNodes*2;
@@ -207,7 +221,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
         }
     }
 
-    protected void ensureAttributeCapacity() {
+    private void ensureAttributeCapacity() {
         if (attParent.length < numberOfAttributes+1) {
             int k = numberOfAttributes*2;
             if (k==0) {
@@ -234,7 +248,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
         }
     }
 
-    protected void ensureNamespaceCapacity() {
+    private void ensureNamespaceCapacity() {
         if (namespaceParent.length < numberOfNamespaces+1) {
             int k = numberOfNamespaces*2;
 
@@ -267,7 +281,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
      * @param nameCode0     The name of the node
      * @return the node number of the node that was added
      */
-    protected int addNode(short kind, int depth0, int alpha0, int beta0, int nameCode0) {
+    int addNode(short kind, int depth0, int alpha0, int beta0, int nameCode0) {
         ensureNodeCapacity();
         nodeKind[numberOfNodes] = (byte)kind;
         depth[numberOfNodes] = (short)depth0;
@@ -284,16 +298,20 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
         return numberOfNodes++;
     }
 
-    protected void appendChars(CharSequence chars) {
+    void appendChars(CharSequence chars) {
         while (charBuffer.length < charBufferLength + chars.length()) {
             char[] ch2 = new char[charBuffer.length * 2];
             System.arraycopy(charBuffer, 0, ch2, 0, charBufferLength);
             charBuffer = ch2;
         }
-        char[] newchars = chars.toString().toCharArray();
-        System.arraycopy(newchars, 0, charBuffer, charBufferLength, chars.length());
-        // SaxonTODO: this is inefficient. There is no absolute reason that the
-        // character data for the whole document needs to be in one array.
+        if (chars instanceof CharSlice) {
+            ((CharSlice)chars).copyTo(charBuffer, charBufferLength);
+        } else {
+            char[] newchars = chars.toString().toCharArray();
+            System.arraycopy(newchars, 0, charBuffer, charBufferLength, chars.length());
+            // SaxonTODO: this is inefficient. There is no absolute reason that the
+            // character data for the whole document needs to be in one array.
+        }
         charBufferLength += chars.length();
     }
 
@@ -377,12 +395,12 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * Set the type annotation of an element node
     */
 
-    protected void setElementAnnotation(int nodeNr, int typeCode) {
+    void setElementAnnotation(int nodeNr, int typeCode) {
         // The implementation here is not very economical. It is optimized for the case
         // where annotating an element with a type is unusual.
         if (typeCodeArray == null) {
             typeCodeArray = new int[nodeKind.length];
-            for (int i=0; i<nodeNr; i++) {
+            for (int i=0; i<nodeKind.length; i++) {
                 typeCodeArray[i] = -1;
             }
         }
@@ -391,10 +409,10 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
 
     /**
     * Get the type annotation of an element node.
-     * Type.UNTYPED_ANY if there is no type annotation
+     * Type.UNTYPED if there is no type annotation
     */
 
-    protected int getElementAnnotation(int nodeNr) {
+    int getElementAnnotation(int nodeNr) {
         if (typeCodeArray == null) {
             return -1;
         }
@@ -405,7 +423,6 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * On demand, make an index for quick access to preceding-sibling nodes
     */
 
-    // CDL-HACK: Changed to public.
     public void ensurePriorIndex() {
         if (prior==null) {
             makePriorIndex();
@@ -427,15 +444,13 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     }
 
 
-    protected void addAttribute(int parent0, int code0, int type0, CharSequence value0) {
+    void addAttribute(int parent0, int code0, int type0, CharSequence value0, int properties) {
         // System.err.println("addAttribute(" + parent0 + "," + code0 + "," + type0 + "," + value0 + ")");
         ensureAttributeCapacity();
         attParent[numberOfAttributes] = parent0;
         attCode[numberOfAttributes] = code0;
         attValue[numberOfAttributes] = value0;
-//        if (type0==0) {
-//            throw new IllegalArgumentException("Type annotation 0 is illegal");
-//        }
+
         if (type0 != -1) {
             if (attTypeCode==null) {
                 attTypeCode = new int[attParent.length];
@@ -452,16 +467,18 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
             alpha[parent0] = numberOfAttributes;
         }
 
-        if (type0 == IDtype) {
+        if (type0 == IDtype || (properties & ReceiverOptions.DTD_ID_ATTRIBUTE) != 0) {
+            // TODO: what about subtypes of ID?
+
             // The attribute is marked as being an ID. But we don't trust it - it
             // might come from a non-validating parser. Before adding it to the index, we
             // check that it really is an ID.
 
             if (XMLChar.isValidNCName(value0.toString())) {
-                if (idTable==null) {
-                    idTable = new HashMap();
-                }
-                NodeInfo e = getNode(parent0);
+            	if (idTable==null) {
+            		idTable = new HashMap(256);
+            	}
+    			NodeInfo e = getNode(parent0);
                 registerID(e, value0.toString());
             } else if (attTypeCode != null) {
                 attTypeCode[numberOfAttributes] = Type.UNTYPED_ATOMIC;
@@ -471,7 +488,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
         numberOfAttributes++;
     }
 
-    protected void addNamespace(int parent, int nscode ) {
+    void addNamespace(int parent, int nscode ) {
         usesNamespaces = true;
         ensureNamespaceCapacity();
         namespaceParent[numberOfNamespaces] = parent;
@@ -502,14 +519,15 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     }
 
     /**
-     * Get the typed value of a node. The node must be a document, element, text,
+     * Get the typed value of a node whose type is known to be untypedAtomic.
+     * The node must be a document, element, text,
      * comment, or processing-instruction node, and it must have no type annotation.
      * This method gets the typed value
      * of a numbered node without actually instantiating the NodeInfo object, as
      * a performance optimization.
      */
 
-    protected UntypedAtomicValue getUntypedAtomicValue(int nodeNr) {
+    UntypedAtomicValue getUntypedAtomicValue(int nodeNr) {
         switch (nodeKind[nodeNr]) {
             case Type.ELEMENT:
             case Type.DOCUMENT:
@@ -519,7 +537,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
                 while (next < numberOfNodes && depth[next] > level) {
                     if (nodeKind[next]==Type.TEXT) {
                         if (sb==null) {
-                            sb = new StringBuffer();
+                            sb = new StringBuffer(1024);
                         }
                         int length = beta[next];
                         int start = alpha[next];
@@ -560,7 +578,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * Make a (transient) attribute node from the array of attributes
     */
 
-    protected TinyAttributeImpl getAttributeNode(int nr) {
+    TinyAttributeImpl getAttributeNode(int nr) {
         return new TinyAttributeImpl(this, nr);
     }
 
@@ -569,7 +587,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
      * @return Type.UNTYPED_ATOMIC if there is no annotation
     */
 
-    protected int getAttributeAnnotation(int nr) {
+    int getAttributeAnnotation(int nr) {
         if (attTypeCode == null) {
             return -1;
         } else {
@@ -581,7 +599,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * determine whether this document uses namespaces
     */
 
-    protected boolean isUsingNamespaces() {
+    boolean isUsingNamespaces() {
         return usesNamespaces;
     }
 
@@ -589,7 +607,8 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * Make a (transient) namespace node from the array of namespace declarations
     */
 
-    protected TinyNamespaceImpl getNamespaceNode(int nr) {
+
+    TinyNamespaceImpl getNamespaceNode(int nr) {
         return new TinyNamespaceImpl(this, nr);
     }
 
@@ -631,7 +650,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * Set the system id of an element in the document
     */
 
-    protected void setSystemId(int seq, String uri) {
+    void setSystemId(int seq, String uri) {
         if (uri==null) {
             uri = "";
         }
@@ -646,7 +665,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * Get the system id of an element in the document
     */
 
-    protected String getSystemId(int seq) {
+    String getSystemId(int seq) {
         if (systemIdMap==null) {
             return null;
         }
@@ -667,7 +686,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * Set the line number for an element. Ignored if line numbering is off.
     */
 
-    protected void setLineNumber(int sequence, int line) {
+    void setLineNumber(int sequence, int line) {
         if (lineNumberMap != null) {
             lineNumberMap.setLineNumber(sequence, line);
         }
@@ -677,7 +696,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * Get the line number for an element. Return -1 if line numbering is off.
     */
 
-    protected int getLineNumber(int sequence) {
+    int getLineNumber(int sequence) {
         if (lineNumberMap != null) {
             return lineNumberMap.getLineNumber(sequence);
         }
@@ -745,14 +764,14 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * element type, it remembers the result for next time.
     */
 
-    protected AxisIterator getAllElements(int fingerprint) {
-        Integer key = new Integer(fingerprint);
-        if (elementList==null) {
-            elementList = new HashMap();
-        }
+    AxisIterator getAllElements(int fingerprint) {
+    	Integer key = new Integer(fingerprint);
+    	if (elementList==null) {
+    	    elementList = new HashMap(20);
+    	}
         ArrayList list = (ArrayList)elementList.get(key);
         if (list==null) {
-            list = new ArrayList();
+            list = new ArrayList(numberOfNodes/20);
             for (int i=1; i<numberOfNodes; i++) {
                 if (nodeKind[i]==Type.ELEMENT &&
                         (nameCode[i] & 0xfffff ) == fingerprint) {
@@ -787,7 +806,7 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     */
 
     public NodeInfo selectID(String id) {
-        if (idTable==null) return null;            // no ID values found
+        if (idTable==null) return null;			// no ID values found
         return (NodeInfo)idTable.get(id);
     }
 
@@ -796,10 +815,10 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     * building the document.
     */
 
-    protected void setUnparsedEntity(String name, String uri, String publicId) {
+    void setUnparsedEntity(String name, String uri, String publicId) {
         // System.err.println("setUnparsedEntity( " + name + "," + uri + ")");
         if (entityTable==null) {
-            entityTable = new HashMap();
+            entityTable = new HashMap(20);
         }
         String[] ids = new String[2];
         ids[0] = uri;
@@ -823,43 +842,115 @@ public class TinyDocumentImpl extends TinyParentNodeImpl
     }
 
     /**
+     * The following methods are defined in DOM Level 3, and Saxon includes nominal implementations of these
+     * methods so that the code will compile when DOM Level 3 interfaces are installed.
+     */
+
+    public String getInputEncoding() {
+        return null;
+    }
+
+    public String getXmlEncoding() {
+        return null;
+    }
+
+    public boolean getXmlStandalone() {
+        return false;
+    }
+
+    public void setXmlStandalone(boolean xmlStandalone)
+                                  throws DOMException {
+        disallowUpdate();
+    }
+
+    public String getXmlVersion() {
+        return "1.0";
+    }
+    public void setXmlVersion(String xmlVersion)
+                                  throws DOMException {
+        disallowUpdate();
+    }
+
+    public boolean getStrictErrorChecking() {
+        return false;
+    }
+
+    public void setStrictErrorChecking(boolean strictErrorChecking) {
+        disallowUpdate();
+    }
+
+    public String getDocumentURI() {
+        return getSystemId();
+    }
+
+    public void setDocumentURI(String documentURI) {
+        disallowUpdate();
+    }
+
+    public Node adoptNode(Node source)
+                          throws DOMException {
+        disallowUpdate();
+        return null;
+    }
+
+//    DOM LEVEL 3 METHOD
+//    public DOMConfiguration getDomConfig() {
+//        return null;
+//    }
+
+    public void normalizeDocument() {
+        disallowUpdate();
+    }
+
+    public Node renameNode(Node n,
+                           String namespaceURI,
+                           String qualifiedName)
+                           throws DOMException {
+        disallowUpdate();
+        return null;
+    }
+
+    /**
     * Copy this node to a given outputter
     */
 
-    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations) throws TransformerException {
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
+
+        out.startDocument(0);
 
         // output the children
-        // SaxonTODO: this is wrong. In XSLT 2.0, copying a document node should not simply copy the children
 
         AxisIterator children = iterateAxis(Axis.CHILD);
         while (true) {
             NodeInfo n = (NodeInfo)children.next();
             if (n == null) {
-                return;
+                break;
             }
-            n.copy(out, whichNamespaces, copyAnnotations);
+            n.copy(out, whichNamespaces, copyAnnotations, locationId);
         }
+
+        out.endDocument();
     }
 
-    /**
-    * Produce diagnostic print of main tree arrays
-    */
+	/**
+	* Produce diagnostic print of main tree arrays
+	*/
 
-    public void diagnosticDump() {
-        System.err.println("    node    type   depth    next   alpha    beta    name");
-        for (int i=0; i<numberOfNodes; i++) {
-            System.err.println(n8(i) + n8(nodeKind[i]) + n8(depth[i]) + n8(next[i]) +
-                                     n8(alpha[i]) + n8(beta[i]) + n8(nameCode[i]));
-        }
-        System.err.println("    attr  parent    name    value");
-        for (int i=0; i<numberOfAttributes; i++) {
-            System.err.println(n8(i) + n8(attParent[i]) + n8(attCode[i]) + "    " + attValue[i]);
-        }
-        System.err.println("      ns  parent  prefix     uri");
-        for (int i=0; i<numberOfNamespaces; i++) {
-            System.err.println(n8(i) + n8(namespaceParent[i]) + n8(namespaceCode[i]>>16) + n8(namespaceCode[i]&0xffff));
-        }
-    }
+	public void diagnosticDump() {
+		System.err.println("    node    type   depth    next   alpha    beta    name");
+		for (int i=0; i<numberOfNodes; i++) {
+			System.err.println(n8(i) + n8(nodeKind[i]) + n8(depth[i]) + n8(next[i]) +
+									 n8(alpha[i]) + n8(beta[i]) + n8(nameCode[i]));
+		}
+		System.err.println("    attr  parent    name    value");
+		for (int i=0; i<numberOfAttributes; i++) {
+		    System.err.println(n8(i) + n8(attParent[i]) + n8(attCode[i]) + "    " + attValue[i]);
+		}
+		System.err.println("      ns  parent  prefix     uri");
+		for (int i=0; i<numberOfNamespaces; i++) {
+		    System.err.println(n8(i) + n8(namespaceParent[i]) + n8(namespaceCode[i]>>16) + n8(namespaceCode[i]&0xffff));
+		}
+	}
 
     /**
     * Output a number as a string of 8 characters

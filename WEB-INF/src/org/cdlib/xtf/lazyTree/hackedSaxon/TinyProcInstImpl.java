@@ -3,13 +3,13 @@ package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.type.Type;
 
-import javax.xml.transform.TransformerException;
+import net.sf.saxon.xpath.XPathException;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.DOMException;
 
 /**
   * TProcInstImpl is an implementation of ProcInstInfo
-  * @author Michael H. Kay (michael.h.kay@ntlworld.com)
+  * @author Michael H. Kay
   * @version 16 July 1999
   */
 
@@ -25,7 +25,7 @@ final class TinyProcInstImpl extends TinyNodeImpl implements ProcessingInstructi
         int start = document.alpha[nodeNr];
         int len = document.beta[nodeNr];
         if (len==0) {
-            return "";    // need to special-case this for the Microsoft JVM
+        	return "";	// need to special-case this for the Microsoft JVM
         }
         char[] dest = new char[len];
         document.commentBuffer.getChars(start, start+len, dest, 0);
@@ -40,8 +40,8 @@ final class TinyProcInstImpl extends TinyNodeImpl implements ProcessingInstructi
     * Copy this node to a given outputter
     */
 
-    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations) throws TransformerException {
-        out.processingInstruction(getDisplayName(), getStringValue(), 0);
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
+        out.processingInstruction(getDisplayName(), getStringValue(), 0, 0);
     }
 
     // DOM methods

@@ -1,5 +1,8 @@
 package org.cdlib.xtf.lazyTree;
 
+// IMPORTANT NOTE: When comparing, this file is most similar to 
+//                 Saxon's net.sf.tree.AttributeImpl
+
 /**
  * Copyright (c) 2004, Regents of the University of California
  * All rights reserved.
@@ -29,42 +32,46 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import javax.xml.transform.TransformerException;
-
-import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.type.Type;
 
+import net.sf.saxon.event.Receiver;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
+
+import net.sf.saxon.xpath.XPathException;
+
 
 /**
  * Represents an attribute node from a persistent XML document.
  * 
  * @author Martin Haye
  */
-class AttributeImpl extends NodeImpl implements Attr
-{
+final class AttributeImpl extends NodeImpl implements Attr {
+
     ElementImpl element;
     int         index;
     
     /**
-     * Construct an Attribute node for the n'th attribute of a given element
-     * @param element The element containing the relevant attribute
-     * @param index The index position of the attribute starting at zero
-     */
-    public AttributeImpl( ElementImpl element, int index ) {
+    * Construct an Attribute node for the n'th attribute of a given element
+    * @param element The element containing the relevant attribute
+    * @param index The index position of the attribute starting at zero
+    */
+
+    public AttributeImpl(ElementImpl element, int index) {
         super( element.document );
+        this.index = index;
         parentNum = element.nodeNum;
         this.element = element;
-        this.index   = index;
     }
 
     /**
-     * Get the name code, which enables the name to be located in the name pool
-     */
+    * Get the name code, which enables the name to be located in the name pool
+    */
+
     public int getNameCode() {
         return element.attrNames[index];
     }
@@ -100,11 +107,10 @@ class AttributeImpl extends NodeImpl implements Attr
      * @return true if this Node object and the supplied Node object represent the
      * same node in the tree.
      */
-    public boolean isSameNode( NodeInfo other ) {
-        if( this == other ) 
-            return true;
-        if( !(other instanceof AttributeImpl) ) 
-            return false;
+
+    public boolean isSameNodeInfo(NodeInfo other) {
+        if (!(other instanceof AttributeImpl)) return false;
+        if (this == other) return true;
         AttributeImpl otherAtt = (AttributeImpl)other;
         return (element.isSameNode(otherAtt.element) &&
                 index == otherAtt.index);
@@ -195,16 +201,13 @@ class AttributeImpl extends NodeImpl implements Attr
      * Copy this node to a given outputter
      */
 
-    public void copy( Receiver out, int whichNamespaces,
-                      boolean copyAnnotations ) 
-        throws TransformerException 
-    {
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
         int nameCode = getNameCode();
-        //if ((nameCode>>20 & 0xff) != 0) { // non-null prefix
+    	//if ((nameCode>>20 & 0xff) != 0) {	// non-null prefix
         // check there is no conflict of namespaces
-        //  nameCode = out.checkAttributePrefix(nameCode);
+		//	nameCode = out.checkAttributePrefix(nameCode);
         //}
-        out.attribute(nameCode, 0, getStringValue(), 0);
+        out.attribute(nameCode, -1, getStringValue(), 0, 0);
     }
-    
+
 } // class AttributeImpl

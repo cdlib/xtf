@@ -1,35 +1,43 @@
 package org.cdlib.xtf.lazyTree;
+
+// IMPORTANT NOTE: When comparing, this file is most similar to Saxon's
+//                 net.sf.saxon.tinytree.TinyElementImpl.java
+//
+
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
-import net.sf.saxon.om.NamespaceConstant;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.style.StandardNames;
 import net.sf.saxon.tree.DOMExceptionImpl;
 import net.sf.saxon.type.Type;
+import net.sf.saxon.xpath.XPathException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 import org.cdlib.xtf.util.PackedByteBuf;
 
-import javax.xml.transform.TransformerException;
-
 import java.io.IOException;
 
 /**
- * Saxon: A node in the XML parse tree representing an XML element.<P>
+ * A node in the XML parse tree representing an XML element.<P>
  * This class is an implementation of NodeInfo and also implements the
  * DOM Element interface
- * @author <A HREF="mailto:michael.h.kay@ntlworld.com>Michael H. Kay</A>
+  * @author Michael H. Kay
  */
 
 class ElementImpl extends ParentNodeImpl
-    implements Element 
-{
+    implements Element {
+
     int nameSpace;
     
     int[]    attrNames;
     String[] attrValues;
     
+   /**
+    * Constructor
+    */
+
     public ElementImpl( LazyDocument document ) {
         super( document );
     }
@@ -62,29 +70,34 @@ class ElementImpl extends ParentNodeImpl
     
     /**
      * Return the type of node.
-     * 
      * @return Type.ELEMENT
      */
+
     public final int getNodeKind() {
         return Type.ELEMENT;
     }
 
     /**
-     * Get the base URI of this element node. This will be the same as the 
-     * System ID unless xml:base has been used.
+    * Get the base URI of this element node. This will be the same as the System ID unless
+    * xml:base has been used.
      */
-    public String getBaseURI() 
-    {
-        String xmlBase = getAttributeValue( NamespaceConstant.XML, "base" );
-        if( xmlBase != null )
+
+    public String getBaseURI() {
+        String xmlBase = getAttributeValue( StandardNames.XML_BASE );
+        if( xmlBase != null ) {
             return xmlBase;
+        }
         String startSystemId = getSystemId();
         NodeInfo parent = getParent();
-        String parentSystemId = parent.getSystemId();
-        if( startSystemId.equals(parentSystemId) )
-            return parent.getBaseURI();
-        else
+        if (parent==null) {
             return startSystemId;
+        }
+        String parentSystemId = parent.getSystemId();
+        if( startSystemId.equals(parentSystemId) ) {
+            return parent.getBaseURI();
+        } else {
+            return startSystemId;
+        }
     }
 
     /**
@@ -97,29 +110,27 @@ class ElementImpl extends ParentNodeImpl
 
     /**
      * Output all namespace nodes associated with this element.
-     * 
      * @param out The relevant outputter
      * @param includeAncestors True if namespaces associated with ancestor
      * elements must also be output; false if these are already known to be
      * on the result tree.
      */
     public void outputNamespaceNodes( Receiver out, boolean includeAncestors )
-    throws TransformerException 
-    {
+         throws XPathException {
+
         int ns = nameSpace;
         if( ns > 0 ) {
             while (ns < document.numberOfNamespaces &&
-                    document.namespaceParent[ns] == nodeNum ) 
-            {
+                    document.namespaceParent[ns] == nodeNum ) {
                 int nscode = document.namespaceCode[ns];
                 out.namespace(nscode, 0);
                 ns++;
             }
         }
 
-        // now add the namespaces defined on the ancestor nodes. We rely on the 
-        // receiver to eliminate multiple declarations of the same prefix
-        //
+        // now add the namespaces defined on the ancestor nodes. We rely on the receiver
+        // to eliminate multiple declarations of the same prefix
+
         if (includeAncestors && document.isUsingNamespaces()) {
             NodeInfo parent = getParent();
             if (parent != null) {
@@ -127,17 +138,46 @@ class ElementImpl extends ParentNodeImpl
             }
             // terminates when the parent is a root node
         }
-    } // outputNamespaceNodes()
+    }
 
     /**
      * Returns whether this node (if it is an element) has any attributes.
-     * 
      * @return <code>true</code> if this node has any attributes,
      *   <code>false</code> otherwise.
      * @since DOM Level 2
      */
+
     public boolean hasAttributes() {
         return attrNames != null;
+    }
+
+    /**
+     * Get the value of a given attribute of this node
+     * @param fingerprint The fingerprint of the attribute name
+     * @return the attribute value if it exists or null if not
+     */
+
+    public String getAttributeValue(int fingerprint) {
+        if( attrNames == null )
+            return null;
+        
+        for( int i = 0; i < attrNames.length; i++ ) {
+            if( (attrNames[i] & 0xfffff) == fingerprint )
+                return attrValues[i];
+        } // for i
+        return null;
+    }
+
+    /**
+    * Set the value of an attribute on the current element. This affects subsequent calls
+    * of getAttribute() for that element.
+    * @param name The name of the attribute to be set. Any prefix is interpreted relative
+    * to the namespaces defined for this element.
+    * @param value The new value of the attribute. Set this to null to remove the attribute.
+    */
+
+    public void setAttribute(String name, String value ) throws DOMException {
+        throw new DOMExceptionImpl((short)9999, "LazyTree DOM is not updateable");
     }
 
     /**
@@ -154,46 +194,10 @@ class ElementImpl extends ParentNodeImpl
         return getAttributeValue( f );
     }
 
-    /**
-     * Get the value of a given attribute of this node
-     * 
-     * @param fingerprint The fingerprint of the attribute name
-     * @return the attribute value if it exists or null if not
-     */
-    public String getAttributeValue(int fingerprint) 
-    {
-        if( attrNames == null )
-            return null;
-        
-        for( int i = 0; i < attrNames.length; i++ ) {
-            if( (attrNames[i] & 0xfffff) == fingerprint )
-                return attrValues[i];
-        } // for i
-        return null;
-    } // getAttributeValue()
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
 
-    /**
-     * Set the value of an attribute on the current element. This affects 
-     * subsequent calls of getAttribute() for that element.
-     * 
-     * @param name The name of the attribute to be set. Any prefix is 
-     *             interpreted relative to the namespaces defined for this 
-     *             element.
-     * @param value The new value of the attribute. Set this to null to remove 
-     *              the attribute.
-     */
-    public void setAttribute(String name, String value ) 
-        throws DOMException 
-    {
-        throw new DOMExceptionImpl((short)9999, "LazyTree DOM is not updateable");
-    }
-
-    public void copy( Receiver out, int whichNamespaces, 
-                      boolean copyAnnotations) 
-        throws TransformerException 
-    {
         int typeCode = (copyAnnotations ? getTypeAnnotation() : 0);
-        out.startElement( nameCode, typeCode, 0 );
+        out.startElement( nameCode, typeCode, locationId, 0 );
 
         // output the namespaces
         if (whichNamespaces != NO_NAMESPACES)
@@ -204,7 +208,7 @@ class ElementImpl extends ParentNodeImpl
         {
             for( int i = 0; i < attrNames.length; i++ ) {
                 new AttributeImpl(this, i).copy( 
-                        out, NO_NAMESPACES, copyAnnotations );
+                        out, NO_NAMESPACES, copyAnnotations, locationId );
             } // for i
         } // if
         
@@ -219,7 +223,7 @@ class ElementImpl extends ParentNodeImpl
             NodeInfo next = (NodeInfo) children.next();
             if( next == null )
                 break;
-            next.copy(out, childNamespaces, copyAnnotations);
+            next.copy(out, childNamespaces, copyAnnotations, locationId);
         }
         out.endElement();
     }

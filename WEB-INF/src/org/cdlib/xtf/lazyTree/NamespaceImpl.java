@@ -4,8 +4,8 @@ import net.sf.saxon.om.NamePool;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceiverOptions;
 import net.sf.saxon.type.Type;
+import net.sf.saxon.xpath.XPathException;
 
-import javax.xml.transform.TransformerException;
 import org.w3c.dom.Node;
 
 /**
@@ -164,7 +164,7 @@ final class NamespaceImpl extends NodeImpl {
     * Copy this node to a given outputter
     */
 
-    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations) throws TransformerException {
+    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
         out.namespace(nsCode, ReceiverOptions.REJECT_DUPLICATES);
     }
 

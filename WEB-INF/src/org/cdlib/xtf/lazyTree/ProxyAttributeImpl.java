@@ -29,13 +29,12 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import javax.xml.transform.TransformerException;
-
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.type.Type;
+import net.sf.saxon.xpath.XPathException;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
@@ -107,7 +106,7 @@ class ProxyAttributeImpl extends NodeImpl implements Attr
         if( !(other instanceof ProxyAttributeImpl) ) 
             return false;
         ProxyAttributeImpl otherAtt = (ProxyAttributeImpl)other;
-        return (element.isSameNode(otherAtt.element) &&
+        return (element.isSameNode( otherAtt.element) &&
                 index == otherAtt.index);
     }
 
@@ -197,15 +196,15 @@ class ProxyAttributeImpl extends NodeImpl implements Attr
      */
 
     public void copy( Receiver out, int whichNamespaces,
-                      boolean copyAnnotations ) 
-        throws TransformerException 
+                      boolean copyAnnotations, int locationId ) 
+        throws XPathException 
     {
         int nameCode = getNameCode();
         //if ((nameCode>>20 & 0xff) != 0) { // non-null prefix
         // check there is no conflict of namespaces
         //  nameCode = out.checkAttributePrefix(nameCode);
         //}
-        out.attribute(nameCode, 0, getStringValue(), 0);
+        out.attribute(nameCode, 0, getStringValue(), locationId, 0);
     }
     
 } // class ProxyAttributeImpl

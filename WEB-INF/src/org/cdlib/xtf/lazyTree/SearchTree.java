@@ -1184,7 +1184,7 @@ public class SearchTree extends LazyDocument
      {
          if( axisNumber == Axis.DESCENDANT ) {
              if( nodeTest instanceof NameTest &&
-                 nodeTest.getNodeKind() == Type.ELEMENT ) 
+                 nodeTest.getPrimitiveType() == Type.ELEMENT ) 
              {
                  return getAllElements( nodeTest.getFingerprint() );
              } 

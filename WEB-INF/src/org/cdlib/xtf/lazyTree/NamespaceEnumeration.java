@@ -100,7 +100,7 @@ final class NamespaceEnumeration extends AxisIteratorImpl {
     }
 
     private boolean matches(int nsCode) {
-        if (nodeTest instanceof NodeKindTest && nodeTest.getNodeKind()==Type.NAMESPACE) {
+        if (nodeTest instanceof NodeKindTest && nodeTest.getPrimitiveType()==Type.NAMESPACE) {
             // fast path when selecting namespace::*
             return true;
         } else {
