@@ -1246,7 +1246,7 @@ public class XMLTextProcessor extends DefaultHandler
         // If there no XSLT input filter defined for this index, just 
         // parse the source XML file directly, and return early.
         //
-        if( srcText.inputFilter == null ) {
+        if( srcText.preFilter == null ) {
             xmlParser.parse( inSrc, this );
             return 0;
         }
@@ -1254,7 +1254,7 @@ public class XMLTextProcessor extends DefaultHandler
         // There is an XSLT filter specified. So set up to use it, and 
         // process the resulting filtered XML text.
         //
-        Templates stylesheet = srcText.inputFilter;
+        Templates stylesheet = srcText.preFilter;
               
         // Create an actual transform filter from the stylesheet for this
         // particular document we're indexing.

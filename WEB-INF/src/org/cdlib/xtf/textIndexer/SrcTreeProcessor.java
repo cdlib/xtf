@@ -358,7 +358,7 @@ public class SrcTreeProcessor
     String strVal = parentEl.getAttribute( "inputFilter" );
     if( strVal != null && strVal.length() > 0 ) {
         String inFilterPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, strVal);
-        info.inputFilter  = stylesheetCache.find( inFilterPath );
+        info.preFilter  = stylesheetCache.find( inFilterPath );
     }
     
     // If there a display stylesheet specified?

@@ -56,10 +56,9 @@
     The output of this stylesheet should be an XML document like this:
       
     <indexFiles>
-        <indexFile dirPath="{path of the directory}"
-                   fileName="{file name #1}"
+        <indexFile fileName="{file name #1}"
                    format="{XML|PDF|HTML|...}"
-                   inputFilter="{path to input filter stylesheet}"
+                   preFilter="{path to input filter stylesheet}"
                    displayStyle="{path to display stylesheet}"/>
         <indexFile .../>
         ...etc...
@@ -69,9 +68,13 @@
       
       - If no files should be indexed, the output document should be empty.
       
-      - All filesystem paths are relative to the XTF home directory.
+      - If you use relative paths for the input filter or display style 
+        attributes, they will be interpreted as being relative
+        to XTF_HOME.
       
-      - The 'dirPath' and 'fileName' attributes are required
+      - The 'fileName' attribute is required, and SHOULD NOT contain path
+        information. Essentially, this should be one of the file names 
+        from an input <file... /> tag.
       
       - The other attributes ('format', 'inputFilter' and 'displayStyle') are
         all optional.
@@ -79,7 +82,7 @@
       - If the 'format' attribute is not specified, the textIndexer will 
         attempt to deduce the file's format based on its file name extension.
         
-      - If 'inputFilter' isn't specified, no pre-filtering will be performed
+      - If 'preFilter' isn't specified, no pre-filtering will be performed
         on the source document.
         
       - If 'displayStyle' isn't specified, no XSL keys will be pre-computed
@@ -113,7 +116,7 @@
       <xsl:if test="not(ends-with(@fileName, '.mets.xml')) and
                     not(ends-with(@fileName, '.dc.xml'))">
         <indexFile fileName="{@fileName}"
-                   inputFilter="style/textIndexer/default/prefilter.xsl"
+                   preFilter="style/textIndexer/default/prefilter.xsl"
                    displayStyle="style/dynaXML/docFormatter/default/docFormatter.xsl"/>
       </xsl:if>
     </xsl:if>

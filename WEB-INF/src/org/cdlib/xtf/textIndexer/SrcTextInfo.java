@@ -49,7 +49,7 @@ public class SrcTextInfo
   public String key;
   
   /** XSLT pre-filter used to massage the XML document (null for none) */
-  public Templates inputFilter;
+  public Templates preFilter;
 
   /** Stylesheet from which to gather XSLT key definitions to be computed
    *  and cached on disk. Typically, one would use the actual display 
