@@ -1472,7 +1472,39 @@
     </xsl:if>    
 
   </xsl:template>
-
+    
+  <!-- ====================================================================== -->
+  <!-- Select Builder                                                         -->
+  <!-- ====================================================================== -->
+  
+  <xsl:template name="selectBuilder">
+    <xsl:param name="selectType"/>
+    <xsl:param name="optionList"/>
+    <xsl:param name="count"/>
+    
+    <xsl:variable name="option" select="substring-before($optionList, '::')"/>
+    
+    <xsl:choose>
+      <xsl:when test="$selectType='subject'">    
+        <xsl:if test="$option != ''"> 
+          <option>
+            <xsl:attribute name="value">"<xsl:value-of select="$option"/>"</xsl:attribute>
+            <xsl:if test="contains($subject,$option)">
+              <xsl:attribute name="selected" select="'yes'"/>
+            </xsl:if>
+            <xsl:value-of select="$option"/>
+          </option>    
+          <xsl:call-template name="selectBuilder">
+            <xsl:with-param name="selectType" select="$selectType"/>
+            <xsl:with-param name="optionList" select="replace(substring-after($optionList, $option), '^::', '')"/>
+            <xsl:with-param name="count" select="$count + 1"/>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:when>
+    </xsl:choose>    
+    
+  </xsl:template>
+  
   <!-- ====================================================================== -->
   <!-- Generate ARK List for Testing                                          -->
   <!-- ====================================================================== -->
