@@ -520,8 +520,7 @@ public class XMLTextProcessor extends DefaultHandler
           } // else( !configInfo.clean )
 
           // Try to open the index for reading and searching.
-          indexReader   = IndexReader.open( indexPath );
-          indexSearcher = new IndexSearcher( indexReader );
+          openIdxForReading();
           
           // Locate the index information document
           Hits match = indexSearcher.search( 
@@ -771,6 +770,11 @@ public class XMLTextProcessor extends DefaultHandler
            IOException
 
   {
+    // Oddly, we need an IndexReader to delete things from a Lucene index.
+    // Make sure we've got one.
+    //
+    openIdxForReading();
+    
     // If any old version of this document exists, delete it.
     int nDeleted = indexReader.delete( new Term( "key", key ) );
 
@@ -881,14 +885,6 @@ public class XMLTextProcessor extends DefaultHandler
 
   public void processQueuedTexts() throws IOException
   {
-      // Close the reader and searcher, since doing so will make indexing 
-      // go much more quickly.
-      //
-      if( indexSearcher != null ) indexSearcher.close();
-      if( indexReader   != null ) indexReader.close();
-      indexSearcher = null;
-      indexReader   = null;
-
       // Initialize the string buffers for accumulating and compacting the 
       // text to index.
       //
@@ -918,13 +914,6 @@ public class XMLTextProcessor extends DefaultHandler
           Trace.error( "*** Exception Processing Queued Texts: " + e );
           Trace.untab();
       }
-      
-      finally {
-          if( indexWriter != null ) indexWriter.close();
-          indexWriter = null;
-      }
-          
-      assert indexWriter == null : "indexWriter not closed in finally block";
       
   } // processQueuedTexts()
   
@@ -3347,6 +3336,37 @@ public class XMLTextProcessor extends DefaultHandler
 
   ////////////////////////////////////////////////////////////////////////////
 
+  /** Open the active Lucene index database for reading (and deleting, an
+   *  oddity in Lucene). <br><br>
+   * 
+   *  @throws
+   *    IOException  Any exceptions generated during the creation of the 
+   *                 Lucene database writer object.
+   * 
+   *  @.notes
+   *    This method attempts to open the Lucene database specified by the 
+   *    {@link XMLTextProcessor#indexPath indexPath} member for reading
+   *    and/or deleting. It is strange that you delete things from a
+   *    Lucene index by using an IndexReader, but hey, whatever floats your
+   *    boat man.
+   *    <br><br>
+   */
+  private void openIdxForReading() throws IOException
+  
+  {
+    if( indexWriter != null ) 
+        indexWriter.close();
+    indexWriter = null;
+      
+    if( indexReader == null )
+        indexReader = IndexReader.open( indexPath );
+    
+    if( indexSearcher == null )
+        indexSearcher = new IndexSearcher( indexReader );
+    
+  } // openIdxForReading()
+  
+  
   /** Open the active Lucene index database for writing. <br><br>
    * 
    *  @throws
@@ -3361,6 +3381,18 @@ public class XMLTextProcessor extends DefaultHandler
   private void openIdxForWriting() throws IOException
   
   {
+    // Close the reader and searcher, since doing so will make indexing 
+    // go much more quickly.
+    //
+    if( indexSearcher != null ) indexSearcher.close();
+    if( indexReader   != null ) indexReader.close();
+    indexSearcher = null;
+    indexReader   = null;
+    
+    // If already open for writing, it would be bad to do it over again.
+    if( indexWriter != null )
+        return;
+
     // Create an index writer, using the selected index db Path
     // and create mode. Pass it our own text analyzer, currently 
     // with an empty stop-word list (not null, as we interpret
