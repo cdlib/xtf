@@ -1,0 +1,30 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Doug Cutting">
+</head>
+<body>
+<p>Speed up queries containing stop-words. The default behavior in Lucene is to 
+  ignore stop-words; this makes query processing efficient because it doesn't 
+  have to evaluate each and every instance of words such as &quot;the&quot;, &quot;is&quot;, 
+  &quot;and&quot;, etc. However, in the real world users do query for these words 
+  and want results that reflect the stop-words.</p>
+<p>A technique has been developed to deal with this, called &quot;n-grams&quot; 
+  by Doug Cutting. At index time, stop words are combined with adjacent non-stop 
+  words instead of being thrown away. For instance, &quot;man in the moon&quot; 
+  might be indexed as &quot;man man-in in-the the-moon moon&quot;. A similar transformation 
+  is performed at query time, so a user's query for &quot;the moon&quot; might 
+  become &quot;(moon OR the-moon)&quot;. The scoring system will naturally favor 
+  hits on &quot;the-moon&quot; (since it will be rarer than just &quot;moon&quot;) 
+  and the user will get hits back reflecting the stop-word they typed in. But 
+  the query is still very efficient to process.</p>
+<p>This package contains two classes that perform n-gramming (in this case, 2-gramming):</p>
+<ul>
+  <li><a href="NgramStopFilter.html">NgramStopFilter</a> turns a normal token 
+    stream into a stream of n-grams.</li>
+  <li> <a href="NgramQueryRewriter.html">NgramQueryRewriter</a> transforms a normal 
+    query into the equivalent n-gram query. </li>
+</ul>
+</body>
+</html>

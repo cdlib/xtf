@@ -1,0 +1,35 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Doug Cutting">
+</head>
+<body>
+<p>This package is for handling for very large documents that have been indexed 
+  in overlapping chunks.</p>
+<p>Lucene deals readily with documents in the range of a few bytes to maybe a 
+  hundred kbytes. But throw a 10-megabyte document at it, and things start to 
+  break down. For one thing, generating snippets on a number of these documents 
+  becomes very slow.</p>
+<p>One technique for dealing with these large documents is to index them in small 
+  &quot;chunks&quot;, for instance, breaking a document into 200-word chunks. 
+  In order for proximity queries to still be effective, these chunks need to overlap. 
+  For instance, if one queried for &quot;bat man&quot;, one would expect to get 
+  a hit even if &quot;bat&quot; appears at the end of one chunk and &quot;man&quot; 
+  appears at the start of the next.</p>
+<p>Breaking documents into chunks isn't addressed by this package, but once you've 
+  indexed it that way, the classes in this package will help to query the chunked 
+  index. Follow these steps:</p>
+<ol>
+  <li>Form your query using Lucene's &quot;span&quot; logic -- that is, classes 
+    derived from SpanQuery.</li>
+  <li>If you use 'not' queries, be sure to use <a href="SpanChunkedNotQuery.html">SpanChunkedNotQuery</a> 
+    which has special handling for the overlap between chunks.</li>
+  <li>Wrap the whole SpanQuery in a <a href="SpanDechunkingQuery.html">SpanDechunkingQuery</a>. 
+    That will take care of summing all the span scores for the chunks and attributing 
+    them to the main document.</li>
+  <li>Finally, if you want hit marking, pass a <a href="ChunkedWordIter.html">ChunkedWordIter</a> 
+    to one of SpanDocument's markField() methods.</li>
+</ol>
+</body>
+</html>

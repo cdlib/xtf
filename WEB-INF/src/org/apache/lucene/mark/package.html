@@ -1,0 +1,22 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Doug Cutting">
+</head>
+<body>
+<p>This package provides the ability to mark terms, spans, and context around 
+  spans within the contents of a stored document field.</p>
+<p>Here are the general steps to use this functionality:</p>
+<ol>
+  <li>Create a query using Lucene's Span system (i.e. use classes derived from 
+    SpanQuery).</li>
+  <li>On the top level query, turn on span recording by calling setSpanRecording() 
+    on the query.</li>
+  <li>Run the query. Each Document returned will in reality be a <a href="SpanDocument.html">SpanDocument</a>.</li>
+  <li>Call one of the markField() methods of <a href="SpanDocument.html">SpanDocument</a> 
+    and supply a <a href="MarkCollector.html">MarkCollector</a> to collect the 
+    resulting marks.</li>
+</ol>
+</body>
+</html>
