@@ -206,9 +206,6 @@ class XtfChunkSource extends ChunkSource
     // Replace the old text with the new (which has the markers removed).
     chunk.text = buf.toString();
     
-    // During debugging, print out the chunk data.
-    debugChunk( chunk );
-    
     // All done!
     return chunk;
   } // loadChunk()
