@@ -355,10 +355,11 @@ public class SrcTreeProcessor
     }
     
     // Optional attributes come after. Is there an input filter specified?
-    String strVal = parentEl.getAttribute( "inputFilter" );
+    String strVal = parentEl.getAttribute( "preFilter" );
     if( strVal != null && strVal.length() > 0 ) {
-        String inFilterPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, strVal);
-        info.preFilter  = stylesheetCache.find( inFilterPath );
+        String preFilterPath = 
+            Path.resolveRelOrAbs(cfgInfo.xtfHomePath, strVal);
+        info.preFilter  = stylesheetCache.find( preFilterPath );
     }
     
     // If there a display stylesheet specified?
