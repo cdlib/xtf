@@ -3,7 +3,7 @@
 <!-- regress-search-tree="data/doc2.xml" -->
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="10">
-  <text indexPath="IndexDB" maxSnippets="1000" contextChars="80">
+  <text indexPath="IndexDB" maxSnippets="1000" contextChars="80" termMode="all">
     <term>apartheid</term>
   </text>
 </query>

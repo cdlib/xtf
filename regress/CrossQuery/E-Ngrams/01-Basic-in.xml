@@ -7,7 +7,4 @@
       <term>book</term>
     </and>
   </text>
-  <text indexPath="IndexDB" maxSnippets="3" contextChars="80">
-    <term>book</term>
-  </text>
 </query>

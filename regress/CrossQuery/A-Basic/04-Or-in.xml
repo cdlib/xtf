@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="10">
-  <text indexPath="IndexDB" maxSnippets="3" contextChars="80">
+  <text indexPath="IndexDB" maxSnippets="3" contextChars="80" termMode="context">
     <or>
        <phrase>
          <term>can</term>

@@ -6,7 +6,7 @@
       <term field="subject">politics</term>
     </meta>
     <text maxSnippets="3" contextChars="80">
-      <term>PAPERBACK</term> <!-- TODO: Works in lowercase but not uppercase! -->
+      <term>PAPERBACK</term>
     </text>
   </combine>
 </query>

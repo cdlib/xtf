@@ -5,7 +5,11 @@
          <title>Thirty-Eight Witnesses: The Kitty Genovese Case</title>
          <creator>A.M. Rosenthal</creator>
          <subject>
-            <term>Politics</term>
+            <snippet rank="1" score="100">
+               <hit rank="1" score="100">
+                  <term>Politics</term>
+               </hit>
+            </snippet>
          </subject>
          <subject>Sociology</subject>
          <subject>Urban Studies</subject>

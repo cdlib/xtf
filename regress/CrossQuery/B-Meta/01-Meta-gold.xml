@@ -2,7 +2,11 @@
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
    <docHit file="doc1.xml">
       <meta>
-         <title>The Opening of the <term>Apartheid</term> Mind: Options for the New South Africa</title>
+         <title>
+            <snippet rank="1" score="100">The Opening of the <hit rank="1" score="100">
+                  <term>Apartheid</term>
+               </hit> Mind: Options for the New South Africa</snippet>
+         </title>
          <creator>Heribert Adam and Kogila Moodley</creator>
          <subject>African Studies</subject>
          <subject>Politics</subject>

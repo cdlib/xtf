@@ -4,9 +4,9 @@
       <meta>
          <testMeta>x</testMeta>
       </meta>
-      <snippet sectionType="20-a">X X X X X X X X X X X X X X e1 e2 e3 <hit>
+      <snippet sectionType="20-a">e1 e2 e3 <hit>
             <term>e4</term> 
             <term>e8</term>
-         </hit> e9 e10 f1 f2 f3 f4 f8 f9 f12 f13 f14</snippet>
+         </hit> e9 e10</snippet>
    </docHit>
 </crossQueryResult>

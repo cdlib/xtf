@@ -4,10 +4,10 @@
       <meta>
          <testMeta>"Some test data"</testMeta>
       </meta>
-      <snippet>the end. You just gotta love it! Cats don't care about <hit>
+      <snippet>This is the end. You just gotta love it! Cats don't care about <hit>
             <term>man's</term>
-         </hit> inhumanity to <term>man</term>.</snippet>
-      <snippet>the end. You just gotta love it! Cats don't care about <term>man's</term> inhumanity to <hit>
+         </hit> inhumanity</snippet>
+      <snippet>to <hit>
             <term>man</term>
          </hit>.</snippet>
    </docHit>

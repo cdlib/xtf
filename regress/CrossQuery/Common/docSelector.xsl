@@ -47,7 +47,19 @@
 
   <xsl:template match="file">
     <xsl:if test="ends-with(@fileName, '.xml')">
-      <indexFile fileName="{@fileName}"/>
+      <indexFile fileName="{@fileName}" type="XML"/>
+    </xsl:if>
+    <xsl:if test="ends-with(@fileName, '.pdf')">
+      <indexFile fileName="{@fileName}" type="PDF"/>
+    </xsl:if>
+    <xsl:if test="ends-with(@fileName, '.htm')">
+      <indexFile fileName="{@fileName}" type="HTML"/>
+    </xsl:if>
+    <xsl:if test="ends-with(@fileName, '.html')">
+      <indexFile fileName="{@fileName}" type="HTML"/>
+    </xsl:if>
+    <xsl:if test="ends-with(@fileName, '.txt')">
+      <indexFile fileName="{@fileName}" type="Text"/>
     </xsl:if>
   </xsl:template>
 

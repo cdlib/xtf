@@ -4,13 +4,13 @@
       <meta>
          <testMeta>x</testMeta>
       </meta>
-      <snippet sectionType="10-a">X X X X X X X X X X X X X X d1 d2 d3 <hit>
+      <snippet sectionType="10-a">d1 d2 d3 <hit>
             <term>d4</term> 
             <term>d5</term>
-         </hit> d6 d7 d8 X X X X X X X X X X X X X X</snippet>
-      <snippet sectionType="10-b">X X X X X X X X X X X X X X d1 d2 d3 <hit>
+         </hit> d6 d7 d8</snippet>
+      <snippet sectionType="10-b">d1 d2 d3 <hit>
             <term>d4</term> 
             <term>d5</term>
-         </hit> d6 d7 d8 X X X X X X X X X X X X X X</snippet>
+         </hit> d6 d7 d8</snippet>
    </docHit>
 </crossQueryResult>

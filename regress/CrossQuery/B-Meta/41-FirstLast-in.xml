@@ -8,7 +8,7 @@
         <term>environmental</term>
       </or>
     </meta>
-    <text maxSnippets="3" contextChars="80">
+    <text maxSnippets="3" contextChars="80" termMode="context">
       <or>
         <phrase>
           <term>Global</term><term>relevance</term><term>of</term><term>south</term><term>africa</term>

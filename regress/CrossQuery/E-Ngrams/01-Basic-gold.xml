@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="2" startDoc="1" endDoc="2">
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
    <docHit file="doc1.xml">
       <meta>
          <testMeta>x</testMeta>
@@ -8,19 +8,8 @@
          <hit>
             <term>The</term> 
             <term>book</term>
-         </hit>. Men of war. Man on the moon. A cat in a hat. It is not a problem. X X</snippet>
-      <snippet>X X X X X X X X X X X X X X X X X X <hit>
-            <term>Book</term>
-         </hit> of the year. Weird men. Moon man too.</snippet>
-   </docHit>
-   <docHit file="doc1.xml">
-      <meta>
-         <testMeta>x</testMeta>
-      </meta>
-      <snippet>The <hit>
-            <term>book</term>
-         </hit>. Men of war. Man on the moon. A cat in a hat. It is not a problem. X X</snippet>
-      <snippet>X X X X X X X X X X X X X X X X X X <hit>
+         </hit>. Men of war. Man on the moon. A cat in a hat.</snippet>
+      <snippet>X X X X X X X X X X X X X X X X X X X <hit>
             <term>Book</term>
          </hit> of the year. Weird men. Moon man too.</snippet>
    </docHit>

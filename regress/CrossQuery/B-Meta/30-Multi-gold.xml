@@ -2,13 +2,24 @@
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
    <docHit file="doc2.xml">
       <meta>
-         <title>The Problems of a <term>Political</term> Animal: Community, Justice, <term>and</term> Conflict in Aristotelian <term>Political</term> Thought</title>
+         <title>The Problems of a Political <snippet rank="1" score="100">Animal: Community, Justice, <hit rank="1" score="100">
+                  <term>and</term> Conflict in Aristotelian <term>Political</term>
+               </hit> Thought</snippet>
+         </title>
          <creator>Bernard R. Yack</creator>
          <subject>Politics</subject>
          <subject>Philosophy</subject>
          <subject>
-            <term>Political</term> Theory</subject>
-         <subject>Social and <term>Political</term> Thought</subject>
+            <snippet rank="1" score="100">
+               <hit rank="1" score="100">
+                  <term>Political</term>
+               </hit> Theory</snippet>
+         </subject>
+         <subject>
+            <snippet rank="2" score="100">Social and <hit rank="2" score="100">
+                  <term>Political</term>
+               </hit> Thought</snippet>
+         </subject>
          <subject>Social Theory</subject>
          <description>A bold new interpretation of Aristotelian thought is central to Bernard Yack's provocative new book. He shows that for Aristotle, community is a conflict-ridden fact of everyday life, as well as an ideal of social harmony and integration. From political justice and the rule of law to class struggle and moral conflict, Yack maintains that Aristotle intended to explain the conditions of everyday political life, not just, as most commentators assume, to represent the hypothetical achievements of an idealistic "best regime."By showing how Aristotelian ideas can provide new insight into our own political life, Yack makes a valuable contribution to contemporary discourse and debate. His work will excite interest among a wide range of social, moral, and political theorists.</description>
          <date>19930809</date>
