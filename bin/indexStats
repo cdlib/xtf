@@ -45,4 +45,4 @@ foreach $jar (@jars) { $classpath = "$classpath:$lib/$jar"; }
 
 $cmd = "java -classpath $classpath -Xms50m -Xmx500m -Dxtf.home=$home -enableassertions org.cdlib.xtf.textIndexer.IndexStats $args";
 
-system $cmd;
+exec $cmd;
