@@ -2,6 +2,8 @@ package org.cdlib.xtf.dynaXML;
 
 import java.io.IOException;
 
+import javax.xml.transform.Templates;
+
 import org.cdlib.xtf.util.StructuredStore;
 import org.xml.sax.InputSource;
 
@@ -58,13 +60,15 @@ public interface DocLocator
      * @param sourcePath      Path to the source document
      * @param indexConfigPath Path to the index configuration file
      * @param indexName       Name of the index being searched
+     * @param preFilter       Stylesheet to filter the document with
      * 
      * @return                Store containing the tree, or null if none
      *                        could be found.
      */
     StructuredStore getLazyStore( String indexConfigPath,
                                   String indexName,
-                                  String sourcePath ) throws IOException;
+                                  String sourcePath,
+                                  Templates preFilter ) throws IOException;
     
 
     /**

@@ -214,6 +214,8 @@ class DocInfoCache extends GeneratingCache
             else if( tagName.equals("query") )
                 info.query = new QueryRequest( el.getWrappedNode(), 
                                                new File(TextServlet.getRealPath("")) );
+            else if( tagName.equalsIgnoreCase("preFilter") )
+                info.preFilter = DynaXML.getRealPath( el.attrValue("path") );
             else
                 throw new DynaXMLException( "Unknown tag '" + tagName +
                     "' specified by docReqParser" );

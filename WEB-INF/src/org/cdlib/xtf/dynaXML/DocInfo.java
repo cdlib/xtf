@@ -53,6 +53,7 @@ public class DocInfo
         indexName   = other.indexName;
         brand       = other.brand;
         authSpecs   = new Vector(other.authSpecs);
+        preFilter   = other.preFilter;
     }
 
     /** Path to the display stylesheet (relative to servlet base dir) */
@@ -79,6 +80,11 @@ public class DocInfo
      * is found that definitely allows or denies access.
      */
     public Vector authSpecs = new Vector(3);
+    
+    /** Path to a pre-filter stylesheet to run on the document (or null
+     *  for no pre-filtering.)
+     */
+    public String preFilter;
     
     /** Text query to run on the document, or null for none. */
     public QueryRequest query;

@@ -59,7 +59,7 @@ import net.sf.saxon.trans.KeyManager;
 
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
-import org.cdlib.xtf.textEngine.IdxConfigUtil;
+import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
@@ -497,11 +497,23 @@ public class DynaXML extends TextServlet
         throws IOException, SAXException, ParserConfigurationException,
                InvalidDocumentException
     {
+        // If a pre-filter stylesheet was specified, load it.
+        Templates preFilter = null;
+        if( docInfo.preFilter != null ) {
+            try {
+                preFilter = stylesheetCache.find( docInfo.preFilter );
+            }
+            catch( IOException e ) { throw e; }
+            catch( SAXException e ) { throw e; }
+            catch( Exception e ) { throw new RuntimeException( e ); }
+        }
+      
         // See if we can find a lazy version of the document (for speed
         // and searching)
         //
         StructuredStore lazyStore = docLocator.getLazyStore( 
-            docInfo.indexConfig, docInfo.indexName, docInfo.source );
+            docInfo.indexConfig, docInfo.indexName, docInfo.source,
+            preFilter );
         
         // If not found...
         if( lazyStore == null ) 
@@ -532,7 +544,7 @@ public class DynaXML extends TextServlet
         // a normal lazy tree.
         //
         if( docInfo.query != null ) {
-            String docKey = IdxConfigUtil.calcDocKey(
+            String docKey = IndexUtil.calcDocKey(
                                       new File(getRealPath("")),
                                       new File(docInfo.indexConfig),
                                       docInfo.indexName,
