@@ -268,6 +268,67 @@
     
   </xsl:template>
   
+  <xsl:template match="param[@name='year'][1]">
+
+    <!-- THIS IS VERY MESSY! -->
+    <!-- DOESN'T SEEM TO WORK -->
+    <!-- CHECK LOGS -->
+    
+    <xsl:variable name="op">
+      <xsl:choose>
+        <xsl:when test="following-sibling::param[@name='year']">
+          <xsl:value-of select="'range'"/>
+        </xsl:when>
+        <xsl:when test="year-prox/@value != ''">
+          <xsl:value-of select="'near'"/>
+        </xsl:when>
+        <xsl:when test="year-join/@value != ''">
+          <xsl:value-of select="year-join/@value"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="'and'"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    
+    <!-- 'and' all the terms together, unless "<field>-join" specifies a
+    different operator (like 'or'). In the simple case when there's 
+    only one term, the query processor optimizes this out, so it's 
+    harmless. -->
+    <xsl:element name="{$op}">
+      
+      <!-- Specify the field name for meta-data queries -->
+      <xsl:attribute name="metaField" select="'year'"/>
+      
+      <!-- Specify the maximum term separation for a proximity query -->
+      <xsl:if test="year-prox/@value != ''">
+        <xsl:attribute name="slop" select="year-prox/@value"/>
+      </xsl:if>
+      
+      <xsl:choose>
+        <xsl:when test="following-sibling::param[@name='year']">
+          <upper><xsl:value-of select="@value"/></upper>
+          <lower><xsl:value-of select="following-sibling::param[@name='year']/@value"/></lower>
+        </xsl:when>
+        <xsl:otherwise>
+          <term><xsl:value-of select="@value"/></term>
+        </xsl:otherwise>
+      </xsl:choose>
+      
+      <!-- If there is an 'exclude' parameter for this field, process it -->
+      <xsl:if test="year-exclude/@value != ''">
+        <not>
+          <xsl:apply-templates select="year-exclude/*"/>
+        </not>
+      </xsl:if>
+      
+    </xsl:element>
+
+  </xsl:template>
+
+  <!-- HIDE SECOND YEAR (WILL BE USED FOR RANGE) -->
+  <xsl:template match="param[@name='year'][2]"/>
+  
 <!-- ====================================================================== -->
 <!-- Phrase template                                                        -->
 <!--                                                                        -->
