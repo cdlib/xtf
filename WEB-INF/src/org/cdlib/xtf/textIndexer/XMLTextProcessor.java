@@ -45,11 +45,8 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.sax.SAXSource;
 
 import net.sf.saxon.Controller;
 import net.sf.saxon.PreparedStylesheet;
@@ -77,21 +74,17 @@ import org.apache.lucene.analysis.Token;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import org.cdlib.xtf.lazyTree.LazyDocument;
 import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
 import org.cdlib.xtf.lazyTree.RecordingNamePool;
-import org.cdlib.xtf.textEngine.IdxConfigUtil;
-import org.cdlib.xtf.util.DocTypeDeclRemover;
+import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
 import org.cdlib.xtf.util.Path;
-import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.Trace;
-import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -708,14 +701,14 @@ public class XMLTextProcessor extends DefaultHandler
     // exists, toss it. Also make sure the directory exists.
     //
     File srcFile = new File( srcInfo.source.getSystemId() );
-    File lazyFile = IdxConfigUtil.calcLazyPath( 
+    File lazyFile = IndexUtil.calcLazyPath( 
             new File(xtfHomePath),
             indexInfo,
             srcFile,
             true );
     if( lazyFile.canRead() )
         lazyFile.delete();
-    srcInfo.lazyStore = StructuredFile.create( lazyFile );
+    srcInfo.lazyStore = new StructuredFileProxy( lazyFile );
     
     // Otherwise, queue it to be indexed.
     queueText( srcInfo );
@@ -781,7 +774,7 @@ public class XMLTextProcessor extends DefaultHandler
         // Delete the old lazy file, if any. Might as well delete any
         // empty parent directories as well.
         //
-        lazyFile = IdxConfigUtil.calcLazyPath(
+        lazyFile = IndexUtil.calcLazyPath(
                                          new File(xtfHomePath),
                                          indexInfo, 
                                          srcFile,
@@ -1122,45 +1115,10 @@ public class XMLTextProcessor extends DefaultHandler
   
   {
     
-    // For some evil reason, Resin overrides the default transformer
-    // and parser implementations with its own, deeply inferior,
-    // versions. Screw that.
-    //
-    System.setProperty( "javax.xml.parsers.TransformerFactory",
-                        "net.sf.saxon.TransformerFactoryImpl" );
-    
-    // Our first choice is the new parser supplied by Java 1.5.
-    // Second choice is the older (but reliable) Crimson parser.
-    //
-    try {
-        Class.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-        System.setProperty( "javax.xml.parsers.SAXParserFactory",
-                            "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl" );
-    }
-    catch( ClassNotFoundException e ) {
-        try {
-            Class.forName("org.apache.crimson.jaxp.SAXParserFactoryImpl");
-            System.setProperty( "javax.xml.parsers.SAXParserFactory",
-                                "org.apache.crimson.jaxp.SAXParserFactoryImpl" );
-        }
-        catch( ClassNotFoundException e2 ) {
-            ; // Okay, accept whatever the default is.
-        }
-    }
-    
-    // Create a SAX parser factory.
-    SAXParserFactory spf = SAXParserFactory.newInstance();
-    
     try {
         
-        // Instantiate a new XML parser instance.
-        SAXParser xmlParser = spf.newSAXParser();
-        XMLReader xmlReader = xmlParser.getXMLReader();
-        xmlReader.setFeature( 
-                  "http://xml.org/sax/features/namespaces", true );
-        xmlReader.setFeature( 
-                  "http://xml.org/sax/features/namespace-prefixes", false );
-        
+        // Instantiate a new XML parser, being sure to get the right one.
+        SAXParser xmlParser = IndexUtil.createSAXParser();
     
         InputSource inSrc = null;
 
@@ -1199,21 +1157,9 @@ public class XMLTextProcessor extends DefaultHandler
         // If the file is an XML file...
         else if( file.format.equals("XML") ) {
           
-            // Remove DOCTYPE declarations, since the XML reader will barf if it
-            // can't resolve the entity reference, and we really don't care.
-            //
-            inStream = new DocTypeDeclRemover( inStream );
-            
-            // Work around a nasty bug in the Apache Crimson parser. If it
-            // finds a ']' character at the end of its 8193-byte buffer,
-            // and that is preceded by a '>' character then it crashes. The 
-            // following filter inserts a space in such cases.
-            //
-            if( xmlParser.getClass().getName().equals("org.apache.crimson.jaxp.SAXParserImpl") )
-                inStream = new CrimsonBugWorkaround( inStream );
-            
-            // Now we're ready to make the InputSource out of the InputStream
-            inSrc = new InputSource( inStream );
+            // Apply the standard set of document filters.
+            inSrc = new InputSource( 
+                IndexUtil.filterXMLDocument(inStream, xmlParser) );
         }
         
         // If the file is plain text...
@@ -1261,33 +1207,9 @@ public class XMLTextProcessor extends DefaultHandler
             return 0;
         }
         
-        // There is an XSLT filter specified. So set up to use it, and 
-        // process the resulting filtered XML text.
-        //
-        Templates stylesheet = srcText.preFilter;
-              
-        // Create an actual transform filter from the stylesheet for this
-        // particular document we're indexing.
-        //
-        Transformer filter = stylesheet.newTransformer();
-            
-        // And finally, make a SAX source that combines the XML reader with
-        // the filtered input source.
-        //
-        SAXSource srcText = new SAXSource( xmlReader, inSrc );
-      
-        // Identify this class as the parser for the XML events that 
-        // the XSLT translation will produce.
-        //
-        SAXResult filteredText = new SAXResult( this );
-      
-        // Make sure errors get directed to the right place.
-        if( !(filter.getErrorListener() instanceof XTFSaxonErrorListener) )
-            filter.setErrorListener( new XTFSaxonErrorListener() );
-    
-        // Perform the translation.
-        filter.transform( srcText, filteredText );
-
+        // Apply the pre-filter.
+        IndexUtil.applyPreFilter( srcText.preFilter, xmlParser, inSrc, this );
+        
     } // try
     
     catch( Throwable t ) {
@@ -3374,7 +3296,7 @@ public class XMLTextProcessor extends DefaultHandler
             // Delete the old lazy file, if any. Might as well delete any
             // empty parent directories as well.
             //
-            File lazyFile = IdxConfigUtil.calcLazyPath(
+            File lazyFile = IndexUtil.calcLazyPath(
                                              new File(xtfHomePath),
                                              indexInfo, 
                                              srcFile,
