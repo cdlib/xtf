@@ -53,7 +53,7 @@
   <!-- Local Parameters                                                       -->
   <!-- ====================================================================== -->
 
-  <xsl:param name="css.path" select="'/xtf/css/default/'"/>
+  <xsl:param name="css.path" select="concat($serverURL, 'css/default/')"/>
     
   <!-- ====================================================================== -->
   <!-- Root Template                                                          -->
@@ -667,8 +667,8 @@
       <tr bgcolor="#62708D">
         <td width="33%" height="44" align="left">
           <a href="http://xtf.sourceforge.net" target="_top">
-            <img src="/xtf/icons/default/spacer.gif" border="0" width="15"/>
-            <img src="/xtf/icons/default/xtfMan.gif" border="0" height="44" alt="XTF"/>
+            <img src="{$serverURL}icons/default/spacer.gif" border="0" width="15"/>
+            <img src="{$serverURL}icons/default/xtfMan.gif" border="0" height="44" alt="XTF"/>
           </a>
         </td>
         <td width="34%" height="44" align="center">
@@ -676,8 +676,8 @@
         </td>
         <td width="33%" height="44" align="right">
           <a href="http://www.sourceforge.net" target="_top">
-            <img src="/xtf/icons/default/sflogo.php.png" border="0" alt="SourceForge"/>
-            <img src="/xtf/icons/default/spacer.gif" border="0" width="15"/>
+            <img src="{$serverURL}icons/default/sflogo.php.png" border="0" alt="SourceForge"/>
+            <img src="{$serverURL}icons/default/spacer.gif" border="0" width="15"/>
           </a>
         </td>
       </tr>

@@ -36,8 +36,10 @@
   <xsl:include href="debug.xsl"/>
 
   <xsl:param name="servlet.path"/>
+  
+  <xsl:param name="root.path"/>
 
-  <xsl:param name="serverURL" select="'/'"/>
+  <xsl:param name="serverURL" select="$root.path"/>
 
   <xsl:param name="docId"/>
 
@@ -56,9 +58,9 @@
 
   <xsl:param name="doc.path"><xsl:value-of select="$servlet.path"/>?<xsl:value-of select="$query.string"/></xsl:param>
 
-  <xsl:param name="figure.path" select="concat($serverURL, 'xtf/data/', $subDir, '/', $docId, '/figures/')"/>
+  <xsl:param name="figure.path" select="concat($serverURL, 'data/', $subDir, '/', $docId, '/figures/')"/>
 
-  <xsl:param name="pdf.path" select="concat($serverURL, 'xtf/data/', $subDir, '/', $docId, '/pdfs/')"/>
+  <xsl:param name="pdf.path" select="concat($serverURL, 'data/', $subDir, '/', $docId, '/pdfs/')"/>
 
   <xsl:param name="doc.view" select="'0'"/>
 

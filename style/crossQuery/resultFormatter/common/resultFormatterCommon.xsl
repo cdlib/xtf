@@ -190,6 +190,8 @@
 
   <!-- Path Parameters -->
   <xsl:param name="servlet.path"/>
+  <xsl:param name="root.path"/>
+  <xsl:param name="serverURL" select="$root.path"/>
   <xsl:param name="dynaxml.path" select="if (matches($servlet.path, 'org.cdlib.xtf.crossQuery.CrossQuery')) then 'org.cdlib.xtf.dynaXML.DynaXML' else 'view'"/>
 
   <!-- Query String -->

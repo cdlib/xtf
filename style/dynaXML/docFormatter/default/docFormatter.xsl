@@ -395,7 +395,7 @@
             <td width="2"><img src="{$icon.path}spacer.gif" width="2"/></td>
 
             <!-- BEGIN TOPNAV CENTER -->
-            <form action="{$serverURL}xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML" target="{$target}" method="GET">
+            <form action="{$servlet.path}" target="{$target}" method="GET">
               <input type="hidden" name="docId">
                 <xsl:attribute name="value">
                   <xsl:value-of select="$docId"/>
@@ -509,7 +509,7 @@
           </xsl:when>
           <xsl:when test="$formula.id != '0'">
             <div align="center">
-              <applet code="HotEqn.class" archive="{$serverURL}xtf/applets/HotEqn.jar" height="550" width="550" name="{$formula.id}" align="middle">
+              <applet code="HotEqn.class" archive="{$serverURL}applets/HotEqn.jar" height="550" width="550" name="{$formula.id}" align="middle">
                 <param name="equation">
                   <xsl:attribute name="value">
                     <xsl:value-of select="key('formula-id', $formula.id)"/>
