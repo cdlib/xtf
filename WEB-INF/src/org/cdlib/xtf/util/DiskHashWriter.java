@@ -62,7 +62,7 @@ public class DiskHashWriter
     } // put()
     
     /** Writes out the entire hash */
-    public void outputTo( Subfile out )
+    public void outputTo( SubStore out )
         throws IOException
     {
         // Calculate a good size for the hash. We want to have plenty of open
@@ -169,10 +169,10 @@ public class DiskHashWriter
                 
                 w.put( "bar", buf );
                 
-                w.outputTo( f.createSubfile("testhash") );
+                w.outputTo( f.createSubStore("testhash") );
                 
                 DiskHashReader r = 
-                    new DiskHashReader( f.openSubfile("testhash") );
+                    new DiskHashReader( f.openSubStore("testhash") );
                 
                 buf = r.find( "bar" );
                 assert buf != null;

@@ -97,6 +97,21 @@ public class PackedByteBuf
      * @param in    Source for data
      * @param len   How many bytes to read
      */
+    public PackedByteBuf( SubStore in, int len )
+        throws IOException
+    {
+        bytes = new byte[len];
+        in.readFully( bytes, 0, len );
+        decompress();
+    } // constructor
+
+    /**
+     * Construct a byte buffer for reading from. This constructor reads a chunk
+     * of data from 'in', starting at its current position.
+     * 
+     * @param in    Source for data
+     * @param len   How many bytes to read
+     */
     public PackedByteBuf( DataInput in, int len )
         throws IOException
     {
@@ -428,6 +443,18 @@ public class PackedByteBuf
      * 
      * @param out   Where to write the data to.
      */ 
+    public void output( SubStore out )
+        throws IOException
+    {
+        compress();
+        output( out, pos );
+    }
+
+    /**
+     * Copy the entire contents of the buffer to an output sink.
+     * 
+     * @param out   Where to write the data to.
+     */ 
     public void output( DataOutput out )
         throws IOException
     {
@@ -435,6 +462,51 @@ public class PackedByteBuf
         output( out, pos );
     }
 
+    /**
+     * Copy some or all of the buffer to an output sink. Note that if 'len'
+     * is greater than the buffer's size, the output will be padded at the
+     * end with zeros.
+     * 
+     * @param out   Where to write the data to
+     * @param len   How many bytes to write (okay to exceed buffer length)
+     */
+    public void output( SubStore out, int len )
+        throws IOException
+    {
+        assert pos > 0 : "Cannot output empty buffer";
+        
+        // The first byte is special: it marks whether the buffer is compressed
+        // or not.
+        //
+        compress();
+        if( compressed ) {
+            out.write( compressMarker );
+            assert( (uncompLen>>16) == 0 ) : "Tried to compress too much data"; 
+            out.write( uncompLen & 0xff );
+            out.write( (uncompLen>>8) & 0xff );
+            out.write( bytes[0] );
+            assert length() == pos + 3;
+        }
+        else {
+            out.write( bytes[0] );
+            if( bytes[0] == compressMarker ) {
+                out.writeByte( 0 );
+                out.writeByte( 0 );
+                assert length() == pos + 2;
+            }
+            else
+                assert length() == pos;
+        }
+
+        // Write the rest of the bytes, and pad with zeros if requested.
+        int nToWrite = (len <= pos) ? len : pos;
+        out.write( bytes, 1, nToWrite-1 );
+        if( nToWrite < len ) {
+            byte[] zeros = new byte[len - nToWrite];
+            out.write( zeros, 0, len - nToWrite );
+        }
+    }
+    
     /**
      * Copy some or all of the buffer to an output sink. Note that if 'len'
      * is greater than the buffer's size, the output will be padded at the

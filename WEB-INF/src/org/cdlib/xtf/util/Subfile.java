@@ -29,8 +29,6 @@ package org.cdlib.xtf.util;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -42,7 +40,7 @@ import java.io.RandomAccessFile;
  * 
  * @author Martin Haye
  */
-public class Subfile implements DataInput, DataOutput
+class Subfile implements SubStore
 {
     /** Actual disk file to write to */
     private RandomAccessFile file;
@@ -139,14 +137,6 @@ public class Subfile implements DataInput, DataOutput
         }
     }
 
-    public int read(byte[] b, int off, int len) throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( len );
-            return file.read(b, off, len);
-        }
-    }
-
     public void readFully(byte[] b) throws IOException
     {
         synchronized( parent ) {
@@ -178,23 +168,6 @@ public class Subfile implements DataInput, DataOutput
         }
     }
 
-    public void setLength(long newLength) throws IOException
-    {
-        synchronized( parent ) {
-            if( segLength >= 0 )
-                throw new IOException( "Cannot set length of previously created subfile" );
-            file.setLength(newLength + segOffset);
-        }
-    }
-
-    public int skipBytes(int n) throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( n );
-            return file.skipBytes(n);
-        }
-    }
-
     public void write(byte[] b) throws IOException
     {
         synchronized( parent ) {
@@ -211,51 +184,11 @@ public class Subfile implements DataInput, DataOutput
         }
     }
 
-    public int read() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 1 );
-            return file.read();
-        }
-    }
-
-    public boolean readBoolean() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 1 );
-            return file.readBoolean();
-        }
-    }
-
     public byte readByte() throws IOException
     {
         synchronized( parent ) {
             checkLength( 1 );
             return file.readByte();
-        }
-    }
-
-    public char readChar() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 2 );
-            return file.readChar();
-        }
-    }
-
-    public double readDouble() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 8 );
-            return file.readDouble();
-        }
-    }
-
-    public float readFloat() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 4 );
-            return file.readFloat();
         }
     }
 
@@ -267,71 +200,11 @@ public class Subfile implements DataInput, DataOutput
         }
     }
 
-    public String readLine() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 1 );
-            String ret = file.readLine();
-            checkLength( 0 );
-            return ret;
-        }
-    }
-
-    public long readLong() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 4 );
-            return file.readLong();
-        }
-    }
-
-    public short readShort() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 4 );
-            return file.readShort();
-        }
-    }
-
-    public int readUnsignedByte() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 1 );
-            return file.readUnsignedByte();
-        }
-    }
-
-    public int readUnsignedShort() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 1 );
-            return file.readUnsignedShort();
-        }
-    }
-
-    public String readUTF() throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 1 );
-            String ret = file.readUTF();
-            checkLength( 0 );
-            return ret;
-        }
-    }
-
     public void write(int b) throws IOException
     {
         synchronized( parent ) {
             checkLength( 1 );
             file.write(b);
-        }
-    }
-
-    public void writeBoolean(boolean v) throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 1 );
-            file.writeBoolean(v);
         }
     }
 
@@ -351,14 +224,6 @@ public class Subfile implements DataInput, DataOutput
         }
     }
 
-    public void writeChar(int v) throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 2 );
-            file.writeChar(v);
-        }
-    }
-
     public void writeChars(String s) throws IOException
     {
         synchronized( parent ) {
@@ -367,51 +232,11 @@ public class Subfile implements DataInput, DataOutput
         }
     }
 
-    public void writeDouble(double v) throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 8 );
-            file.writeDouble(v);
-        }
-    }
-
-    public void writeFloat(float v) throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 4 );
-            file.writeFloat(v);
-        }
-    }
-
     public void writeInt(int v) throws IOException
     {
         synchronized( parent ) {
             checkLength( 4 );
             file.writeInt(v);
-        }
-    }
-
-    public void writeLong(long v) throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 8 );
-            file.writeLong(v);
-        }
-    }
-
-    public void writeShort(int v) throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( 2 );
-            file.writeShort(v);
-        }
-    }
-
-    public void writeUTF(String str) throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( str.length() * 3 );
-            file.writeUTF(str);
         }
     }
 

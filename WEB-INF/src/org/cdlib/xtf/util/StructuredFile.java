@@ -46,7 +46,7 @@ import java.util.HashMap;
  * 
  * @author Martin Haye
  */
-public class StructuredFile
+public class StructuredFile implements StructuredStore
 {
     /** Actual file path of the structured file */
     private File             file;
@@ -127,9 +127,10 @@ public class StructuredFile
             readHeader();
     } // constructor
     
-    /** Gets the File (path) associated with this structured file */
-    public File getFile() {
-        return file;
+    /** Get the full path to the file */
+    public String getSystemId()
+    {
+        return file.getAbsolutePath();
     }
 
     /**
@@ -212,7 +213,7 @@ public class StructuredFile
      * @param name  Name of the sub-file to create. Must not exist.
      * @return      A subfile to write to.
      */
-    public synchronized Subfile createSubfile( String name )
+    public synchronized SubStore createSubStore( String name )
         throws IOException
     {
         // Can only create one sub-file at a time.
@@ -253,8 +254,8 @@ public class StructuredFile
      * 
      * @param name  Name of pre-existing subfile to open.
      */
-    public synchronized Subfile openSubfile( String name )
-        throws FileNotFoundException, IOException
+    public synchronized SubStore openSubStore( String name )
+        throws IOException
     {
         // Find the directory entry.
         DirEntry ent = dir.find( name );
@@ -300,7 +301,7 @@ public class StructuredFile
     } // closeSubfile()
     
     /**
-     * Sets a user-defined version number for the file. It can be retrieved
+     * Sets a user-defined version number for the store. It can be retrieved
      * later with {@link #getUserVersion()}.
      * 
      * @param ver   The version number to set.
@@ -371,6 +372,17 @@ public class StructuredFile
             }
         }
     } // close()
+    
+    /** Close and delete the entire structured file */
+    public void delete() throws IOException
+    {
+        // Close if we haven't already.
+        if( realFile != null )
+            close();
+        
+        // And delete the file.
+        file.delete();
+    } // delete()
     
     /** 
      * Gets rid of the directory at the end of the file, in preparation for
@@ -579,13 +591,13 @@ public class StructuredFile
                 f = StructuredFile.open( testFile );
                 
                 // Add a couple sub-files.
-                Subfile sf1 = f.createSubfile( "foo" );
+                SubStore sf1 = f.createSubStore( "foo" );
                 sf1.writeInt( 1 );
                 sf1.writeByte( 2 );
                 sf1.writeInt( 3 );
                 sf1.close();
                 
-                Subfile sf2 = f.createSubfile( "foo2" );
+                SubStore sf2 = f.createSubStore( "foo2" );
                 sf2.writeByte( 8 );
                 sf2.writeInt( 9 );
                 sf2.close();
@@ -594,8 +606,8 @@ public class StructuredFile
                 
                 // Verify the sub-files.
                 f = StructuredFile.open( testFile );
-                sf2 = f.openSubfile( "foo2" );
-                sf1 = f.openSubfile( "foo" );
+                sf2 = f.openSubStore( "foo2" );
+                sf1 = f.openSubStore( "foo" );
                 
                 assert sf2.readByte() == 8;
                 assert sf1.readInt() == 1;
@@ -623,24 +635,24 @@ public class StructuredFile
                 assert ok;
                 
                 // Make sure we can add another one.
-                Subfile sf3 = f.createSubfile( "foo3" );
+                SubStore sf3 = f.createSubStore( "foo3" );
                 sf3.writeInt( 10 );
                 sf3.seek( 0 );
                 assert sf3.readInt() == 10;
                 
                 // Can't create two at the same time
                 ok = false;
-                try { f.createSubfile("foo4"); } catch( IOException e ) { ok = true; }
+                try { f.createSubStore("foo4"); } catch( IOException e ) { ok = true; }
                 assert ok;
                 
                 sf3.close();
                 
-                sf3 = f.openSubfile( "foo3" );
+                sf3 = f.openSubStore( "foo3" );
                 assert sf3.readInt() == 10;
                 
                 // Shouldn't be able to open a non-existent sub-file.
                 ok = false;
-                try { f.openSubfile("foo99"); }
+                try { f.openSubStore("foo99"); }
                 catch( FileNotFoundException e ) { ok = true; }
                 assert ok;
             

@@ -43,8 +43,8 @@ public class DiskHashReader
     /** Size of the header we expect to find */
     static final int headerSize = 12;
     
-    /** Subfile to read the hash from */
-    private Subfile       subfile;
+    /** SubStore to read the hash from */
+    private SubStore       subfile;
     
     /** Number of hash slots in the subfile */
     private int           nSlots;
@@ -63,7 +63,7 @@ public class DiskHashReader
      * 
      * @param subfile   Must have been created by DiskHashWriter.outputTo()
      */
-    public DiskHashReader( Subfile subfile )
+    public DiskHashReader( SubStore subfile )
         throws IOException
     {
         this.subfile = subfile;
@@ -72,7 +72,7 @@ public class DiskHashReader
         byte[] magic = new byte[4];
         subfile.read( magic );
         if( magic[0] != 'h' || magic[1] != 'a' || magic[2] != 's' || magic[3] != 'h' )
-            throw new IOException( "Subfile isn't a proper DiskHash" );
+            throw new IOException( "SubStore isn't a proper DiskHash" );
         
         nSlots   = subfile.readInt();
         slotSize = subfile.readInt();
