@@ -35,7 +35,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Properties;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -86,7 +85,7 @@ import org.w3c.dom.Node;
  * 
  * @author Martin Haye
  */
-public class QueryRequest
+public class QueryRequest implements Cloneable
 {
     /** Path (base dir relative) for the resultFormatter stylesheet */
     public String     displayStyle;
@@ -117,11 +116,6 @@ public class QueryRequest
     
     /** Term marking mode */
     public int        termMode     = SpanDocument.MARK_SPAN_TERMS;
-    
-    /** List of queries that need some sort of fix-up after certain parameters
-     *  (like index chunk size) are known.
-     */
-    private LinkedList slopFixups = new LinkedList();
     
     /** 
      * During tokenization, the '*' wildcard has to be changed to a word
@@ -203,6 +197,14 @@ public class QueryRequest
 
         parseOutput( (Element) queryDoc );
     } // constructor
+    
+    
+    // Creates an exact copy of this query request.
+    public Object clone() 
+    {
+        try { return super.clone(); }
+        catch( CloneNotSupportedException e ) { throw new RuntimeException(e); }
+    } // clone()
     
     
     /**
@@ -840,8 +842,11 @@ public class QueryRequest
                            "'boost' attribute" );
                 }
             }
-            else if( attrName.equals("maxSnippets") )
+            else if( attrName.equals("maxSnippets") ) {
                 maxSnippets = parseIntAttrib( parent, attrName );
+                if( maxSnippets < 0 )
+                    maxSnippets = 999999999;
+            }
             else
                 parseMainAttrib( parent, attrName, attrVal );
         }
@@ -902,7 +907,7 @@ public class QueryRequest
         //
         if( name.equals("all") || name.equals("phrase") || name.equals("near"))
         {   
-            int slop = name.equals("all") ? 999999 :
+            int slop = name.equals("all") ? 999999999 :
                        name.equals("phrase") ? 0 :
                        parseIntAttrib( parent, "slop" );
             return makeProxQuery( parent, slop, field, maxSnippets );
@@ -1034,7 +1039,7 @@ public class QueryRequest
             // it to a big value for now, and it will be clamped by
             // fixupSlop() later whent he query is run.
             //
-            q = new SpanNearQuery( subQueries, 999999, false );
+            q = new SpanNearQuery( subQueries, 999999999, false );
         }
         else
             q = new SpanOrQuery( subQueries );
@@ -1157,7 +1162,7 @@ public class QueryRequest
         // Now make the final 'not' query. Note that the actual slop will have
         // to be fixed when the query is run.
         //
-        SpanQuery nq = new SpanChunkedNotQuery( query, subQuery, 9999999 );
+        SpanQuery nq = new SpanChunkedNotQuery( query, subQuery, 999999999 );
         nq.setSpanRecording( maxSnippets );
         return nq;
     } // processTextNots();
