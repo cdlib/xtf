@@ -75,7 +75,7 @@ public class SrcTreeProcessor
   private IndexerConfig    cfgInfo;
   private XMLTextProcessor textProcessor;
   private StylesheetCache  stylesheetCache = 
-                                  new StylesheetCache( 100, 0, false );
+                                  new StylesheetCache( 100, 0, true );
   private Transformer      docSelector;
   private int              nScanned = 0;
   
