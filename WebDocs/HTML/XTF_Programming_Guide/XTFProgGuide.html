@@ -711,16 +711,15 @@
     after the <b>?</b> symbol) defines the search to be performed. Also notice that 
     search to be performed is represented by two parameters: <br>
     <br>
-    <table width="606">
+    <table width="606" cellpadding="0" cellspacing="8">
       <tr> 
         <td width="213" align="right" valign="top" class="Code">text=man+war</td>
-        <td width="10">&nbsp;</td>
         <td width="246"><span class="BaseStyle">The list of words search for.</span></td>
       </tr>
       <tr> 
         <td width="213" align="right" valign="top" class="Code">text-exclude=%22Man+of+War%22</td>
-        <td width="10">&nbsp;</td>
-        <td width="246"><span class="BaseStyle">The phrase to exclude from the search.</span></td>
+        <td width="246"><span class="BaseStyle">The phrase to exclude from the 
+          search.</span></td>
       </tr>
     </table>
     <br>
@@ -752,20 +751,18 @@
       <br>
       where <br>
       <br>
-      <table>
+      <table cellpadding="0" cellspacing="8">
         <tr> 
           <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">Word</span>" 
           </td>
-          <td width="10">&nbsp;</td>
           <td><span class="BaseStyle">is the actual word or symbol extracted from 
             the URL.</span></td>
         </tr>
         <tr> 
           <td width="16%" align="right" valign="top" class="Code"> isWord="<span class="MacroCode">YesOrNo</span>" 
           </td>
-          <td width="10">&nbsp;</td>
-          <td><span class="BaseStyle">identifies whether the token is a word or punctuation 
-            symbol.</span></td>
+          <td><span class="BaseStyle">identifies whether the token is a word or 
+            punctuation symbol.</span></td>
         </tr>
       </table>
     </div>
@@ -782,20 +779,19 @@
 </pre>
       where <br>
       <br>
-      <table>
+      <table cellpadding="0" cellspacing="8">
         <tr> 
           <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">StringOfWords</span>" 
           </td>
-          <td width="10">&nbsp;</td>
-          <td><span class="BaseStyle">is the entire phrase extracted from the URL 
-            as a single string.</span></td>
+          <td><span class="BaseStyle">is the entire phrase extracted from the 
+            URL as a single string.</span></td>
         </tr>
         <tr> 
           <td width="16%" align="right" valign="top" class="Code"> <span class="MacroCode">Token</span>...<span class="MacroCode">Token</span> 
           </td>
-          <td width="10">&nbsp;</td>
-          <td> <span class="BaseStyle"> is the original phrase broken down into individual 
-            token tags for each word or symbol in the phrase. </span> </td>
+          <td> <span class="BaseStyle"> is the original phrase broken down into 
+            individual token tags for each word or symbol in the phrase. </span> 
+          </td>
         </tr>
       </table>
     </div>
@@ -1029,18 +1025,16 @@
           </div>
           where 
           <div class="IndentLR"> 
-            <table>
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> dirPath="<span class="MacroCode">DirectoryPath</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td><span class="BaseStyle">is absolute file path to the directory 
                   on disk.</span></td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> <span class="MacroCode">File, 
                   File</span>... </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is zero or more <a href="#textIndexer_Input_FileTag">File 
                   Tags</a>, one for each file found in the directory.</span> </td>
               </tr>
@@ -1057,15 +1051,14 @@
             <br>
             where<br>
             <br>
-            <table>
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="166" align="right" valign="top" class="Code"> fileName="<span class="MacroCode">FileName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td width="636"><span class="BaseStyle">is the name of a file found 
-                  in the directory identified by the containing <span class="Code">&lt;directory...&gt;</span> 
-                  tag. Note that this file name <i><b>does not</b></i> contain any 
-                  path information for the file, but only the file name itself.</span></td>
+                <td width="636"><span class="BaseStyle">is the name of a file 
+                  found in the directory identified by the containing <span class="Code">&lt;directory...&gt;</span> 
+                  tag. Note that this file name <i><b>does not</b></i> contain 
+                  any path information for the file, but only the file name itself.</span></td>
               </tr>
             </table>
           </div>
@@ -1116,16 +1109,15 @@
 </i>      <i>{</i>displayStyle = "<span class="MacroCode">DocumentFormatterPath</span>"<i>}</i>/&gt;</pre>
             where<br>
             <br>
-            <table cellpadding="4">
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="264" align="right" valign="top" class="Code" height="22"> 
                   <div align="right">fileName="<span class="MacroCode">FileName</span>"</div>
                 </td>
-                <td width="4" height="22">&nbsp;</td>
                 <td width="541" height="22"> 
                   <div align="left"><span class="BaseStyle">is a required attribute 
-                    that specifies the name of a file to be indexed. Note that this 
-                    file name <i><b>should not</b></i> contain any path information 
+                    that specifies the name of a file to be indexed. Note that 
+                    this file name <i><b>should not</b></i> contain any path information 
                     for the file, but only the file name itself.</span></div>
                 </td>
               </tr>
@@ -1133,49 +1125,47 @@
                 <td width="264" align="right" valign="top" class="Code" height="22"> 
                   <div align="right">format="<span class="MacroCode">FileFormat</span>"</div>
                 </td>
-                <td width="4" height="22">&nbsp;</td>
                 <td width="541" height="22"> 
                   <div align="left"><span class="BaseStyle">is an optional attribute 
-                    that specifies the format of a file to be indexed. Currently XML, 
-                    PDF, HTML and Plain Text files are handled by the <i><b>textIndexer</b></i>, 
+                    that specifies the format of a file to be indexed. Currently 
+                    XML, PDF, HTML and Plain Text files are handled by the <i><b>textIndexer</b></i>, 
                     and the format attriibute should correspondingly be set to<span class="Code"> 
                     XML</span>,<span class="Code"> PDF</span>,<span class="Code"> 
                     HTML</span>, or<span class="Code"> Text</span>. If this attribute 
-                    is omitted, the <i><b>textIndexer</b></i> will try to infer the 
-                    file type based on the file extension.</span></div>
+                    is omitted, the <i><b>textIndexer</b></i> will try to infer 
+                    the file type based on the file extension.</span></div>
                 </td>
               </tr>
               <tr> 
                 <td width="264" align="right" valign="top" class="Code" height="22"> 
                   <div align="right">preFilter="<span class="MacroCode">PreFilterPath</span>"</div>
                 </td>
-                <td width="4" height="22">&nbsp;</td>
                 <td width="541" height="22"> 
                   <div align="left"><span class="BaseStyle">is an optional attribute 
-                    that specifies the path to the <b>Pre-Filter</b> stylesheet to 
-                    be applied to this file. If this path is not specified as an absolute 
-                    path, it is assumed to be relative to the XTF base installation 
-                    directory (i.e., <span class="Code">XTF_HOME</span>.) If this 
-                    attribute is omitted, no pre-filter will be applied to the file.</span></div>
+                    that specifies the path to the <b>Pre-Filter</b> stylesheet 
+                    to be applied to this file. If this path is not specified 
+                    as an absolute path, it is assumed to be relative to the XTF 
+                    base installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
+                    If this attribute is omitted, no pre-filter will be applied 
+                    to the file.</span></div>
                 </td>
               </tr>
               <tr> 
                 <td width="264" align="right" valign="top" class="Code" height="22"> 
                   <div align="right">displayStyle="<span class="MacroCode">DocumentFormatterPath</span>"</div>
                 </td>
-                <td width="4" height="22">&nbsp;</td>
                 <td width="541" height="22"> 
                   <div align="left"><span class="BaseStyle">is an optional attribute 
                     that specifies path to the <b>Document Formatter</b> stylesheet 
-                    to use for this file. If this path is not specified as an absolute 
-                    path, it is assumed to be relative to the XTF base installation 
-                    directory (i.e., <span class="Code">XTF_HOME</span>.)<br>
+                    to use for this file. If this path is not specified as an 
+                    absolute path, it is assumed to be relative to the XTF base 
+                    installation directory (i.e., <span class="Code">XTF_HOME</span>.)<br>
                     <br>
-                    If this attribute is present, the <i><b>textIndexer</b></i> will 
-                    create a special cache that is used by the <i> <b>dynaXML</b></i> 
-                    servlet to display the current file more quickly. If this attribute 
-                    is omitted, the cache is not created. For more details, see the 
-                    discussion of <a href="../XTF_Under_Hood/XTFUnderHood.html#LazyDocs">Lazy 
+                    If this attribute is present, the <i><b>textIndexer</b></i> 
+                    will create a special cache that is used by the <i> <b>dynaXML</b></i> 
+                    servlet to display the current file more quickly. If this 
+                    attribute is omitted, the cache is not created. For more details, 
+                    see the discussion of <a href="../XTF_Under_Hood/XTFUnderHood.html#LazyDocs">Lazy 
                     Document Handling</a> in the <a href="../XTF_Under_Hood/XTFUnderHood.html">XTF 
                     Under the Hood</a> guide.</span></div>
                 </td>
@@ -1343,20 +1333,18 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table>
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> name="<span class="MacroCode">ParamName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is the name of the parameter extracted 
                   from the original query URL. </span></td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">ParamValue</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the original text in the query URL 
-                  that is assigned to the specified parameter. </span> </td>
+                <td> <span class="BaseStyle"> is the original text in the query 
+                  URL that is assigned to the specified parameter. </span> </td>
               </tr>
             </table>
           </div>
@@ -1380,21 +1368,19 @@
           <br>
           where <br>
           <div class="IndentLR"> 
-            <table>
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">Word</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td><span class="BaseStyle">is the actual word or symbol extracted 
-                  from the URL.</span></td>
+                <td valign="baseline"><span class="BaseStyle">is the actual word 
+                  or symbol extracted from the URL.</span></td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> isWord="<span class="MacroCode">YesOrNo</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> identifies whether the token is a word 
-                  (<span class="Code">isWord="yes"</span>) or a punctuation symbol 
-                  (<span class="Code">isWord="no"</span>.) </span> </td>
+                <td> <span class="BaseStyle"> identifies whether the token is 
+                  a word (<span class="Code">isWord="yes"</span>) or a punctuation 
+                  symbol (<span class="Code">isWord="no"</span>.) </span> </td>
               </tr>
             </table>
           </div>
@@ -1414,21 +1400,19 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table>
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">StringOfWords</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td><span class="BaseStyle">is the entire phrase extracted from the 
-                  URL as a single string.</span></td>
+                <td><span class="BaseStyle">is the entire phrase extracted from 
+                  the URL as a single string.</span></td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> <span class="MacroCode">Token, 
                   Token</span>... </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the original phrase broken down into 
-                  one or more token tags (one for each word or symbol in the phrase.) 
-                  </span> </td>
+                <td> <span class="BaseStyle"> is the original phrase broken down 
+                  into one or more token tags (one for each word or symbol in 
+                  the phrase.) </span> </td>
               </tr>
             </table>
           </div>
@@ -1445,11 +1429,11 @@
           <b>Text Search Engine</b>. It has the form:<br>
           <br>
           <div class="IndentLR"> 
-            <pre class="Code">&lt;query style      = "<span class="MacroCode">ResultFormatterLocation</span>"
-       <i>{</i>startDoc  = "<span class="MacroCode">FirstDocToReturn</span>"<i>}</i>
-       <i>{</i>maxDocs   = "<span class="MacroCode">MaxDocsToReturn</span>"<i>}</i>
-       <i>{</i>termLimit = "<span class="MacroCode">MaxTermsToAllow</span>"<i>}</i>
-       {workLimit = "<span class="MacroCode">MaxWorkToAllow</span>"<i>}</i>&gt;
+            <pre class="Code">&lt;query style            = "<span class="MacroCode">ResultFormatterLocation</span>"<br>       <i>{</i>sortMetaFields  = "<span class="MacroCode">ListOfMetaFields</span>"<i>}</i>
+       <i>{</i>startDoc        = "<span class="MacroCode">FirstDocToReturn</span>"<i>}</i>
+       <i>{</i>maxDocs         = "<span class="MacroCode">MaxDocsToReturn</span>"<i>}</i>
+       <i>{</i>termLimit       = "<span class="MacroCode">MaxTermsToAllow</span>"<i>}</i>
+       {workLimit       = "<span class="MacroCode">MaxWorkToAllow</span>"<i>}</i>&gt;
 
     <span class="MacroCode">QueryType</span>
 
@@ -1457,69 +1441,98 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px">
+            <table cellspacing="8px" cellpadding="0">
               <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> style="<span class="MacroCode">ResultFormatterLocation</span>" 
+                <td width="201" align="right" valign="top" class="Code"> 
+                  <div align="right">style="<span class="MacroCode">ResultFormatterLocation</span>" 
+                  </div>
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the path to the <b>Result Formatter</b> 
-                  stylesheet to use to display the results generated by the current 
-                  query. If this path is not specified as an absolute path, it is 
-                  assumed to be relative to the XTF base installation directory (i.e., 
-                  <span class="Code">XTF_HOME</span>.) </span> </td>
+                <td valign="top" width="1193"> <span class="BaseStyle"> is the 
+                  path to the <b>Result Formatter</b> stylesheet to use to display 
+                  the results generated by the current query. If this path is 
+                  not specified as an absolute path, it is assumed to be relative 
+                  to the XTF base installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
+                  </span> </td>
               </tr>
               <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> startDoc="<span class="MacroCode">FirstDocToOutput</span>" 
+                <td width="201" align="right" valign="top" class="Code"> 
+                  <div align="right">sortMetaFields="<span class="MacroCode">ListOfMetaFields</span>" 
+                  </div>
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is an optional attribute specifying 
-                  the ordinal number of the first matching document to pass on to 
-                  the <b>Result Formatter</b> If not specified, this attribute defaults 
-                  to 1, meaning the first document that contains matches for the specified 
-                  query. </span> </td>
+                <td valign="top" width="1193"> <span class="BaseStyle"> is an 
+                  optional attribute specifying a list of meta fields by which 
+                  to sort the results. The list should consist of a quoted string 
+                  containing one or more meta-field names, separated by commas. 
+                  If multiple meta-fields are specified, the results are sorted 
+                  first by the left-most meta-field, then sub-sorted by subsequent 
+                  fields to produce the final output. Optionally, each meta-field 
+                  name can be preceeded by a plus sign (<b class="Code">+</b>) 
+                  or a minus sign (<b class="Code">-</b>) to indicate whether 
+                  the results for that field should be sorted in ascending or 
+                  descending order. If no plus or minus sign is specified for 
+                  a meta-field, then the results are sorted in ascending order 
+                  by default.</span> </td>
               </tr>
               <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> maxDocs="<span class="MacroCode">MaxDocsToOutput</span>" 
+                <td width="201" align="right" valign="top" class="Code"> 
+                  <div align="right">startDoc="<span class="MacroCode">FirstDocToReturn</span>" 
+                  </div>
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is an optional attribute specifying 
-                  the number of matching documents to pass on to the <b>Result Formatter</b>. 
-                  If not specified, this attribute defaults to -1, meaning all the 
-                  documents with matches for the specified query. </span> </td>
+                <td valign="top" width="1193"> <span class="BaseStyle"> is an 
+                  optional attribute specifying the ordinal number of the first 
+                  matching document to pass on to the <b>Result Formatter</b> 
+                  If not specified, this attribute defaults to 1, meaning the 
+                  first document that contains matches for the specified query. 
+                  </span> </td>
               </tr>
               <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> termLimit="<span class="MacroCode">MaxTermsToAllow</span>" 
+                <td width="201" align="right" valign="top" class="Code"> 
+                  <div align="right">maxDocs="<span class="MacroCode">MaxDocsToReturnt</span>" 
+                  </div>
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is an optional attribute that limits 
-                  the number of terms permitted in a query. If not specified, this 
-                  attribute defaults to -1, meaning no limit is enforced. This attribute 
-                  is used primarily to prevent wildcard expansions like<span class="code"> 
-                  &lt;term&gt;a*&lt;/term&gt </span>from overloading the <b><i>crossQuery</i></b> 
-                  servlet. If the query does in fact exceed the limit specified by 
-                  this attribute, a<span class="Code"> <a href="#crossQuery_TermLimitErrorTag">TermLimit</a> 
-                  </span>error is sent to the <b>Error Generator</b> stylesheet for 
-                  the offending query. </span> </td>
+                <td valign="top" width="1193"> <span class="BaseStyle"> is an 
+                  optional attribute specifying the number of matching documents 
+                  to pass on to the <b>Result Formatter</b>. If not specified, 
+                  this attribute defaults to -1, meaning all the documents with 
+                  matches for the specified query. </span> </td>
               </tr>
               <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> workLimit="<span class="MacroCode">MaxWorkToAllow</span>" 
+                <td width="201" align="right" valign="top" class="Code"> 
+                  <div align="right">termLimit="<span class="MacroCode">MaxTermsToAllow</span>" 
+                  </div>
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is an optional attribute that limits 
-                  the amount of "work" that may be performed in a query. If not specified, 
-                  this attribute defaults to -1, meaning no limit is enforced. <br>
+                <td valign="top" width="1193"> <span class="BaseStyle"> is an 
+                  optional attribute that limits the number of terms permitted 
+                  in a query. If not specified, this attribute defaults to -1, 
+                  meaning no limit is enforced. This attribute is used primarily 
+                  to prevent wildcard expansions like<span class="code"> &lt;term&gt;a*&lt;/term&gt 
+                  </span>from overloading the <b><i>crossQuery</i></b> servlet. 
+                  If the query does in fact exceed the limit specified by this 
+                  attribute, a<span class="Code"> <a href="#crossQuery_TermLimitErrorTag">TermLimit</a> 
+                  </span>error is sent to the <b>Error Generator</b> stylesheet 
+                  for the offending query. </span> </td>
+              </tr>
+              <tr> 
+                <td width="201" align="right" valign="top" class="Code"> 
+                  <div align="right">workLimit="<span class="MacroCode">MaxWorkToAllow</span>" 
+                  </div>
+                </td>
+                <td valign="top" width="1193"> <span class="BaseStyle"> is an 
+                  optional attribute that limits the amount of "work" that may 
+                  be performed in a query. If not specified, this attribute defaults 
+                  to -1, meaning no limit is enforced. <br>
                   <br>
                   This attribute is used primarily to prevent queries from overloading 
                   the <b><i>crossQuery</i></b> servlet, which would adversly impact 
-                  the responsiveness of the XTF system. If a query exceeds the work 
-                  limit set by this attribute, a<span class="Code"> <a href="#crossQuery_TermLimitErrorTag">WorkLimit</a> 
-                  </span>error is sent to the <b>Error Generator</b> stylesheet for 
-                  the offending query. <br>
+                  the responsiveness of the XTF system. If a query exceeds the 
+                  work limit set by this attribute, a<span class="Code"> <a href="#crossQuery_TermLimitErrorTag">WorkLimit</a> 
+                  </span>error is sent to the <b>Error Generator</b> stylesheet 
+                  for the offending query. <br>
                   <br>
-                  For the <b><i>crossQuery</i></b> servlet, one unit of "work" is 
-                  equivalent to finding a single matching term in a single document. 
-                  Experimentally, a value of 500,000 for this attribute seems to work 
-                  well. </span> </td>
+                  For the <b><i>crossQuery</i></b> servlet, one unit of "work" 
+                  is equivalent to finding a single matching term in a single 
+                  document. Experimentally, a value of 500,000 for this attribute 
+                  seems to work well. </span> </td>
               </tr>
             </table>
             <br>
@@ -1585,37 +1598,36 @@
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> indexPath="<span class="MacroCode">IndexDBLocation</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is the path to the <b>Index Database</b> 
                   to use when performing the search. If this path is not specified 
-                  as an absolute path, it is assumed to be relative to the XTF base 
-                  installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
+                  as an absolute path, it is assumed to be relative to the XTF 
+                  base installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
                   </span> </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> maxSnippets="<span class="MacroCode">SnippetsToOutput</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> identifies the number of snippets to 
-                  pass on to the <b>Result Formatter</b> stylesheet for display. A 
-                  snippet is defined as the matching text found in a document for 
-                  a particular query, along with some additional text around it for 
-                  context. The amount of context displayed for each match is defined 
-                  by the <span class="Code">maxContext</span> attribute. <br>
+                <td> <span class="BaseStyle"> identifies the number of snippets 
+                  to pass on to the <b>Result Formatter</b> stylesheet for display. 
+                  A snippet is defined as the matching text found in a document 
+                  for a particular query, along with some additional text around 
+                  it for context. The amount of context displayed for each match 
+                  is defined by the <span class="Code">maxContext</span> attribute. 
+                  <br>
                   <br>
                   If not specified this attribute defaults to 3, meaning snippets 
-                  for the top three matches for a document are returned. Also, this 
-                  attribute can be set to -1, meaning all the snippets for a document 
-                  are returned. </span> </td>
+                  for the top three matches for a document are returned. Also, 
+                  this attribute can be set to -1, meaning all the snippets for 
+                  a document are returned. </span> </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> maxContext="<span class="MacroCode">maxContextChars</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> identifies the size of a snippet to 
-                  pass on to the <b>Result Formatter</b><span class="Code"> <a href="#crossQuery_SnippetTag">snippet</a> 
-                  </span>tag. If not specified, this attribute defaults to 80 characters. 
-                  Note that the context length is the total number of characters for 
+                <td> <span class="BaseStyle"> identifies the size of a snippet 
+                  to pass on to the <b>Result Formatter</b><span class="Code"> 
+                  <a href="#crossQuery_SnippetTag">snippet</a> </span>tag. If 
+                  not specified, this attribute defaults to 80 characters. Note 
+                  that the context length is the total number of characters for 
                   the snippet, which includes both the matched text and the context 
                   text surrounding it. </span> </td>
               </tr>
@@ -1658,11 +1670,10 @@
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> indexPath="<span class="MacroCode">IndexDBLocation</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is the path to the <b>Index Database</b> 
                   to use when performing the search. If this path is not specified 
-                  as an absolute path, it is assumed to be relative to the XTF base 
-                  installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
+                  as an absolute path, it is assumed to be relative to the XTF 
+                  base installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
                   </span> </td>
               </tr>
             </table>
@@ -1692,15 +1703,14 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px">
+            <table cellspacing="8" cellpadding="0">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> indexPath="<span class="MacroCode">IndexDBLocation</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is the path to the <b>Index Database</b> 
                   to use when performing the search. If this path is not specified 
-                  as an absolute path, it is assumed to be relative to the XTF base 
-                  installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
+                  as an absolute path, it is assumed to be relative to the XTF 
+                  base installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
                   </span> </td>
               </tr>
             </table>
@@ -1724,20 +1734,20 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px">
+            <table cellspacing="8px" cellpadding="0">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> metaField="<span class="MacroCode">MetaFieldName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is an optional attribute used during 
-                  meta-data searches to identify the name of the meta-field to be 
-                  searched. If this attribute is missing for a meta-search, the parent 
-                  tag's meta-field name is used. If no parent meta-field name exists, 
+                  meta-data searches to identify the name of the meta-field to 
+                  be searched. If this attribute is missing for a meta-search, 
+                  the parent tag's meta-field name is used. If no parent meta-field 
+                  name exists, a <a href="#crossQuery_GeneralExceptionTag">General 
+                  Exception</a> will be sent to the <b><i>crossQuery</i></b> <b>Error 
+                  Generator</b> stylesheet. Similarly, if this attribute is present 
+                  for a non-meta search, and has any value other than "text", 
                   a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> 
-                  will be sent to the <b><i>crossQuery</i></b> <b>Error Generator</b> 
-                  stylesheet. Similarly, if this attribute is present for a non-meta 
-                  search, and has any value other than "text", a <a href="#crossQuery_GeneralExceptionTag">General 
-                  Exception</a> will also be generated. </span> </td>
+                  will also be generated. </span> </td>
               </tr>
             </table>
             <br>
@@ -1774,16 +1784,16 @@
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> metaField="<span class="MacroCode">MetaFieldName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is an optional attribute used during 
-                  meta-data searches to identify the name of the meta-field to be 
-                  searched. If this attribute is missing for a meta-search, the parent 
-                  tag's meta-field name is used. If no parent meta-field name exists, 
+                  meta-data searches to identify the name of the meta-field to 
+                  be searched. If this attribute is missing for a meta-search, 
+                  the parent tag's meta-field name is used. If no parent meta-field 
+                  name exists, a <a href="#crossQuery_GeneralExceptionTag">General 
+                  Exception</a> will be sent to the <b><i>crossQuery</i></b> <b>Error 
+                  Generator</b> stylesheet. Similarly, if this attribute is present 
+                  for a non-meta search, and has any value other than "text", 
                   a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> 
-                  will be sent to the <b><i>crossQuery</i></b> <b>Error Generator</b> 
-                  stylesheet. Similarly, if this attribute is present for a non-meta 
-                  search, and has any value other than "text", a <a href="#crossQuery_GeneralExceptionTag">General 
-                  Exception</a> will also be generated. </span> </td>
+                  will also be generated. </span> </td>
               </tr>
             </table>
             <br>
@@ -1819,16 +1829,16 @@
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> metaField="<span class="MacroCode">MetaFieldName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is an optional attribute used during 
-                  meta-data searches to identify the name of the meta-field to be 
-                  searched. If this attribute is missing for a meta-search, the parent 
-                  tag's meta-field name is used. If no parent meta-field name exists, 
+                  meta-data searches to identify the name of the meta-field to 
+                  be searched. If this attribute is missing for a meta-search, 
+                  the parent tag's meta-field name is used. If no parent meta-field 
+                  name exists, a <a href="#crossQuery_GeneralExceptionTag">General 
+                  Exception</a> will be sent to the <b><i>crossQuery</i></b> <b>Error 
+                  Generator</b> stylesheet. Similarly, if this attribute is present 
+                  for a non-meta search, and has any value other than "text", 
                   a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> 
-                  will be sent to the <b><i>crossQuery</i></b> <b>Error Generator</b> 
-                  stylesheet. Similarly, if this attribute is present for a non-meta 
-                  search, and has any value other than "text", a <a href="#crossQuery_GeneralExceptionTag">General 
-                  Exception</a> will also be generated. </span> </td>
+                  will also be generated. </span> </td>
               </tr>
             </table>
             <br>
@@ -1860,16 +1870,16 @@
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> metaField="<span class="MacroCode">MetaFieldName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is an optional attribute used during 
-                  meta-data searches to identify the name of the meta-field to be 
-                  searched. If this attribute is missing for a meta-search, the parent 
-                  tag's meta-field name is used. If no parent meta-field name exists, 
+                  meta-data searches to identify the name of the meta-field to 
+                  be searched. If this attribute is missing for a meta-search, 
+                  the parent tag's meta-field name is used. If no parent meta-field 
+                  name exists, a <a href="#crossQuery_GeneralExceptionTag">General 
+                  Exception</a> will be sent to the <b><i>crossQuery</i></b> <b>Error 
+                  Generator</b> stylesheet. Similarly, if this attribute is present 
+                  for a non-meta search, and has any value other than "text", 
                   a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> 
-                  will be sent to the <b><i>crossQuery</i></b> <b>Error Generator</b> 
-                  stylesheet. Similarly, if this attribute is present for a non-meta 
-                  search, and has any value other than "text", a <a href="#crossQuery_GeneralExceptionTag">General 
-                  Exception</a> will also be generated. </span> </td>
+                  will also be generated. </span> </td>
               </tr>
             </table>
             <br>
@@ -1942,21 +1952,20 @@
           <div class="IndentLR"> 
             <table cellspacing="8px">
               <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> slop="<span class="MacroCode">MaxMatchDistance</span>" 
+                <td width="174" align="right" valign="top" class="Code"> slop="<span class="MacroCode">MaxMatchDistance</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is a measure of the "nearness" of the 
-                  terms or clauses specified. A slop value for a potential match is 
-                  accumulated as follows: 
+                <td width="1164"> <span class="BaseStyle"> is a measure of the 
+                  "nearness" of the terms or clauses specified. A slop value for 
+                  a potential match is accumulated as follows: 
                   <ol>
-                    <li class="ListItem"> A potential match is found when all the 
-                      items specified in the<span class="Code"> near </span> tag are 
-                      found in a document. Initially, the accumulated slop for this 
-                      potential match is set to zero.<br>
+                    <li class="ListItem"> A potential match is found when all 
+                      the items specified in the<span class="Code"> near </span> 
+                      tag are found in a document. Initially, the accumulated 
+                      slop for this potential match is set to zero.<br>
                     </li>
                     <li class="ListItem"> Next the accumulated slop is incremented 
-                      by one for each word in the potential match that doesn't appear 
-                      in<span class="Code"> near </span>tag. </li>
+                      by one for each word in the potential match that doesn't 
+                      appear in<span class="Code"> near </span>tag. </li>
                     <li class="ListItem"> Finally, the accumulated slop is incremented 
                       by one each time a word specified in the<span class="Code"> 
                       near </span>tag appears out of order in the document. </li>
@@ -1965,24 +1974,24 @@
                   slop </span> attribute of the<span class="Code"> near </span>tag, 
                   the potential match is ignored. <br>
                   <br>
-                  Note that a setting the<span class="Code"> slop </span>value for 
-                  the<span class="Code"> near </span>tag to zero effectively produces 
-                  an exact phrase search, and is in fact how the<span class="Code"> 
+                  Note that a setting the<span class="Code"> slop </span>value 
+                  for the<span class="Code"> near </span>tag to zero effectively 
+                  produces an exact phrase search, and is in fact how the<span class="Code"> 
                   phrase </span>tag is implemented internally. </span> </td>
               </tr>
               <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> metaField="<span class="MacroCode">MetaFieldName</span>" 
+                <td width="174" align="right" valign="top" class="Code"> metaField="<span class="MacroCode">MetaFieldName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is an optional attribute used during 
-                  meta-data searches to identify the name of the meta-field to be 
-                  searched. If this attribute is missing for a meta-search, the parent 
-                  tag's meta-field name is used. If no parent meta-field name exists, 
+                <td width="1164"> <span class="BaseStyle"> is an optional attribute 
+                  used during meta-data searches to identify the name of the meta-field 
+                  to be searched. If this attribute is missing for a meta-search, 
+                  the parent tag's meta-field name is used. If no parent meta-field 
+                  name exists, a <a href="#crossQuery_GeneralExceptionTag">General 
+                  Exception</a> will be sent to the <b><i>crossQuery</i></b> <b>Error 
+                  Generator</b> stylesheet. Similarly, if this attribute is present 
+                  for a non-meta search, and has any value other than "text", 
                   a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> 
-                  will be sent to the <b><i>crossQuery</i></b> <b>Error Generator</b> 
-                  stylesheet. Similarly, if this attribute is present for a non-meta 
-                  search, and has any value other than "text", a <a href="#crossQuery_GeneralExceptionTag">General 
-                  Exception</a> will also be generated. </span> </td>
+                  will also be generated. </span> </td>
               </tr>
             </table>
             <br>
@@ -2016,36 +2025,35 @@
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> inclusive="<span class="MacroCode">YesOrNo</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is an optional attribute that specifies 
-                  whether the range should include the first and last term when matching. 
-                  If not specified, this attribute defaults to <b>yes</b>. </span> 
-                </td>
+                  whether the range should include the first and last term when 
+                  matching. If not specified, this attribute defaults to <b>yes</b>. 
+                  </span> </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> metaField="<span class="MacroCode">MetaFieldName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is an optional attribute used during 
-                  meta-data searches to identify the name of the meta-field to be 
-                  searched. If this attribute is missing, the parent tag's meta-field 
-                  name is used. If no parent meta-field name exists, a <a href="#crossQuery_GeneralExceptionTag">General 
-                  Exception</a> will be sent to the <b><i>crossQuery</i></b> <b>Error 
-                  Generator</b> stylesheet. </span> </td>
+                  meta-data searches to identify the name of the meta-field to 
+                  be searched. If this attribute is missing, the parent tag's 
+                  meta-field name is used. If no parent meta-field name exists, 
+                  a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> 
+                  will be sent to the <b><i>crossQuery</i></b> <b>Error Generator</b> 
+                  stylesheet. </span> </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> <span class="MacroCode">FirstTermToFind</span> 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the first term in the range to find. 
-                  Usually, this is a starting number, date, or year. </span> </td>
+                <td> <span class="BaseStyle"> is the first term in the range to 
+                  find. Usually, this is a starting number, date, or year. </span> 
+                </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> <span class="MacroCode">LastTermToFind</span> 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the last term in the range to find. 
-                  Usually, this is an ending number, date, or year. </span> </td>
+                <td> <span class="BaseStyle"> is the last term in the range to 
+                  find. Usually, this is an ending number, date, or year. </span> 
+                </td>
               </tr>
             </table>
             <br>
@@ -2085,31 +2093,28 @@
         <div class="IndentLR"> 
           <table cellspacing="8px">
             <tr> 
-              <td width="16%" align="right" valign="top" class="Code"> totalDocs="<span class="MacroCode">NumberOfDocs</span>" 
+              <td width="218" align="right" valign="top" class="Code"> totalDocs="<span class="MacroCode">NumberOfDocs</span>" 
               </td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> is the number of documents that had matches 
-                for the specified query. </span> </td>
+              <td width="1132"> <span class="BaseStyle"> is the number of documents 
+                that had matches for the specified query. </span> </td>
             </tr>
             <tr> 
-              <td width="16%" align="right" valign="top" class="Code"> startDoc="<span class="MacroCode">FirstDocNumber</span>" 
+              <td width="218" align="right" valign="top" class="Code"> startDoc="<span class="MacroCode">FirstDocNumber</span>" 
               </td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> is the sequential document number for 
-                the highest ranking document in the current Query. Note that this 
-                may not be the overall highest ranking document if a paged query was 
-                specified. See the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> 
+              <td width="1132"> <span class="BaseStyle"> is the sequential document 
+                number for the highest ranking document in the current Query. 
+                Note that this may not be the overall highest ranking document 
+                if a paged query was specified. See the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> 
                 </span>tag for more details about performing paged queries. </span> 
               </td>
             </tr>
             <tr> 
-              <td width="16%" align="right" valign="top" class="Code"> endDoc="<span class="MacroCode">LastDocNumber</span>" 
+              <td width="218" align="right" valign="top" class="Code"> endDoc="<span class="MacroCode">LastDocNumber</span>" 
               </td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> is the sequential document number for 
-                the lowest ranking document match in the current query. Note that 
-                this may not be the overall lowest ranking document if a paged query 
-                was specified. See the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> 
+              <td width="1132"> <span class="BaseStyle"> is the sequential document 
+                number for the lowest ranking document match in the current query. 
+                Note that this may not be the overall lowest ranking document 
+                if a paged query was specified. See the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> 
                 </span>tag for more details about performing paged queries. </span> 
               </td>
             </tr>
@@ -2207,25 +2212,23 @@
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> rank="<span class="MacroCode">MatchRelevanceRank</span>" 
               </td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> is the ordinal ranking of this match in 
-                the current document, with 1 being the most relevant match in the 
-                document. Note that this is an absolute ranking for the match with 
-                respect to the entire document, and not a page relative ranking. For 
-                more information about paged queries, see the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> 
-                </span>tag. </span> </td>
+              <td> <span class="BaseStyle"> is the ordinal ranking of this match 
+                in the current document, with 1 being the most relevant match 
+                in the document. Note that this is an absolute ranking for the 
+                match with respect to the entire document, and not a page relative 
+                ranking. For more information about paged queries, see the<span class="Code"> 
+                <a href="#crossQuery_QueryTag">query</a> </span>tag. </span> </td>
             </tr>
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> score="<span class="MacroCode">MatchRelevanceScore</span>" 
               </td>
-              <td width="10">&nbsp;</td>
               <td> <span class="BaseStyle"> is the relevance score for this match 
-                ranging from 0% to 100%. The snippet with the highest overall relevance 
-                will receive a score of 100%, and less relevant snippets will receive 
-                lower scores. Note that this score is an overall relevance score and 
-                is not affected by paging. For information about paged queries, see 
-                the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag. 
-                </span> </td>
+                ranging from 0% to 100%. The snippet with the highest overall 
+                relevance will receive a score of 100%, and less relevant snippets 
+                will receive lower scores. Note that this score is an overall 
+                relevance score and is not affected by paging. For information 
+                about paged queries, see the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> 
+                </span>tag. </span> </td>
             </tr>
           </table>
           <br>
@@ -2304,24 +2307,23 @@
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> $exception 
               </td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> A string containing the name of the exception 
-                that occurred. This will be the name of one of the error/exception 
+              <td> <span class="BaseStyle"> A string containing the name of the 
+                exception that occurred. This will be the name of one of the error/exception 
                 tags listed below (e.g., <span class="Code"> "UnsupportedQuery"</span>,<span class="Code"> 
                 "TermLimit"</span>,<span class="Code"> </span>etc.) </span> </td>
             </tr>
             <tr> 
-              <td width="16%" align="right" valign="top" class="Code"> $message </td>
-              <td width="10">&nbsp;</td>
+              <td width="16%" align="right" valign="top" class="Code"> $message 
+              </td>
               <td> <span class="BaseStyle"> The descriptive message for the error/exception 
                 (if any; may be an empty string.) </span> </td>
             </tr>
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> $stackTrace 
               </td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> The HTML-Formatted Java Stack Trace generated 
-                by the exception, (if any; may be an empty string.) </span> </td>
+              <td> <span class="BaseStyle"> The HTML-Formatted Java Stack Trace 
+                generated by the exception, (if any; may be an empty string.) 
+                </span> </td>
             </tr>
           </table>
         </div>
@@ -2444,18 +2446,16 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table>
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> name="<span class="MacroCode">ParamName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is the name of the parameter extracted 
                   from the original document request URL. </span></td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">ParamValue</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is the original text in the document 
                   request URL that is assigned to the specified parameter. </span> 
                 </td>
@@ -2555,16 +2555,15 @@
           <pre class="Code">&lt;style path="<span class="MacroCode">DocFormatterLocation</span>"/&gt;</pre>
           where <br>
           <div class="IndentLR"> 
-            <table>
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> path="<span class="MacroCode">DocFormatterLocation</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the file path and name for the <b>Document 
-                  Formatter</b> stylesheet to use for the requested document. If this 
-                  path is not specified as an absolute path, it is assumed to be relative 
-                  to the base XTF installation directory (i.e., <b>XTF_HOME</b>.) 
-                  </span> </td>
+                <td> <span class="BaseStyle"> is the file path and name for the 
+                  <b>Document Formatter</b> stylesheet to use for the requested 
+                  document. If this path is not specified as an absolute path, 
+                  it is assumed to be relative to the base XTF installation directory 
+                  (i.e., <b>XTF_HOME</b>.) </span> </td>
               </tr>
             </table>
           </div>
@@ -2578,15 +2577,14 @@
           <pre class="Code">&lt;source path="<span class="MacroCode">SrcDocLocation</span>"/&gt;</pre>
           where <br>
           <div class="IndentLR"> 
-            <table>
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> path="<span class="MacroCode">SrcDocLocation</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the file path and name for the document 
-                  to be retrieved. If this path is not specified as an absolute path, 
-                  it is assumed to be relative to the base XTF installation directory 
-                  (i.e., <b>XTF_HOME</b>.) </span> </td>
+                <td> <span class="BaseStyle"> is the file path and name for the 
+                  document to be retrieved. If this path is not specified as an 
+                  absolute path, it is assumed to be relative to the base XTF 
+                  installation directory (i.e., <b>XTF_HOME</b>.) </span> </td>
               </tr>
             </table>
           </div>
@@ -2600,15 +2598,14 @@
           <pre class="Code">&lt;brand path="<span class="MacroCode">BrandStylesheetLocation</span>"/&gt;</pre>
           where <br>
           <div class="IndentLR"> 
-            <table>
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> path="<span class="MacroCode">BrandStylesheetLocation</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the file path and name for the brand 
-                  file to use. If this path is not specified as an absolute path, 
-                  it is assumed to be relative to the base XTF installation directory 
-                  (i.e., <b>XTF_HOME</b>.) </span> </td>
+                <td> <span class="BaseStyle"> is the file path and name for the 
+                  brand file to use. If this path is not specified as an absolute 
+                  path, it is assumed to be relative to the base XTF installation 
+                  directory (i.e., <b>XTF_HOME</b>.) </span> </td>
               </tr>
             </table>
           </div>
@@ -2632,22 +2629,21 @@
           <pre class="Code">&lt;index configPath="<span class="MacroCode">TextIndexerConfigLocation</span>" name="<span class="MacroCode">IndexName</span>"/&gt;</pre>
           where <br>
           <div class="IndentLR"> 
-            <table>
+            <table cellpadding="0" cellspacing="8">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> configPath="<span class="MacroCode">TextIndexerConfigLocation</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the file path and name for the <b><i>textIndexer</i></b> 
-                  config file. If this path is not specified as an absolute path, 
-                  it is assumed to be relative to the base XTF installation directory 
-                  (i.e., <b>XTF_HOME</b>.) </span> </td>
+                <td> <span class="BaseStyle"> is the file path and name for the 
+                  <b><i>textIndexer</i></b> config file. If this path is not specified 
+                  as an absolute path, it is assumed to be relative to the base 
+                  XTF installation directory (i.e., <b>XTF_HOME</b>.) </span> 
+                </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> name="<span class="MacroCode">IndexName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the name of the index to use. This 
-                  index name must exist in the config file specified by the<span class="Code"> 
+                <td> <span class="BaseStyle"> is the name of the index to use. 
+                  This index name must exist in the config file specified by the<span class="Code"> 
                   configPath </span>attribute above. </span> </td>
               </tr>
             </table>
@@ -2710,11 +2706,10 @@
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> access="<span class="MacroCode">AllowOrDeny</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> specifies whether all users should be 
-                  allowed access (<span class="Code">access="allow"</span>) or denied 
-                  access (<span class="Code">access="deny"</span>) to the requested 
-                  document. </span> </td>
+                <td> <span class="BaseStyle"> specifies whether all users should 
+                  be allowed access (<span class="Code">access="allow"</span>) 
+                  or denied access (<span class="Code">access="deny"</span>) to 
+                  the requested document. </span> </td>
               </tr>
             </table>
           </div>
@@ -2743,20 +2738,18 @@
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> access="<span class="MacroCode">AllowOrDeny</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> specifies whether addresses in the IP 
-                  list should be allowed access (<span class="Code">access="allow"</span>) 
-                  or denied access (<span class="Code">access="deny"</span>) to the 
-                  requested document. </span> </td>
+                <td> <span class="BaseStyle"> specifies whether addresses in the 
+                  IP list should be allowed access (<span class="Code">access="allow"</span>) 
+                  or denied access (<span class="Code">access="deny"</span>) to 
+                  the requested document. </span> </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> list="<span class="MacroCode">LocationOfIPList</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> specifies the path and filename of a 
-                  list of IP addresses to allow or deny access. If not specified as 
-                  an absolute path, this path is assumed to be relative to the XTF 
-                  base install directory (i.e.,<span class="Code"> XTF_HOME</span>.) 
+                <td> <span class="BaseStyle"> specifies the path and filename 
+                  of a list of IP addresses to allow or deny access. If not specified 
+                  as an absolute path, this path is assumed to be relative to 
+                  the XTF base install directory (i.e.,<span class="Code"> XTF_HOME</span>.) 
                   <br>
                   <br>
                   To learn about the format of the IP List file, see the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html#AuthIPList">XTF 
@@ -2793,59 +2786,57 @@
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> server="<span class="MacroCode">LDAPServerURL</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> identifies the location of the LDAP 
                   server to use. </span> </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> realm="<span class="MacroCode">PswdDialogDescr</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is a string to display in the browser 
-                  dialog box that asks for the user's name and password. </span> </td>
+                  dialog box that asks for the user's name and password. </span> 
+                </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> bindName="<span class="MacroCode">LDAPConnectName</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is an optional attribute specifying 
-                  the name to use when connecting to the LDAP server. If this attribute 
-                  is omitted, then an anonymous LDAP connection will be attempted. 
+                  the name to use when connecting to the LDAP server. If this 
+                  attribute is omitted, then an anonymous LDAP connection will 
+                  be attempted. <br>
                   <br>
-                  <br>
-                  If anonymous connections are permitted by the LDAP database, then 
-                  the<span class="Code"> bindPassword </span>attribute should also 
-                  be omitted, and the<span class="Code"> queryName </span> attribute 
-                  must be present for user authentication to proceed. For anonymous 
-                  LDAP access the <span class="Code"> matchField </span> and<span class="Code"> 
-                  matchValue </span>attributes are optional. <br>
+                  If anonymous connections are permitted by the LDAP database, 
+                  then the<span class="Code"> bindPassword </span>attribute should 
+                  also be omitted, and the<span class="Code"> queryName </span> 
+                  attribute must be present for user authentication to proceed. 
+                  For anonymous LDAP access the <span class="Code"> matchField 
+                  </span> and<span class="Code"> matchValue </span>attributes 
+                  are optional. <br>
                   <br>
                   If the name passed for this attribute is the LDAP administrator 
                   name, then the<span class="Code"> bindPassword </span> attribute 
                   must be set to the LDAP administrator password, and the<span class="Code"> 
-                  queryName </span>must also be present for user authentication to 
-                  proceed. For administrative LDAP access, the<span class="Code"> 
-                  matchField </span>and<span class="Code"> matchValue </span> attributes 
-                  are optional. <br>
+                  queryName </span>must also be present for user authentication 
+                  to proceed. For administrative LDAP access, the<span class="Code"> 
+                  matchField </span>and<span class="Code"> matchValue </span> 
+                  attributes are optional. <br>
                   <br>
-                  It should also be noted that the user name will be substituted for 
-                  any occurence of the<span class="Code"> % </span> symbol in this 
-                  attribute. Doing so allows connections with the LDAP database to 
-                  be established using the user name instead of an LDAP administrator 
-                  name. <br>
+                  It should also be noted that the user name will be substituted 
+                  for any occurence of the<span class="Code"> % </span> symbol 
+                  in this attribute. Doing so allows connections with the LDAP 
+                  database to be established using the user name instead of an 
+                  LDAP administrator name. <br>
                   <br>
-                  Finally, if successfully connecting to the LDAP database with a 
-                  user name and password is all that is required for authentication, 
+                  Finally, if successfully connecting to the LDAP database with 
+                  a user name and password is all that is required for authentication, 
                   then no other attributes need to be specified in the authentication 
                   tag. Otherwise, the <span class="Code"> queryName </span> attribute 
                   and optionally the<span class="Code"> matchField </span> and<span class="Code"> 
-                  matchValue </span> attributes may be specified to complete the authentication 
-                  request. </span> </td>
+                  matchValue </span> attributes may be specified to complete the 
+                  authentication request. </span> </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> bindPassword="<span class="MacroCode">LDAPConnectPswd</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
                 <td> <span class="BaseStyle"> is an optional attribute specifying 
                   the password to use when connecting to the LDAP server. <br>
                   <br>
@@ -2853,75 +2844,74 @@
                   bindName </span>attribute has not been specified), this attribute 
                   should also not appear in the authentication tag. <br>
                   <br>
-                  If the<span class="Code"> bindName </span>attribute specifies the 
-                  LDAP administrator name, this attribute <b><i>must</i></b> be set 
-                  to the LDAP administrator password. <br>
+                  If the<span class="Code"> bindName </span>attribute specifies 
+                  the LDAP administrator name, this attribute <b><i>must</i></b> 
+                  be set to the LDAP administrator password. <br>
                   <br>
                   Finally, the user password will be substituted for any occurence 
-                  of the<span class="Code"> % </span> symbol in this attribute. Doing 
-                  so allows connections with the LDAP database to be established using 
-                  the user password instead of an LDAP administrator password. </span> 
-                </td>
+                  of the<span class="Code"> % </span> symbol in this attribute. 
+                  Doing so allows connections with the LDAP database to be established 
+                  using the user password instead of an LDAP administrator password. 
+                  </span> </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> queryName="<span class="MacroCode">LDAPRecordToFind</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is an attribute identifying the name 
-                  of an LDAP record to find. If an anonymous or administrator connection 
-                  to the LDAP server is being attempted, this attribute is required. 
-                  For user connections, this attribute is optional. <br>
+                <td> <span class="BaseStyle"> is an attribute identifying the 
+                  name of an LDAP record to find. If an anonymous or administrator 
+                  connection to the LDAP server is being attempted, this attribute 
+                  is required. For user connections, this attribute is optional. 
                   <br>
-                  As with the<span class="Code"> bindName </span>attribute, the user 
-                  name will be substituted for any occurence of the<span class="Code"> 
-                  % </span>symbol in this attribute. Doing so allows connections with 
-                  the LDAP database to be established using the user name instead 
-                  of an LDAP administrator name. <br>
                   <br>
-                  Also, if the <span class="Code"> queryName </span>attribute is specified 
-                  without the<span class="Code"> matchField </span>or<span class="Code"> 
-                  matchValue </span>attributes, then user authentication will succeed 
-                  if the given record name simply exists in the LDAP database. If 
-                  the given record is not in the LDAP database, authentication will 
-                  fail. </span> </td>
+                  As with the<span class="Code"> bindName </span>attribute, the 
+                  user name will be substituted for any occurence of the<span class="Code"> 
+                  % </span>symbol in this attribute. Doing so allows connections 
+                  with the LDAP database to be established using the user name 
+                  instead of an LDAP administrator name. <br>
+                  <br>
+                  Also, if the <span class="Code"> queryName </span>attribute 
+                  is specified without the<span class="Code"> matchField </span>or<span class="Code"> 
+                  matchValue </span>attributes, then user authentication will 
+                  succeed if the given record name simply exists in the LDAP database. 
+                  If the given record is not in the LDAP database, authentication 
+                  will fail. </span> </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> matchField="<span class="MacroCode">LDAPFieldToFind</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is an attribute identifying the name 
-                  of a field to find in the LDAP record named by the<span class="Code"> 
-                  queryName </span>attribute. Note that the<span class="Code"> matchField 
-                  </span> attribute should not be used if the<span class="Code"> queryName 
-                  </span>attribute hasn't been specified. <br>
+                <td> <span class="BaseStyle"> is an attribute identifying the 
+                  name of a field to find in the LDAP record named by the<span class="Code"> 
+                  queryName </span>attribute. Note that the<span class="Code"> 
+                  matchField </span> attribute should not be used if the<span class="Code"> 
+                  queryName </span>attribute hasn't been specified. <br>
                   <br>
-                  Like the<span class="Code"> queryName </span>attribute, the user 
-                  name will be substituded for any occurence of the<span class="Code"> 
-                  % </span>symbol in this attribute. Doing so allows connections with 
-                  the LDAP database to be established using the user name instead 
-                  of an LDAP administrator name. <br>
+                  Like the<span class="Code"> queryName </span>attribute, the 
+                  user name will be substituded for any occurence of the<span class="Code"> 
+                  % </span>symbol in this attribute. Doing so allows connections 
+                  with the LDAP database to be established using the user name 
+                  instead of an LDAP administrator name. <br>
                   <br>
                   Finally, if the <span class="Code"> matchField </span>attribute 
-                  is specified without the<span class="Code"> matchValue </span> attribute, 
-                  then user authentication will succeed if the given field name simply 
-                  exists in the LDAP record. If the given field name does not exist 
-                  inthe LDAP database authentication will fail. </span> </td>
+                  is specified without the<span class="Code"> matchValue </span> 
+                  attribute, then user authentication will succeed if the given 
+                  field name simply exists in the LDAP record. If the given field 
+                  name does not exist inthe LDAP database authentication will 
+                  fail. </span> </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> matchValue="<span class="MacroCode">LDAPValueToMatch</span>" 
                 </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is an attribute that specifies the value 
-                  that must exist in the LDAP field named by the<span class="Code"> 
-                  matchField </span>attribute for authentication to succeed. If the 
-                  specified value doesn't match the LDAP field, user authentication 
+                <td> <span class="BaseStyle"> is an attribute that specifies the 
+                  value that must exist in the LDAP field named by the<span class="Code"> 
+                  matchField </span>attribute for authentication to succeed. If 
+                  the specified value doesn't match the LDAP field, user authentication 
                   will fail. <br>
                   <br>
-                  As with the previous attributes, the user's password will be substituted 
-                  for any occurences of the<span class="Code"> % </span>symbol. Doing 
-                  so allows connections with the LDAP database to be established using 
-                  the user pasword instead of an LDAP administrator password. </span> 
-                </td>
+                  As with the previous attributes, the user's password will be 
+                  substituted for any occurences of the<span class="Code"> % </span>symbol. 
+                  Doing so allows connections with the LDAP database to be established 
+                  using the user pasword instead of an LDAP administrator password. 
+                  </span> </td>
               </tr>
             </table>
           </div>
