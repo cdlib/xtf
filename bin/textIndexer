@@ -43,6 +43,6 @@ closedir DIR;
 $classpath = "$home/WEB-INF/classes";
 foreach $jar (@jars) { $classpath = "$classpath:$lib/$jar"; }
 
-$cmd = "java -classpath $classpath -Xms50m -Xmx500m -Dxtf.home=$home -DentityExpansionLimit=128000 -enableassertions org.cdlib.xtf.textIndexer.TextIndexer $args";
+$cmd = "java -classpath $classpath -Xms50m -Xmx1000m -Dxtf.home=$home -DentityExpansionLimit=128000 -enableassertions org.cdlib.xtf.textIndexer.TextIndexer $args";
 
 exec $cmd;
