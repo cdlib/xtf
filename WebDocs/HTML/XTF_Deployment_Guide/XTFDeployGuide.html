@@ -484,12 +484,14 @@
       <div class="IndentL">
 
         <p class="Heading2">Configuring the textIndexer Tool<a name="XTFTextIndexer"></a></p>
-        <!------------------------------------------------------------------------------------------------------------->
-        The <i><b>textIndexer</b></i> tool is a command line tool that indexes the XML documents in an XTF document
-        library. The index it creates is used by the <b><i>crossQuery</i></b> servlet to search for documents based on
-        user queries. The organization of the <b><i>textIndexer</i></b> tool can be illustrated as follows:
-
-        <p align="center">
+        
+    <!-------------------------------------------------------------------------------------------------------------> 
+    The <i><b>textIndexer</b></i> tool is a command line tool that indexes the XML, 
+    PDF, and HTML documents in an XTF document library. The index it creates is used 
+    by the <b><i>crossQuery</i></b> servlet to search for documents based on user 
+    queries. The organization of the <b><i>textIndexer</i></b> tool can be illustrated 
+    as follows: 
+    <p align="center">
           <img src="../Common_Art/textIndexer.gif"> <br>
           Figure 5: The <b><i>textIndexer</i></b> Tool
         </p>
@@ -740,14 +742,14 @@
         </span><br>
             
         <div class="IndentLR"> 
-          <p>This tag identifies the location of an XSLT file that describes which 
-            source documents should be indexed, what pre-filter (if any) should be 
-            used on the selected documents, and what display formatter should be used 
-            to display the document when it is retrieved by the user. The path specified 
-            for the document selector must be a valid path and file name for the operating 
-            system on which the tool is being run (e.g., Windows, Mac, Linux, etc.) 
-            If a relative path is used, it is considered to be relative to the base 
-            XTF installation directory (i.e., <span class="Code">XTF_HOME</span>.)<br>
+          <p>This tag identifies the location of an XSLT stylesheet that describes 
+            which source documents should be indexed, what pre-filter (if any) should 
+            be used on the selected documents, and what display formatter should be 
+            used to display the document when it is retrieved by the user. The path 
+            specified for the document selector must be a valid path and file name 
+            for the operating system on which the tool is being run (e.g., Windows, 
+            Mac, Linux, etc.) If a relative path is used, it is considered to be relative 
+            to the base XTF installation directory (i.e., <span class="Code">XTF_HOME</span>.)<br>
           </p>
           <div class="Note"> (<u>Note</u>: The document selector must be specified 
             for an index. If it is not, an error is generated, and no document indexing 
@@ -817,7 +819,8 @@
         use this example as the basis for defining your own document selection logic 
         if you wish. However, writing and maintaining the XSLT document selector is 
         beyond the scope of this deployment guide, and will not be discussed here. 
-        Please refer to the <a href="../XTF_Programming_Guide/XTFProgGuide.html">XTF 
+        Please refer to the <a href="../XTF_Programming_Guide/XTFProgGuide.html#textIndexer_DocSelector_Prog">Document 
+        Selector Programming</a> section of the <a href="../XTF_Programming_Guide/XTFProgGuide.html">XTF 
         Programming Guide</a> for more information about writing your own document 
         selector.<br>
         <br>
