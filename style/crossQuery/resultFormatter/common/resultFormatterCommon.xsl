@@ -1360,7 +1360,7 @@
       <xsl:when test="(contains($rmode, 'show')) and (matches(string() , '.{500}'))">
         <xsl:apply-templates select="$block"/>
         <xsl:text>&#160;&#160;&#160;</xsl:text>
-        <a href="{$servlet.path}?{$hideString}#{$identifier}">[brief]</a>         
+        <a href="{$servlet.path}?{$hideString}&amp;startDoc={$startDoc}#{$identifier}">[brief]</a>         
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates select="$block" mode="crop">
@@ -1380,7 +1380,7 @@
       <xsl:when test="matches(string(.) , '.{300}')">
         <xsl:value-of select="replace(., '(.{300}).+', '$1')"/>
         <xsl:text> . . . </xsl:text>
-        <a href="{$servlet.path}?{$moreString}#{$identifier}">[more]</a>  
+        <a href="{$servlet.path}?{$moreString}&amp;startDoc={$startDoc}#{$identifier}">[more]</a>  
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates/>
