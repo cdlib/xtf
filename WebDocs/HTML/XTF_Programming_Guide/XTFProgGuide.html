@@ -129,6 +129,8 @@
         <li>
           <b><a href="#textIndexer_Prog">textIndexer Programming</a></b>
           <ul class="NoBullets">
+            
+        <li><a href="#textIndexer_DocSelector_Prog">Document Selector Programming</a></li>
             <li><a href="#textIndexer_PreFilter_Prog">Pre-Filter Programming</a></li>
           </ul>
         </li> <br>
@@ -155,7 +157,11 @@
           <b><a href="#XTF_Tag_Ref">XTF Stylesheet Tag Reference</a></b>
           <ul class="NoBullets">
             <li class="ListItem">
-              <a href="#textIndexer_Tag_Ref">textIndexer Pre-Filter Tag Reference</a>
+              <a href="#textIndexer_Tag_Ref">textIndexer Tag Reference</a>
+              <ul class="NoBullets">
+                <li><a href="#textIndexer_DocSelector_Tags">Document Selector Tags</a></li>
+                <li><a href="#textIndexer_PreFilter_Tags">Pre-Filter Tags</a></li>
+              </ul>
             </li>
             <li class="ListItem">
               <a href="#crossQuery_Tag_Ref">crossQuery Tag Reference</a>
@@ -216,27 +222,45 @@
         Figure 2: Internal organization of the <b><i>textIndexer</i></b> Tool
       </p>
 
-      What the diagram shows, is that the <b><i>textIndexer</i></b> takes in XML documents, and pre-filters them using
-      an XSLT template. The filtered XML document is then passed on to the actual <b><i>Text Indexer Engine</i></b>,
-      which breaks the document into smaller overlapping chunks and then adds them to a Lucene based word index. The
-      index can then be used by the <b><i>crossQuery</i></b> servlet to quicky locate files in the document library
-      containing any text requested by the user. Optionally, the <b><i>dynaXML</i></b> servlet can also use the index to
-      highlight in context any matches in the original XML documents when they are viewed. <br><br>
+      What the diagram shows, is that the <b><i>textIndexer</i></b> uses its <b>Document 
+  Selector</b> stylesheet to select which files in the document library need to be 
+  indexed. For non-XML source files, the text to index is extracted and converted 
+  to XML. The raw XML is then processed by the <b>Document Pre-Filter</b> stylesheet 
+  to add additional meta-data and/or sectioning information to the text. The resulting 
+  filtered XML is then passed on to the actual <b><i>Text Indexer Engine</i></b>, 
+  which breaks the document into smaller overlapping chunks and then adds them to 
+  a Lucene based word index. The index can then be used by the <b><i>crossQuery</i></b> 
+  servlet to quicky locate files in the document library containing any text requested 
+  by the user. Optionally, the <b><i>dynaXML</i></b> servlet can also use the index 
+  to highlight in context any matches in the original XML documents when they are 
+  viewed. <br>
+  <br>
+  The <span class="Code">textIndexer.conf</span> file, the <b>Document Selector</b> 
+  stylesheet, and the <b>Pre-filter</b> stylesheet together define how the <b><i>textIndexer</i></b> 
+  performs the document indexing process. A complete discussion of the <span class="Code">textIndexer.conf</span> 
+  file appears in the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF Deployment 
+  Guide</a>, and so will not be discussed in any great depth here. The inner workings 
+  of the <b>Document Selector</b> and <b>Pre-Filter</b> stylesheets however, are the 
+  subject of the following sub-sections. 
+  <div class="IndentL">
 
-      The <span class="Code">textIndexer.conf</span> and <b>XSLT pre-filter</b> together define how the
-      <b><i>textIndexer</i></b> performs the document indexing process. A complete discussion of the
-      <span class="Code">textIndexer.conf</span> file appears in the
-      <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF Deployment Guide</a>, and so will
-      not be discussed in any great depth here. The inner workings of the <b><i>textIndexer</i></b> pre-filter however,
-      are the subject of the following sub-sections.
+        <p class="Heading2">Document Selector Programming<a name="textIndexer_DocSelector_Prog"></a></p>
+        
+    <!-------------------------------------------------------------------------------------------------------------> 
+    The primary purpose of the <b><i>textIndexer</i></b> <b>Document Selector</b> 
+    is to ... <br>
+    <br>
+      </div>
 
       <div class="IndentL">
 
         <p class="Heading2">Pre-Filter Programming<a name="textIndexer_PreFilter_Prog"></a></p>
-        <!------------------------------------------------------------------------------------------------------------->
-        The primary purpose of the <b><i>textIndexer</i></b> pre-filter is to modify an XML document prior to adding
-        it to an index. The main ways in which a document can be modified are described in the following five
-        sub-sections. <br><br>
+        
+    <!-------------------------------------------------------------------------------------------------------------> 
+    The primary purpose of the <b><i>textIndexer</i></b> <b>Pre-Filter</b> is to modify 
+    an XML document prior to adding it to an index. The main ways in which a document 
+    can be modified are described in the following five sub-sections. <br>
+    <br>
 
         For the <b><i>textIndexer</i></b> pre-filter to work properly, an<span class="Code"> xtf: </span>namespace
         must be declared at the top of the pre-filter. To do this, simply add the following attribute to
@@ -893,24 +917,38 @@
       </div> <br> <!-- dynaXML -->
 
       <!--------------------------------------------------------------------------------------------------------------->
-      <p class="Heading1">XTF Stylesheet Tag Reference<a name="XTF_Tag_Ref"></p>
-      This section provides a quick reference to the various XTF sytlesheet tags recognized by the
-      <b><i>textIndexer</i></b> tool, and the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets.
-
-      <div class="IndentL">
-
-        <p class="Heading2">textIndexer Pre-Filter Reference<a name="textIndexer_Tag_Ref"></a></p>
-        <!------------------------------------------------------------------------------------------------------------->
-        This section summarizes the pre-filter attributes attributes recognized by the <b><i>textIndexer</i></b> tool.
-        <br><br>
-
+      <p class="Heading1">XTF Stylesheet Tag Reference<a name="XTF_Tag_Ref"></a></p>
+      
+  <p>This section provides a quick reference to the various XTF sytlesheet tags recognized 
+    by the <b><i>textIndexer</i></b> tool, and the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> 
+    servlets. <br>
+  </p>
+  <div class="IndentL">
+    <p class="Heading2">textIndexer Pre-Filter Tag Reference<a name="textIndexer_Tag_Ref"></a></p>
+        
+    <!-------------------------------------------------------------------------------------------------------------> 
+    This section summarizes the XTF specific tags for the <b><i>textIndexer </i></b> 
+    <b>Documentg Selector</b> stylesheet and the <b>Pre-Filter</b> stylesheet.<br>
+    
+    <div class="IndentL">
+        <p class="Heading3">Document Selector Tags<a name="textIndexer_DocSelector_Tags"></a></p>
+        This section summarizes the attributes defined for <b>Document Selector</b> stylesheet 
+        used by the <b><i>textIndexer</i></b> tool. 
+        
         <div class="IndentL">
+        </div>
+    
+        <p class="Heading3">Pre-Filter Tags<a name="textIndexer_PreFilter_Tags"></a></p>
+        This section summarizes the attributes defined for the <b>Pre-Filter</b> stylesheet 
+        used by the <b><i>textIndexer</i></b> tool. <br><br>
 
-          <div class="GreyList">
+        <div class="GreyList">
             <span class="Code">
-               &lt;xsl:attribute name="xtf:index" select="'<span class="MacroCode">TrueOrFalse</span>'"/&gt; <br>
-               &lt;xsl:attribute name="xtf:noindex" select="'<span class="MacroCode">TrueOrFalse</span>'"/&gt; <br>
+              &lt;xsl:attribute name="xtf:index" select="'<span class="MacroCode">TrueOrFalse</span>'"/&gt;
             </span><br>
+            <span class="Code">  
+              &lt;xsl:attribute name="xtf:noindex" select="'<span class="MacroCode">TrueOrFalse</span>'"/&gt;
+            </span><br><br>
             <div class="IndentLR">
               This attribute is used to turn on/off indexing for a tag in a source document.
               The<span class="Code"> noindex </span>variant is simply a logical inverse of
@@ -1030,14 +1068,15 @@
 
         </div> <!-- textIndexer Pre-Filter Tags -->
 
-      </div> <!-- textIndexer Pre-Filter Reference -->
+      </div> <!-- textIndexer Reference -->
 
       <div class="IndentL">
 
         <p class="Heading2">crossQuery Tag Reference<a name="crossQuery_Tag_Ref"></a></p>
-        <!------------------------------------------------------------------------------------------------------------->
-        This section summarizes the XTF specific tags the <b><i>crossQuery</i></b> <b>Query Parser</b> stylesheet and
-        the <b>Result Formatter</b> stylesheet. <br><br>
+        
+    <!-------------------------------------------------------------------------------------------------------------> 
+    This section summarizes the XTF specific tags for the <b><i>crossQuery</i></b> 
+    <b>Query Parser</b> stylesheet and the <b>Result Formatter</b> stylesheet. <br>
 
         <div class="IndentL">
           <p class="Heading3">Query Parser Tags<a name="crossQuery_QueryParser_Tags"></a></p>
@@ -2556,7 +2595,7 @@
             <b><i>dynaXML</i></b> <b>Document Retrieval Engine</b> for processing. <br><br>
 
               <div class="Sample">
-                <b><u>Style Tag<a name="dynaXML_StyleTag"></u></b><br>
+                <b><u>Style Tag</u></b><a name="dynaXML_StyleTag"></a><br>
                 <!--------------------------------------------------->
                 This tag identifies the location of the <b>Document Formatter</b> Stylesheet. It has the form: <br><br>
 
@@ -2584,7 +2623,7 @@
               </div><br>
 
               <div class="Sample">
-                <b><u>Source Document Tag<a name="dynaXML_SourceTag"></u></b><br>
+                <b><u>Source Document Tag</u></b><a name="dynaXML_SourceTag"></a><br>
                 <!-------------------------------------------------------------->
                 This tag identifies the location of the document to be retrieved. It has the form: <br><br>
 
@@ -2613,7 +2652,7 @@
               </div><br>
 
               <div class="Sample">
-                <b><u>Brand Tag<a name="dynaXML_BrandTag"></u></b><br>
+                <b><u>Brand Tag</u></b><a name="dynaXML_BrandTag"></a><br>
                 <!--------------------------------------------------->
                 This tag identifies a file that contains a list of site-specific parameters to be passed on to the
                 document formatter. It has the form: <br><br>
@@ -2653,7 +2692,7 @@
               </div><br>
 
               <div class="Sample">
-                <b><u>Index Tag<a name="dynaXML_IndexTag"></u></b><br>
+                <b><u>Index Tag</u></b><a name="dynaXML_IndexTag"></a><br>
                 <!--------------------------------------------------->
                 This tag identifies the index to use for lazy loading of text, and for marking search hits in a
                 document. It has the form: <br><br>
