@@ -185,7 +185,7 @@ public class Path
     String filename = normalizePath( path );
 
     // Now if the resulting normalized Path ends in a slash, remove it.
-    if( filename.charAt(filename.length()-1) == '/' )
+    if( filename.length() > 0 && filename.charAt(filename.length()-1) == '/' )
       filename = filename.substring( 0, filename.length()-1 );
     
     // Return the result to the caller.
