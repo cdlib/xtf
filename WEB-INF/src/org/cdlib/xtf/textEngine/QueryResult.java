@@ -52,4 +52,7 @@ public class QueryResult
     /** One hit per document */
     public DocHit[] docHits;
     
+    /** Stylesheet to use for formatting hits (optional) */
+    public String formatter;
+    
 } // class QueryResult

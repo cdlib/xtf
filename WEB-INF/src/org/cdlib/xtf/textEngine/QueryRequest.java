@@ -30,21 +30,18 @@ package org.cdlib.xtf.textEngine;
  */
 
 import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
+import javax.xml.transform.Source;
 
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.TreeBuilder;
+import net.sf.saxon.Configuration;
 
-import org.apache.lucene.analysis.Token;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.chunk.SpanChunkedNotQuery;
 import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.index.Term;
@@ -59,16 +56,11 @@ import org.apache.lucene.search.spans.SpanRangeQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
 
-import org.cdlib.xtf.textIndexer.XTFTextAnalyzer;
-import org.cdlib.xtf.util.Attrib;
-import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
-import org.cdlib.xtf.util.XMLFormatter;
 import org.cdlib.xtf.util.XMLWriter;
-import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
 /**
  * Processes URL parameters into a Lucene query, using a stylesheet to perform
@@ -109,64 +101,19 @@ public class QueryRequest implements Cloneable
     public int        termMode     = SpanDocument.MARK_SPAN_TERMS;
     
     /** 
-     * During tokenization, the '*' wildcard has to be changed to a word
-     * to keep it from being removed.
-     */
-    private static final String SAVE_WILD_STAR = "jwxbkn";
-
-    /** 
-     * During tokenization, the '?' wildcard has to be changed to a word
-     * to keep it from being removed.
-     */
-    private static final String SAVE_WILD_QMARK   = "vkyqxw";
-
-    /** 
      * Keeps track of the servlet base directory, used to map relative
      * file paths.
      */
     private File        baseDir;
     
-    /**
-     * Produce a Lucene query using a list of attributes (which are typically
-     * gathered from the URL parameters to a servlet.) They are processed
-     * through the specified stylesheet.
-     * 
-     * @param stylesheet Transformer that will be used. Should
-     *                   already be stuffed with any global user-specified
-     *                   parameters.
-     * @param atts       Attributes to pass to the stylesheet, in plain and tokenized
-     *                   form.
-     * @param baseDir    Directory that paths are interpreted relative to.   
+    /** 
+     * Configuration object used when building trees (only created if
+     * necessary.)
      */
-    public QueryRequest( Transformer stylesheet, 
-                         AttribList  atts,
-                         File        baseDir )
-        throws QueryGenException, TransformerException, QueryFormatError
-    {
-        this.baseDir = baseDir;
-        
-        NodeInfo    input  = tokenizeParams( atts );
-        TreeBuilder output = new TreeBuilder();
-        
-        if( Trace.getOutputLevel() >= Trace.debug ) {
-            Trace.debug( "*** queryParser input ***" );
-            Trace.debug( XMLWriter.toString(input) );
-        }
-        
-        // Make sure errors get directed to the right place.
-        if( !(stylesheet.getErrorListener() instanceof XTFSaxonErrorListener) )
-            stylesheet.setErrorListener( new XTFSaxonErrorListener() );
-
-        stylesheet.transform( input, output );
-        
-        if( Trace.getOutputLevel() >= Trace.debug ) {
-            Trace.debug( "*** queryParser output ***" );
-            Trace.debug( XMLWriter.toString(output.getCurrentRoot()) );
-        }
-        
-        parseOutputTop( new EasyNode(output.getCurrentRoot()) );
-    } // constructor
+    private Configuration config;
     
+    /** The top-level source node */
+    private NodeInfo topNode;
     
     /**
      * Produce a Lucene query from the intermediate format that is normally
@@ -174,8 +121,8 @@ public class QueryRequest implements Cloneable
      * 
      * @param queryDoc A document containing the query.
      */
-    public QueryRequest( NodeInfo queryDoc,
-                         File     baseDir )
+    public QueryRequest( Source queryDoc,
+                         File   baseDir )
         throws QueryGenException, QueryFormatError
     {
         this.baseDir = baseDir;
@@ -185,7 +132,19 @@ public class QueryRequest implements Cloneable
             Trace.debug( XMLWriter.toString(queryDoc) );
         }
 
-        parseOutputTop( new EasyNode(queryDoc) );
+        if( queryDoc instanceof NodeInfo )
+            parseOutputTop( new EasyNode((NodeInfo)queryDoc) );
+        else {
+            if( config == null )
+                config = new Configuration();
+            try {
+                NodeInfo top = TreeBuilder.build( queryDoc, null, config );
+                parseOutputTop( new EasyNode(top) );
+            }
+            catch( XPathException e ) {
+                throw new RuntimeException( e );
+            }
+        }
     } // constructor
     
     
@@ -197,223 +156,18 @@ public class QueryRequest implements Cloneable
     } // clone()
     
     
-    /**
-     * Creates a document containing tokenized and untokenized versions of each
-     * parameter.
-     */
-    public static NodeInfo tokenizeParams( AttribList atts )
-        throws QueryGenException
+    /** Get an XML source suitable for re-creating this query */
+    public Source getSource()
     {
-        XMLFormatter fmt = new XMLFormatter();
-        
-        // The top-level node marks the fact that this is the parameter list.
-        fmt.beginTag( "parameters" );
-        
-        // Add each parameter to the document.
-        for( Iterator iter = atts.iterator(); iter.hasNext(); ) {
-            Attrib att = (Attrib) iter.next();
-            
-            // Don't tokenize build-in attributes.
-            if( att.key.equals("servlet.path") )
-                continue;
-            if( att.key.equals("root.path") )
-                continue;
-            if( att.key.startsWith("http.") )
-                continue;
-            if( att.key.equals("raw") )
-                continue;
-            addParam( fmt, att.key, att.value );
-        }
-        
-        fmt.endTag();
-        
-        // And we're done.
-        return fmt.toNode();
-    } // buildInput()
+        return topNode;
+    } // getSource()
     
     
-    /**
-     * Adds the tokenized and un-tokenized version of the attribute to the
-     * given formatter.
-     * 
-     * @param fmt formatter to add to
-     * @param name Name of the URL parameter
-     * @param val String value of the URL parameter
-     */
-    private static void addParam( XMLFormatter fmt,
-                                  String name, String val )
+    /** Get the base directory from which relative paths are resolved */
+    public File getBaseDir()
     {
-        // Create the parameter node and assign its name and value.
-        fmt.beginTag( "param" );
-        fmt.attr( "name", name );
-        fmt.attr( "value", val );
-        
-        // Now tokenize it.
-        tokenize( fmt, val );
-        
-        // All done.
-        fmt.endTag();
-    } // addParam()
-    
-    
-    /**
-     * Break 'val' up into its component tokens and add elements for them.
-     * 
-     * @param fmt formatter to add to
-     * @param val value to tokenize
-     */
-    private static void tokenize( XMLFormatter fmt, String val )
-    {
-        char[] chars   = val.toCharArray();
-        char   inQuote = 0;
-        String tmpStr;
-        
-        int i;
-        int start = 0;
-        for( i = 0; i < chars.length; i++ ) {
-            char c = chars[i];
-            
-            if( c == inQuote ) {
-                if( i > start ) {
-                    tmpStr = new String( chars, start, i-start );
-                    addTokens( inQuote, fmt, tmpStr );
-                }
-                inQuote = 0;
-                start = i+1;
-            }
-            else if( inQuote == 0 && c == '\"' ) {
-                if( i > start ) {
-                    tmpStr = new String( chars, start, i-start );
-                    addTokens( inQuote, fmt, tmpStr );
-                }
-                inQuote = c;
-                start = i+1;
-            }
-            else
-                ; // Don't change start... has result of building up a token.
-        } // for i
-        
-        // Process the last tokens
-        if( i > start ) {
-            tmpStr = new String( chars, start, i-start );
-            addTokens( inQuote, fmt, tmpStr ); 
-        }
-    } // tokenize()
-    
-    
-    /**
-     * Adds one or more token elements to a parameter node. Also handles
-     * phrase nodes.
-     * 
-     * @param inQuote Non-zero means this is a quoted phrase, in which case the
-     *                element will be 'phrase' instead of 'token', and it will
-     *                be given sub-token elements.
-     * @param fmt formatter to add to
-     * @param str The token value
-     */
-    private static void addTokens( char         inQuote,  
-                                   XMLFormatter fmt,
-                                   String       str )
-    {
-        // If this is a quoted phrase, tokenize the words within it.
-        if( inQuote != 0 ) {
-            fmt.beginTag( "phrase" );
-            fmt.attr( "value", str );
-            tokenize( fmt, str );
-            fmt.endTag();
-            return;
-        }
-        
-        // We want to retain wildcard characters, but the tokenizer won't see
-        // them as part of a word. So substitute, temporarily.
-        //
-        str = saveWildcards( str );
-        
-        // Otherwise, use a tokenizer to break up the string.
-        try {
-            XTFTextAnalyzer analyzer = new XTFTextAnalyzer( null, -1 );
-            TokenStream toks = analyzer.tokenStream( "text", new StringReader(str) );
-            int prevEnd = 0;
-            while( true ) {
-                Token tok = toks.next();
-                if( tok == null )
-                    break;
-                if( tok.startOffset() > prevEnd )
-                    addToken( fmt, 
-                              str.substring(prevEnd, tok.startOffset()),
-                              false );
-                prevEnd = tok.endOffset();
-                addToken( fmt, tok.termText(), true );
-            }
-            if( str.length() > prevEnd )
-                addToken( fmt, str.substring(prevEnd, str.length()),
-                          false );
-        }
-        catch( IOException e ) {
-            assert false : "How can analyzer throw IO error on string buffer?";
-        }
-    } // addToken()
-    
-    
-    /**
-     * Adds a token element to a parameter node.
-     * 
-     * @param fmt formatter to add to
-     * @param str The token value
-     * @param isWord true if  token is a real word, false if only punctuation
-     */
-    private static void addToken( XMLFormatter fmt,
-                                  String str,
-                                  boolean isWord )
-    {
-        // Remove spaces. If nothing is left, don't bother making a token.
-        str = str.trim();
-        if( str.length() == 0 )
-            return;
-        
-        // Recover wildcards that were saved.
-        str = restoreWildcards( str );
-        
-        // And create the node
-        fmt.beginTag( "token" );
-        fmt.attr( "value", str );
-        fmt.attr( "isWord", isWord ? "yes" : "no" );
-        fmt.endTag();
-    } // addToken()
-    
-    
-    /**
-     * Converts wildcard characters into word-looking bits that would never
-     * occur in real text, so the standard tokenizer will keep them part of
-     * words. Resurrect using {@link #restoreWildcards(String)}.
-     */
-    private static String saveWildcards( String s )
-    {
-        // Early out if no wildcards found.
-        if( s.indexOf('*') < 0 && s.indexOf('?') < 0 )
-            return s;
-        
-        // Convert to wordish stuff.
-        s = s.replaceAll( "\\*", SAVE_WILD_STAR );
-        s = s.replaceAll( "\\?", SAVE_WILD_QMARK );
-        return s;
-    } // saveWildcards()
-    
-    
-    /**
-     * Restores wildcards saved by {@link #saveWildcards(String)}.
-     */
-    private static String restoreWildcards( String s )
-    {
-        // Early out if no wildcards found.
-        if( s.indexOf(SAVE_WILD_STAR) < 0 && s.indexOf(SAVE_WILD_QMARK) < 0 )
-            return s;
-
-        // Convert back from wordish stuff to real wildcards.
-        s = s.replaceAll( SAVE_WILD_STAR, "*" );
-        s = s.replaceAll( SAVE_WILD_QMARK,   "?" );
-        return s;
-    } // restoreWildcards()
+        return baseDir;
+    } // getBaseDir()
     
     
     /**
@@ -442,6 +196,8 @@ public class QueryRequest implements Cloneable
             parseOutput( output );
             return;
         }
+        
+        topNode = output.getWrappedNode();
         
         for( int i = 0; i < output.nChildren(); i++ ) {
             EasyNode main = output.child( i );
