@@ -204,6 +204,9 @@ public class TestableDynaXML extends DynaXML
   protected Source getSourceDoc( DocInfo docInfo, Transformer transformer )
     throws IOException, SAXException, ParserConfigurationException
   {
+    // If no lazy file is available, skip the document.
+    forceLazy = true;
+
     // If not annotating, use the normal SearchTree...
     if( !useAnnotated ) {
         Source realSrc = super.getSourceDoc( docInfo, transformer );

@@ -99,6 +99,9 @@ public class DynaXML extends TextServlet
 
     /** Holds global servlet configuration info */
     private static DynaXMLConfig config;
+
+    /** Only allow lazy documents (set by TestableDynaXML only) */
+    protected static boolean forceLazy = false;
     
     /**
      * Gets a dependency on the docLookup cache for the given document.
@@ -491,7 +494,8 @@ public class DynaXML extends TextServlet
      *                                      problems
      */
     protected Source getSourceDoc( DocInfo docInfo, Transformer transformer )
-        throws IOException, SAXException, ParserConfigurationException
+        throws IOException, SAXException, ParserConfigurationException,
+               InvalidDocumentException
     {
         // If no 'index' specified in the docInfo, then there's no way we can
         // find the lazy file.
@@ -524,6 +528,9 @@ public class DynaXML extends TextServlet
             if( lazyFile == null || !lazyFile.canRead() )
                 useLazy = false;
         }
+
+        if( !useLazy && forceLazy )
+            throw new InvalidDocumentException();
 
         // Get a source stream of events. It might come from a plain file,
         // URLConnection, or a lazy tree. If there is a query, it will also
