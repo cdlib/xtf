@@ -316,8 +316,67 @@
       Under the Hood</a> guide.</div>
     <p>Using these XML input and output specifications shown, a simple document selector 
       might look something like this:</p>
-    <p>More...</p>
-    </div>
+    
+    <pre class="Sample">&lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"&gt;
+
+  &lt;xsl:template match="directory"&gt;
+    &lt;indexFiles&gt;
+      &lt;xsl:apply-templates/&gt;
+    &lt;/indexFiles&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;xsl:template match="file"&gt;
+    &lt;xsl:if test="ends-with(@fileName,'.pdf')"&gt;
+	  &lt;indexFile fileName="{@fileName}" format="PDF"/&gt;
+    &lt;/xsl:if&gt;
+  &lt;/xsl:template&gt;
+
+&lt;/xsl:stylesheet&gt;</pre>
+    <p>In this simple <b>Document Selector</b> example, the first line establishes 
+      the<span class="Code"> xsl </span>namespace used in the rest of the stylesheet. 
+      Next, the<span class="Code"> &lt;xsl:template match=&quot;directory&quot;&gt; 
+      </span>tag looks for the<span class="Code"> &lt;directory...&gt; </span>block 
+      in the input XML, and writes out a corresponding<span class="Code"> &lt;indexFiles&gt; 
+      </span>block to the output XML. Also the<span class="Code"> &lt;xsl:template&nbsp;match="file"&gt; 
+      </span>template is applied to any tags found within the<span class="Code"> &lt;directory...&gt; 
+      </span>block.</p>
+    <p>The<span class="Code"> &lt;xsl:template&nbsp;match="file"&gt; </span>block 
+      is the code that is actually responsible for selecting the files to be indexed. 
+      In this example, only files that end in<span class="Code"> .pdf </span>are passed 
+      on for indexing, and are assigned the type<span class="Code"> PDF</span>. No 
+      <b>Pre-Filter</b> or <b>Document Formatter</b> stylesheets are defined, and 
+      so the <i><b>textIndexer</b></i> will not pre-filter or pre-cache display information 
+      for<span class="Code"> PDF </span>files.</p>
+    <p>Selecting other file types for indexing is as simple as adding more<span class="Code"> 
+      &lt;xsl:if...&gt; </span>clauses to the<span class="Code"> &lt;xsl:template 
+      match=&quot;file&quot;&gt; </span>block, like this:</p>
+    <pre class="Sample">          <img src="../Common_Art/vDotDotDot.gif" width="6" height="26">
+  &lt;xsl:template match="file"&gt;
+    &lt;xsl:if test="ends-with(@fileName,'.pdf')"&gt;
+	  &lt;indexFile fileName="{@fileName}" format="PDF"/&gt;
+    &lt;/xsl:if&gt;
+    <b><font color="#990000">&lt;xsl:if test="ends-with(@fileName,'.xml')"&gt;
+	  &lt;indexFile fileName     = "{@fileName}"
+                 preFilter    = &quot;style/textIndexer/default/prefilter.xsl&quot;
+                 displayStyle = &quot;style/dynaXML/docFormatter/default/docFormatter.xsl&quot;/&gt;
+    &lt;/xsl:if&gt;</font></b>
+  &lt;/xsl:template&gt;
+
+&lt;/xsl:stylesheet&gt;</pre>
+    <p>This<span class="Code"> second &lt;xsl:if...&gt; </span>block passes XML on 
+      files for indexing. Note that the<span class="Code"> &lt;indexFile...&gt; </span>tag 
+      doesn't specify the file type, and so the textIndexer is left to infer that 
+      the file type is XML from the file extension. Lastly, the<span class="Code"> 
+      &lt;indexFile...&gt; </span>tag also defines a <b>Pre-Filter</b> and a <b>Document 
+      Formatter</b> stylesheet for XML files.</p>
+    <p>While this simple<b> Document Selector </b>example works, it's file selection 
+      rules are limited only to checking for certain file extensions. Clearly, all 
+      the power of XSLT could be used to construct more complicated selection criteria 
+      for files, including ignoring various directories, skipping files older than 
+      a certain date, and so on. For a more complete example of a <b>Document Selector</b> 
+      stylesheet, see the default <span class="Code"> style/textIndexer/docSelector.xsl</span> 
+      stylesheet.</p>
+  </div>
 
       <div class="IndentL">
 
