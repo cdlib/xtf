@@ -1083,11 +1083,12 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replace(replace(replace($queryString, 
-                          '&amp;rmode=([A-Za-z0-9&quot;\-\. ]+)', ''), 
-                          '&amp;relation=([A-Za-z0-9&quot;\-\. ]+)', ''), 
+    <xsl:copy-of select="replace(replace(replace(replace(replace(replace($queryString, 
+                          '&amp;rmode=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
+                          '&amp;relation=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
+                          '&amp;relation-exclude=([A-Za-z0-9&quot;\-\.\* ]+)', ''),       
                           'year=([0-9]+)&amp;year-max=([0-9]+)', 'year=$1-$2'), 
-                          '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\. ]+)', '$2 in $1'),
+                          '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\.\* ]+)', '$2 in $1'),
                           '&amp;', ' and ')"/>
   </xsl:param>
     
@@ -1111,18 +1112,18 @@
       </xsl:choose>
     </xsl:variable>    
     
-    <span class="heading">
-      <xsl:text>Displaying </xsl:text>
-      <xsl:value-of select="$startDoc"/>
-      <xsl:text> - </xsl:text>
-      <xsl:value-of select="$lastOnPage"/>
-      <xsl:text> of </xsl:text>
+    <xsl:text> Displaying </xsl:text>
+    <xsl:value-of select="$startDoc"/>
+    <xsl:text> - </xsl:text>
+    <xsl:value-of select="$lastOnPage"/>
+    <xsl:text> of </xsl:text>
+    <strong>
       <xsl:value-of select="@totalDocs"/>
-      <xsl:text> book(s)</xsl:text>
-      <xsl:if test="$totalDocs > $docsPerPage">
-        <xsl:text>: </xsl:text>
-      </xsl:if>
-    </span>  
+    </strong>
+    <xsl:text> item(s)</xsl:text>
+    <xsl:if test="$totalDocs > $docsPerPage">
+      <xsl:text>: </xsl:text>
+    </xsl:if>
     
   </xsl:template>
 
@@ -1153,6 +1154,10 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    
+    <xsl:if test="$nPages &gt; 2">
+      <xsl:text>Page: </xsl:text>
+    </xsl:if>
 
     <xsl:for-each select="(1 to $maxPages)">
       <!-- Figure out which block you need to be in -->
@@ -1234,9 +1239,9 @@
     
     <xsl:analyze-string select="$query" regex="([A-Za-z0-9\-]+) in ([A-Za-z0-9\-]+)">
       <xsl:matching-substring>
-        <b><i><xsl:value-of select="regex-group(1)"/></i></b>
+        <span class="search-item"><xsl:value-of select="regex-group(1)"/></span>
         <xsl:text> in </xsl:text>
-        <b><xsl:value-of select="regex-group(2)"/></b>
+        <em><xsl:value-of select="regex-group(2)"/></em>
       </xsl:matching-substring>
       <xsl:non-matching-substring>
         <xsl:value-of select="."/>
