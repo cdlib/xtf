@@ -47,7 +47,7 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 
 import net.sf.saxon.Controller;
-import net.sf.saxon.PreparedStyleSheet;
+import net.sf.saxon.PreparedStylesheet;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceivingContentHandler;
 import net.sf.saxon.instruct.Executable;
@@ -1030,7 +1030,7 @@ public class XMLTextProcessor extends DefaultHandler
         
         lazyHandler = new ReceivingContentHandler();
         lazyHandler.setReceiver( lazyReceiver );
-        lazyHandler.setNamePool( namePool );
+        lazyHandler.setConfiguration( lazyReceiver.getConfiguration() );
     }
     else {
         lazyBuilder  = null;
@@ -1293,7 +1293,7 @@ public class XMLTextProcessor extends DefaultHandler
     Templates stylesheet = stylesheetCache.find( stylesheetPath );
 
     // Register a lazy key manager
-    PreparedStyleSheet pss = (PreparedStyleSheet) stylesheet;
+    PreparedStylesheet pss = (PreparedStylesheet) stylesheet;
     Executable exec = pss.getExecutable();
     if( !(exec.getKeyManager() instanceof LazyKeyManager) ) {
         exec.setKeyManager( new LazyKeyManager(exec.getKeyManager(),
@@ -1307,7 +1307,8 @@ public class XMLTextProcessor extends DefaultHandler
     // For every xsl:key registered in the stylesheet, build the lazy key
     // hash.
     //
-    int nKeysCreated = keyMgr.createAllKeys( doc, (Controller) trans );
+    int nKeysCreated = keyMgr.createAllKeys( doc, 
+                               ((Controller)trans).newXPathContext() );
     Trace.more( Trace.info, "(" + nKeysCreated + " keys) " );
     
     // Make sure to close it when we're done.
