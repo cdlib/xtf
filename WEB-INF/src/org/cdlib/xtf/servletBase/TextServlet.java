@@ -315,17 +315,10 @@ public abstract class TextServlet extends HttpServlet
             }
             trans.setParameter( name, value );
         }
-
-        // This is useful so the stylesheet can be entirely portable... it
-        // can call itself in new URLs by simply using this path. Some servlet
-        // containers include the parameters, so strip those if present.
-        //
-        String uri = req.getRequestURI();
-        if( uri.indexOf('?') >= 0 )
-            uri = uri.substring(0, uri.indexOf('?') );
-        trans.setParameter( "servlet.path", uri );
+        
+        stuffSpecialAttribs( req, trans );
+        
     } // stuffAttribs()
-
 
     /**
      * Adds all the attributes in the list to the transformer as parameters
@@ -342,6 +335,57 @@ public abstract class TextServlet extends HttpServlet
             trans.setParameter( a.key, a.value );
         }
     } // stuffAttribs()
+
+
+    /**
+     * Calculates and adds the "servlet.path" and "root.path" attributes 
+     * to the given transformer.
+     */
+    public static void 
+    stuffSpecialAttribs( HttpServletRequest req, Transformer trans )
+    {
+    
+        // This is useful so the stylesheet can be entirely portable... it
+        // can call itself in new URLs by simply using this path. Some servlet
+        // containers include the parameters, so strip those if present.
+        //
+        String uri = req.getRequestURI();
+        if( uri.indexOf('?') >= 0 )
+            uri = uri.substring(0, uri.indexOf('?') );
+        trans.setParameter( "servlet.path", uri );
+        
+        // Another useful parameter is the path to this instance in the
+        // servlet container, for other resources such as icons and
+        // CSS files.
+        //
+        String rootPath = uri;
+        if( rootPath.endsWith("/") )
+            rootPath = rootPath.substring( 0, rootPath.length() - 1 );
+        
+        int slashPos = rootPath.lastIndexOf('/');
+        if( slashPos >= 1 )
+            rootPath = rootPath.substring( 0, slashPos );
+
+        String lookFor = "/servlet";
+        if( rootPath.endsWith(lookFor) )
+            rootPath = rootPath.substring( 0, 
+                                   rootPath.length() - lookFor.length() );
+        
+        rootPath = rootPath + "/";
+        trans.setParameter( "root.path", rootPath );
+        
+        // Stuff all the HTTP request parameters for the stylesheet to
+        // use if it wants to.
+        //
+        Enumeration i = req.getHeaderNames();
+        trans.setParameter( "http.URL", req.getRequestURI() );
+        while( i.hasMoreElements() ) {
+            String name = (String) i.nextElement();
+            String value = req.getHeader( name );
+            trans.setParameter( "http." + name, value );
+        }
+        
+    } // stuffSpecialAttribs()
 
 
     /**

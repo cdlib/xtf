@@ -239,6 +239,9 @@ public class CrossQuery extends TextServlet
         //
         stuffAttribs( trans, attribs );
         
+        // Add the special computed attributes.
+        stuffSpecialAttribs( req, trans );
+        
         // Finally we can generate the query... it will do the rest of the work.
         return new QueryRequest( trans, attribs, new File(getRealPath("")) );
     } // generateQueryReq()
@@ -272,6 +275,9 @@ public class CrossQuery extends TextServlet
         
         // Also stuff the URL parameters (in case stylesheet wants them)
         stuffAttribs( trans, attribs );
+        
+        // Add the special computed parameters.
+        stuffSpecialAttribs( req, trans );
         
         // Make an input document for it based on the document hits.
         Source sourceDoc = structureHits( result ); 
