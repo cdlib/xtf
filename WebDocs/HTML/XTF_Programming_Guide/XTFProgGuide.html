@@ -580,17 +580,13 @@
       <p class="Heading3">Adding or Marking Meta-Data</p>
       <!-----------------------------------------------------------------------------------------------------------> 
       There are times when it is useful to record Meta-Data for a document. Meta-Data 
-      is simply information about a document that is not part of the document text 
-      itself. The author name, document publication date, and document revision are 
-      all examples of Meta-Data. Ideally, this information would be indexed and separately 
-      searchable, but would not be considered when searching for words in the actual 
-      text for a document. <br>
-      <br>
-      The <b><i>textIndexer</i></b> system supports the concept of Meta-Data through 
-      the use of the <span class="Code">meta</span> attribute. Using the pre-filter 
-      to add this attribute to a tag causes name of the tag and its contents to be 
-      recorded in a special Meta-Data section of the index for the document. For example: 
-      <br>
+      is simply information about a document that is not part of the document 
+      text itself. The author name, document publication date, and document revision 
+      are all examples of Meta-Data. The <b><i>textIndexer</i></b> system supports 
+      the concept of Meta-Data through the use of the <span class="Code">meta</span> 
+      attribute. Using the pre-filter to add this attribute to a tag causes name 
+      of the tag and its contents to be recorded in a special Meta-Data section 
+      of the index for the document. For example: <br>
       <br>
       <pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="PublicationInfo"</font>&gt;
 
@@ -601,19 +597,45 @@
     &lt;/xsl:copy&gt;
 
 &lt;/xsl:template&gt;</b></pre>
-      This snippet of pre-filter code would take any tag with the name <span class="Code">PublicationInfo</span> 
-      and add a <span class="Code">meta</span> attribute to it, thus telling the <b><i>textIndexer</i></b> 
-      to add the publication info to the meta-data index for the current document 
-      rather than the main text index. <br>
-      <br>
-      Once meta-data has been recorded for a document, it can be searched by modifying 
-      the <b><i>crossQuery</i></b> servlet's Query Parser Stylesheet to generate meta 
-      search requests. Doing so is described in detail below in the <a href="#crossQuery_QueryParser_Prog">Query 
-      Parser Programming</a> section below. </div>
-    <br>
-    <br>
-    In closing, a few additional facts should be mentioned about the attributes supported 
-    by the XTF system: 
+      <p>This snippet of pre-filter code would take any tag with the name <span class="Code">PublicationInfo</span> 
+        and add a <span class="Code">meta</span> attribute to it, thus telling 
+        the <b><i>textIndexer</i></b> to add the publication info to the meta-data 
+        index for the current document rather than the main text index. Once meta-data 
+        has been recorded for a document, it can be searched by modifying the 
+        <b><i>crossQuery</i></b> servlet's Query Parser Stylesheet to generate 
+        meta search requests. Doing so is described in detail below in the <a href="#crossQuery_QueryParser_Prog">Query 
+        Parser Programming</a> section below.</p>
+      <p>Another way in which meta-data for a document can be used is as a query 
+        <i><b> sort key</b></i>. Sort keys are used by the <i><b>crossQuery</b></i> 
+        servlet to reorder how query matches are displayed for the user. To use 
+        a meta-field as a sort key, its contents must not be tokenized. Since 
+        tokenizing is turned on by default for to make a meta-data field searchable, 
+        the pre-filter code that processes meta-data must explicitly turn tokenizing 
+        off. This is accomplished as follows:</p>
+      <pre class="Sample"><b>&lt;xsl:template match="PublicationInfo"&gt;
+
+    &lt;xsl:copy&gt;
+        &lt;xsl:copy-of select="@*"/&gt;
+        &lt;xsl:attribute name="xtf:meta" select="'true'"/&gt;
+        <font color="#990000">&lt;xsl:attribute name="xtf:tokenize" select="'no'"/&gt;</font>
+        &lt;xsl:apply-templates/&gt;
+    &lt;/xsl:copy&gt;
+
+&lt;/xsl:template&gt;</b></pre>
+      <p>Like the previous example, this pre-filter code would take any tag with 
+        the name <span class="Code">PublicationInfo</span> and mark it as meta-data. 
+        But the addition of the line of code shown in red disables tokenizing 
+        so that the meta-data can be used as a sort key by the <i> <b>crossQuery</b></i> 
+        servlet.</p>
+      <p>It is important to note that since a meta-data must be tokenized to be 
+        searchable, and it must be un-tokenized to be used as a sort key, meta-based 
+        searching and sorting operations are effectively mutually exclusive. If 
+        you want to perform both searching and sorting on a collection of meta-data, 
+        you'll need to add code to your prefilter to produce two copies of that 
+        meta-data: one copy for searching that is tokenized, and one copy for 
+        sorting that is not tokenized.</p>
+      <p>&nbsp;</p>
+    </div>
     <ol>
       <li class="ListItem"> All the examples above show the <b><i>textIndexer</i></b> 
         pre-filter adding attributes to the XML representation for a document. However, 
@@ -1209,6 +1231,15 @@
           data) or the string <span class="Code"> 'false' </span> (text in tag <b>is 
           not</b> meta data.) </div>
       </div>
+      <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:tokenize" 
+        select="<span class="MacroCode">'YesOrNo'</span>"/&gt; </span> <br>
+        <br>
+        <div class="IndentLR"> This attribute is used to indicate whether a meta-data 
+          field should be tokenized or not. By default, meta-data fields are tokenized 
+          so they can be searched. If you intend to use a meta-data field for 
+          sorting query results instead, set this atttibute to <span class="Code"> 
+          'no'</span> .</div>
+      </div>
       <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:proximitybreak" 
         select="'<span class="MacroCode">TrueOrFalse</span>'"/&gt; </span><br>
         <br>
@@ -1441,7 +1472,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px" cellpadding="0">
+            <table cellspacing="10" cellpadding="0">
               <tr> 
                 <td width="201" align="right" valign="top" class="Code"> 
                   <div align="right">style="<span class="MacroCode">ResultFormatterLocation</span>" 
@@ -1459,25 +1490,34 @@
                   <div align="right">sortMetaFields="<span class="MacroCode">ListOfMetaFields</span>" 
                   </div>
                 </td>
-                <td valign="top" width="1193"> <span class="BaseStyle"> is an 
-                  optional attribute specifying a list of meta fields by which 
-                  to sort the results. The list should consist of a quoted string 
-                  containing one or more meta-field names, separated by commas. 
-                  If multiple meta-fields are specified, the results are sorted 
-                  first by the left-most meta-field, then sub-sorted by subsequent 
-                  fields to produce the final output. Optionally, each meta-field 
-                  name can be preceeded by a plus sign (<b class="Code">+</b>) 
-                  or a minus sign (<b class="Code">-</b>) to indicate whether 
-                  the results for that field should be sorted in ascending or 
-                  descending order. If no plus or minus sign is specified for 
-                  a meta-field, then the results are sorted in ascending order 
-                  by default.</span> </td>
+                <td valign="top" width="1193"> 
+                  <p><span class="BaseStyle"> is an optional attribute specifying 
+                    a list of meta fields by which to sort the results. The list 
+                    should consist of a quoted string containing one or more meta-field 
+                    names, separated by commas. If multiple meta-fields are specified, 
+                    the results are sorted first by the left-most meta-field, 
+                    then sub-sorted by subsequent fields to produce the final 
+                    output. Optionally, each meta-field name can be preceeded 
+                    by a plus sign (<b class="Code">+</b>) or a minus sign (<b class="Code">-</b>) 
+                    to indicate whether the results for that field should be sorted 
+                    in ascending or descending order. If no plus or minus sign 
+                    is specified for a meta-field, then the results are sorted 
+                    in ascending order by default.</span></p>
+
+                    
+                  <p><span class="Note"><span class="BaseStyle"> <i>(Note: Meta 
+                    tags to be used for sorting queries should also have an xtf:tokenize=&quot;no&quot; 
+                    attribute set, or sorting will produce unpredictable results.)</i></span> 
+                    </span> </p>
+                  </td>
               </tr>
               <tr> 
-                <td width="201" align="right" valign="top" class="Code"> 
-                  <div align="right">startDoc="<span class="MacroCode">FirstDocToReturn</span>" 
+                <td width="201" align="right" valign="top"> 
+                  <div align="right">
+                    <span class="BaseStyle">startDoc="<span class="MacroCode">FirstDocToReturn</span>"
+                    </span> 
                   </div>
-                </td>
+              </td>
                 <td valign="top" width="1193"> <span class="BaseStyle"> is an 
                   optional attribute specifying the ordinal number of the first 
                   matching document to pass on to the <b>Result Formatter</b> 
