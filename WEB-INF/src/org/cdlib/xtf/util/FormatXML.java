@@ -425,7 +425,7 @@ public class FormatXML {
 
     // If no text was passed by the caller, simply return an empty string.
     if( str == null || str.length() == 0 ) return "";
-
+            
     // Otherwise, indent the text, and return it to the caller.
     return spaces.substring( 0, tabCount ) + str;
 
@@ -460,40 +460,70 @@ public class FormatXML {
     String outStr = "";
 
     // While the remaining text is longer than the maximum width...
-    while( str != null && str.length() > maxWidth ) {
+    while( str != null ) {
+
+        // Trim leading and trailing spaces from the the string.
+        str = str.trim();
 
         // Start with the necessary indentation.
         outStr += spaces.substring( 0, tabCount );
 
-        // Look for the first space at or before the maximum width.
-        int spaceIdx = str.lastIndexOf( ' ', maxWidth );
-
-        // If no space was found, simply use the string as is, and
+        // Look for the first space/carriage-return/line-feed at or 
+        // before the maximum width.
+        //
+        int spaceIdx = str.lastIndexOf( ' ',  maxWidth );
+        int crIdx    = str.indexOf( '\r' );
+        int lfIdx    = str.indexOf( '\n' );
+        
+        // Assume we'll break the string at the location of the space.
+        int breakIdx = spaceIdx;
+        
+        // If we found a carriage-return, and it's within the max line
+        // width, have it override the space as the break point.
+        // 
+        if( crIdx > -1 && crIdx < maxWidth ) {
+            breakIdx = crIdx;
+          
+            // If we also found a line-feed, and it's before the carriage
+            // return, have it override the carriage-return as the break
+            // point.
+            //
+            if( lfIdx > -1 && lfIdx < crIdx ) breakIdx = lfIdx;
+        }
+        
+        // We didn't find a carriage return. But if found a line-feed
+        // and it's within the maximum line width, have it override the
+        // space as the break point.
+        // 
+        else if( lfIdx > -1 && lfIdx < maxWidth ) 
+            breakIdx = lfIdx;
+        
+        // If no break was found, simply use the string as is, and
         // consider the job done.
         //
-        if( spaceIdx == -1 ) {
-            outStr += str + "\n";
+        if( breakIdx == -1 ) {
+            outStr += str;
             str = null;
         }
 
-        // If the only space found was the first character in the
+        // If the break was the first character in the
         // remaining text, skip it and go 'round again.
         //
-        else if( spaceIdx == 0 )
+        else if( breakIdx == 0 )
             str = str.substring( 1 );
 
-        // For the space at any other location....
+        // For the break at any other location....
         else {
 
-            // Tack on the text up to and including the space.
-            outStr += str.substring( 0, spaceIdx ) + "\n";
+            // Tack on the text up to break character.
+            outStr += str.substring( 0, breakIdx ) + " \n";
 
-            // If the space was not the last character in the
+            // If the break was not the last character in the
             // remaining string, chop off the part we just
             // added to the output string and go 'round again.
             //
-            if( spaceIdx < str.length()-1)
-                str = str.substring( spaceIdx + 1 );
+            if( breakIdx < str.length()-1)
+                str = str.substring( breakIdx + 1 );
 
             // Otherwise, there's nothing left in the original
             // source string, so flag that we're finished.
@@ -504,11 +534,6 @@ public class FormatXML {
         } // else( space at any other location )
 
     } // while( str != null && str.length() > maxWidth )
-
-    // If there was anything left in the original string, stick it onto
-    // the end of the output string with indentation.
-    //
-    if( str != null ) outStr += spaces.substring( 0, tabCount ) + str;
 
     // Finally, return the resulting output string.
     return outStr;
