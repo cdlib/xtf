@@ -31,21 +31,41 @@ package org.cdlib.xtf.textEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXSource;
+
+import org.cdlib.xtf.textIndexer.CrimsonBugWorkaround;
 import org.cdlib.xtf.textIndexer.IndexInfo;
 import org.cdlib.xtf.textIndexer.IndexerConfig;
+import org.cdlib.xtf.util.DocTypeDeclRemover;
 import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.XTFSaxonErrorListener;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
- * This class provides methods to calculate document keys (as used in an 
- * index), or lazy file paths. It also maintains a publicly accessible cache 
- * of index info entries read from the index config file(s).
+ * This class provides methods related to, but not always part of, a text
+ * index. For instance, there are methods to calculate document keys (as 
+ * used in an index), or lazy file paths. It also maintains a publicly 
+ * accessible cache of index info entries read from the index config file(s).
  * 
  * @author Martin Haye
  */
-public class IdxConfigUtil
+public class IndexUtil
 {
   private static ConfigCache configCache = new ConfigCache();
+  private static SAXParserFactory saxParserFactory = null;
   
   /**
    * Given an index configuration file and the name of an index within that file,
@@ -249,4 +269,137 @@ public class IdxConfigUtil
       
   } // calcDocKey()
   
+  
+  /**
+   * Given an index within a config file and the path to the source XML text
+   * of a document, this method infers the correct document key that should be
+   * stored in the index.
+   * 
+   * @param xtfHomeFile     The XTF_HOME directory
+   * @param idxInfo         Configuration info for the index in question.
+   * @param srcTextFile     Source text file of interest
+   * 
+   * @return                Document key to store or look for in the index
+   *    
+   * @throws Exception      If the config file cannot be loaded, or the
+   *                        paths are invalid.        
+   */
+  public static SAXParser createSAXParser()
+  {
+    // If we don't have a factory yet, make one...
+    if( saxParserFactory == null ) 
+    {
+        // For some evil reason, Resin overrides the default transformer
+        // and parser implementations with its own, deeply inferior,
+        // versions. Screw that.
+        //
+        System.setProperty( "javax.xml.parsers.TransformerFactory",
+                            "net.sf.saxon.TransformerFactoryImpl" );
+        
+        // Our first choice is the new parser supplied by Java 1.5.
+        // Second choice is the older (but reliable) Crimson parser.
+        //
+        try {
+            Class.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
+            System.setProperty( "javax.xml.parsers.SAXParserFactory",
+                                "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl" );
+        }
+        catch( ClassNotFoundException e ) {
+            try {
+                Class.forName("org.apache.crimson.jaxp.SAXParserFactoryImpl");
+                System.setProperty( "javax.xml.parsers.SAXParserFactory",
+                                    "org.apache.crimson.jaxp.SAXParserFactoryImpl" );
+            }
+            catch( ClassNotFoundException e2 ) {
+                ; // Okay, accept whatever the default is.
+            }
+        }
+        
+        // Create a SAX parser factory.
+        saxParserFactory = SAXParserFactory.newInstance();
+    }
+    
+    // Use the parser factory to make a new parser.
+    synchronized( saxParserFactory ) {
+        try {
+            SAXParser xmlParser = saxParserFactory.newSAXParser();
+            XMLReader xmlReader = xmlParser.getXMLReader();
+            xmlReader.setFeature( 
+                      "http://xml.org/sax/features/namespaces", true );
+            xmlReader.setFeature( 
+                      "http://xml.org/sax/features/namespace-prefixes", false );
+            return xmlParser;
+        }
+        catch( SAXException e ) {
+            throw new RuntimeException( e );
+        }
+        catch( ParserConfigurationException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+    
+  } // createSaxParser() 
+    
+  /**
+   * Applies the standard set of filters for an XML document. In our case,
+   * this involves removing document type declarations, and working around
+   * a bug in the Apache Crimson parser.
+   * 
+   * @param inStream    Document stream to filter
+   * @param saxParser   Parser that will be used to parse the document
+   * 
+   * @return            Filtered input stream
+   */
+  public static InputStream filterXMLDocument( InputStream inStream, 
+                                               SAXParser   saxParser )
+  {
+      // Remove DOCTYPE declarations, since the XML reader will barf if it
+      // can't resolve the entity reference, and we really don't care.
+      //
+      inStream = new DocTypeDeclRemover( inStream );
+      
+      // Work around a nasty bug in the Apache Crimson parser. If it
+      // finds a ']' character at the end of its 8193-byte buffer,
+      // and that is preceded by a '>' character then it crashes. The 
+      // following filter inserts a space in such cases.
+      //
+      if( saxParser.getClass().getName().equals("org.apache.crimson.jaxp.SAXParserImpl") )
+          inStream = new CrimsonBugWorkaround( inStream );
+      
+      return inStream;
+  }
+  
+   
+  public static void applyPreFilter( Templates      prefilterStylesheet,
+                                     SAXParser      saxParser,
+                                     InputSource    inSrc,
+                                     ContentHandler contentHandler )
+    throws SAXException, 
+           TransformerException,
+           TransformerConfigurationException
+  {
+    // Create an actual transform filter from the stylesheet for this
+    // particular document we're indexing.
+    //
+    Transformer filter = prefilterStylesheet.newTransformer();
+        
+    // And finally, make a SAX source that combines the XML reader with
+    // the filtered input source.
+    //
+    SAXSource srcText = new SAXSource( saxParser.getXMLReader(), inSrc );
+  
+    // Identify this class as the parser for the XML events that 
+    // the XSLT translation will produce.
+    //
+    SAXResult filteredText = new SAXResult( contentHandler );
+  
+    // Make sure errors get directed to the right place.
+    if( !(filter.getErrorListener() instanceof XTFSaxonErrorListener) )
+        filter.setErrorListener( new XTFSaxonErrorListener() );
+
+    // Perform the translation.
+    filter.transform( srcText, filteredText );
+    
+  } // applyPreFilter()
+
 } // class FileCalc
