@@ -99,7 +99,7 @@
     <!-- The top-level query element tells what stylesheet will be used to
        format the results, which document to start on, and how many documents
        to display on this page. -->
-    <query indexPath="index" termLimit="1000" workLimit="500000" style="{$stylesheet}" startDoc="{$startDoc}" maxDocs="{$docsPerPage}">
+    <query indexPath="index" termLimit="1000" workLimit="1000000" style="{$stylesheet}" startDoc="{$startDoc}" maxDocs="{$docsPerPage}">
 
       <!-- sort attribute -->
       <xsl:if test="$sort">
