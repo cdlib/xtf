@@ -40,7 +40,7 @@ import java.io.RandomAccessFile;
  * 
  * @author Martin Haye
  */
-class SubFileReader implements SubStoreReader
+class SubFileReader extends SubStoreReader
 {
     /** Actual disk file to write to */
     private RandomAccessFile file;
@@ -114,15 +114,6 @@ class SubFileReader implements SubStoreReader
             
             if( curPos + nBytes > segLength )
                 throw new EOFException( "End of sub-file reached" );
-        }
-    }
-
-    public void read(byte[] b) throws IOException
-    {
-        synchronized( parent ) {
-            checkLength( b.length );
-            file.readFully(b);
-            curPos += b.length;
         }
     }
 

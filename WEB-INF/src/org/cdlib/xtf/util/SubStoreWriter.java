@@ -42,13 +42,32 @@ import java.io.IOException;
  * 
  * @author Martin Haye
  */
-public interface SubStoreWriter 
+public abstract class SubStoreWriter 
 {
-  void close() throws IOException;
-  long length() throws IOException;
-  void write(byte[] b) throws IOException;
-  void write(byte[] b, int off, int len) throws IOException;
-  void writeByte(int b) throws IOException;
-  void writeChars(String s) throws IOException;
-  void writeInt(int v) throws IOException;
+  public void write(byte[] b) throws IOException
+  {
+      write( b, 0, b.length );
+  }
+  
+  public abstract void write(byte[] b, int off, int len) throws IOException;
+  public abstract void writeByte(int b) throws IOException;
+  
+  public void writeChars( String s ) throws IOException
+  {
+      int clen = s.length();
+      int blen = 2*clen;
+      byte[] b = new byte[blen];
+      char[] c = new char[clen];
+      s.getChars( 0, clen, c, 0 );
+      for( int i = 0, j = 0; i < clen; i++ ) {
+          b[j++] = (byte)(c[i] >>> 8);
+          b[j++] = (byte)(c[i] >>> 0);
+      }
+      write( b );
+  }
+
+  public abstract void writeInt(int v) throws IOException;
+  
+  public abstract long length() throws IOException;
+  public abstract void close() throws IOException;
 }

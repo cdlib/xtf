@@ -39,7 +39,7 @@ import java.io.RandomAccessFile;
  * 
  * @author Martin Haye
  */
-class SubFileWriter implements SubStoreWriter
+class SubFileWriter extends SubStoreWriter
 {
     /** Actual disk file to write to */
     private RandomAccessFile file;
@@ -54,7 +54,7 @@ class SubFileWriter implements SubStoreWriter
     private long writtenPos = 0;
     
     /** Size of the buffer to maintain */
-    private static final int BUF_SIZE = 50; // TODO: Increase buffer
+    private static final int BUF_SIZE = 32768;
     
     /** Buffered data (cuts down access to the physical file) */
     private byte[] buf = new byte[BUF_SIZE];
@@ -144,21 +144,7 @@ class SubFileWriter implements SubStoreWriter
             buf[bufTop++] = (byte) (v & 0xff);
         }
     }
-
-    public void writeChars(String s) throws IOException
-    {
-        int clen = s.length();
-        int blen = 2*clen;
-        byte[] b = new byte[blen];
-        char[] c = new char[clen];
-        s.getChars( 0, clen, c, 0 );
-        for( int i = 0, j = 0; i < clen; i++ ) {
-            b[j++] = (byte)(c[i] >>> 8);
-            b[j++] = (byte)(c[i] >>> 0);
-        }
-        write( b );
-    }
-
+    
     public void writeInt(int v) throws IOException
     {
         synchronized( parent ) {

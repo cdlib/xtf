@@ -42,14 +42,21 @@ import java.io.IOException;
  * 
  * @author Martin Haye
  */
-public interface SubStoreReader 
+public abstract class SubStoreReader 
 {
-  void close() throws IOException;
-  long getFilePointer() throws IOException;
-  long length() throws IOException;
-  void read(byte[] b) throws IOException;
-  void read(byte[] b, int off, int len) throws IOException;
-  void seek(long pos) throws IOException;
-  byte readByte() throws IOException;
-  int  readInt() throws IOException;
+  public abstract void close() throws IOException;
+  
+  public abstract long getFilePointer() throws IOException;
+  public abstract long length() throws IOException;
+  
+  public void read(byte[] b) throws IOException
+  {
+      read( b, 0, b.length );
+  }
+
+  public abstract void read(byte[] b, int off, int len) throws IOException;
+  public abstract void seek(long pos) throws IOException;
+  
+  public abstract byte readByte() throws IOException;
+  public abstract int  readInt() throws IOException;
 }
