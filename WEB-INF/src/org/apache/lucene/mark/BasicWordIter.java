@@ -29,7 +29,7 @@ import org.apache.lucene.analysis.TokenStream;
  * <p>Created: Dec 13, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: BasicWordIter.java,v 1.1 2005-02-08 23:19:36 mhaye Exp $
+ * @version $Id: BasicWordIter.java,v 1.2 2005-02-24 05:15:06 mhaye Exp $
  */
 public class BasicWordIter implements WordIter, Cloneable
 {
@@ -96,7 +96,7 @@ public class BasicWordIter implements WordIter, Cloneable
   // inherit javadoc
   public boolean next(boolean force) {
     // Are we at the end?
-    if (tokNum == tokens.length - 1)
+    if (tokNum >= tokens.length - 1)
       return false;
 
     // Advance.
@@ -108,7 +108,7 @@ public class BasicWordIter implements WordIter, Cloneable
   // inherit javadoc
   public boolean prev(boolean force) {
     // Are we at the start?
-    if (tokNum == 0)
+    if (tokNum <= 0)
       return false;
 
     // Back up one token.
