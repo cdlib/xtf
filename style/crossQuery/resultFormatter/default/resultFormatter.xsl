@@ -674,7 +674,7 @@
           </a>
         </td>
         <td width="34%" height="44" align="center">
-          <h1 style="color: white">XTF Demonstration</h1>
+          <h1 style="color: white">XTF Default Interface</h1>
         </td>
         <td width="33%" height="44" align="right">
           <a href="http://www.sourceforge.net" target="_top">

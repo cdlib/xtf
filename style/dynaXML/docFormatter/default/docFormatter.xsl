@@ -440,7 +440,7 @@
         </a>
       </td>
       <td class="header-right"  width="34%" height="44" align="center">
-        <h1 style="color: white">XTF Demonstration</h1>
+        <h1 style="color: white">XTF Default Interface</h1>
       </td>
       <td class="header-right" width="33%" height="44" align="right">
         <a href="http://www.sourceforge.net" target="{$target}">
@@ -517,34 +517,19 @@
 
             <!-- BEGIN TOPNAV CENTER -->
             <form action="{$serverURL}xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML" target="{$target}" method="GET">
-              <input type="hidden" name="doc.path">
+              <input type="hidden" name="docId">
                 <xsl:attribute name="value">
-                  <xsl:value-of select="$doc.path"/>
-                </xsl:attribute>
-              </input>
-              <input type="hidden" name="doc.view">
-                <xsl:attribute name="value">
-                  <xsl:value-of select="$doc.view"/>
+                  <xsl:value-of select="$docId"/>
                 </xsl:attribute>
               </input>
               <input type="hidden" name="chunk.id">
                 <xsl:attribute name="value">
                   <xsl:value-of select="$chunk.id"/>
                 </xsl:attribute>
-              </input>
-              <input type="hidden" name="toc.depth">
+              </input>              
+              <input type="hidden" name="doc.view">
                 <xsl:attribute name="value">
-                  <xsl:value-of select="$toc.depth"/>
-                </xsl:attribute>
-              </input>
-              <input type="hidden" name="toc.id">
-                <xsl:attribute name="value">
-                  <xsl:value-of select="$toc.id"/>
-                </xsl:attribute>
-              </input>
-              <input type="hidden" name="search.mode">
-                <xsl:attribute name="value">
-                  <xsl:value-of select="'thisbook'"/>
+                  <xsl:value-of select="'frames'"/>
                 </xsl:attribute>
               </input>
               
