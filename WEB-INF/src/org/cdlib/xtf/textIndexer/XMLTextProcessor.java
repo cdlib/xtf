@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -1181,8 +1182,8 @@ public class XMLTextProcessor extends DefaultHandler
     // Create a SAX parser factory.
     SAXParserFactory spf = SAXParserFactory.newInstance();
     
-    try 
-    {
+    try {
+        
         // Instantiate a new XML parser instance.
         SAXParser xmlParser = spf.newSAXParser();
         XMLReader xmlReader = xmlParser.getXMLReader();
@@ -1191,39 +1192,61 @@ public class XMLTextProcessor extends DefaultHandler
         xmlReader.setFeature( 
                   "http://xml.org/sax/features/namespace-prefixes", true );
         
-        // Convert our XML text file into a SAXON input source.
-        InputStream inStream;
-        if( file.source.getByteStream() == null )
-            inStream = new FileInputStream( file.source.getSystemId() );
-        else
-            inStream = file.source.getByteStream();
-        
-        // Remove DOCTYPE declarations, since the XML reader will barf if it
-        // can't resolve the entity reference, and we really don't care.
-        //
-        inStream = new DocTypeDeclRemover( inStream );
     
-        // If there no XSLT input filter defined for this index, just 
-        // parse the source XML file directly, and return early.
-        //
-        if( srcText.inputFilter == null ) {
-            xmlParser.parse( inStream, this );
-            return 0;
+        InputSource inSrc = null;
+
+        // If the file format is PDF...
+        if( file.format == "PDF" ){
+          
+            // Convert the PDF file into an XML string that we can index.
+            String pdfXMLStr = PDFToString.convert( file.source.getSystemId() );
+            
+            inSrc = new InputSource( new StringReader(pdfXMLStr) );          
+              
+            // If there no XSLT input filter defined for this index, just 
+            // parse the source XML file directly, and return early.
+            //
+            if( srcText.inputFilter == null ) {
+                xmlParser.parse( inSrc, this );
+                return 0;
+            }
         }
+        else {
+          
+            // Convert our XML text file into a SAXON input source.
+            InputStream inStream;
+            if( file.source.getByteStream() == null )
+                inStream = new FileInputStream( file.source.getSystemId() );
+            else
+                inStream = file.source.getByteStream();
+            
+            // Remove DOCTYPE declarations, since the XML reader will barf if it
+            // can't resolve the entity reference, and we really don't care.
+            //
+            inStream = new DocTypeDeclRemover( inStream );
         
+            // If there no XSLT input filter defined for this index, just 
+            // parse the source XML file directly, and return early.
+            //
+            if( srcText.inputFilter == null ) {
+                xmlParser.parse( inStream, this );
+                return 0;
+            }
+            
+            // Now make an input source.
+            inSrc = new InputSource( inStream );
+        }
+    
         // If we got to this point, there is an XSLT filter specified. So 
         // set up to use it, and process the resulting filtered XML text.
         //
         Templates stylesheet = srcText.inputFilter;
-        
+              
         // Create an actual transform filter from the stylesheet for this
         // particular document we're indexing.
         //
         Transformer filter = stylesheet.newTransformer();
-      
-        // Now make an input source.
-        InputSource inSrc = new InputSource( inStream );
-        
+            
         // Put a proper system ID on it.
         if( file.source.getSystemId() != null )
             inSrc.setSystemId( file.source.getSystemId() );
