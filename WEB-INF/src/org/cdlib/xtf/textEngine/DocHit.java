@@ -38,7 +38,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.mark.FieldSpans;
 import org.apache.lucene.mark.SpanDocument;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.spans.Span;
 import org.cdlib.xtf.textIndexer.XtfSpecialTokensFilter;
 import org.cdlib.xtf.util.AttribList;
 
@@ -67,12 +66,6 @@ public class DocHit extends ScoreDoc
      * high enough to report.
      */
     private int totalSnippets; // >= number of snippets
-    
-    /** Sorted array of spans */
-    private Span[] spans;
-    
-    /** Array of chunk # per span */
-    private int[] chunks;
     
     /** Array of pre-built snippets */
     private Snippet[] snippets;
@@ -126,12 +119,6 @@ public class DocHit extends ScoreDoc
 
         // Get the span hits.
         totalSnippets = fieldSpans != null ? fieldSpans.getSpanTotal(FIELD) : 0;
-        
-        // If no span hits, we're done.
-        if( totalSnippets == 0 ) {
-            spans = new Span[0];
-            return;
-        }
     } // finish()
     
     /**
@@ -293,7 +280,7 @@ public class DocHit extends ScoreDoc
         // If we haven't built the snippets yet (or if we didn't get the
         // text for them), do so now.
         //
-        if( snippets == null || snippets[hitNum].text == null )
+        if( snippets == null || (getText && snippets[hitNum].text == null) )
             snippets = snippetMaker.makeSnippets( fieldSpans, doc, 
                                                   "text", getText );
         
