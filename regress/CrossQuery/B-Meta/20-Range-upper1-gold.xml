@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit file="doc5.xml">
+      <meta>
+         <title>California Riparian Systems: Ecology, Conservation, and Productive Management</title>
+         <creator>Richard E. Warner and Kathleen M. Hendrix, editors</creator>
+         <subject>Environmental Studies</subject>
+         <subject>California and the West</subject>
+         <description>This volume presents 135 of the papers presented at the 1981 California Riparian Systems Conference. The papers address all aspects of riparian systems: habitat, wildlife, land management, land use policy planning, conservation and water resource management.</description>
+         <date>19841203</date>
+         <type>text</type>
+         <identifier>http://ark.cdlib.org/ark:/13030/ft1c6003wp</identifier>
+         <relation>http://www.ucpress.edu/</relation>
+         <relation>http://escholarship.cdlib.org/</relation>
+         <rights>Public</rights>
+      </meta>
+   </docHit>
+</crossQueryResult>

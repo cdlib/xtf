@@ -1,0 +1,1474 @@
+<html>
+
+  <head>
+    <title>XTF Under the Hood</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+    <style type="text/css">
+      <!--
+        .DocTitle     { margin-left:  0.00in;
+                        font-family:  Arial, Helvetica, sans-serif;
+                        font-size:    18pt;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        font-variant: small-caps; }
+
+        .BaseStyle    { margin-left:  0.00in;
+                        font-family:  Arial, Helvetica, sans-serif;
+                        font-size:    10pt;
+                        font-style:   normal;
+                        font-weight:  normal;
+                        font-variant: normal; }
+
+        .IndentL      { margin-left: 0.25in; margin-right: 0.00in }
+        .IndentLR     { margin-left: 0.25in; margin-right: 0.25in }
+
+        .Heading1     { font-size:    14pt;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        font-variant: small-caps;
+                        width:        100%;
+                        line-height:  normal;
+                        color:        #b6953b;
+                        border-color: #b6953b;
+                        border-style: solid;
+                        border-left-width: 0px; border-right-width:  0px;
+                        border-top-width:  0px; border-bottom-width: 3px;
+                        margin-top: 28pt; margin-bottom: 4pt }
+
+        .Heading2     { font-size:    12pt;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        width:        100%;
+                        line-height:  normal;
+                        color:        #576490;
+                        border-color: #576490;
+                        border-style: solid;
+                        border-left-width: 0px; border-right-width:  0px;
+                        border-top-width:  0px; border-bottom-width: 2px;
+                        margin-top: 24pt; margin-bottom: 4pt }
+
+        .Heading3     { font-size:    10pt;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        line-height:  normal;
+                        color:        #000000;
+                        border-color: #000000;
+                        border-style: solid;
+                        border-left-width: 0px; border-right-width:  0px;
+                        border-top-width:  0px; border-bottom-width: 1px;
+                        margin-top: 20pt; margin-bottom: 4pt }
+
+
+        .Code         { font-family: "Courier New", Courier, mono;
+                        font-size:   10pt;
+                        font-style:  bold;
+                        font-weight: bold;
+                        color:       #112233 }
+
+        .CodeNorm     { font-family: "Courier New", Courier, mono;
+                        font-size:   10pt;
+                        font-style:  normal;
+                        font-weight: normal;
+                        color:       #112233 }
+
+        .MacroCode    { font-family: "Times New Roman", Times, serif;
+                        font-style:  italic;
+                        font-weight: bold;
+                        color:       #576490 }
+
+        .MacroCodeB   { font-family: "Times New Roman", Times, serif;
+                        font-style:  italic;
+                        font-weight: bold;
+                        color:       #990099 }
+
+        .Sample       { margin-left: 0.15in; margin-right: 0.1in;
+                        background-color: #E0E0E0;
+                        padding-top:  8px; padding-bottom: 8px;
+                        padding-left: 8px; padding-right:  8px;
+                        border-style: none }
+
+        .YellowBG     { background-color: #FFFF00; }
+
+        .Note         { color:      #990000;
+                        font-style: italic;
+                        margin-left: 0.15in; margin-right: 0.15in }
+
+        .Red           { color: #990000; font-style: italic; }
+
+        .RedB          { color: #990000; font-weight: bold; }
+
+        .GreyList     { background-color: #E0E0E0;
+                        margin-left: 0.15in; margin-right: 0.15in;
+                        margin-top:   5px;  margin-bottom:  0px;
+                        padding-left: 8px;  padding-right:  8px;
+                        padding-top:  8px;  padding-bottom: 8px }
+
+        .ParamList    { margin-top: 5px;  margin-bottom: 0px; }
+
+        .OrderedList   { margin-left:         0.35in;
+                         list-style-position: outside;
+                         list-style-image:    none;
+                         list-style-type:     decimal }
+
+        .UnorderedList { margin-left:         0.35in;
+                         list-style-position: outside;
+                         list-style-type:     disc }
+
+        .NoBullets  { margin-left:     0.25in;
+                      list-style-type: none }
+
+        .ListItem  { margin-top: 6px; }
+      -->
+    </style>
+  </head>
+
+  <body bgcolor="#FFFFFF" text="#101010" >
+
+    <div class="BaseStyle">
+
+      <p class="DocTitle" align="center">Extensible Text Framework: Under the Hood</p>
+
+      <p class="Heading1">Table of Contents</p>
+      <!--------------------------------------------------------------------------------------------------------------->
+      <ul class="NoBullets">
+        <li>
+            <b><a href="#Introduction">Introduction</a></b>
+        </li> <br><br>
+
+        <li>
+          <b><a href="#Documents">Document Processing</a></b>
+          <ul class="NoBullets">
+            <li><a href="#Documents_Text">Text</a></li>
+            <li><a href="#Documents_Meta">Meta-data</a></li>
+            <li><a href="#Documents_Tokenizing">Tokenizing</a></li>
+            <li><a href="#Documents_Proximity">Proximity and "Slop"</a></li>
+            <li><a href="#Documents_Chunking">Chunking</a></li>
+            <li><a href="#Documents_StopWords">Stop Words and N-grams</a></li>
+          </ul>
+        </li> <br>
+
+        <li>
+          <b><a href="#QueryOps">Query Operations and What They Do</a></b>
+          <ul class="NoBullets">
+            <li><a href="#QueryOps_User">Interpreting User Queries</a></li>
+            <li><a href="#QueryOps_Text">Text Query Operations</a></li>
+              <ul class="NoBullets">
+                <li><a href="#QueryOps_Text_TERMWILD">TERM and Wildcard Queries</a></li>
+                <li><a href="#QueryOps_Text_AND">AND</a> and <a href="#QueryOps_Text_OR">OR</a> Queries</li>
+                <li><a href="#QueryOps_Text_PHRASE">PHRASE</a> and <a href="#QueryOps_Text_NEAR">NEAR</a> Queries</li>
+                <li><a href="#QueryOps_Text_NOT">NOT Clause</a></li>
+              </ul>
+            <li><a href="#QueryOps_Meta">Meta-data Query Operations</a></li>
+              <ul class="NoBullets">
+                <li><a href="#QueryOps_Meta_TERMWILD">TERM and Wildcard Queries</a></li>
+                <li><a href="#QueryOps_Meta_RANGE">RANGE Query</a></li>
+                <li><a href="#QueryOps_Meta_AND">AND</a> and <a href="#QueryOps_Meta_OR">OR</a> Queries</li>
+                <li><a href="#QueryOps_Meta_PHRASE">PHRASE</a> and <a href="#QueryOps_Meta_NEAR">NEAR</a> Queries</li>
+                <li><a href="#QueryOps_Meta_NOT">NOT Clause</a></li>
+              </ul>
+            <li><a href="#QueryOps_StopWords">Stop Words in Queries</a></li>
+          </ul>
+        </li> <br>
+
+        <li>
+          <b><a href="#Marking">Term and Hit Marking</a></b>
+          <ul class="NoBullets">
+            <li><a href="#Marking_Meta">Terms in Meta-data Fields</a></li>
+            <li><a href="#Marking_Snippets">Snippet Formation and Marking</a></li>
+            <li><a href="#Marking_Context">Hits in their Original Context</a></li>
+            <li><a href="#Marking_Span">Spanning XML Tags</a></li>
+            <li><a href="#Marking_Stopwords">Special Rules for Marking Stop Words</a></li>
+          </ul>
+        </li> <br>
+
+        <li>
+          <b><a href="#Scoring">Hit Scoring</a></b>
+          <ul class="NoBullets">
+            <li><a href="#Scoring_Text">Text Hit Scoring</a></li>
+            <li><a href="#Scoring_Meta">Meta-data Hit Scoring</a></li>
+            <li><a href="#Scoring_Documents">Combined Document Score</a></li>
+          </ul>
+        </li> <br>
+
+      </ul> <br>
+
+      <p class="Heading1">Introduction<a name="Introduction"></a></p>
+      <!--------------------------------------------------------------------------------------------------------------->
+      This document goes into moderate depth on the actual operation of the E<b>X</b>tensible
+      <b>T</b>ext <b>F</b> ramework (<b><i>XTF</i></b>.) This document is <i>not</i> an
+      overview of the <b><i>XTF</i></b> system, but rather delves into
+      some nitty-gritty details of how the system performs its tasks. The reader is
+      encouraged to first read the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">
+      XTF Deployment Guide</a> and have a solid understanding of how data flows
+      through the <b><i>XTF</i></b> servlets, both <b><i>crossQuery</i></b> and
+      <b><i>dynaXML</i></b>.
+
+
+      <p class="Heading1">Document Processing<a name="Documents"></a></p>
+      <!--------------------------------------------------------------------------------------------------------------->
+      The bulk of the <b><i>XTF</i></b> system is concerned with searching XML documents
+      for text in various ways, and displaying the results in several forms. A brute-force
+      search of each word in each document, every time a user made a query, would be
+      extremely inefficient, so the <b><i> textIndexer</i></b> tool is used to compile all
+      of the documents into what is called an "<i>inverted index</i>". In essence, this
+      index is similar to that in the back of a book: for each word, it points to all the
+      locations that word appears in all of the documents that have been indexed.<br><br>
+
+      The following sections discuss the details of how the <b><i>textIndexer</i></b>
+      dissects and digests documents, and covers a few basic concepts (such as terms,
+      proximity, and stop words) necessary to understand the entire system.<br> <br>
+
+      But first, some useful definitions are needed. The <b><i>XTF</i></b> system views
+      each XML document as containing two major types of data: (1) Full text, and (2)
+      Meta-data.<br><br>
+
+      <div class="IndentL">
+        <b>XTF Definition:</b> <i>Full text</i>, n. All text within an XML document,
+        except actual element definitions and their attributes.<br><br>
+
+        <b>XTF Definition:</b> <i>Meta-data</i>, n. Short data fields within an XML
+        document which describe the entire document, for example: title, author,
+        subject, publication date and publisher, access rights, etc.<br><br>
+      </div>
+
+      This distinction mainly reflects the way the two types of data are used. Typically,
+      meta-data fields are searched "database style". For instance, if one were looking
+      for any book about Mark Twain published after 1912, then one would search the
+      publication date and subject meta-data fields.<br><br>
+
+      By contrast, the full text is typically searched "shotgun style", when one is
+      looking for any use of a word or phrase in any book. For example, one might be
+      interested in every reference to Mark Twain. Of course, the two types of queries can
+      be combined in useful ways, for instance if one were interested in any mention of
+      Mark Twain in books published after 1960.<br><br>
+
+
+      <div class="IndentL">
+
+        <p class="Heading2">Text Processing<a name="Documents_Text"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        The <b><i>textIndexer</i></b> extracts the text from each XML document,
+        locating each word and storing its position in the inverted index. These
+        words are called "terms".<br><br>
+
+        <b>XTF Definition:</b> <i>term</i>, n. A single indexable word. Punctuation marks
+        are not considered terms, but may occasionally appear within terms. For example,
+        consider the string "O'Reilly". <b><i>XTF</i></b> considers this to be a single
+        term, not two terms as in "O" and "Reilly". See <a href="#Documents_Tokenizing">
+        Tokenizing</a> below for details of how terms are parsed.<br><br>
+
+        In the following sample XML fragment, all the terms are <u><b>underlined</b></u>.<br><br>
+
+<pre class="Sample">&lt;head id="chapter2"&gt;
+    &lt;p&gt;"<u><b>This</b></u> <u><b>is</b></u> <u><b>the</b></u> <u><b>day</b></u> <u><b>of</b></u> <u><b>man</b></u>'s <u><b>greatest</b></u> <u><b>peril</b></u>."&lt;/p&gt;
+    &lt;footnote&gt;<u><b>Bekins</b></u>, <u><b>1986</b></u>&lt;/footnote&gt;
+&lt;/head&gt;
+</pre>
+
+        As many documents may be book-length, this body of text could be extremely large,
+        containing tens or hundreds of thousands of terms. <b><i>XTF</i></b> imposes no
+        limits on the length of the text or the number of terms within it.<br><br>
+
+        Of course the text exists within the context of XML elements; these elements and
+        their attributes are not considered part of the document text and are not indexed,
+        with one exception. A special attribute (<span class= "code">xtf:sectionType</span>)
+        can be used to associate a type with block of text; the section type is
+        recorded with all the terms in that block, and text queries can later be
+        restricted to certain blocks based on their section types.<br><br>
+
+
+        <p class="Heading2">Meta-data Processing<a name="Documents_Meta"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        As mentioned earlier, meta-data consists of small fields describing an XML
+        document as a whole. Examples might be a book's publication date and publisher,
+        author(s), subject keywords, etc.<br><br>
+
+        <b><i>XTF</i></b> provides a very simple model of meta-data: each document may
+        have any number of meta-data fields, each with a name and a textual value.
+        A given field name may be repeated; each associated text value will be considered
+        one unit of meta-data. Note that structured meta-data (i.e. sub-fields within
+        fields) is not supported.<br><br>
+
+        Each meta-data field is scanned for terms, and each term and its position are
+        recorded in the inverted index. Typically these fields contain dozens or rarely
+        hundreds of terms. Longer blocks, while supported, are discouraged as they are
+        inefficient to process.
+
+        <p class="Heading2">Tokenizing<a name="Documents_Tokenizing"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        As mentioned earlier, all text (whether part of a meta-data field or the full text
+        of a document) is broken into <b>terms</b>.<br><br>
+
+        <b>XTF Definition: </b><i>tokenize</i>, v., to break a string of text into
+        discrete tokens, or "terms".<br><br>
+
+        <b><i>XTF</i></b>, as it is based on the Lucene search toolkit, uses Lucene's
+        standard tokenizer, which makes a fair effort at identifying terms in the source
+        text. It attempts to filter out only punctuation that isn't part of a term. The
+        following table gives examples of character strings that the tokenizer recognizes
+        as terms. The exact specification is somewhat complex; for details see <b>
+        StandardTokenizer.jj</b> from the Lucene Distribution (reproduced <a href=
+        "Library/StandardTokenizer.jj.txt">here</a> for your convenience.)<br><br>
+
+        <div class="Sample">
+          <table>
+            <tr>
+              <td width="33%" align="right">
+                <span class="BaseStyle">Basic word: sequence of digits and letters.</span></td>
+              <td width="10">&nbsp;</td>
+              <td><span class="Code">boat &nbsp; Washington &nbsp; 6 &nbsp; 1895 &nbsp; Java2</span></td>
+            </tr>
+            <tr>
+              <td width="33%" align="right">
+                <span class="BaseStyle">Words with internal apostrophes.</span></td>
+              <td width="10">&nbsp;</td>
+              <td><span class="Code">O'Reilly &nbsp; you're &nbsp; O'Reilly's</span></td>
+            </tr>
+            <tr>
+              <td width="33%" align="right">
+                <span class="BaseStyle">Acronyms <i>(internal dots are removed)</i></span></td>
+              <td width="10">&nbsp;</td>
+              <td><span class="Code">U.S.A &nbsp; I.B.M.</span></td>
+            </tr>
+            <tr>
+              <td width="33%" align="right">
+                <span class="BaseStyle">Company names.</span></td>
+              <td width="10">&nbsp;</td>
+              <td><span class="Code">AT&T &nbsp; Excite@Home</span></td>
+            </tr>
+            <tr>
+              <td width="33%" align="right">
+                <span class="BaseStyle">Email addresses.</span></td>
+              <td width="10">&nbsp;</td>
+              <td><span class="Code">wer@all-one.com</span></td>
+            </tr>
+            <tr>
+              <td width="33%" align="right">
+                <span class="BaseStyle">Computer host names.</span></td>
+              <td width="10">&nbsp;</td>
+              <td><span class="Code">texts.cdlib.org &nbsp; main.server</span></td>
+            </tr>
+            <tr>
+              <td width="33%" align="right">
+                <span class="BaseStyle">Floating-point numbers.</span></td>
+              <td width="10">&nbsp;</td>
+              <td><span class="Code">3.14159 &nbsp; .6 &nbsp; 7,23</span></td>
+            </tr>
+            <tr>
+              <td width="33%" align="right">
+                <span class="BaseStyle">Dates and year ranges.</span></td>
+              <td width="10">&nbsp;</td>
+              <td><span class="Code">12/3/89 &nbsp; 3-Jan-02 &nbsp; 1856-1889</span></td>
+            </tr>
+            <tr>
+              <td width="33%" align="right">
+                <span class="BaseStyle">Serial and model numbers</span></td>
+              <td width="10">&nbsp;</td>
+              <td><span class="Code">12-6A &nbsp; 127.0.1.1 &nbsp; 270_ES &nbsp; FX/7</span></td>
+            </tr>
+          </table>
+        </div><br>
+
+        As a final step, all upper-case letters within tokens are converted to lower-case; this allows queries to be
+        case-insensitive.
+
+        <p class="Heading2">Proximity and "Slop"<a name="Documents_Proximity"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        As mentioned earlier, the inverted index not only maintains a list of the
+        documents each term appears in, but also each term's position. This information is
+        then used to support proximity-based queries, for example, searching for a pair of
+        terms within 10 words of each other. In <b><i>XTF</i></b>, proximity queries are
+        viewed as a "sloppy" match, and thus are specified in terms of a "slop" value.<br>
+        <br>
+
+        <b>XTF Definition:</b> <i>slop</i>, n. The sum, for each term in the query, of the
+        distance between its position in the query and its position (relative to the start
+        of the match) in the source text. Note that slop is similar to "edit distance" in
+        Computer Science, but slop is easier to compute.<br><br>
+
+        For example, consider the query <span class="code"> man <i>NEAR</i> war </span>
+        compared to this sentence in a document: "The <u>man went to war</u>." The
+        potential match will be on the words "man went to war". In this case, "man" is at
+        position 1 in both, and thus contributes nothing to the slop. However, "war" is at
+        position 2 in the query but position 4 in the match; thus it constributes 2 to the
+        slop, making the total slop 2. Thus for this to be considered a match, the
+        proximity query would have to specify a slop of 2 or greater. This can be
+        summarized in a table:<br><br>
+
+        <div class="Sample">
+          <table class="BaseStyle">
+            <tr align="center">
+              <td>&nbsp;<b><u>Term</u></b>&nbsp;</td>
+              <td>&nbsp;<b><u>Position in Query</u></b>&nbsp;</td>
+              <td>&nbsp;<b><u>Position in Text</u></b>&nbsp;</td>
+              <td>&nbsp;<b><u>Difference</u></b>&nbsp;</td>
+            </tr>
+            <tr align="center">
+              <td align="center">&nbsp;man&nbsp;</td>
+              <td align="center">&nbsp;1&nbsp;</td>
+              <td align="center">&nbsp;1&nbsp;</td>
+              <td align="center">&nbsp;0&nbsp;</td>
+            </tr>
+            <tr align="center">
+              <td align="center">&nbsp;war&nbsp;</td>
+              <td align="center">&nbsp;2&nbsp;</td>
+              <td align="center">&nbsp;4&nbsp;</td>
+              <td align="center">&nbsp;2&nbsp;</td>
+            </tr>
+            <tr></tr>
+            <tr align="center">
+              <td></td>
+              <td></td>
+              <td>&nbsp;<b><i>total slop</i></b>&nbsp;</td>
+              <td>&nbsp;<b><i>2</i></b>&nbsp;</td>
+            </tr>
+          </table>
+        </div><br>
+
+        The definition of slop penalizes terms that are found out-of-order in the document
+        text. So for example, consider a query for <span class="code"> dog <i>NEAR</i>
+        house </span> compared to the sentence "Looking at his <u>house, our dog</u>
+        despaired." Even though there's only one word between the terms, the slop is
+        actually 3:<br><br>
+
+        <div class="Sample">
+          <table class="BaseStyle">
+            <tr align="center">
+              <td>&nbsp;<b><u>Term</u></b>&nbsp;</td>
+              <td>&nbsp;<b><u>Position in Query</u></b>&nbsp;</td>
+              <td>&nbsp;<b><u>Position in Text</u></b>&nbsp;</td>
+              <td>&nbsp;<b><u>Difference</u></b>&nbsp;</td>
+            </tr>
+            <tr align="center">
+              <td align="center">&nbsp;dog&nbsp;</td>
+              <td align="center">&nbsp;1&nbsp;</td>
+              <td align="center">&nbsp;3&nbsp;</td>
+              <td align="center">&nbsp;2&nbsp;</td>
+            </tr>
+            <tr align="center">
+              <td align="center">&nbsp;house&nbsp;</td>
+              <td align="center">&nbsp;2&nbsp;</td>
+              <td align="center">&nbsp;1&nbsp;</td>
+              <td align="center">&nbsp;1&nbsp;</td>
+            </tr>
+            <tr></tr>
+            <tr align="center">
+              <td></td>
+              <td></td>
+              <td>&nbsp;<b><i>total slop</i></b>&nbsp;</td>
+              <td>&nbsp;<b><i>3</i></b>&nbsp;</td>
+            </tr>
+          </table>
+        </div><br>
+
+        It is easy to see that if the slop were zero, then all the words must appear in
+        the source document in the same order with no intervening terms. This is
+        considered an exact match, generally referred to in this document as a "phrase".
+        <br><br>
+
+        <b>XTF Definition:</b> <i>phrase</i>, n. A proximity query with slop equal to
+        zero.<br><br>
+
+        When processing the source document, the <b><i>textIndexer</i></b> increments the
+        position for each term it encounters in the source document. However, at sentence
+        boundaries it incremented by five (this default can be changed), which gives the
+        effect of penalizing matches that cross sentence boundaries. Additionally, special
+        index pre-filter tags can increase the position (see the <a href=
+        "../XTF_Programming_Guide/XTFProgGuide.html#textIndexer_Tag_Ref">XTF Programming
+        Guide</a> for details.)
+
+        <p class="Heading2">Chunking<a name="Documents_Chunking"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        The <i><b>textIndexer</b></i> tool splits source documents into smaller chunks of
+        text when adding the document to its index. Doing so makes poximity searches and
+        calculating their resulting summary blurbs or "snippets" faster by limiting how
+        much of the source document must be read into memory.<br><br>
+
+        <b>XTF Definition: </b><i>snippet</i>, n. A section of source text surrounding and
+        including a match (or "hit").<br><br>
+
+        The Lucene search engine forms the foundation of <b><i>XTF</b></i>'s search
+        capabilities. From Lucene's point of view, each of these text chunks is a single
+        searchable unit, independent of all other chunks. You might wonder then, "How are
+        proximity searches performed that span the boundary between two chunks?" For
+        instance, consider the following two chunks representing the sentence "The quick
+        brown fox jumped over the lazy dog."<br><br>
+
+        <div class="Sample">
+          <table class="BaseStyle">
+            <tr>
+              <td><b>Chunk 1:</b>&nbsp;</td>
+              <td>the</td>
+              <td>quick</td>
+              <td>brown</td>
+              <td>fox</td>
+              <td>jumped</td>
+            </tr>
+            <tr align="center">
+              <td><b>Chunk 2:</b>&nbsp;</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>over</td>
+              <td>the</td>
+              <td>lazy</td>
+              <td>dog</td>
+            </tr>
+          </table>
+        </div><br>
+
+        If one searched for the phrase "fox jumped over", the text engine would return
+        zero results. This is clearly unacceptable.<br><br>
+
+        The answer is that each chunk overlaps the previous one by a certain number of
+        terms, called the "chunk overlap". This overlapping area allows a match in one
+        chunk to extend into the next chunk by the overlapping number of words. Thus the
+        overlap limits and is equal to the maximum proximity the system can handle.
+        <br><br>
+
+        <div class="Sample">
+          <table class="BaseStyle">
+            <tr>
+              <td><b>Chunk 1:</b>&nbsp;</td>
+              <td>the</td>
+              <td>quick</td>
+              <td>brown</td>
+              <td>fox</td>
+              <td>jumped</td>
+            </tr>
+            <tr align="center">
+              <td><b>Chunk 2:</b>&nbsp;</td>
+              <td></td>
+              <td></td>
+              <td>brown</td>
+              <td>fox</td>
+              <td>jumped</td>
+              <td>over</td>
+              <td>the</td>
+            </tr>
+            <tr align="center">
+              <td><b>Chunk 3:</b>&nbsp;</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>jumped</td>
+              <td>over</td>
+              <td>the</td>
+              <td>lazy</td>
+              <td>dog</td>
+            </tr>
+          </table>
+        </div><br>
+
+        The chunk size and chunk overlap are both configurable. If the selected chunk
+        overlap is large relative to the chunk size, space and processing time will be
+        wasted because many more chunks will be created. Conversely, making the overlap
+        very small limits the effective maximum "slop" value for all proximity queries.
+        Selecting these values is a trade-off between performance and maximum proximity.
+        <br><br>
+
+        The default values in the <b><i>XTF</i></b> distribution are chunk size of 200,
+        overlap of 20. These seem to give an adequate maximum proximity, while minimizing
+        processing time and disk space.
+
+        One final note: chunking is not performed on meta-data fields, as they are assumed
+        to be relatively small in size. In addition, snippets are never formed for meta-
+        data, though any matching query terms are marked. See the section on <a href=
+        "#Marking_Snippets">Snippet Formation and Marking</a> for details.<br><br>
+
+        <p class="Heading2">Stop Words and N-grams<a name="Documents_StopWords"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        Recall that <b><i>XTF</i></b> builds an <i>inverted index</i> using Lucene. For
+        each term found in any document, the index stores a list of each occurrence of
+        that term.<br><br>
+
+        Now consider a term like "the." It occurs so commonly in English-language texts
+        that the list of all occurrences becomes very long and thus takes a long time to
+        process. Common words like "the" are called stop words; other examples are "a",
+        "an", "it", "and", "in", "is".<br><br>
+
+        A key observation is that these stop words, because they're so common, are
+        uninteresting to search for. One's initial tendency might be then to simply ignore
+        them, and this solution indeed speeds up searching.<br><br>
+
+        For instance, a search for "man in war" would be interpreted as "man war".
+        Unfortunately, this will turn up occurrences of "man of war" (a kind of jellyfish,
+        and not what the user intended.)<br><br>
+
+        So the second key observation is that stop words are useful <i>in conjunction with
+        non-stop words</i>. While "in" is a very common word, the combination "man-in" is
+        much less common, and is thus much faster to search for. This leads us directly to
+        the idea of n-grams, which <b><i>XTF</i></b> implements to get almost the speed of
+        eliminating stop words, but still providing good query results.<br><br>
+
+        <b>XTF Definition: </b><i>N-gram</i>, n. A single term in the index, composed of a
+        stop word and a non-stop word fused together.<br><br>
+
+        Consider the sentence "A friend in need is a friend indeed." Scanning for stop-
+        words and combining them with adjacent words, we get the following sequence of
+        terms (regular terms are marked in <b>bold</b>, while n-grams are <u>underlined</u
+        >):<br><br>
+
+        <div class="Sample">
+            Index: <u>a-friend</u> &nbsp;<b>friend</b> &nbsp;<u>friend-in</u> &nbsp;<u>in-need</u>
+            &nbsp;<b>need</b> &nbsp;<u>need-is</u> &nbsp;<u>is-a</u> &nbsp;<u>a-friend</u> &nbsp;<b>indeed</b>
+        </div> <br>
+
+        As you can see, the index is quite different with the n-grams. Consequently, a
+        similar transformation must be performed when a query is made, essentially
+        rewriting the query. For instance, a search for a <i>phrase</i> " <b>friend</b> in
+        <b>need</b>" is re-written to search for the phrase "<u>friend-in</u> <u>in-need
+        </u>".<br><br>
+
+        More complex transformations are required for NEAR queries. For instance, consider
+        the proximity query: "<b>friend</b> NEAR <b>in</b> NEAR <b>need</b>". The engine
+        rewrites the query with and without stop words, so that if any exact matches are
+        found, they will be ranked higher, but if not, any matches containing "friend"
+        near "need" will be found. The resulting query looks like this:<br><br>
+
+        <div class="Sample">
+          Query: (<b>friend</b> OR <u>friend-in</u>) NEAR (<u>in-need</u> OR <b>need</b>)
+        </div><br>
+
+        In summary, transforming stop words into n-grams speeds up query processing, while
+        retaining the ability to include stop words in a query.
+
+      </div><br> <!-- IndentL -->
+
+      <p class="Heading1">Query Operations and What They Do<a name="QueryOps"></a></p>
+      <!--------------------------------------------------------------------------------------------------------------->
+
+      This section gives details on how queries are interpreted, and specifies how the
+      various query operators work. Note that meta-data and text queries are treated
+      somewhat differently. This is due to the fact that meta-data fields are assumed to
+      be short, while the full text of a document is assumed to be very large.
+
+      <div class="IndentL">
+
+        <p class="Heading2">Interpreting User Queries<a name="QueryOps_User"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        The job of translating queries from an input URL to a form that <b><i>XTF</i></b>
+        can understand is undertaken by the Query Parser stylesheet. The query parser
+        included in the base distribution is relatively simple: by default, it simply
+        forms an AND query consisting of all the input terms. All non-word terms (such as
+        the "++" in "C++") are ignored. Optionally, the operation can be changed to OR or
+        NEAR. In addition, terms can be excluded if desired.<br><br>
+
+        Here are some sample URLS, and how the default query parser interprets each one:
+        <br><br>
+
+        <div class="Sample">
+          <span class="Code">
+            http://<span class="MacroCode">yourserver.org</span>/search?title=apartheid+mind
+          </span><br>
+          <div class="IndentLR">
+            Interpreted as: <span class="Code">title:(apartheid AND mind)</span>
+            <br><i>(Note that "<span class="Code">+</span>" is the URL coding for a space.)</i>
+          </div><br>
+
+          <span class="Code">
+            http://<span class="MacroCode">yourserver.org</span>/search?title=apartheid+mind&amp;title-exclude=mandela
+          </span><br>
+          <div class="IndentLR">
+            Interpreted as: <span class="Code">title:((apartheid AND mind) NOT (mandela))</span>
+          </div><br>
+
+          <span class="Code">
+            http://<span class="MacroCode">yourserver.org</span>/search?title=apartheid+mind&amp;title-join=or
+          </span><br>
+          <div class="IndentLR">
+            Interpreted as: <span class="Code">title:(apartheid OR mind)</span>
+          </div><br>
+
+          <span class="Code">
+            http://<span class="MacroCode">yourserver.org</span>/search?title=apartheid&text=mandela
+          </span><br>
+          <div class="IndentLR">
+            Interpreted as: <span class="Code">(title:apartheid) AND (text:mandela)</span>
+          </div><br>
+
+          <span class="Code">
+            http://<span class="MacroCode">yourserver.org</span>/search?text=%22Nelson+Mandela%22&subject=africa
+          </span><br>
+          <div class="IndentLR">
+            Interpreted as: <span class="Code">(text:PHRASE "nelson mandela") AND (subject:africa)</span>
+            <br><i>(Note that "<span class="Code">%22</span>" is the URL coding for a quote character.)</i>
+          </div><br>
+
+          <span class="Code">
+            http://<span class="MacroCode">yourserver.org</span>/search?text=Mandela+Apartheid&text-join=5
+          </span><br>
+          <div class="IndentLR">
+            Interpreted as: <span class="Code">(text:Mandela NEAR{proximity=5} Apartheid)</span>
+          </div>
+        </div><br>
+
+        Of course much more complex query parsing is possible, since the <b>Text Engine</b>
+        can handle arbitrarily complex queries consisting any combination of boolean
+        query operators. Creating such a system is, however, left to the system designer
+        setting up <b><i>XTF</i></b>, as it intermeshes closely with whatever HTML form or
+        other mechanism is used to input the query, and is highly dependent on the skill
+        level and needs of the final users of the system.<br><br>
+
+        <p class="Heading2">Text Query Operations<a name="QueryOps_Text"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+
+        <b><i>XTF</i></b> implements a full complement of "boolean" operators used to
+        form complex queries: AND, OR, NEAR, PHRASE, and NOT, and supports wildcard
+        search characters. This section covers the details of how these queries are
+        interpreted within the very large documents <b><i>XTF</i></b> can deal in.
+        <br><br>
+
+        <div class="IndentLR">
+
+          <p class="Heading3">TERM and Wildcard Queries on Text<a name="QueryOps_Text_TERMWILD"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+
+          <div class="IndentL">
+            A <b>TERM</b> query matches every occurrence of the specified term in
+            the document. Upper-case vs. lower-case distinctions are ignored.
+
+            Additionally, the term may contain contain special wildcard
+            characters:<br><br>
+
+            <div class="IndentL">
+              <table class="BaseStyle">
+                <tr>
+                  <td valign="top"><span class="Code">?</span> &nbsp;</td>
+                  <td valign="top">The question-mark character matches terms with any character at that
+                      position. For example, <span class="Code">lo?e</span> would match "love" <i>or</i> "lose".
+                  </td>
+                </tr>
+                <td valign="top"><span class="Code">*</span> &nbsp;</td>
+                <td valign="top">The question-mark character matches terms with any number (including
+                    zero) characters at that position. For example, <span class="Code">dog*</span> would match
+                    any of the following terms: "dog", "dogs", "doggie", "doggerel", etc.
+                </td>
+              </table>
+            </div><br>
+
+            Depending on the particular wildcard, hundreds or even thousands of terms
+            might match, so care should be taken when using these. To avoid allowing such
+            queries to occupy the engine for long periods of time, <b><i>XTF</i></b>
+            allows queries to specify a limit on the maximum number of terms to match.
+            Queries that exceed the limit produce an error.<br><br>
+          </div>
+
+          <p class="Heading3">AND Query on Text<a name="QueryOps_Text_AND"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+          <div class="IndentL">
+            What does it mean to search for "man AND war" in the full text of all
+            documents? Perhaps the most obvious answer would be to search for any document
+            containing both words. But consider a document where "man" appeared in Chapter
+            1 and "war" appeared in Chapter 7. Would that be a document the user really
+            wanted to find? Probably not. More likely they'd be interested in a document where
+            "man" and "war" appear <i>close together</i>.<br><br>
+
+            Thus <b><i>XTF</i></b> interprets <b>AND</b> queries on the full text as <b>
+            NEAR</b> queries instead, with the slop factor set to the maximum for that
+            index. <br><br>
+
+            More formally, when used with terms, the <b>AND</b> query will match any
+            section of text what contains <i>all</i> of the terms, in any order, as long
+            as they are close together (that is, within the maximum proximity defined for
+            the index -- 20 words in the default configuration.)<br><br>
+
+            When used to group sub-queries together, <b>AND</b> will match text where all
+            of the sub-queries match, in any order, as long as the matches are close
+            together (i.e. within the maximum proximity for the index.)
+          </div>
+
+          <p class="Heading3">OR Query on Text<a name="QueryOps_Text_OR"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+          <div class="IndentL">
+            When used to group terms, an <b>OR</b> query matches each occurrence of
+            every term contained within it.<br><br>
+
+            If used to group sub-queries together, the <b>OR</b> query matches each
+            occurrence of every sub-query.
+          </div>
+
+          <p class="Heading3">PHRASE Query on Text<a name="QueryOps_Text_PHRASE"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+
+          <div class="IndentL">
+            A <b>PHRASE</b> query generally contains two or more terms, and it matches
+            any span of text where all the terms appear together, in order, with
+            no other terms between them.<br><br>
+
+            Less frequently, it can be used to group sub-queries. It matches a span
+            of text where all of the sub-queries match, in order, without any
+            intervening non-matching terms.<br><br>
+
+            Note that a <b>PHRASE</b> query is equivalent to a <b>NEAR</b> query
+            with a slop factor of zero.
+          </div>
+
+          <p class="Heading3">NEAR Query on Text<a name="QueryOps_Text_NEAR"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+
+          <div class="IndentL">
+            Each <b>NEAR</b> query requires a "slop" factor. In rough terms, this
+            factor can be thought of as limiting the amount of sloppyness when
+            matching. A slop of zero indicates very tight control; in fact, a <b>NEAR</b>
+            query with zero slop is equivalent to a <b>PHRASE</b> query. A large slop
+            value indicates that terms may appear far apart, or out of order, or both.
+            Note however that the slop value is silently constrained to the maximum
+            proximity defined by the chunk overlap of an index.<br><br>
+
+            For more details on how slop is computed, see the section on <a href=
+            "#Documents_Proximity">Proximity and Slop</a>. For information on chunk
+            overlap and how it relates to proximity searching, see the section on <a href=
+            "#Documents_Chunking">Chunking</a>.<br><br>
+
+            The <b>NEAR</b> query, when used with terms, matches a span of text containing
+            all of the terms, where the match's slop is less than or equal to the slop
+            factor specified for the query.<br><br>
+
+            When used to group sub-queries, it matches a span of text
+            where all of the sub-queries match, and the complete match's slop is less
+            than or equal to the slop factor specified for the <b>NEAR</b> query.
+          </div>
+
+          <p class="Heading3">NOT Clause on Text<a name="QueryOps_Text_NOT"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+          <div class="IndentL">
+            A <b>NOT</b> clause may be specified as a sub-query of any boolean query
+            (<b>OR</b>, <b>AND</b>, <b>PHRASE</b>, or <b>NEAR</b>). Any matches in the <b>NOT
+            </b> clause will suppress outer matches within the maximum proximity of the
+            index. This can be thought of as a "kill zone": each match within the <b>NOT
+            </b> clause kills off nearby matches.
+          </div>
+
+        </div>
+
+        <p class="Heading2">Meta-data Query Operations<a name="QueryOps_Meta"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+
+        The following query operations can be applied to any meta-data field. Queries are
+        applied to meta-data and full text in like fashion, with a few exceptions: <b>AND</b>
+        queries are not proximity-based, <b>NOT</b> clauses can eliminate whole documents, and
+        a new operator, <b>RANGE</b>, is available.
+
+        <div class="IndentLR">
+
+          <p class="Heading3">TERM and Wildcard Queries on Meta-data<a name="QueryOps_Meta_TERMWILD"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+
+          <div class="IndentL">
+            A <b>TERM</b> query matches every occurrence of the specified term in
+            the meta-data field. Upper-case vs. lower-case distinctions are ignored.
+
+            Additionally, the term may contain contain special wildcard
+            characters:<br><br>
+
+            <div class="IndentL">
+              <table class="BaseStyle">
+                <tr>
+                  <td valign="top"><span class="Code">?</span> &nbsp;</td>
+                  <td valign="top">The question-mark character matches terms with any character at that
+                      position. For example, <span class="Code">lo?e</span> would match "love" <i>or</i> "lose".
+                  </td>
+                </tr>
+                <td valign="top"><span class="Code">*</span> &nbsp;</td>
+                <td valign="top">The question-mark character matches terms with any number (including
+                    zero) characters at that position. For example, <span class="Code">dog*</span> would match
+                    any of the following terms: "dog", "dogs", "doggie", "doggerel", etc.
+                </td>
+              </table>
+            </div><br>
+
+            Depending on the particular wildcard, hundreds or even thousands of terms
+            might match, so care should be taken when using these. To avoid allowing such
+            queries to occupy the engine for long periods of time, <b><i>XTF</i></b>
+            allows queries to specify a limit on the maximum number of terms to match.
+            Queries that exceed the limit produce an error.<br><br>
+          </div>
+
+          <p class="Heading3">RANGE Queries on Meta-data<a name="QueryOps_Meta_RANGE"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+          <div class="IndentL">
+            A <b>RANGE</b> query is similar to a wildcard term query in that it matches a
+            (possibly large) number of terms. Lower and upper bounding terms are
+            specified, and <i>every</i> term that appears in the index lexicographically
+            between the two bounds is matched.<br><br>
+
+            For example, if the lower bound were "1895" and the upper bound were "1900", a
+            range query would match any of the terms 1895, 1896, 1897, 1898, 1899, and
+            1900. Optionally, the query can exclude the bounds, in which case it wouldn't
+            match 1895 nor 1900.<br><br>
+
+            As in the case of wildcard queries, care must be taken to avoid searching a
+            huge number of terms. This can happen easily: in the case of the example
+            above, if dates were encoded in the index in the form "YYYY-MM-DD", then all
+            the days from 1895 to 1900 would match... potentially 2,190 of them. And of
+            course a range query from A to Z would match practically every term in the
+            index. Again, each query can specify a limit on the maximum number of terms to
+            match, to avoid bogging down the engine.
+          </div>
+
+          <p class="Heading3">AND Query on Meta-data<a name="QueryOps_Meta_AND"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+          <div class="IndentL">
+            Unlike in full-text queries, an <b>AND</b> query on meta-data implies
+            no proximity restrictions. When used with terms, it matches documents
+            where <i>every</i> term appears somewhere in the field, in any order.<br><br>
+
+            When used to group sub-queries, it matches documents where <i>all</i>
+            of the sub-queries match (note that the sub-queries may be on several
+            different fields.)
+          </div>
+
+          <p class="Heading3">OR Query on Meta-data<a name="QueryOps_Meta_OR"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+          <div class="IndentL">
+            When used to group terms, an <b>OR</b> query matches a document where
+            any of the terms occurs within the meta-data field.<br><br>
+
+            If used to group sub-queries together, the <b>OR</b> query matches
+            documents that match by <i>any</i> of the sub-queries (note that the
+            sub-queries may involve several different fields.)
+          </div>
+
+          <p class="Heading3">PHRASE Query on Meta-data<a name="QueryOps_Meta_PHRASE"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+
+          <div class="IndentL">
+            A <b>PHRASE</b> query generally contains two or more terms, and it matches
+            any document where the terms appear together in the field, in order,
+            with no other terms between them.<br><br>
+
+            Less frequently, it can be used to group sub-queries. It matches any
+            document where all of the sub-queries match, in order, without any
+            intervening non-matching terms.<br><br>
+
+            Note that a <b>PHRASE</b> query is equivalent to a <b>NEAR</b> query
+            with a slop factor of zero.
+          </div>
+
+          <p class="Heading3">NEAR Query on Meta-data<a name="QueryOps_Meta_NEAR"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+
+          <div class="IndentL">
+            Each <b>NEAR</b> query requires a "slop" factor. In rough terms, this
+            factor can be thought of as limiting the amount of sloppyness when
+            matching. A slop of zero indicates very tight control; in fact, a <b>NEAR</b>
+            query with zero slop is equivalent to a <b>PHRASE</b> query. A large slop
+            value indicates that terms (or sub-queries) may appear far apart, or out
+            of order, or both. There is no upper bound on the slop factor.
+
+            For more details on how slop is computed, see the section on <a href=
+            "#Documents_Proximity">Proximity and Slop</a>.
+
+            The <b>NEAR</b> query, when used with terms, matches any document where
+            all of the terms appear in the field and their group slop is less
+            than or equal to the slop factor specified for the query.<br><br>
+
+            When used to group sub-queries, it matches any document
+            where all of the sub-queries match, and the complete match's slop is less
+            than or equal to the slop factor specified for the <b>NEAR</b> query.
+          </div>
+
+          <p class="Heading3">NOT Clause on Meta-data<a name="QueryOps_Meta_NOT"></a></p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+          <div class="IndentL">
+            A <b>NOT</b> clause may be specified as a sub-query of any boolean query
+            (<b>OR</b>, <b>AND</b>, <b>PHRASE</b>, or <b>NEAR</b>). Any documents
+            matching the <b>NEAR</b> clause will be removed from the outer set
+            of matches.
+          </div>
+
+        </div> <!-- IndentL -->
+
+        <p class="Heading2">Stop Words in Queries<a name="QueryOps_StopWords"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        If a query contains one or more stop words, the query will be internally rewritten
+        to work properly with the N-gram system. Recall from the section on <a href=
+        "#Documents_StopWords">Stop Words and N-grams</a> that using n-grams allows <b><i>
+        XTF</i></b> to support queries containing stop words while avoiding the usual
+        severe impact on performance that they might have.<br><br>
+
+        Here are some details on how stop words are handled in various query situations:<br><br>
+
+        <ul>
+          <li>
+            In the absence of any grouping operator, querying for a single stop word
+            in a <b>TERM</b> query will produce an empty result set.
+          </li>
+          <li>
+            Wildcards queries will skip stop words; for example, searching for "th?" would
+            not match "the" (which is a stop word), but would still match "thy".
+          </li>
+          <li>
+            Stop words are stripped out of <b>OR</b> queries and <b>NOT</b> clauses.
+          </li>
+          <li>
+            By contrast, <b>PHRASE</b> queries retain all stop words, because users would be
+            dismayed if a query on "man of war" returned matches on "man in war".
+          </li>
+          <li>
+            In <b>AND</b> and <b>NEAR</b> queries, stop words are joined with adjacent
+            words to form n-grams. The resulting query will effectively prefer matches
+            containing the stop words in the correct places, but will allow matches
+            where they don't appear.
+          </li>
+      </div> <!-- IndentL -->
+
+      <p class="Heading1">Term and Hit Marking<a name="Marking"></a></p>
+      <!--------------------------------------------------------------------------------------------------------------->
+
+      When a meta-data field, snippet, or marked up document is fed into a <b><i>
+      crossQuery</i></b> or <b><i>dynaXML</i></b> formatting stylesheet, <b><i>XTF</i></b>
+      inserts XML tags to indicate matched terms in context, and also indicates the
+      extent of full-text matches, also called "text hits". <br><br>
+
+      <b>XTF Definition:</b> <i>text hit</i>, n. A consecutive span of words in a document that
+      matches a text query. (Note that there may be many hits per document.)<br><br>
+
+      This section covers details of which terms are marked where, what "snippets" are
+      and how they are formed, and how hits are marked, both within snippets and
+      in their original context.<br><br>
+
+      <div class="IndentL">
+
+        <p class="Heading2">Terms in Meta-data Fields<a name="Marking_Meta"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        <b>XTF</b> will scan each meta-data field looking for terms matching those in
+        the query/queries on that field. It will then insert
+        a<span class="Code"> &lt;term&gt; </span>tag to mark them. Note that terms
+        will only be marked in the field for which they were queried; for example, if one
+        queried the title for "apartheid", and that word also appeared in the subject
+        field, it would only be marked in the title.<br><br>
+
+        In meta-data fields, the full extent of a multi-word match is <i>not</i> marked.
+        For example, if one searched for "man NEAR war", and the matching meta-data
+        field contained the text "man went to war", only the words "man" and "war"
+        would be marked. By contrast, hits in the full text of a document are marked
+        with their full extent (see next section.)
+
+        <p class="Heading2">Snippet Formation and Marking<a name="Marking_Snippets"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        Hits found in the full text of a document are, of course, surrounded by other text
+        that can help the user decide if the hit is useful to them. <b><i>XTF</i></b>
+        provides this context by calculating a "snippet" for each hit within a document. <br><br>
+
+        <b>XTF Definition: </b><i>snippet</i>, n. A section of source text surrounding and
+        including a match (or "hit").<br><br>
+
+        A query may specify the optimal length (in characters) of a snippet, and the system
+        will get as close as it can to that length without exceeding it. The default is
+        80 characters.<br><br>
+
+        The process used to form snippets is fairly simple:<br>
+        <ul>
+          <li>First, the <b>Text Engine</b> locates the matching
+              text and surrounds it with a <span class="Code">&lt;hit&gt;</span> tag.</li>
+          <li>Next, the engine adds words found in the source document before and after the hit,
+              until it cannot add any more without exceeding the specified snippet size.
+              It attempts to equalize the amount of context added before vs. after
+              the hit.</li>
+          <li>Finally, each matching term is marked with a <span class="Code">&lt;term&gt;</span>
+              tag. </li>
+        </ul>
+
+        Note that many hits will contain terms that aren't part of the
+        query and thus won't be marked with <span class="Code">&lt;term&gt;</span>.
+        For instance, a search for "dog NEAR skeleton NEAR bone" on the text "The dog
+        chewed on the skeleton's leg bone." would yield:<br><br>
+        <div class="Sample">
+          <span class="CodeNorm">The &lt;hit&gt;<b>&lt;term&gt;</b>dog<b>&lt;/term&gt;</b> chewed on the<br>
+          <b>&lt;term&gt;</b>skeleton's<b>&lt;/term&gt;</b> leg
+          <b>&lt;term&gt;</b>bone<b>&lt;/term&gt;</b>&lt;/hit&gt;</span>
+        </div><br>
+
+        Snippets are provided to the <b>Document Formatter</b> stylesheet in <b><i>crossQuery</i></b>
+        for displaying a summary of hits in all documents, and to the <b>Document Formatter</b>
+        stylesheet in <b><i>dynaXML</i></b> to display a ranked list of snippets in a
+        single document.
+
+        <p class="Heading2">Hits in their Original Context<a name="Marking_Context"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        In addition to snippets, <b><i>dynaXML</i></b> also inserts <span class="Code">&lt;hit&gt;</span>
+        tags and <span class="Code">&lt;term&gt;</span> tags into the original XML document
+        before feeding it to the <b>Document Formatter</b> stylesheet. This allows the stylesheet
+        to display the document contents with the hits and terms highlighted in their original
+        context.<br><br>
+
+        The tags are identical to those contained in snippets (except of course that surrounding
+        text need not be inserted, as the hits are marked in the original context.) Additional attributes
+        are added to each hit, giving its score, rank, and hit number.<br><br>
+
+        Note that query terms are marked everywhere they appear in the document text, not just
+        within <span class="Code">&lt;hit&gt;</span> markers. This gives the stylesheet the
+        option of highlighting them inside and/or outside hits.
+
+        <p class="Heading2">Spanning XML Tags<a name="Marking_Span"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        Complication arises when a hit crosses the boundary between two XML elements in the
+        original source text. <b><i>XTF</i></b> takes care not to alter the structure of the
+        document, so hit tags in this circumstance are inserted in a special way. Essentially,
+        the hit is divided into several stretches of unbroken text. The first stretch is marked
+        with an <span class="Code">&lt;xtf:hit&gt;</span> tag with its <span class="Code">continues</span>
+        attribute set to "yes". The subsequent stretches are each marked with
+        an <span class="Code">&lt;xtf:more&gt;</span> tag; the <span class="Code">continues</span>
+        attribute for each is "yes" except for the last, which is "no".<br><br>
+
+        The goal is to allow the <b>Document Formatter</b> stylesheet to present a seamless
+        interface to the end-user, who is probably unaware of the underlying structure
+        of a document and is only concerned with where the hits fall.<br><br>
+
+        For example, say we had the following source text containing <span class="Code">&lt;i&gt;</span> to
+        mark an italicized section:<br><br>
+
+        <div class="Sample">
+          <span class="Code">The hungry plant yearned for &lt;i&gt;man-flesh&lt;/i&gt; to fill its
+                             bottomless gullet.</span>
+        </div><br>
+
+        If the user searched for "plant NEAR man" they would expect results something like this:<br><br>
+
+        <div class="Sample">
+          The hungry <span class="YellowBG"><span class="RedB">plant</span> yearned for
+          </span><i><span class="YellowBG"><span class="RedB">man</span></span>-flesh</i>
+          to fill its bottomless gullet.
+        </div><br>
+
+        To support this sort of behavior, <b><i>XTF</i></b> would mark up the source document
+        like this (broken into multiple lines and indented for clarity):<br><br>
+
+        <div class="Sample">
+          <span class="CodeNorm">
+<pre>The hungry
+<b>&lt;hit hitNum="1" continues="yes"&gt;</b>
+  &lt;term&gt;plant&lt;/term&gt; yearned for
+<b>&lt;/hit&gt;</b>
+&lt;i&gt;
+  <b>&lt;more hitNum="1" continues="no"&gt;</b>
+    &lt;term&gt;man&lt;/term&gt;
+  <b>&lt;/more&gt;</b>-flesh
+&lt;/i&gt;
+to fill its bottomless gullet.</pre>
+          </span>
+        </div><br>
+
+        Let's consider another example. If the user searched for "plant NEAR bottomless", the
+        resulting hit would completely span across the <span class="Code">&lt;i&gt;</span> tag.
+        Reasonable results from the <b>Document Formatter</b> could be:<br><br>
+
+        <div class="Sample">
+          The hungry <span class="YellowBG"><span class="RedB">plant</span> yearned for
+          <i>man-flesh</i> to fill its <span class="RedB">bottomless</span></span> gullet.
+        </div><br>
+
+Here is how <b><i>XTF</i></b> would mark up this example:<br><br>
+
+        <div class="Sample">
+          <span class="CodeNorm">
+<pre>The hungry
+<b>&lt;hit hitNum="1" continues="yes"&gt;</b>
+  &lt;term&gt;plant&lt;/term&gt; yearned for
+<b>&lt;/hit&gt;</b>
+&lt;i&gt;
+  <b>&lt;more hitNum="1" continues="yes"&gt;</b>
+    man-flesh
+  <b>&lt;/more&gt;</b>
+&lt;/i&gt;
+<b>&lt;more hitNum="1" continues="no"&gt;</b>
+  to fill its &lt;term&gt;bottomless&lt;/term&gt;
+<b>&lt;/more&gt;</b> gullet.</pre>
+          </span>
+        </div><br>
+
+        <p class="Heading2">Special Rules for Marking Stop Words<a name="Marking_Stopwords"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+
+        When stop words are part of the query, special rules are applied when marking them in snippets and
+        in their original document context:<br><br>
+
+        <ul>
+          <li>
+            Stop words are never marked within a meta-data field.
+          </li>
+          <li>
+            Within a snippet, stop words are only marked with a <span class="Code">&lt;term&gt;</span>
+            tag when they appear within a <span class="Code">&lt;hit&gt;</span>, and then only
+            as part of an adjoining non-stop-word that actually contributed to the match.
+          </li>
+          <li>
+            Likewise, when the original XML document is marked up for the <b>Document Formatter</b>,
+            stop words are only marked within a <span class="Code">&lt;hit&gt;</span>, and only
+            as part of an adjoining term that contributed to the match.
+          </li>
+        </ul><br>
+
+      </div> <!-- IndentL -->
+
+      <p class="Heading1">Hit Scoring<a name="Scoring"></a></p>
+      <!--------------------------------------------------------------------------------------------------------------->
+      <b><i>XTF</i></b> uses and extends Lucene's built-in scoring mechanism to provide
+      a relevance score for each hit, and returning hits in ranked order (i.e. highest
+      score first.) This section describes briefly how the <b>Text Engine</b> determines
+      the score for hits in the full text and hits on meta-data fields.
+
+      <div class="IndentL">
+
+        <p class="Heading2">Text Hit Scoring<a name="Scoring_Text"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        Queries on the full text of a document are scored using <b><i>XTF</i></b>'s
+        internal scoring method, because Lucene provides no way to score individual hits
+        within a document. The structure of the scoring formula is fixed, but one can
+        override the calculation of the various factors by providing a Java implementation
+        of the <b>XTFSimilarity</b> interface.
+
+        <div class="IndentL">
+          <p class="Heading3">Plain English</p>
+
+          <ul>
+            <li>
+              Rare terms are given more weight than common terms.
+            </li>
+            <li>
+              Any section of text in the document can be boosted at index time; hits in
+              boosted sections will rank higher.
+            </li>
+            <li>
+              For <b>AND</b> and <b>NEAR</b> queries, more exact matches will rank higher
+              than sloppy matches. That is, a hit where the terms appear in order without
+              intervening words will rank higher than an out-of-order match with many
+              other words interspersed.
+            </li>
+            <li>
+              A high-ranking hit dampens (reduces the score) of nearby hits. The closer the nearby
+              hit, the lower its score.
+            </li>
+            <li>
+              If a query has several terms, hits that match many of the terms will
+              rank higher than those that only match a few.
+            </li>
+          </ul>
+
+          A note on dampening: consider a query on a single term that has many hits
+          in a document, many of them close together. Since it's a single term, all
+          the hits will score equally, and so will be ranked in document order.
+          Unfortunately, the effect is that the snippets for the highest ranked
+          hits will overlap. By adding the dampening factor, a high scoring hit
+          will dampen others around it; thus the highest ranking hits will seldom
+          have overlapping snippets.
+
+          <p class="Heading3">Mathematical Details</p><br>
+
+          For a given query <b>q</b>, the score for a match <b>m</b> in text
+          chunk <b>c</b>, consisting of terms <b>t</b>, is calculated as follows:
+
+          <div class="IndentL">
+            <table cellpadding="0" cellspacing="0" border="0">
+             <tr>
+               <td valign="middle" align="right" rowspan="2">textScore(q,m) =<br></td>
+               <td valign="middle" align="center">
+               <big><big><big><big><big>&Sigma;</big></big></big></big></big></td>
+               <td valign="middle"><small>
+               idf(t) *
+               boost(c) *
+               sloppyFreq(m.slop) *
+               damp(m) *
+               coord(q,m)
+               </small></td>
+             </tr>
+             <tr>
+              <td valign="top" align="right">
+               <small>t in m</small>
+               </td>
+             </tr>
+            </table>
+          </div>
+
+          where
+          <ul>
+            <li>
+              <b>idf(t)</b> is a factor based on the number of text chunks containing
+              <b>t</b>. Terms that occur in fewer chunks are better indicators of
+              topic, so <b>idf</b> is high when <b>t</b> appears in few chunks, and
+              low when <b>t</b> appears in many chunks.
+              Default implementation: log(number of chunks in index / number
+              of chunks containing <b>t</b>)
+            </li>
+            <li>
+              <b>boost(c)</b> is the boost factor (if any) applied to the section
+              of text containing <b>c</b>.
+            </li>
+            <li>
+              <b>sloppyFreq(m.slop)</b> is a factor that decreases as the sloppiness
+              of the match increases. The effect is to favor more exact matches.
+              Default implementation: 1 / (slop + 1)
+            </li>
+            <li>
+              <b>damp(m)</b> is a factor that increases the closer <b>m</b> is to
+              a nearby higher-scoring match. The effect is to avoid bunching up
+              high-scoring hits. Default implementation: sqrt( dist / maxDist )
+            </li>
+            <li>
+              <b>coord(q,d)</b> is a factor based on the fraction of all query terms
+              that this field contains. Documents whose field contents match more
+              terms in the query will be ranked higher. Default implementation:
+              number of terms matched / number of terms in query.
+            </li>
+          </ul>
+        </div>
+
+
+        <p class="Heading2">Meta-data Hit Scoring<a name="Scoring_Meta"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        Queries on meta-data fields use Lucene's built-in scoring formula. While the
+        structure of the formula is fixed, the method of computing each factor
+        can be overridden if desired, by providing a Java implementation of Lucene's
+        <b>XtfSimilarity</b> interface.
+
+        <div class="IndentL">
+          <p class="Heading3">Plain English</p>
+
+          <ul>
+            <li>
+              If a term appears many times in a document, the document will
+              rank higher; if it only appears a few times, the document will rank lower.
+            </li>
+            <li>
+              Rare terms are given more weight than common terms.
+            </li>
+            <li>
+              Any document's fields can be boosted at index time; hits in boosted
+              documents will rank higher.
+            </li>
+            <li>
+              Matches in short fields are ranked higher than those in long fields.
+            </li>
+            <li>
+              If a query has several terms, hits that match many of the terms will
+              rank higher than those that only match a few.
+            </li>
+          </ul>
+
+          <p class="Heading3">Mathematical Details</p><br>
+
+          For a given query <b>q</b>, the score for a specific document <b>d</b> is
+          calculated as the sum of scores for all the terms <b>t</b> (in all fields) in
+          the query. Here's the full formula:
+
+          <div class="IndentL">
+            <table cellpadding="0" cellspacing="0" border="0">
+             <tr>
+               <td valign="middle" align="right" rowspan="2">metaScore(q,d) =<br></td>
+               <td valign="middle" align="center">
+               <big><big><big><big><big>&Sigma;</big></big></big></big></big></td>
+               <td valign="middle"><small>
+               tf(t in d) *
+               idf(t) *
+               boost(t.field in d) *
+               lengthNorm(t.field in d) *
+               coord(q,d)
+               </small></td>
+             </tr>
+             <tr>
+              <td valign="top" align="right">
+               <small>t in q</small>
+               </td>
+             </tr>
+            </table>
+          </div>
+
+          where
+          <ul>
+            <li>
+              <b>tf(t in d)</b> is a score factor based on the term's frequency in
+              the document. Repeated terms usually indicate the topic of the field,
+              so when the frequency is high, <b>tf</b> will be high. Default
+              implementation: square root of the frequency of <b>t</b> in <b>d</b>.
+            </li>
+            <li>
+              <b>idf(t)</b> is a factor based on the number of documents containing
+              <b>t</b> in the field. Terms that occur in fewer documents are better
+              indicators of topic, so <b>idf</b> is high when <b>t</b> appears in
+              few documents, and low when <b>t</b> appears in many documents.
+              Default implementation: log(number of documents in index / number
+              of docs containing <b>t</b>)
+            </li>
+            <li>
+              <b>boost(t.field in d)</b> is the boost factor (if any) applied to
+              this field of the document.
+            </li>
+            <li>
+              <b>lengthNorm(t.field in d)</b> is a factor that decreases as the number
+              of terms in the field of the document increases, since matches in
+              longer fields are generally less precise. Default implementation:
+              square root of the number of terms in the field.
+            </li>
+            <li>
+              <b>coord(q,d)</b> is a factor based on the fraction of all query terms
+              that this field contains. Documents whose field contents match more
+              terms in the query will be ranked higher. Default implementation:
+              number of terms matched / number of terms in query.
+            </li>
+          </ul>
+        </div>
+
+        <p class="Heading2">Combined Document Score<a name="Scoring_Documents"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        The final type of scoring <b><i>XTF</i></b> performs is to combine the scores of
+        all text hits with a document with that document's meta-data score, to form the
+        final score for that document. The structure of this computation is fixed, but the
+        calculations can be overridden by providing a Java implementation of the <b>
+        XtfSimilarity</b> interface.
+
+        <div class="IndentL">
+          <p class="Heading3">Plain English</p>
+
+          <ul>
+            <li>
+              A document's score is based on the sum of all the text hits within it, plus
+              its meta-data score.
+            </li>
+            <li>
+              A factor is applied so that a document with a small number of high-scoring
+              text hits will rank higher than one with a somewhat larger number of low-
+              scoring text hits.
+            </li>
+          </ul>
+
+          <p class="Heading3">Mathematical Details</p><br>
+
+          For a given query <b>q</b> consisting of a meta-data query <b>qm</b> and a
+          text query <b>qt</b>, the score for a specific document <b>d</b> containing
+          matches <b>m</b> is as follows:
+
+          <div class="IndentL">
+            <table cellpadding="0" cellspacing="0" border="0">
+             <tr>
+               <td valign="middle" align="right" rowspan="2">
+                 docScore(q,d) = metaScore(qm,d) + sqrt(<br></td>
+               <td valign="middle" align="center">
+               <big><big><big><big><big>&Sigma;</big></big></big></big></big></td>
+               <td valign="middle"><small>
+               textScore(qt,m)
+               </small></td>
+               <td valign="middle" align="right" rowspan="2">&nbsp;)</td>
+             </tr>
+             <tr>
+              <td valign="top" align="right">
+               <small>m in qt</small>
+               </td>
+             </tr>
+            </table>
+          </div><br>
+
+          where <b>metaScore</b> and <b>textScore</b> are computed as outlined in the
+          previous two sections.
+        </div>
+
+    </div> <!-- BaseStyle -->
+
+  </body>
+
+</html>

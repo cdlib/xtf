@@ -1,0 +1,28 @@
+/* crossQuery results stylesheet */
+
+/* TABLES */
+
+TABLE {
+  border: gray thick solid;
+  margin-bottom: 1%;
+}
+
+/* FORMATTING */
+
+SPAN.heading {
+  font-weight: bold;
+}
+
+.select {
+ color: green;
+}
+
+.highlight {
+  background-color: yellow;
+}
+
+/* HITS */
+
+.term {
+  color: red;
+}

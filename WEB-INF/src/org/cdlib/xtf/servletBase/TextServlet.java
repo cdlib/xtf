@@ -1,0 +1,595 @@
+package org.cdlib.xtf.servletBase;
+
+/**
+ * Copyright (c) 2004, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, 
+ *   this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, 
+ *   this list of conditions and the following disclaimer in the documentation 
+ *   and/or other materials provided with the distribution.
+ * - Neither the name of the University of California nor the names of its
+ *   contributors may be used to endorse or promote products derived from this 
+ *   software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Enumeration;
+import java.util.Iterator;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import org.cdlib.xtf.textEngine.workLimiter.ExcessiveWorkException;
+import org.cdlib.xtf.util.Attrib;
+import org.cdlib.xtf.util.AttribList;
+import org.cdlib.xtf.util.GeneralException;
+import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.XTFSaxonErrorListener;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+/**
+ * Base class for the crossQuery and dynaXML servlets. Handles first-time
+ * initialization, config file loading and some parsing, error handling, and
+ * a few utility methods.
+ */
+public abstract class TextServlet extends HttpServlet 
+{
+    /** Caches stylesheets (based on their URL) */
+    public static StylesheetCache stylesheetCache;
+
+    /** Context useful for mapping partial paths to full paths */
+    private static ServletContext staticContext;
+
+    /** Base directory specified in servlet config (if any) */
+    private static String baseDir;
+
+    /** Flag to discern whether class has been initialized yet */
+    private boolean isInitted = false;
+
+    /** 
+     * Last modification time of the configuration file, so we can decide
+     * when we need to re-initialize the servlet.
+     */
+    private long configFileLastModified = 0;
+
+
+    /** 
+     * Extracts all of the text data from a DOM tree element node.
+     *
+     * @param element   DOM element to get text from
+     * @return          Concatenated text from the element.
+     */
+    public static String getText( Node element )
+        throws DOMException
+    {
+        Node n;
+        String text = "";
+        for( n = element.getFirstChild(); n != null; n = n.getNextSibling() )
+        {
+            if( n.getNodeType() != Node.TEXT_NODE )
+                continue;
+            text = text + n.getNodeValue();
+        }
+
+        return text.trim();
+    }
+
+
+    /**
+     * Translate a partial filesystem path to a full path.
+     *
+     * @param partialPath   A partial (or full) path
+     * @return              The full path
+     */
+    public static String getRealPath( String partialPath )
+    {
+        if( staticContext == null )
+            return partialPath;
+        
+        if( partialPath.startsWith("http://") )
+            return partialPath;
+        if( partialPath.startsWith("/") || partialPath.startsWith("\\") )
+            return partialPath;
+        if( partialPath.length() > 1 && partialPath.charAt(1) == ':' )
+            return partialPath;
+        if( !isEmpty(baseDir) )
+            return Path.resolveRelOrAbs( 
+                            new File(baseDir), partialPath ).toString();
+        return staticContext.getRealPath( partialPath );
+    } // getRealPath()
+
+    /**
+     * Utility function - check if string is null or ""
+     *
+     * @param s     String to check
+     * @return      true if the string is null or the empty string ("")
+     */
+    public static boolean isEmpty( String s )
+    {
+        return (s == null || s.equals(""));
+    }
+
+
+    /**
+     * Utlity function - if the value is null, throws an exception.
+     *
+     * @param value     The value to check for null
+     * @param descrip   If exception is thrown, this will be the message.
+     * @throws GeneralException    Only if the value is null
+     */
+    public static void requireOrElse( String value, String descrip )
+        throws GeneralException
+    {
+        if( isEmpty(value) )
+            throw new GeneralException( descrip );
+    } // requireOrElse()
+
+    
+    /**
+     * Ensures that the servlet has been properly initialized. If init()
+     * hasn't been called yet, or if the config file changes, then this
+     * method reads the config file, then calls derivedInit().
+     * 
+     * @throws Exception    If an error occurs reading config
+     */
+    protected final void firstTimeInit( boolean forceInit )
+        throws Exception
+    {
+        // Even if multiple instances get called at the same time, make sure
+        // that we init once and only once.
+        //
+        synchronized( getClass() ) {
+
+            // Record the context so we can easily translate paths.
+            staticContext = getServletContext();
+
+            // If a base directory was specified, record it.
+            baseDir = getServletConfig().getInitParameter( "base-dir" );
+            if( !isEmpty(baseDir) && !baseDir.endsWith("/") )
+                baseDir = baseDir + "/";
+
+            // If the modification time of the configuration file has
+            // changed, we need to re-initialize.
+            //
+            String configPath  = getRealPath( getConfigName() );
+            File configFile = new File(configPath);
+            if( configFileLastModified > 0 &&
+                configFile.lastModified() != configFileLastModified ) 
+            {
+                stylesheetCache.clear();
+                isInitted = false;
+            }
+            configFileLastModified = configFile.lastModified();
+
+            // Force reinitialization if requested
+            if( forceInit )
+                isInitted = false;
+            
+            // Only init once.
+            if( isInitted )
+                return;
+
+            // For some evil reason, Resin overrides the default transformer
+            // and parser implementations with its own, deeply inferior,
+            // versions. Screw that.
+            //
+            System.setProperty( "javax.xml.parsers.TransformerFactory",
+                                "net.sf.saxon.TransformerFactoryImpl" );
+            
+            System.setProperty( "javax.xml.parsers.SAXParserFactory",
+                                "org.apache.crimson.jaxp.SAXParserFactoryImpl" );
+            
+            // Read in the configuration file.
+            TextConfig config = readConfig( configPath );
+
+            // Set up the Trace facility. We want timestamps, and we use a
+            // format that matches Resin's.
+            //
+            Trace.printTimestamps( true );
+            Trace.dateFormat = new SimpleDateFormat( "HH:mm:ss.SSS" );
+            
+            // Make sure output lines get flushed immediately, since we may
+            // be sharing the log file with other servlets.
+            //
+            Trace.setAutoFlush( true );
+
+            // Establish the trace output level.
+            Trace.setOutputLevel( 
+                (config.logLevel.equals("silent"))   ? Trace.silent :
+                (config.logLevel.equals("errors"))   ? Trace.errors :
+                (config.logLevel.equals("warnings")) ? Trace.warnings :
+                (config.logLevel.equals("debug"))    ? Trace.debug :
+                Trace.info );
+
+            // And let everyone know the servlet has restarted
+            Trace.error( "" );
+            Trace.error( "*** SERVLET RESTART: " + getServletInfo() + " ***" );
+            Trace.error( "" );
+            Trace.error( "Log level: " + config.logLevel );
+
+            // Create the caches
+            stylesheetCache = new StylesheetCache( 
+                config.stylesheetCacheSize,
+                config.stylesheetCacheExpire,
+                config.dependencyCheckingEnabled );
+
+            // Mark the flag so we won't init again.
+            isInitted = true;
+        }
+    } // firstTimeInit()
+    
+    
+    /**
+     * Derived classes must supply this method. It is the main entry point for
+     * processing an HTTP request.
+     */
+    public abstract void doGet( HttpServletRequest req, 
+                                HttpServletResponse res )
+        throws IOException;
+
+
+    /**
+     * Derived classes must supply this method. Simply returns the relative
+     * path name of the configuration file (e.g. "conf/dynaXml.conf").
+     */
+    protected abstract String getConfigName();
+
+    
+    /** 
+     * Derived classes must supply this method. It reads in the servlet's
+     * configuration file, and performs any derived class initialization
+     * as necessary.
+     * 
+     * @param path        Path to the configuration file
+     * @return            Parsed config information
+     */
+    protected abstract TextConfig readConfig( String path )
+        throws Exception;
+
+
+    /** 
+     * Derived classes must supply this method. It simply returns the
+     * configuration info that was read previously by readConfig()
+     */
+    protected abstract TextConfig getConfig();
+
+
+    /**
+     * Adds all URL attributes from the request into a transformer.
+     *
+     * @param   trans   The transformer to stuff the parameters in
+     * @param   req     The request containing the parameters
+     */
+    public static void stuffAttribs( Transformer trans, 
+                                     HttpServletRequest req )
+    {
+        Enumeration p = req.getParameterNames();
+        while( p.hasMoreElements() ) {
+            String name = (String) p.nextElement();
+            
+            // Deal with screwy URL encoding of Unicode strings on
+            // many browsers. Someday we'll do this more robustly.
+            //
+            String value = req.getParameter( name );
+            if( value.indexOf('\u00c2') >= 0 ||
+                value.indexOf('\u00c3') >= 0) 
+            {
+                try {
+                    byte[] bytes = value.getBytes("ISO-8859-1");
+                    value = new String(bytes, "UTF-8");
+                }
+                catch( UnsupportedEncodingException e ) { }
+            }
+            trans.setParameter( name, value );
+        }
+
+        // This is useful so the stylesheet can be entirely portable... it
+        // can call itself in new URLs by simply using this path. Some servlet
+        // containers include the parameters, so strip those if present.
+        //
+        String uri = req.getRequestURI();
+        if( uri.indexOf('?') >= 0 )
+            uri = uri.substring(0, uri.indexOf('?') );
+        trans.setParameter( "servlet.path", uri );
+    } // stuffAttribs()
+
+
+    /**
+     * Adds all the attributes in the list to the transformer as parameters
+     * that can be used by the stylesheet.
+     *
+     * @param   trans   The transformer to stuff the parameters in
+     * @param   list    The list containing attributes to stuff
+     */
+    public static void 
+    stuffAttribs( Transformer trans, AttribList list )
+    {
+        for( Iterator i = list.iterator(); i.hasNext(); ) {
+            Attrib a = (Attrib) i.next();
+            trans.setParameter( a.key, a.value );
+        }
+    } // stuffAttribs()
+
+
+    /**
+     * Reads a brand profile (a simple stylesheet) and stuffs all the output 
+     * tags into the specified transformer as parameters.
+     *
+     * @param path          Filesystem path to the brand profile
+     * @param req           HTTP servlet request containing URL parameters
+     * @param targetTrans   Where to stuff the attributes into
+     * @throws Exception    If an error occurs loading or parsing the profile.
+     */
+    protected void readBranding( String             path, 
+                                 HttpServletRequest req,
+                                 Transformer        targetTrans )
+        throws Exception
+    {
+        if( path == null || path.equals("") )
+            return;
+
+        // First, load the stylesheet.
+        Templates pss = stylesheetCache.find( path );
+
+        // Make a transformer and stuff it full of parameters.
+        Transformer trans = pss.newTransformer();
+        stuffAttribs( trans, req );
+        stuffAttribs( trans, getConfig().attribs );
+        
+        // Make a tiny document for it to transform
+        String doc = "<dummy>dummy</dummy>\n";
+        StreamSource src = new StreamSource( new StringReader(doc) );
+        
+        // Make sure errors get directed to the right place.
+        if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
+            trans.setErrorListener( new XTFSaxonErrorListener() );
+
+        // Now request it to give us the info we crave.
+        DOMResult result = new DOMResult();
+        trans.transform( src, result );
+
+        // Process all the tags.
+        Node node;
+        for( node = result.getNode().getFirstChild();
+             node != null;
+             node = node.getNextSibling() )
+        {
+            if( node.getNodeType() != Node.ELEMENT_NODE )
+                continue;
+
+            Element el      = (Element) node;
+            String  tagName = el.getTagName();
+            String  strVal  = getText( el );
+
+            targetTrans.setParameter( tagName, strVal );
+
+        } // for node
+
+    } // readBranding()
+
+    /**
+     * Translates any HTML-special characters (like quote, ampersand, etc.)
+     * into the corresponding code (like &amp;quot;)
+     * 
+     * @param s The string to transform
+     */
+    public static String makeHtmlString( String s )
+    {
+        return makeHtmlString( s, false );
+    }
+
+    /**
+     * Translates any HTML-special characters (like quote, ampersand, etc.)
+     * into the corresponding code (like &amp;quot;)
+     * 
+     * @param s The string to transform
+     */
+    public static String makeHtmlString( String s, boolean keepTags )
+    {
+        if( s == null )
+            return "";
+        
+        StringBuffer buf = new StringBuffer();
+
+        boolean inTag = false;
+        
+        for( int i = 0; i < s.length(); i++ ) {
+            char c = s.charAt( i );
+
+            if( keepTags && !inTag && c == '<' ) {
+                inTag = true;
+                buf.append( c );
+                continue;
+            }
+            
+            if( keepTags && inTag && c == '>' ) {
+                inTag = false;
+                buf.append( c );
+                continue;
+            }
+            
+            if( inTag ) {
+                buf.append( c );
+                continue;
+            }
+                
+            switch( c ) {
+                case '<':  buf.append( "&lt;" ); break;
+                case '>':  buf.append( "&gt;" ); break;
+                case '&':  buf.append( "&amp;" ); break;
+                case '\'': buf.append( "&apos;" ); break;
+                case '\"': buf.append( "&quot;" ); break;
+                case '\n': buf.append( "<br/>\n" ); break;
+                default:   buf.append( c ); break;
+            }
+        }
+         
+        return buf.toString();
+    } // makeHtmlString()
+    
+    /**
+    * Generate an error page based on the given exception. Utilizes the system
+    * error stylesheet to produce a nicely formatted HTML page.
+    *
+    * @param req  The HTTP request we're responding to
+    * @param res  The HTTP result to write to
+    * @param exc  The exception producing the error. If it's a
+    *             DynaXMLException, the attributes will be passed to
+    *             the error stylesheet.
+    */
+    protected void genErrorPage( HttpServletRequest  req, 
+                                 HttpServletResponse res, 
+                                 Exception           exc )
+    {
+        // Contort to obtain a string version of the stack trace.
+        ByteArrayOutputStream traceStream = new ByteArrayOutputStream();
+        exc.printStackTrace( new PrintStream(traceStream) );
+        String strStackTrace = traceStream.toString();
+
+        String htmlStackTrace = makeHtmlString( strStackTrace );
+
+        try {
+
+            ServletOutputStream out = res.getOutputStream();
+
+            // First, load the error generating stylesheet.
+            TextConfig config = getConfig();
+            Templates pss = stylesheetCache.find( config.errorGenSheet ); 
+
+            // Make a trans and put attributes from the HTTP request
+            // and from the global config file into it as attributes that
+            // the stylesheet can use.
+            //
+            Transformer trans = pss.newTransformer();
+            stuffAttribs( trans, req );
+            stuffAttribs( trans, config.attribs );
+
+            // Figure out just the last part of the exception class name.
+            String fullClassName = exc.getClass().getName();
+            String className = exc.getClass().getName().
+                replaceAll( ".*\\.", "" ).
+                replaceAll( ".*\\$", "" ).
+                replaceAll( "Exception", "" ).
+                replaceAll( "Error", "" );
+
+            // Now make a document that the stylesheet can parse. Inside it
+            // we'll put the exception info.
+            //
+            StringBuffer doc = new StringBuffer( 2048 );
+            doc.append( "<" + className + ">\n" );
+            trans.setParameter( "exception", className );
+
+            // Give the message (if any)
+            String msg = makeHtmlString( exc.getMessage() );
+            if( !isEmpty(msg) ) {
+                doc.append( "<message>" + msg + "</message>\n" );
+                trans.setParameter( "message", msg );
+            }
+
+            // Add any attributes if this is a GeneralException
+            if( exc instanceof GeneralException ) {
+                GeneralException bve = (GeneralException) exc;
+                for( Iterator i = bve.attribs.iterator(); i.hasNext(); ) {
+                    Attrib a = (Attrib) i.next();
+
+                    doc.append( "<" + a.key + ">" );
+                        doc.append( a.value );
+                    doc.append( "</" + a.key + ">\n" );
+                    trans.setParameter( a.key, a.value );
+                }
+            }
+
+            // Give the stack trace, but only if this is *not* a normal
+            // servlet exception. (The normal ones happen normally, and
+            // thus don't need stack traces for debugging.)
+            //
+            if( !(exc instanceof ExcessiveWorkException) &&
+                (!(exc instanceof GeneralException) || 
+                 ((GeneralException)exc).isSevere()) ) 
+            {
+                doc.append( "<stackTrace>\n" + 
+                            htmlStackTrace + 
+                            "</stackTrace>\n" );
+                trans.setParameter( "stackTrace", htmlStackTrace );
+            }
+
+            doc.append( "</" + className + ">\n" );
+
+            // If this is a severe problem, log it.
+            if( exc instanceof GeneralException && 
+                ((GeneralException)exc).isSevere() )
+            {          
+                Trace.error( "Error: " + doc.toString() );
+            }
+
+            // Now produce the error page.
+            StreamSource src = new StreamSource( 
+                new StringReader(doc.toString()) );
+            StreamResult dst = new StreamResult( out );
+            trans.transform( src, dst );
+        }
+        catch( Exception e ) {
+
+            // For some reason, we couldn't load or run the error generator.
+            // Try to output a reasonable default.
+            //
+            try {
+                Trace.error( "Unable to generate error page because: " + 
+                             e.getMessage() + "\n" +
+                             "Original problem: " +
+                             exc.getMessage() + "\n" + strStackTrace );
+
+                ServletOutputStream out = res.getOutputStream();
+
+                out.println( "<HTML><BODY>" );
+                out.println( "<B>Servlet configuration error:</B><br/>" );
+                out.println( "Unable to generate error page: " + 
+                             e.getMessage() + "<br>" );
+                out.println( "Caused by: " + exc.getMessage() + "<br/>" +
+                             htmlStackTrace );
+                out.println( "</BODY></HTML>" );
+
+            }
+            catch( IOException e2 ) {
+                // We couldn't even write to the output stream. Give up.
+            }
+        }
+
+    } // genErrorPage()
+
+
+} // class TextServlet

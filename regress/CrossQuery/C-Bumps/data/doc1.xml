@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+  <all>
+    <testMeta xtf:meta="true">x</testMeta>
+    
+    <!-- Data for testing sectionType processing -->
+    
+        <section xtf:sectionType="01-a">
+            a1 a2 a3 a4 a5 a6
+        </section>
+
+        <section xtf:sectionType="01-b">
+            b1 b2 b3 b4 b5 b6
+        </section>
+
+        <section xtf:sectionType="01-c">
+            c1 c2 c3 c4 c5 c6
+        </section>
+        
+        X X X X X X X X X X X X X X X X X X X X
+        
+    <!-- Data for testing proximity break -->
+    
+        <section xtf:sectionType="10-a">
+            d1 d2 d3 d4
+            d5 d6 d7 d8
+        </section>
+
+        X X X X X X X X X X X X X X X X X X X X
+
+        <section xtf:sectionType="10-b">
+            d1 d2 d3 d4
+            <foo xtf:proximityBreak="false">
+              d5 d6 d7 d8
+            </foo>
+        </section>
+    
+        X X X X X X X X X X X X X X X X X X X X
+
+        <section xtf:sectionType="10-c">
+            d1 d2 d3 d4
+            <foo xtf:proximityBreak="true">
+              d5 d6 d7 d8
+            </foo>
+        </section>
+    
+        X X X X X X X X X X X X X X X X X X X X
+
+    <!-- Data for testing index/noIndex -->
+    
+        <section xtf:sectionType="20-a">
+            e1 e2 e3 e4
+            <foo xtf:noIndex="yes">
+                e5 e6 e7
+            </foo>
+            e8 e9 e10
+        </section>
+
+        <section xtf:sectionType="20-b">
+            f1 f2 f3 f4
+            <foo xtf:index="no">
+                f5 f6 f7 f7a f7b f7c f7d f7e f7f f7g f7h f7i f7j f7k f7l f7m f7n f7o f7p f7q f7r f7s
+                f7t f7u f7v f7w f7x f7y f7z
+                <foo xtf:index="yes">
+                    f8 f9
+                </foo>
+                f10 f11
+            </foo>
+            f12 f13 f14
+        </section>
+
+        X X X X X X X X X X X X X X X X X X X X
+
+    <!-- Data for testing sentence bump -->
+    
+        <section xtf:sectionType="30-a" xtf:sentenceBump="1">
+            g1 g2. g3 g4.
+        </section>
+
+        <section xtf:sectionType="30-b" xtf:sentenceBump="2">
+            g1 g2. g3 g4.
+        </section>
+
+        <section xtf:sectionType="30-c" xtf:sentenceBump="3">
+            g1 g2. g3 g4.
+        </section>
+
+        X X X X X X X X X X X X X X X X X X X X
+
+    <!-- Data for testing boost -->
+    
+        <section xtf:sectionType="40-a">
+            h1 hx h2
+        </section>
+
+        <section xtf:sectionType="40-b" xtf:wordBoost=".5">
+            h3 hx h4
+        </section>
+
+        <section xtf:sectionType="40-c" xtf:wordBoost="2">
+            h5 hx h6
+        </section>
+
+        X X X X X X X X X X X X X X X X X X X X
+
+    <!-- Data for testing sectionType queries -->
+    
+        <section xtf:sectionType="50 a">
+            i1 ix i2
+        </section>
+
+        <section xtf:sectionType="50 b">
+            i3 ix i4
+        </section>
+
+        <section xtf:sectionType="50 c">
+            i5 ix i6
+        </section>
+
+        <section xtf:sectionType="50 d">
+            i7 ix i8
+        </section>
+
+        X X X X X X X X X X X X X X X X X X X X
+
+  </all>
+</document>

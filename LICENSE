@@ -1,0 +1,13 @@
+
+XTF - eXtensible Text Framework
+License Information
+
+The bulk of this package is original code distributed under a BSD-style
+license. See LICENSE_XTF for details.
+
+Portions contain modified code from the Jakarta Lucene project, distributed
+under the Apache License, Version 2.0. See LICENSE_LUCENE for details.
+
+Portions contain modified code from Michael Kay's Saxon project, distributed
+under the Mozilla Public License 1.1. See LICENSE_SAXON for details.
+

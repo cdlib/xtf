@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+  <text indexPath="IndexDB" maxSnippets="3" contextChars="80">
+    <and>
+      <term>the</term>
+      <term>book</term>
+    </and>
+  </text>
+  <text indexPath="IndexDB" maxSnippets="3" contextChars="80">
+    <term>book</term>
+  </text>
+</query>

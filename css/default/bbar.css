@@ -1,0 +1,7 @@
+/* dynaXML Button Bar stylesheet */
+ 
+/* Applies only to the top navigation bar that appears in the frames view */
+
+@import url("http://texts.cdlib.org/styles/escholarship-editions.css");
+
+span.topnav {font-size: 75%;}

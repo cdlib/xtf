@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TEI.2 id="ft958009mm">
+   <teiHeader type="text" status="new">
+      <fileDesc>
+         <titleStmt>
+            <title>The Opening of the Apartheid Mind: Options for the New South Africa</title>
+         </titleStmt>
+         <publicationStmt>
+            <idno type="ARK">ark:/13030/ft958009mm</idno>
+            <idno type="LOCAL">6178</idno>
+            <availability>
+               <p>Distributed by the California Digital Library.</p>
+            </availability>
+         </publicationStmt>
+         <sourceDesc default="NO">
+            <p>Originally published by the University of California Press.</p>
+         </sourceDesc>
+      </fileDesc>
+   </teiHeader>
+   <text>
+      <front>
+         <titlePage>
+            <titlePart type="main">The Opening of <lb/>the Apartheid Mind</titlePart>
+            <titlePart type="subtitle">Options for the New South Africa</titlePart>
+            <docAuthor>Heribert Adam and <lb/>Kogila Moodley</docAuthor>
+            <docImprint>
+               <publisher>UNIVERSITY OF CALIFORNIA PRESS</publisher>
+               <pubPlace>Berkeley   ·   Los Angeles   ·   London</pubPlace>
+               <docDate>1993</docDate>
+            </docImprint>
+         </titlePage>
+         <div1 type="dedication" id="ded1" org="uniform" part="N" sample="complete">
+            <p>For Kanya and Maya<lb/>in lieu of letters</p>
+         </div1>
+         <div1 id="ack" type="fmsec" org="uniform" part="N" sample="complete">
+            <head type="main">Acknowledgments</head>
+            <p>Our reasoning has drawn liberally on the insights of many colleagues. First and foremost, we benefited from numerous conversations with two longtime South African friends, Van Zyl Slabbert and Hermann Giliomee. Slabbert’s political savvy and Giliomee’s sensitivity toward Afrikaner nationalism, as well as our disagreements over the nature of ethnicity, stimulated much of our writing. We had frequent political discussions with Jenny and Alex Boraine, André du Toit, Hamish Dickie-Clark, Pieter and Ingrid Le Roux, Wilmot James, Helen Zille and Johann Maree, Michael Savage, Oscar Dhlomo, Franklin Sonn, Allister Sparks, Solly Benatar, Vincent Mapai, Pierre van den Berghe, Mamphela Ramphele, Theo Hanf, Motti Tamarkin and Tony Williamson.</p>
+            <p>Jeffrey Butler and David Welsh read the manuscript for the publisher and made valuable suggestions, as did our students in Vancouver and Cape Town. All the research associates who collected data in Canada and South Africa during the past four years, as well as the dozens of busy respondents who allowed themselves to be interviewed, deserve thanks.</p>
+            <p>We could not have asked for more thoughtful copyeditors than Pamela Holway and Amy Einsohn in Berkeley. The end product would not be in a presentable state without the meticulous attention of Anita Mahoney, Jan MacLellan in the Dean of Art’s Office at Simon Fraser University, Peng Wong in the Multicultural Liaison Office at the University of British Columbia, and Gila van Rooyen at the Graduate School of Business at the University of Cape Town. The Canadian Social Science and Humanities Research Council (SSHRC) continued to support our research.</p>
+            <byline>Cape Town, January 1993 Heribert Adam Kogila Moodley</byline>
+         </div1>
+         <div1 id="abb" type="fmsec" org="uniform" part="N" sample="complete">
+            <head type="main">Abbreviations and Acronyms</head>
+            <list type="gloss">
+               <label>AHI</label>
+               <item>Afrikaanse Handelsinstituut</item>
+               <label>ANC</label>
+               <item>African National Congress</item>
+               <label>Assocom</label>
+               <item>Association of Chambers of Commerce</item>
+               <label>AVU</label>
+               <item>Afrikaner Volksunie, a splinter faction of the Conservative Party</item>
+               <label>AWB</label>
+               <item>Afrikaner Weerstandsbeweging (Afrikaner Resistance Movement)</item>
+               <label>Azapo</label>
+               <item>Azanian People’s Organisation</item>
+               <label>BCM</label>
+               <item>Black Consciousness Movement</item>
+               <label>BOSS</label>
+               <item>Bureau of State Security, predecessor of NIS</item>
+               <label>CBM</label>
+               <item>Consultative Business Movement</item>
+               <label>CCB</label>
+               <item>Civil Cooperation Bureau, an undercover agency of the SADF</item>
+               <label>Codesa</label>
+               <item>Convention for a Democratic South Africa, a negotiating forum of nineteen parties established in 1991</item>
+               <label>Contralesa</label>
+               <item>Congress of Traditional Leaders of South Africa</item>
+               <label>Cosatu</label>
+               <item>Congress of South African Trade Unions</item>
+               <label>CP</label>
+               <item>Conservative Party</item>
+               <label>DET</label>
+               <item>Department of Education and Training</item>
+               <label>DMI</label>
+               <item>Department of Military Intelligence</item>
+               <label>DP</label>
+               <item>Democratic Party</item>
+               <label>EPG</label>
+               <item>Eminent Persons’ Group</item>
+               <label>FCI</label>
+               <item>Federated Chamber of Industries</item>
+               <label>FLS</label>
+               <item>Frontline States, the eleven states of Southern Africa that are members of SADC</item>
+               <label>Fosatu</label>
+               <item>Federation of South African Trade Unions, predecessor of Cosatu</item>
+               <label>HNP</label>
+               <item>Herstigte Nasionale Party, an extreme right-wing splinter party led by Jaap Marais</item>
+               <label>Idasa</label>
+               <item>Institute for a Democratic Alternative for South Africa</item>
+               <label>IDT</label>
+               <item>Independent Development Trust</item>
+               <label>IFP</label>
+               <item>Inkatha Freedom Party</item>
+               <label>JSE</label>
+               <item>Johannesburg Stock Exchange</item>
+               <label>KZP</label>
+               <item>KwaZulu Police</item>
+               <label>LRA</label>
+               <item>Labour Relations Act</item>
+               <label>MDM</label>
+               <item>Mass Democratic Movement</item>
+               <label>MK</label>
+               <item>Umkhonto we Sizwe, the military wing of the ANC</item>
+               <label>MNR</label>
+               <item>Mozambique National Resistance, also known as Renamo</item>
+               <label>MPLA</label>
+               <item>Popular Movement for the Liberation of Angola, led by José Eduardo dos Santos</item>
+               <label>Nactu</label>
+               <item>National Council of Trade Unions</item>
+               <label>Nafcoc</label>
+               <item>National African Federated Chambers of Commerce</item>
+               <label>Nats</label>
+               <item>Members of the National Party</item>
+               <label>NECC</label>
+               <item>National Education Crisis Committee</item>
+               <label>NIS</label>
+               <item>National Intelligence Service</item>
+               <label>NMC</label>
+               <item>National Manpower Commission</item>
+               <label>NP</label>
+               <item>National Party</item>
+               <label>NSMS</label>
+               <item>National Security Management System</item>
+               <label>NUM</label>
+               <item>National Union of Mine Workers</item>
+               <label>Numsa</label>
+               <item>National Union of Metal Workers</item>
+               <label>OAU</label>
+               <item>Organization of African Unity</item>
+               <label>OFS</label>
+               <item>Orange Free State</item>
+               <label>PAC</label>
+               <item>Pan Africanist Congress</item>
+               <label>PFP</label>
+               <item>Progressive Federal Party, predecessor of the Democratic Party</item>
+               <label>PWV</label>
+               <item>Pretoria-Witwatersrand-Vaal Triangle</item>
+               <label>Renamo</label>
+               <item>Resistência Nacional Mocambicano, a South Africa-supported rebel movement against the ruling Frelimo party; also known as MNR</item>
+               <label>SABC</label>
+               <item>South African Broadcasting Corporation</item>
+               <label>Sabta</label>
+               <item>South African Black Taxi Association</item>
+               <label>Saccola</label>
+               <item>South African Consultative Committee on Labour Affairs</item>
+               <label>Sacob</label>
+               <item>South African Chamber of Business</item>
+               <label>SACP</label>
+               <item>South African Communist Party</item>
+               <label>SADCC</label>
+               <item>Southern African Development Coordination Conference; renamed SADC (Southern African Development Community) in 1992 under terms of the Windhoek Treaty</item>
+               <label>SADF</label>
+               <item>South African Defence Force</item>
+               <label>SAIRR</label>
+               <item>South African Institute of Race Relations</item>
+               <label>Samcor</label>
+               <item>South African Motor Corporation</item>
+               <label>SANCO</label>
+               <item>South African National Civic Organisation</item>
+               <label>SAP</label>
+               <item>South African Police</item>
+               <label>SBDC</label>
+               <item>Small Business Development Corporation</item>
+               <label>SSC</label>
+               <item>State Security Council</item>
+               <label>Swapo</label>
+               <item>South West African People’s Organisation, the ruling nationalist movement in Namibia</item>
+               <label>TBCV</label>
+               <item>Transkei, Bophuthatswana, Ciskei, and Venda, the nominally independent homelands</item>
+               <label>UDF</label>
+               <item>United Democratic Front</item>
+               <label>UF</label>
+               <item>Urban Foundation</item>
+               <label>Unita</label>
+               <item>Uniâo Nacional para a Independência Total de Angola, the U.S.- and South Africa-supported movement led by Jonas Savimbi</item>
+               <label>Uwusa</label>
+               <item>United Workers’ Union of South Africa</item>
+            </list>
+         </div1>
+      </front>
+      <body>
+         <div1 id="introduction" type="chapter" org="uniform" part="N" sample="complete">
+            <head type="main">Methodological Approaches and Political Values</head>
+            <epigraph>
+               <p>The most repugnant form of lying is to tell, all of it, whilst hiding the soul of facts.</p>
+            </epigraph>
+            <p>Reluctant reconciliation is taking shape in South Africa. The ambivalent alliance between the two major contenders for power, the National Party (NP) and the African National Congress (ANC), results from a balance of forces where neither side can defeat the other. It is their mutual weakness, rather than their equal strength, that makes both longtime adversaries embrace negotiations for power-sharing. Like a forced marriage, the working arrangement lacks love but nonetheless is consummated because any alternative course would lead to a worse fate for both sides.</p>
+            <p>The emergence of multiracial domination has surprised those observers who viewed the battle over apartheid as a clear moral issue, the defeat of the last colonizers by a widely acclaimed movement of national liberation. During the 1970s and 1980s the international debate on South Africa was preoccupied with the obvious immorality of legalized racism. The apartheid state was invariably treated as a monolithic racist entity, and internal strategic developments were overlooked or reduced to simple dichotomies between oppressors and victims. This either-or reasoning ignored local contexts and obscured the ambiguities, contradictions, and irrationalities of life under apartheid. Undoubtedly, the grotesque Verwoerdian social engineering was brutal; but it also contained a certain paternalistic benevolence that oiled the system and helps explain why apartheid lasted so long. Incontrovertibly, the system of racially defined privileges designated oppressors and victims, but if we are to understand South African politics, victimology needs to be balanced by accounts of how the seemingly powerless survived, gave meaning to their lives, and acted upon their particular historical circumstances.</p>
+            <p>Developments in South Africa have also been widely misunderstood owing to the tendency to apply false colonial analogies or popular stereotypes of violent tribalism. Later, the personality cult surrounding Nelson Mandela and the accolades accorded to F. W. de Klerk have further romanticized a conflictual relationship, personalizing it into a literal matter of black versus white, and thereby obscuring the social conditions and constraints under which these leaders act, the passions and interests that drive their interacting constituencies. Criticizing the ANC became taboo among anti-apartheid activists. But it is precisely because the ANC and Nelson Mandela are key players in South Africa’s future that they cannot be treated as above criticism or scrutiny. Sympathy for the essential legitimacy of the ANC’s claims, and respect for Mandela’s moral stature, statesmanship, and pragmatic wisdom do not require progressives to endorse at face value everything the ANC says about itself. Critical solidarity, not cheerleading, is required.</p>
+            <p>To contribute to a more nuanced understanding of South Africa, this study probes the various competing forces in the ongoing transition. How did the miracle happen that allowed for multiparty negotiations? What are the sources of the continuing violence, which threatens these historic negotiations? What are the prospects for the success or failure of democracy in a society characterized by such extremes of affluence and poverty? How can the legacies of apartheid be overcome without creating new injustices? Can postapartheid South Africa, the most industrialized society in a war-ravaged continent, serve as the engine of growth for all of Southern Africa? What are the options for international assistance in the postapartheid era?</p>
+            <p>In a referendum held on March 17, 1992, a surprising 68.7 percent of South Africa’s whites supported a negotiated abolition of their minority rule. The same cabinet ministers and Afrikaner National Party that presided over the implementation of apartheid in defiance of world opinion, were now, with the support of two-thirds of their constituency, to act as democratic reformers. The approval of the referendum has been universally hailed as unprecedented in the annals of politics. Whites, however, did not vote to transfer power <hi rend="italic">to</hi> the black majority, as the media reported, but only to share power.<ref target="fn0.1" type="fnoteref" targOrder="U">*</ref> They agreed to democratize a system in which they themselves will necessarily remain major stakeholders. Though strong in symbolic support, the ANC is weak in bureaucratic resources, military capacity, and economic leverage. Real power will therefore remain in the hands of the present establishment; even if Nelson Mandela becomes president of South Africa, the economy, the civil service, and the army will have to rely on white skills, capital, and goodwill for a long time to come.</p>
+            <p>Faced with the threat of a beleaguered siege economy, the ruling group thus opted for an inclusive ideology that may in the future even win substantial support from like-minded black conservatives. Moreover, by not insisting on guaranteed racial group representation, as white Zimbabweans had, the dwindling white minority in South Africa set in motion the prospect for a broad coalition government of national unity in which whites could emerge as a powerful legitimate force.</p>
+            <p>The goal of transformation through negotiation corresponds to neither the revolutionary nor the reformist agenda for South Africa. Socialist adherents of the former always falsely assumed South Africa to be the only developed capitalist country “[that] is not only ‘objectively’ ripe for revolution but has actually entered a stage of overt and seemingly irreversible revolutionary struggle.”<ref target="bn0.1" id="d0e912" type="noteref" targOrder="U">1</ref> The reformist agenda, on the other hand, was falsely predicated on selective co-option as the most effective method to buy off dissent while preserving political inequality. The multiparty negotiations, however, will neither leave the status quo intact, as the reformers had hoped, nor utterly reverse all power relations, as revolutionaries had expected. Instead, the negotiations grant all major forces a stake in a historic compromise by which each party stands to gain more than it would lose by continuing the confrontation. Most likely, economic and bureaucratic power will remain largely in the hands of the present establishment for some time, even as political power increasingly passes into the hands of the formerly disenfranchised. The negotiations concern the precise terms of such a deal.</p>
+         </div1>
+      </body>
+   </text>
+</TEI.2>

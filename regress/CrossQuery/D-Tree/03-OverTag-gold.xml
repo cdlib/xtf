@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xtf="http://cdlib.org/xtf" xmlns:xtf="http://cdlib.org/xtf" xtf:hitCount="1" xtf:firstHit="1">
+   <xtf:snippets totalHitCount="1" hitCount="1">
+      <xtf:snippet rank="1" hitNum="1">a test of the <xtf:hit>
+            <xtf:term>emergency</xtf:term> (broadcasting) system. Anything you <xtf:term>say</xtf:term>
+         </xtf:hit> can and will be</xtf:snippet>
+   </xtf:snippets>
+   <testMeta xtf:meta="yes">Some test data</testMeta>
+   <p xtf:hitCount="1" xtf:firstHit="1">
+    This is a test of the <xtf:hit rank="1" hitNum="1" more="yes">
+         <xtf:term>emergency</xtf:term> 
+      </xtf:hit>
+      <foo>
+         <xtf:more rank="1" hitNum="1" more="yes"> (broadcasting) system. Anything </xtf:more>
+      </foo>
+      <xtf:more rank="1" hitNum="1" more="no"> you <xtf:term>say</xtf:term>
+      </xtf:more> can and will be used against
+    you in a court of law. If this had been a real <xtf:term>emergency</xtf:term> you would have been told where to go and
+    what to do.
+    </p>
+   <p>
+    The animal world is full of examples. This particular one is missing from this document, but if
+    you like you can use your imagination. Never lose your imagination. 
+    A loss is a terrible thing to mind. This is the end.
+    </p>
+   <p>
+    You just gotta love it!
+    </p>
+   <p>
+    Cats don't care about man's inhumanity to man.
+    </p>
+</document>

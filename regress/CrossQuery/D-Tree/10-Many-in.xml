@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- regress-search-tree="data/doc1.xml" -->
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+  <text indexPath="IndexDB" maxSnippets="3" contextChars="80">
+    <or>
+      <and>
+        <term>This</term>
+        <term>emergency</term>
+      </and>
+      <and>
+        <term>animal</term>
+        <term>examples</term>
+      </and>
+      <and>
+        <term>terrible</term>
+        <term>thing</term>
+      </and>
+    </or>
+  </text>
+</query>

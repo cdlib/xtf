@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TEI.2 id="ft1c6003wp" xmlns:xtf="http://cdlib.org/xtf">
+   <title xtf:meta="true">California Riparian Systems: Ecology, Conservation, and Productive Management</title>
+   <creator xtf:meta="true">Richard E. Warner and Kathleen M. Hendrix, editors</creator>
+   <subject xtf:meta="true">Environmental Studies</subject>
+   <subject xtf:meta="true">California and the West</subject>
+   <description xtf:meta="true">This volume presents 135 of the papers presented at the 1981 California Riparian Systems Conference. The papers address all aspects of riparian systems: habitat, wildlife, land management, land use policy planning, conservation and water resource management.</description>
+   <date xtf:meta="yes">19841203</date>
+   <type xtf:meta="true">text</type>
+   <identifier xtf:meta="yes">http://ark.cdlib.org/ark:/13030/ft1c6003wp</identifier>
+   <relation xtf:meta="true">http://www.ucpress.edu/</relation>
+   <relation xtf:meta="yes">http://escholarship.cdlib.org/</relation>
+   <rights xtf:meta="true">Public</rights>
+   <text>
+      <front>
+         <titlePage>
+            <titlePart type="main">California Riparian Systems</titlePart>
+            <titlePart type="subtitle">Ecology, Conservation, and Productive Management</titlePart>
+            <docAuthor>Edited by<lb/> Richard E. Warner and Kathleen M. Hendrix</docAuthor>
+            <docImprint>
+               <publisher>UNIVERSITY OF CALIFORNIA PRESS</publisher>
+               <pubPlace>Berkeley ·  Los Angeles ·  Oxford</pubPlace>
+               <docDate>1984</docDate>
+            </docImprint>
+         </titlePage>
+         <div1 type="dedication" id="d0e29" org="uniform" part="N" sample="complete">
+            <p>TO<lb/> A. STARKER LEOPOLD, 1913–1983<lb/> Scientist<lb/> Conservationist<lb/> Mentor<lb/> Colleague<lb/> Friend<lb/> ALOHA NUI LOA, AND GODSPEED</p>
+         </div1>
+         <div1 type="fmsec" id="d0e46" org="uniform" part="N" sample="complete">
+            <head type="main" rend="Heading-Heading2">IN MEMORIAM</head>
+            <p>Rick Warner has died since completing this book. He finished it with the last of his ebbing great strength. He was a remarkable field scientist and activist who could be counted on to get things done correctly regardless of the difficulties. He was a strong moral force that will be sadly missed in the ongoing struggle to maintain a semblance of environmental quality.</p>
+            <byline>HUEY JOHNSON</byline>
+            <pb id="JD_Page_ix" n="ix"/>
+         </div1>
+         <div1 type="fmsec" id="d0e54" org="uniform" part="N" sample="complete">
+            <head type="main" rend="Heading-Heading2">A PICTORIAL OVERVIEW OF CALIFORNIA RIPARIAN SYSTEM CHARACTERISTICS</head>
+            <p>California riparian systems exhibit, in both structure and function, a mixture of regional uniqueness and global universality. An understanding of the nature and consequences of these characteristics can be very useful in interpreting observed field conditions and in designing and implementing management programs. Many of these characteristics are best described using on-site photography. The adage "one picture is worth a thousand words," is especially true here, where the diversity of species, topography, biogeography, climate, and geology found in California is so great. The set of photographs described below was selected to demonstrate and to assist in interpreting some of the more pervasive elements of structure and function in riparian systems both in California and elsewhere.</p>
+            <p>Frontispiece.—Valley oak (<hi rend="underline">Quercus</hi>
+               <hi rend="underline">lobata</hi> ) forest on the lower floodplain of the Cosumnes River, San Joaquin County. The wild grape (<hi rend="underline">Vitis</hi>
+               <hi rend="underline">californica</hi> ) draping the branches in areas exposed to the sun gives this magnificent forest a cathedral-like aspect. (Photograph © 1983 by R.E. Warner.)</p>
+            <p>Page 1.—A stand of black cottonwood (<hi rend="underline">Populus</hi>
+               <hi rend="underline"> trichocarpa</hi> ) at about 4,000 ft. elevation along the Yuba River, Nevada County. This species is replaced at lower, drier, and warmer elevations by Fremont cottonwood (<hi rend="underline">P</hi> . <hi rend="underline"> fremontii</hi> ), and at higher elevations by the quaking aspen (<hi rend="underline">P</hi> . <hi rend="underline">tremuloides</hi> ). (Photograph © 1983 by R.E. Warner.)</p>
+            <p>Page 45.—A stand of black willow (<hi rend="underline">Salix</hi>
+               <hi rend="underline"> gooddingii</hi> var. <hi rend="underline">variabilis</hi> ) along the American River Parkway, Sacramento. Willows vary greatly in form, depending upon species. Some are small, prostrate shrubs; others robust shrubs and small trees; and others, like that illustrated here, are capable of developing into a dense forest, 50 ft. or more in height. (Photograph © 1983 by R.E. Warner.)</p>
+            <p>Page 109.—The California sycamore (<hi rend="underline">Platanus</hi>
+               <hi rend="underline"> racemosa</hi> ), here growing on the floodplain of the Sacramento River about 12 miles north of Sacramento, Yolo County. This species is strictly limited to streamside corridors and riverine floodplains, where it provides an attractive and ecologically valuable element to the riparian vegetation. Its tendency to produce cavities in trunks and major branches following limb loss makes it especially valuable to hole-nesting species of birds and mammals. (Photograph © 1983 by R.E. Warner.)</p>
+            <p>Page 159.—Valley oak forest in Caswell State Park, San Joaquin County. This area has been protected from human-use damage for several decades and is one of the most intact and ecologically diverse riparian systems in California. Even here, however, recent studies have demonstrated that tree size/frequency ratios and other determinants of vegetation structure are unusual. Thus, while valley oak forests of Caswell State Park are among the most intact of California riparian systems, even they are not "primeval," further supporting the growing suspicion that because of ubiquitous, long-term, human use impacts, there are essentially no pristine riparian systems left in the state. (Photograph © 1983 by R.E. Warner.)</p>
+        </div1>
+     </front>
+   </text>
+</TEI.2>

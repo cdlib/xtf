@@ -1,0 +1,30 @@
+<html>
+
+<head>
+
+<title>Untitled Document</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+</head>
+
+
+
+<body bgcolor="#FFFFFF">
+
+<p>This package provides two different caching mechanisms, which are used throughout 
+  XTF to speed access to commonly used items. The two types of caches are <a href="SimpleCache.html">SimpleCache</a>, 
+  to which one simply adds items to cache, and <a href="GeneratingCache.html">GeneratingCache</a> 
+  in which one queries for a requested item and it's generated if it doesn't yet 
+  exist. </p>
+<p>Both types of caches support the ability to expire entries on a least-recently-used 
+  basis, maintaining a limit on the number of entries, maximum age of an entry, 
+  or both.</p>
+<p>Added to this is a fairly sophisticated dependency mechanism, where one cache 
+  entry can depend on one (or many) <a href="FileDependency.html">FileDependencies</a>; 
+  if any file changes, the entry is thrown out. Likewise, a cache entry can depend 
+  on another cache entry using a <a href="CacheDependency.html">CacheDependency</a>.</p>
+</BODY>
+
+</HTML>
+

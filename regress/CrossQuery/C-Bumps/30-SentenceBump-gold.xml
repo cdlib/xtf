@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit file="doc1.xml">
+      <meta>
+         <testMeta>x</testMeta>
+      </meta>
+      <snippet sectionType="30-a">X X X X X X X X X X X X X X X X X g1 <hit>
+            <term>g2</term>. <term>g3</term>
+         </hit> g4. g1 <term>g2</term>. <term>g3</term> g4. g1 <term>g2</term>. <term>g3</term> g4. X X</snippet>
+      <snippet sectionType="30-b">X X X X X X X X X X g1 <term>g2</term>. <term>g3</term> g4. g1 <hit>
+            <term>g2</term>. <term>g3</term>
+         </hit> g4. g1 <term>g2</term>. <term>g3</term> g4. X X X X X X X X X</snippet>
+   </docHit>
+</crossQueryResult>

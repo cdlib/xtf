@@ -1,0 +1,174 @@
+<project name="XTF" default="compile" basedir=".">
+
+  <description>
+      eXtensible Text Framework
+  </description>
+
+  <!-- set global properties for this build -->
+  <property name="src"     location="src"/>
+  <property name="build"   location="classes"/>
+  <property name="dist"    location="dist"/>
+  <property name="lib"     location="lib"/>
+  <property name="doc"     location="javadoc"/>
+  <property name="saxon"   location="${lib}/saxon-8.0.jar"/>
+  <property name="lucene"  location="${lib}/lucene-1.4.1.jar"/>
+  <property name="servlet" location="${lib}/servlet.jar"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <!-- ================================================== compile -->
+  <target name="compile" depends="init,tokenizer"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac target="1.4" 
+           source="1.4" 
+           debug="true"
+           classpath="${saxon}:${lucene}:${servlet}"
+           srcdir="${src}" 
+           destdir="${build}"/>
+  </target>
+	
+  <target name="tokenizer" description="compile the XTF tokenizer">
+    <javacc target="${src}/org/cdlib/xtf/textIndexer/tokenizer/XTFTokenizer.jj"
+  	        javacchome="${lib}"/>
+  </target>
+
+  <!-- ================================================== dist -->
+  <target name="dist" depends="compile,docs"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}"/>
+
+    <!-- Create a temp directory for the build -->
+    <delete dir="build-tmp" quiet="true"/>
+    <mkdir dir="build-tmp"/>
+    <mkdir dir="build-tmp/WEB-INF"/>
+    <mkdir dir="build-tmp/WEB-INF/lib"/>
+
+    <!-- Make a jar file containing the XTF classes -->
+    <jar jarfile="build-tmp/WEB-INF/lib/xtf.jar" basedir="${build}"/>
+
+    <!-- Zip up the regression tests -->
+    <zip zipfile="build-tmp/regress.zip">
+      <fileset dir="..">
+        <include name="regress/**/*"/>
+        <exclude name="regress/**/IndexDB/**/*"/>
+        <exclude name="regress/**/*-test.xml"/>
+        <include name="bin/regressTest"/>
+      </fileset>
+    </zip>
+
+    <!-- Make a zip file of all the source code -->
+    <zip zipfile="build-tmp/WEB-INF/src.zip">
+      <fileset dir="." includes="src/**/*.java"/>
+      <fileset dir="." includes="src/**/*.html"/>
+    </zip>
+
+    <!-- Zip up the JavaDocs -->
+    <zip zipfile="build-tmp/WEB-INF/javadoc.zip">
+      <fileset dir="." includes="javadoc/**/*"/>
+    </zip>
+
+    <!-- Copy the remaining files to the temporary build dir -->
+    <copy todir="build-tmp">
+      <fileset dir="..">
+
+        <exclude name="**/backup"/>
+        <exclude name="**/backup/**/*"/>
+        <exclude name="**/.*"/>
+        <exclude name="**/.*/**/*"/>
+        <exclude name="**/*.psd"/>
+        <exclude name="**/*.sdr"/>
+        <exclude name="conf/textIndexer.conf"/>
+        <exclude name="style/crossQuery/complexQueryParser.xsl"/>
+
+        <include name="bin/textIndexer"/>
+
+        <include name="brand/default.xsl"/>
+
+        <include name="conf/**/*"/>
+
+        <include name="css/default/**/*"/>
+
+        <include name="icons/default/**/*"/>
+
+        <include name="profiles/**/public*"/>
+        <include name="profiles/**/default*"/>
+
+        <include name="style/crossQuery/*.xsl"/>
+        <include name="style/crossQuery/resultFormatter/default/*.xsl"/>
+        <include name="style/crossQuery/resultFormatter/common/*.xsl"/>
+
+        <include name="style/dynaXML/*.xsl"/>
+        <include name="style/dynaXML/docFormatter/default/*.xsl"/>
+
+        <include name="style/textIndexer/**/*"/>
+
+        <include name="INSTALL"/>
+
+        <include name="LICENSE*"/>
+
+        <include name="WebDocs/HTML/**/*"/>
+        <exclude name="WebDocs/**/Art/**/*"/>
+
+        <include name="WEB-INF/lib/*.jar"/>
+        <exclude name="WEB-INF/lib/winstone.jar"/>
+        <exclude name="WEB-INF/lib/servlet.jar"/>
+
+      </fileset>
+    </copy>
+
+    <!-- Copy sample files (some will overwrite) -->
+    <copy todir="build-tmp">
+      <fileset dir="../sample">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+
+    <!-- Now make the main distribution WAR file -->
+    <delete file="${dist}/xtf-dev-${DSTAMP}.war" quiet="true"/>
+    <jar jarfile="${dist}/xtf-dev-${DSTAMP}.war">
+      <fileset dir="build-tmp">
+        <include name="**/*"/>
+      </fileset>
+    </jar>
+
+    <delete dir="build-tmp" quiet="true"/>
+  </target>
+
+  <!-- ================================================== docs -->
+  <target name="docs" 
+          description="generate javadoc documentation.">
+    <javadoc destdir="${doc}" 
+             private="true" 
+             breakiterator="yes"
+             source="1.4"
+             classpath="${lucene}:${saxon}:${servlet}"
+             sourcepath="${src}"
+    		 noqualifier="all">
+      <tag name=".notes" description="Notes:"/>
+      <tag name=".warnings" description="Warnings:"/>
+      <packageset dir="${src}">
+        <include name="**"/>
+      </packageset>
+    </javadoc>
+  </target>
+
+  <!-- ================================================== clean -->
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}" quiet="true"/>
+    <delete quiet="true">
+      <fileset dir="${dist}" includes="**/xtf-dev-*.war"/>
+    </delete>
+    <delete dir="${doc}" quiet="true"/>
+  </target>
+</project>
+
+

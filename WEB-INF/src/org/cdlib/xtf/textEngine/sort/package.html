@@ -1,0 +1,28 @@
+<html>
+
+<head>
+
+<title>Untitled Document</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+</head>
+
+
+
+<body bgcolor="#FFFFFF">
+
+<p>This package contains a very slightly modified version of Lucene's field sorting 
+  classes, adapted for use within XTF's chunk-based text query system.</p>
+<p>Most of the classes are exact copies from Lucene, with only a few members made 
+  public so they can be re-used.</p>
+<p>One new class, <a href="SparseStringComparator.html">SparseStringComparator</a>, 
+  is like a normal string comparator except that it compacts all the empty entries 
+  out of the array. This is very desirable in the XTF world, where most document 
+  IDs are actually chunks. When sorting documents, an array containing every chunk 
+  and document would be needlessly huge. </p>
+<p>&nbsp;</p>
+</BODY>
+
+</HTML>
+

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+ <meta indexPath="IndexDB">
+    <range field="date" inclusive="yes">
+       <upper>19930628</upper>
+    </range>
+  </meta>
+</query>

@@ -1,0 +1,78 @@
+<html>
+
+<head>
+
+<title>Untitled Document</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+</head>
+
+
+
+<body bgcolor="#FFFFFF">
+
+<p>The XTF Text Engine is responsible for parsing and executing queries against 
+  the Lucene index. The actual work of building an index is done by the <a href="../textIndexer/package-summary.html">textIndexer</a> 
+  tool. </p>
+<p>Here's a breakdown of the Texdt Engine's major functions, and the classes associated 
+  with each function:</p>
+<h3>Query Parsing</h3>
+Takes care of calling the queryParser stylesheet to transform a URL query request 
+into a strictly structured, XML-formatted query. Also accumulates a list of terms 
+present in the query (useful later for term highlighting.) 
+<ul>
+  <li><a href="QueryRequest.html">QueryRequest</a> (main class)</li>
+  <li><a href="ComboQuery.html">ComboQuery</a></li>
+  <li><a href="TermMap.html">TermMap</a></li>
+  <li><a href="QueryGenException.html">QueryGenException</a></li>
+</ul>
+<h3>Query Processing</h3>
+These classes implement the main logic of the package, taking a structured query 
+and applying it to the Lucene indexes. They handle stop-word (n-gram) query pre-processing, 
+and scoring and sorting the hits 
+<ul>
+  <li><a href="QueryProcessor.html">QueryProcessor</a> (main class)</li>
+  <li><a href="XtfSearcher.html">XtfSearcher</a></li>
+  <li><a href="XtfSimilarity.html">XtfSimilarity</a></li>
+  <li><a href="NgramQueryRewriter.html">NgramQueryRewriter</a></li>
+  <li><a href="DocHitQueue.html">DocHitQueue</a></li>
+  <li><a href="DocNumMap.html">DocNumMap</a></li>
+  <li><a href="SpanDocFilterQuery.html">SpanDocFilterQuery</a></li>
+  <li><a href="SpanSectionTypeFilterQuery.html">SpanSectionTypeFilterQuery</a></li>
+  <li><a href="SpanList.html">SpanList</a></li>
+  <li><a href="RankedSpanList.html">RankedSpanList</a></li>
+  <li><a href="UnrankedSpanList.html">UnrankedSpanList</a></li>
+  <li><a href="dedupeSpans/package-summary.html"><b>dedupeSpans</b></a> sub-package</li>
+</ul>
+<h3>Limiting Work Performed by a Query</h3>
+To help ease server load problems due to unwitting or malicious queries, XTF has 
+added an extensive layer of work limiting on top of Lucene. 
+<ul>
+  <li><a href="LimitedRangeQuery.html">LimitedRangeQuery</a></li>
+  <li><a href="LimitedWildcardQuery.html">LimitedWildcardQuery</a></li>
+  <li><a href="TermLimitException.html">TermLimitException</a></li>
+  <li><a href="workLimiter/package-summary.html"><b>workLimiter</b></a> sub-package</li>
+</ul>
+<h3>Retrieving Query Results</h3>
+Once a query has been performed, the following classes provide access to the document 
+hits, and to text snippets within each document. 
+<ul>
+  <li><a href="QueryResult.html">QueryResult</a> (main class)</li>
+  <li><a href="DocHit.html">DocHit</a></li>
+  <li><a href="Snippet.html">Snippet</a></li>
+  <li><a href="SnippetMaker.html">SnippetMaker</a></li>
+  <li><a href="HitLoadException.html">HitLoadException</a></li>
+</ul>
+<h3>Utility classes</h3>
+These classes don't fit into any other category.
+<ul>
+  <li><a href="ConfigCache.html">ConfigCache</a></li>
+  <li><a href="IdxConfigUtil.html">IdxConfigUtil</a></li>
+  <li><b><a href="regress/package-summary.html">regress</a></b> sub-package</li>
+</ul>
+<p>&nbsp;</p>
+</BODY>
+
+</HTML>
+

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit file="doc1.xml">
+      <meta>
+         <testMeta>"Some test data"</testMeta>
+      </meta>
+      <snippet>the end. You just gotta love it! Cats don't care about <hit>
+            <term>man's</term>
+         </hit> inhumanity to <term>man</term>.</snippet>
+      <snippet>the end. You just gotta love it! Cats don't care about <term>man's</term> inhumanity to <hit>
+            <term>man</term>
+         </hit>.</snippet>
+   </docHit>
+</crossQueryResult>

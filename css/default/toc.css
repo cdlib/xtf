@@ -1,0 +1,36 @@
+/* dynaXML TOC stylesheet */
+
+@import url("http://texts.cdlib.org/styles/escholarship-editions.css");
+
+span.topnav {font-size: 75%;}
+
+/* HEADINGS */
+
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em;}
+h3 {font-size: 1.17em;}
+
+/* TOC */
+
+div.toc {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+a.booktitle {
+	color: maroon;
+}
+
+.hit-count {
+	color: red;
+	font-weight: bold;
+}
+
+.expand-collapse {
+	color: #6699CC;
+	text-decoration: none;
+}
+
+.toc-hi {
+	background-color: #FFCC66;
+}

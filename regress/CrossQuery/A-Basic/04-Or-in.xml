@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+  <text indexPath="IndexDB" maxSnippets="3" contextChars="80">
+    <or>
+       <phrase>
+         <term>can</term>
+         <term>and</term>
+         <term>will</term>
+       </phrase>
+       <and>
+         <term>this</term>
+         <term>test</term>
+       </and>
+    </or>
+  </text>
+</query>

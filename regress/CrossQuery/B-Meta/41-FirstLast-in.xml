@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+  <combine indexPath="IndexDB">
+    <meta>
+      <or field="subject">
+        <term>politics</term>
+        <term>environmental</term>
+      </or>
+    </meta>
+    <text maxSnippets="3" contextChars="80">
+      <or>
+        <phrase>
+          <term>Global</term><term>relevance</term><term>of</term><term>south</term><term>africa</term>
+        </phrase>
+        <phrase>
+          <term>left</term><term>in</term><term>the</term><term>state</term>
+        </phrase>
+      </or>
+    </text>
+  </combine>
+</query>

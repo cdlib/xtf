@@ -1,0 +1,26 @@
+<html>
+
+<head>
+
+<title>Untitled Document</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+</head>
+
+
+
+<body bgcolor="#FFFFFF">
+
+<p>Saxon's &quot;tiny tree&quot; implementation is perfect for loading an entire 
+  document into RAM, assinging numbers to everything and placing them in handy 
+  arrays; perfect, that is, except for the fact that all these handy variables 
+  are marked 'private'. The classes in this package are almost verbatim from the 
+  Saxon distribution, with two exceptions: (1) many members changed to 'public', 
+  and (2) text is accumulated to disk instead of in RAM.</p>
+<p>XTF's &quot;lazy tree&quot; uses the tiny tree to load the source document, 
+  then references the arrays to build the persistent output file.</p>
+</BODY>
+
+</HTML>
+

@@ -1,0 +1,3561 @@
+<html>
+
+  <head>
+    <title>XTF Programming Guide</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+    <style type="text/css">
+      <!--
+        .DocTitle     { margin-left:  0.00in;
+                        font-family:  Arial, Helvetica, sans-serif;
+                        font-size:    18pt;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        font-variant: small-caps; }
+
+        .BaseStyle    { margin-left:  0.00in;
+                        font-family:  Arial, Helvetica, sans-serif;
+                        font-size:    10pt;
+                        font-style:   normal;
+                        font-weight:  normal;
+                        font-variant: normal; }
+
+        .IndentL      { margin-left: 0.25in; margin-right: 0.00in }
+        .IndentLR     { margin-left: 0.25in; margin-right: 0.25in }
+
+        .Heading1     { font-size:    14pt;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        font-variant: small-caps;
+                        width:        100%;
+                        line-height:  normal;
+                        color:        #b6953b;
+                        border-color: #b6953b;
+                        border-style: solid;
+                        border-left-width: 0px; border-right-width:  0px;
+                        border-top-width:  0px; border-bottom-width: 3px;
+                        margin-top: 28pt; margin-bottom: 4pt }
+
+        .Heading2     { font-size:    12pt;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        width:        100%;
+                        line-height:  normal;
+                        color:        #576490;
+                        border-color: #576490;
+                        border-style: solid;
+                        border-left-width: 0px; border-right-width:  0px;
+                        border-top-width:  0px; border-bottom-width: 2px;
+                        margin-top: 24pt; margin-bottom: 4pt }
+
+        .Heading3     { font-size:    10pt;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        line-height:  normal;
+                        color:        #000000;
+                        border-color: #000000;
+                        border-style: solid;
+                        border-left-width: 0px; border-right-width:  0px;
+                        border-top-width:  0px; border-bottom-width: 1px;
+                        margin-top: 20pt; margin-bottom: 4pt }
+
+
+        .Code         { font-family: "Courier New", Courier, mono;
+                        font-size:   10pt;
+                        font-style:  bold;
+                        font-weight: bold;
+                        color:       #112233 }
+
+        .MacroCode    { font-family: "Times New Roman", Times, serif;
+                        font-style:  italic;
+                        font-weight: bold;
+                        color:       #576490 }
+
+        .MacroCodeB   { font-family: "Times New Roman", Times, serif;
+                        font-style:  italic;
+                        font-weight: bold;
+                        color:       #990099 }
+
+        .Sample       { margin-left: 0.15in; margin-right: 0.1in;
+                        background-color: #E0E0E0;
+                        padding-top:  8px; padding-bottom: 8px;
+                        padding-left: 8px; padding-right:  8px;
+                        border-style: none }
+
+        .Note         { color:      #990000;
+                        font-style: italic;
+                        margin-left: 0.15in; margin-right: 0.15in }
+
+        .Red           { color: #990000; font-style: italic; }
+
+        .GreyList     { background-color: #E0E0E0;
+                        margin-left: 0.15in; margin-right: 0.15in;
+                        margin-top:   5px;  margin-bottom:  0px;
+                        padding-left: 8px;  padding-right:  8px;
+                        padding-top:  8px;  padding-bottom: 8px }
+
+        .ParamList    { margin-top: 5px;  margin-bottom: 0px; }
+
+        .OrderedList   { margin-left:         0.35in;
+                         list-style-position: outside;
+                         list-style-image:    none;
+                         list-style-type:     decimal }
+
+        .UnorderedList { margin-left:         0.35in;
+                         list-style-position: outside;
+                         list-style-type:     disc }
+
+        .NoBullets  { margin-left:     0.25in;
+                      list-style-type: none }
+
+        .ListItem  { margin-top: 6px; }
+      -->
+    </style>
+  </head>
+
+  <body bgcolor="#FFFFFF" text="#101010" >
+
+    <div class="BaseStyle">
+
+      <p class="DocTitle" align="center">Extensible Text Framework Programming Guide</p>
+
+      <p class="Heading1">Table of Contents</p>
+      <!--------------------------------------------------------------------------------------------------------------->
+      <ul class="NoBullets">
+        <li>
+            <b><a href="#Introduction">Introduction</a></b>
+        </li> <br><br>
+
+        <li>
+          <b><a href="#textIndexer_Prog">textIndexer Programming</a></b>
+          <ul class="NoBullets">
+            <li><a href="#textIndexer_PreFilter_Prog">Pre-Filter Programming</a></li>
+          </ul>
+        </li> <br>
+
+        <li>
+          <b><a href="#crossQuery_Prog">crossQuery Programming</a></b>
+          <ul class="NoBullets">
+            <li><a href="#crossQuery_QueryParser_Prog">Query Parser Programming</a></li>
+            <li><a href="#crossQuery_ResultFormatter_Prog">Result Formatter Programming</a></li>
+            <li><a href="#crossQuery_ErrorGen_Prog">Error Generator Programming</a></li>
+          </ul>
+        </li> <br>
+
+        <li>
+          <b><a href="#dynaXML_Prog">dynaXML Programming</a></b>
+          <ul class="NoBullets">
+            <li><a href="#dynaXML_DocReqParser_Prog">Document Request Parser Programming</a></li>
+            <li><a href="#dynaXML_DocFormatter_Prog">Document Formatter Programming</a></li>
+            <li><a href="#dynaXML_ErrorGen_Prog">Error Generator Programming</a></li>
+          </ul>
+        </li> <br>
+
+        <li>
+          <b><a href="#XTF_Tag_Ref">XTF Stylesheet Tag Reference</a></b>
+          <ul class="NoBullets">
+            <li class="ListItem">
+              <a href="#textIndexer_Tag_Ref">textIndexer Pre-Filter Tag Reference</a>
+            </li>
+            <li class="ListItem">
+              <a href="#crossQuery_Tag_Ref">crossQuery Tag Reference</a>
+              <ul class="NoBullets">
+                <li><a href="#crossQuery_QueryParser_Tags">Query Parser Tags</a></li>
+                <li><a href="#crossQuery_ResultFormatter_Tags">Search Result Formatter Tags</a></li>
+                <li><a href="#crossQuery_ErrorGen_Tags">Error Generator Tags</a></li>
+              </ul>
+            </li>
+            <li class="ListItem">
+              <a href="#dynaXML_Tag_Ref">dynaXML Tag Reference</a>
+              <ul class="NoBullets">
+                <li class="ListItem"><a href="#dynaXML_DocReqParser_Tags">Document Request Parser Tags</a></li>
+                <li class="ListItem"><a href="#dynaXML_DocFormatter_Tags">Document Formatter Tags and Attributes</a></li>
+                <li class="ListItem"><a href="#dynaXML_ErrorGen_Tags">Error Generator Tags</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li> <br>
+
+      </ul> <br>
+
+      <p class="Heading1">Introduction<a name="Introduction"></a></p>
+      <!--------------------------------------------------------------------------------------------------------------->
+      This guide describes how to customize the operation of the E<b>X</b>tensible <b>T</b>ext <b>F</b>ramework
+      (<b><i>XTF</i></b>) This document assumes that you have completed the basic installation and configuration
+      described in the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF Deployment Guide</a>, and that their
+      correct operation has been verified. <br><br>
+
+      The XTF system consists of Java Servlets and tools that permit users to perform Web-based searching and retrieval
+      of electronic documents. Its basic organization of the XTF components can be illustrated as follows:
+
+      <p align="center">
+        <a name="SummaryDiagram"></a>
+        <img src="../Common_Art/SummaryDiagram.gif"><br>
+        Figure 1: Extensible Text Framework (XTF) Overview
+      </p>
+
+      In this diagram, the basic flow of information is left to right. Document retrieval begins with a Web-based user
+      search query. The <i><b>crossQuery</b></i> servlet checks the query against an index of available documents, and
+      produces a list of matching documents for display in a web browser. Selecting a document from the search results
+      page invokes the <i><b>dynaXML</b></i> servlet, which retrieves and formats the actual document for display in a
+      web browser. The <b><i>textIndexer</i></b> tool shown at the bottom is used to update the document search index
+      whenever documents in the library are added, removed, or updated. <br><br>
+
+      The remainder of this document will examine how to customize the XTF tools and servlets by reprogramming the
+      XSLT templates that define their behavior.
+
+      <p class="Heading1">textIndexer Programming<a name="textIndexer_Prog"></a></p>
+      <!--------------------------------------------------------------------------------------------------------------->
+      As mentioned above in the introduction, the purpose of the <b><i>textIndexer</i></b> tool is to create or update
+      a document search index whenever documents are updated, added to, or removed from the document library. If we
+      would isolate and zoom in on the <b><i>textIndexer</i></b> portion of the <a href="#SummaryDiagram">XTF Overview
+      Diagram</a> shown above, we'd see something like this: <br>
+
+      <p align="center">
+        <img src="../Common_Art/textIndexer.gif"><br>
+        Figure 2: Internal organization of the <b><i>textIndexer</i></b> Tool
+      </p>
+
+      What the diagram shows, is that the <b><i>textIndexer</i></b> takes in XML documents, and pre-filters them using
+      an XSLT template. The filtered XML document is then passed on to the actual <b><i>Text Indexer Engine</i></b>,
+      which breaks the document into smaller overlapping chunks and then adds them to a Lucene based word index. The
+      index can then be used by the <b><i>crossQuery</i></b> servlet to quicky locate files in the document library
+      containing any text requested by the user. Optionally, the <b><i>dynaXML</i></b> servlet can also use the index to
+      highlight in context any matches in the original XML documents when they are viewed. <br><br>
+
+      The <span class="Code">textIndexer.conf</span> and <b>XSLT pre-filter</b> together define how the
+      <b><i>textIndexer</i></b> performs the document indexing process. A complete discussion of the
+      <span class="Code">textIndexer.conf</span> file appears in the
+      <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF Deployment Guide</a>, and so will
+      not be discussed in any great depth here. The inner workings of the <b><i>textIndexer</i></b> pre-filter however,
+      are the subject of the following sub-sections.
+
+      <div class="IndentL">
+
+        <p class="Heading2">Pre-Filter Programming<a name="textIndexer_PreFilter_Prog"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        The primary purpose of the <b><i>textIndexer</i></b> pre-filter is to modify an XML document prior to adding
+        it to an index. The main ways in which a document can be modified are described in the following five
+        sub-sections. <br><br>
+
+        For the <b><i>textIndexer</i></b> pre-filter to work properly, an<span class="Code"> xtf: </span>namespace
+        must be declared at the top of the pre-filter. To do this, simply add the following attribute to
+        the<span class="Code"> &lt;xsl:stylesheet<span class="BasicStyle">...</span>&gt; </span>tag at the top of
+        the pre-filter: <br><br>
+
+        <div class="Sample">
+          <span class="Code">xmlns:xtf="http://cdlib.org/xtf"</span>
+        </div> <br>
+
+        Defining an<span class="Code"> xtf: </span>namespace in this way and then prefixing <b><i>textIndexer</i></b>
+        specific attributes with it allows the <b><i>textIndexer</i></b> to distinguish its own attributes from
+        other ones in the filtered document.
+
+        <div class="IndentLR">
+          <p class="Heading3">Preventing Text from being Indexed</p> <br>
+          <!----------------------------------------------------------------------------------------------------------->
+          There will be times when the text within certain tags in an XML document should not be indexed (e.g.:
+          versioning information about the XML file format.) The XSLT pre-filter can be prevent such tags and
+          their associated text from being indexed.  There are two possible ways to do this:
+          <ol>
+            <li class="ListItem">
+               Standard XSLT programming can be used to eliminate the tag and its text entirely.
+            </li> <br>
+            <li class="ListItem">
+               A special <span class="Code">noindex</span> attribute can be added to the tag to tell the
+               <b><i>textIndexer</i></b> to ignore its contents when indexing.
+            </li>
+          </ol>
+
+          Eliminating certain tags through the use of standard XSLT techiques has the advantage that it saves space. The
+          tag's text is not added to the search index, nor is it stored by the fast retrieval database for later display
+          by the <b><i>dynaXML</i></b> servlet. By contrast, the <span class="Code">noindex</span> attribute simply
+          prevents the tag's text from being indexed. The text is still stored in the fast retrieval database so that
+          the <b><i>dynaXML</i></b> servlet can display the text if necessary. <br><br>
+
+          A snippet of code showing the use of the <span class="Code"> noindex </span> attribute can be found in the
+          sample <span class="Code"> preFilter.xml </span> file that is included with the default XTF installation.
+          It looks as follows: <br><br>
+
+<pre class="Sample"><b>&lt;xsl:template match="teiHeader"&gt;
+
+    &lt;xsl:copy&gt;
+        &lt;xsl:copy-of select="@*"/&gt;
+        <font color="#990000">&lt;xsl:attribute name="xtf:noindex" select="'true'"/&gt;</font>
+        &lt;xsl:apply-templates/&gt;
+    &lt;/xsl:copy&gt;
+
+&lt;/xsl:template&gt;</b></pre>
+
+          Notice that the <span class="Code"> noindex </span> attribute when used in the pre-filter is prefixed with
+          <span class="Code"> xtf: </span>. This is the namespace used in XTF tags and attributes to prevent collisions
+          with similarly named tags and attributes defined by other programs.<br><br>
+
+          Finally, it should be mentioned that the <span class="Code">noindex</span> attribute has two forms: <br><br>
+
+          <div class="IndentLR"><pre class="Code">noindex = true/yes, false/no</pre></div>
+          and
+          <div class="IndentLR"><pre class="Code">index   = false/no, true/yes</pre></div>
+
+          Both forms enable or disable indexing, but their logic is inverted so that the XSLT programmer can choose the
+          wording that makes the most sense in any given situation.
+
+          <p class="Heading3">Controlling Proximity</p>
+          <!----------------------------------------------------------------------------------------------------------->
+          If an XTF user specifies a list of words to search for, the <b><i>crossQuery</i></b> servlet will rank any
+          matching words that are closer together as better matches than ones that are far apart. This is what is
+          known as <b><i>proximity searching</i></b>. <br><br>
+
+          There are times however when simple proximity matches will produce undesired results. For example, consider
+          the case where a query matches some words in two different places in a document. For the first match, the
+          words are very close together but in two different chapters' tags. For the second match, the words are all in
+          the same chapter, but slightly further apart. In this case, the proximity search mechanism will incorrectly
+          give a higher score to match with the words that are closer together but split across two chapters. <br><br>
+
+          To correct for these kinds of situations, the pre-filter can insert a <b><i>proximity break attribute</i></b>
+          into a tag. Doing so effectively puts an infinite distance between the tag with the break and the text
+          before it, thus entirely preventing proximity matches from being found that span the two tags. For example,
+          to solve the "proximity across chapters" problem described above, a pre-filter might include some code like
+          this: <br><br>
+
+<pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="chapter"</font>&gt;
+
+    &lt;xsl:copy&gt;
+        &lt;xsl:copy-of select="@*"/&gt;
+        <font color="#990000">&lt;xsl:attribute name="xtf:proximitybreak" select="'true'"/&gt;</font>
+        &lt;xsl:apply-templates/&gt;
+    &lt;/xsl:copy&gt;
+
+&lt;/xsl:template&gt;</b></pre>
+
+          In this example, the important code is on first and fourth lines. The first line tells the pre-filter to look
+          for "chapter" tags. And when it finds one, the fourth line adds a proximity break attribute. Adding this
+          code to the pre-filter would ensure that proximity matches are never found that span two "chapter" tags.
+          <br><br>
+
+          Sometimes it may still be desirable to find proximity matches across sections, but deemphasize them compared
+          to matches found entirely within a section. In this case, the<span class="Code"> sectionBump </span>attribute
+          can be used in place of a proximity break. Unlike the<span class="Code"> proximityBreak </span>tag,
+          the<span class="Code">sectionBump</span> tag can be told how much distance (as a number of words) to
+          introduce between two adjacent sections. For example, this code: <br><br>
+
+<pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="chapter"</font>&gt;
+
+    &lt;xsl:copy&gt;
+        &lt;xsl:copy-of select="@*"/&gt;
+        <font color="#990000">&lt;xsl:attribute name="xtf:sectionBump" select="10"/&gt;</font>
+        &lt;xsl:apply-templates/&gt;
+    &lt;/xsl:copy&gt;
+
+&lt;/xsl:template&gt;</b></pre>
+
+          would separate adjacent chapters from eachother by ten words. Proximity matches across chapters would still
+          be found, but they would be considered 10 words further apart (and therefore less relevant) than similar
+          matches found entirely within a single section. <br><br>
+
+          Just as it may be desirable to deemphasize proximity matches across adjacent sections, it may also be
+          desireable to control proximity matches across sentence boundaries. To accomplish this, the sentenceBump
+          attribute can be added to a tag like this: <br><br>
+
+<pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="DocText"</font>&gt;
+
+    &lt;xsl:copy&gt;
+        &lt;xsl:copy-of select="@*"/&gt;
+        <font color="#990000">&lt;xsl:attribute name="xtf:sentenceBump" select="5"/&gt;</font>
+        &lt;xsl:apply-templates/&gt;
+    &lt;/xsl:copy&gt;
+
+&lt;/xsl:template&gt;</b></pre>
+
+          In this example, a hypothetical tag under which all other document tags and text exist has its sentenceBump
+          value set to 5 words. This effectively separates the end of one sentence from the beginning of the next by
+          five words. Doing so makes proximity matches across sentences less relevant than a similar proximity match
+          entirely within a single sentence.
+
+          <p class="Heading3">Sectioning Documents</p>
+          <!----------------------------------------------------------------------------------------------------------->
+          Another attribute that can be added to document tags is the<span class="Code"> sectionType </span>attribute.
+          This attribute allows you to assign names to tags witin a document. Doing so would allow permit advanced
+          user queries that only search for text in specific section types. Consider the following example:
+          <br><br>
+
+<pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="ChapterTitle"</font>&gt;
+
+    &lt;xsl:copy&gt;
+        &lt;xsl:copy-of select="@*"/&gt;
+        <font color="#990000">&lt;xsl:attribute name="xtf:sectionType" select="'ChapterTitle'"/&gt;</font>
+        &lt;xsl:apply-templates/&gt;
+    &lt;/xsl:copy&gt;
+
+&lt;/xsl:template&gt;</b></pre>
+
+          This XSLT code simply labels the text indexed for a chapter title with a "ChapterTitle" section type. With
+          the text labeled in this manner, the query page presented to the user could provide an advanced search
+          option to look for text only in chapter titles. We'll talk more about how to actually do this in the
+          section below on <a href="#crossQuery_QueryParser_Prog">programming the <b><i>crossQuery</i></b> servlet's
+          Query Parser Stylesheet</a>. <br><br>
+
+
+          One other thing to mention about <span class="Code">sectionType</span> attributes is that they may be used
+          in nested tags. The <b><i>textIndexer</i></b> maintains an internal stack of nested section types, and
+          correctly restores previous section types when a given section/tag ends.
+
+
+          <p class="Heading3">Relevance Boost</p>
+          <!----------------------------------------------------------------------------------------------------------->
+          There may be times when it is useful to boost or deemphasize the relevance of text in a particular part of a
+          document. Consider the case where you had a document that was a book of quotations. In such a  document, it
+          might make sense to boost the relevance of the text in the actual quotations as compared to any text that
+          discussions the quotations. To facilitate this, the <b><i>textIndexer</i></b>  pre-filter provides a
+          <b><i>wordboost</i></b> attribute. The following example illustrates its use: <br><br>
+
+<pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="Quotation"</font>&gt;
+
+    &lt;xsl:copy&gt;
+        &lt;xsl:copy-of select="@*"/&gt;
+        <font color="#990000">&lt;xsl:attribute name="xtf:wordboost" select="1.5"/&gt;</font>
+        &lt;xsl:apply-templates/&gt;
+    &lt;/xsl:copy&gt;
+
+&lt;/xsl:template&gt;</b></pre>
+
+          This XSLT code simply boosts text found in <span class="Code">Quotation</span> tags to be 1.5 times more
+          relevant than non-boosted text in the document. Conversely, to deemphasize text simply use a value between
+          zero and one (e.g., a boost of 0.5 would make text half as relevant when searching.) <br><br>
+
+
+          As with <span class="Code">section</span> attributes, the wordboost attribute may be used in nested tags.
+          The <b><i>textIndexer</i></b> maintains an internal stack of nested boost values, and correctly restores
+          previous values when a given section/tag ends. Note however that boost values in nested tags
+          <b><i>do not</i></b> accumulate. That is, a tag with a boost value of 1.5 will boost the relevance of its
+          words by 1.5, regardless of the boost values applied to any tags that contain it.
+
+          <p class="Heading3">Adding or Marking Meta-Data</p>
+          <!----------------------------------------------------------------------------------------------------------->
+          There are times when it is useful to record Meta-Data for a document. Meta-Data is simply information about a
+          document that is not part of the document text itself. The author name, document publication date, and
+          document revision are all examples of Meta-Data. Ideally, this information would be indexed and separately
+          searchable, but would not be considered when searching for words in the actual text for a document. <br><br>
+
+          The <b><i>textIndexer</i></b> system supports the concept of Meta-Data through the use of the
+          <span class="Code">meta</span> attribute. Using the pre-filter to add this attribute to a tag causes name
+          of the tag and its contents to be recorded in a special Meta-Data section of the index for the document. For
+          example: <br><br>
+
+<pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="PublicationInfo"</font>&gt;
+
+    &lt;xsl:copy&gt;
+        &lt;xsl:copy-of select="@*"/&gt;
+        <font color="#990000">&lt;xsl:attribute name="xtf:meta" select="'true'"/&gt;</font>
+        &lt;xsl:apply-templates/&gt;
+    &lt;/xsl:copy&gt;
+
+&lt;/xsl:template&gt;</b></pre>
+
+        This snippet of pre-filter code would take any tag with the name <span class="Code">PublicationInfo</span>
+        and add a <span class="Code">meta</span> attribute to it, thus telling the <b><i>textIndexer</i></b> to add
+        the publication info to the meta-data index for the current document rather than the main text index. <br><br>
+
+        Once meta-data has been recorded for a document, it can be searched by modifying the <b><i>crossQuery</i></b>
+        servlet's Query Parser Stylesheet to generate meta search requests. Doing so is described in detail below in
+        the <a href="#crossQuery_QueryParser_Prog">Query Parser Programming</a> section below.
+
+        <p class="Heading3"></p>
+     </div> <br><br>
+
+     In closing, a few additional facts should be mentioned about the attributes supported by the XTF system:
+
+     <ol>
+       <li class="ListItem">
+         All the examples above show the <b><i>textIndexer</i></b> pre-filter adding them to document tags. Alternately,
+         the attributes could have simply been embedded in the original source document tags. But the advantage of using
+         the pre-filter to do the work is that the format of the original XML document isn't tied to the indexing
+         requirements of the XTF system.
+       </li>
+       <li class="ListItem">
+         A single tag can be assigned more than one attribute. For example, a tag could be assigned both a word boost
+         and a section title if desired. Note however that some combinations (like <span class="Code">sectionType</span>
+         + <span class="Code">proximitybreak</span>) are redundant and unnecessary.
+        </li>
+        <li class="ListItem">
+          Currently, when a <span class="Code">meta</span> attribute is added to a tag, all the other XTF specific
+          attributes are ignored (e.g., <span class="Code">wordboost</span>, <span class="Code">proximitybreak</span>,
+          etc.)
+        </li>
+      </ol>
+
+      Finally, it should be noted that the sample <span class="Code">style/textIndexer/preFilter.xsl</span> beneath
+      the base XTF directory (i.e., <span class="Code">XTF_HOME</span>) is a good starting point for creating your own
+      customized pre-filters.
+
+      </div> <br> <!-- textIndexer -->
+
+      <p class="Heading1">crossQuery Programming<a name="crossQuery_Prog"></a></p>
+      <!--------------------------------------------------------------------------------------------------------------->
+      The <b><i>crossQuery</i></b> servlet previously shown in the XTF overview allows users to search the document
+      library for particular words or phrases. If we look more closely at the <b><i>crossQuery</i></b> portion of the
+      <a href="#SummaryDiagram">XTF Overview Diagram</a>, we'll see something like this: <br>
+
+      <p align="center">
+        <img src="../Common_Art/crossQuery.gif"><br>
+        Figure 3: Internal organization of the <b><i>crossQuery</i></b> Servlet
+      </p>
+
+      Once again, the basic flow of information in this diagram is left to right. A document search begins with a
+      the user specifying some text to search for on a web page. The query is assembled into a URL of the form: <br><br>
+
+      <div class="Sample">
+        <span class="Code">
+         http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?text=<span class="MacroCode">TextToFind</span>
+        </span>
+      </div> <br>
+
+      This query URL is then passed on to the <i><b>crossQuery</b></i> servlet for processing. The first thing the
+      servlet does is translate the query URL into an XML  query that the <b><i>crossQuery</i></b> search
+      engine can actually understand. This translation is accomplished by the XSLT based <b>Query Parser</b>
+      (<span class="Code">queryParser.xsl</span>.) <br><br>
+
+      The <b><i>crossQuery</i></b> search engine then uses the XML query to look for occurences of the specified text
+      in the document index. Any matches that are found in the index are assembled into a list of XML tags, and passed
+      on to <b>Result Formatter</b> stylesheet (<span class="Code">resultFormatter.xsl</span>.) The <b>Result
+      Formatter</b> stylesheet then converts the list of matches into HTML for review by the user. <br><br>
+
+      The remaining two subsections describe in detail how to write <b>Query Parser</b> and <b>Result Formatter</b>
+      XSLT code to carry out the necessary translations.
+
+      <div class="IndentL">
+
+        <p class="Heading2">Query Parser Programming<a name="crossQuery_QueryParser_Prog"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        As previously noted, the <b>Query Parser</b> is responsible for translating a URL based query into an XML
+        query that the search engine can actually understand. Consider the following pseudo-query: <br><br>
+
+        <div class="IndentLR">
+          <span class="Code">Find all occurences of "man" and "war" but not "Man of War".</span>
+        </div> <br>
+
+        What we're trying to find here is any document containing both "man" and "war", but not "Man of War", which
+        is a kind of jellyfish. In theory, the web page into which the user types the search query could take a
+        simplified English-like representation of the query with the form: <br><br>
+
+        <div class="IndentLR">
+          <span class="Code">man and war not "Man of War"</span>
+        </div> <br>
+
+        but writing an XSLT parser to process it would be a complicated endeavor. To simplify things, we'll assume
+        that the web page has a field that accepts all the words or phrases to find, and another field that accepts all
+        the words or phrases to exclude. For our specific example, the user would type <br><br>
+
+        <div class="IndentLR">
+          <span class="Code">
+            man war
+          </span>
+        </div> <br>
+
+        into the <b>text to find</b> field, and <br><br>
+
+        <div class="IndentLR">
+          <span class="Code">
+            "Man of War"
+          </span>
+        </div> <br>
+
+        into the <b>text to exclude</b> field. Note that each word or phrase is separated from the others by a space,
+        and that an exact phrase (like <span class="Code">Man of War</span>) is enclosed in double-quotes to
+        differentiate it from a list of individual words. The resulting query URL that would be passed to the
+        <b><i>crossQuery</i></b> servlet would then look something like this: <br><br>
+
+        <div class="Sample">
+          <span class="Code">
+           http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?text=man+war&text-exclude=%22Man+of+War%22
+          </span>
+        </div> <br>
+
+        Notice that the first part of the URL (everything before the <b>?</b> symbol) invokes the
+        <b><i>crossQuery</i></b> servlet, and second part of the URL (everything after the <b>?</b> symbol) defines the
+        search to be performed. Also notice that search to be performed is represented by two parameters:
+        <br><br>
+
+        <table>
+          <tr>
+            <td width="33%" align="right" valign="top" class="Code">text=man+war</td>
+            <td width="10">&nbsp;</td>
+            <td><span class="BaseStyle">The list of words search for.</span></td>
+          </tr>
+          <tr>
+            <td width="33%" align="right" valign="top" class="Code">text-exclude=%22Man+of+War%22</td>
+            <td width="10">&nbsp;</td>
+            <td><span class="BaseStyle">The phrase to exclude from the search.</span></td>
+          </tr>
+        </table> <br>
+
+        These two parameters carry the "find" and "exclude" semantics represented by the two fields of our imagined
+        query Web-Page. As is typical for URLs, the spaces in each parameter have been replaced with plus signs
+        (<span class="Code">+</span>), and the double-quote characters have been replaced with their ANSI equivalent
+        hexadecimal values. <br><br>
+
+        Since the <b>Query Parser</b> is written in XSLT, it actually expects an XML document as its input, and not
+        a URL like the one presented above. Consquently, the <b><i>crossQuery</i></b> servlet preprocesses the query
+        URL and turns it into an XML input fragment for the <b>Query Parser</b> to translate.
+
+        In general, the input XML passed to the <b>Query Parser</b> looks like this:
+
+<pre class="Sample"><b>&lt;parameters&gt;
+
+  &lt;param name="<span class="MacroCode">ParamName</span>" value="<span class="MacroCode">ParamValue</span>"&gt;
+      <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
+      <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
+            <img src="../Common_Art/vDotDotDot.gif">
+  &lt;/param&gt;
+      <img src="../Common_Art/vDotDotDot.gif">
+&lt;/parameters&gt;</b></pre>
+
+        where <span class="MacroCode">Token</span> specifies a single word, and has the form: <br><br>
+
+        <div class="Sample">
+          <span class="Code">
+             &lt;token value="<span class="MacroCode">Word</span>" isWord = "<span class="MacroCode">YesOrNo</span>"/&gt;
+          </span> <br><br>
+
+          where <br><br>
+
+          <table>
+            <tr>
+              <td width="16%" align="right" valign="top" class="Code">
+                value="<span class="MacroCode">Word</span>"
+              </td>
+              <td width="10">&nbsp;</td>
+              <td><span class="BaseStyle">is the actual word or symbol extracted from the URL.</span></td>
+            </tr>
+            <tr>
+              <td width="16%" align="right" valign="top" class="Code">
+                isWord="<span class="MacroCode">YesOrNo</span>"
+              </td>
+              <td width="10">&nbsp;</td>
+              <td><span class="BaseStyle">identifies whether the token is a word or punctuation symbol.</span></td>
+            </tr>
+          </table>
+        </div> <br>
+
+        and <span class="MacroCode">Phrase</span> specifies an entire phrase extracted as a single string, with
+        the form: <br><br>
+
+        <div class="Sample">
+<pre class="Code">&lt;phrase value="<span class="MacroCode">StringOfWords</span>"&gt;
+    <span class="MacroCode">Token</span>
+      <img src="../Common_Art/vDotDotDot.gif">
+    <span class="MacroCode">Token</span>
+&lt;/phrase&gt;
+</pre>
+          where <br><br>
+
+          <table>
+            <tr>
+              <td width="16%" align="right" valign="top" class="Code">
+                value="<span class="MacroCode">StringOfWords</span>"
+              </td>
+              <td width="10">&nbsp;</td>
+              <td><span class="BaseStyle">is the entire phrase extracted from the URL as a single string.</span></td>
+            </tr>
+            <tr>
+              <td width="16%" align="right" valign="top" class="Code">
+                <span class="MacroCode">Token</span>...<span class="MacroCode">Token</span>
+              </td>
+              <td width="10">&nbsp;</td>
+              <td>
+                <span class="BaseStyle">
+                  is the original phrase broken down into individual token tags for each
+                  word or symbol in the phrase.
+                </span>
+              </td>
+            </tr>
+          </table>
+        </div> <br>
+
+        For our particular example URL, the input XML fragment passed to the <b>Query Parser</b> would be: <br><br>
+
+<pre class="Sample"><b>&lt;parameters&gt;
+
+  &lt;param name="text" value="man war"&gt;
+     &lt;token value="man" isWord="yes"/&gt;
+     &lt;token value="war" isWord="yes"/&gt;
+  &lt;/param&gt;
+
+  &lt;param name="text-exclude" value="&#34;Man of War&#34"&gt;
+     &lt;phrase value="Man of War"/&gt;
+         &lt;token value="Man" isWord="yes"/&gt;
+         &lt;token value="of"  isWord="yes"/&gt;
+         &lt;token value="War" isWord="yes"/&gt;
+     &lt;/phrase&gt;
+  &lt;/param&gt;
+
+&lt;/parameters&gt;</b></pre>
+
+        As mentioned before, it is the job of the the <b>Query Parser</b> XSLT code to translate the above input into
+        an XML query that the <b><i>crossQuery</i></b> search engine understands. The general format of an XML query
+        passed to the search engine has the form: <br><br>
+
+<pre class="Sample"><b>&lt;query style="<span class="MacroCode">ResultFormatterLocation</span>"&gt;
+
+    <span class="MacroCode">QueryType</span>
+
+&lt;/query&gt;</b></pre>
+
+        The <span class="Code">&lt;query...&gt;</span> tag is always the outermost tag in a query, containing all the
+        other tags that define the query to be performed. Through its
+        <span class="Code">style="<span class="MacroCode">ResultFormatterLocation</span>"</span> attribute, it also
+        defines the path to the <a href="#crossQuery_ResultFormatter_Prog">Result Formatter</a> XSLT stylesheet. This
+        path is relative to the base install path for the XTF system (i.e.,<span class="Code"> XTF_HOME</span>.) <br><br>
+
+        Within the <span class="Code">&lt;query...&gt;</span> tag, a <span class="MacroCode">QueryType</span> tag
+        is specified to identify the type of query to perform. The query type tag identifies whether the query is a
+        text query, a meta-data query, or a combined text/meta-data query. For the sample
+        <span class="Code">"man" and "war" not "Man of War"</span> query shown above, we would use a simple text query,
+        which has the form: <br><br>
+
+<pre class="Sample"><b>&lt;text indexPath="<span class="MacroCode">LocationOfIndexDBToUse</span>"&gt;
+
+          <span class="MacroCode">SearchType</span>
+
+&lt;/text&gt;</b></pre>
+
+        This tag indicates that we wish to search only the document text (and not the meta-data associated with the
+        document.) Through its
+        <span class="Code">indexPath="<span class="MacroCode">LocationOfIndexDBToUse</span>"</span> attribute, this
+        tag also identifies the index database to use when searching for matches. As with most other XTF related path
+        attributes, if it is not specified as an absolute path, this path is assumed to be relative to the XTF base
+        installation directory (i.e., <span class="Code">XTF_HOME</span>.) <br><br>
+
+        Within the query type tag, a single <span class="MacroCode">SearchType</span> tag is specified. A search
+        type tag identifies a search operation to be performed. A search type tag can identify a single
+        <span class="MacroCode">Term</span> or word to search for: <br><br>
+
+<pre class="Sample"><b>&lt;term&gt<span class="MacroCode">WordToFind</span>&lt;/term&gt;</b></pre>
+
+        Alternately, it may identify a <span class="MacroCode">Phrase</span> to search for:
+
+<pre class="Sample"><b>&lt;phrase&gt;
+    <span class="MacroCode">Term</span>
+    <span class="MacroCode">Term</span>
+      <img src="../Common_Art/vDotDotDot.gif">
+&lt;/phrase&gt;</b></pre>
+
+        Or it may identify a <span class="MacroCode">Clause</span> to search for:
+
+<pre class="Sample"><b>&lt;<span class="MacroCode">ClauseType</span>&gt;
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+         <img src="../Common_Art/vDotDotDot.gif">
+&lt;/<span class="MacroCode">ClauseType</span>&gt;</b></pre>
+
+        Where valid <span class="MacroCode">ClauseType</span> values are <span class="Code">and</span>,
+        <span class="Code">or</span>, <span class="Code">not</span>, and <span class="Code">near</span>. Each of
+        these clause types do pretty much what you would expect:
+
+        <ul>
+          <li class="ListItem">
+            The <span class="Code">and</span> clause requires all its sub-terms/phrases/clauses to
+            be present for a match to occur.
+          </li>
+          <li class="ListItem">
+            The <span class="Code">or</span> clause requires any one of its sub-terms/phrases/clauses to
+            be present for a match to occur.
+          </li>
+          <li class="ListItem">
+            The <span class="Code">not</span> clause requires that none of its sub-terms/phrases/clauses are
+            present for a match to occur.
+          </li>
+          <li class="ListItem">
+            The <span class="Code">near</span> clause requires all its sub-terms/phrases/clauses to
+            be <b><i>near</i></b> each other for a match to occur. The definition of <b><i>near</i></b>
+            is fairly complicated, and will not be discussed here. See the
+            <a href="#crossQuery_QueryParser_Tags">Query Parser</a> tag reference for an in-depth description of
+            the <span class="code">near</span> clause.
+          </li>
+        </ul>
+
+        For the sample query we discussed above: <br><br>
+
+        <div class="IndentLR">
+          <span class="Code">man and war not "Man of War"</span>
+        </div> <br>
+
+        the final output query would look as follows:
+
+<pre class="Sample"><b>&lt;query style="./style/crossQuery/resultFormatter.xsl"&gt;
+    &lt;text indexPath="./index"&gt;
+        &lt;and&gt;
+            &lt;term&gtman&lt;/term&gt;
+            &lt;term&gtwar&lt;/term&gt;
+            &lt;not&gt;
+                &lt;phrase&gt;
+                    &lt;term&gtMan&lt;/term&gt;
+                    &lt;term&gtof&lt;/term&gt;
+                    &lt;term&gtWar&lt;/term&gt;
+                &lt;/phrase&gt;
+            &lt;/not&gt;
+        &lt;/and&gt;
+    &lt;/text&gt;
+&lt;/query&gt;</b></pre>
+
+        At this point, the trick is to write a <span class="Code">queryParser.xsl</span> stylesheet that converts the
+        given input XML fragment into the output XML query shown above. Unfortunately, writing XSLT is way beyond the
+        scope of this document and will not be discussed here. The good news however is that the sample
+        <span class="Code">queryParser.xsl</span> included with the XTF installation performs the necessary query
+        conversion illustrated in this example, and is a good starting point for creating your own custom Query Parser.
+        <br><br>
+
+        It should also be noted that the various query tags illustrated here have been shown in their simplest form for
+        the sake of clarity. For example the <span class="MacroCode">Query</span> tag has additional attributes
+        that allow query matches to be returned a few at a time. This allows the Result Formatter to display search
+        results in multiple pages rather than as a single long page. Similarly,
+        <span class="MacroCode">Phrase</span> tags are in fact recursive, and can contain sub-phrases or clauses,
+        and not just <span class="MacroCode">Term</span> tags. For a complete description of query tags and the
+        attributes they support, please refer to the
+        <a href="#crossQuery_QueryParser_Tags">Query Parser Tag Reference</a> at the end of this document.
+
+        <p class="Heading2">Result Formatter Programming<a name="crossQuery_ResultFormatter_Prog"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        What the filter does<br>
+        Input<br>
+        Output<br>
+
+        <p class="Heading2">Error Generator Programming<a name="crossQuery_ErrorGen_Prog"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        What the filter does<br>
+        Input<br>
+        Output<br>
+
+      </div> <br> <!-- crossQuery -->
+
+      <p class="Heading1">dynaXML Programming<a name="dynaXML_Prog"></a></p>
+      <!------------------------------------------------------------------------------------------------------------->
+      This section provides... <br>
+
+      <p align="center">
+        <img src="../Common_Art/dynaXML.gif"><br>
+        Figure 3: Internal organization of the <b><i>crossQuery</i></b> Servlet
+      </p>
+
+      <div class="IndentL">
+
+        <p class="Heading2">Document Request Parser Programming<a name="dynaXML_DocReqParser_Prog"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        What the filter does<br>
+        Input<br>
+        Output<br>
+
+        <p class="Heading2">Document Formatter Programming<a name="dynaXML_DocFormatter_Prog"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        The <b>Document Formatter</b> stylesheet receives as its input the requested XML document. For its output it
+        shold produce an HTML based document web-page that can be viewed in the user's browser. <br><br>
+
+        The XML document passed by the dynaXML servlet to the Document Formatter Stylesheet consists of the
+        original XML source document with the following additions: <br>
+        <ul>
+          <li class="ListItem">
+            Any added <a href="#textIndexer_Tag_Ref">attributes</a> introduced by the <b><i>textIndexer</i></b>
+            <b>Pre-Filter</b> when the document was indexed.
+          </li>
+          <li class="ListItem">
+            If a query accompanied the document request, a<span class="Code"> snippets </span>tag will appear at the
+            top of the document, summarizing of all the hits found within the document.
+          </li>
+          <li class="ListItem">
+            If a query accompanied the document request, then zero or
+            more<span class="Code"> hit </span>and<span class="Code"> term </span>tags
+            will appear around matching text in the main body of the document for the given query.
+          </li>
+        </ul>
+
+        The additional tags and attributes added by the <b><i>textIndexer</i></b> and the <b><i>dynaXML</i></b>
+        servlet are prefixed with an<span class="Code"> xtf: </span>namespace to clearly differentiate them from
+        other tags in the XML document. <br><br>
+
+        The<span class="Code"> snippets </span> summary tag will have the following form:
+
+<pre class="Sample"><span class="Code">&lt;snippets&gt;
+  <span class="MacroCode">Snippet</span>
+  <span class="MacroCode">Snippet</span>
+    <img src="../Common_Art/vDotDotDot.gif">
+&lt;/snippets&gt;</span></pre>
+
+        where each <span class="MacroCode">Snippet</span> is
+        a <b><i>dynaXML</i></b><span class="Code"> <a href="#dynaXML_SnippetTag">snippet</a> </span>tag that
+        summarizes one query match in the requested document.
+
+        <p class="Heading2">Error Generator Programming<a name="dynaXML_ErrorGen_Prog"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        What the filter does<br>
+        Input<br>
+        Output<br>
+
+      </div> <br> <!-- dynaXML -->
+
+      <!--------------------------------------------------------------------------------------------------------------->
+      <p class="Heading1">XTF Stylesheet Tag Reference<a name="XTF_Tag_Ref"></p>
+      This section provides a quick reference to the various XTF sytlesheet tags recognized by the
+      <b><i>textIndexer</i></b> tool, and the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets.
+
+      <div class="IndentL">
+
+        <p class="Heading2">textIndexer Pre-Filter Reference<a name="textIndexer_Tag_Ref"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        This section summarizes the pre-filter attributes attributes recognized by the <b><i>textIndexer</i></b> tool.
+        <br><br>
+
+        <div class="IndentL">
+
+          <div class="GreyList">
+            <span class="Code">
+               &lt;xsl:attribute name="xtf:index" select="'<span class="MacroCode">TrueOrFalse</span>'"/&gt; <br>
+               &lt;xsl:attribute name="xtf:noindex" select="'<span class="MacroCode">TrueOrFalse</span>'"/&gt; <br>
+            </span><br>
+            <div class="IndentLR">
+              This attribute is used to turn on/off indexing for a tag in a source document.
+              The<span class="Code"> noindex </span>variant is simply a logical inverse of
+              the<span class="Code"> index </span>variant. Both are provided as a convenience to the programmer.
+              <br><br>
+
+              The value for either of these tags should be set to either the
+              string<span class="Code"> 'true' </span>or the string <span class="Code"> 'false' </span>. <br><br>
+
+              <div class="Note">
+                (Note: If not explicitly set, nested sub-tags for a document inherit the index/noindex state from the
+                closest parent tag for which an index state is defined.)
+              </div>
+            </div>
+          </div>
+
+          <div class="GreyList">
+            <span class="Code">
+              &lt;xsl:attribute name="xtf:meta" select="<span class="MacroCode">'TrueOrFalse'</span>"/&gt;
+            </span> <br><br>
+            <div class="IndentLR">
+              This attribute is used to mark the contents of a tag as being part of the meta-data for a document rather
+              than main-body text for the document. <br><br>
+
+              The<span class="Code"> select </span>value for this tag should be set to either the
+              string<span class="Code"> 'true' </span>(text in tag is meta data) or the string <span class="Code">
+              'false' </span> (text in tag <b>is not</b> meta data.)
+            </div>
+          </div>
+
+          <div class="GreyList">
+            <span class="Code">
+              &lt;xsl:attribute name="xtf:proximitybreak" select="'<span class="MacroCode">TrueOrFalse</span>'"/&gt;
+            </span><br><br>
+
+            <div class="IndentLR">
+              This attribute introduces a proximity break into a document. A tag marked with a proximity break attribute
+              is considered to be infinitely far away from the previous or containing tag. Using this tag prevents
+              proximity matches that span two adjacent tags from being counted as a valid match. <br><br>
+
+              The<span class="Code"> select </span>value for this tag should be set to either the
+              string<span class="Code"> 'true' </span>(introduce a proximity break) or the string <span class="Code">
+              'false' </span> (<b>do not </b>introduce a proximity break.) <br><br>
+
+              To de-emphasize rather than disallow proximity matches across sections, use
+              the<span class="Code"> <a href="#textIndexer_SectionBumpAttr">sectionBump</a>
+              </span>attribute instead.
+            </div>
+          </div>
+
+          <div class="GreyList">
+            <span class="Code">
+              &lt;xsl:attribute name="xtf:sentenceBump" select="<span class="MacroCode">BumpInWords</span>"/&gt;
+            </span> <br><br>
+            <div class="IndentLR">
+              This attribute de-emphasizes proximity searches that span multiple sentences by introducing extra
+              virtual spacing between adjacent sentences. The amount of virtual spacing to add between the end of
+              the previous sentence and the beginning of the current one is specified as a number of virtual words
+              by the <span class="Macrocode">BumpInWords</span> argument. This value, if not specified, defaults to
+              five words of added spacing. <br><br>
+
+              <div class="Note">
+                (Note: If not explicitly set, nested sub-tags for a document inherit the sentence bump value from the
+                closest parent tag for which a sentence bump value is defined.)
+              </div>
+            </div>
+          </div>
+
+          <div class="GreyList">
+            <span class="Code">
+              &lt;xsl:attribute name="xtf:sectionType" select="'<span class="MacroCode">TypeName</span>'"
+            </span> <br><br>
+            <div class="IndentLR">
+              This attribute assigns a section type name to a tag, with the <span class="MacroCode">TypeName</span>
+              parameter identifying the section name to use. Assigning a section name to a tag allows grouped searches
+              to be performed on tags that have the same section names. <br><br>
+
+              <div class="Note">
+                (Note: If not explicitly set, nested sub-tags for a document inherit the section type name from the
+                closest parent tag for which a section name is defined.)
+              </div>
+            </div>
+          </div>
+
+          <div class="GreyList">
+            <span class="Code">
+              &lt;xsl:attribute name="xtf:sectionBump" select="<span class="MacroCode">BumpInWords</span>"/&gt;
+              <a name="textIndexer_SectionBumpAttr"></a>
+            </span> <br><br>
+            <div class="IndentLR">
+              This attribute de-emphasizes proximity searches that span multiple sections by introducing extra
+              virtual spacing between adjacent sections. The amount of virtual spacing added between the end of
+              the previous section and the beginning of the current one is specified as a number of virtual words
+              by the <span class="Macrocode">BumpInWords</span> argument. This value, if not specified, defaults to
+              zero words of added spacing.
+            </div>
+          </div> <br>
+
+          <div class="GreyList">
+            <span class="Code">
+              &lt;xsl:attribute name="xtf:wordBoost" select="<span class="MacroCode">BoostValue</span>"/&gt;
+            </span> <br><br>
+
+            <div class="IndentLR">
+              This attribute boosts or de-emphasizes the relevance of text found within a particular tag. To boost
+              the relevance of text in a tag, set the <span class="MacroCode">BoostValue</span> parameter to a
+              floating-point number greater than 1.0. To de-emphasis the relevance of a tag's text, set the
+              <span class="MacroCode">BoostValue</span> parameter to a floating-point number between 0.0 and 1.0.
+              <br><br>
+
+              <div class="Note">
+                (Note: If not explicitly set, nested sub-tags for a document inherit the boost value from the
+                closest parent tag for which a boost value is defined.)
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- textIndexer Pre-Filter Tags -->
+
+      </div> <!-- textIndexer Pre-Filter Reference -->
+
+      <div class="IndentL">
+
+        <p class="Heading2">crossQuery Tag Reference<a name="crossQuery_Tag_Ref"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        This section summarizes the XTF specific tags the <b><i>crossQuery</i></b> <b>Query Parser</b> stylesheet and
+        the <b>Result Formatter</b> stylesheet. <br><br>
+
+        <div class="IndentL">
+          <p class="Heading3">Query Parser Tags<a name="crossQuery_QueryParser_Tags"></a></p>
+          <!----------------------------------------------------------------------------------------------------------->
+          The tags listed here are XML tags associated with the <b>Query Parser</b> stylesheet. The tags are divided
+          into two categories: input tags and output tags. The input tags are used by the <b><i>crossQuery</i></b>
+          Servlet to translate the original query URL into a simple XML representation that can act as input to the
+          <b>Query Parser</b> stylesheet. The output tags are then used by the  <b>Query Parser</b> stylesheet to
+          form the actual XML query passed to the <b><i>crossQuery</i></b> servlet's <b>Text Search Engine</b> for
+          processing. <br><br>
+
+          <div class="IndentL">
+            <p class="Heading3">Input Tags</p>
+            The following tags make up the XML input for the <b>Query Parser</b> stylesheet. They constitute a
+            simple XML representation of the query URL supplied to the <b><i>crossQuery</i></b> servlet from the
+            user query web-page. <br><br>
+
+            <div class="Sample">
+              <b><u>Container Tag</u></b><br>
+              This tag is the outer-most tag for the XML input fragment sent to the <b>Query Parser</b> stylesheet
+              for translation. It has the form: <br><br>
+
+<pre class="code">&lt;parameters&gt;
+    <span class="MacroCode">ParameterBlock</span>
+    <span class="MacroCode">ParameterBlock</span>
+         <img src="../Common_Art/vDotDotDot.gif">
+&lt;/parameters&gt;</pre>
+
+            </div> <br>
+
+            <div class="Sample">
+              <b><u>Parameter Block Tag</u></b><br>
+              This tag is the XML input to the <span class="Code">queryParser.xsl</span> for a single parameter in a
+              user query URL. It has the form:<br><br>
+
+              <div class="IndentLR">
+<pre class="code">
+&lt;param name="<span class="MacroCode">ParamName</span>" value="<span class="MacroCode">ParamValue</span>"&gt;
+    <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
+    <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
+          <img src="../Common_Art/vDotDotDot.gif">
+&lt;/param&gt;</pre>
+
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      name="<span class="MacroCode">ParamName</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the name of the parameter extracted from the original query URL.
+                      </span></td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      value="<span class="MacroCode">ParamValue</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the original text in the query URL that is assigned to the specified parameter.
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </div> <br>
+
+              Note that each of the parameters from the query URL is also available as a standard XSL parameter with the form: <br><br>
+
+              <div class="Sample">
+                <span class="Code">
+                  &lt;xsl:param name="<span class="MacroCode">ParamName</span>" select="<span class="MacroCode">DefaultValueIfNotInURL</span>"/&gt;
+                </span>
+              </div> <br>
+
+              This allows query parameters to be accessed either through th standard template driven XML or through
+              stylesheet parameters.
+
+            </div> <br>
+
+            <div class="Sample">
+              <b><u>Token Tag</u></b><br>
+              This tag identifies a single word or token taken from the query URL. It has the form: <br><br>
+
+              <div class="IndentLR">
+                <span class="Code">
+                   &lt;token value="<span class="MacroCode">Word</span>" isWord="<span class="MacroCode">YesOrNo</span>"/&gt;
+                </span>
+              </div>  <br>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      value="<span class="MacroCode">Word</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td><span class="BaseStyle">is the actual word or symbol extracted from the URL.</span></td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      isWord="<span class="MacroCode">YesOrNo</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        identifies whether the token is a word (<span class="Code">isWord="yes"</span>)
+                        or a punctuation symbol (<span class="Code">isWord="no"</span>.)
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+            </div> <br>
+
+            <div class="Sample">
+              <b><u>Phrase Tag</u></b><br>
+              This tag identifies a literal phrase taken from the query URL. It has the form: <br><br>
+
+              <div class="IndentLR">
+<pre class="Code">&lt;phrase value="<span class="MacroCode">StringOfWords</span>"&gt;
+    <span class="MacroCode">Token</span>
+    <span class="MacroCode">Token</span>
+      <img src="../Common_Art/vDotDotDot.gif">
+&lt;/phrase&gt;
+</pre>
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      value="<span class="MacroCode">StringOfWords</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td><span class="BaseStyle">is the entire phrase extracted from the URL as a single string.</span></td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      <span class="MacroCode">Token, Token</span>...
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the original phrase broken down into one or more token tags (one for each
+                        word or symbol in the phrase.)
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+            </div> <br>
+
+            <p class="Heading3">Output Tags<a name="crossQuery_QueryParserOutputTags"></a></p>
+            These tags are used by the <b>Query Parser</b> stylesheet to form the XML query passed to the
+            <b><i>crossQuery</i></b> <b>Text Search Engine</b> for processing. <br><br>
+
+            <div class="Sample">
+              <b><u>Query Tag</u></b><a name="crossQuery_QueryTag"></a><br>
+              <!---------------------------------------------------------->
+              This tag is outer-most tag in an XML query sent to the <b><i>crossQuery</i></b> servlet's
+              <b>Text Search Engine</b>. It has the form:<br><br>
+
+              <div class="IndentLR">
+<pre class="Code">&lt;query style      = "<span class="MacroCode">ResultFormatterLocation</span>"
+       {startDoc  = "<span class="MacroCode">FirstDocToReturn</span>"}
+       {maxDocs   = "<span class="MacroCode">MaxDocsToReturn</span>"}
+       {termLimit = "<span class="MacroCode">MaxTermsToAllow</span>"}
+       {workLimit = "<span class="MacroCode">MaxWorkToAllow</span>"}&gt;
+
+    <span class="MacroCode">QueryType</span>
+
+&lt;/query&gt;</pre>
+
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table cellspacing="8px">
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      style="<span class="MacroCode">ResultFormatterLocation</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the path to the <b>Result Formatter</b> stylesheet to use to display the results generated
+                        by the current query. If this path is not specified as an absolute path, it is assumed to be
+                        relative to the XTF base installation directory (i.e., <span class="Code">XTF_HOME</span>.)
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      startDoc="<span class="MacroCode">FirstDocToOutput</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is an optional attribute specifying the ordinal number of the first matching document to
+                        pass on to the <b>Result Formatter</b>  If not specified, this attribute defaults to 1,
+                        meaning the first document that contains matches for the specified query.
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      maxDocs="<span class="MacroCode">MaxDocsToOutput</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is an optional attribute specifying the number of matching documents to pass on to the
+                        <b>Result Formatter</b>. If not specified, this attribute defaults to -1, meaning all the
+                        documents with matches for the specified query.
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      termLimit="<span class="MacroCode">MaxTermsToAllow</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is an optional attribute that limits the number of terms permitted in a query.
+                        If not specified, this attribute defaults to -1, meaning no limit is enforced.
+
+                        This attribute is used primarily to prevent wildcard expansions
+                        like<span class="code"> &lt;term&gt;a*&lt;/term&gt </span>from overloading the
+                        <b><i>crossQuery</i></b> servlet. If the query does in fact exceed the limit specified by this
+                        attribute, a<span class="Code"> <a href="#crossQuery_TermLimitErrorTag">TermLimit</a>
+                        </span>error is sent to the <b>Error Generator</b> stylesheet for the offending query.
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      workLimit="<span class="MacroCode">MaxWorkToAllow</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is an optional attribute that limits the amount of "work" that may be performed in a
+                        query. If not specified, this attribute defaults to -1, meaning no limit is enforced.
+                        <br><br>
+
+                        This attribute is used primarily to prevent queries from overloading the
+                        <b><i>crossQuery</i></b> servlet, which would adversly impact the responsiveness
+                        of the XTF system. If a query exceeds the work limit set by this attribute,
+                        a<span class="Code"> <a href="#crossQuery_TermLimitErrorTag">WorkLimit</a> </span>error
+                        is sent to the <b>Error Generator</b> stylesheet for the offending query. <br><br>
+
+                        For the <b><i>crossQuery</i></b> servlet, one unit of "work" is equivalent to finding a
+                        single matching term in a single document. Experimentally, a value of 500,000 for this
+                        attribute seems to work well.
+                      </span>
+                    </td>
+                  </tr>
+                </table><br>
+
+              </div>
+
+              The primary purpose of the <span class="Code">startDoc</span> and <span class="Code">maxDocs</span>
+              attributes is to allow search results to be split up into multiple pages by the <b>Result Formatter</b>.
+              For example, to display the second page of 50 matching documents, the following query tag could be
+              generated by a link on the current result page: <br><br>
+
+              <div class="IndentLR">
+<pre class="Code">
+ &lt;query style="./style/crossQuery/queryParser.xml", startDoc="51", maxDocs="50"&gt;
+     <img src="../Common_Art/vDotDotDot.gif">
+ &lt;/query&gt;</pre>
+              </div>
+
+              The <span class="MacroCode">QueryType</span> specified within this tag identifies the kind of
+              query to be performed. This can be a<span class="Code"> <a href="#crossQuery_TextTag">text</a> </span>
+              query tag, a<span class="Code"> <a href="#crossQuery_MetaTag">meta</a> </span> query tag, or
+              a<span class="Code"> <a href="#crossQuery_CombineTag">combine</a> </span> query tag. <br><br>
+
+              Note that the <b>Query Parser</b> stylesheet can issue a single
+              top-level<span class="Code"> <a href="#crossQuery_ErrorTag">error</a> </span>tag instead
+              of a<span class="Code"> query </span>tag if it encounters any errors.
+
+            </div> <br><!-- QueryTag -->
+
+            <div class="Sample">
+              <b><u>Error Tag</u></b><a name="crossQuery_ErrorTag"></a><br>
+              <!---------------------------------------------------------->
+              This tag can be issued by the <b>Query Parser</b> when it encounters an error. It has the form:<br><br>
+
+              <div class="IndentLR">
+                <pre class="Code">&lt;error message="<span class="MacroCode">Error Message</span>"/&gt;</pre>
+              </div>
+
+              where <span class="MacroCode">Error Message</span> is an error string describing the error. <br><br>
+
+              This tag is a top level tag, and should be issued by itself in place of the normal
+              <span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span> tag when an error occurs.
+              Once issued, the error will be routed to the <b><i>crossQuery</i></b>
+              <b><a href="#crossQuery_ErrorGen_Prog">Error Generator</a></b> stylesheet for processing.
+
+            </div> <br><!-- ErrorTag -->
+
+            <div class="Sample">
+              <b><u>Text Query Tag</u></b><a name="crossQuery_TextTag"></a><br>
+              <!-------------------------------------------------------------->
+              This tag specifies that the query it contains should be carried out on the main text of a document.
+              The format of a text query is as follows: <br><br>
+
+              <div class="IndentLR">
+
+<pre class="Code">&lt;text {indexPath="<span class="MacroCode">IndexDBLocation</span>"}
+      {maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"}
+      {maxContext  = "<span class="MacroCode">maxContextChars</span>"}&gt;
+
+    <span class="MacroCode">SearchType</span>
+
+&lt;/text&gt;</pre>
+
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table cellspacing="8px">
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      indexPath="<span class="MacroCode">IndexDBLocation</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the path to the <b>Index Database</b> to use when performing the search. If this path
+                        is not specified as an absolute path, it is assumed to be relative to the XTF base
+                        installation directory (i.e., <span class="Code">XTF_HOME</span>.)
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        identifies the number of snippets to pass on to the <b>Result Formatter</b>
+                        stylesheet for display. A snippet is defined as the matching text found in a document for a
+                        particular query, along with some additional text around it for context. The amount of context
+                        displayed for each match is defined by the <span class="Code">maxContext</span> attribute.
+                        <br><br>
+
+                        If not specified this attribute defaults to 3, meaning snippets for the top three matches
+                        for a document are returned. Also, this attribute can be set to -1, meaning all the
+                        snippets for a document are returned.
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      maxContext="<span class="MacroCode">maxContextChars</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        identifies the size of a snippet to pass on to the <b>Result
+                        Formatter</b><span class="Code"> <a href="#crossQuery_SnippetTag">snippet</a> </span>tag.
+                        If not specified, this attribute defaults to 80 characters. Note that the context length is
+                        the total number of characters for the snippet, which includes both the matched text and the
+                        context text surrounding it.
+                      </span>
+                    </td>
+                  </tr>
+                </table><br>
+
+              </div>
+
+              The <span class="MacroCode">SearchType</span> specified within this tag identifies the actual
+              text to be searched for.
+              This can be a<span class="Code"> <a href="#crossQuery_TermTag">Term</a> </span>tag,
+              a<span class="Code"> <a href="#crossQuery_PhraseTag">Phrase</a> </span>tag,
+              a<span class="Code"> <a href="#crossQuery_AndTag">AND Clause</a> </span>tag,
+              a<span class="Code"> <a href="#crossQuery_OrTag">OR Clause</a> </span>tag,
+              a<span class="Code"> <a href="#crossQuery_NotTag">NOT Clause</a> </span>tag, or
+              a<span class="Code"> <a href="#crossQuery_NearTag">Near Clause</a> </span>tag, or
+              a<span class="Code"> <a href="#crossQuery_RangeTag">Range Clause</a> </span>tag. <br><br>
+
+              To perform meta-data queries or combined text/meta-data queries, use
+              the<span class="Code"> <a href="#crossQuery_MetaTag">meta</a> </span>and<span class="Code">
+              <a href="#crossQuery_CombineTag">combine</a> </span>tags described below.
+            </div> <br> <!-- Text Tag -->
+
+            <div class="Sample">
+              <b><u>Meta-Data Query Tag<a name="crossQuery_MetaTag"></a></u></b><br>
+              <!------------------------------------------------------------------->
+              This tag specifies that the query it contains should be carried out on the meta-data for a document.
+              To perform main text queries or combined text/meta-data queries, use
+              the<span class="Code"> <a href="#crossQuery_TextTag">text</a>
+              </span>and<span class="Code"> <a href="#crossQuery_CombineTag">combine</a> </span>tags.
+              The format of a meta query is as follows: <br><br>
+
+              <div class="IndentLR">
+
+<pre class="Code">&lt;meta indexPath="<span class="MacroCode">IndexDBLocation</span>"&gt;
+
+    <span class="MacroCode">SearchType</span>
+
+&lt;/meta&gt;</pre>
+
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table cellspacing="8px">
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      indexPath="<span class="MacroCode">IndexDBLocation</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the path to the <b>Index Database</b> to use when performing the search. If this path
+                        is not specified as an absolute path, it is assumed to be relative to the XTF base
+                        installation directory (i.e., <span class="Code">XTF_HOME</span>.)
+                      </span>
+                    </td>
+                  </tr>
+
+                </table><br>
+
+              </div>
+
+              Unlike the <a href="#crossQuery_TextTag">Text Query Tag</a>, this tag doesn't provide snippet or context
+              attributes. This is because the result from a meta query is the entire meta field where the match was
+              found, rather than a snippet of text.
+
+            </div> <br> <!-- Meta Tag -->
+
+            <div class="Sample">
+              <b><u>Combined Meta-Data/Text Query Tag<a name="crossQuery_CombineTag"></a></u></b><br>
+              <!--------------------------------------------------------------------------------->
+              This tag specifies that the query it contains should be carried out on both the meta-data and the main
+              text for a document. To perform separate meta-data or main text queries use
+              the<span class="Code"> <a href="#crossQuery_MetaTag">meta</a>
+              </span>or<span class="Code"> <a href="#crossQuery_TextTag">text</a> </span>tags. The format of a
+              combined query tag is as follows: <br><br>
+
+              <div class="IndentLR">
+
+<pre class="Code">&lt;combine indexPath="<span class="MacroCode">IndexDBLocation</span>"&gt;
+
+    <span class="MacroCode">TextQuery</span>
+    <span class="MacroCode">MetaQuery</span>
+
+&lt;/combine&gt;</pre>
+
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table cellspacing="8px">
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      indexPath="<span class="MacroCode">IndexDBLocation</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the path to the <b>Index Database</b> to use when performing the search. If this path
+                        is not specified as an absolute path, it is assumed to be relative to the XTF base
+                        installation directory (i.e., <span class="Code">XTF_HOME</span>.)
+                      </span>
+                    </td>
+                  </tr>
+
+                </table><br>
+
+              </div>
+
+              The <span class="Code">combine</span> tag is basically a container tag that holds one each of
+              a<span class="Code"> <a href="#crossQuery_MetaTag">meta</a> </span>tag and
+              a<span class="Code"> <a href="#crossQuery_TextTag">text</a> </span>tag.
+              The<span class="Code"> indexPath </span>attributes of these sub-query types must either
+              be omitted or must match the<span class="Code"> indexPath </span>specified by the combine tag.
+              Otherwise, an error is generated.
+
+            </div> <br> <!-- Combine Tag -->
+
+            <div class="Sample">
+              <b><u>Term Search Tag<a name="crossQuery_TermTag"></a></u></b><br>
+              <!---------------------------------------------------------------->
+              This tag specifies a single word to search for. This tag has the form: <br><br>
+
+              <div class="IndentLR">
+                <pre class="Code">&lt;term {metaField="<span class="MacroCode">MetaFieldName</span>"}&gt; <span class="MacroCode">WordToFind</span> &lt;/term&gt;</pre>
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table cellspacing="8px">
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      metaField="<span class="MacroCode">MetaFieldName</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                         is an optional attribute used during meta-data searches to identify the name of the
+                         meta-field to be searched. If this attribute is missing for a meta-search, the parent
+                         tag's meta-field name is used. If no parent meta-field name exists,
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will be sent to the
+                         <b><i>crossQuery</i></b> <b>Error Generator</b> stylesheet. Similarly, if this attribute
+                         is present for a non-meta search, and has any value other than "text",
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will also be generated.
+                      </span>
+                    </td>
+                  </tr>
+
+                </table><br>
+              </div>
+
+              Note that if any symbols exist in <span class="MacroCode">WordToFind</span> (e.g., quotes, punctuation
+              characters, parentheses, etc.) no matches will be found in the index. This is because the index removes
+              all symbols from a term before indexing it. Also, the<span class="Code"> term </span>tag is
+              case-insensitive, so matches with capitalization different from that given
+              in<span class="MacroCode"> WordToFind </span> may appear in the resulting list of matches.
+              <br><br>
+
+              <div class="Note">
+                  (Note: Any whitespace characters in <span class="Code"> WordToFind </span>(i.e, space, tab,
+                   carriage-return, line-feed, etc.) will produce unpredictable search results.)
+              </div>
+
+            </div> <br> <!-- Term Tag -->
+
+            <div class="Sample">
+              <b><u>Phrase Search Tag<a name="crossQuery_PhraseTag"></a></u></b><br>
+              <!-------------------------------------------------------------------->
+              This tag specifies an exact phrase to search for. This tag has the form: <br><br>
+
+              <div class="IndentLR">
+<pre class="Code">&lt;phrase {metaField="<span class="MacroCode">MetaFieldName</span>"}&gt;
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+             <img src="../Common_Art/vDotDotDot.gif">
+&lt;/phrase&gt;</pre>
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table cellspacing="8px">
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      metaField="<span class="MacroCode">MetaFieldName</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                         is an optional attribute used during meta-data searches to identify the name of the
+                         meta-field to be searched. If this attribute is missing for a meta-search, the parent
+                         tag's meta-field name is used. If no parent meta-field name exists,
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will be sent to the
+                         <b><i>crossQuery</i></b> <b>Error Generator</b> stylesheet. Similarly, if this attribute
+                         is present for a non-meta search, and has any value other than "text",
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will also be generated.
+                      </span>
+                    </td>
+                  </tr>
+
+                </table><br>
+              </div>
+
+              Within the phrase tag, <span class="MacroCode">Term</span> is
+              a<span class="Code"> <a href="#crossQuery_TermTag">term</a> </span>tag,
+              <span class="MacroCode">Phrase</span> is
+              a<span class="Code"> <a href="#crossQuery_PhraseTag">phrase</a> </span>tag,
+              and <span class="MacroCode">Clause</span> is an<span class="Code">
+              <a href="#crossQuery_AndTag">and</a></span>,<span class="Code"> <a href="#crossQuery_OrTag">or</a></span>,<span class="Code">
+              <a href="#crossQuery_NearTag">near</a></span>,<span class="Code"> <a href="#crossQuery_RangeTag">range</a></span>,
+              or<span class="Code"> <a href="#crossQuery_NotTag">not</a> </span>tag. <br><br>
+
+              Note that document text will only match a phrase, if all the terms in
+              the<span class="Code"> phrase </span>tag appear in the document in same order, with no other intervening
+              words.
+
+            </div> <br> <!-- Phrase Tag -->
+
+            <div class="Sample">
+              <b><u>AND Search Tag<a name="crossQuery_AndTag"></a></u></b><br>
+              <!-------------------------------------------------------------->
+              This tag defines a search where all of sub-terms or clauses must exist in a document for a match to be
+              made. This tag has the form: <br><br>
+
+              <div class="IndentLR">
+
+<pre class="Code">&lt;and {metaField="<span class="MacroCode">MetaFieldName</span>"}&gt;
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+             <img src="../Common_Art/vDotDotDot.gif">
+&lt;/and&gt;</pre>
+
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table cellspacing="8px">
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      metaField="<span class="MacroCode">MetaFieldName</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                         is an optional attribute used during meta-data searches to identify the name of the
+                         meta-field to be searched. If this attribute is missing for a meta-search, the parent
+                         tag's meta-field name is used. If no parent meta-field name exists,
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will be sent to the
+                         <b><i>crossQuery</i></b> <b>Error Generator</b> stylesheet. Similarly, if this attribute
+                         is present for a non-meta search, and has any value other than "text",
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will also be generated.                      </span>
+                    </td>
+                  </tr>
+
+                </table><br>
+              </div>
+
+              Within the<span class="Code"> and </span>tag,
+              <span class="MacroCode">Term</span> is
+              a<span class="Code"> <a href="#crossQuery_TermTag">term</a> </span>tag,
+              <span class="MacroCode">Phrase</span> is
+              a<span class="Code"> <a href="#crossQuery_PhraseTag">phrase</a> </span>tag,
+              and <span class="MacroCode">Clause</span> is an<span class="Code">
+              <a href="#crossQuery_AndTag">and</a></span>,<span class="Code"> <a href="#crossQuery_OrTag">or</a></span>,<span class="Code">
+              <a href="#crossQuery_NearTag">near</a></span>,<span class="Code"> <a href="#crossQuery_RangeTag">range</a></span>, or<span class="Code"> <a href="#crossQuery_NotTag">not</a> </span>tag.
+
+            </div> <br> <!-- AND Tag -->
+
+            <div class="Sample">
+              <b><u>OR Search Tag<a name="crossQuery_OrTag"></a></u></b><br>
+              <!-------------------------------------------------------------->
+              This tag defines a search where any one of sub-terms or clauses must exist in a document for a match to be
+              made. This tag has the form: <br><br>
+
+              <div class="IndentLR">
+
+<pre class="Code">&lt;or {metaField="<span class="MacroCode">MetaFieldName</span>"}&gt;
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+             <img src="../Common_Art/vDotDotDot.gif">
+&lt;/or&gt;</pre>
+
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table cellspacing="8px">
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      metaField="<span class="MacroCode">MetaFieldName</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                         is an optional attribute used during meta-data searches to identify the name of the
+                         meta-field to be searched. If this attribute is missing for a meta-search, the parent
+                         tag's meta-field name is used. If no parent meta-field name exists,
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will be sent to the
+                         <b><i>crossQuery</i></b> <b>Error Generator</b> stylesheet. Similarly, if this attribute
+                         is present for a non-meta search, and has any value other than "text",
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will also be generated.                      </span>
+                    </td>
+                  </tr>
+
+                </table><br>
+              </div>
+
+              Within the<span class="Code"> or </span>tag,
+              <span class="MacroCode">Term</span> is
+              a<span class="Code"> <a href="#crossQuery_TermTag">term</a> </span>tag,
+              <span class="MacroCode">Phrase</span> is
+              a<span class="Code"> <a href="#crossQuery_PhraseTag">phrase</a> </span>tag,
+              and <span class="MacroCode">Clause</span> is an<span class="Code">
+              <a href="#crossQuery_AndTag">and</a></span>,<span class="Code"> <a href="#crossQuery_OrTag">or</a></span>,<span class="Code">
+              <a href="#crossQuery_NearTag">near</a></span>,<span class="Code"> <a href="#crossQuery_RangeTag">range</a></span>, or<span class="Code"> <a href="#crossQuery_NotTag">not</a> </span>tag.
+
+            </div> <br> <!-- OR Tag -->
+
+            <div class="Sample">
+              <b><u>Not Search Tag<a name="crossQuery_NotTag"></a></u></b><br>
+              <!-------------------------------------------------------------->
+              This tag defines a search where none of sub-terms or clauses must exist in a document for a match to be
+              made. This tag has the form: <br><br>
+
+              <div class="IndentLR">
+
+<pre class="Code">&lt;not&gt;
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+             <img src="../Common_Art/vDotDotDot.gif">
+&lt;/not&gt;</pre>
+
+              </div>
+                where <span class="MacroCode">Term</span> is
+                a<span class="Code"> <a href="#crossQuery_TermTag">term</a> </span>tag,
+                <span class="MacroCode">Phrase</span> is
+                a<span class="Code"> <a href="#crossQuery_PhraseTag">phrase</a> </span>tag,
+                and <span class="MacroCode">Clause</span> is an<span class="Code">
+                <a href="#crossQuery_AndTag">and</a></span>,<span class="Code"> <a href="#crossQuery_OrTag">or</a></span>,<span class="Code">
+                <a href="#crossQuery_NearTag">near</a></span>,<span class="Code"> <a href="#crossQuery_RangeTag">range</a></span>, or<span class="Code"> <a href="#crossQuery_NotTag">not</a> </span>tag.
+                <br><br>
+
+                Note that the<span class="Code"> not </span>tag is different from other tags in that it is always
+                "subtracted" from any clause or phrase tag that enclose it. That is, within any tag that contains it,
+                the <span class="Code">not</span> tag can be read as "<b><i>but not...</i></b>" (i.e.,
+                <i>"this <b>AND</b> that <b>BUT NOT</b> the other"</i>,
+                or <i>"this <b>OR</b> that <b>BUT NOT</b> the other"</i>, etc.)
+
+                The subtractive nature of the<span class="Code"> not </span>tag also implies the following two
+                additional restrictions: <br><br>
+
+                <ol>
+                  <li class="ListItem">
+                    The<span class="Code"> not </span>tag can only appear within some other type of clause,
+                    and never as a top-level tag itself.
+                  </li>
+                  <li class="ListItem">
+                    The<span class="Code"> not </span>tag doesn't have its own<span class="Code"> metaField
+                    </span>attribute, but rather always inherits the parent
+                    tag's<span class="Code"> metaField </span> name.
+                  </li>
+                </ol>
+
+                If no parent meta-field name exists,
+                a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will be sent to the
+                <b><i>crossQuery</i></b> <b>Error Generator</b> stylesheet.
+
+              </div> <br> <!-- Not Tag -->
+
+            <div class="Sample">
+              <b><u>Near Search Tag<a name="crossQuery_NearTag"></a></u></b><br>
+              <!---------------------------------------------------------------->
+              This tag defines a search where all of sub-terms or clauses must be in a document, <b>and</b> within a
+              specified distance of each other for a match to be made. This tag has the form: <br><br>
+
+              <div class="IndentLR">
+
+<pre class="Code">&lt;near slop="<span class="MacroCode">MaxMatchDistance</span>" {metaField="<span class="MacroCode">MetaFieldName</span>"}&gt;
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+             <img src="../Common_Art/vDotDotDot.gif">
+&lt;/near&gt;</pre>
+
+              </div>
+
+              where
+
+              <div class="IndentLR">
+                <table cellspacing="8px">
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      slop="<span class="MacroCode">MaxMatchDistance</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is a measure of the "nearness" of the terms or clauses specified. A slop value for a
+                        potential match is accumulated as follows:
+
+                        <ol>
+                          <li class="ListItem">
+                            A potential match is found when all the items specified in
+                            the<span class="Code"> near </span> tag are found in a document. Initially,
+                            the accumulated slop for this potential match is set to zero.
+                          </li>
+                          <li class="ListItem">
+                            Next the accumulated slop is incremented by one for each word in the potential match
+                            that doesn't appear in<span class="Code"> near </span>tag.
+                          </li>
+                          <li class="ListItem">
+                            Finally, the accumulated slop is incremented by one each time a word specified in
+                            the<span class="Code"> near </span>tag appears out of order in the document.
+                          </li>
+                        </ol>
+
+                        If the final accumulated slop exceeds the value set by the<span class="Code"> slop </span>
+                        attribute of the<span class="Code"> near </span>tag, the potential match is ignored. <br><br>
+
+                        Note that a setting the<span class="Code"> slop </span>value for
+                        the<span class="Code"> near </span>tag to zero effectively produces an exact phrase search,
+                        and is in fact how the<span class="Code"> phrase </span>tag is implemented internally.
+                      </span>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      metaField="<span class="MacroCode">MetaFieldName</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                         is an optional attribute used during meta-data searches to identify the name of the
+                         meta-field to be searched. If this attribute is missing for a meta-search, the parent
+                         tag's meta-field name is used. If no parent meta-field name exists,
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will be sent to the
+                         <b><i>crossQuery</i></b> <b>Error Generator</b> stylesheet. Similarly, if this attribute
+                         is present for a non-meta search, and has any value other than "text",
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will also be generated.
+                      </span>
+                    </td>
+                  </tr>
+
+                </table><br>
+              </div>
+
+              Within the <span class="Code">near</span> tag,
+              <span class="MacroCode">Term</span> is
+              a<span class="Code"> <a href="#crossQuery_TermTag">term</a> </span>tag,
+              <span class="MacroCode">Phrase</span> is
+              a<span class="Code"> <a href="#crossQuery_PhraseTag">phrase</a> </span>tag,
+              and <span class="MacroCode">Clause</span> is an<span class="Code">
+              <a href="#crossQuery_AndTag">and</a></span>,<span class="Code"> <a href="#crossQuery_OrTag">or</a></span>,<span class="Code">
+              <a href="#crossQuery_NearTag">near</a></span>,<span class="Code"> <a href="#crossQuery_RangeTag">range</a></span>, or<span class="Code"> <a href="#crossQuery_NotTag">not</a> </span>tag.
+              <br><br>
+
+              It should also be noted that if the value specified for the<span class="Code"> slop </span>attribute
+              exceeds the maximum proximity for the index being used, the maximum proximity value will be used
+              instead.
+
+            </div> <br> <!-- Near Tag -->
+
+            <div class="Sample">
+              <b><u>Range Search Tag<a name="crossQuery_RangeTag"></a></u></b><br>
+              <!------------------------------------------------------------------>
+              This tag matches any words that fall within the range specified by the specified first and last term.
+              It has the form:
+
+              <div class="IndentLR">
+<pre class="Code">&lt;range {inclusive="<span class="MacroCode">YesOrNo</span>"} {metaField="<span class="MacroCode">MetaFieldName</span>"}&gt;
+    &lt;upper&gt;<span class="MacroCode">FirstTermToFind</span>&lt;/upper&gt;
+    &lt;lower&gt;<span class="MacroCode">LastTermToFind</span>&lt;/lower&gt;
+&lt;/range&gt;</pre>
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table cellspacing="8px">
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      inclusive="<span class="MacroCode">YesOrNo</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is an optional attribute that specifies whether the range should include the first
+                        and last term when matching. If not specified, this attribute defaults to <b>yes</b>.
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      metaField="<span class="MacroCode">MetaFieldName</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                         is an optional attribute used during meta-data searches to identify the name of the
+                         meta-field to be searched. If this attribute is missing, the parent
+                         tag's meta-field name is used. If no parent meta-field name exists,
+                         a <a href="#crossQuery_GeneralExceptionTag">General Exception</a> will be sent to the
+                         <b><i>crossQuery</i></b> <b>Error Generator</b> stylesheet.
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      <span class="MacroCode">FirstTermToFind</span>
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the first term in the range to find. Usually, this is a starting number, date, or year.
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      <span class="MacroCode">LastTermToFind</span>
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the last term in the range to find. Usually, this is an ending number, date, or year.
+                      </span>
+                    </td>
+                  </tr>
+                </table><br>
+              </div>
+
+              This tag returns a match for any word that lexicographically falls in the range specified by
+              the<span class="Code"> upper </span>and<span class="Code"> lower </span>tags. This tag is primarily
+              used to search for a range of revision numbers, dates, or years. <br><br>
+
+              <div class="Note">
+                Note: This tag can only be used in meta-data searches, and not full-text searches.
+                Attempting to use the<span class="Code"> range </span>tag on a full-text search
+                will generate an error.
+              </div>
+
+            </div> <br> <!-- Range Tag -->
+
+          </div> <!-- Input/Output Tags indent -->
+
+        </div> <!-- queryParser Tags indent -->
+
+        <div class="IndentL">
+          <p class="Heading3">Search Result Formatter Tags<a name="crossQuery_ResultFormatter_Tags"></a></p>
+          <!----------------------------------------------------------------------------------------------------------->
+          The following tags make up the XML input for the <b>Search Result Formatter</b> stylesheet. They constitute a
+          simple XML representation of the matching text found for the most recent query. The
+          <b>Search Result Formatter</b> stylesheet uses these input tags to generate the HTML for the actual
+          search result web-page viewed by the user. <br><br>
+
+          <div class="Sample">
+            <b><u>Query Result Tag<a name="crossQuery_QueryResultTag"></a></u></b><br>
+            <!----------------------------------------------------------------------->
+            This tag is the outer-most container tag for the results produced by the crossQuery servlet. It has the
+            form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;crossQueryResult totalDocs="<span class="MacroCode">NumberOfDocs</span>" startDoc="<span class="MacroCode">FirstDocNumber</span>" endDoc="<span class="MacroCode">LastDocNumber</span>"&gt;
+    <img src="../Common_Art/vDotDotDot.gif">
+&lt;/crossQueryResult&gt;</pre>
+            </div>
+
+            where <br>
+
+            <div class="IndentLR">
+              <table cellspacing="8px">
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    totalDocs="<span class="MacroCode">NumberOfDocs</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the number of documents that had matches for the specified query.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    startDoc="<span class="MacroCode">FirstDocNumber</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                       is the sequential document number for the highest ranking document in the current Query.
+                       Note that this may not be the overall highest ranking document if a paged query was specified.
+                       See the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag for more
+                       details about performing paged queries.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    endDoc="<span class="MacroCode">LastDocNumber</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                       is the sequential document number for the lowest ranking document match in the current query.
+                       Note that this may not be the overall lowest ranking document if a paged query was specified.
+                       See the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag for more details
+                       about performing paged queries.
+                    </span>
+                  </td>
+                </tr>
+              </table><br>
+            </div>
+
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Document Hit Tag<a name="crossQuery_DocHitTag"></a></u></b><br>
+            <!------------------------------------------------------------------>
+            This tag identifies a document containing one or more matches for the current query. This tag has
+            the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;docHit rank="<span class="MacroCode">DocRelevanceRank</span>" path="<span class="MacroCode">DocumentLocation</span>" score="<span class="MacroCode">DocRelevanceScore</span>"&gt;
+    <img src="../Common_Art/vDotDotDot.gif">
+&lt;/docHit&gt;</pre>
+            </div>
+
+            where <br>
+
+            <div class="IndentLR">
+              <table cellspacing="8px">
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    rank="<span class="MacroCode">DocRelevanceRank</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the ordinal ranking of this matching document, with 1 being the most relevant document for
+                      a query. Note that this is an absolute ranking for the document with respect to the entire
+                      query, and not a page relative ranking. For more information about paged queries, see
+                      the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    path="<span class="MacroCode">DocumentLocation</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                       is the file path and name for the matching document. This path is relative to the base XTF
+                       directory (i.e.,<span class="Code"> XTF_HOME</span>.)
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    score="<span class="MacroCode">DocRelevanceScore</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the document relevance score ranging from 0% to 100%. The document with the highest
+                      overall relevance will receive a score of 100%, and less relevant documents will receive
+                      lower scores. Note that this score is an overall relevance score and is not affected by
+                      paging. For information about paged queries, see
+                      the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag.
+                    </span>
+                  </td>
+                </tr>
+              </table><br>
+            </div>
+
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Document Meta-Data Tag<a name="crossQuery_DocMetaTag"></a></u></b><br>
+            <!------------------------------------------------------------------>
+            This tag identifies a block of meta-data for a matching document. This tag has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;meta&gt;
+   <img src="../Common_Art/vDotDotDot.gif">
+&lt;/meta&gt;</pre>
+            </div>
+
+            The actual tags within the meta-data block will depend on the implementation of the
+            <b><a href="#textIndexer_PreFilter_Prog">Pre-Filter</a></b> used
+            by the <b><i>textIndexer</i></b>. However, any matches found in the meta-data due to either
+            a<span class="Code"> <a href="#crossQuery_MetaTag">meta</a> </span>query or
+            a<span class="Code"> <a href="#crossQuery_CombineTag">combine</a> </span>query will be marked
+            with<span class="Code"> <a href="#crossQuery_MatchedTermTag">term</a> </span>tags. <br><br>
+
+            The document meta-data tag is always included in the query results, regardless of whether there are
+            any matches in it or not. This guarantees that the result formatter has access to the title of the
+            document and other document related information in addition to the match results.
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Snippet Tag<a name="crossQuery_SnippetTag"></a></u></b><br>
+            <!-------------------------------------------------------------->
+            This tag contains a snippet of text associated with a match found in a document. The snippet consists of
+            the text matched along with some context text around it. This tag has the form: <br><br>
+
+            <div class="IndentLR">
+<pre class="Code">&lt;snippet rank="<span class="MacroCode">MatchRelevanceRank</span>" score="<span class="MacroCode">MatchRelevanceScore</span>"&gt;
+
+    <span class="MacroCode">Hit Text (and context text, if any)</span>
+
+&lt;/snippet&gt;</pre>
+            </div>
+
+            where <br>
+
+            <div class="IndentLR">
+              <table cellspacing="8px">
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    rank="<span class="MacroCode">MatchRelevanceRank</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the ordinal ranking of this match in the current document, with 1 being the most relevant
+                      match in the document. Note that this is an absolute ranking for the match with respect to the
+                      entire document, and not a page relative ranking. For more information about paged queries, see
+                      the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    score="<span class="MacroCode">MatchRelevanceScore</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the relevance score for this match ranging from 0% to 100%. The snippet with the highest
+                      overall relevance will receive a score of 100%, and less relevant snippets will receive
+                      lower scores. Note that this score is an overall relevance score and is not affected by
+                      paging. For information about paged queries, see
+                      the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag.
+                    </span>
+                  </td>
+                </tr>
+              </table><br>
+            </div>
+
+            The amount of context text displayed in a snippet is determined by
+            the<span class="Code"> <a href="#crossQuery_TextTag">text</a> </span>tag in the original query. If the
+            context length specified is less than the matched text, then only the matched text will be displayed.
+            <br><br>
+
+            Within the snippet itself, each matching word from the query will be marked with a single
+            <span class="Code"> <a href="#crossQuery_MatchedTermTag">term</a> </span>tag, and the matching
+            text around which the context text is centered on will also be marked with a single
+            <span class="Code"> <a href="#crossQuery_HitTag">hit</a> </span>tag.
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Hit Tag<a name="crossQuery_HitTag"></a></u></b><br>
+            <!------------------------------------------------------>
+            This tag identifies actual matched text within the context text of
+            a<span class="Code"> <a href="#crossQuery_SnippetTag">snippet</a> </span>tag.
+            This tag has the form: <br><br>
+
+            <div class="IndentLR">
+<pre class="Code">&lt;hit&gt;
+  <img src="../Common_Art/vDotDotDot.gif">
+&lt;/hit&gt;</pre>
+            </div>
+
+            A hit may contain one or more matched words, which are separately marked with term tags. <br><br>
+
+            If the original query used a<span class="Code"> <a href="#crossQuery_NearTag">near</a> </span>
+            or<span class="Code"> <a href="#crossQuery_AndTag">and</a> </span>clause, the<span class="Code"> hit
+            </span>tag will mark the entire range of text between the first  and last word found for the clause.
+            For example, for  a<span class="Code"> "man" </span>near<span class="Code"> "war" </span>query, the
+            result would look like this:
+
+            <div class="IndentLR">
+<pre class="Code, IndentLR">&lt;snippet rank="3" score="86"&gt;
+    that <b>&lt;hit&gt;</b>&lt;term&gt;man&lt;/term&gt; had never actually been to &lt;term&gt;war&lt;/term&gt;<b>&lt;/hit&gt;</b>, but
+    he spoke as if he had
+&lt;/snippet&gt;</pre>
+            </div>
+
+            For an<span class="Code"> <a href="#crossQuery_OrTag">or</a> </span>query, if multiple matched words exist
+            in the snippet, all the matched words will be marked
+            with<span class="Code"> <a href="#crossQuery_MatchedTermTag">term</a> </span>tags, but only the word
+            that this snippet is centered around will be marked with a<span class="Code"> hit </span>tag.
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Term Tag<a name="crossQuery_MatchedTermTag"></a></u></b><br>
+            <!-------------------------------------------------------------->
+            This tag identifies a word in a document that matches one of the terms in the query. This tag has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;term&gt;
+    <span class="MacroCode">MatchedWord</span>
+&lt;/term&gt;</pre>
+            </div>
+
+            A<span class="Code"> term </span>tag may or may not be inside
+            a<span class="Code"> <a href="#crossQuery_HitTag">hit</a> </span>tag, depending on whether the occurence
+            of the matched word is within the primary match for a snippet, or simply another occurence within the
+            context text.
+          </div>
+
+        </div>
+
+        <div class="IndentL">
+          <p class="Heading3">Error Generator Tags<a name="crossQuery_ErrorGen_Tags"></a></p>
+          <!----------------------------------------------------------------------------------------------------------->
+          The purpose of the <b>Error Generator</b> stylesheet is to generate a web-page that displays user friendly
+          messages when <b><i>crossQuery</i></b> errors occur. Since its output is obviously HTML, the only tags that
+          this reference section covers are the input XML tags passed to the <b>Error Generator</b> by the
+          <b><i>crossQuery</i></b> Servlet. <br><br>
+
+          For convenience, all of the error information passed into the <b>Error Generator</b> stylesheet as XML tags
+          is also available in the following XSLT parameters: <br><br>
+
+          <div class="IndentLR">
+            <div class="Sample">
+               <table class="Sample" cellspacing="8px">
+                 <tr>
+                   <td width="16%" align="right" valign="top" class="Code">
+                     $exception
+                   </td>
+                   <td width="10">&nbsp;</td>
+                   <td>
+                     <span class="BaseStyle">
+                       A string containing the name of the exception that occurred. This will be the name of one of the
+                       error/exception tags listed below (e.g.,
+                       <span class="Code"> "UnsupportedQuery"</span>,<span class="Code"> "TermLimit"</span>,<span class="Code"> </span>etc.)
+                     </span>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td width="16%" align="right" valign="top" class="Code">
+                     $message
+                   </td>
+                   <td width="10">&nbsp;</td>
+                   <td>
+                     <span class="BaseStyle">
+                       The descriptive message for the error/exception (if any; may be an empty string.)
+                     </span>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td width="16%" align="right" valign="top" class="Code">
+                     $stackTrace
+                   </td>
+                   <td width="10">&nbsp;</td>
+                   <td>
+                     <span class="BaseStyle">
+                       The HTML-Formatted Java Stack Trace generated by the exception, (if any; may be an empty string.)
+                     </span>
+                   </td>
+                 </tr>
+               </table>
+            </div>
+          </div> <!-- XSLT Variable List Indent -->
+
+          <p class="Heading3"></p> <br>
+
+          <div class="Sample">
+            <b><u>Query Format Error Tag<a name="crossQuery_QueryFormatErrorTag"></a></u></b><br>
+            <!---------------------------------------------------------------------------------->
+            This error tag is issued by the <b>Query Parser</b> stylesheet if its code determines that there is an
+            error in the query URL received from the user. It has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;QueryFormat&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/QueryFormat&gt;</pre>
+            </div>
+
+            To generate such an error, the <b>Query Parser</b> simply issues a <br><br>
+
+            <div class="IndentLR">
+              <pre class="Code">&lt;error message="<span class="MacroCode">Error Message</span>"/&gt;</pre>
+            </div>
+
+            tag instead of a<span class="Code"> query </span>tag. The error message specified by the
+            <b>Query Parser</b>'s error tag is then transferred to the <b>Query Format Error Tag</b>,
+            for processing by the <b><i>crossQuery</i></b> <b>Error Generator</b> stylesheet.
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Term Limit Error Tag<a name="crossQuery_TermLimitErrorTag"></a></u></b><br>
+            <!------------------------------------------------------------------------------>
+            This error tag is issued when the number terms or clauses in a query exceeds the maximum term limit
+            established by the<span class="Code"> <a href="#crossQuery_QueryTag">termLimit</a> </span>attribute
+            of the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag produced by the
+            <a href="#crossQuery_QueryParser_Prog"><b>Query Parser</b></a>.  It has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;TermLimit&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/TermLimit&gt;</pre>
+            </div>
+
+            This error is most often generated by the expansion of wildcard and range queries.
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Excessive Work Error Tag<a name="crossQuery_ExcessiveWorkErrorTag"></a></u></b><br>
+            <!-------------------------------------------------------------------------------------->
+            This error tag is issued when a query exceeds the maximum work limit established by
+            the<span class="Code"> <a href="#crossQuery_QueryTag">workLimit</a> </span>attribute
+            of the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag
+            produced by the <a href="#crossQuery_QueryParser_Prog"><b>Query Parser</b></a>. It has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;ExcessiveWork&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/ExcessiveWork&gt;</pre>
+            </div>
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>General Exception Tag<a name="crossQuery_GeneralExceptionTag"></a></u></b><br>
+            <!--------------------------------------------------------------------------------->
+            This error tag is generated whenever an internal exception occurs in the <b><i>crossQuery</i></b> Servlet.
+            This tag looks as follows:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;<span class="MacroCode">GeneralExceptionName</span>&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+    &lt;stackTrace&gt;<span class="MacroCode">HTML-Formatted Java Stack Trace</span>&lt;/stackTrace&gt;
+&lt;/<span class="MacroCode">GeneralExceptionName</span>&gt;</pre>
+            </div>
+
+            Exceptions are usually generated by anomalous fatal conditions like missing required files, corrupted
+            indexes, or files locked by other applications.
+
+          </div> <br>
+
+        </div>
+
+      </div> <!-- crossQuery Tag Reference -->
+
+      <div class="IndentL">
+
+        <p class="Heading2">dynaXML Tag Reference<a name="dynaXML_Tag_Ref"></a></p>
+        <!------------------------------------------------------------------------------------------------------------->
+        This section provides a quick reference to the various XTF sytlesheet tags recognized by the
+        <b><i>dynaXML</i></b> stylesheets. <br><br>
+
+        <div class="IndentL">
+          <p class="Heading3">Document Request Parser Tags<a name="dynaXML_DocReqParser_Tags"></a></p>
+          <!----------------------------------------------------------------------------------------------------------->
+          The tags listed here are XML tags associated with the <b>Document Request Parser</b> stylesheet. The tags
+          are divided into two categories: input tags and output tags. The input tags are used by the
+          <b><i>dynaXML</i></b> servlet to translate the original document request URL into a simple XML
+          representation that can act as input to the <b>Document Request Parser</b> stylesheet. The output tags
+          are then used by the  <b>Document Request Parser</b> stylesheet to form the actual XML document request
+          passed to the <b><i>dynaXML</i></b> servlet's <b>Document Retrieval Engine</b> for processing. <br><br>
+
+          <div class="IndentL">
+            <p class="Heading3">Input Tags</p>
+            These tags form the XML input fragment passed to the <b>Document Request Parser</b> stylesheet.
+            They constitute a simple XML representation of the document request URL supplied to the
+            <b><i>dynaXML</i></b> servlet from either a document catalog web-page or a <b><i>crossQuery</i></b>
+            search result web-page. <br><br>
+
+
+            <div class="Sample">
+              <b><u>Container Tag</u></b><br>
+              This tag is the outer-most tag for the XML input fragment sent to the <b>Document Request Parser</b>
+              stylesheet for translation. It has the form: <br><br>
+
+<pre class="code">&lt;parameters&gt;
+    <span class="MacroCode">ParameterBlock</span>
+    <span class="MacroCode">ParameterBlock</span>
+         <img src="../Common_Art/vDotDotDot.gif">
+&lt;/parameters&gt;</pre>
+
+            </div> <br>
+
+            <div class="Sample">
+              <b><u>Parameter Block Tag</u></b><br>
+              This tag is the XML input to the <b>Document Request Parser</b> for a single parameter in a
+              user query URL. It has the form:<br><br>
+
+              <div class="IndentLR">
+<pre class="code">
+&lt;param name="<span class="MacroCode">ParamName</span>" value="<span class="MacroCode">ParamValue</span>"&gt;
+    <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
+    <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
+          <img src="../Common_Art/vDotDotDot.gif">
+&lt;/param&gt;</pre>
+
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      name="<span class="MacroCode">ParamName</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the name of the parameter extracted from the original document request URL.
+                      </span></td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      value="<span class="MacroCode">ParamValue</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the original text in the document request URL that is assigned to the specified parameter.
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </div> <br>
+
+              Each parameter from the document request URL is also available as a standard XSL parameter with the
+              form: <br><br>
+
+              <div class="Sample">
+                <span class="Code">
+                  &lt;xsl:param name="<span class="MacroCode">ParamName</span>" select="<span class="MacroCode">DefaultValueIfNotInURL</span>"/&gt;
+                </span>
+              </div> <br>
+
+              This allows document request parameters to be accessed either through the standard template driven XSLT or
+              through stylesheet parameters. <br><br>
+
+              Note that not all the parameters in the document request URL will be passed to the <b>Document Request
+              Parser</b>. Only the parameters listed in the<span class="Code"> dynaXML.conf </span> under
+              the<span class="code"> params </span>attribute of the &lt;docReqParser&gt; configuration tag are passed
+              to the <b>Document Request Parser</b>.
+
+            </div> <br>
+
+            <div class="Sample">
+              <b><u>Token Tag</u></b><br>
+              This tag identifies a single word or token taken from the document request URL. It has the form: <br><br>
+
+              <div class="IndentLR">
+                <span class="Code">
+                   &lt;token value="<span class="MacroCode">Word</span>" isWord="<span class="MacroCode">YesOrNo</span>"/&gt;
+                </span>
+              </div>  <br>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      value="<span class="MacroCode">Word</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td><span class="BaseStyle">is the actual word or symbol extracted from the URL.</span></td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      isWord="<span class="MacroCode">YesOrNo</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        identifies whether the token is a word (<span class="Code">isWord="yes"</span>)
+                        or a punctuation symbol (<span class="Code">isWord="no"</span>.)
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+            </div> <br>
+
+            <div class="Sample">
+              <b><u>Phrase Tag</u></b><br>
+              This tag identifies a literal phrase taken from the document request URL. It has the form: <br><br>
+
+              <div class="IndentLR">
+<pre class="Code">&lt;phrase value="<span class="MacroCode">StringOfWords</span>"&gt;
+    <span class="MacroCode">Token</span>
+    <span class="MacroCode">Token</span>
+      <img src="../Common_Art/vDotDotDot.gif">
+&lt;/phrase&gt;
+</pre>
+              </div>
+
+              where <br>
+
+              <div class="IndentLR">
+                <table>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      value="<span class="MacroCode">StringOfWords</span>"
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td><span class="BaseStyle">is the entire phrase extracted from the URL as a single string.</span></td>
+                  </tr>
+                  <tr>
+                    <td width="16%" align="right" valign="top" class="Code">
+                      <span class="MacroCode">Token, Token</span>...
+                    </td>
+                    <td width="10">&nbsp;</td>
+                    <td>
+                      <span class="BaseStyle">
+                        is the original phrase broken down into one or more token tags (one for each
+                        word or symbol in the phrase.)
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+            </div> <br>
+
+            <p class="Heading3">Output Tags</p>
+            These tags are used by the <b>Document Request Parser</b> stylesheet to form the XML query passed to the
+            <b><i>dynaXML</i></b> <b>Document Retrieval Engine</b> for processing. <br><br>
+
+              <div class="Sample">
+                <b><u>Style Tag<a name="dynaXML_StyleTag"></u></b><br>
+                <!--------------------------------------------------->
+                This tag identifies the location of the <b>Document Formatter</b> Stylesheet. It has the form: <br><br>
+
+                <pre class="Code">&lt;style path="<span class="MacroCode">DocFormatterLocation</span>"/&gt;</pre>
+                where <br>
+
+                <div class="IndentLR">
+                  <table>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        path="<span class="MacroCode">DocFormatterLocation</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is the file path and name for the <b>Document Formatter</b> stylesheet to
+                          use for the requested document. If this path is not specified as an absolute path,
+                          it is assumed to be relative to the base XTF installation directory (i.e., <b>XTF_HOME</b>.)
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+
+              </div><br>
+
+              <div class="Sample">
+                <b><u>Source Document Tag<a name="dynaXML_SourceTag"></u></b><br>
+                <!-------------------------------------------------------------->
+                This tag identifies the location of the document to be retrieved. It has the form: <br><br>
+
+                <pre class="Code">&lt;source path="<span class="MacroCode">SrcDocLocation</span>"/&gt;</pre>
+
+                where <br>
+
+                <div class="IndentLR">
+                  <table>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        path="<span class="MacroCode">SrcDocLocation</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is the file path and name for the document to be retrieved. If this path is not specified
+                          as an absolute path, it is assumed to be relative to the base XTF installation directory
+                          (i.e., <b>XTF_HOME</b>.)
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+
+              </div><br>
+
+              <div class="Sample">
+                <b><u>Brand Tag<a name="dynaXML_BrandTag"></u></b><br>
+                <!--------------------------------------------------->
+                This tag identifies a file that contains a list of site-specific parameters to be passed on to the
+                document formatter. It has the form: <br><br>
+
+                <pre class="Code">&lt;brand path="<span class="MacroCode">BrandStylesheetLocation</span>"/&gt;</pre>
+
+                where <br>
+
+                <div class="IndentLR">
+                  <table>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        path="<span class="MacroCode">BrandStylesheetLocation</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is the file path and name for the brand file to use. If this path is not specified
+                          as an absolute path, it is assumed to be relative to the base XTF installation directory
+                          (i.e., <b>XTF_HOME</b>.)
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </div> <br>
+
+                This contents of the branding file is a set of parameter definitions of the form:
+
+                <div class="IndentLR">
+<pre class="Code">&lt;name&gt;<span class="MacroCode">value</span>&lt;/name&gt;
+&lt;name&gt;<span class="MacroCode">value</span>&lt;/name&gt;
+        <img src="../Common_Art/vDotDotDot.gif"></pre>
+                </div>
+
+                These parameters are most often used to pass "branding" information to the <b>Document Formatter</b>
+                stylesheet (e.g., background color to use, cascading stylesheet to use, font to use, etc.)
+              </div><br>
+
+              <div class="Sample">
+                <b><u>Index Tag<a name="dynaXML_IndexTag"></u></b><br>
+                <!--------------------------------------------------->
+                This tag identifies the index to use for lazy loading of text, and for marking search hits in a
+                document. It has the form: <br><br>
+
+                <pre class="Code">&lt;index configPath="<span class="MacroCode">TextIndexerConfigLocation</span>" name="<span class="MacroCode">IndexName</span>"/&gt;</pre>
+
+                where <br>
+
+                <div class="IndentLR">
+                  <table>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        configPath="<span class="MacroCode">TextIndexerConfigLocation</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is the file path and name for the <b><i>textIndexer</i></b> config file. If this path is
+                          not specified as an absolute path, it is assumed to be relative to the base XTF installation
+                          directory (i.e., <b>XTF_HOME</b>.)
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        name="<span class="MacroCode">IndexName</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is the name of the index to use. This index name must exist in the config file specified by
+                          the<span class="Code"> configPath </span>attribute above.
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </div> <br>
+
+                This tag is required if the document request passed to the <b><i>dynaXML</i></b> servlet will include
+                a<span class="Code"> <a href="#dynaXML_QueryTag">query</a> </span>tag. Using
+                the<span class="Code"> <a href="#dynaXML_QueryTag">query</a> </span>tag in a
+                document request without an<span class="Code"> index </span>tag will result in
+                an <a href="#dynaXML_UnsupportedQueryErrorTag">Unsupported Query Error</a> being sent to the
+                <b>Error Generator</b> stylesheet. <br><br>
+
+                Placing this tag in a document request will also enable lazy loading of the requested document (i.e.,
+                portions of the document are loaded only when viewed by the user.) Using lazy loading can substantially
+                increase the responsiveness of the XTF system for libraries of large documents. <br><br>
+              </div><br>
+
+              <div class="Sample">
+                <b><u>Query Tag<a name="dynaXML_QueryTag"></a></u></b><br>
+                <!------------------------------------------------------->
+                This tag is a container tag for a <b><i>crossQuery</i></b> style query. It has the form: <br><br>
+
+                <div class="IndentLR">
+<pre class="Code">&lt;query&gt;
+      <span class="MacroCode">crossQuery-Style Query Tags</span>
+&lt;/query&gt;</pre>
+                </div>
+
+                where <span class="MacroCode">crossQuery-Style Query Tags</span> are any of the query tags outlined in
+                the <a href="#crossQuery_QueryParserOutputTags"><b>Query Parser Output Tags</b></a>
+                section. Note however that the <b><i>dynaXML</i></b><span class="Code"> query </span>tag doesn't use the
+                attributes available for the
+                <b><i>crossQuery</i></b><span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag. <br><br>
+
+                Including a query in the document request allows the <b><i>dynaXML</i></b> servlet to mark query hits
+                in context in the original document. Then, the <b>Document Formatter</b> stylesheet can opt to provide
+                quick links to the hits or to simply highlight them in context. <br><br>
+
+                <div class="Note">
+                  Note: If a<span class="Code"> query </span>tag is used in a document request,
+                  the<span class="Code"> <a href="#dynaXML_IndexTag">index</a> </span><b>must</b> also be present in the
+                  document request. If the<span class="Code"> <a href="#dynaXML_IndexTag">index</a> </span>tag is not
+                  present in the document request, an
+                  <a href="#dynaXML_UnsupportedQueryErrorTag">Unsupported Query</a> error will be sent to the
+                  <b>Error Generator</b> stylesheet.
+                </div>
+
+              </div><br>
+
+              <div class="Sample">
+                <b><u>Public Authentication Tag<a name="dynaXML_PubAuthTag"></a></u></b><br>
+                <!------------------------------------------------------------------------->
+                This variant of the authentication tag is used to provide or deny full public access to documents.
+                It has the form:
+
+                <div class="IndentLR">
+                  <pre class="Code">&lt;auth access="<span class="MacroCode">AllowOrDeny</span>" type="all"/&gt;</pre>
+                </div>
+
+                where <br>
+
+                <div class="IndentLR">
+                  <table cellspacing="8px">
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        access="<span class="MacroCode">AllowOrDeny</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          specifies whether all users should be allowed access
+                          (<span class="Code">access="allow"</span>) or denied access
+                          (<span class="Code">access="deny"</span>) to the requested document.
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+
+                Allowing access to all users with this tag can be used when no special authorization is required to
+                access on-line documents. <br><br>
+
+                <div class="Note">
+                  Note: One or more<span class="Code"> auth </span>tags must exist in the
+                  <b>Document Request Parser</b> stylesheet. These tags will be processed in the order they are
+                  encountered until one of them authorizes or denies access. If none of the authentication tags
+                  explicitly authorize or deny access, the <b><i>dynaXML</i></b> servlet will deny access by default.
+                </div>
+
+              </div> <br>
+
+              <div class="Sample">
+                <b><u>IP List Authentication Tag<a name="dynaXML_IPListAuthTag"></a></u></b><br>
+                <!----------------------------------------------------------------------------->
+                This variant of the authentication tag is used to provide access to documents based on the user's
+                IP address. This tag provides simple (but not particularly robust) authorization for document
+                access. It has the form:
+
+                <div class="IndentLR">
+                  <pre class="Code">&lt;auth access="<span class="MacroCode">AllowOrDeny</span>" type="IP" list="<span class="MacroCode">LocationOfIPList</span>"/&gt;</pre>
+                </div>
+
+                where <br>
+
+                <div class="IndentLR">
+                  <table cellspacing="8px">
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        access="<span class="MacroCode">AllowOrDeny</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          specifies whether addresses in the IP list should be allowed access
+                          (<span class="Code">access="allow"</span>) or denied access
+                          (<span class="Code">access="deny"</span>) to the requested document.
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        list="<span class="MacroCode">LocationOfIPList</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          specifies the path and filename of a list of IP addresses to allow or deny access. If
+                          not specified as an absolute path, this path is assumed to be relative to the XTF
+                          base install directory (i.e.,<span class="Code"> XTF_HOME</span>.) <br><br>
+
+                          To learn about the format of the IP List file, see the
+                          <a href="../XTF_Deployment_Guide/XTFDeployGuide.html#AuthIPList">XTF Deployment Guide</a>.
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+
+                <div class="Note">
+                  Note: One or more<span class="Code"> auth </span>tags must exist in the
+                  <b>Document Request Parser</b> stylesheet. These tags will be processed in the order they are
+                  encountered until one of them authorizes or denies access. If none of the authentication tags
+                  explicitly authorize or deny access, the <b><i>dynaXML</i></b> servlet will deny access by default.
+                </div>
+
+              </div> <br>
+
+              <div class="Sample">
+                <b><u>LDAP Authentication Tag<a name="dynaXML_LDAPAuthTag"></a></u></b><br>
+                <!------------------------------------------------------------------------>
+                This variant of the authentication tag is used to provide access to documents based on an LDAP
+                database. It has the form:
+
+                <div class="IndentLR">
+<pre class="Code">&lt;auth access        = "allow"
+      type          = "LDAP"
+      server        = "<span class="MacroCode">LDAPServerURL</span>"
+      realm         = "<span class="MacroCode">PswdRequestDescr</span>"
+      {bindName     = "<span class="MacroCode">LDAPConnectName</span>"}
+      {bindPassword = "<span class="MacroCode">LDAPConnectPswd</span>"}
+      {queryName    = "<span class="MacroCode">LDAPRecordNameToFind</span>"}
+      {matchField   = "<span class="MacroCode">LDAPFieldToFind</span>"}
+      {matchValue   = "<span class="MacroCode">LDAPValueToMatch</span>"/&gt;}</pre>
+                </div>
+
+                where <br>
+
+                <div class="IndentLR">
+                  <table cellspacing="8px">
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        server="<span class="MacroCode">LDAPServerURL</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          identifies the location of the LDAP server to use.
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        realm="<span class="MacroCode">PswdDialogDescr</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is a string to display in the browser dialog box that asks for the user's name and
+                          password.
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        bindName="<span class="MacroCode">LDAPConnectName</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is an optional attribute specifying the name to use when connecting to the LDAP
+                          server. If this attribute is omitted, then an anonymous LDAP connection will be attempted.
+                          <br><br>
+
+                          If anonymous connections are permitted by the LDAP database, then
+                          the<span class="Code"> bindPassword </span>attribute should also be omitted, and
+                          the<span class="Code"> queryName </span> attribute must be present for user
+                          authentication to proceed. For anonymous LDAP access the <span class="Code"> matchField </span>
+                          and<span class="Code"> matchValue </span>attributes are optional. <br><br>
+
+                          If the name passed for this attribute is the LDAP administrator name, then
+                          the<span class="Code"> bindPassword </span> attribute must be set to the LDAP
+                          administrator password, and the<span class="Code"> queryName </span>must also be
+                          present for user authentication to proceed. For administrative LDAP access,
+                          the<span class="Code"> matchField </span>and<span class="Code"> matchValue </span>
+                          attributes are optional. <br><br>
+
+                          It should also be noted that the user name will be substituted for any occurence of
+                          the<span class="Code"> % </span> symbol in this attribute. Doing so allows connections
+                          with the LDAP database to be established using the user name instead of an LDAP
+                          administrator name. <br><br>
+
+                          Finally, if successfully connecting to the LDAP database with a user name and password is
+                          all that is required for authentication, then no other attributes need to be specified in
+                          the authentication tag. Otherwise,
+                          the <span class="Code"> queryName </span> attribute and optionally
+                          the<span class="Code"> matchField </span>
+                          and<span class="Code"> matchValue </span> attributes may be specified to complete
+                          the authentication request.
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        bindPassword="<span class="MacroCode">LDAPConnectPswd</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is an optional attribute specifying the password to use when connecting to the LDAP
+                          server. <br><br>
+
+                          If an anonymous LDAP connection is being performed (i.e,
+                          the<span class="Code"> bindName </span>attribute has not been specified), this attribute
+                          should also not appear in the authentication tag. <br><br>
+
+                          If the<span class="Code"> bindName </span>attribute specifies the LDAP administrator name,
+                          this attribute <b><i>must</i></b> be set to the LDAP administrator password. <br><br>
+
+                          Finally, the user password will be substituted for any occurence of
+                          the<span class="Code"> % </span> symbol in this attribute. Doing so allows connections
+                          with the LDAP database to be established using the user password instead of an LDAP
+                          administrator password.
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        queryName="<span class="MacroCode">LDAPRecordToFind</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is an attribute identifying the name of an LDAP record to find. If an anonymous or
+                          administrator connection to the LDAP server is being attempted, this attribute is
+                          required. For user connections, this attribute is optional. <br><br>
+
+                          As with the<span class="Code"> bindName </span>attribute, the user name will be substituted
+                          for any occurence of the<span class="Code"> % </span>symbol in this attribute. Doing so
+                          allows connections with the LDAP database to be established using the user name instead
+                          of an LDAP administrator name. <br><br>
+
+                          Also, if the <span class="Code"> queryName </span>attribute is specified without
+                          the<span class="Code"> matchField </span>or<span class="Code"> matchValue </span>attributes,
+                          then user authentication will succeed if the given record name simply exists in the LDAP
+                          database. If the given record is not in the LDAP database, authentication will fail.
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        matchField="<span class="MacroCode">LDAPFieldToFind</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is an attribute identifying the name of a field to find in the LDAP record named
+                          by the<span class="Code"> queryName </span>attribute. Note that
+                          the<span class="Code"> matchField </span> attribute should not be used if
+                          the<span class="Code"> queryName </span>attribute hasn't been specified. <br><br>
+
+                          Like the<span class="Code"> queryName </span>attribute, the user name will be
+                          substituded for any occurence of the<span class="Code"> % </span>symbol in this
+                          attribute. Doing so allows connections with the LDAP database to be established
+                          using the user name instead of an LDAP administrator name. <br><br>
+
+                          Finally, if the <span class="Code"> matchField </span>attribute is specified without
+                          the<span class="Code"> matchValue </span> attribute, then user authentication will
+                          succeed if the given field name simply exists in the LDAP record. If the given field name
+                          does not exist inthe LDAP database authentication will fail.
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="16%" align="right" valign="top" class="Code">
+                        matchValue="<span class="MacroCode">LDAPValueToMatch</span>"
+                      </td>
+                      <td width="10">&nbsp;</td>
+                      <td>
+                        <span class="BaseStyle">
+                          is an attribute that specifies the value that must exist in the LDAP field named by
+                          the<span class="Code"> matchField </span>attribute for authentication to succeed. If
+                          the specified value doesn't match the LDAP field, user authentication will fail. <br><br>
+
+                          As with the previous attributes, the user's password will be substituted for any
+                          occurences of the<span class="Code"> % </span>symbol. Doing so allows connections
+                          with the LDAP database to be established using the user pasword instead of an LDAP
+                          administrator password.
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+
+                <div class="Note">
+                  Note: One or more<span class="Code"> auth </span>tags must exist in the
+                  <b>Document Request Parser</b> stylesheet. These tags will be processed in the order they are
+                  encountered until one of them authorizes or denies access. If none of the authentication tags
+                  explicitly authorize or deny access, the <b><i>dynaXML</i></b> servlet will deny access by default.
+                </div>
+
+              </div> <br>
+
+              <div class="Sample">
+                <b><u>External Authentication Tag<a name="dynaXML_ExtAuthTag"></a></u></b><br>
+                <!--------------------------------------------------------------------------->
+                This variant of the authentication tag is used to provide access to documents based on an external
+                authentication web-page or server. It has the form:
+
+                <div class="IndentLR">
+<pre class="Code">&lt;auth access = "allow"
+      type   = "external"
+      key    = "<span class="MacroCode">SecretKeyStr</span>"
+      url    = "<span class="MacroCode">AuthenticationURL</span>"/&gt;</pre>
+                </div>
+
+                <div class="Note">
+                  Note: One or more<span class="Code"> auth </span>tags must exist in the
+                  <b>Document Request Parser</b> stylesheet. These tags will be processed in the order they are
+                  encountered until one of them authorizes or denies access. If none of the authentication tags
+                  explicitly authorize or deny access, the <b><i>dynaXML</i></b> servlet will deny access by default.
+
+                  For more details about exernal authentication, see
+                  the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html#AuthExternal">XTF Deployment Guide</a>.
+                </div>
+
+              </div> <br>
+
+          </div>
+        </div>
+
+        <div class="IndentL">
+          <p class="Heading3">Document Formatter Tags and Attributes<a name="dynaXML_DocFormatter_Tags"></a></p>
+          <!----------------------------------------------------------------------------------------------------------->
+          The following tags and attributes are added by the <b><i>dynaXML</i></b> servlet to the original XML tags
+          that make up the requested XML document, which are then passed to the <b>Document Formatter</b> stylesheet
+          for output formatting. <br><br>
+
+
+          <div class="Sample">
+<span class="Code">xtf:hitCount="<span class="MacroCode">NumberOfHitsBelowThisTag</span>" xtf:firstHit="<span class="MacroCode">FirstHitNumberBelowThisTag</span>"</span><br><br>
+
+            <div class="IndentLR">
+              These attributes are added to XML documents to indicate where matched text hits are located. By
+              providing these tags, the dynaXML servlet allows the <b>Document Formatter</b> stylesheet to
+              quickly determine if a section of a document needs any special hilighting or not.<br><br>
+
+              If the requested document has no hits, these attributes will appear once in the outer-most tag for the
+              document with both the attributes set to zero. If the document has one or more hits, these attributes
+              will appear for any XML tag that has a hit inside it or inside its child tags.
+            </div>
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Snippets Tag<a name="dynaXML_QueryFormatErrorTag"></a></u></b><br>
+            <!--------------------------------------------------------------------->
+            This tag is a container tag added to the start of the document when there are query results for the
+            document. It has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;xtf:snippets&gt;
+  <span class="MacroCode">Snippet</span>
+  <span class="MacroCode">Snippet</span>
+    <img src="../Common_Art/vDotDotDot.gif">
+&lt;/snippets&gt;</pre>
+             </div>
+
+             where each <span class="MacroCode">Snippet</span> is
+             a <b><i>dynaXML</i></b><span class="Code"> <a href="#dynaXML_SnippetTag">snippet</a> </span>tag that
+             summarizes one query match in the requested document. <br><br>
+
+             <div class="Note">
+               Note: The<span class="Code"> snippets </span>tag is prefixed with the<span class="Code"> xtf:
+               </span>namespace to differentiate it from tags that came from the original XML document.
+             </div>
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Snippet Tag<a name="dynaXML_SnippetTag"></a></u></b><br>
+            <!-------------------------------------------------------------->
+            This tag contains a snippet of text associated with a match found in the requested document. The snippet
+            consists of the text matched along with some context text around it. This tag has the form: <br><br>
+
+            <div class="IndentLR">
+<pre class="Code">&lt;snippet hitNum="<span class="MacroCode">HitNumber</span>" rank="<span class="MacroCode">MatchRelevanceRank</span>" score="<span class="MacroCode">MatchRelevanceScore</span>"&gt;
+
+    <span class="MacroCode">Hit Text (and context text, if any)</span>
+
+&lt;/snippet&gt;</pre>
+            </div>
+
+            where <br>
+
+            <div class="IndentLR">
+              <table cellspacing="8px">
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    hitNum="<span class="MacroCode">HitNumber</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the ordinal ID of the current hit. This attribute will also appear
+                      in<span class="Code"> <a href="#dynaXML_HitTag">hit</a> </span>tags in the main text, allowing
+                      the hit number for the next or previous in-context tag to be easily determined.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    rank="<span class="MacroCode">MatchRelevanceRank</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the ranking of this match in the current document, with 1 being the most relevant
+                      match in the document.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    score="<span class="MacroCode">MatchRelevanceScore</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the relevance score for this match ranging from 0% to 100%. The snippet with the highest
+                      overall relevance will receive a score of 100%, and less relevant snippets will receive
+                      lower scores.
+                    </span>
+                  </td>
+                </tr>
+              </table><br>
+            </div>
+
+            The amount of context text displayed in a snippet is determined by
+            the<span class="Code"> <a href="#crossQuery_TextTag">text</a> </span>tag in the original query. If the
+            context length specified is less than the matched text, then only the matched text will be displayed.
+            <br><br>
+
+            Within the snippet itself, each matching word from the query will be marked with a single
+            <span class="Code"> <a href="#dynaXML_MatchedTermTag">term</a> </span>tag, and the matching
+            text around which the context text is centered on will also be marked with a single
+            <span class="Code"> <a href="#dynaXML_HitTag">hit</a> </span>tag.
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Hit Tag<a name="dynaXML_HitTag"></a></u></b><br>
+            <!--------------------------------------------------->
+            This tag identifies actual matched text in
+            a<span class="Code"> <a href="#dynaXML_SnippetTag">snippet</a> </span>tag or in the main text
+            for the requested document. This tag has the form: <br><br>
+
+            <div class="IndentLR">
+<pre class="Code">&lt;xtf:hit hitNum    = "<span class="MacroCode">HitNumber</span>"
+         rank      = "<span class="MacroCode">MatchRelevanceRank</span>"
+         score     = "<span class="MacroCode">MatchRelevanceScore</span>
+         continues = "<span class="MacroCode">YesOrNo</span>"&gt;
+  <img src="../Common_Art/vDotDotDot.gif">
+&lt;/hit&gt;</pre>
+            </div>
+
+            where <br>
+
+            <div class="IndentLR">
+              <table cellspacing="8px">
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    xtf:
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is an XTF namespace prefix added to the tag to differentiate it from tags that came
+                      came from the original XML document. The prefix will not be present
+                      in<span class="Code"> hit </span>tags that appear within the
+                      initial<span class="Code"> <a href="#dynaXML_SnippetsTag">snippets</a> </span>summary tag,
+                      but only in<span class="Code"> hit </span>tags that occur in the main text for the document.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    hitNum="<span class="MacroCode">HitNumber</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the ordinal ID of the current hit. This attribute allows the hit number for the next or
+                      previous in-context tag to be easily determined.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    rank="<span class="MacroCode">MatchRelevanceRank</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the ranking of this match in the current document, with 1 being the most relevant
+                      match in the document.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    score="<span class="MacroCode">MatchRelevanceScore</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the relevance score for this match ranging from 0% to 100%. The snippet with the highest
+                      overall relevance will receive a score of 100%, and less relevant snippets will receive
+                      lower scores.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    continues="<span class="MacroCode">YesOrNo</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      indicates whether this hit continues into the next XML tag
+                      (<span class="Code">continues="<b>yes</b>"</span>) or not
+                      (<span class="Code">continues="<b>no</b>"</span>). Note that when a hit continues into the next
+                      XML tag, a<span class="Code"> <a href="#dynaXML_MoreTag">more</a> </span>tag will always follow.
+                    </span>
+                  </td>
+                </tr>
+              </table> <br>
+            </div>
+
+            A hit may contain one or more matched words, which are separately marked
+            with<span class="Code"> <a href="#dynaXML_MatchedTermTag">term</a> </span>tags. <br><br>
+
+            If the query in the document request included a<span class="Code"> <a href="#crossQuery_NearTag">near</a> </span>
+            or<span class="Code"> <a href="#crossQuery_AndTag">and</a> </span>clause, the<span class="Code"> hit
+            </span>tag will mark the entire range of text between the first and last word found for the clause. Also,
+            within the main text, if the entire range spans multiple XML tags in the document, the hit will be broken
+            down into an initial<span class="Code"> hit </span>tag followed by one or
+            more<span class="Code"> <a href="#dynaXML_MoreTag">more</a> </span>tags. <br><br>
+
+            For summary snippets, if the query for the requested document includes
+            an<span class="Code"> <a href="#crossQuery_OrTag">or</a> </span>clause, all the matched words in the
+            snippet will be marked
+            with<span class="Code"> <a href="#dynaXML_MatchedTermTag">term</a> </span>tags, but only the word
+            that the snippet is centered around will be marked with a<span class="Code"> hit </span>tag. Within the
+            main text however, any term matched in
+            the<span class="Code"> <a href="#crossQuery_OrTag">or</a> </span>clause will be marked with <b>both</b>
+            a<span class="Code"> hit </span>and
+            a<span class="Code"> <a href="#dynaXML_MatchedTermTag">term</a> </span>tag.
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>More Tag<a name="dynaXML_MoreTag"></a></u></b><br>
+            <!--------------------------------------------------->
+            This tag identifies the continuation of
+            a<span class="Code"> <a href="#dynaXML_HitTag">hit</a> </span> tag that started in a previous XML tag.
+            This tag has the form: <br><br>
+
+            <div class="IndentLR">
+<pre class="Code">&lt;xtf:more hitNum    = "<span class="MacroCode">HitNumber</span>"
+         rank       = "<span class="MacroCode">MatchRelevanceRank</span>"
+         score      = "<span class="MacroCode">MatchRelevanceScore</span>
+         continues  = "<span class="MacroCode">YesOrNo</span>"&gt;
+  <img src="../Common_Art/vDotDotDot.gif">
+&lt;/more&gt;</pre>
+            </div>
+
+            where <br>
+
+            <div class="IndentLR">
+              <table cellspacing="8px">
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    xtf:
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is an XTF namespace prefix added to the tag to differentiate it from tags that came
+                      came from the original XML document.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    hitNum="<span class="MacroCode">HitNumber</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the ordinal ID of the hit to which this<span class="Code"> more </span> tag belongs.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    rank="<span class="MacroCode">MatchRelevanceRank</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the ranking of the hit to which this<span class="Code"> more </span> tag belongs.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    score="<span class="MacroCode">MatchRelevanceScore</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is the relevance score of the hit to which this<span class="Code"> more </span> tag belongs.
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="16%" align="right" valign="top" class="Code">
+                    continues="<span class="MacroCode">YesOrNo</span>"
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      indicates whether the associated hit continues into yet another XML tag
+                      (<span class="Code">continues="<b>yes</b>"</span>) or not
+                      (<span class="Code">continues="<b>no</b>"</span>). Note that when a hit continues into another
+                      XML tag, another<span class="Code"> <a href="#dynaXML_MoreTag">more</a> </span>tag will always
+                      follow.
+                    </span>
+                  </td>
+                </tr>
+              </table> <br>
+            </div>
+
+            A<span class="Code"> more </span>tag may contain one or more matched words, which are separately marked
+            with<span class="Code"> <a href="#dynaXML_MatchedTermTag">term</a> </span>tags. <br><br>
+
+            If the query in the document request included a<span class="Code"> <a href="#crossQuery_NearTag">near</a> </span>
+            or<span class="Code"> <a href="#crossQuery_AndTag">and</a> </span>clause, and the entire range of the hits
+            spans multiple XML tags in the document, the<span class="Code"> more </span>tag will mark any parts of the
+            range that occur in subsequent XML tags.
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Term Tag<a name="dynaXML_MatchedTermTag"></a></u></b><br>
+            <!----------------------------------------------------->
+            This tag identifies a single word in the main text that matches a query associated with the requested
+            document. This tag has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;xtf:term&gt;
+    <span class="MacroCode">MatchedWord</span>
+&lt;/term&gt;</pre>
+            </div>
+
+            where <br>
+
+            <div class="IndentLR">
+              <table cellspacing="8px">
+                <tr>
+                  <td width="5%" align="right" valign="top" class="Code">
+                    xtf:
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td>
+                    <span class="BaseStyle">
+                      is an XTF namespace prefix added to the tag to differentiate it from tags that came
+                      came from the original XML document. The orefix will not be present
+                      in<span class="Code"> term </span>tags that appear within the
+                      initial<span class="Code"> <a href="#dynaXML_SnippetsTag">snippets</a> </span>summary tag,
+                      but only in<span class="Code"> term </span>tags that occur in the main text for the document.
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="IndentL">
+          <p class="Heading3">Error Generator Tags<a name="dynaXML_ErrorGen_Tags"></a></p>
+          <!----------------------------------------------------------------------------------------------------------->
+          The purpose of the <b>Error Generator</b> stylesheet is to generate a web-page that displays user friendly
+          messages when <b><i>dynaXML</i></b> errors occur. Since its output is obviously HTML, the only tags that
+          this reference section covers are the input XML tags passed to the <b>Error Generator</b> by the
+          <b><i>dynaXML</i></b> Servlet. <br><br>
+
+          For convenience, all of the error information passed into the <b>Error Generator</b> stylesheet as XML tags
+          is also available in the following XSLT parameters: <br><br>
+
+          <div class="IndentLR">
+            <div class="Sample">
+               <table class="Sample" cellspacing="8px">
+                 <tr>
+                   <td width="16%" align="right" valign="top" class="Code">
+                     $exception
+                   </td>
+                   <td width="10">&nbsp;</td>
+                   <td>
+                     <span class="BaseStyle">
+                       A string containing the name of the exception that occurred. This will be the name of one of the
+                       error/exception tags listed below (e.g.,
+                       <span class="Code"> "UnsupportedQuery"</span>,<span class="Code"> "TermLimit"</span>,<span class="Code"> </span>etc.)
+                     </span>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td width="16%" align="right" valign="top" class="Code">
+                     $message
+                   </td>
+                   <td width="10">&nbsp;</td>
+                   <td>
+                     <span class="BaseStyle">
+                       The descriptive message for the error/exception (if any; may be an empty string.)
+                     </span>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td width="16%" align="right" valign="top" class="Code">
+                     $stackTrace
+                   </td>
+                   <td width="10">&nbsp;</td>
+                   <td>
+                     <span class="BaseStyle">
+                       The HTML-Formatted Java Stack Trace generated by the exception, (if any; may be an empty string.)
+                     </span>
+                   </td>
+                 </tr>
+               </table>
+            </div>
+          </div> <!-- XSLT Variable List Indent -->
+
+          <p class="Heading3"></p> <br>
+
+          <div class="Sample">
+           <b><u>Unsuppored Query Tag<a name="dynaXML_UnsupportedQueryErrorTag"></a></u></b><br>
+            <!--------------------------------------------------------------------------------->
+            This error tag is issued by the <b><i>dynaXML</i></b> servlet if a document request issued by the
+            <b>Document Request Parser</b> stylesheet has an error. It has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;UnsupporedQuery&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/UnsupporedQuery&gt;</pre>
+            </div>
+
+            Usually, this error is generated when a<span class="Code"> <a href="#dynaXML_QueryTag">query</a> </span>tag
+            has been used in a document request without the
+            required<span class="Code"> <a href="#dynaXML_IndexTag">index</a> </span>tag.
+
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Query Format Error Tag<a name="dynaXML_QueryFormatErrorTag"></a></u></b><br>
+            <!------------------------------------------------------------------------------->
+            This error tag is issued by the <b>Document Request Parser</b> stylesheet if its code determines that
+            there is an error in the query URL received from a document request. It has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;QueryFormat&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/QueryFormat&gt;</pre>
+            </div>
+
+            To generate such an error, the <b>Document Requeste Parser</b> simply issues a <br><br>
+
+            <div class="IndentLR">
+              <pre class="Code">&lt;error message="<span class="MacroCode">Error Message</span>"/&gt;</pre>
+            </div>
+
+            tag instead of a<span class="Code"> query </span>tag. The error message specified by the
+            <b>Document Request Parser</b>'s error tag is then transferred to the <b>Query Format Error Tag</b>,
+            for processing by the <b><i>dynaXML</i></b> <b>Error Generator</b> stylesheet.
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Term Limit Error Tag<a name="dynaXML_TermLimitErrorTag"></a></u></b><br>
+            <!------------------------------------------------------------------------------>
+            This error tag is issued when the number of terms or clauses in a query issued by the
+            <b>Document Request Parser</b> exceeds the maximum term limit
+            established by the<span class="Code"> <a href="#crossQuery_QueryTag">termLimit</a> </span>attribute
+            of the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag produced by the
+            <a href="#crossQuery_QueryParser_Prog"><b>Query Parser</b></a>.  It has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;TermLimit&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/TermLimit&gt;</pre>
+            </div>
+
+            This error is most often generated by the expansion of wildcard and range queries.
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>Excessive Work Error Tag<a name="dynaXML_ExcessiveWorkErrorTag"></a></u></b><br>
+            <!-------------------------------------------------------------------------------------->
+            This error tag is issued when a query exceeds the maximum work limit established by
+            the<span class="Code"> <a href="#crossQuery_QueryTag">workLimit</a> </span>attribute
+            of the<span class="Code"> <a href="#crossQuery_QueryTag">query</a> </span>tag
+            produced by the <a href="#crossQuery_QueryParser_Prog"><b>Query Parser</b></a>.
+            It has the form:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;ExcessiveWork&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/ExcessiveWork&gt;</pre>
+            </div>
+          </div> <br>
+
+          <div class="Sample">
+            <b><u>General Exception Tag<a name="dynaXML_GeneralExceptionTag"></a></u></b><br>
+            <!--------------------------------------------------------------------------------->
+            This error tag is generated whenever an internal exception occurs in the <b><i>dynaXML</i></b> Servlet.
+            This tag looks as follows:
+
+            <div class="IndentLR">
+<pre class="Code">&lt;<span class="MacroCode">GeneralExceptionName</span>&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+    &lt;stackTrace&gt;<span class="MacroCode">HTML-Formatted Java Stack Trace</span>&lt;/stackTrace&gt;
+&lt;/<span class="MacroCode">GeneralExceptionName</span>&gt;</pre>
+            </div>
+
+            Exceptions are usually generated by anomalous fatal conditions like missing required files, corrupted
+            indexes, or files locked by other applications.
+
+          </div> <br>
+
+        </div>
+
+      </div> <!-- dynaXML Tag Reference -->
+
+    </div> <!-- BaseStyle -->
+
+  </body>
+
+</html>

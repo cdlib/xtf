@@ -1,0 +1,37 @@
+<html>
+
+<head>
+
+<title>Untitled Document</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+</head>
+
+
+
+<body bgcolor="#FFFFFF">
+
+<p>The &quot;lazy tree&quot; mechanism speeds document processing requests by 
+  storing a binary document representation on disk and only loading the actual 
+  nodes used in a given transformation. Most requests only use a small part of 
+  any given document, so this results in a large time savings. At all times, we 
+  maintain the illusion that the entire tree is in RAM, even though most of it 
+  is secretly left on disk.</p>
+<p>In addition to a binary representation of each node, the disk file also contains 
+  a cache for each xsl:key definition that is processed. Without this cache, every 
+  time a key was used the entire tree would have to be loaded from disk, defeating 
+  the purpose of the LazyTree.</p>
+<p>Given a source XML document, a persistent disk file can be created using <a href="LazyTreeBuilder.html">LazyTreeBuilder</a>. 
+  The same class can be used later to load that document back from disk (or rather, 
+  to load the root node of that document; other nodes will be loaded as needed 
+  to maintain the illusion that the whole tree is in memory.)</p>
+<p>Additionally, this package supports annotating the disk file with TextEngine 
+  search results; see the <a href="SearchTree.html">SearchTree</a> class for more 
+  information.</p>
+<p>Where possible, the code here makes use of Michael Kay's Saxon code, and implements 
+  Saxon's NodeInfo interface to integrate seamlessly and speedily with XSLT processing.</p>
+</BODY>
+
+</HTML>
+

@@ -1,0 +1,24 @@
+<html>
+
+<head>
+
+<title>Untitled Document</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+</head>
+
+
+
+<body bgcolor="#FFFFFF">
+
+<p>These classes are used to limit the amount of &quot;work&quot; performed by 
+  a query. The mechanism is easy to use: simply wrap a Lucene IndexReader with 
+  a <a href="LimIndexReader.html">LimIndexReader</a> instance. Every time a document 
+  or position is read from the index, a counter is incremented, and if it exceeds 
+  the limit specified to LimIndexReader, an <a href="ExcessiveWorkException.html">ExcessiveWorkException</a> 
+  will be thrown.</p>
+</BODY>
+
+</HTML>
+

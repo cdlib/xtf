@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit file="doc1.xml">
+      <meta>
+         <testMeta>"Some test data"</testMeta>
+      </meta>
+      <snippet>system. Anything you say <hit>
+            <term>can</term> 
+            <term>and</term> 
+            <term>will</term>
+         </hit> be used against you in a court of law. If</snippet>
+      <snippet>
+         <hit>
+            <term>This</term> is a <term>test</term>
+         </hit> of the emergency broadcasting system. Anything you say <term>can</term> 
+         <term>and</term>
+      </snippet>
+   </docHit>
+</crossQueryResult>

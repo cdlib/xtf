@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+  <all>
+    <testMeta xtf:meta="true">x</testMeta>
+    
+    <!-- Data for testing basic ngrams -->
+
+        The book.
+        
+        Men of war.
+
+        Man on the moon.
+        
+        A cat in a hat.
+        
+        It is not a problem.
+        
+        X X X X X X X X X X X X X X X X X X X X
+        
+        Book of the year.
+        
+        Weird men.
+        
+        Moon man too.
+        
+        Hat on the cat.
+        
+        Problem it is not.
+        
+  </all>
+</document>

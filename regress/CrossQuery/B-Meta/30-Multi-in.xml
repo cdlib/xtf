@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+  <meta indexPath="IndexDB">
+    <and>
+      <term field="subject">political</term>
+      <term field="title">and</term>
+      <term field="title">political</term>
+    </and>
+  </meta>
+</query>

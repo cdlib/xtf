@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xtf="http://cdlib.org/xtf" xmlns:xtf="http://cdlib.org/xtf" xtf:hitCount="3" xtf:firstHit="1">
+   <xtf:snippets totalHitCount="4" hitCount="3">
+      <xtf:snippet rank="1" hitNum="3">your imagination. A loss is a <xtf:hit>
+            <xtf:term>terrible</xtf:term> 
+            <xtf:term>thing</xtf:term>
+         </xtf:hit> to mind. <xtf:term>This</xtf:term> is the end. You just</xtf:snippet>
+      <xtf:snippet rank="2" hitNum="2">go and what to do. The <xtf:hit>
+            <xtf:term>animal</xtf:term> world is full of <xtf:term>examples</xtf:term>
+         </xtf:hit>. <xtf:term>This</xtf:term> particular one is</xtf:snippet>
+      <xtf:snippet rank="3" hitNum="1">in a court of law. If <xtf:hit>
+            <xtf:term>this</xtf:term> had been a real <xtf:term>emergency</xtf:term>
+         </xtf:hit> you would have been told</xtf:snippet>
+   </xtf:snippets>
+   <testMeta xtf:meta="yes">Some test data</testMeta>
+   <p xtf:hitCount="1" xtf:firstHit="1">
+    
+      <xtf:term>This</xtf:term> is a test of the <xtf:term>emergency</xtf:term> 
+      <foo> (broadcasting) system. Anything </foo> you say can and will be used against
+    you in a court of law. If <xtf:hit rank="3" hitNum="1" more="no">
+         <xtf:term>this</xtf:term> had been a real <xtf:term>emergency</xtf:term>
+      </xtf:hit> you would have been told where to go and
+    what to do.
+    </p>
+   <p xtf:hitCount="2" xtf:firstHit="2">
+    The <xtf:hit rank="2" hitNum="2" more="no">
+         <xtf:term>animal</xtf:term> world is full of <xtf:term>examples</xtf:term>
+      </xtf:hit>. <xtf:term>This</xtf:term> particular one is missing from <xtf:term>this</xtf:term> document, but if
+    you like you can use your imagination. Never lose your imagination. 
+    A loss is a <xtf:hit rank="1" hitNum="3" more="no">
+         <xtf:term>terrible</xtf:term> 
+         <xtf:term>thing</xtf:term>
+      </xtf:hit> to mind. <xtf:term>This</xtf:term> is the end.
+    </p>
+   <p>
+    You just gotta love it!
+    </p>
+   <p>
+    Cats don't care about man's inhumanity to man.
+    </p>
+</document>
