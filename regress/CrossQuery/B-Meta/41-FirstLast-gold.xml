@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="2" startDoc="1" endDoc="2">
+   <docHit file="doc5.xml">
+      <meta>
+         <title>California Riparian Systems: Ecology, Conservation, and Productive Management</title>
+         <creator>Richard E. Warner and Kathleen M. Hendrix, editors</creator>
+         <subject>
+            <term>Environmental</term> Studies</subject>
+         <subject>California and the West</subject>
+         <description>This volume presents 135 of the papers presented at the 1981 California Riparian Systems Conference. The papers address all aspects of riparian systems: habitat, wildlife, land management, land use policy planning, conservation and water resource management.</description>
+         <date>19841203</date>
+         <type>text</type>
+         <identifier>http://ark.cdlib.org/ark:/13030/ft1c6003wp</identifier>
+         <relation>http://www.ucpress.edu/</relation>
+         <relation>http://escholarship.cdlib.org/</relation>
+         <rights>Public</rights>
+      </meta>
+      <snippet>pristine riparian systems <hit>
+            <term>left</term> 
+            <term>in</term> 
+            <term>the</term> 
+            <term>state</term>
+         </hit>. (Photograph © 1983 by R.E. Warner</snippet>
+   </docHit>
    <docHit file="doc1.xml">
       <meta>
          <title>The Opening of the Apartheid Mind: Options for the New South Africa</title>
@@ -25,27 +47,5 @@
             <term>South</term> 
             <term>Africa</term>
          </hit> It is now conventional wisdom</snippet>
-   </docHit>
-   <docHit file="doc5.xml">
-      <meta>
-         <title>California Riparian Systems: Ecology, Conservation, and Productive Management</title>
-         <creator>Richard E. Warner and Kathleen M. Hendrix, editors</creator>
-         <subject>
-            <term>Environmental</term> Studies</subject>
-         <subject>California and the West</subject>
-         <description>This volume presents 135 of the papers presented at the 1981 California Riparian Systems Conference. The papers address all aspects of riparian systems: habitat, wildlife, land management, land use policy planning, conservation and water resource management.</description>
-         <date>19841203</date>
-         <type>text</type>
-         <identifier>http://ark.cdlib.org/ark:/13030/ft1c6003wp</identifier>
-         <relation>http://www.ucpress.edu/</relation>
-         <relation>http://escholarship.cdlib.org/</relation>
-         <rights>Public</rights>
-      </meta>
-      <snippet>pristine riparian systems <hit>
-            <term>left</term> 
-            <term>in</term> 
-            <term>the</term> 
-            <term>state</term>
-         </hit>. (Photograph © 1983 by R.E. Warner</snippet>
    </docHit>
 </crossQueryResult>
