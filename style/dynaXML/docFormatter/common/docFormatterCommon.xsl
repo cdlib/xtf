@@ -30,8 +30,15 @@
 -->
 
 
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                              xmlns:xtf="http://cdlib.org/xtf">
+<xsl:stylesheet version="2.0" 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:xtf="http://cdlib.org/xtf"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:mets="http://www.loc.gov/METS/"
+  xmlns:mods="http://www.loc.gov/mods/"
+  xmlns:xlink="http://www.w3.org/TR/xlink"
+  xmlns:parse="http://cdlib.org/parse"
+  exclude-result-prefixes="xsl dc mets mods xlink parse">
 
   <xsl:param name="servlet.path"/>
   
@@ -112,9 +119,32 @@
   </xsl:param>  
     
   <xsl:param name="hit.rank" select="'0'"/>
-
+  
+  <!-- METS -->
+  
+  <xsl:param name="sourceDir" select="concat('data/', $subDir, '/', $docId, '/')"/>
+  <xsl:param name="METS" select="document(concat('../../../../../', $sourceDir, $docId, '.mets.xml'))"/>  
+  
   <!-- Brand Parameter -->
-  <xsl:param name="brand"/>
+  
+  <!-- Checking the METS for brand is really just a placeholder -->
+  <!-- They haven't been encoded with the appropriate behaviorSec yet -->
+  <xsl:variable name="brandMechURL" select="$METS//mets:behavior[@BTYPE='brand']/mets:mechanism/@*[local-name()='href']"/>
+  <xsl:variable name="brandMech" select="document($brandMechURL)"/>
+ 
+  <xsl:param name="brand">
+    <xsl:choose>
+      <xsl:when test="$brand != ''">
+        <xsl:value-of select="$brand"/>
+      </xsl:when>
+      <xsl:when test="$brandMech//brand">
+        <xsl:value-of select="$brandMech//brand/@path"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$brand"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:param>
   
   <!-- Retrieve Branding Nodes -->
   <xsl:variable name="brand.file">
@@ -131,8 +161,6 @@
   <xsl:param name="brand.links" select="$brand.file//links/*"/>
   <xsl:param name="brand.header" select="$brand.file//header/*"/>
   <xsl:param name="brand.header.dynaxml.header" select="$brand.file//header.dynaxml.header/*"/>
-  <xsl:param name="brand.header.dynaxml.topnav.left" select="$brand.file//header.dynaxml.topnav.left/*"/>
-  <xsl:param name="brand.header.dynaxml.topnav.right" select="$brand.file//header.dynaxml.topnav.right/*"/>
   <xsl:param name="brand.footer" select="$brand.file//footer/*"/>
   
   <!-- URL Encoding Map -->
