@@ -190,7 +190,7 @@ class SpanRecordingScorer extends Scorer
   }
 
   public boolean skipTo(int target) throws IOException {
-    if (doc == 0 || target > spans.doc())
+    if (doc == 0 || (more && target > spans.doc()))
       more = spans.skipTo(target);
     return advance();
   }
