@@ -1321,7 +1321,7 @@
   <!-- ====================================================================== -->
       
   <xsl:template match="subject">
-    <a href="{$servlet.path}?subject=%22{.}%22&amp;relation={$relation}&amp;rmode={$rmode}">
+    <a href="{$servlet.path}?subject=%22{.}%22&amp;relation={$relation}&amp;relation-exclude={$relation-exclude}&amp;rmode={$rmode}">
       <xsl:apply-templates/>
     </a>
     <xsl:if test="not(position() = last())">
