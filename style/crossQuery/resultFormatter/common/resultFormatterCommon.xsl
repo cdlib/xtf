@@ -171,10 +171,29 @@
   <xsl:param name="sectionType"/>
 
   <!-- Search and Result Behavior URL Parameters -->
-  <xsl:param name="smode"/>
-  <xsl:param name="rmode"/>
-  <xsl:param name="raw"/>
+  <xsl:param name="smode" select="'simple'"/>
+  <xsl:param name="rmode" select="'none'"/>
+  <xsl:param name="brand"/>
   <xsl:param name="sort"/>
+  
+  <!-- XML Output Parameter -->
+  <xsl:param name="raw"/>
+  
+  <!-- Retrieve Branding Nodes -->
+  <xsl:variable name="brand.file">
+    <xsl:choose>
+      <xsl:when test="$brand != ''">
+        <xsl:copy-of select="document(concat('../../../../brand/',$brand,'.xml'))"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="document('../../../../brand/default.xml')"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  
+  <xsl:param name="brand.links" select="$brand.file//links/*"/>
+  <xsl:param name="brand.header" select="$brand.file//header/*"/>
+  <xsl:param name="brand.footer" select="$brand.file//footer/*"/>
 
   <!-- Paging Parameters-->  
   <xsl:param name="startDoc" as="xs:integer" select="1"/>
@@ -206,7 +225,7 @@
   
   <xsl:param name="queryString">
     <xsl:call-template name="queryString">
-      <xsl:with-param name="textParams" select="'keyword keyword-join keyword-prox keyword-exclude fieldList text text-join text-prox text-exclude text-max title title-join title-prox title-exclude title-max creator creator-join creator-prox creator-exclude creator-max subject subject-join subject-prox subject-exclude subject-max description description-join description-prox description-exclude description-max publisher publisher-join publisher-prox publisher-exclude publisher-max contributor contributor-join contributor-prox contributor-exclude contributor-max date date-join date-prox date-exclude date-max type type-join type-prox type-exclude type-max format format-join format-prox format-exclude format-max identifier identifier-join identifier-prox identifier-exclude identifier-max source source-join source-prox source-exclude source-max language language-join language-prox language-exclude language-max relation relation-join relation-prox relation-exclude relation-max coverage coverage-join coverage-prox coverage-exclude coverage-max rights rights-join rights-prox rights-exclude rights-max year year-join year-prox year-exclude year-max profile profile-join profile-prox profile-exclude profile-max sectionType rmode sort '"/>
+      <xsl:with-param name="textParams" select="'keyword keyword-join keyword-prox keyword-exclude fieldList text text-join text-prox text-exclude text-max title title-join title-prox title-exclude title-max creator creator-join creator-prox creator-exclude creator-max subject subject-join subject-prox subject-exclude subject-max description description-join description-prox description-exclude description-max publisher publisher-join publisher-prox publisher-exclude publisher-max contributor contributor-join contributor-prox contributor-exclude contributor-max date date-join date-prox date-exclude date-max type type-join type-prox type-exclude type-max format format-join format-prox format-exclude format-max identifier identifier-join identifier-prox identifier-exclude identifier-max source source-join source-prox source-exclude source-max language language-join language-prox language-exclude language-max relation relation-join relation-prox relation-exclude relation-max coverage coverage-join coverage-prox coverage-exclude coverage-max rights rights-join rights-prox rights-exclude rights-max year year-join year-prox year-exclude year-max profile profile-join profile-prox profile-exclude profile-max sectionType smode rmode brand sort '"/>
       <xsl:with-param name="count" select="1"/>
     </xsl:call-template>
   </xsl:param>
@@ -891,12 +910,26 @@
           <xsl:text>sectionType=</xsl:text>
           <xsl:value-of select="$sectionType"/>
         </xsl:when>
+        <xsl:when test="$param = 'smode' and $smode">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>smode=</xsl:text>
+          <xsl:value-of select="$smode"/>
+        </xsl:when>
         <xsl:when test="$param = 'rmode' and $rmode">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
           </xsl:if>
           <xsl:text>rmode=</xsl:text>
           <xsl:value-of select="$rmode"/>
+        </xsl:when>
+        <xsl:when test="$param = 'brand' and $brand">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>brand=</xsl:text>
+          <xsl:value-of select="$brand"/>
         </xsl:when>
         <xsl:when test="$param = 'sort' and $sort">
           <xsl:if test="$count > 1">
@@ -1211,9 +1244,10 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString, 
-                          '&amp;rmode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
+    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString,                           
                           '&amp;smode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),
+                          '&amp;rmode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),
+                          '&amp;brand=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),
                           '&amp;relation=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;profile=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;profile-join=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
@@ -1410,7 +1444,7 @@
   <!-- ====================================================================== -->
       
   <xsl:template match="subject">
-    <a href="{$servlet.path}?subject=%22{.}%22&amp;profile={$profile}&amp;profile-join={$profile-join}&amp;rmode={$rmode}">
+    <a href="{$servlet.path}?subject=%22{.}%22&amp;profile={$profile}&amp;profile-join={$profile-join}&amp;smode={$smode}&amp;rmode={$rmode}&amp;brand={$brand}">
       <xsl:apply-templates/>
     </a>
     <xsl:if test="not(position() = last())">
@@ -1426,10 +1460,10 @@
   
     <xsl:param name="block"/>    
     <xsl:param name="identifier"/>
-    <xsl:variable name="hideString" select="replace($queryString, '(rmode=[A-Za-z0-9]+)-show', '$1')"/>
+    <xsl:variable name="hideString" select="replace($queryString, 'rmode=[A-Za-z0-9]*', 'rmode=hideDescrip')"/>
 
     <xsl:choose>
-      <xsl:when test="(contains($rmode, 'show')) and (matches(string() , '.{500}'))">
+      <xsl:when test="(contains($rmode, 'showDescrip')) and (matches(string() , '.{500}'))">
         <xsl:apply-templates select="$block"/>
         <xsl:text>&#160;&#160;&#160;</xsl:text>
         <a href="{$servlet.path}?{$hideString}&amp;startDoc={$startDoc}#{$identifier}">[brief]</a>         
@@ -1446,7 +1480,7 @@
   <xsl:template match="node()" mode="crop">
     
     <xsl:param name="identifier"/>   
-    <xsl:variable name="moreString" select="replace($queryString, '(rmode=[A-Za-z0-9]+)', '$1-show')"/>
+    <xsl:variable name="moreString" select="replace($queryString, 'rmode=[A-Za-z0-9]*', 'rmode=showDescrip')"/>
     
     <xsl:choose>
       <xsl:when test="matches(string(.) , '.{300}')">

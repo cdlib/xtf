@@ -60,13 +60,16 @@
   
   <!-- search mode -->
   <xsl:param name="smode"/>
-
+  
   <!-- result mode -->
-  <xsl:param name="rmode"/>
-
+  <xsl:param name="rmode"/>  
+  
+  <!-- brand mode -->
+  <xsl:param name="brand"/>
+  
   <!-- sort mode -->
   <xsl:param name="sort"/>
-  
+
   <!-- raw XML dump flag -->
   <xsl:param name="raw"/>
 
@@ -140,7 +143,7 @@
     <xsl:variable name="textParam" select="$queryParams[matches(@name, 'text|query')]"/>
     
     <!-- Find the meta-data queries, if any -->
-    <xsl:variable name="metaParams" select="$queryParams[not(matches(@name, 'text*|query*|rmode|smode|sort|startDoc|docsPerPages|sectionType|fieldList|.*-ignore'))]"/>
+    <xsl:variable name="metaParams" select="$queryParams[not(matches(@name, 'text*|query*|smode|rmode|brand|sort|startDoc|docsPerPages|sectionType|fieldList|.*-ignore'))]"/>
  
     <and>
       <!-- Process the meta-data queries, if any -->

@@ -114,9 +114,7 @@ POSSIBILITY OF SUCH DAMAGE.
     This can be quite useful for instance if you want to have two or more
     color schemes for different sets of documents.
     -->
-    
-    <brand path="brand/default.xsl"/>        
-    
+
     <!-- ==================================================================
     For speed, a persistent or "lazy" version of each document is
     stored in the index. The servlet needs to be able to get back to

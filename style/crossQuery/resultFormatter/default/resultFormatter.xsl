@@ -64,7 +64,7 @@
       <xsl:when test="$smode = 'test'">
         <xsl:apply-templates select="crossQueryResult" mode="test"/>
       </xsl:when>
-      <xsl:when test="$smode = 'modify'">
+      <xsl:when test="contains($smode, '-modify')">
         <xsl:apply-templates select="crossQueryResult" mode="form"/>
       </xsl:when>
       <xsl:when test="
@@ -116,13 +116,15 @@
       </xsl:choose>
     </xsl:variable>
 
+    <xsl:variable name="modifyString" select="replace($queryString, '(smode=[A-Za-z0-9]*)', '$1-modify')"/>
+
     <html>
       <head>
         <title>XTF: Search Results</title>
-        <link rel="stylesheet" href="{$css.path}results.css" type="text/css"/>
+        <xsl:copy-of select="$brand.links"/>
       </head>
       <body bgcolor="ivory">
-        <xsl:call-template name="header"/>
+        <xsl:copy-of select="$brand.header"/>
         <table style="margin-top: 1%; margin-bottom: 1%" width="100%" cellpadding="0" cellspacing="2" border="0" bgcolor="ivory">
           <tr>
             <td align="right" width="10%">
@@ -165,7 +167,7 @@
           </tr> 
           <tr>
             <td colspan="3" align="center">
-              <a class="highlight" href="{$servlet.path}?{$queryString}&amp;smode=modify">
+              <a class="highlight" href="{$servlet.path}?{$modifyString}">
                 <xsl:text>Modify Search</xsl:text>
               </a>
               <xsl:text>&#160;&#160;</xsl:text>
@@ -187,7 +189,7 @@
           </table>
         </xsl:if>
         
-        <xsl:call-template name="footer"/>      
+        <xsl:copy-of select="$brand.footer"/>    
         
       </body>
     </html>
@@ -201,10 +203,10 @@
     <html>
       <head>
         <title>XTF: Search Form</title>
-        <link rel="stylesheet" href="{$css.path}results.css" type="text/css"/>
+        <xsl:copy-of select="$brand.links"/>
       </head>
       <body bgcolor="ivory">
-        <xsl:call-template name="header"/>
+        <xsl:copy-of select="$brand.header"/>
         <form method="get" action="{$servlet.path}">
           <table width="90%" cellpading="0" cellspacing="2" bgcolor="ivory" border="0">
             <tr>
@@ -416,7 +418,7 @@
             </tr>
           </table>
         </form>
-        <xsl:call-template name="footer"/>
+        <xsl:copy-of select="$brand.footer"/>
       </body>
     </html>
   </xsl:template>
@@ -651,52 +653,6 @@
       </xsl:otherwise>
     </xsl:choose> 
    
-  </xsl:template>
-    
-  <!-- ====================================================================== -->
-  <!-- Display Header & Footer                                                -->
-  <!-- ====================================================================== -->
-
-  <xsl:template name="header">
-    <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="ivory">     
-      <tr bgcolor="#62708D">
-        <td width="33%" height="44" align="left">
-          <a href="http://xtf.sourceforge.net" target="_top">
-            <img src="{$serverURL}icons/default/spacer.gif" border="0" width="15"/>
-            <img src="{$serverURL}icons/default/xtfMan.gif" border="0" height="44" alt="XTF"/>
-          </a>
-        </td>
-        <td width="34%" height="44" align="center">
-          <h1 style="color: white">XTF Default Interface</h1>
-        </td>
-        <td width="33%" height="44" align="right">
-          <a href="http://www.sourceforge.net" target="_top">
-            <img src="{$serverURL}icons/default/sflogo.php.png" border="0" alt="SourceForge"/>
-            <img src="{$serverURL}icons/default/spacer.gif" border="0" width="15"/>
-          </a>
-        </td>
-      </tr>
-      <tr bgcolor="silver">
-        <td align="left">
-          <a href="{$servlet.path}">Search</a>
-          <xsl:text> | </xsl:text>
-          <a href="{$servlet.path}?relation=www.ucpress.edu&amp;sort=title">Browse</a>
-        </td>
-        <td align="right" colspan="2">
-          <a href="http://xtf.sourceforge.net/index.html#docs">Help</a>
-        </td>
-      </tr>
-    </table>
-  </xsl:template>
- 
-  <xsl:template name="footer">
-    <table width="100%" cellpading="0" cellspacing="2" bgcolor="ivory">        
-      <tr>
-        <td>
-          <a href="https://sourceforge.net/tracker/?func=add&amp;group_id=119724&amp;atid=684779">Comments? Questions?</a>
-        </td>
-      </tr>
-    </table>
   </xsl:template>
 
 </xsl:stylesheet>

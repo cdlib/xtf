@@ -113,10 +113,28 @@
     
   <xsl:param name="hit.rank" select="'0'"/>
 
-  <!-- Branding Parameters -->
-
+  <!-- Brand Parameter -->
   <xsl:param name="brand"/>
-
+  
+  <!-- Retrieve Branding Nodes -->
+  <xsl:variable name="brand.file">
+    <xsl:choose>
+      <xsl:when test="$brand != ''">
+        <xsl:copy-of select="document(concat('../../../../brand/',$brand,'.xml'))"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="document('../../../../brand/default.xml')"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  
+  <xsl:param name="brand.links" select="$brand.file//links/*"/>
+  <xsl:param name="brand.header" select="$brand.file//header/*"/>
+  <xsl:param name="brand.header.dynaxml.header" select="$brand.file//header.dynaxml.header/*"/>
+  <xsl:param name="brand.header.dynaxml.topnav.left" select="$brand.file//header.dynaxml.topnav.left/*"/>
+  <xsl:param name="brand.header.dynaxml.topnav.right" select="$brand.file//header.dynaxml.topnav.right/*"/>
+  <xsl:param name="brand.footer" select="$brand.file//footer/*"/>
+  
   <!-- URL Encoding Map -->
 
   <xtf:encoding-map>
