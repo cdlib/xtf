@@ -209,7 +209,9 @@ public class NgramQueryRewriter
             anyChange = true;
         
         // And add it to the appropriate vector.
-        if( clauses[i].prohibited )
+        if( rewrittenQuery == null )
+            continue;
+        else if( clauses[i].prohibited )
             prohibited.add( rewrittenQuery );
         else if( clauses[i].required )
             required.add( rewrittenQuery );
