@@ -1,10 +1,10 @@
 <html>
 
-  <head>
-    <title>XTF Deployment Guide</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
-    <style type="text/css">
+  
+<head>
+<title>XTF Deployment Guide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
       <!--
         .DocTitle     { margin-left:  0.00in;
                         font-family:  Arial, Helvetica, sans-serif;
@@ -58,7 +58,7 @@
         .MacroCodeB   { font-family: "Times New Roman", Times, serif; font-style: italic; color: #990099 }
 
         .Sample       { margin-left: 0.15in; margin-right: 0.1in;
-                        background-color: #EEEEEE;
+                        background-color: #E0E0E0;
                         padding-top:  8px; padding-bottom: 8px;
                         padding-left: 8px; padding-right:  8px;
                         border-style: none }
@@ -69,7 +69,7 @@
 
         .Red           { color: #990000; font-style: italic; }
 
-        .GreyList     { background-color: #EEEEEE;
+        .GreyList     { background-color: #E0E0E0;
                         margin-left: 0.15in; margin-right: 0.15in;
                         margin-top:   5px;  margin-bottom:  0px;
                         padding-left: 8px;  padding-right:  8px;
@@ -88,7 +88,7 @@
                       list-style-type: none }
       -->
     </style>
-  </head>
+</head>
 
   <body bgcolor="#FFFFFF" text="#101010" >
 
@@ -398,7 +398,7 @@
 
         <p class="Heading2">Saxon <i>(optional)</i><a name="RunTimeSaxon"></a></p>
         <!------------------------------------------------------------------------------------------------------------->
-        <i><b>Note</i></b>: The proper version of Saxon is included with the XTF distribution package, so you generally
+        <i><b>Note</b></i>: The proper version of Saxon is included with the XTF distribution package, so you generally
         will not need extra installation unless XTF will run in the same servlet container with tools that need
         a different version of Saxon.<br><br>
 
@@ -417,7 +417,7 @@
 
         <p class="Heading2">Lucene <i>(optional)</i><a name="RunTimeLucene"></a></p>
         <!------------------------------------------------------------------------------------------------------------->
-        <i><b>Note</i></b>: The proper version of Lucene is included with the XTF distribution package, so you generally
+        <i><b>Note</b></i>: The proper version of Lucene is included with the XTF distribution package, so you generally
         will not need extra installation unless XTF will run in the same servlet container with tools that need
         a different version of Lucene.<br><br>
 
@@ -429,11 +429,12 @@
         have typically been incompatible with earlier versions, and it is reasonable to expect that future versions will
         incompatible as well. Consequently, only version 1.4 of the Lucene Library is supported by the XTF system at
         this time. <br><br>
-
-        For the most part, installing Lucene consists of simply placing the <span class="Code">.jar</span> file in
-        your class path. However, as with the Java J2SE and the Saxon Library, Lucene is a third party package whose
-        installation and configuration may change in future releases. Please refer to the documentation that accompanies
-        Lucene for any additional steps required to install and configure the library. <br>
+    For the most part, installing Lucene consists of simply placing the <span class="Code">.jar</span> 
+    file in your class path. However, as with the Java J2SE and the Saxon Library, 
+    Lucene is a third party package whose installation and configuration may change 
+    in future releases. Please refer to the documentation that accompanies Lucene 
+    for any additional steps required to install and configure the library.<br>
+    <br>
 
       </div> <!-- Run-Time Install/Config -->
 
@@ -443,44 +444,42 @@
       Prior to installing the XTF package, install and configure the Run-Time Environment as described in the
       <a href="#RunTimeInstall">previous section</a>. Once the run-time environment is up and running, do the
       following to install the XTF Package: <br>
-
-      <ol class="OrderedList">
-
-
-
-        <li>
-          Shut down your servlet container, to keep it from prematurely trying to unpack <b><i>XTF</i></b>.
-        </li>
-
-        <li> Download the California Digital Library XTF web-archive file (via <a href="http://sourceforge.net/projects/xtf">SourceForge</a>) and place it in your servlet container's webapps directory.  </li>
-
-        <li>
-          <span class="Red">Very important:</span>
-          Rename the web-archive file to <span class="Code">xtf.war</span> .
-        </li>
-
-        <li>
-          Start up the servlet container, and browse to a URL referencing an XTF servlet, such as dynaXML:<br><br>
-
-          <div class="Sample">
-            <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML?docId=ft958009mm&amp;doc.view=frames</span>
-          </div> <br>
-
-          Accessing this URL should cause the servlet container to unpack the web archive file, creating an
-          <span class="Code">xtf</span> sub-directory below the container's <span class="Code">webapps</span>
-          directory. This automatically installs the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets,
-          the <b><i>textIndexer</i></b> tool, a sample document library, and a sample configuration that allows
-          you to index, search for, and retrieve documents from the the sample library. <br><br>
-        </li>
-
-      </ol>
-
-      At this point, the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, and the <b><i>textIndexer</i></b>
-      tool will be installed and ready to use. Also installed are a sample document library and a sample configuration
-      that you can use to index, search for, and retrieve documents from the sample library. To play with the sample
-      setup, simply follow the steps outlined in the <a href="#QuickIndex">last two sections</a> of the
-      <b>Quick Start</b> guide above. Alternately, to customize the sample installation to better suit your needs, see
-      the three remaining <b>XTF Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>. <br>
+  <ol class="OrderedList">
+    <li> Shut down your servlet container, to keep it from prematurely trying to unpack 
+      <b><i>XTF</i></b>.<br>
+      <br>
+    </li>
+    <li> Download the California Digital Library XTF web-archive file (via <a href="http://sourceforge.net/projects/xtf">SourceForge</a>) 
+      and place it in your servlet container's webapps directory.<br>
+      <br>
+    </li>
+    <li> <span class="Red">Very important:</span> Rename the web-archive file to <span class="Code">xtf.war</span> 
+      .<br>
+      <br>
+    </li>
+    <li> Start up the servlet container, and browse to a URL referencing an XTF servlet, 
+      such as dynaXML:<br>
+      <br>
+      <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML?docId=ft958009mm&amp;doc.view=frames</span> 
+      </div>
+      <br>
+      Accessing this URL should cause the servlet container to unpack the web archive 
+      file, creating an <span class="Code">xtf</span> sub-directory below the container's 
+      <span class="Code">webapps</span> directory. This automatically installs the 
+      <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, the <b><i>textIndexer</i></b> 
+      tool, a sample document library, and a sample configuration that allows you 
+      to index, search for, and retrieve documents from the the sample library. <br>
+      <br>
+    </li>
+  </ol>
+  At this point, the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, 
+  and the <b><i>textIndexer</i></b> tool will be installed and ready to use. Also 
+  installed are a sample document library and a sample configuration that you can 
+  use to index, search for, and retrieve documents from the sample library. To play 
+  with the sample setup, simply follow the steps outlined in the <a href="#QuickIndex">last 
+  two sections</a> of the <b>Quick Start</b> guide above. Alternately, to customize 
+  the sample installation to better suit your needs, see the three remaining <b>XTF 
+  Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>. <br>
 
       <div class="IndentL">
 
@@ -522,20 +521,22 @@
 
           <div class="GreyList">
             <span class="Code">-config <span class="MacroCode">config-file-path</span></span><br>
-            This argument is an optional argument that identifies an XML configuration file to use when indexing. If
-            this argument is omitted, the <b><i>textIndexer</i></b> will use the
-            <span class="Code">textIndexer.conf</span> file found in the <span class="Code">XTF_HOME/conf</span>
-            directory. If used, this argument must be the first argument passed to the text indexer. For a complete
-            description of the contents of the configuration file, see the following section. <br>
+        This argument is an optional argument that identifies an XML configuration 
+        file to use when indexing. If this argument is omitted, the <b><i>textIndexer</i></b> 
+        will use the <span class="Code">textIndexer.conf</span> file found in the 
+        <span class="Code">XTF_HOME/conf</span> directory. If used, this argument 
+        must be the first argument passed to the text indexer. For a complete description 
+        of the contents of the configuration file, see the following section.
           </div>
 
           <div class="GreyList">
             <span class="Code">-clean | <b>-incremental</b></span><br>
-            This argument is an optional argument that can be set to either <span class="Code">-clean</span> or
-            <span class="Code">-incremental</span>. This flag tells the text indexer whether the document indexes
-            should be rebuilt from scratch (<span class="Code">-clean</span>) or should be updated incrementally
-            (<span class="Code">-incremental</span>). If this argument is not specified, the default behavior is
-            to incrementally update the index. <br>
+        This argument is an optional argument that can be set to either <span class="Code">-clean</span> 
+        or <span class="Code">-incremental</span>. This flag tells the text indexer 
+        whether the document indexes should be rebuilt from scratch (<span class="Code">-clean</span>) 
+        or should be updated incrementally (<span class="Code">-incremental</span>). 
+        If this argument is not specified, the default behavior is to incrementally 
+        update the index.
           </div>
 
           <div class="GreyList">
@@ -547,9 +548,11 @@
           </div>
 
           <div class="GreyList">
-            <span class="Code">-trace</span> <span class="MacroCode">trace-level</span></span> <br>
-            This argument is an optional argument that sets the level of output displayed by the text indexer. The
-            possible output levels are defined as follows: <br><br>
+            <span class="Code">-trace <span class="MacroCode">trace-level</span></span> <br>
+        This argument is an optional argument that sets the level of output displayed 
+        by the <i><b>textIndexer</b></i>. The possible output levels are defined as 
+        follows: <br>
+        <br>
 
             <table>
               <tr>
@@ -577,10 +580,9 @@
                 </td>
               </tr>
             </table> <br>
-
-            <b>If this argument is not specified, the text indexer defaults to displaying informational
-            (<span class="Code">info</span>) level messages. </b>
-          </div>
+        If this argument is not specified, the <i><b>textIndexer</b></i> defaults 
+        to displaying informational (<span class="Code">info</span>) level messages. 
+      </div>
 
           <div class="GreyList">
             <span class="Code">-dir <span class="MacroCode">subdirectory</span></span> <br>
@@ -624,11 +626,11 @@
           <b>abstracts</b> index is updated incrementally and not optimized. <br><br><br>
 
           <b><u>The textIndexer Configuration File</u></b> <br>
-          As noted above, first command line argument passed to the <b><i>textIndexer</i></b> tool is the name of a
-          configuration file. This file contains the name of one or more indexes and their associated parameters. The
-          format of the file is as follows:
-
-<pre class="Sample"><b>
+      As noted above, first command line argument passed to the <b><i>textIndexer</i></b> 
+      tool is the name of a configuration file. This file contains the name of one 
+      or more indexes and their associated parameters. The format of the file is as 
+      follows: 
+      <pre class="Sample"><b>
 &lt;?xml version="1.0" encoding="utf-8"?&gt;
 
 &lt;textIndexer-config&gt;
@@ -637,9 +639,8 @@
         &lt;src path="<span class="MacroCode">LocationOfSourceDocuments</span>"/&gt;
         &lt;db path="<span class="MacroCode">LocationOfIndexDatabase</span>"/&gt;
         &lt;chunk size="<span class="MacroCode">TextChunkSize</span> overlap="<span class="MacroCode">TextChunkOverlap</span>"/&gt;
-        &lt;skip files="<span class="MacroCode">FilesToSkip</span>"/&gt;
-        &lt;inputfilter path="<span class="MacroCode">LocationOfDocumentPreFilter</span>"/&gt;
         &lt;stopwords path="<span class="MacroCode">LocationOfStopWordFile</span>"/&gt;
+        &lt;docselector path="<span class="MacroCode">LocationOfDocSelector</span>"/&gt;
     &lt;/index&gt;
         <img src="../Common_Art/vDotDotDot2.gif">
     &lt;index name="<span class="MacroCode">NameOfIndexN</span>"/&gt;
@@ -731,33 +732,26 @@
             </div>
           </div>
 
-          <div class="GreyList">
-            <span class="Code"> &lt;skip files="<span class="MacroCode">FilesToSkip</span>"&gt;</span><br>
-            <div class="IndentLR">
-              This attribute specifies a list of files that the <i><b>textIndexer</b></i> should ignore when indexing.
-              The files to skip can be specified through the use of the <b>*</b> and <b>?</b> wildcard characters, or by
-              listing them explicitly (including paths if desired.) To specify multiple files for skipping, separate
-              each new file in the string from the previous one by spaces, commas, or both. <br>
-            </div>
-          </div>
+          
+      <div class="GreyList"> <span class="Code"> </span> </div>
 
-          <div class="GreyList">
-            <span class="Code">
-              &lt;inputfilter path="<span class="MacroCode">LocationOfDocumentPreFilter</span>"&gt;
-            </span><br>
-            <div class="IndentLR">
-              The <i><b>textIndexer</b></i> can optionally run each source document through an XSLT pre-filter before it
-              is indexed. In most cases, the prefilter used to strip out sections of the source document that should not
-              be indexed, or to insert additional markup tags that affect document's organization. This attribute
-              identifies the location and name of the pre-filter file to use. The path and name of the file specified by
-              this attribute must valid for the operating system on which the tool is being run (e.g., Windows, Mac,
-              Linux, etc.) If a relative path is used, it is considered to be relative to the location of the
-              XTF base installation directory (i.e.,<span class="Code"> XTF_HOME </span>.) <br><br>
-
-              <div class="Note">
-                (<u>Note</u>: If this attribute doesn't appear in an index definition block, no pre-filtering is performed
-                by the <b><i>textIndexer</i></b>.)
-              </div>
+          
+      <div class="GreyList"> <span class="Code"> &lt;docselector path="<span class="MacroCode">LocationOfDocSelector</span>"&gt; 
+        </span><br>
+            
+        <div class="IndentLR"> 
+          <p>This tag identifies the location of an XSLT file that describes which 
+            source documents should be indexed, what pre-filter (if any) should be 
+            used on the selected documents, and what display formatter should be used 
+            to display the document when it is retrieved by the user. The path specified 
+            for the document selector must be a valid path and file name for the operating 
+            system on which the tool is being run (e.g., Windows, Mac, Linux, etc.) 
+            If a relative path is used, it is considered to be relative to the base 
+            XTF installation directory (i.e., <span class="Code">XTF_HOME</span>.)<br>
+          </p>
+          <div class="Note"> (<u>Note</u>: The document selector must be specified 
+            for an index. If it is not, an error is generated, and no document indexing 
+            will be performed<b><i></i></b>.) </div>
             </div>
           </div>
 
@@ -785,12 +779,11 @@
               phrases, like <b>of</b> in <b>Man of War</b>, or <b>the</b> in <b>The Terminator</b>.
             </div>
           </div> <br>
-
-          An example of a working <b><i>textIndexer</i></b> configuration file is the sample<span class="Code">
-          textIndexer.conf </span>file found in the<span class="Code"> conf </span>subdirectory immediately below the
-          base XTF install directory. At the time of this writing it looked like this:
-
-<pre class="Sample"><b>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+      An example of a working <b><i>textIndexer</i></b> configuration file is the 
+      sample<span class="Code"> textIndexer.conf </span>file found in the<span class="Code"> 
+      conf </span>subdirectory immediately below the base XTF install directory. At 
+      the time of this writing it looked like this: 
+      <pre class="Sample"><b>&lt;?xml version="1.0" encoding="utf-8"?&gt;
 
 &lt;textIndexer-config&gt;
 
@@ -798,51 +791,78 @@
         &lt;src path=&quot;./data&quot;/&gt;
         &lt;db path=&quot;./index&quot;/&gt;
         &lt;chunk size="200 overlap="20"/&gt;
-        &lt;skip files=&quot;*.mets.xml, *.dc.xml, *AuthMech*"/&gt;
-        &lt;inputfilter path="./style/textIndexer/preFilter.xsl"/&gt;
         &lt;stopwords path=&quot;./conf/stopWords.txt&quot;/&gt;
+        &lt;docselector path="./style/textIndexer/docSelector.xsl"/&gt;
     &lt;/index&gt;
 
 &lt;/textIndexer-config&gt;</b></pre>
-
-          In this example, we see that the index name is <span class="Code">texts</span>, that the source and index
-          paths are <span class="Code">../data</span> and <span class="Code">../index</span> respectively, (relative to
-          the directory in which the <b><i>textIndexer</i></b> configuration file resides), the chunk size and
-          overlap are the recommended sizes of 200 and 20 <span class="Code"> </span>words, there are some file types to
-          skip, an XSLT pre-filter is specified, and a list of stop-words is active for the index. <br><br><br>
-
-          <b><u>The XSLT Document Pre-Filter</u></b> <br>
-          As the previously mentioned, the <i><b>TextIndexer</b></i> can make use of an XSLT based document pre-filter.
-          Using a pre-filter allows the <b><i>textIndexer</i></b> to restructure the source document just prior to indexing without
-          changing the stored source document. Normally this feature is used to remove meta-text from a document that
-          shouldn't be indexed with the main text, or to insert additional formatting tags or section information before
-          indexing is performed. <br><br>
-
-          The use of a pre-filter is defined by the presence or absence of the<span class="Code">
-          &lt;inputfilter path="<span class="MacroCode">LocationOfDocumentPreFilter</span>"&gt;</span>
-          attribute described above. The default sample pre-filter is called <span class="Code">preFilter.xsl</span>,
-          and is also located in the <span class="Code">style/textIndexer</span> sub-directory immediately
-          below the base XTF installation directory (i.e.,<span class="Code"> XTF_HOME </span>. <br><br>
-
-          Because writing and maintaining the XSLT pre-filter is beyond the scope of this depolyment guide, its format
-          will not be discussed here. Please refer to the <a href="../XTF_Programming_Guide/XTFProgGuide.html">XTF Programming Guide</a> for
-          more information about document pre-filters. <br><br><br>
-
-          <b><u>Adding/Deleting/Updating Source Documents</u></b> <br>
-          When new source documents are added to the document library or when existing documents are updated or deleted,
-          the <b><i>textIndexer</i></b> tool must be used to update the index. Fortunately, nothing special needs to be
-          done to inform the <b><i>textIndexer</i></b> about which documents have been updated, added, or deleted. The
-          program automatically detects the changes, and takes the appropriate action. It even has enough smarts to
-          avoid reindexing documents that have not changed since the last time the index was generated. <br><br>
-
-          Updating the index can occur any time after a document has been added, deleted or changed. You might wish to
-          run the <b><i>textIndexer</i></b> tool manually or as part of a script whenever a change to the document
-          library is made. Alternately, you could schedule a daily or weekly <span class="Code">cron</span> job that
-          made any accumulated changes to the document library and then reindexed afterwards. Regardless of the method
-          selected, it is best to reindex as soon as possible after the document library is updated so as to minimize
-          the chance of a user performing a search with an index that doesn't match the actual document set. <br><br>
-
-        </div> <!-- textIndexer Install/Config Subs -->
+      <p>In this example, we see that the index name is <span class="Code">texts</span>, 
+        that the source and index paths are <span class="Code">../data </span>and 
+        <span class="Code"> ../index </span> respectively, (relative to the directory 
+        in which the <b><i>textIndexer</i></b> configuration file resides), the chunk 
+        size and overlap are the recommended sizes of 200 and 20 <span class="Code"> 
+        </span>words, a list of stop-words is active for the index, and the example 
+        document selector has been specified.<br>
+        <br>
+        <br>
+        <b><u>The XSLT Document Selector</u></b> <br>
+        As the previously mentioned, the <i><b>TextIndexer</b></i> uses an XSLT based 
+        <i> <b>document selector</b></i> to identify which documents in the source 
+        tree should be indexed. Using an XSLT stylesheet allows arbitrary selection 
+        criteria to determine which source files to index, and which ones to ignore. 
+      </p>
+      <p>The example document selector provided with the default XTF installation 
+        will index any document files whose names end in <span class="Code">.HTML</span>, 
+        <span class="Code">.PDF</span>, or <span class="Code">.XML</span>. You can 
+        use this example as the basis for defining your own document selection logic 
+        if you wish. However, writing and maintaining the XSLT document selector is 
+        beyond the scope of this deployment guide, and will not be discussed here. 
+        Please refer to the <a href="../XTF_Programming_Guide/XTFProgGuide.html">XTF 
+        Programming Guide</a> for more information about writing your own document 
+        selector.<br>
+        <br>
+      </p>
+      <p> <b><u>The XSLT Document Pre-Filter</u></b> <br>
+        The <i><b>TextIndexer</b></i> can make use of an XSLT based document pre-filter 
+        to restructure the source document just prior to indexing without changing 
+        the stored source document. Normally this feature is used to insert or mark 
+        meta-data for a document, or to insert additional sectioning attributes before 
+        indexing is performed. <br>
+        <br>
+        Once a pre-filter has been defined, it is used on any source documents identified 
+        by the <i><b>document selector</b></i> stylesheet for an index. The default 
+        sample pre-filter is called <span class="Code">preFilter.xsl</span>, and is 
+        located in the <span class="Code">style/textIndexer/default</span> sub-directory 
+        immediately below the base XTF installation directory (i.e.,<span class="Code"> 
+        XTF_HOME </span>). <br>
+        <br>
+        Because writing and maintaining the XSLT pre-filter is beyond the scope of 
+        this depolyment guide, its format will not be discussed here. Please refer 
+        to the <a href="../XTF_Programming_Guide/XTFProgGuide.html">XTF Programming 
+        Guide</a> for more information about document pre-filters. <br>
+        <br>
+        <br>
+        <b><u>Adding/Deleting/Updating Source Documents</u></b> <br>
+        When new source documents are added to the document library or when existing 
+        documents are updated or deleted, the <b><i>textIndexer</i></b> tool must 
+        be used to update the index. Fortunately, nothing special needs to be done 
+        to inform the <b><i>textIndexer</i></b> about which documents have been updated, 
+        added, or deleted. The program automatically detects the changes, and takes 
+        the appropriate action. It even has enough smarts to avoid reindexing documents 
+        that have not changed since the last time the index was generated. <br>
+        <br>
+        Updating the index can occur any time after a document has been added, deleted 
+        or changed. You might wish to run the <b><i>textIndexer</i></b> tool manually 
+        or as part of a script whenever a change to the document library is made. 
+        Alternately, you could schedule a daily or weekly <span class="Code">cron</span> 
+        job that made any accumulated changes to the document library and then reindexed 
+        afterwards. Regardless of the method selected, it is best to reindex as soon 
+        as possible after the document library is updated so as to minimize the chance 
+        of a user performing a search with an index that doesn't match the actual 
+        document set. <br>
+        <br>
+      </p>
+    </div> <!-- textIndexer Install/Config Subs -->
 
         <p class="Heading2">Configuring the dynaXML Servlet<a name="XTFDynaXML"></a></p>
         <!------------------------------------------------------------------------------------------------------------->
@@ -898,13 +918,43 @@
 
           These tags and attributes have the following meanings: <br><br>
 
-          <div class="GreyList">
-            <span class="Code">
-              &lt;logging level="<span class="MacroCode">LoggingLevel</span>"/&gt;
-            </span><br>
-            <div class="IndentLR">
-            </div>
-          </div>
+          
+      <div class="GreyList"> 
+        <span class="Code"> &lt;logging level="<span class="MacroCode">LoggingLevel</span>"/&gt;</span>
+        <div class="IndentLR"> This tag is an optional tag that sets the level of 
+          logging output by the <i><b>dynaXML</b></i> servlet. The possible output 
+          levels are defined as follows:<br>
+          <br>
+          <table>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code">errors</td>
+              <td width="10">&nbsp;</td>
+              <td><span class="BaseStyle">Only error messages are displayed.</span></td>
+            </tr>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code">warnings</td>
+              <td width="10">&nbsp;</td>
+              <td><span class="BaseStyle">Both error and warning messages are displayed.</span></td>
+            </tr>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code">info</td>
+              <td width="10">&nbsp;</td>
+              <td><span class="BaseStyle">Error, warning, and informational messages 
+                are displayed</span></td>
+            </tr>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code">debug</td>
+              <td width="10">&nbsp;</td>
+              <td> <span class="BaseStyle"> Low level debug output is displayed in 
+                addition to error, warning, and informational messages. </span> </td>
+            </tr>
+          </table>
+          <br>
+          If this argument is not specified, the <i><b>dynaXML</b></i> servlet defaults 
+          to displaying informational (<span class="Code">info</span>) level messages. 
+        </div>
+       </div>
+ 
           <div class="GreyList">
             <span class="Code">
               &lt;reverseProxy IP="<span class="MacroCode">ddd.ddd.ddd.ddd</span>"
@@ -1002,7 +1052,7 @@
                   <td>
                     <span class="BaseStyle">
                         Compiled versions of stylesheets (request parser, doc formatter, etc.)
-                    <span>
+                    </span>
                   </td>
                 </tr>
                 <tr>
@@ -1012,7 +1062,7 @@
                     <span class="BaseStyle">
                       Parsed requests for specific URLs, to avoid running the request parser stylesheet over
                       and over.
-                    <span>
+                    </span>
                   </td>
                 </tr>
                 <tr>
@@ -1021,7 +1071,7 @@
                   <td>
                     <span class="BaseStyle">
                       Compiled versions of IP lists (used only for IP-address based authentication.)
-                    <span>
+                    </span>
                   </td>
                 </tr>
                 <tr>
@@ -1045,8 +1095,8 @@
                   </td>
                 </tr>
               </table>
-
-            </div>
+            
+        </div>
           </div>
 
           <div class="GreyList">
@@ -1151,19 +1201,45 @@
 
           These tags and attributes have the following meanings: <br><br>
 
-          <div class="GreyList">
-            <span class="Code">
-              &lt;logging level="<span class="MacroCode">LoggingLevel</span>"/&gt;
-            </span><br>
-            <div class="IndentLR">
-            </div>
-          </div>
+          
+      <div class="GreyList"> 
+        <span class="Code">&lt;logging level="<span class="MacroCode">LoggingLevel</span>"/&gt;</span><br>
+        <div class="IndentLR"> This tag is an optional tag that sets the level of 
+          logging output by the <i><b>crossQuery</b></i> servlet. The possible output 
+          levels are defined as follows:<br>
+          <br> 
+          <table>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code">errors</td>
+              <td width="10">&nbsp;</td>
+              <td><span class="BaseStyle">Only error messages are displayed.</span></td>
+            </tr>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code">warnings</td>
+              <td width="10">&nbsp;</td>
+              <td><span class="BaseStyle">Both error and warning messages are displayed.</span></td>
+            </tr>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code">info</td>
+              <td width="10">&nbsp;</td>
+              <td><span class="BaseStyle">Error, warning, and informational messages 
+                are displayed</span></td>
+            </tr>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code">debug</td>
+              <td width="10">&nbsp;</td>
+              <td> <span class="BaseStyle"> Low level debug output is displayed in 
+                addition to error, warning, and informational messages. </span> </td>
+            </tr>
+          </table>
+          <br>
+          If this argument is not specified, the <i><b>crossQuery</b></i> servlet 
+          defaults to displaying informational (<span class="Code">info</span>) level 
+          messages. </div>
+       </div>
 
           <div class="GreyList">
-
-            <span class="Code">
-              &lt;queryParser path="<span class="MacroCode">LocationOfQueryParser</span>"/&gt;
-            </span><br>
+            <span class="Code">&lt;queryParser path="<span class="MacroCode">LocationOfQueryParser</span>"/&gt;</span>
             <div class="IndentLR">
               This tag specifies the name and path to the XSLT template used by the <b><i>crossQuery</i></b>
               servlet to convert incoming search query URLs to the internal XML search query format actually used
