@@ -312,7 +312,7 @@ public class TextIndexer
 
           // Process everything below it.
           srcTreeProcessor.open( cfgInfo );
-          srcTreeProcessor.processDir( new File(srcRootDir) );
+          srcTreeProcessor.processDir( new File(srcRootDir), 0 );
           srcTreeProcessor.close();
 
           // Cull files which are present in the index but missing

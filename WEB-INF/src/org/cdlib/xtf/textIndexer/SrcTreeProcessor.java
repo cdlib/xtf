@@ -30,11 +30,19 @@ package org.cdlib.xtf.textIndexer;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -44,6 +52,8 @@ import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
 
+import org.cdlib.xtf.cache.Dependency;
+import org.cdlib.xtf.cache.FileDependency;
 import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IdxConfigUtil;
@@ -79,6 +89,14 @@ public class SrcTreeProcessor
                                   new StylesheetCache( 100, 0, true );
   private Templates        docSelector;
   private int              nScanned = 0;
+  
+  private StringBuffer     docBuf = new StringBuffer( 1024 );
+  private StringBuffer     dirBuf = new StringBuffer( 1024 );
+  
+  private String           docSelPath;
+  private String           docSelDependencies;
+  private File             docSelCacheFile;
+  private HashMap          docSelCache = new HashMap();
   
   ////////////////////////////////////////////////////////////////////////////
 
@@ -131,6 +149,14 @@ public class SrcTreeProcessor
         cfgInfo.xtfHomePath = 
             new File(cfgInfo.cfgFilePath).getParentFile().toString();
     }
+    
+    // Make a transformer for the docSelector stylesheet.
+    docSelPath = Path.resolveRelOrAbs( cfgInfo.xtfHomePath,
+                                       cfgInfo.indexInfo.docSelectorPath);
+    docSelector = stylesheetCache.find( docSelPath );
+  
+    // Load the previous docSelector cache (if any)
+    loadCache( cfgInfo );
 
     // Open the Lucene index specified by the config info.
     textProcessor.open( cfgInfo.xtfHomePath, 
@@ -145,11 +171,6 @@ public class SrcTreeProcessor
     if( !(NamePool.getDefaultNamePool() instanceof RecordingNamePool) )
         NamePool.setDefaultNamePool( new RecordingNamePool() );
     
-    // Make a transformer for the docSelector stylesheet.
-    String docSelPath = Path.resolveRelOrAbs( cfgInfo.xtfHomePath,
-                                              cfgInfo.indexInfo.docSelectorPath);
-    docSelector = stylesheetCache.find( docSelPath );
-  
     // Give some feedback.
     Trace.info( "Scanning Data Directories..." );
       
@@ -177,6 +198,9 @@ public class SrcTreeProcessor
   public void close() throws IOException
   
   {
+      // Save the doc selector cache.
+      saveCache();
+    
       // Done scanning now.
       Trace.more( " Done." );
 
@@ -194,6 +218,151 @@ public class SrcTreeProcessor
   
   ////////////////////////////////////////////////////////////////////////////
 
+  /** Load the previous docSelector cache.
+   * 
+   *  @param cfgInfo   The {@link org.cdlib.xtf.textIndexer#IndexerConfig IndexerConfig}
+   *                   that indentifies the Lucene index, source text tree, and
+   *                   other parameters required to perform indexing. <br><br>
+   */
+  public void loadCache( IndexerConfig cfgInfo ) 
+  
+  { 
+    docSelCache.clear();
+    
+    // Figure out the path to the cache file
+    String indexPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, 
+                                            cfgInfo.indexInfo.indexPath);
+    indexPath = Path.normalizePath( indexPath );
+    docSelCacheFile = new File( indexPath + "docSelect.cache" );
+    
+    // Calculate all the file dependencies of the docSelector stylesheet.
+    Iterator iter = stylesheetCache.getDependencies( docSelPath );
+    StringBuffer depBuf = new StringBuffer();
+    while( iter.hasNext() ) {
+        Dependency d = (Dependency) iter.next();
+        if( d instanceof FileDependency ) {
+            depBuf.append( d.toString() );
+            depBuf.append( "\n" );
+        }
+    }
+    docSelDependencies = depBuf.toString();
+
+    // If we're making a clean index, delete the old cache file.
+    if( cfgInfo.clean ) {
+        docSelCacheFile.delete();
+        return;
+    }
+    
+    // If the cache file doesn't exist, don't load it.
+    if( !docSelCacheFile.canRead() )
+        return;
+    
+    // Open the file and read it. 
+    try {
+        FileInputStream fis = new FileInputStream( docSelCacheFile );
+        InflaterInputStream iis = new InflaterInputStream( fis );
+        ObjectInputStream ois = new ObjectInputStream( iis );
+        
+        String fileVersion = ois.readUTF();
+        if( !fileVersion.equals("docSelectorCache v1.0") ) {
+            Trace.warning( "Warning: Unrecognized docSelector cache \"" + 
+                           docSelCacheFile + "\"" );
+            docSelCache.clear();
+            return;
+        }
+        
+        // Check the dependencies.
+        String fileDep = ois.readUTF();
+        if( !fileDep.equals(docSelDependencies) ) 
+        {
+            Trace.debug( "Note: docSelector stylesheet or sub-sheet " +
+                         " has changed... throwing away " +
+                         "old docSelector cache." );
+            ois.close();
+            fis.close();
+            docSelCacheFile.delete();
+            docSelCache.clear();
+            return;
+        }
+        
+        // And load the map.
+        docSelCache = (HashMap) ois.readObject();
+    }
+    catch( IOException e ) {
+        Trace.warning( "Warning: Error loading docSelector cache \"" + 
+                       docSelCacheFile + "\": " + e );
+        docSelCache.clear();
+        return;
+    }
+    catch( Exception e ) {
+        Trace.warning( "Warning: Corrupt docSelector cache \"" + 
+                       docSelCacheFile + "\"" );
+        docSelCache.clear();
+        return;
+    }
+    
+  } // loadCache()
+  
+    
+  ////////////////////////////////////////////////////////////////////////////
+
+  /** Save the docSelector cache.
+   */
+  public void saveCache()
+  
+  {
+    
+    // Let's keep the old file intact until the new one is ready.
+    File newFile = new File( docSelCacheFile.toString() + ".new" );
+    FileOutputStream     fos = null;
+    DeflaterOutputStream dos = null;
+    ObjectOutputStream   oos = null;
+    
+    try 
+    {
+        // First, open the new file.
+        fos = new FileOutputStream( newFile );
+        dos = new DeflaterOutputStream( fos );
+        oos = new ObjectOutputStream( dos );
+        
+        // Write the version info first.
+        oos.writeUTF( "docSelectorCache v1.0" );
+        
+        // Next, write the current stylesheet dependency info.
+        oos.writeUTF( docSelDependencies );
+        
+        // Now write the mapping.
+        oos.writeObject( docSelCache );
+        
+        // All done. Close the new file.
+        oos.close();
+        dos.close();
+        fos.close();
+        
+        // Get rid of the old file, and rename the new one.
+        docSelCacheFile.delete();
+        newFile.renameTo( docSelCacheFile );
+    }
+    catch( IOException e ) 
+    {
+        Trace.warning( "Warning: Error writing docSelector cache \"" +
+                      newFile + "\": " + e );
+        
+        try {
+            if( oos != null ) oos.close();
+            if( fos != null ) fos.close();
+        }
+        catch( IOException e2 ) { }
+        
+        newFile.delete();
+        return;
+    }
+    
+  } // saveCache()
+  
+  
+  ////////////////////////////////////////////////////////////////////////////
+
   /** Process a directory containing source XML files. <br><br>
    * 
    * This method iterates through a source directory's contents indexing any
@@ -201,6 +370,9 @@ public class SrcTreeProcessor
    * 
    * @param currFile   The current file to be processed. This may be a source
    *                   XML file, a file to be skipped, or a subdirectory. <br><br>
+   *
+   * @param level      The directory level we're currently processing (zero
+   *                   for top-level, 1 for its children, etc.) <br><br>
    * 
    *  @throws   Exception  Any exceptions generated internally
    *                       by the <code>File</code> class or the  
@@ -208,7 +380,7 @@ public class SrcTreeProcessor
    *                       class. <br><br>
    * 
    */
-  public void processDir( File currFile ) throws Exception
+  public void processDir( File currFile, int level ) throws Exception
   
   { 
     
@@ -222,15 +394,24 @@ public class SrcTreeProcessor
     // Process all of the non-directory files first. Form a document 
     // representing the directory and all its files.
     //
-    StringBuffer docBuf = new StringBuffer( 1024 );
+    docBuf.setLength( 0 );
+    dirBuf.setLength( 0 );
+    
     String dirPath = Path.normalizePath( currFile.toString() );
     docBuf.append( "<directory dirPath=\"" + dirPath + "\">\n" );
     int nFiles = 0;
     for( Iterator i = list.iterator(); i.hasNext(); ) {
         File subFile = new File( currFile, (String) i.next() );
         if( !subFile.getAbsoluteFile().isDirectory() ) {
-            docBuf.append( "  <file fileName=\"" + 
-                           subFile.getName() + "\"/>\n" );
+            docBuf.append( "  <file fileName=\"" );
+            docBuf.append( subFile.getName() );
+            docBuf.append( "\"/>\n" );
+            
+            dirBuf.append( subFile.getName() );
+            dirBuf.append( ':' );
+            dirBuf.append( subFile.lastModified() );
+            dirBuf.append( "\n" );
+            
             ++nFiles;
 
             // Print out dots as we process large amounts of files, just so 
@@ -244,8 +425,33 @@ public class SrcTreeProcessor
     
     // Now process the document using the docSelector stylesheet.
     boolean anyProcessed = false;
-    if( nFiles > 0 ) {
-        String inStr = docBuf.toString();
+    boolean runStylesheet;
+    String  inStr = docBuf.toString();
+    String  filesAndTimes = dirBuf.toString();
+    String  dirKey;
+    if( level == 0 )
+        dirKey = cfgInfo.indexInfo.indexName + ":/"; 
+    else
+        dirKey = IdxConfigUtil.calcDocKey( new File(cfgInfo.xtfHomePath),
+                                           cfgInfo.indexInfo, currFile );
+    if( nFiles == 0 )
+        runStylesheet = false;
+    else {
+        CacheEntry ent = (CacheEntry) docSelCache.get( dirKey );
+        if( ent == null )
+            runStylesheet = true;
+        else if( !ent.filesAndTimes.equals(filesAndTimes) ) {
+            docSelCache.remove( dirKey );
+            runStylesheet = true;
+        }
+        else {
+            anyProcessed = ent.anyProcessed;
+            runStylesheet = false;
+        }
+    }
+    
+    if( runStylesheet ) {
+        
         InputSource docSelectorInput = new InputSource( 
                                                  new StringReader(inStr) );
 
@@ -292,6 +498,12 @@ public class SrcTreeProcessor
             
         } // while
         
+        // Store this in the cache so we don't have to run the stylesheet
+        // next time (that is, unless the directory contents or stylesheet
+        // are different).
+        //
+        docSelCache.put( dirKey, new CacheEntry(filesAndTimes, anyProcessed) );
+        
     } // if nFiles > 0
     
     // If we found any files to process, the convention is that subdirectories
@@ -305,7 +517,7 @@ public class SrcTreeProcessor
     for( Iterator i = list.iterator(); i.hasNext(); ) {
         File subFile = new File( currFile, (String) i.next() );
         if( subFile.getAbsoluteFile().isDirectory() )
-            processDir( subFile );
+            processDir( subFile, level + 1 );
     }
 
   } // processDir()
@@ -434,5 +646,19 @@ public class SrcTreeProcessor
     return true;
         
   } // processFile()
+  
+  /** One entry in the docSelector cache */
+  static class CacheEntry implements Serializable
+  {
+      String  filesAndTimes;
+      boolean anyProcessed;
+      
+      CacheEntry() { }
+      
+      CacheEntry( String filesAndTimes, boolean anyProcessed ) {
+          this.filesAndTimes = filesAndTimes;
+          this.anyProcessed  = anyProcessed;
+      }
+  } // class CacheEntry
   
 } // class SrcTreeProcessor
