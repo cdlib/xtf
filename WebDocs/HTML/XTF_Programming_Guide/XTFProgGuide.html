@@ -609,7 +609,7 @@
         <i><b> sort key</b></i>. Sort keys are used by the <i><b>crossQuery</b></i> 
         servlet to reorder how query matches are displayed for the user. To use 
         a meta-field as a sort key, its contents must not be tokenized. Since 
-        tokenizing is turned on by default for to make a meta-data field searchable, 
+        tokenizing is turned on by default to make a meta-data field searchable, 
         the pre-filter code that processes meta-data must explicitly turn tokenizing 
         off. This is accomplished as follows:</p>
       <pre class="Sample"><b>&lt;xsl:template match="PublicationInfo"&gt;
@@ -627,15 +627,16 @@
         But the addition of the line of code shown in red disables tokenizing 
         so that the meta-data can be used as a sort key by the <i> <b>crossQuery</b></i> 
         servlet.</p>
-      <p>It is important to note that since a meta-data must be tokenized to be 
-        searchable, and it must be un-tokenized to be used as a sort key, meta-based 
+      <p>It is important to note that since meta-data must be tokenized to be 
+        searchable, and it must not be tokenized to be used as a sort key, meta-based 
         searching and sorting operations are effectively mutually exclusive. If 
         you want to perform both searching and sorting on a collection of meta-data, 
         you'll need to add code to your prefilter to produce two copies of that 
         meta-data: one copy for searching that is tokenized, and one copy for 
         sorting that is not tokenized.</p>
-      <p>&nbsp;</p>
     </div>
+    <p>In closing, a few additional facts should be mentioned about the attributes 
+      supported by the XTF system:</p>
     <ol>
       <li class="ListItem"> All the examples above show the <b><i>textIndexer</i></b> 
         pre-filter adding attributes to the XML representation for a document. However, 
@@ -656,9 +657,9 @@
         <span class="Code">wordboost</span>, <span class="Code">proximitybreak</span>, 
         etc.) </li>
     </ol>
-    Finally, it should be noted that the sample <span class="Code">style/textIndexer/preFilter.xsl</span> 
-    beneath the base XTF directory (i.e., <span class="Code">XTF_HOME</span>) is a 
-    good starting point for creating your own customized pre-filters. </div>
+    Finally, it should be noted that the sample <span class="Code">style/textIndexer/common/preFilterCommon.xsl</span> 
+    beneath the base XTF directory (i.e., <span class="Code">XTF_HOME</span>) 
+    is a good starting point for creating your own customized pre-filters. </div>
   <br>
   <!-- textIndexer --> 
   <p class="Heading1">crossQuery Programming<a name="crossQuery_Prog"></a></p>
