@@ -61,9 +61,6 @@
   
   <xsl:template match="/">
     <xsl:choose>
-      <xsl:when test="$smode = 'help'">
-        <xsl:call-template name="help"/>
-      </xsl:when>
       <xsl:when test="$smode = 'debug'">
         <pre>
           <xsl:apply-templates select="*" mode="debug"/>

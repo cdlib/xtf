@@ -33,13 +33,8 @@
 -->
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-                              xmlns:dc="http://purl.org/dc/elements/1.1/" 
-                              xmlns:mets="http://www.loc.gov/METS/" 
-                              xmlns:xlink="http://www.w3.org/TR/xlink"
                               xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xsl:output method="html" indent="yes" encoding="UTF-8" media-type="text/html" doctype-public="-//W3C//DTD HTML 4.0//EN"/>
-  
   <!-- ====================================================================== -->
   <!-- Parameters                                                             -->
   <!-- ====================================================================== -->
@@ -1083,9 +1078,10 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replace(replace(replace(replace($queryString, 
+    <xsl:copy-of select="replace(replace(replacereplace((replace(replace(replace($queryString, 
                           '&amp;rmode=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
                           '&amp;relation=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
+                          '&amp;relation-join=([A-Za-z0-9&quot;\-\.\* ]+)', ''),  
                           '&amp;relation-exclude=([A-Za-z0-9&quot;\-\.\* ]+)', ''),       
                           'year=([0-9]+)&amp;year-max=([0-9]+)', 'year=$1-$2'), 
                           '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\.\* ]+)', '$2 in $1'),
@@ -1255,7 +1251,7 @@
   <!-- ====================================================================== -->
       
   <xsl:template match="subject">
-    <a href="{$servlet.path}?subject=%22{.}%22&amp;relation={$relation}&amp;relation-exclude={$relation-exclude}&amp;rmode={$rmode}">
+    <a href="{$servlet.path}?subject=%22{.}%22&amp;relation={$relation}&amp;relation-join={$relation-join}&amp;relation-exclude={$relation-exclude}&amp;rmode={$rmode}">
       <xsl:apply-templates/>
     </a>
     <xsl:if test="not(position() = last())">
