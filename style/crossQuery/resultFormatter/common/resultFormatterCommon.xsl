@@ -1224,7 +1224,7 @@
     <strong>
       <xsl:value-of select="@totalDocs"/>
     </strong>
-    <xsl:text> item(s)</xsl:text>
+    <xsl:text> books</xsl:text>
     <xsl:if test="$totalDocs > $docsPerPage">
       <xsl:text>: </xsl:text>
     </xsl:if>
@@ -1359,7 +1359,7 @@
       <xsl:when test="(contains($rmode, 'show')) and (matches(string() , '.{500}'))">
         <xsl:apply-templates select="$block"/>
         <xsl:text>&#160;&#160;&#160;</xsl:text>
-        <a href="{$servlet.path}?{$hideString}">[hide]</a>         
+        <a href="{$servlet.path}?{$hideString}">[brief]</a>         
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates select="$block" mode="crop"/>        
@@ -1373,8 +1373,8 @@
     <xsl:variable name="moreString" select="replace($queryString, '(rmode=[A-Za-z0-9]+)', '$1-show')"/>
     
     <xsl:choose>
-      <xsl:when test="matches(string(.) , '.{500}')">
-        <xsl:value-of select="replace(., '(.{500}).+', '$1')"/>
+      <xsl:when test="matches(string(.) , '.{300}')">
+        <xsl:value-of select="replace(., '(.{300}).+', '$1')"/>
         <xsl:text> . . . </xsl:text>
         <a href="{$servlet.path}?{$moreString}">[more]</a>                
       </xsl:when>
