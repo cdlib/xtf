@@ -14,8 +14,7 @@
    </xtf:snippets>
    <testMeta xtf:meta="yes">Some test data</testMeta>
    <p xtf:hitCount="1" xtf:firstHit="1">
-    
-      <xtf:term>This</xtf:term> is a test of the <xtf:term>emergency</xtf:term> 
+          <xtf:term>This</xtf:term> is a test of the <xtf:term>emergency</xtf:term> 
       <foo> (broadcasting) system. Anything </foo> you say can and will be used against
     you in a court of law. If <xtf:hit rank="3" hitNum="1" more="no">
          <xtf:term>this</xtf:term> had been a real <xtf:term>emergency</xtf:term>
