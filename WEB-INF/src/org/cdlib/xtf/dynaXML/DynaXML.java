@@ -50,6 +50,7 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -392,6 +393,22 @@ public class DynaXML extends TextServlet
         // Get the source document.
         Source sourceDoc = getSourceDoc( docInfo, transformer );
         
+        // If we are in raw mode, use a null transform instead of the
+        // stylesheet.
+        //
+        String raw = req.getParameter("raw");
+        if( "yes".equals(raw) || "true".equals(raw) || "1".equals(raw) ) 
+        {
+            res.setContentType("text/xml");
+            
+            TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
+            transformer = factory.newTransformer();
+            Properties props = transformer.getOutputProperties();
+            props.put( "indent", "yes" );
+            props.put( "method", "xml" );
+            transformer.setOutputProperties( props );
+        }
+            
         // Modify as necessary
         if( dump && sourceDoc instanceof PersistentTree )
             ((PersistentTree)sourceDoc).setAllPermanent( true );
@@ -402,7 +419,7 @@ public class DynaXML extends TextServlet
         // Make sure errors get directed to the right place.
         if( !(transformer.getErrorListener() instanceof XTFSaxonErrorListener) )
             transformer.setErrorListener( new XTFSaxonErrorListener() );
-
+        
         // Now do the bulk of the work
         try {
             transformer.transform( sourceDoc, new StreamResult(out) );

@@ -35,12 +35,14 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -262,6 +264,22 @@ public class CrossQuery extends TextServlet
         // Make a transformer for this specific query.
         Transformer trans = displaySheet.newTransformer();
         
+        // If we are in raw mode, use a null transform instead of the
+        // stylesheet.
+        //
+        String raw = req.getParameter("raw");
+        if( "yes".equals(raw) || "true".equals(raw) || "1".equals(raw) ) 
+        {
+            res.setContentType("text/xml");
+            
+            TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
+            trans = factory.newTransformer();
+            Properties props = trans.getOutputProperties();
+            props.put( "indent", "yes" );
+            props.put( "method", "xml" );
+            trans.setOutputProperties( props );
+        }
+            
         // Stuff all the common config properties into the transformer in
         // case the query generator needs access to them.
         //
