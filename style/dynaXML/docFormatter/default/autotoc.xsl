@@ -51,8 +51,8 @@
 
   <xsl:variable name="occur">
     <xsl:choose>
-      <xsl:when test="$sum != 1">occurences</xsl:when>
-      <xsl:otherwise>occurence</xsl:otherwise>
+      <xsl:when test="$sum != 1">occurrences</xsl:when>
+      <xsl:otherwise>occurrence</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
 
