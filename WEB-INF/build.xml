@@ -11,12 +11,7 @@
   <property name="lib"     location="lib"/>
   <property name="bin"     location="bin"/>
   <property name="doc"     location="javadoc"/>
-  <property name="saxon"   location="${lib}/saxonb-8.1.1.jar"/>
-  <property name="lucene"  location="${lib}/lucene-1.4.1.jar"/>
-  <property name="servlet" location="${lib}/servlet.jar"/>
-  <property name="pdfbox"  location="${lib}/PDFBox-0.6.7a.jar"/>
-  <property name="log4j"   location="${lib}/log4j-1.2.9.jar"/>
-  <property name="tidy"    location="${lib}/Tidy.jar"/>
+  <property name="libs"    value="${lib}/saxonb-8.3.jar:${lib}/servlet.jar:${lib}/PDFBox-0.6.7a.jar:${lib}/log4j-1.2.9.jar:${lib}/Tidy.jar"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -32,7 +27,7 @@
     <javac target="1.4" 
            source="1.4" 
            debug="true"
-           classpath="${saxon}:${lucene}:${servlet}:${pdfbox}:${log4j}:${tidy}"
+           classpath="${libs}"
            srcdir="${src}" 
            excludes="**/.sf/**/*,**/.cdl/**/*"
            destdir="${build}"/>
@@ -143,7 +138,7 @@
              private="true" 
              breakiterator="yes"
              source="1.4"
-             classpath="${lucene}:${saxon}:${servlet}:${pdfbox}:${log4j}:${tidy}"
+             classpath="${libs}"
              sourcepath="${src}"
     		 noqualifier="all">
       <tag name=".notes" description="Notes:"/>
