@@ -330,7 +330,15 @@ public class SnippetMaker
               buf.append( "</snippet>" );
               if( contextSize > maxContext ) {
                   int posDiff = contextStart.countTextTo(pos);
-                  assert false : "ContextMarker made snippet too big";
+                  //
+                  // NOTE: Do NOT re-enable the assert below. Why? Consider
+                  //       the situation where the matching search terms are
+                  //       simply very far apart, and there's no way to
+                  //       make a snippet that contains all of them within
+                  //       the specified maxContext. I think you still want
+                  //       the whole hit in this case.       
+                  //
+                  //assert false : "ContextMarker made snippet too big";
               }
               inContext = false;
             }
