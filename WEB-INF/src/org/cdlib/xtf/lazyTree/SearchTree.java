@@ -57,14 +57,15 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.mark.SpanDocument;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.spans.SpanQuery;
 import org.cdlib.xtf.textEngine.DocHit;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.textEngine.Snippet;
-import org.cdlib.xtf.textEngine.TermMap;
 import org.cdlib.xtf.util.CheckingTokenStream;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
@@ -96,7 +97,7 @@ public class SearchTree extends LazyDocument
     String sourceKey;
     
     /** Map containing all terms used in the query */
-    TermMap termMap;
+    Set termMap;
     
     /** Set of "stop-words" (i.e. short words like "the", "and", "a", etc.) */
     Set stopSet;
@@ -115,6 +116,9 @@ public class SearchTree extends LazyDocument
     
     /** Mapping from hitsByScore -> hitsByLocation */
     int[] hitRankToNum;
+    
+    /** Where to mark terms (all, context only, etc.) */
+    int termMode;
     
     /** 
      * True to suppress marking the hits with scores (useful for automated
@@ -313,34 +317,30 @@ public class SearchTree extends LazyDocument
         throws IOException
     {
         // Make sure the input request is reasonable
-        assert req.comboQueries.length == 1;
-        assert req.comboQueries[0].textQuery != null;
-        assert req.comboQueries[0].maxSnippets != 0; // -1, or some pos int OK.
+        if( req.query instanceof SpanQuery ) {
+            // -1, or some pos int OK.
+            assert ((SpanQuery)req.query).getSpanRecording() != 0;
+        }
         assert req.maxDocs != 0; // -1, or som pos int OK.
         assert req.startDoc == 0;
+        
+        // Record the real term mode (which we'll respond to directly). Then
+        // limit the one in the query to only terms within the context, since
+        // marking all terms would be really slow.
+        //
+        termMode = req.termMode;
+        req.termMode = Math.min(req.termMode, SpanDocument.MARK_CONTEXT_TERMS);
 
         // Add a meta-query that restricts to this document alone. Besides
         // giving us only the hits we want, this also makes the query faster.
         //
-        Term t = new Term( "key", sourceKey );
         BooleanQuery bq = new BooleanQuery();
         bq.add( new TermQuery(new Term("docInfo", "1")), true, false );
-
-        // TODO: KLUDGE ALERT!! Remove eschol kludge after re-indexing.
-        boolean kludge = true;
-        if( kludge ) {
-            BooleanQuery bq2 = new BooleanQuery();
-            bq2.add( new TermQuery(t), false, false );
-            String kludgeKey = sourceKey.replaceAll( "texts:",
-                                                     "eschol:" );
-            t = new Term( "key", kludgeKey );
-            bq2.add( new TermQuery(t), false, false );
-            bq.add( bq2, true, false );
-        }
-        else
-            bq.add( new TermQuery(t), true, false );
+        Term t = new Term( "key", sourceKey );
+        bq.add( new TermQuery(t), true, false );
+        bq.add( req.query, true, false );
         
-        req.comboQueries[0].metaQuery = bq;
+        req.query = bq;
 
         // Run the query and get the results.
         QueryResult result = processor.processReq( req );
@@ -593,6 +593,12 @@ public class SearchTree extends LazyDocument
             }
         }
         
+        // If we're only marking terms within hits and there are no hits in this
+        // node, then we need do nothing more.
+        //
+        if( termMode < SpanDocument.MARK_ALL_TERMS && hitStart < 0 )
+            return origNode;
+        
         // Okay, now scan every word. Use a fast tokenizer, since the Standard
         // one is dog-slow. Special case: if the 'check' flag is turned on, we
         // run both tokenizers in parallel and check that they give the exact
@@ -633,7 +639,7 @@ public class SearchTree extends LazyDocument
             if( wordOffset == hitStart ) {
 
                 assert snippet.startNode != num
-                       || termMap.contains( token.termText() ) : 
+                       || termMap.contains( token.termText().toLowerCase() ) : 
                        "first hit token must be in search terms";
                 assert !inHit;
                 inHit = true;
@@ -664,7 +670,10 @@ public class SearchTree extends LazyDocument
             wordOffset++;
 
             // If the token matches a query term, mark it.
-            if( termMap != null && termMap.contains(token.termText()) &&
+            if( termMap != null && 
+                termMap.contains(token.termText().toLowerCase()) &&
+                (termMode == SpanDocument.MARK_ALL_TERMS ||
+                 (termMode >= SpanDocument.MARK_SPAN_TERMS && inHit)) &&
                 (inHit || 
                  stopSet == null || 
                  !stopSet.contains(token.termText().toLowerCase())) ) 
@@ -690,11 +699,11 @@ public class SearchTree extends LazyDocument
             endChar = token.endOffset();
             
             // Are we at the end of a hit? If not, go again.
-            if( wordOffset != hitEnd )
+            if( hitEnd < 0 || wordOffset <= hitEnd )
                 continue;
             
             assert snippet.endNode != num
-                   || termMap.contains( token.termText() ) : 
+                   || termMap.contains( token.termText().toLowerCase() ) : 
                    "last hit token must be a search term";
             assert inHit;
             inHit = false;
