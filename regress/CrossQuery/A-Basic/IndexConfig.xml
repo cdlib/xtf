@@ -5,6 +5,7 @@
   <index name="all">
        <db path="./IndexDB"/>
        <src path="./data"/>
+       <docSelector path="../Common/docSelector.xsl"/>
        <chunk size="40" overlap="20"/>
   </index>
 
