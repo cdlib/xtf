@@ -45,7 +45,6 @@ import org.apache.lucene.mark.MarkPos;
 import org.apache.lucene.mark.SpanDocument;
 import org.apache.lucene.search.spans.Span;
 import org.cdlib.xtf.textIndexer.XTFTextAnalyzer;
-import org.cdlib.xtf.util.Trace;
 
 /**
  * Does the heavy lifting of interpreting span hits using the actual document
@@ -303,7 +302,7 @@ public class SnippetMaker
             public void term(MarkPos startPos, MarkPos endPos, String term) {
               copyUpTo( startPos );
               buf.append( "<term>" );
-              Trace.more( Trace.debug, "{" + startPos.getTextTo(endPos) + "}");
+              //Trace.more( Trace.debug, "{" + startPos.getTextTo(endPos) + "}");
               String toAdd = startPos.getTextTo(endPos) ; 
               buf.append( toAdd );
               buf.append( "</term>" );
