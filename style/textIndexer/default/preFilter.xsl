@@ -131,7 +131,7 @@
   
   <xsl:template match="xsubject|ntitle|lastmod" mode="inmeta">
     <xsl:element name="{name()}">
-        <xsl:attribute name="xtf:meta" select="'no'"/>
+      <xsl:attribute name="xtf:index" select="'no'"/>
       <xsl:value-of select="string()"/>
     </xsl:element>    
   </xsl:template>
