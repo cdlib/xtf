@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.apache.lucene.analysis.Token;
-import org.cdlib.xtf.textIndexer.tokenizer.Tokenizer;
+import org.apache.lucene.analysis.Tokenizer;
 import org.cdlib.xtf.textIndexer.tokenizer.XTFTokenizer;
 
 /**
@@ -69,7 +69,7 @@ public class FastTokenizer extends Tokenizer
     private DribbleReader dribbleReader;
     
     /** Standard tokenizer, used for hard cases only */
-    private XTFTokenizer stdTokenizer;
+    private Tokenizer stdTokenizer;
     
     private static final char[] charType = new char[0x10000];
     
@@ -282,6 +282,6 @@ public class FastTokenizer extends Tokenizer
             
             return toRead;
         } // read()
-} // class DribbleReader
+    } // class DribbleReader
 
 } // class FastTokenizer
