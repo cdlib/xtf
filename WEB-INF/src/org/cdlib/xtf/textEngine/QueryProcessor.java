@@ -146,12 +146,6 @@ public class QueryProcessor
         //
         searcher = new IndexSearcher( reader );
         
-        // Establish the XTF similarity, if the default hasn't been
-        // overridden.
-        //
-        if( !(searcher.getSimilarity() instanceof XtfSimilarity) )
-            searcher.setSimilarity( new XtfSimilarity() );
-        
         // Translate -1 maxDocs to "essentially all"
         int maxDocs = req.maxDocs;
         if( maxDocs < 0 )
