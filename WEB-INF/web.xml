@@ -1,19 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!DOCTYPE web-app PUBLIC '-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN' 'http://java.sun.com/j
-2ee/dtds/web-app_2.2.dtd'>
+<!-- DOCTYPE web-app PUBLIC '-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN' 'http://java.sun.com/j2ee/dtds/web-app_2.2.dtd' -->
 
 <web-app>
-  <display-name>XTF CDL </display-name>
-  <description>Indexer and Search engine</description>
+
+  <servlet>
+    <servlet-name>crossQuery</servlet-name>
+    <servlet-class>org.cdlib.xtf.crossQuery.CrossQuery</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>dynaXML</servlet-name>
+    <servlet-class>org.cdlib.xtf.dynaXML.DynaXML</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>previewXML</servlet-name>
+    <servlet-class>org.cdlib.xtf.web.PreviewXML</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <url-pattern>/search</url-pattern>
+    <servlet-name>crossQuery</servlet-name>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <url-pattern>/view</url-pattern>
+    <servlet-name>dynaXML</servlet-name>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <url-pattern>/preview</url-pattern>
+    <servlet-name>previewXML</servlet-name>
+  </servlet-mapping>
+
   <servlet>
     <servlet-name>org.cdlib.xtf.dynaXML.DynaXML</servlet-name>
-    <description>Display a document</description>
     <servlet-class>org.cdlib.xtf.dynaXML.DynaXML</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>org.cdlib.xtf.crossQuery.CrossQuery</servlet-name>
-    <description>Search for documents</description>
     <servlet-class>org.cdlib.xtf.crossQuery.CrossQuery</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -24,11 +50,7 @@
     <servlet-name>org.cdlib.xtf.crossQuery.CrossQuery</servlet-name>
     <url-pattern>/servlet/org.cdlib.xtf.crossQuery.CrossQuery</url-pattern>
   </servlet-mapping>
-  <session-config>
-    <session-timeout>30</session-timeout>
-  </session-config>
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
+
+
 </web-app>
 
