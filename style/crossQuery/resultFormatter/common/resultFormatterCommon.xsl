@@ -1135,14 +1135,37 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replace(replace(replace(replace($queryString, 
-                          '&amp;rmode=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
-                          '&amp;profile=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
-                          '&amp;profile-join=([A-Za-z0-9&quot;\-\.\* ]+)', ''),     
+    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace($queryString, 
+                          '&amp;rmode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
+                          '&amp;smode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
+                          '&amp;relation=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
+                          '&amp;profile=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
+                          '&amp;profile-join=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),     
                           'year=([0-9]+)&amp;year-max=([0-9]+)', 'year=$1-$2'), 
-                          '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\.\* ]+)', '$2 in $1'),
+                          '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'XX $2 in $1 XX'),
                           '&amp;', ' and ')"/>
   </xsl:param>
+    
+  <!-- ====================================================================== -->
+  <!-- Format Query for Display                                               -->
+  <!-- ====================================================================== -->
+  
+  <xsl:template name="format-query">
+    
+    <xsl:param name="query"/>
+    
+    <xsl:analyze-string select="$query" regex="XX ([A-Za-z0-9&quot;\-\.\*\+ ]+?) in ([A-Za-z0-9\-]+) XX">
+      <xsl:matching-substring>
+        <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
+        <xsl:text> in </xsl:text>
+        <em><xsl:value-of select="regex-group(2)"/></em>
+      </xsl:matching-substring>
+      <xsl:non-matching-substring>
+        <xsl:value-of select="."/>
+      </xsl:non-matching-substring>
+    </xsl:analyze-string>
+    
+  </xsl:template>
     
   <!-- ====================================================================== -->
   <!-- Result Paging                                                          -->
@@ -1279,27 +1302,6 @@
 
     </xsl:for-each>
 
-  </xsl:template>
-    
-  <!-- ====================================================================== -->
-  <!-- Format Query for Display                                               -->
-  <!-- ====================================================================== -->
-  
-  <xsl:template name="format-query">
-    
-    <xsl:param name="query"/>
-    
-    <xsl:analyze-string select="$query" regex="([A-Za-z0-9\-]+) in ([A-Za-z0-9\-]+)">
-      <xsl:matching-substring>
-        <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
-        <xsl:text> in </xsl:text>
-        <em><xsl:value-of select="regex-group(2)"/></em>
-      </xsl:matching-substring>
-      <xsl:non-matching-substring>
-        <xsl:value-of select="."/>
-      </xsl:non-matching-substring>
-    </xsl:analyze-string>
-    
   </xsl:template>
 
   <!-- ====================================================================== -->
