@@ -29,12 +29,12 @@ package org.cdlib.xtf.textIndexer;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.IOException;
 import java.io.Reader;
 import java.util.Set;
 
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
+import org.apache.lucene.ngram.NgramStopFilter;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
 
@@ -122,7 +122,7 @@ public class XTFTextAnalyzer extends Analyzer {
    *  method to read the source text for filter operations in random access
    *  fashion.)
    */
-  private StringBuffer srcText;
+  private String srcText;
   
   //////////////////////////////////////////////////////////////////////////////
 
@@ -131,16 +131,11 @@ public class XTFTextAnalyzer extends Analyzer {
    *  This method creates a <code>XTFTextAnalyzer</code> and initializes its
    *  member variables.
    * 
-   *  @param  stopSet  The set of stop-words to be used when filtering text.
-   *                   For more information about stop-words, see the 
-   *                   {@link XTFTextAnalyzer} class description.
+   *  @param  stopSet   The set of stop-words to be used when filtering text.
+   *                    For more information about stop-words, see the 
+   *                    {@link XTFTextAnalyzer} class description.
    * 
-   *  @param  srcText  A reference to the original source text to be analyzed. 
-   *                   (Saved internally for random access filter operations not 
-   *                   normally possible through the serial <code>Reader</code> 
-   *                   object passed to 
-   *                   {@link XTFTextAnalyzer#tokenStream(String,Reader) tokenStream()}.)
-   *                   <br><br>
+   *  @param  chunkSize The size (in words) of each chunk.<br><br>
    * 
    *  @.notes
    *    Use this method to initialize an instance of an 
@@ -151,8 +146,7 @@ public class XTFTextAnalyzer extends Analyzer {
    */
 
   public XTFTextAnalyzer( Set          stopSet,
-                          int          chunkSize,
-                          StringBuffer srcText )
+                          int          chunkSize )
   {
     
     // Record the set of stop words to use and the combine distance
@@ -160,9 +154,6 @@ public class XTFTextAnalyzer extends Analyzer {
     
     // Record the chunk size (used for checking)
     this.chunkSize       = chunkSize;
-    
-    // Store the blurbed text for later reference.
-    this.srcText = srcText;
     
   } // public XTFTextAnalyzer( stopWords, blurbedText )
   
@@ -187,41 +178,26 @@ public class XTFTextAnalyzer extends Analyzer {
 
   {
     
-    // Create a fast string reader.
-    String text;
-    if( fieldName.equals("text") )
-        text = srcText.toString();
-    else {
-        char[] ch = new char[256];
-        StringBuffer buf = new StringBuffer( 256 );
-        while( true ) {
-            try {
-                int nRead = reader.read( ch );
-                if( nRead < 0 )
-                    break;
-                buf.append( ch );
-            }
-            catch( IOException e ) { 
-                // This really can't happen, given that the reader is always
-                // a StringReader. But if it does, barf out.
-                //
-                throw new RuntimeException( e ); 
-            }
-        } // while
-        text = buf.toString();
-    }
+    // Create a fast string reader if we weren't passed one already.
+    FastStringReader fastReader; 
+    if( reader instanceof FastStringReader )
+        fastReader = (FastStringReader) reader;
+    else
+        fastReader = new FastStringReader(reader);
     
-    FastStringReader fastReader = new FastStringReader( text );
+    // Record the text string for later use.
+    srcText = fastReader.getString();
     
     // Convert the text into tokens.
     TokenStream result = new FastTokenizer(fastReader);
     
-    // Perform the standard filtering.
+    // Perform the standard filtering (remove apostrophes, dots from 
+    // acronyms, etc.)
+    //
     result = new StandardFilter( result );
     
-    // If the current field is the text field, filter special tokens.
-    if( fieldName.equals("text") )
-        result = new XtfSpecialTokensFilter( result, srcText );
+    // Filter special tokens (word bump, node markers, etc.)
+    result = new XtfSpecialTokensFilter( result, srcText );
     
     // Normalize everything to be lowercase.
     result = new LowerCaseFilter( result );

@@ -64,6 +64,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.ngram.NgramStopFilter;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
@@ -296,9 +297,7 @@ public class XMLTextProcessor extends DefaultHandler
    */
   private SrcTextInfo srcText;
   
-  /** The base directory for the current Lucene database specified by the
-   *  {@link XMLTextProcessor#configInfo configInfo} member.
-   */ 
+  /** The base directory for the current Lucene database. */
   private String indexPath;
   
   /** Used to cache the input filter stylesheet, and any xslKeysFrom
@@ -375,9 +374,7 @@ public class XMLTextProcessor extends DefaultHandler
   private IndexSearcher indexSearcher;  
   
   /** An Lucene index writer object, used to add or update documents 
-   *  to the index currently defined by the 
-   *  {@link XMLTextProcessor#configInfo configInfo}
-   *  member.
+   *  to the index currently opened for writing.
    */
   private IndexWriter indexWriter;
   
@@ -456,7 +453,7 @@ public class XMLTextProcessor extends DefaultHandler
    *   <code>cfgInfo</code> structure. <br><br>
    * 
    *   This method makes a private internal reference 
-   *   {@link XMLTextProcessor#configInfo configInfo}
+   *   {@link XMLTextProcessor#indexInfo indexInfo}
    *   to the passed configuration structure for use by other methods in this 
    *   class. <br><br>
    * 
@@ -636,7 +633,7 @@ public class XMLTextProcessor extends DefaultHandler
    *   IOException  Any I/O exceptions that occurred during the deletion of 
    *                a previous Lucene database or during the creation of the
    *                new index currently specified by the internal 
-   *                {@link XMLTextProcessor#configInfo configInfo}
+   *                {@link XMLTextProcessor#indexInfo indexInfo}
    *                structure. <br><br>
    * 
    */
@@ -653,9 +650,7 @@ public class XMLTextProcessor extends DefaultHandler
         // First, make the index.
         indexWriter = new IndexWriter( 
                      indexPath, 
-                     new XTFTextAnalyzer( stopSet, 
-                                          indexInfo.getChunkSize(),
-                                          compactedAccumText ), 
+                     new XTFTextAnalyzer( stopSet, indexInfo.getChunkSize() ),
                      true );
         
         // Then add the index info chunk to it.
@@ -695,8 +690,8 @@ public class XMLTextProcessor extends DefaultHandler
    *  This method first checks if the given source file is already in the
    *  index. If not, it adds it to a queue of files to be (re)indexed. 
    * 
-   *  @param xmlTextFile  The source XML text file to add to the queue of 
-   *                      files to be indexed/reindexed. <br><br>
+   *  @param srcInfo  The source XML text file to add to the queue of 
+   *                  files to be indexed/reindexed. <br><br>
    *  
    *  @.notes
    *    For more about why source text files are queued, see the 
@@ -728,8 +723,8 @@ public class XMLTextProcessor extends DefaultHandler
   
   /** Queue a source text file for (re)indexing. <br><br>
    * 
-   *  @param xmlTextFile  The source XML text file to add to the queue of 
-   *                      files to be indexed/reindexed. <br><br>
+   *  @param srcInfo  The source XML text file to add to the queue of 
+   *                  files to be indexed/reindexed. <br><br>
    *  
    *  @.notes
    *    For more about why source text files are queued, see the 
@@ -844,7 +839,7 @@ public class XMLTextProcessor extends DefaultHandler
   /** Process the list of files queued for indexing or reindexing. <br><br>
    * 
    *  This method iterates through the list of queued source text files,
-   *  calling the {@link XMLTextProcessor#processText(XMLTextProcessor.SrcTextInfo,int) processText()}
+   *  calling the {@link XMLTextProcessor#processText(SrcTextInfo, int) processText()}
    *  method to (re)index the file as needed. <br><br>
    *
    *  @throws 
@@ -923,8 +918,7 @@ public class XMLTextProcessor extends DefaultHandler
   /** Add the specified XML source text to the active Lucene index.
    * 
    *  This method indexes the specified XML source text file, adding it to the
-   *  Lucene database currently specified by the 
-   * {@link XMLTextProcessor#configInfo configInfo} member.
+   *  Lucene database currently specified by the {@link #indexPath} member.
    * 
    * @param file    The XML source text file to process.
    * 
@@ -1116,7 +1110,7 @@ public class XMLTextProcessor extends DefaultHandler
    *    attributes such as <code>sectiontype</code> and <code>proximitybreak</code>
    *    are assumed to be prefixed by the namespace <code>xtf</code>. <br><br>
    * 
-   *    If present in the {@link XMLTextProcessor#configInfo configInfo} member,
+   *    If present in the {@link XMLTextProcessor#indexInfo indexInfo} member,
    *    the XML file will be prefiltered with the specified XSL filter before 
    *    XML parsing begins. This allows node attributes to be inserted that 
    *    modify the proximity of various text sections as well as boost or 
@@ -1577,7 +1571,32 @@ public class XMLTextProcessor extends DefaultHandler
     // If this is the end of a meta-data field, record it.
     if( inMeta == 1 ) {
         metaField.value = metaBuf.toString().trim();
-        metaInfo.add( metaField );
+        
+        // Lucene will fail subtly if we add two fields with the same name.
+        // Basically, the terms for each field are added at overlapping
+        // positions, causing a phrase search to easily span them. To counter
+        // this, we stick them all together in one field, but add word bump
+        // separators to keep hits from occurring across one and the next.
+        //
+        boolean add = true;
+        for( Iterator i = metaInfo.iterator(); i.hasNext(); ) {
+            MetaField mf = (MetaField) i.next();
+            if( mf.name.equals(metaField.name) ) {
+                StringBuffer buf = new StringBuffer();
+                buf.append( mf.value );
+                buf.append( XtfSpecialTokensFilter.bumpMarker );
+                buf.append( Integer.toString(indexInfo.getChunkOvlp()) );
+                buf.append( XtfSpecialTokensFilter.bumpMarker );
+                buf.append( ' ' );
+                buf.append( metaField.value );
+                mf.value = buf.toString();
+                add = false;
+            }
+        }
+
+        if( add )
+            metaInfo.add( metaField );
+        
         metaField = null;
         metaBuf.setLength( 0 );
         inMeta = 0;
@@ -2034,6 +2053,28 @@ public class XMLTextProcessor extends DefaultHandler
     // Index whatever is left in the accumulated text buffer.
     indexText( sectionType, wordBoost );
   
+    // Make the next chunk current.
+    chunkStartNode  = nextChunkStartNode;
+    chunkWordOffset = nextChunkWordOffset;
+    chunkWordCount  = nextChunkWordCount;
+
+    // Remove the text from the buffer that was in the previous
+    // chunk but not in the next one.
+    //
+    accumText.delete( 0, nextChunkStartIdx );
+                    
+    // Make sure that the next word added doesn't bump up against
+    // the last one accumulated.
+    //
+    trimAccumText( true );
+
+    // Reset the start index for the next chunk.
+    nextChunkStartIdx = 0;
+    nextChunkWordCount = 0;
+    
+    // Index whatever is left in the accumulated text buffer.
+    indexText( sectionType, wordBoost );
+
     // Since we're forcing a new chunk, advance the next chunk past
     // the one we just wrote.
     //
@@ -2320,7 +2361,10 @@ public class XMLTextProcessor extends DefaultHandler
             // Must insert chunkWordSize virtual words (not chunkWordOvlp
             // which could make it look like the next chunk overlaps).
             //
-            insertVirtualWords( vWord, chunkWordSize, text, 0 );
+            // Update: I can't figure out why the above is true. It seems
+            //         quite wasteful in fact.
+            //
+            insertVirtualWords( vWord, chunkWordOvlp, text, 0 );
           
             // Cancel the forced chunk flag, now that we've handled it.
             forcedChunk = false;
@@ -2527,7 +2571,7 @@ public class XMLTextProcessor extends DefaultHandler
    *  @.notes
    *    This method peforms the final step of adding a chunk of assembled text
    *    to the Lucene database specified by the 
-   *    {@link XMLTextProcessor#configInfo configInfo} configuration member. 
+   *    {@link XMLTextProcessor#indexInfo indexInfo} configuration member. 
    *    This includes compacting virtual words via the 
    *    {@link XMLTextProcessor#compactVirtualWords() compactVirtualWords()}
    *    method, and recording the unique document identifier (key) for the 
@@ -3418,8 +3462,7 @@ public class XMLTextProcessor extends DefaultHandler
     indexWriter = new IndexWriter( 
                      indexPath,
                      new XTFTextAnalyzer( stopSet, 
-                                          indexInfo.getChunkSize(),
-                                          compactedAccumText ), 
+                                          indexInfo.getChunkSize() ),
                                           false );
       
     // Since we end up adding tons of little 'documents' to Lucene, it's much 

@@ -88,11 +88,11 @@ public class XtfSpecialTokensFilter extends TokenFilter
   
   /** A reference to the original contiguous text that the input token list
    *  corresponds. See the 
-   *  {@linkplain XtfSpecialTokensFilter#XtfSpecialTokensFilter(TokenStream,StringBuffer) constructor}
+   *  {@linkplain XtfSpecialTokensFilter#XtfSpecialTokensFilter(TokenStream, String) constructor}
    *  for more about how this reference is used. <br><br>
    *  
    */
-  private StringBuffer srcText;
+  private String srcText;
   
   //////////////////////////////////////////////////////////////////////////////
  
@@ -112,7 +112,7 @@ public class XtfSpecialTokensFilter extends TokenFilter
    *    markers to be punctuation  rather than part of the token, and strips 
    *    them out. <br><br>
    */
-  public XtfSpecialTokensFilter( TokenStream srcTokens, StringBuffer srcText )
+  public XtfSpecialTokensFilter( TokenStream srcTokens, String srcText )
   
   {
     super( srcTokens );
