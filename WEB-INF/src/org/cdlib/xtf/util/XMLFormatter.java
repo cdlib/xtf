@@ -29,7 +29,17 @@ package org.cdlib.xtf.util;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.StringReader;
 import java.util.LinkedList;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.Configuration;
+import net.sf.saxon.om.AllElementStripper;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tinytree.TinyBuilder;
+import net.sf.saxon.trans.XPathException;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,30 +50,18 @@ import java.util.LinkedList;
  *    To use this class, you basically do the following: <br><br>
  *
  *    <code>
- *    Writer XMLDoc = new OutputStreamWriter(
- *                          new FileOutputStream( XMLFilePath )
- *                        );
  *
- *    FormatXML.tabSize(4); // (Defaults to 2 spaces if not specified)
- *
- *    XMLDoc.write(
- *      FormatXML.procInstr( "xml version=\"1.0\" encoding=\"utf-8\"" )
- *    );
- *
- *    XMLDoc.write(
- *     FormatXML.beginTag( "tagName", "tagAttr=\"value\"" )
- *    );
- *
- *    XMLDoc.write(
- *      FormatXML.text( "A bunch of text within a tag." ) + newLine(2)
- *    );
- *
- *    XMLDoc.write(
- *      FormatXML.endTag()
- *    );
+ *    XMLFormatter formatter = new XMLFormatter();
+ *    
+ *    formatter.tabSize(4); // (Defaults to 2 spaces if not specified)
+ *    formatter.procInstr( "xml version=\"1.0\" encoding=\"utf-8\"" )
+ *    formatter.beginTag( "tagName", "tagAttr=\"value\"" )
+ *    formatter.text( "A bunch of text within a tag." ) + newLine(2)
+ *    formatter.endTag();
+ *    String result = formatter.toString();
  *    </code> <br><br>
  *
- *    This will produce an XML file with the following contents: <br><br>
+ *    This will produce an XML string with the following contents: <br><br>
  *
  *    &lt;?xml version="1.0" encoding="utf-8"?&gt;
  *
@@ -73,10 +71,13 @@ import java.util.LinkedList;
  *
  *    &lt;/tagName&gt;
  */
-public class FormatXML {
+public class XMLFormatter {
+  
+  /** Buffer to accumulate the results in */
+  private StringBuffer buf = new StringBuffer();
 
   /** Default amount to indent when {@link #tab()} is called. */
-  public static int defaultTabSize = 2;
+  public int defaultTabSize = 2;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -85,14 +86,14 @@ public class FormatXML {
    *
    *  The default behavior is to insert a blank line after each tag. To change
    *  this behavior, call the
-   *  {@link FormatXML#blankLineAfterTag(boolean) blankLineAfterTag(boolean enable) }
+   *  {@link XMLFormatter#blankLineAfterTag(boolean) blankLineAfterTag(boolean enable) }
    *  function. <br><br>
    *
    *  @return
    *     <code>true</code> - Blank lines will be inserted after each new tag.
    *     <code>false</code> - No blank lines will be inserted after each new tag.
    */
-  public static final boolean blankLineAfterTag()
+  public boolean blankLineAfterTag()
 
   {
 
@@ -113,7 +114,7 @@ public class FormatXML {
    *  @return
    *      The value of the blank line flag just prior to this call.
    */
-  public static final boolean blankLineAfterTag( boolean enable )
+  public boolean blankLineAfterTag( boolean enable )
 
   {
 
@@ -134,14 +135,14 @@ public class FormatXML {
   /** Return the current tab size used for indenting nested tags. <br><br>
    *
    *  By default, the tab size is set to 2 spaces. To change the indent size,
-   *  call the {@link FormatXML#tabSize(int) tabSize(int newTabSize) }
+   *  call the {@link XMLFormatter#tabSize(int) tabSize(int newTabSize) }
    *  method.
    *
    *  @return
    *      The number of spaces each a nested line will be indented from its
    *      container.
    */
-  public static final int tabSize()
+  public int tabSize()
 
   {
 
@@ -161,7 +162,7 @@ public class FormatXML {
    *      The number of spaces each a nested line will be indented from its
    *      container.
    */
-  public static final int tabSize( int newTabSize )
+  public int tabSize( int newTabSize )
 
   {
 
@@ -183,36 +184,65 @@ public class FormatXML {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a string containing a properly indented begin tag consisting
+  /** Add a string containing a properly indented begin tag consisting
    *  only of the tag name. <br><br>
    *
    *  @param tagName  The name of the tag to create.
    */
-  public static final String beginTag( String tagName )
+  public void beginTag( String tagName )
 
   {
 
-    // If no tag name was specified, simply return an empty string.
-    if( tagName == null || tagName.length() == 0 ) return "";
+    // Close any previous tag that's hanging open.
+    closeTag();
+    
+    // If no tag name was specified, simply return.
+    if( tagName == null || tagName.length() == 0 ) return;
 
     // Indent, and write the begin tag name between angle brackets.
-    String outStr = spaces.substring( 0, tabCount ) + "<" + tagName + ">\n";
+    buf.append( spaces.substring(0, tabCount) );
+    buf.append( "<" );
+    buf.append( tagName );
+    
+    // Remember that we have a tag currently open. It will be closed by
+    // any operation except adding an attribute.
+    //
+    tagOpen = true;
 
     // Add the tag name to the current nesting stack so that the
     // endTag() method can properly close the tag when called.
     //
     tagStack.addLast( tagName );
 
-    // If the user wants a blank line after each tag, put one in.
-    if( mBlankLineAfterTag ) outStr += "\n";
-
     // Indent subsequent output to lie within this tag.
     tab();
 
-    // And finally return the tag string to the caller.
-    return outStr;
-
   } // public beginTag( String tagName )
+  
+  
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * If there has been a beginTag(), we need to be sure and add the closing
+   * ">" before doing anything else.
+   */
+  private void closeTag()
+  
+  {
+    
+    // If there's no tag open, simply return.
+    if( !tagOpen ) return;
+    
+    // Emit the closing bracket.
+    buf.append( ">" );
+    
+    // Add a newline if requested.
+    if( mBlankLineAfterTag ) buf.append( "\n" );
+    
+    // All done.
+    tagOpen = false;
+    
+  } // private closeTag()
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -220,11 +250,15 @@ public class FormatXML {
   /** Format a tag attribute from an attribute name and an associated string
    *  value.
    */
-   public static final String attr( String attName, String attValue )
+  public void attr( String attName, String attValue )
 
   {
 
-    return " " + attName + "=\"" + attValue + "\"";
+    buf.append( " " );
+    buf.append( attName );
+    buf.append( "=\"" );
+    buf.append( escapeText(attValue) );
+    buf.append( "\"" );
 
   } // public attr()
 
@@ -234,11 +268,10 @@ public class FormatXML {
   /** Format a tag attribute from an attribute name and an associated integer
    *  value.
    */
-  public static final String attr( String attName, int attValue )
+  public void attr( String attName, int attValue )
 
   {
-
-    return " " + attName + "=\"" + Integer.toString(attValue) + "\"";
+    attr( attName, Integer.toString(attValue) );
 
   } // public attr()
 
@@ -248,18 +281,17 @@ public class FormatXML {
   /** Format a tag attribute from an attribute name and an associated 
    *  floating-point value.
    */
-  public static final String attr( String attName, float attValue )
+  public void attr( String attName, float attValue )
 
   {
-
-    return " " + attName + "=\"" + Float.toString(attValue) + "\"";
+    attr( attName, Float.toString(attValue) );
 
   } // public attr()
 
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a string containing a properly indented begin tag consisting
+  /** Format a string containing a properly indented begin tag consisting
    *  of a tag name and a list of attributes. <br><br>
    *
    *  @param tagName        The name of the tag to create.
@@ -267,11 +299,11 @@ public class FormatXML {
    *  @param tagAtts        A string of attributes to tadd to the tag.
    *      
    *  @.notes
-   *       Use the {@link FormatXML#attr(String, String) attr() } method
+   *       Use the {@link XMLFormatter#attr(String, String) attr() } method
    *       and its cousins to simplify constructing attribute name/value 
    *       pairs.      
    */
-  public static final String beginTag( 
+  public void beginTag( 
   
       String  tagName, 
       String  tagAtts
@@ -279,26 +311,35 @@ public class FormatXML {
 
   {
 
-    // If no tag name was specified, simply return an empty string.
-    if( tagName == null || tagName.length() == 0 ) return "";
+    // Close any previous tag that's hanging open.
+    closeTag();
+    
+    // If no tag name was specified, simply return.
+    if( tagName == null || tagName.length() == 0 ) return;
 
     // If the tag attributes string is empty, have the simple beginTag()
     // function do the work.
     //
-    if( tagAtts == null || tagAtts.length() == 0 ) return beginTag( tagName );
+    if( tagAtts == null || tagAtts.length() == 0 ) {
+        beginTag( tagName );
+        return;
+    }
 
     // Format up the tag name and attributes between angle brackets. Start
     // with the angle bracket and tag name.
     //
-    String outStr = spaces.substring( 0, tabCount ) + "<" + tagName;
+    buf.append( spaces.substring(0, tabCount) );
+    buf.append( "<" );
+    buf.append( tagName );
     
     // If the tag string doesn't start with a space, add one to separate
     // the first attribute from the tag name.
     //
-    if( tagAtts.charAt(0) != ' ' ) outStr += " ";
+    if( tagAtts.charAt(0) != ' ' ) buf.append( " " );
     
     // Then add the closing angle bracket and we're done.
-    outStr += tagAtts +">\n";
+    buf.append( tagAtts );
+    buf.append( ">\n" );
  
     // Add the tag name to the current nesting stack so that the
     // endTag() method can properly close the tag when called.
@@ -306,159 +347,170 @@ public class FormatXML {
     tagStack.addLast( tagName );
 
     // If the user wants a blank line after each tag, put one in.
-    if( mBlankLineAfterTag ) outStr += "\n";
+    if( mBlankLineAfterTag ) buf.append( "\n" );
 
     // Indent subsequent output to lie within this tag.
     tab();
-
-    // And finally return the tag string to the caller.
-    return outStr;
 
   } // public beginTag( String tagName, String tagAtts )
 
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a string containing a properly indented end tag for the
+  /** Add a string containing a properly indented end tag for the
    *  closest open tag (if any.)
    */
-  public static final String endTag()
+  public void endTag()
 
   {
 
-    // If there are no open tags left, simply return an empty string.
-    if( tagStack.isEmpty() ) return "";
+    // Close any previous tag that's hanging open.
+    closeTag();
+    
+    // If there are no open tags left, simply return;
+    if( tagStack.isEmpty() ) return;
 
     // Undo the current indent level.
     untab();
 
     // Format up the end-tag.
-    String outStr = spaces.substring( 0, tabCount ) + "</" +
-                    (String)(tagStack.removeLast()) + ">\n";
+    buf.append( spaces.substring( 0, tabCount ) );
+    buf.append( "</" );
+    buf.append( (String)(tagStack.removeLast()) );
+    buf.append( ">\n" );
 
     // If the user wants a blank line after each tag, add one.
-    if( mBlankLineAfterTag ) outStr += "\n";
-
-    // Finally, return the end tag to the caller.
-    return outStr;
+    if( mBlankLineAfterTag ) buf.append( "\n" );
 
   } // public endTag()
 
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a string containing properly indented end tags for any
+  /** Add a string containing properly indented end tags for any
    *  remaining open tags.
    */
-  public static final String endAllTags()
+  public void endAllTags()
 
   {
 
+    // Close any previous tag that's hanging open.
+    closeTag();
+    
     // Start with no accumulated end tags.
     String outStr = "";
 
     // While there are open tags left, end each one.
-    while( !tagStack.isEmpty() ) outStr += endTag();
-
-    // Return the accumulated end tags.
-    return outStr;
+    while( !tagStack.isEmpty() ) endTag();
 
   } // public endAllTags()
 
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a processing instruction tag.
+  /** Format an element tag.
    *
-   *  @param  tagStr  The processing instruction string to place in the tag.
-   *
-   *  @return
-   *      A processing instruction tag indented to the current indentation
-   *      level.
+   *  @param  tagStr  The string to place in the tag.
    */
-  public static final String tag( String tagStr )
+  public void tag( String tagStr )
 
   {
 
+    // Close any previous tag that's hanging open.
+    closeTag();
+    
     // Indent and assemble the specified tag.
-    String outStr = spaces.substring( 0, tabCount ) + "<" + tagStr + "/>\n";
+    buf.append( spaces.substring( 0, tabCount ) );
+    buf.append( "<" );
+    buf.append( tagStr );
+    buf.append( "/>\n" );
 
     // If the user wants a blank line after the tag, add one.
-    if( mBlankLineAfterTag ) outStr += "\n";
-
-    // Return the tag to the caller.
-    return outStr;
+    if( mBlankLineAfterTag ) buf.append( "\n" );
 
   } // public tag()
 
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a processing instruction tag at the current level of indentation.
+  /** Format a processing instruction tag at the current level of indentation.
    *
    *  @param  procStr   The processing instruction string to place in the tag.
    */
-  public static final String procInstr( String procStr )
+  public void procInstr( String procStr )
 
   {
 
+    // Close any previous tag that's hanging open.
+    closeTag();
+    
      // Format up the processing instruction tag.
-     String outStr = spaces.substring( 0, tabCount ) + "<?" + procStr + "?>\n";
+     buf.append( spaces.substring(0, tabCount) );
+     buf.append( "<?" );
+     buf.append( procStr );
+     buf.append( "?>\n" );
 
      // If the user wants a blank line after each tag, put one in.
-     if( mBlankLineAfterTag ) outStr += "\n";
-
-     // Return the tag string to the caller.
-     return outStr;
+     if( mBlankLineAfterTag ) buf.append( "\n" );
 
   } // procInstr( String procStr )
 
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a string of text at the current level of indentation.
+  /** Format a string of text at the current level of indentation.
    *
    *  @param  str  The text to indent.
    */
-  public static final String text( String str )
+  public void text( String str )
 
   {
 
-    // If no text was passed by the caller, simply return an empty string.
-    if( str == null || str.length() == 0 ) return "";
+    // Close any previous tag that's hanging open.
+    closeTag();
+    
+    // If no text was passed by the caller, simply return.
+    if( str == null || str.length() == 0 ) return;
             
-    // Otherwise, indent the text, and return it to the caller.
-    return spaces.substring( 0, tabCount ) + str;
+    // Escape any special characters.
+    str = escapeText( str );
+    
+    // Otherwise, indent the text, and add it to the buffer.
+    buf.append( spaces.substring(0, tabCount) );
+    buf.append( str );
 
   } // public text( String str )
 
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a string containing text broken across multiple indented
+  /** Format a string containing text broken across multiple indented
    *  lines less than or equal to a maximum line length. <br><br>
    *
    *   @param  str        The string to break across multiple lines.
    *
    *   @param  maxWidth   The maximum width for each line.
-   *
-   *   @return
-   *       The original input text broken across multiple lines.
    */
-  public static final String text( String str, int maxWidth )
+  public void text( String str, int maxWidth )
 
   {
 
-    // If the caller didn't pass any text in, simply return an empty string.
-    if( str == null ) return "";
+    // Close any previous tag that's hanging open.
+    closeTag();
+    
+    // Escape any special characters.
+    str = escapeText( str );
+    
+    // If the caller didn't pass any text in, simply return.
+    if( str == null ) return;
 
     // If no maximum width was specified by the caller, call the simple
     // text function to do the work.
     //
-    if( maxWidth <= 0 ) return text( str );
-
-    // Start with no accumulated text.
-    String outStr = "";
+    if( maxWidth <= 0 ) {
+        text( str );
+        return;
+    }
 
     // While the remaining text is longer than the maximum width...
     while( str != null ) {
@@ -467,7 +519,7 @@ public class FormatXML {
         str = str.trim();
 
         // Start with the necessary indentation.
-        outStr += spaces.substring( 0, tabCount );
+        buf.append( spaces.substring(0, tabCount) );
 
         // Look for the first space/carriage-return/line-feed at or 
         // before the maximum width.
@@ -503,7 +555,7 @@ public class FormatXML {
         // consider the job done.
         //
         if( breakIdx == -1 ) {
-            outStr += str;
+            buf.append( str );
             str = null;
         }
 
@@ -517,7 +569,8 @@ public class FormatXML {
         else {
 
             // Tack on the text up to break character.
-            outStr += str.substring( 0, breakIdx ) + " \n";
+            buf.append( str.substring(0, breakIdx) );
+            buf.append( " \n" );
 
             // If the break was not the last character in the
             // remaining string, chop off the part we just
@@ -536,27 +589,24 @@ public class FormatXML {
 
     } // while( str != null && str.length() > maxWidth )
 
-    // Finally, return the resulting output string.
-    return outStr;
-
   } // public text( String str, int maxWidth )
 
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a string with a single new-line.
+  /** Add a single new-line.
    * 
    */
-  public static final String newLine() { return "\n"; }
+  public void newLine() { buf.append( "\n" ); }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a string containing a specified number of new-lines.
+  /** Add a specified number of new-lines.
    *
-   *  @param lineCount  The number of new-lines to return.
+   *  @param lineCount  The number of new-lines to add.
    * 
    */
-  public static final String newLine( int lineCount )
+  public void newLine( int lineCount )
 
   {
 
@@ -565,27 +615,22 @@ public class FormatXML {
     //
     if( lineCount > newLines.length() ) lineCount = newLines.length();
 
-    // Return a string containing the specified number of new lines.
-    return newLines.substring( 0, lineCount );
+    // Add a string containing the specified number of new lines.
+    buf.append( newLines.substring(0, lineCount) );
 
   } // public newLine( int lineCount )
 
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a string containing one or two new-lines depending on whether 
+  /** Adds a string containing one or two new-lines depending on whether 
    *  the user wants blank lines after tags or not.
    * 
    */
-  public static final String newLineAfterText()
+  public void newLineAfterText()
 
   {
-
-    // If the caller wants a blank line after the text, return two new-lines.
-    if( mBlankLineAfterTag ) return "\n\n";
-    
-    // Otherwise, just return one.
-    return "\n";
+    newLine( mBlankLineAfterTag ? 2 : 1 );
     
   } // public newLineAfterText()
 
@@ -595,7 +640,7 @@ public class FormatXML {
   /** Indent by the current tab size for all subsequent calls to FormatXML
    *  output functions.
    */
-  private static final void tab()
+  private void tab()
 
   {
 
@@ -615,7 +660,7 @@ public class FormatXML {
   /** Un-indent by the current tab size for all subsequent calls to FormatXML
    *  output functions.
    */
-  private static final void untab()
+  private void untab()
 
   {
 
@@ -627,7 +672,81 @@ public class FormatXML {
     else                     tabCount =  0;
 
   } // public untab()
+  
+  
+  //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Change any XML-special characters to their ampersand equivalents.
+   *  
+   * @param text  Text to scan
+   * @return      Modified version with escaped characters.
+   */
+  public static String escapeText( String text )
+  
+  {
+    
+      if( text.indexOf('&') >= 0 )
+          text = text.replaceAll( "&", "&amp;" );
+      
+      if( text.indexOf('<') >= 0 )
+          text = text.replaceAll( "<", "&lt;"  );
+      
+      if( text.indexOf('>') >= 0 )
+          text = text.replaceAll( ">", "&gt;"  );
+      
+      if( text.indexOf('\"') >= 0 )
+          text = text.replaceAll( "\"", "&quot;"  );
+      
+      return text;
+    
+  } // public escapeText()
+
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  /** Get the formatted results as a string.
+   */
+  public String toString()
+
+  {
+    return buf.toString();
+
+  } // public toString()
+
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  /** Get the results as a Saxon-compatible Source.
+   */
+  public Source toSource()
+
+  {
+    return new StreamSource( new StringReader(buf.toString()) );
+
+  } // public toSource()
+
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  /** Get the results as a Saxon NodeInfo.
+   */
+  public NodeInfo toNode()
+
+  {
+    if( config == null )
+        config = new Configuration();
+    
+    StreamSource src = new StreamSource( new StringReader(buf.toString()) );
+    try {
+        return TinyBuilder.build( src, AllElementStripper.getInstance(), config );
+    }
+    catch( XPathException e ) {
+        throw new RuntimeException( e );
+    }
+    
+  } // public toNode()
+  
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -655,14 +774,20 @@ public class FormatXML {
   "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 
   /** Stack of current tag nestings */
-  private static LinkedList tagStack = new LinkedList();
+  private LinkedList tagStack = new LinkedList();
 
   /** Current tab level for this thread */
-  private static int tabCount = 0;
+  private int tabCount = 0;
+  
+  /** Is there currently a begin tag open? */
+  private boolean tagOpen = false;
 
   /** Automatically insert blank lines after tags */
-  private static boolean mBlankLineAfterTag = true;
+  private boolean mBlankLineAfterTag = true;
 
   /** Amount to indent when {@link #tab()} is called. */
-  private static int tabSize = defaultTabSize;
+  private int tabSize = defaultTabSize;
+  
+  /** Saxon configuration (used by {@link #toNode()} only) */
+  private Configuration config = null;
 }
