@@ -31,6 +31,7 @@ package org.cdlib.xtf.textIndexer;
 
 import javax.xml.transform.Templates;
 
+import org.cdlib.xtf.util.StructuredStore;
 import org.xml.sax.InputSource;
 
 /**
@@ -63,5 +64,11 @@ public class SrcTextInfo
    *  they need not be calculated later during the display process.
    */
   public Templates displayStyle;
+  
+  /** 
+   * Empty storage in which to build the persistent version of the
+   * document (aka the "lazy tree"), or null to avoid building it.
+   */
+  public StructuredStore lazyStore;
   
 } // class SrcTextInfo

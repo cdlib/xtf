@@ -90,7 +90,6 @@ import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
-import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
@@ -705,6 +704,19 @@ public class XMLTextProcessor extends DefaultHandler
     int ret = checkFile( srcInfo );
     if( ret == 1 ) return;
     
+    // Figure out where to put the lazy tree file. If an old one already
+    // exists, toss it. Also make sure the directory exists.
+    //
+    File srcFile = new File( srcInfo.source.getSystemId() );
+    File lazyFile = IdxConfigUtil.calcLazyPath( 
+            new File(xtfHomePath),
+            indexInfo,
+            srcFile,
+            true );
+    if( lazyFile.canRead() )
+        lazyFile.delete();
+    srcInfo.lazyStore = StructuredFile.create( lazyFile );
+    
     // Otherwise, queue it to be indexed.
     queueText( srcInfo );
 
@@ -939,19 +951,9 @@ public class XMLTextProcessor extends DefaultHandler
                             file.key;
     Trace.info( msg + "Indexing [" + prettyKey + "] ... " );
     
-    // Figure out where to put the lazy tree file. If an old one already exists,
-    // toss it. Also make sure the directory exists.
-    //
-    if( srcText.source.getSystemId() != null ) {
-        File srcFile = new File( srcText.source.getSystemId() );
-        lazyFile = IdxConfigUtil.calcLazyPath( 
-                new File(xtfHomePath),
-                indexInfo,
-                srcFile,
-                true );
-        if( lazyFile.canRead() )
-            lazyFile.delete();
-        
+    // Build a lazy tree if requested.
+    if( file.lazyStore != null ) 
+    {
         // We need to make sure to use a special name pool that records all
         // possible name codes. We can use it later to iterate through and
         // find all the registered keys (it's the only way.)
@@ -959,11 +961,11 @@ public class XMLTextProcessor extends DefaultHandler
         NamePool namePool = NamePool.getDefaultNamePool();
         assert namePool instanceof RecordingNamePool;
         
-        // While we parse the source document, we're going to also build up a tree
-        // that will be written to the lazy file.
+        // While we parse the source document, we're going to also build up 
+        // a tree that will be written to the lazy file.
         //
         lazyBuilder = new LazyTreeBuilder();
-        lazyReceiver = lazyBuilder.begin( StructuredFile.create(lazyFile) );
+        lazyReceiver = lazyBuilder.begin( file.lazyStore );
         
         lazyBuilder.setNamePool( namePool );
         
@@ -1026,8 +1028,9 @@ public class XMLTextProcessor extends DefaultHandler
     // Regardless of result, finish the lazy tree so we don't leave everything
     // hanging open.
     //
-    if( lazyBuilder != null ) {
-        lazyBuilder.finish( lazyReceiver );
+    if( lazyBuilder != null ) 
+    {
+        lazyBuilder.finish( lazyReceiver, false ); // don't close Store yet
     
         // If a stylesheet has been specified that contains xsl:key defs
         // to apply to the lazy tree, do so now.
@@ -1062,7 +1065,10 @@ public class XMLTextProcessor extends DefaultHandler
                 }
             }
         }
-    }
+        
+        // Now that the keys are built, it's safe to close the lazy store.
+        srcText.lazyStore.close();
+    } // if
 
     // If it went well, let the user know.
     if( result == 0 )
@@ -1334,8 +1340,7 @@ public class XMLTextProcessor extends DefaultHandler
     
     Transformer trans = pss.newTransformer();
     LazyKeyManager keyMgr = (LazyKeyManager) exec.getKeyManager();
-    StructuredStore treeStore = StructuredFile.open( lazyFile );
-    LazyDocument doc = (LazyDocument) lazyBuilder.load( treeStore );
+    LazyDocument doc = (LazyDocument) lazyBuilder.load( srcText.lazyStore );
     
     // For every xsl:key registered in the stylesheet, build the lazy key
     // hash.
