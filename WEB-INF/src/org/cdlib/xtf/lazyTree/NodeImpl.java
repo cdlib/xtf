@@ -3,57 +3,32 @@ package org.cdlib.xtf.lazyTree;
 // IMPORTANT NOTE: When comparing, this file is most similar to 
 //                 Saxon's net.sf.tree.NodeImpl
 
-/**
- * Copyright (c) 2004, Regents of the University of California
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met:
- *
- * - Redistributions of source code must retain the above copyright notice, 
- *   this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, 
- *   this list of conditions and the following disclaimer in the documentation 
- *   and/or other materials provided with the distribution.
- * - Neither the name of the University of California nor the names of its
- *   contributors may be used to endorse or promote products derived from this 
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
 import java.io.IOException;
 
-import org.w3c.dom.Node;
+import javax.xml.transform.SourceLocator;
 
 import net.sf.saxon.Configuration;
+import net.sf.saxon.Err;
 import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.pattern.NameTest;
 import net.sf.saxon.pattern.AnyNodeTest;
+import net.sf.saxon.om.FingerprintedNode;
+import net.sf.saxon.om.NamespaceIterator;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.EmptyIterator;
+import net.sf.saxon.om.PrependIterator;
+import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.SingletonIterator;
-import net.sf.saxon.om.AbstractNode;
+import net.sf.saxon.trans.DynamicError;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.type.SchemaType;
 import net.sf.saxon.type.Type;
+import net.sf.saxon.value.UntypedAtomicValue;
 import net.sf.saxon.event.Receiver;
-
-import org.w3c.dom.Element;
-
-import net.sf.saxon.xpath.XPathException;
 
 
 /**
@@ -61,10 +36,12 @@ import net.sf.saxon.xpath.XPathException;
   * This is the top-level class in the implementation class hierarchy; it essentially contains
   * all those methods that can be defined using other primitive methods, without direct access
   * to data.
-  * @author Martin Haye
+  * 
+  * @author Michael Kay, Martin Haye
   */
-abstract public class NodeImpl extends AbstractNode {
-
+public abstract class NodeImpl 
+    implements NodeInfo, FingerprintedNode, SourceLocator 
+{
     LazyDocument document;
     int          nodeNum;
     int          nameCode;
@@ -72,6 +49,14 @@ abstract public class NodeImpl extends AbstractNode {
     int          prevSibNum;
     int          nextSibNum;
     
+    /**
+    * Chararacteristic letters to identify each type of node, indexed using the node type
+    * values. These are used as the initial letter of the result of generate-id()
+    */
+    public static final char[] NODE_LETTER =
+        {'x', 'e', 'a', 't', 'x', 'x', 'x', 'p', 'c', 'r', 'x', 'x', 'x', 'n'};
+
+    /** Create a new node and attach it to a document */
     public NodeImpl( LazyDocument document ) {
         this.document = document;
     }
@@ -80,11 +65,63 @@ abstract public class NodeImpl extends AbstractNode {
     public void init( int alpha, int beta ) throws IOException { }
     
     /**
+     * Get the value of the item as a CharSequence. This is in some cases more efficient than
+     * the version of the method that returns a String.
+     */
+    public CharSequence getStringValueCS() {
+        return getStringValue();
+    }
+
+    /**
+    * Get the type annotation of this node, if any
+    */
+    public int getTypeAnnotation() {
+        return -1;
+    }
+
+    /**
+    * Get the column number of the node.
+    * The default implementation returns -1, meaning unknown
+    */
+    public int getColumnNumber() {
+        return -1;
+    }
+
+    /**
+    * Get the public identifier of the document entity containing this node.
+    * The default implementation returns null, meaning unknown
+    */
+    public String getPublicId() {
+        return null;
+    }
+
+    /**
+     * Get the typed value of this node.
+     * If there is no type annotation, we return the string value, as an instance
+     * of xdt:untypedAtomic
+    */
+
+    public SequenceIterator getTypedValue() throws XPathException {
+        int annotation = getTypeAnnotation();
+        if (annotation==-1) {
+            return SingletonIterator.makeIterator(new UntypedAtomicValue(getStringValue()));
+        } else {
+            SchemaType stype = getConfiguration().getSchemaType(annotation);
+            if (stype == null) {
+                String typeName = getNamePool().getDisplayName(annotation);
+                throw new DynamicError("Unknown type annotation " +
+                        Err.wrap(typeName) + " in document instance");
+            } else {
+                return stype.getTypedValue(this);
+            }
+        }
+    }
+
+    /**
     * Set the system ID of this node. This method is provided so that a NodeInfo
     * implements the javax.xml.transform.Source interface, allowing a node to be
     * used directly as the Source of a transformation
-     */
-
+    */
     public void setSystemId( String uri ) {
         // overridden in DocumentImpl and ElementImpl
         if( this instanceof AttributeImpl )
@@ -98,7 +135,6 @@ abstract public class NodeImpl extends AbstractNode {
     * @return true if this Node object and the supplied Node object represent the
     * same node in the tree.
      */
-
     public boolean isSameNodeInfo( NodeInfo other ) {
         // default implementation: differs for attribute and namespace nodes   
         if( this==other ) return true;
@@ -133,15 +169,18 @@ abstract public class NodeImpl extends AbstractNode {
     * @return a string.
      */
     public String generateId() {
-        return document.generateId() + getClass().getName() + nodeNum;
+        return "d" + document.generateId() +
+                NODE_LETTER[getNodeKind()] +
+                nodeNum;
     }
    
-	/**
-	* Get the node corresponding to this javax.xml.transform.dom.DOMLocator
-	*/
+    /**
+     * Get the document number of the document containing this node
+     * (Needed when the document isn't a real node, for sorting free-standing elements)
+     */
 
-    public Node getOriginatingNode() {
-        return this;
+    public int getDocumentNumber() {
+        return document.getDocumentNumber();
     }
 
     /**
@@ -181,10 +220,15 @@ abstract public class NodeImpl extends AbstractNode {
 
     public final int compareOrder( NodeInfo other ) {
         long a = getSequenceNumber();
-        long b = ((NodeImpl)other).getSequenceNumber();
-        if (a<b) return -1;
-        if (a>b) return +1;
-        return 0;
+        if( other instanceof NodeImpl ) {
+            long b = ((NodeImpl)other).getSequenceNumber();
+            if (a<b) return -1;
+            if (a>b) return +1;
+            return 0;
+        } else {
+            // it must be a namespace node
+            return 0 - other.compareOrder(this);
+        }
     }
 
     /**
@@ -277,7 +321,7 @@ abstract public class NodeImpl extends AbstractNode {
      * child of its parent.
      */
 
-    public Node getPreviousSibling()  {
+    public NodeInfo getPreviousSibling()  {
         return document.getNode( prevSibNum );
     }
 
@@ -288,7 +332,7 @@ abstract public class NodeImpl extends AbstractNode {
      * @return The next sibling node. Returns null if the current node is the last
      * child of its parent.
      */
-    public Node getNextSibling()  {
+    public NodeInfo getNextSibling()  {
         return document.getNode( nextSibNum );
     }
 
@@ -297,7 +341,7 @@ abstract public class NodeImpl extends AbstractNode {
     * @return null
      */
 
-    public Node getFirstChild()  {
+    public NodeInfo getFirstChild()  {
         return null; // overridden in ParentNodeImpl
     }
 
@@ -306,7 +350,7 @@ abstract public class NodeImpl extends AbstractNode {
     * @return null
     */
 
-    public Node getLastChild()  {
+    public NodeInfo getLastChild()  {
         return null;
     }
 
@@ -338,6 +382,7 @@ abstract public class NodeImpl extends AbstractNode {
 
     public AxisIterator iterateAxis( byte axisNumber, NodeTest nodeTest ) { 
 
+        int type = getNodeKind();
         switch (axisNumber) {
             case Axis.ANCESTOR:
                  return new AncestorEnumeration( this, nodeTest, false );
@@ -357,7 +402,7 @@ abstract public class NodeImpl extends AbstractNode {
                  }
 
             case Axis.DESCENDANT:
-                if( getNodeKind() == Type.DOCUMENT &&
+                if( type == Type.DOCUMENT &&
                     nodeTest instanceof NameTest &&
                     nodeTest.getPrimitiveType() == Type.ELEMENT ) { 
                     return ((LazyDocument)this).getAllElements(
@@ -379,10 +424,10 @@ abstract public class NodeImpl extends AbstractNode {
 
             case Axis.NAMESPACE:
                  if( this.getNodeKind() != Type.ELEMENT ) return EmptyIterator.getInstance();
-                 return new NamespaceEnumeration( (ElementImpl)this, nodeTest );
+                 return new NamespaceIterator( (ElementImpl)this, nodeTest );
 
             case Axis.PARENT:
-                 NodeInfo parent = (NodeInfo)getParentNode();
+                 NodeInfo parent = getParent();
                  if( parent == null ) return EmptyIterator.getInstance();
                  if( nodeTest.matches(parent.getNodeKind(), 
                                       parent.getFingerprint(),
@@ -406,7 +451,15 @@ abstract public class NodeImpl extends AbstractNode {
                  return EmptyIterator.getInstance();
 
             case Axis.PRECEDING_OR_ANCESTOR:
-                 return new PrecedingOrAncestorEnumeration( this, nodeTest );
+                 if (type==Type.DOCUMENT) {
+                     return EmptyIterator.getInstance();
+                 } else if (type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
+                     // See test numb32.
+                     NodeImpl el = (NodeImpl)getParent();
+                     return new PrependIterator(el, new PrecedingEnumeration(el, nodeTest));
+                 } else {
+                     return new PrecedingEnumeration(this, nodeTest);
+                 }
 
             default:
                  throw new IllegalArgumentException("Unknown axis number " + axisNumber);
@@ -414,42 +467,14 @@ abstract public class NodeImpl extends AbstractNode {
     }
 
     /**
-     * Returns whether this node (if it is an element) has any attributes.
-     * @return <code>true</code> if this node has any attributes,
-     *   <code>false</code> otherwise.
-     * @since DOM Level 2
-     */
-
-    public boolean hasAttributes() {
-        // overridden in LazyElementImpl
+    * Determine whether the node has any children.
+    * @return <code>true</code> if this node has any attributes,
+    *   <code>false</code> otherwise.
+    */
+    public boolean hasChildNodes() {
+        // overridden in ParentNodeImpl
         return false;
     }
-
-    /**
-     * Find the value of a given attribute of this node. <BR>
-     * This method is defined on all nodes to meet XSL requirements, but for nodes
-     * other than elements it will always return null.
-     * @param uri the namespace uri of an attribute
-     * @param localName the local name of an attribute
-     * @return the value of the attribute, if it exists, otherwise null
-     */
-
-//    public String getAttributeValue( String uri, String localName ) {
-//        return null;
-//    }
-
-    /**
-     * Find the value of a given attribute of this node. <BR>
-     * This method is defined on all nodes to meet XSL requirements, but for nodes
-     * other than elements it will always return null.
-     * @param name the name of an attribute. This must be an unqualified attribute name,
-     * i.e. one with no namespace prefix.
-     * @return the value of the attribute, if it exists, otherwise null
-     */
-
-//    public String getAttributeValue( String name ) {
-//        return null;
-//    }
 
     /**
     * Get the value of a given attribute of this node
@@ -458,19 +483,7 @@ abstract public class NodeImpl extends AbstractNode {
     */
 
     public String getAttributeValue(int fingerprint) {
-    	return null;
-    }
-
-    /**
-     * Get the outermost element.
-     * @return the Element node for the outermost element of the document. If the document is
-     * not well-formed, this returns the last element child of the root if there is one, otherwise
-     * null.
-     */
-
-    public Element getDocumentElement() {
-        return ((LazyDocument)getDocumentRoot()).getDocumentElement();
-
+    	  return null;
     }
 
     /**
@@ -521,7 +534,7 @@ abstract public class NodeImpl extends AbstractNode {
 
     /**
      * Get the previous node in document order
-    * @return the previous node in the document, or null if there is no such node
+     * @return the previous node in the document, or null if there is no such node
      */
     public NodeImpl getPreviousInDocument() {
 
@@ -532,7 +545,7 @@ abstract public class NodeImpl extends AbstractNode {
 
         NodeImpl prev = (NodeImpl)getPreviousSibling();
         if( prev != null ) return prev.getLastDescendantOrSelf();
-        return (NodeImpl)getParentNode();
+        return (NodeImpl)getParent();
     }
     
     /**
@@ -546,16 +559,33 @@ abstract public class NodeImpl extends AbstractNode {
     }
 
     /**
-     * Output all namespace nodes associated with this element. Does nothing if
-     * the node is not an element.
-     * @param out The relevant outputter
-     * @param includeAncestors True if namespaces declared on ancestor elements must
-     * be output; false if it is known that these are already on the result tree
-     */
-
-    public void outputNamespaceNodes( Receiver out, boolean includeAncestors )
+    * Output all namespace nodes associated with this element. Does nothing if
+    * the node is not an element.
+    * @param out The relevant outputter
+    * @param includeAncestors True if namespaces declared on ancestor elements must
+    */
+    public void sendNamespaceDeclarations(Receiver out, boolean includeAncestors)
         throws XPathException
     {}
+
+    /**
+     * Get all namespace undeclarations and undeclarations defined on this element.
+     *
+     * @param buffer If this is non-null, and the result array fits in this buffer, then the result
+     *               may overwrite the contents of this array, to avoid the cost of allocating a new array on the heap.
+     * @return An array of integers representing the namespace declarations and undeclarations present on
+     *         this element. For a node other than an element, return null. Otherwise, the returned array is a
+     *         sequence of namespace codes, whose meaning may be interpreted by reference to the name pool. The
+     *         top half word of each namespace code represents the prefix, the bottom half represents the URI.
+     *         If the bottom half is zero, then this is a namespace undeclaration rather than a declaration.
+     *         The XML namespace is never included in the list. If the supplied array is larger than required,
+     *         then the first unused entry will be set to -1.
+     *         <p/>
+     *         <p>For a node other than an element, the method returns null.</p>
+     */
+    public int[] getDeclaredNamespaces(int[] buffer) {
+        return null;
+    }
 
     /**
     * Copy nodes. Copying type annotations is not yet supported for this tree
@@ -564,18 +594,23 @@ abstract public class NodeImpl extends AbstractNode {
 
     public abstract void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException;
     
-     // implement DOM Node methods
-
-    /**
-     * Determine whether the node has any children.
-     * @return  <code>true</code> if the node has any children,
-     *   <code>false</code> if the node has no children.
-     */
-
-    public boolean hasChildNodes() {
-        // overridden in ParentNodeImpl
-        return false;
-    }
-
 }
 
+
+//
+// The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
+// you may not use this file except in compliance with the License. You may obtain a copy of the
+// License at http://www.mozilla.org/MPL/
+//
+// Software distributed under the License is distributed on an "AS IS" basis,
+// WITHOUT WARRANTY OF ANY KIND, either express or implied.
+// See the License for the specific language governing rights and limitations under the License.
+//
+// The Original Code is: all this file.
+//
+// The Initial Developer of the Original Code is Michael H. Kay.
+//
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+//
+// Contributor(s): none.
+//

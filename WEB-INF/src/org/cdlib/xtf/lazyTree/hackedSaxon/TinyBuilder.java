@@ -6,9 +6,10 @@ import net.sf.saxon.event.Builder;
 import net.sf.saxon.event.LocationProvider;
 import net.sf.saxon.event.ReceiverOptions;
 import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.om.FastStringBuffer;
+import net.sf.saxon.trans.DynamicError;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
-import net.sf.saxon.xpath.DynamicError;
-import net.sf.saxon.xpath.XPathException;
 
 import org.cdlib.xtf.util.PackedByteBuf;
 import org.cdlib.xtf.util.StructuredFile;
@@ -114,8 +115,9 @@ public class TinyBuilder extends Builder  {
 //        if (currentDepth == 0 && tree.numberOfNodes != 0) {
 //            System.err.println("**** FOREST DOCUMENT ****");
 //        }
-        if (started) {
-            // this happens when using an IdentityTransformer
+        if (started || currentDepth > 0) {
+            // this happens when using an IdentityTransformer, or when copying a document node to form
+            // the content of an element
             return;
         }
         started = true;
@@ -156,6 +158,9 @@ public class TinyBuilder extends Builder  {
 
     public void endDocument () throws XPathException {
              // System.err.println("TinyBuilder: " + this + " End document");
+
+        if (currentDepth > 1) return;
+            // happens when copying a document node as the child of an element
 
         if (ended) return;  // happens when using an IdentityTransformer
         ended = true;
@@ -295,7 +300,7 @@ public class TinyBuilder extends Builder  {
     public void processingInstruction (String piname, CharSequence remainder, int locationId, int properties) throws XPathException
     {
         if (tree.commentBuffer==null) {
-            tree.commentBuffer = new StringBuffer(200);
+            tree.commentBuffer = new FastStringBuffer(200);
         }
         int s = tree.commentBuffer.length();
         tree.commentBuffer.append(remainder.toString());
@@ -311,10 +316,13 @@ public class TinyBuilder extends Builder  {
         tree.next[nodeNr] = prevAtDepth[currentDepth - 1];   // *O* owner pointer in last sibling
         prevAtDepth[currentDepth] = nodeNr;
 
-            // TODO: handle PI Base URI
-            //if (locator!=null) {
-            //    pi.setLocation(locator.getSystemId(), locator.getLineNumber());
-            //}
+        LocationProvider locator = pipe.getLocationProvider();
+        if (locator != null) {
+            tree.setSystemId(nodeNr, locator.getSystemId(locationId));
+            if (lineNumbering) {
+                tree.setLineNumber(nodeNr, locator.getLineNumber(locationId));
+            }
+        }
     }
 
     /**
@@ -323,7 +331,7 @@ public class TinyBuilder extends Builder  {
 
     public void comment (CharSequence chars, int locationId, int properties) throws XPathException {
         if (tree.commentBuffer==null) {
-            tree.commentBuffer = new StringBuffer(200);
+            tree.commentBuffer = new FastStringBuffer(200);
         }
         int s = tree.commentBuffer.length();
         tree.commentBuffer.append(chars.toString());

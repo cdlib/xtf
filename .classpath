@@ -7,8 +7,6 @@
 	<classpathentry sourcepath="WEB-INF/lib/source/PDFBox-0.6.7a/" kind="lib" path="WEB-INF/lib/PDFBox-0.6.7a.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/log4j-1.2.9.jar"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/jtidy-04aug2000r7-dev" kind="lib" path="WEB-INF/lib/Tidy.jar"/>
-	<classpathentry sourcepath="WEB-INF/lib/source/saxonb-8.2" kind="lib" path="WEB-INF/lib/saxonb-8.2.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/dom.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/jaxp-api.jar"/>
+	<classpathentry sourcepath="WEB-INF/lib/source/saxonb-8.3" kind="lib" path="WEB-INF/lib/saxonb-8.3.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>

@@ -37,12 +37,12 @@ import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
+
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tree.TreeBuilder;
+import net.sf.saxon.type.Type;
 
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
@@ -62,17 +62,13 @@ import org.apache.lucene.search.spans.SpanWildcardQuery;
 import org.cdlib.xtf.textIndexer.XTFTextAnalyzer;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
+import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.XMLFormatter;
 import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 
 /**
  * Processes URL parameters into a Lucene query, using a stylesheet to perform
@@ -149,8 +145,8 @@ public class QueryRequest implements Cloneable
     {
         this.baseDir = baseDir;
         
-        Document  input  = tokenizeParams( atts );
-        DOMResult output = new DOMResult();
+        NodeInfo    input  = tokenizeParams( atts );
+        TreeBuilder output = new TreeBuilder();
         
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** queryParser input ***" );
@@ -161,15 +157,14 @@ public class QueryRequest implements Cloneable
         if( !(stylesheet.getErrorListener() instanceof XTFSaxonErrorListener) )
             stylesheet.setErrorListener( new XTFSaxonErrorListener() );
 
-        DOMSource src = new DOMSource( input );
-        stylesheet.transform( src, output );
+        stylesheet.transform( input, output );
         
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** queryParser output ***" );
-            Trace.debug( XMLWriter.toString(output.getNode()) );
+            Trace.debug( XMLWriter.toString(output.getCurrentRoot()) );
         }
         
-        parseOutput( output.getNode() );
+        parseOutputTop( new EasyNode(output.getCurrentRoot()) );
     } // constructor
     
     
@@ -177,10 +172,10 @@ public class QueryRequest implements Cloneable
      * Produce a Lucene query from the intermediate format that is normally
      * produced by the formatting stylesheet.
      * 
-     * @param queryDoc A DOM document containing the query.
+     * @param queryDoc A document containing the query.
      */
-    public QueryRequest( Node queryDoc,
-                         File baseDir )
+    public QueryRequest( NodeInfo queryDoc,
+                         File     baseDir )
         throws QueryGenException, QueryFormatError
     {
         this.baseDir = baseDir;
@@ -190,7 +185,7 @@ public class QueryRequest implements Cloneable
             Trace.debug( XMLWriter.toString(queryDoc) );
         }
 
-        parseOutput( (Element) queryDoc );
+        parseOutputTop( new EasyNode(queryDoc) );
     } // constructor
     
     
@@ -206,22 +201,13 @@ public class QueryRequest implements Cloneable
      * Creates a document containing tokenized and untokenized versions of each
      * parameter.
      */
-    public static Document tokenizeParams( AttribList atts )
+    public static NodeInfo tokenizeParams( AttribList atts )
         throws QueryGenException
     {
-        Document doc = null;
-        
-        // Create an empty document. This really should be easier.
-        try {
-            doc = DocumentBuilderFactory.newInstance().
-                                newDocumentBuilder().newDocument();
-        } catch( ParserConfigurationException e ) {
-            throw new QueryGenException( "Unable to create empty document", e );
-        }
+        XMLFormatter fmt = new XMLFormatter();
         
         // The top-level node marks the fact that this is the parameter list.
-        Node topNode = doc.createElement( "parameters" );
-        doc.appendChild( topNode );
+        fmt.beginTag( "parameters" );
         
         // Add each parameter to the document.
         for( Iterator iter = atts.iterator(); iter.hasNext(); ) {
@@ -232,44 +218,47 @@ public class QueryRequest implements Cloneable
             //
             if( att.key.equals("servlet.path") )
                 continue;
-            addParam( doc, topNode, att.key, att.value );
+            addParam( fmt, att.key, att.value );
         }
         
+        fmt.endTag();
+        
         // And we're done.
-        return doc;
+        return fmt.toNode();
     } // buildInput()
     
     
     /**
-     * Adds the tokenized and un-tokenized version of the attribute as a child
-     * element of the given node.
+     * Adds the tokenized and un-tokenized version of the attribute to the
+     * given formatter.
      * 
-     * @param topNode Node to add the attribute to
+     * @param fmt formatter to add to
      * @param name Name of the URL parameter
      * @param val String value of the URL parameter
      */
-    private static void addParam( Document doc, Node topNode, 
+    private static void addParam( XMLFormatter fmt,
                                   String name, String val )
     {
         // Create the parameter node and assign its name and value.
-        Element parmNode = doc.createElement( "param" );
-        parmNode.setAttribute( "name", name );
-        parmNode.setAttribute( "value", val );
-        topNode.appendChild( parmNode );
+        fmt.beginTag( "param" );
+        fmt.attr( "name", name );
+        fmt.attr( "value", val );
         
         // Now tokenize it.
-        tokenize( doc, parmNode, val );
+        tokenize( fmt, val );
+        
+        // All done.
+        fmt.endTag();
     } // addParam()
     
     
     /**
-     * Break 'val' up into its component tokens and add them to parmNode.
+     * Break 'val' up into its component tokens and add elements for them.
      * 
-     * @param doc Used for creating nodes
-     * @param parmNode Node to add to
-     * @param val The value to tokenize
+     * @param fmt formatter to add to
+     * @param val value to tokenize
      */
-    private static void tokenize( Document doc, Node parmNode, String val )
+    private static void tokenize( XMLFormatter fmt, String val )
     {
         char[] chars   = val.toCharArray();
         char   inQuote = 0;
@@ -283,7 +272,7 @@ public class QueryRequest implements Cloneable
             if( c == inQuote ) {
                 if( i > start ) {
                     tmpStr = new String( chars, start, i-start );
-                    addTokens( inQuote, doc, parmNode, tmpStr );
+                    addTokens( inQuote, fmt, tmpStr );
                 }
                 inQuote = 0;
                 start = i+1;
@@ -291,7 +280,7 @@ public class QueryRequest implements Cloneable
             else if( inQuote == 0 && c == '\"' ) {
                 if( i > start ) {
                     tmpStr = new String( chars, start, i-start );
-                    addTokens( inQuote, doc, parmNode, tmpStr );
+                    addTokens( inQuote, fmt, tmpStr );
                 }
                 inQuote = c;
                 start = i+1;
@@ -303,7 +292,7 @@ public class QueryRequest implements Cloneable
         // Process the last tokens
         if( i > start ) {
             tmpStr = new String( chars, start, i-start );
-            addTokens( inQuote, doc, parmNode, tmpStr ); 
+            addTokens( inQuote, fmt, tmpStr ); 
         }
     } // tokenize()
     
@@ -315,19 +304,19 @@ public class QueryRequest implements Cloneable
      * @param inQuote Non-zero means this is a quoted phrase, in which case the
      *                element will be 'phrase' instead of 'token', and it will
      *                be given sub-token elements.
-     * @param doc Document used to create nodes
-     * @param parmNode The element to add to
+     * @param fmt formatter to add to
      * @param str The token value
      */
-    private static void addTokens( char inQuote,  Document doc, 
-                                   Node parmNode, String   str )
+    private static void addTokens( char         inQuote,  
+                                   XMLFormatter fmt,
+                                   String       str )
     {
         // If this is a quoted phrase, tokenize the words within it.
         if( inQuote != 0 ) {
-            Element phraseNode = doc.createElement( "phrase" );
-            phraseNode.setAttribute( "value", str );
-            parmNode.appendChild( phraseNode );
-            tokenize( doc, phraseNode, str );
+            fmt.beginTag( "phrase" );
+            fmt.attr( "value", str );
+            tokenize( fmt, str );
+            fmt.endTag();
             return;
         }
         
@@ -346,14 +335,14 @@ public class QueryRequest implements Cloneable
                 if( tok == null )
                     break;
                 if( tok.startOffset() > prevEnd )
-                    addToken( doc, parmNode, 
+                    addToken( fmt, 
                               str.substring(prevEnd, tok.startOffset()),
                               false );
                 prevEnd = tok.endOffset();
-                addToken( doc, parmNode, tok.termText(), true );
+                addToken( fmt, tok.termText(), true );
             }
             if( str.length() > prevEnd )
-                addToken( doc, parmNode, str.substring(prevEnd, str.length()),
+                addToken( fmt, str.substring(prevEnd, str.length()),
                           false );
         }
         catch( IOException e ) {
@@ -365,13 +354,11 @@ public class QueryRequest implements Cloneable
     /**
      * Adds a token element to a parameter node.
      * 
-     * @param doc The XML document being added to
-     * @param parmNode The element to add to
+     * @param fmt formatter to add to
      * @param str The token value
      * @param isWord true if  token is a real word, false if only punctuation
      */
-    private static void addToken( Document doc, 
-                                  Node parmNode, 
+    private static void addToken( XMLFormatter fmt,
                                   String str,
                                   boolean isWord )
     {
@@ -384,10 +371,10 @@ public class QueryRequest implements Cloneable
         str = restoreWildcards( str );
         
         // And create the node
-        Element tokenNode = doc.createElement( "token" );
-        tokenNode.setAttribute( "value", str );
-        tokenNode.setAttribute( "isWord", isWord ? "yes" : "no" );
-        parmNode.appendChild( tokenNode );
+        fmt.beginTag( "token" );
+        fmt.attr( "value", str );
+        fmt.attr( "isWord", isWord ? "yes" : "no" );
+        fmt.endTag();
     } // addToken()
     
     
@@ -444,14 +431,12 @@ public class QueryRequest implements Cloneable
      *               should be a 'query' element.
      * @return The resulting Lucene query
      */
-    private void parseOutput( Node output )
+    private void parseOutputTop( EasyNode output )
         throws QueryGenException, QueryFormatError
     {
-        for( ElementIter mainIter = new ElementIter(output); 
-             mainIter.hasNext(); ) 
-        {
-            Element main = mainIter.next();
-            String  name = main.getLocalName();
+        for( int i = 0; i < output.nChildren(); i++ ) {
+            EasyNode main = output.child( i );
+            String   name = main.name();
             
             if( !name.equals("query") && !name.equals("error") )
                 error( "Expected 'query' or 'error' element at " +
@@ -466,50 +451,40 @@ public class QueryRequest implements Cloneable
      * 
      * @param main The 'query' element
      */
-    private void parseOutput( Element main )
+    private void parseOutput( EasyNode main )
     {
-        if( main.getLocalName().equals("error") )
-            throw new QueryFormatError( main.getAttribute("message") );
+        if( main.name().equals("error") )
+            throw new QueryFormatError( main.attrValue("message") );
         
         // Process all the top-level attributes.
-        NamedNodeMap attrs = main.getAttributes();
-        for( int i = 0; i < attrs.getLength(); i++ ) {
-            Attr   attr = (Attr) attrs.item( i );
-            String name = attr.getName();
-            String val  = attr.getValue();
+        for( int i = 0; i < main.nAttrs(); i++ ) {
+            String name = main.attrName( i );
+            String val  = main.attrValue( i );
             parseMainAttrib( main, name, val );
         }
 
         // Process the children. If we find an old <combine> element,
         // traverse it just like a top-level query.
         //
-        int childCount = 0;
-        for( ElementIter iter = new ElementIter(main); iter.hasNext(); ) 
-        {
-            Element el = iter.next();
-            
-            childCount++;
-            if( childCount > 1 ) {
-                error( "<" + main.getNodeName() + "> element must have " +
-                       " exactly one child element" );
-            }
-            
-            query = deChunk( parseQuery(el, null, Integer.MAX_VALUE) );
-        }
-
-        if( childCount != 1 ) {
-            error( "<" + main.getNodeName() + "> element must have " +
+        if( main.nChildren() != 1 ) {
+            error( "<" + main.name() + "> element must have " +
                    " exactly one child element" );
         }
         
-        if( main.getLocalName().equals("query") &&
+        for( int i = 0; i < main.nChildren(); i++ ) {
+            EasyNode el = main.child( i );
+            query = deChunk( parseQuery(el, null, Integer.MAX_VALUE) );
+        }
+
+        
+        if( main.name().equals("query") &&
             Trace.getOutputLevel() >= Trace.debug )
         {
             Trace.debug( "Lucene query as parsed: " + query.toString() );
         }
         
         // Check that we got the required parameters.
-        if( main.getLocalName().equals("query") ) {
+        if( main.name().equals("query") ) {
             if( indexPath == null )
                 error( "'indexPath' attribute missing from <query> element" );
         }
@@ -522,7 +497,7 @@ public class QueryRequest implements Cloneable
      * 
      * If the attribute isn't recognized, an error exception is thrown.
      */
-    void parseMainAttrib( Element el, String name, String val )
+    void parseMainAttrib( EasyNode el, String name, String val )
     {
         if( name.equals("style") ) {
             displayStyle = Path.resolveRelOrAbs(baseDir, val);
@@ -588,16 +563,16 @@ public class QueryRequest implements Cloneable
             ; // handled elsewhere
         
         else if( name.equals("inclusive") &&
-                 el.getLocalName().equals("range") )
+                 el.name().equals("range") )
             ; // handled elsewhere
         
         else if( name.equals("slop") &&
-                 el.getLocalName().equals("near") )
+                 el.name().equals("near") )
             ; // handled elsewhere
         
         else {
             error( "Unrecognized attribute \"" + name + "\" " +
-                   "on <" + el.getLocalName() + "> element" );
+                   "on <" + el.name() + "> element" );
         }
     } // parseMainAttrib()
 
@@ -608,7 +583,7 @@ public class QueryRequest implements Cloneable
      * @param el Element to search
      * @param attribName Attribute to find
      */
-    private int parseIntAttrib( Element el, String attribName )
+    private int parseIntAttrib( EasyNode el, String attribName )
         throws QueryGenException
     {
         return parseIntAttrib( el, attribName, false, 0 );
@@ -618,12 +593,12 @@ public class QueryRequest implements Cloneable
      * Locate the named attribute and retrieve its value as an integer.
      * If not found, return a default value.
      * 
-     * @param el Element to search
+     * @param el EasyNode to search
      * @param attribName Attribute to find
      * @param defaultVal If not found and useDefault is true, return this 
      *                   value.
      */
-    private int parseIntAttrib( Element el, 
+    private int parseIntAttrib( EasyNode el, 
                                 String attribName, 
                                 int defaultVal  )
         throws QueryGenException
@@ -635,18 +610,18 @@ public class QueryRequest implements Cloneable
      * Locate the named attribute and retrieve its value as an integer.
      * Handles default processing if requested.
      * 
-     * @param el Element to search
+     * @param el EasyNode to search
      * @param attribName Attribute to find
      * @param useDefault true to supply a default value if none found,
      *                   false to throw an exception if not found.
      * @param defaultVal If not found and useDefault is true, return this 
      *                   value.
      */
-    private int parseIntAttrib( Element el, String attribName, 
+    private int parseIntAttrib( EasyNode el, String attribName, 
                                 boolean useDefault, int defaultVal )
         throws QueryGenException
     {
-        String elName = el.getLocalName();
+        String elName = el.name();
         String str = parseStringAttrib( el, 
                                         attribName,
                                         useDefault,
@@ -668,10 +643,10 @@ public class QueryRequest implements Cloneable
      * Locate the named attribute and retrieve its value as a string. If
      * not found, an error exception is thrown.
      * 
-     * @param el Element to search
+     * @param el EasyNode to search
      * @param attribName Attribute to find
      */
-    private String parseStringAttrib( Element el, 
+    private String parseStringAttrib( EasyNode el, 
                                       String  attribName ) 
         throws QueryGenException
     {
@@ -682,11 +657,11 @@ public class QueryRequest implements Cloneable
      * Locate the named attribute and retrieve its value as a string. If
      * not found, return a default value.
      * 
-     * @param el Element to search
+     * @param el EasyNode to search
      * @param attribName Attribute to find
      * @param defaultVal If not found, return this value.
      */
-    private String parseStringAttrib( Element el, 
+    private String parseStringAttrib( EasyNode el, 
                                       String  attribName,
                                       String  defaultVal ) 
         throws QueryGenException
@@ -698,21 +673,21 @@ public class QueryRequest implements Cloneable
      * Locate the named attribute and retrieve its value as a string.
      * Handles default processing if requested.
      * 
-     * @param el Element to search
+     * @param el EasyNode to search
      * @param attribName Attribute to find
      * @param useDefault true to supply a default value if none found,
      *                   false to throw an exception if not found.
      * @param defaultVal If not found and useDefault is true, return this 
      *                   value.
      */
-    private String parseStringAttrib( Element el, 
+    private String parseStringAttrib( EasyNode el, 
                                       String  attribName, 
                                       boolean useDefault,
                                       String  defaultVal )
         throws QueryGenException
     {
-        String elName = el.getLocalName();
-        String str = el.getAttribute( attribName );
+        String elName = el.name();
+        String str = el.attrValue( attribName );
 
         if( str == null || str.length() == 0 ) {
             if( !useDefault )
@@ -731,14 +706,14 @@ public class QueryRequest implements Cloneable
      * otherwise return 'parentField'. Also checks that field cannot be
      * specified if parentField has already been.
      */
-    private String parseField( Element el, String parentField )
+    private String parseField( EasyNode el, String parentField )
         throws QueryGenException
     {
-        if( !el.hasAttribute("metaField") && !el.hasAttribute("field") )
+        if( !el.hasAttr("metaField") && !el.hasAttr("field") )
             return parentField;
-        String attVal = el.getAttribute("field");
+        String attVal = el.attrValue("field");
         if( attVal == null || attVal.length() == 0 )
-            attVal = el.getAttribute( "metaField" );
+            attVal = el.attrValue( "metaField" );
         
         if( attVal.length() == 0 )
             error( "'field' attribute cannot be empty" );
@@ -755,23 +730,13 @@ public class QueryRequest implements Cloneable
      * Parse a 'sectionType' query element, if one is present. If not, 
      * simply returns null.
      */
-    private SpanQuery parseSectionType( Element parent, 
+    private SpanQuery parseSectionType( EasyNode parent, 
                                         String field,
                                         int maxSnippets )
         throws QueryGenException
     {
         // Find the sectionType element (if any)
-        Element sectionType = null;
-        for( ElementIter iter = new ElementIter(parent); iter.hasNext(); ) 
-        {
-            Element el = iter.next();
-            if( el.getNodeName().equals("sectionType") ) {
-                if( sectionType != null )
-                    error( "Cannot specify more than one sectionType element" );
-                sectionType = el;
-            }
-        }
-        
+        EasyNode sectionType = parent.child( "sectionType" );
         if( sectionType == null )
             return null;
         
@@ -780,27 +745,21 @@ public class QueryRequest implements Cloneable
             error( "'sectionType' element is only appropriate in queries on the 'text' field" );
         
         // Make sure it only has one child.
-        int count = 0;
-        Element child = null;
-        for( ElementIter iter = new ElementIter(sectionType); iter.hasNext(); ) 
-        {
-            child = iter.next();
-            count++;
-        }
-        if( count != 1 )
+        if( sectionType.nChildren() != 1 )
             error( "'sectionType' element requires exactly " +
                    "one child element" );
         
-        return (SpanQuery) parseQuery( child, "sectionType", maxSnippets );
+        return (SpanQuery) parseQuery( sectionType.child(0), 
+                                       "sectionType", maxSnippets );
     } // parseSectionType()
     
     /**
      * Recursively parse a query.
      */
-    private Query parseQuery( Element parent, String field, int maxSnippets )
+    private Query parseQuery( EasyNode parent, String field, int maxSnippets )
         throws QueryGenException
     {
-        String name = parent.getLocalName();
+        String name = parent.name();
         if( !name.matches(
                 "^query$|^term$|^all$|^range$|^phrase$|^near$" +
                 "|^and$|^or$|^not$" +
@@ -821,11 +780,9 @@ public class QueryRequest implements Cloneable
         float boost = 1.0f;
         
         // Validate all attributes.
-        NamedNodeMap attrs = parent.getAttributes();
-        for( int i = 0; i < attrs.getLength(); i++ ) {
-            Attr   attr     = (Attr) attrs.item( i );
-            String attrName = attr.getName();
-            String attrVal  = attr.getValue();
+        for( int i = 0; i < parent.nAttrs(); i++ ) {
+            String attrName = parent.attrName( i );
+            String attrVal  = parent.attrValue( i );
             
             if( attrName.equals("boost") ) {
                 try {
@@ -869,7 +826,7 @@ public class QueryRequest implements Cloneable
     /** 
      * Main work of recursively parsing a query. 
      */
-    private Query parseQuery2( Element parent, String name, String field,
+    private Query parseQuery2( EasyNode parent, String name, String field,
                                int maxSnippets )
         throws QueryGenException
     {
@@ -912,11 +869,11 @@ public class QueryRequest implements Cloneable
         //
         Vector subVec = new Vector();
         Vector notVec = new Vector();
-        for( ElementIter iter = new ElementIter(parent); iter.hasNext(); ) {
-            Element el = iter.next();
-            if( el.getLocalName().equals("sectionType") )
+        for( int i = 0; i < parent.nChildren(); i++ ) {
+            EasyNode el = parent.child( i );
+            if( el.name().equals("sectionType") )
                 ; // handled elsewhere
-            else if( el.getLocalName().equals("not") ) { 
+            else if( el.name().equals("not") ) { 
                 Query q = parseQuery2(el, name, field, maxSnippets);
                 if( q != null )
                     notVec.add( q );
@@ -1086,7 +1043,7 @@ public class QueryRequest implements Cloneable
     /**
      * Parse a range query.
      */
-    private Query parseRange( Element parent, String field, int maxSnippets )
+    private Query parseRange( EasyNode parent, String field, int maxSnippets )
         throws QueryGenException
     {
         // Inclusive or exclusive?
@@ -1101,9 +1058,9 @@ public class QueryRequest implements Cloneable
         // Check the children for the lower and upper bounds.
         Term lower = null;
         Term upper = null;
-        for( ElementIter iter = new ElementIter(parent); iter.hasNext(); ) {
-            Element child = iter.next();
-            String name = child.getLocalName();
+        for( int i = 0; i < parent.nChildren(); i++ ) {
+            EasyNode child = parent.child( i );
+            String name = child.name();
             if( name.equals("lower") ) {
                 if( lower != null )
                     error( "'lower' only allowed once as child of 'range' element" );
@@ -1168,15 +1125,15 @@ public class QueryRequest implements Cloneable
      * 
      * @param parent The element containing the field name and terms.
      */
-    Query makeProxQuery( Element parent, int slop, String field,
+    Query makeProxQuery( EasyNode parent, int slop, String field,
                          int maxSnippets )
         throws QueryGenException
     {
         Vector terms  = new Vector();
         Vector notVec = new Vector();
-        for( ElementIter iter = new ElementIter(parent); iter.hasNext(); ) {
-            Element el = iter.next();
-            if( el.getLocalName().equals("not") ) {
+        for( int i = 0; i < parent.nChildren(); i++ ) {
+            EasyNode el = parent.child( i );
+            if( el.name().equals("not") ) {
                 if( slop == 0 )
                     error( "'not' clauses aren't supported in phrase queries" );
                 
@@ -1202,7 +1159,7 @@ public class QueryRequest implements Cloneable
         }
         
         if( terms.size() == 0 )
-            error( "'" + parent.getLocalName() + "' element requires at " +
+            error( "'" + parent.name() + "' element requires at " +
                    "least one term" );
         
         // Optimization: treat a single-term 'all' query as just a simple
@@ -1230,7 +1187,7 @@ public class QueryRequest implements Cloneable
      * 
      * @param parent The element to parse
      */
-    private Term parseTerm( Element parent, String field, String expectedName )
+    private Term parseTerm( EasyNode parent, String field, String expectedName )
         throws QueryGenException
     {
         // Get field name if specified.
@@ -1239,10 +1196,10 @@ public class QueryRequest implements Cloneable
             error( "'term' element requires 'field' attribute on " +
                    "itself or an ancestor" );
         
-        if( !parent.getLocalName().equals(expectedName) )
+        if( !parent.name().equals(expectedName) )
             error( "Expected '" + expectedName + "' as child of '" + 
-                   parent.getParentNode().getLocalName() +
-                   "' element, but found '" + parent.getLocalName() + "'" );
+                   parent.parent().name() +
+                   "' element, but found '" + parent.name() + "'" );
         
         String termText  = getText( parent );
         
@@ -1266,27 +1223,28 @@ public class QueryRequest implements Cloneable
      * @param el The element to get the text of
      * @return The string value of the text
      */
-    private String getText( Element el )
+    private String getText( EasyNode el )
         throws QueryGenException
     {
         // There should be no element children, only text.
         int count = 0;
         String text = null;
-        for( Node n = el.getFirstChild(); n != null; n = n.getNextSibling() ) {
-            if( n.getNodeType() != Node.ATTRIBUTE_NODE &&
-                    n.getNodeType() != Node.TEXT_NODE )
+        for( int i = 0; i < el.nChildren(); i++ ) {
+            NodeInfo n = el.child(i).getWrappedNode();
+            if( n.getNodeKind() != Type.ATTRIBUTE &&
+                n.getNodeKind() != Type.TEXT )
             {
                 count = -1;
                 break;
             }
-            if( n.getNodeType() == Node.TEXT_NODE )
-                text = n.getNodeValue();
+            if( n.getNodeKind() == Type.TEXT )
+                text = n.getStringValue();
             count++;
         }
         
         if( count != 1 )
             error( "A single text node is required for the '" +
-                   el.getLocalName() + "' element" );
+                   el.name() + "' element" );
         
         return text;
     } // getText()
@@ -1302,42 +1260,5 @@ public class QueryRequest implements Cloneable
         
         public boolean isSevere() { return false; }
     } // class QueryFormatError
-    
-    /**
-     * Iterates through the element children of a node.
-     * 
-     * @author Martin Haye
-     */
-    private class ElementIter
-    {
-        private Node next;
-        
-        public ElementIter( Node parent )
-        {
-            next = parent.getFirstChild();
-            while( next != null && next.getNodeType() != Node.ELEMENT_NODE )
-                next = next.getNextSibling();
-        } // constructor
-        
-        public boolean hasNext()
-        {
-            return next != null;
-        }
-        
-        public Element next()
-        {
-            if( next == null )
-                return null;
-            
-            Element ret = (Element) next;
-            
-            do
-                next = next.getNextSibling();
-            while( next != null && next.getNodeType() != Node.ELEMENT_NODE );
-
-            return ret;
-        }
-        
-    } // class ElementIter
     
 } // class QueryRequest

@@ -32,13 +32,11 @@ package org.cdlib.xtf.lazyTree;
 import java.io.IOException;
 import java.nio.CharBuffer;
 
-import org.w3c.dom.Text;
-
 import org.cdlib.xtf.util.PackedByteBuf;
 
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
-import net.sf.saxon.xpath.XPathException;
 
 /**
  * A simple text node, which knows how to load its text from the persistent
@@ -46,7 +44,7 @@ import net.sf.saxon.xpath.XPathException;
  * 
  * @author Martin Haye
  */
-class TextImpl extends NodeImpl implements Text 
+class TextImpl extends NodeImpl
 {
     protected String text;
     

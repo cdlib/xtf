@@ -1,12 +1,10 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.om.NamespaceResolver;
 import net.sf.saxon.om.Navigator;
 import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.tree.DOMExceptionImpl;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
-import net.sf.saxon.xpath.XPathException;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
 
 
 /**
@@ -16,8 +14,7 @@ import org.w3c.dom.Element;
   * @author Michael H. Kay
   */
 
-final class TinyElementImpl extends TinyParentNodeImpl
-    implements Element {
+final class TinyElementImpl extends TinyParentNodeImpl {
 
     /**
     * Constructor
@@ -58,12 +55,10 @@ final class TinyElementImpl extends TinyParentNodeImpl
     /**
     * Output all namespace nodes associated with this element.
     * @param out The relevant outputter
-    * @param includeAncestors True if namespaces associated with ancestor
-    * elements must also be output; false if these are already known to be
-    * on the result tree.
-    */
+     * @param includeAncestors True if namespaces associated with ancestor
+     */
 
-    public void outputNamespaceNodes(Receiver out, boolean includeAncestors)
+    public void sendNamespaceDeclarations(Receiver out, boolean includeAncestors)
                 throws XPathException {
 
         int ns = tree.beta[nodeNr]; // by convention
@@ -82,21 +77,57 @@ final class TinyElementImpl extends TinyParentNodeImpl
         if (includeAncestors) {
             NodeInfo parent = getParent();
             if (parent != null) {
-                parent.outputNamespaceNodes(out, true);
+                parent.sendNamespaceDeclarations(out, true);
             }
             // terminates when the parent is a root node
         }
     }
 
     /**
-     * Returns whether this node (if it is an element) has any attributes.
-     * @return <code>true</code> if this node has any attributes,
-     *   <code>false</code> otherwise.
-     * @since DOM Level 2
+     * Get all namespace undeclarations and undeclarations defined on this element.
+     *
+     * @param buffer If this is non-null, and the result array fits in this buffer, then the result
+     *               may overwrite the contents of this array, to avoid the cost of allocating a new array on the heap.
+     * @return An array of integers representing the namespace declarations and undeclarations present on
+     *         this element. For a node other than an element, return null. Otherwise, the returned array is a
+     *         sequence of namespace codes, whose meaning may be interpreted by reference to the name pool. The
+     *         top half word of each namespace code represents the prefix, the bottom half represents the URI.
+     *         If the bottom half is zero, then this is a namespace undeclaration rather than a declaration.
+     *         The XML namespace is never included in the list. If the supplied array is larger than required,
+     *         then the first unused entry will be set to -1.
+     *         <p/>
+     *         <p>For a node other than an element, the method returns null.</p>
      */
 
-    public boolean hasAttributes() {
-        return tree.alpha[nodeNr] >= 0;
+    public int[] getDeclaredNamespaces(int[] buffer) {
+        return getDeclaredNamespaces(tree, nodeNr, buffer);
+    }
+
+    static int[] getDeclaredNamespaces(TinyTree tree, int nodeNr, int[] buffer) {
+        int ns = tree.beta[nodeNr]; // by convention
+        if (ns>0 ) {
+            int count = 0;
+            while (ns < tree.numberOfNamespaces &&
+                    tree.namespaceParent[ns] == nodeNr ) {
+                count++;
+                ns++;
+            }
+            if (count == 0) {
+                return NodeInfo.EMPTY_NAMESPACE_LIST;
+            } else if (count <= buffer.length) {
+                System.arraycopy(tree.namespaceCode, tree.beta[nodeNr], buffer, 0, count);
+                if (count < buffer.length) {
+                    buffer[count] = -1;
+                }
+                return buffer;
+            } else {
+                int[] array = new int[count];
+                System.arraycopy(tree.namespaceCode, tree.beta[nodeNr], array, 0, count);
+                return array;
+            }
+        } else {
+            return NodeInfo.EMPTY_NAMESPACE_LIST;
+        }
     }
 
     /**
@@ -118,19 +149,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
     }
 
     /**
-    * Set the value of an attribute on the current element. This affects subsequent calls
-    * of getAttribute() for that element.
-    * @param name The name of the attribute to be set. Any prefix is interpreted relative
-    * to the namespaces defined for this element.
-    * @param value The new value of the attribute. Set this to null to remove the attribute.
-    */
-
-    public void setAttribute(String name, String value ) throws DOMException {
-        throw new DOMExceptionImpl((short)9999, "Saxon DOM is not updateable");
-    }
-
-    /**
-    * Copy this node to a given outputter
+    * Copy this node to a given receiver
     * @param whichNamespaces indicates which namespaces should be copied: all, none,
     * or local (i.e., those not declared on a parent element)
     */
@@ -185,7 +204,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
 					// output namespaces
                     if (whichNamespaces != NO_NAMESPACES) {
                         if (first) {
-                            outputNamespaceNodes(receiver, whichNamespaces==ALL_NAMESPACES);
+                            sendNamespaceDeclarations(receiver, whichNamespaces==ALL_NAMESPACES);
                         } else {
                             int ns = tree.beta[next]; // by convention
                             if (ns>0 ) {
@@ -236,7 +255,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
                     int start = tree.alpha[next];
                     int len = tree.beta[next];
                     if (len>0) {
-                        receiver.comment(tree.commentBuffer.substring(start, start+len), locationId, 0);
+                        receiver.comment(tree.commentBuffer.subSequence(start, start+len), locationId, 0);
                     } else {
                         receiver.comment("", 0, 0);
                     }
@@ -302,6 +321,61 @@ final class TinyElementImpl extends TinyParentNodeImpl
 //        }
 //        out.endElement();
 //    }
+
+
+
+    /**
+     * Get the namespace URI corresponding to a given prefix. Return null
+     * if the prefix is not in scope.
+     *
+     * @param prefix     the namespace prefix. May be the zero-length string, indicating
+     *                   that there is no prefix. This indicates either the default namespace or the
+     *                   null namespace, depending on the value of useDefault.
+     * @param useDefault true if the default namespace is to be used when the
+     *                   prefix is "". If false, the method returns "" when the prefix is "".
+     * @return the uri for the namespace, or null if the prefix is not in scope.
+     *         The "null namespace" is represented by the pseudo-URI "".
+     */
+
+    public String getURIForPrefix(String prefix, boolean useDefault) {
+        if (!useDefault && "".equals(prefix)) {
+            return "";
+        }
+        int prefixCode = getNamePool().getCodeForPrefix(prefix);
+        if (prefixCode == -1) {
+            return null;
+        }
+        int ns = tree.beta[nodeNr]; // by convention
+        if (ns>0 ) {
+            while (ns < tree.numberOfNamespaces &&
+                    tree.namespaceParent[ns] == nodeNr ) {
+                int nscode = tree.namespaceCode[ns];
+                if ((nscode >> 16) == prefixCode) {
+                    int uriCode = nscode & 0xffff;
+                    if (uriCode == 0) {
+                        // this is a namespace undeclaration, so the prefix is not in scope
+                        if (prefixCode == 0) {
+                            // the namespace xmlns="" is always in scope
+                            return "";
+                        } else {
+                            return null;
+                        }
+                    } else {
+                        return getNamePool().getURIFromURICode((short)uriCode);
+                    }
+                }
+                ns++;
+            }
+        }
+
+        // now search the namespaces defined on the ancestor nodes.
+
+        NodeInfo parent = getParent();
+        if (parent instanceof NamespaceResolver) {
+            return ((NamespaceResolver)parent).getURIForPrefix(prefix, useDefault);
+        }
+        return null;
+    }
 
 }
 

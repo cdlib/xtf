@@ -1,9 +1,9 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
-import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.om.AxisIteratorImpl;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.pattern.NodeTest;
 
 /**
 * This class enumerates the ancestor:: or ancestor-or-self:: axes,

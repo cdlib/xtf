@@ -1,13 +1,9 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
-import net.sf.saxon.event.Receiver;
 import net.sf.saxon.Configuration;
+import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.*;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
-import net.sf.saxon.xpath.XPathException;
-import org.w3c.dom.DOMConfiguration;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +16,7 @@ import java.util.List;
   */
 
 public final class TinyDocumentImpl extends TinyParentNodeImpl
-    implements DocumentInfo, Document {
+    implements DocumentInfo {
 
     private HashMap idTable = null;
     private HashMap elementList = null;
@@ -65,16 +61,6 @@ public final class TinyDocumentImpl extends TinyParentNodeImpl
 	public int getDocumentNumber() {
 	    return tree.getDocumentNumber();
 	}
-
-
-    /**
-    * Make a (transient) namespace node from the array of namespace declarations
-    */
-
-
-    TinyNamespaceImpl getNamespaceNode(int nr) {
-        return new TinyNamespaceImpl(tree, nr);
-    }
 
     /**
     * Set the system id of this node
@@ -197,13 +183,11 @@ public final class TinyDocumentImpl extends TinyParentNodeImpl
     /**
     * Register a unique element ID. Fails if there is already an element with that ID.
     * @param e The NodeInfo (always an element) having a particular unique ID value
-    * @param id The unique ID value
+    * @param id The unique ID value. The caller is responsible for checking that this
+     * is a valid NCName.
     */
 
     void registerID(NodeInfo e, String id) {
-        if (!XMLChar.isValidNCName(id)) {
-            return;     // ignore invalid IDs
-        }
         if (idTable==null) {
             idTable = new HashMap(256);
         }
@@ -256,75 +240,6 @@ public final class TinyDocumentImpl extends TinyParentNodeImpl
             return null;
         }
         return (String[])entityTable.get(name);
-    }
-
-    /**
-     * The following methods are defined in DOM Level 3, and Saxon includes nominal implementations of these
-     * methods so that the code will compile when DOM Level 3 interfaces are installed.
-     */
-
-    public String getInputEncoding() {
-        return null;
-    }
-
-    public String getXmlEncoding() {
-        return null;
-    }
-
-    public boolean getXmlStandalone() {
-        return false;
-    }
-
-    public void setXmlStandalone(boolean xmlStandalone)
-                                  throws DOMException {
-        disallowUpdate();
-    }
-
-    public String getXmlVersion() {
-        return "1.0";
-    }
-    public void setXmlVersion(String xmlVersion)
-                                  throws DOMException {
-        disallowUpdate();
-    }
-
-    public boolean getStrictErrorChecking() {
-        return false;
-    }
-
-    public void setStrictErrorChecking(boolean strictErrorChecking) {
-        disallowUpdate();
-    }
-
-    public String getDocumentURI() {
-        return getSystemId();
-    }
-
-    public void setDocumentURI(String documentURI) {
-        disallowUpdate();
-    }
-
-    public Node adoptNode(Node source)
-                          throws DOMException {
-        disallowUpdate();
-        return null;
-    }
-
-//    DOM LEVEL 3 METHOD
-    public DOMConfiguration getDomConfig() {
-        return null;
-    }
-
-    public void normalizeDocument() {
-        disallowUpdate();
-    }
-
-    public Node renameNode(Node n,
-                           String namespaceURI,
-                           String qualifiedName)
-                           throws DOMException {
-        disallowUpdate();
-        return null;
     }
 
     /**

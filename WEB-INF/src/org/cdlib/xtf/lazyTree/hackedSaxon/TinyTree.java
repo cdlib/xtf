@@ -1,10 +1,7 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.ReceiverOptions;
-import net.sf.saxon.om.NamePool;
-import net.sf.saxon.om.NamespaceConstant;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.XMLChar;
+import net.sf.saxon.om.*;
 import net.sf.saxon.style.StandardNames;
 import net.sf.saxon.tree.LineNumberMap;
 import net.sf.saxon.tree.SystemIdMap;
@@ -40,7 +37,7 @@ public final class TinyTree {
 
     protected char[] charBuffer;
     protected int charBufferLength = 0;
-    protected StringBuffer commentBuffer = null; // created when needed
+    protected FastStringBuffer commentBuffer = null; // created when needed
 
     public int numberOfNodes = 0;    // excluding attributes and namespaces
 
@@ -77,7 +74,7 @@ public final class TinyTree {
 
     // the typeCode array holds type codes for element nodes; it is constructed only
     // if at least one element has a type other than untyped (-1)
-    private int[] typeCodeArray = null;
+    int[] typeCodeArray = null;
 
     // the owner array gives fast access from a node to its parent; it is constructed
     // only when required
@@ -306,7 +303,9 @@ public final class TinyTree {
 
     public void condense() {
         if (numberOfNodes * 3 < nodeKind.length ||
-                (nodeKind.length - numberOfNodes > 20000)) {
+                (nodeKind.length - numberOfNodes > 20000) ||
+                numberOfNodes == nodeKind.length) {
+                            // the last condition actually expands the arrays to make room for the stopper
             int k = numberOfNodes + 1;
 
             byte[] nodeKind2 = new byte[k];
@@ -322,6 +321,11 @@ public final class TinyTree {
             System.arraycopy(alpha, 0, alpha2, 0, numberOfNodes);
             System.arraycopy(beta, 0, beta2, 0, numberOfNodes);
             System.arraycopy(nameCode, 0, nameCode2, 0, numberOfNodes);
+            if (typeCodeArray != null) {
+                int[] type2 = new int[k];
+                System.arraycopy(typeCodeArray, 0, type2, 0, numberOfNodes);
+                typeCodeArray = type2;
+            }
 
             nodeKind = nodeKind2;
             next = next2;
@@ -448,17 +452,19 @@ public final class TinyTree {
             alpha[parent] = numberOfAttributes;
         }
 
-        if (root instanceof TinyDocumentImpl && (typeCode == StandardNames.XS_ID || (properties & ReceiverOptions.DTD_ID_ATTRIBUTE) != 0)) {
+        if (root instanceof TinyDocumentImpl && (typeCode == StandardNames.XS_ID ||
+                ((properties & ReceiverOptions.DTD_ID_ATTRIBUTE) != 0) ||
+                ((nameCode & NamePool.FP_MASK) == StandardNames.XML_ID))) {
             // TODO: what about subtypes of ID?
 
             // The attribute is marked as being an ID. But we don't trust it - it
             // might come from a non-validating parser. Before adding it to the index, we
             // check that it really is an ID.
 
-            if (XMLChar.isValidNCName(attValue.toString())) {
-                // TODO: wasteful test (repeated in registerID())
+            String id = attValue.toString().trim();
+            if (XMLChar.isValidNCName(id)) {
     			NodeInfo e = getNode(parent);
-                ((TinyDocumentImpl)root).registerID(e, attValue.toString());
+                ((TinyDocumentImpl)root).registerID(e, id);
             } else if (attTypeCode != null) {
                 attTypeCode[numberOfAttributes] = Type.UNTYPED_ATOMIC;
             }
@@ -515,8 +521,22 @@ public final class TinyTree {
             case Type.ELEMENT:
             case Type.DOCUMENT:
                 int level = depth[nodeNr];
-                StringBuffer sb = null;
                 int next = nodeNr+1;
+
+                // we optimize two special cases: firstly, where the node has no children, and secondly,
+                // where it has a single text node as a child.
+
+                if (depth[next] <= level) {
+                    return UntypedAtomicValue.ZERO_LENGTH_UNTYPED;
+                } else if (nodeKind[next] == Type.TEXT && depth[next+1] <= level) {
+                    int length = beta[next];
+                    int start = alpha[next];
+                    return new UntypedAtomicValue(new CharSlice(charBuffer, start, length));
+                }
+
+                // Now handle the general case
+
+                StringBuffer sb = null;
                 while (next < numberOfNodes && depth[next] > level) {
                     if (nodeKind[next]==Type.TEXT) {
                         if (sb==null) {
@@ -528,13 +548,20 @@ public final class TinyTree {
                     }
                     next++;
                 }
-                if (sb==null) return UntypedAtomicValue.ZERO_LENGTH_UNTYPED;
-                return new UntypedAtomicValue(sb);
+                if (sb==null) {
+                    return UntypedAtomicValue.ZERO_LENGTH_UNTYPED;
+                } else {
+                    //sb.trimToSize();  // TODO: reinstate this in JDK 1.5
+                    char[] buff = new char[sb.length()];
+                    sb.getChars(0, sb.length(), buff, 0);
+                    return new UntypedAtomicValue(new CharSlice(buff));
+                }
+
             case Type.TEXT:
                 int start = alpha[nodeNr];
                 int len = beta[nodeNr];
                 return new UntypedAtomicValue(
-                        new String(charBuffer, start, len));
+                        new CharSlice(charBuffer, start, len));
             case Type.COMMENT:
             case Type.PROCESSING_INSTRUCTION:
                 int start2 = alpha[nodeNr];
@@ -542,7 +569,7 @@ public final class TinyTree {
                 if (len2==0) return UntypedAtomicValue.ZERO_LENGTH_UNTYPED;
                 char[] dest = new char[len2];
                 commentBuffer.getChars(start2, start2+len2, dest, 0);
-                return new UntypedAtomicValue(new String(dest, 0, len2));
+                return new UntypedAtomicValue(new CharSlice(dest, 0, len2));
             default:
                 throw new IllegalStateException("Unknown node kind");
         }
@@ -567,15 +594,6 @@ public final class TinyTree {
         } else {
             return attTypeCode[nr];
         }
-    }
-
-    /**
-    * Make a (transient) namespace node from the array of namespace declarations
-    */
-
-
-    TinyNamespaceImpl getNamespaceNode(int nr) {
-        return new TinyNamespaceImpl(this, nr);
     }
 
     /**

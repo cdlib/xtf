@@ -1,9 +1,9 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 //import net.sf.saxon.om.*;
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
-import net.sf.saxon.xpath.XPathException;
-import org.w3c.dom.ProcessingInstruction;
+import net.sf.saxon.om.Navigator;
 
 /**
   * TProcInstImpl is an implementation of ProcInstInfo
@@ -12,7 +12,7 @@ import org.w3c.dom.ProcessingInstruction;
   */
 
 
-final class TinyProcInstImpl extends TinyNodeImpl implements ProcessingInstruction {
+final class TinyProcInstImpl extends TinyNodeImpl {
 
     public TinyProcInstImpl(TinyTree tree, int nodeNr) {
         this.tree = tree;
@@ -33,6 +33,15 @@ final class TinyProcInstImpl extends TinyNodeImpl implements ProcessingInstructi
     public final int getNodeKind() {
         return Type.PROCESSING_INSTRUCTION;
     }
+
+    /**
+    * Get the base URI of this element node. This will be the same as the System ID unless
+    * xml:base has been used.
+    */
+
+    public String getBaseURI() {
+        return Navigator.getBaseURI(this);
+    }    
 
     /**
     * Copy this node to a given outputter

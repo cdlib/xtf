@@ -445,6 +445,5 @@ public class LazyTreeBuilder
         if( tree.attTypeCode != null )
             throw new IOException( "LazyTree does not support attribute type annotations yet" );
     } // checkSupport()
-    
-    
+     
 } // class LazyTreeBuilder

@@ -1,5 +1,7 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 
+import java.io.Writer;
+
 /**
  * This is an implementation of the JDK 1.4 CharSequence interface: it implements
  * a CharSequence as a view of an array. The implementation relies on the array
@@ -18,6 +20,12 @@ public final class CharSlice implements CharSequence {
     private char[] array;
     private int offset;
     private int count;
+
+    public CharSlice(char[] array) {
+        this.array = array;
+        this.offset = 0;
+        this.count = array.length;
+    }
 
     public CharSlice(char[] array, int start, int length) {
         this.array = array;
@@ -140,6 +148,15 @@ public final class CharSlice implements CharSequence {
     public void copyTo(char[] destination, int destOffset) {
         System.arraycopy(array, offset, destination, destOffset, count);
     }
+
+    /**
+     * Write the value to a writer
+     */
+
+    public void write(Writer writer) throws java.io.IOException {
+        writer.write(array, offset, count);
+    }
+
 }
 
 //

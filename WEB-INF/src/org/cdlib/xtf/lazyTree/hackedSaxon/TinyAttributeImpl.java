@@ -1,9 +1,8 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
-import net.sf.saxon.xpath.XPathException;
-import org.w3c.dom.Attr;
 
 
 /**
@@ -12,7 +11,7 @@ import org.w3c.dom.Attr;
   * @author Michael H. Kay
   */
 
-final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
+final class TinyAttributeImpl extends TinyNodeImpl {
 
     public TinyAttributeImpl(TinyTree tree, int nodeNr) {
         this.tree = tree;

@@ -34,7 +34,7 @@ import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.EmptyIterator;
 import net.sf.saxon.pattern.NodeTest;
-import net.sf.saxon.xpath.XPathException;
+import net.sf.saxon.trans.XPathException;
 
 /**
  * Represents an element that has been (possibly) modified to reflect search
@@ -111,22 +111,6 @@ public class SearchElementImpl extends ElementImpl implements SearchElement
         // That done, we just do the normal thing.
         return super.iterateAxis( axisNumber, nodeTest );
     } // iterateAxis()
-
-    /**
-     * Returns whether this node (if it is an element) has any attributes.
-     * 
-     * @return <code>true</code> if this node has any attributes,
-     *   <code>false</code> otherwise.
-     * @since DOM Level 2
-     */
-    public boolean hasAttributes() 
-    {
-        // Make sure our special attribute has been added before allowing access
-        // to the attributes.
-        //
-        addSpecialAttrib();
-        return attrNames != null;
-    }
 
     /**
      * Get the value of a given attribute of this node

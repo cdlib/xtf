@@ -16,11 +16,11 @@ final class FollowingEnumeration extends TreeEnumeration {
         // skip the descendant nodes if any
         int type = node.getNodeKind();
         if (type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
-            next = ((NodeImpl)node.getParentNode()).getNextInDocument(root);
+            next = ((NodeImpl)node.getParent()).getNextInDocument(root);
         } else {
             do {
                 next = (NodeImpl)node.getNextSibling();
-                if (next==null) node = (NodeImpl)node.getParentNode();
+                if (next==null) node = (NodeImpl)node.getParent();
             } while (next==null && node!=null);
         }
         while (!conforms(next)) {

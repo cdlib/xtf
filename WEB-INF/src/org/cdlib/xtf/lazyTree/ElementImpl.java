@@ -10,11 +10,8 @@ import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.Navigator;
 import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.tree.DOMExceptionImpl;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
-import net.sf.saxon.xpath.XPathException;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
 
 import org.cdlib.xtf.util.PackedByteBuf;
 
@@ -27,8 +24,7 @@ import java.io.IOException;
   * @author Michael H. Kay
  */
 
-class ElementImpl extends ParentNodeImpl
-    implements Element {
+class ElementImpl extends ParentNodeImpl {
 
     int nameSpace;
     
@@ -96,14 +92,13 @@ class ElementImpl extends ParentNodeImpl
     }
 
     /**
-     * Output all namespace nodes associated with this element.
-     * @param out The relevant outputter
+    * Output all namespace nodes associated with this element.
+    * @param out The relevant outputter
      * @param includeAncestors True if namespaces associated with ancestor
-     * elements must also be output; false if these are already known to be
-     * on the result tree.
      */
-    public void outputNamespaceNodes( Receiver out, boolean includeAncestors )
-         throws XPathException {
+
+    public void sendNamespaceDeclarations(Receiver out, boolean includeAncestors)
+                throws XPathException {
 
         int ns = nameSpace;
         if( ns > 0 ) {
@@ -121,9 +116,56 @@ class ElementImpl extends ParentNodeImpl
         if (includeAncestors && document.isUsingNamespaces()) {
             NodeInfo parent = getParent();
             if (parent != null) {
-                parent.outputNamespaceNodes(out, true);
+                parent.sendNamespaceDeclarations(out, true);
             }
             // terminates when the parent is a root node
+        }
+    }
+
+    /**
+     * Get all namespace undeclarations and undeclarations defined on this element.
+     *
+     * @param buffer If this is non-null, and the result array fits in this buffer, then the result
+     *               may overwrite the contents of this array, to avoid the cost of allocating a new array on the heap.
+     * @return An array of integers representing the namespace declarations and undeclarations present on
+     *         this element. For a node other than an element, return null. Otherwise, the returned array is a
+     *         sequence of namespace codes, whose meaning may be interpreted by reference to the name pool. The
+     *         top half word of each namespace code represents the prefix, the bottom half represents the URI.
+     *         If the bottom half is zero, then this is a namespace undeclaration rather than a declaration.
+     *         The XML namespace is never included in the list. If the supplied array is larger than required,
+     *         then the first unused entry will be set to -1.
+     *         <p/>
+     *         <p>For a node other than an element, the method returns null.</p>
+     */
+
+    public int[] getDeclaredNamespaces(int[] buffer) {
+        return getDeclaredNamespaces(document, nodeNum, nameSpace, buffer);
+    }
+
+    static int[] getDeclaredNamespaces(LazyDocument doc, int nodeNr, int nameSpace, int[] buffer) {
+        int ns = nameSpace;
+        if (ns>0 ) {
+            int count = 0;
+            while (ns < doc.numberOfNamespaces &&
+                    doc.namespaceParent[ns] == nodeNr ) {
+                count++;
+                ns++;
+            }
+            if (count == 0) {
+                return NodeInfo.EMPTY_NAMESPACE_LIST;
+            } else if (count <= buffer.length) {
+                System.arraycopy(doc.namespaceCode, nameSpace, buffer, 0, count);
+                if (count < buffer.length) {
+                    buffer[count] = -1;
+                }
+                return buffer;
+            } else {
+                int[] array = new int[count];
+                System.arraycopy(doc.namespaceCode, nameSpace, array, 0, count);
+                return array;
+            }
+        } else {
+            return NodeInfo.EMPTY_NAMESPACE_LIST;
         }
     }
 
@@ -156,18 +198,6 @@ class ElementImpl extends ParentNodeImpl
     }
 
     /**
-    * Set the value of an attribute on the current element. This affects subsequent calls
-    * of getAttribute() for that element.
-    * @param name The name of the attribute to be set. Any prefix is interpreted relative
-    * to the namespaces defined for this element.
-    * @param value The new value of the attribute. Set this to null to remove the attribute.
-    */
-
-    public void setAttribute(String name, String value ) throws DOMException {
-        throw new DOMExceptionImpl((short)9999, "LazyTree DOM is not updateable");
-    }
-
-    /**
      * Find the value of a given attribute of this node. <BR>
      * This method is defined on all nodes to meet XSL requirements, but for 
      * nodes other than elements it will always return null.
@@ -181,6 +211,11 @@ class ElementImpl extends ParentNodeImpl
         return getAttributeValue( f );
     }
 
+    /**
+    * Copy this node to a given receiver
+    * @param whichNamespaces indicates which namespaces should be copied: all, none,
+    * or local (i.e., those not declared on a parent element)
+    */
     public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
 
         int typeCode = (copyAnnotations ? getTypeAnnotation() : 0);
@@ -192,7 +227,7 @@ class ElementImpl extends ParentNodeImpl
 
         // output the namespaces
         if (whichNamespaces != NO_NAMESPACES)
-            outputNamespaceNodes(out, whichNamespaces == ALL_NAMESPACES);
+            sendNamespaceDeclarations(out, whichNamespaces == ALL_NAMESPACES);
 
         // output the attributes
         if( attrNames != null )

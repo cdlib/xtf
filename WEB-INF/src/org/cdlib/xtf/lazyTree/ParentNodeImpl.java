@@ -1,38 +1,8 @@
 package org.cdlib.xtf.lazyTree;
 
-/**
- * Copyright (c) 2004, Regents of the University of California
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met:
- *
- * - Redistributions of source code must retain the above copyright notice, 
- *   this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, 
- *   this list of conditions and the following disclaimer in the documentation 
- *   and/or other materials provided with the distribution.
- * - Neither the name of the University of California nor the names of its
- *   contributors may be used to endorse or promote products derived from this 
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
-import org.w3c.dom.Node;
-
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.pattern.NodeTest;
 
 /**
@@ -71,19 +41,25 @@ abstract class ParentNodeImpl extends NodeImpl
      * 
      * @return the first child node of this node, or null if it has no children
      */
-    public Node getFirstChild()  {
+    public NodeInfo getFirstChild()  {
         return document.getNode( childNum );
     }
 
     /**
-     * Return the string-value of the node, that is, the concatenation
-     * of the character content of all descendent elements and text nodes.
-     * 
-     * @return the accumulated character content of the element, including 
-     * descendant elements.
+    * Return the string-value of the node, that is, the concatenation
+    * of the character content of all descendent elements and text nodes.
+    * @return the accumulated character content of the element, including descendant elements.
+    */
+    public final String getStringValue() {
+        return getStringValueCS().toString();
+    }
+
+    /**
+     * Get the value of the item as a CharSequence. This is in some cases more efficient than
+     * the version of the method that returns a String.
      */
-    public String getStringValue() 
-    {
+
+    public CharSequence getStringValueCS() {
         StringBuffer sb = null;
 
         AxisIterator iter = iterateAxis( Axis.DESCENDANT );
@@ -104,3 +80,22 @@ abstract class ParentNodeImpl extends NodeImpl
     } // getStringValue()
     
 } // class ParentNodeImpl
+
+
+//
+// The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
+// you may not use this file except in compliance with the License. You may obtain a copy of the
+// License at http://www.mozilla.org/MPL/
+//
+// Software distributed under the License is distributed on an "AS IS" basis,
+// WITHOUT WARRANTY OF ANY KIND, either express or implied.
+// See the License for the specific language governing rights and limitations under the License.
+//
+// The Original Code is: all this file.
+//
+// The Initial Developer of the Original Code is Michael H. Kay.
+//
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+//
+// Contributor(s): none.
+//

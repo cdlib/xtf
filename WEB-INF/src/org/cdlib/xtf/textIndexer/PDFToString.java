@@ -96,6 +96,8 @@ public class PDFToString {
         mustConfigureLogger = false;    
     }
     
+    XMLFormatter formatter = new XMLFormatter();
+    
     try {
         PDDocument pdfDoc = null;
         
@@ -110,13 +112,13 @@ public class PDFToString {
                 throw new Exception();
             }               
                     
-            // Start the XML with an XML format tag.   
-            xmlStr = FormatXML.procInstr( 
+            // Start the XML with an XML format tag.
+            formatter.procInstr( 
                          "xml version=\"1.0\" encoding=\"utf-8\"" );
             
             // Set up the tab size and blank line formatting.   
-            FormatXML.tabSize( 4 );
-            FormatXML.blankLineAfterTag( false );
+            formatter.tabSize( 4 );
+            formatter.blankLineAfterTag( false );
             
             // Determine how many pages there are in the PDF file.   
             int pageCount = pdfDoc.getPageCount();
@@ -124,16 +126,15 @@ public class PDFToString {
             // Create an all-enclosing document tag summarizing 
             // the original document name and the number of pages.
             //   
-            xmlStr += FormatXML.beginTag( 
-                          "pdfDocument", 
-                          FormatXML.attr( "pageCount", pageCount ) );
+            formatter.beginTag( "pdfDocument" ); 
+            formatter.attr( "pageCount", pageCount );
             
             // Process each page in the PDF document.   
             for( int i = 1; i <= pageCount; i++ ) {                     
                
                 // Start with a new page tag.
-                xmlStr += FormatXML.beginTag( "pdfPage",
-                              FormatXML.attr( "number", i ) );
+                formatter.beginTag( "pdfPage" );
+                formatter.attr( "number", i );
  
                 // Tell the stripper to only process the current page.
                 stripper.setStartPage( i );
@@ -142,28 +143,21 @@ public class PDFToString {
                 // Get the text for this page.
                 String pdfText = stripper.getText( pdfDoc );
                 
-                // Replace characters in the PDF text with XML aliases
-                // to prevent problems when parsing the XML.
-                //
-                pdfText = pdfText.replaceAll( "&", "&amp;" );
-                pdfText = pdfText.replaceAll( "<", "&lt;"  );
-                pdfText = pdfText.replaceAll( ">", "&gt;"  );
-                
                 // Tack the text onto the XML output, nicely formatted
                 // into lines of 128 characters or less.
                 //   
-                xmlStr += FormatXML.text( pdfText, 128 ) + 
-                          FormatXML.newLineAfterText();
+                formatter.text( pdfText, 128 );
+                formatter.newLineAfterText();
                 
                 // End the current page tag.   
-                xmlStr += FormatXML.endTag();                   
+                formatter.endTag();                   
 
             } // for( int i = 1; i <= pageCount; i++ )
 
             // End any remaining open tags (should only be the pdfDocument
             // tag.)
             //
-            xmlStr += FormatXML.endAllTags();
+            formatter.endAllTags();
                  
           } // try
           
@@ -187,7 +181,7 @@ public class PDFToString {
       }
       
       // Return the resulting XML string to the caller.
-      return xmlStr;
+      return formatter.toString();
       
   } // public convert()
   

@@ -5,9 +5,9 @@ import net.sf.saxon.style.StandardNames;
 import net.sf.saxon.trace.InstructionInfo;
 import net.sf.saxon.trace.InstructionInfoProvider;
 import net.sf.saxon.trace.Location;
+import net.sf.saxon.trans.DynamicError;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.ValidationException;
-import net.sf.saxon.xpath.DynamicError;
-import net.sf.saxon.xpath.XPathException;
 
 import org.xml.sax.SAXException;
 
@@ -173,7 +173,7 @@ public class XTFSaxonErrorListener implements ErrorListener {
         String message = "";
 
         if (err instanceof XPathException) {
-            String code = ((XPathException)err).getErrorCode().toString();
+            String code = ((XPathException)err).getErrorCodeLocalPart();
             if (code != null) {
                 message = code;
             }

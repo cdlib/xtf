@@ -35,21 +35,19 @@ import java.util.LinkedList;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
 
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tree.TreeBuilder;
 import net.sf.saxon.value.StringValue;
 
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.util.AttribList;
+import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import org.cdlib.xtf.cache.CacheDependency;
 import org.cdlib.xtf.cache.GeneratingCache;
@@ -116,11 +114,11 @@ class DocInfoCache extends GeneratingCache
         // having to throw away the stylesheet entry, we record the current
         // dependencies so we can restore them later.
         // 
-        Iterator i = TextServlet.stylesheetCache.getDependencies(
+        Iterator di = TextServlet.stylesheetCache.getDependencies(
             config.docLookupSheet );
         LinkedList oldStylesheetDeps = new LinkedList();
-        while( i.hasNext() )
-            oldStylesheetDeps.add( i.next() );
+        while( di.hasNext() )
+            oldStylesheetDeps.add( di.next() );
 
         // Get a transformer to handle this stylesheet. To avoid making the
         // same one over and over, we maintain a thread-local copy of the
@@ -156,8 +154,7 @@ class DocInfoCache extends GeneratingCache
         // Make a document containing the tokenized and untokenized versions
         // of the parameters (typically useful for queries.)
         //
-        Document paramDoc = QueryRequest.tokenizeParams( attrList );
-        DOMSource src = new DOMSource( paramDoc );
+        NodeInfo paramDoc = QueryRequest.tokenizeParams( attrList );
 
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** docReqParser input ***" );
@@ -170,12 +167,12 @@ class DocInfoCache extends GeneratingCache
         // might load additional files based on the document ID. Add those
         // dependencies directly to our cache entry, not the stylesheet's.
         //
-        DOMResult result;
+        TreeBuilder result;
         synchronized( TextServlet.stylesheetCache ) {
             TextServlet.stylesheetCache.setDependencyReceiver( this );
             try {
-                result = new DOMResult();
-                trans.transform( src, result );
+                result = new TreeBuilder();
+                trans.transform( paramDoc, result );
             }
             finally {
                 TextServlet.stylesheetCache.setDependencyReceiver( null );
@@ -185,7 +182,7 @@ class DocInfoCache extends GeneratingCache
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** docReqParser output ***" );
             Trace.tab();
-            Trace.debug( XMLWriter.toString(result.getNode()) );
+            Trace.debug( XMLWriter.toString(result.getCurrentRoot()) );
             Trace.untab();
         }
         
@@ -194,32 +191,26 @@ class DocInfoCache extends GeneratingCache
                                            config.docLookupSheet) );
 
         // Extract the data we need.
-        Node node;
-        for( node = result.getNode().getFirstChild();
-             node != null;
-             node = node.getNextSibling() )
-        {
-            if( node.getNodeType() != Node.ELEMENT_NODE )
-                continue;
-
-            Element el      = (Element) node;
-            String  tagName = el.getTagName();
+        EasyNode root = new EasyNode( result.getCurrentRoot() );
+        for( int i = 0; i < root.nChildren(); i++ ) {
+            EasyNode el      = root.child( i );
+            String   tagName = el.name();
 
             if( tagName.equals("style") )
-                info.style = DynaXML.getRealPath( el.getAttribute("path") );
+                info.style = DynaXML.getRealPath( el.attrValue("path") );
             else if( tagName.equals("source") )
-                info.source = DynaXML.getRealPath( el.getAttribute("path") );
+                info.source = DynaXML.getRealPath( el.attrValue("path") );
             else if( tagName.equals("index") ) {
-                info.indexConfig = DynaXML.getRealPath( el.getAttribute("configPath") );
-                info.indexName   = el.getAttribute( "name" );
+                info.indexConfig = DynaXML.getRealPath( el.attrValue("configPath") );
+                info.indexName   = el.attrValue( "name" );
             }
             else if( tagName.equals("brand") )
-                info.brand = DynaXML.getRealPath( el.getAttribute("path") );
+                info.brand = DynaXML.getRealPath( el.attrValue("path") );
             else if( tagName.equals("auth") )
                 info.authSpecs.add( 
                         DynaXML.authenticator.processAuthTag(el) );
             else if( tagName.equals("query") )
-                info.query = new QueryRequest( el, 
+                info.query = new QueryRequest( el.getWrappedNode(), 
                                                new File(TextServlet.getRealPath("")) );
             else
                 throw new DynaXMLException( "Unknown tag '" + tagName +

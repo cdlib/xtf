@@ -1,8 +1,8 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
-import net.sf.saxon.pattern.NodeTest;
-import net.sf.saxon.om.Item;
 import net.sf.saxon.om.AxisIteratorImpl;
+import net.sf.saxon.om.Item;
 import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.pattern.NodeTest;
 
 /**
 * Iterate over the following axis starting at a given node.

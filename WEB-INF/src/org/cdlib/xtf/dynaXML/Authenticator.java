@@ -44,10 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-
 import org.cdlib.xtf.cache.*;
 import org.cdlib.xtf.util.*;
 
@@ -109,7 +105,7 @@ class Authenticator
      * Creates an AuthSpec from an 'auth' element produced by the docReqParser
      * stylesheet. Parses the various parameters depending on the type.
      */
-    public AuthSpec processAuthTag( Element el )
+    public AuthSpec processAuthTag( EasyNode el )
         throws DynaXMLException
     {
         AuthSpec spec = null;
@@ -119,26 +115,21 @@ class Authenticator
         {
             StringBuffer buf = new StringBuffer();
 
-            NamedNodeMap map = el.getAttributes();
-            for( int i = 0; i < map.getLength(); i++ ) {
-                Node item = map.item( i );
-                if( item.getNodeType() != Node.ATTRIBUTE_NODE )
-                    continue;
-                String name = item.getNodeName();
-
-                buf.append( name + "=" + el.getAttribute(name) + " " );
+            for( int i = 0; i < el.nAttrs(); i++ ) {
+                String name = el.attrName( i );
+                buf.append( name + "=" + el.attrValue(i) + " " );
             }
 
             Trace.debug( "Processing auth spec: " + buf.toString() );
         }
 
         // Make sure a type is specified
-        if( !el.hasAttribute("type") )
+        if( !el.hasAttr("type") )
             throw new DynaXMLException( 
                 "Auth type not specified by docReqParserSheet" );
 
         // Look for different parameters, depending on the type.
-        String type = el.getAttribute( "type" );
+        String type = el.attrValue( "type" );
         if( type.equals("all") ) {
             spec = new AllAuthSpec();
             spec.type = AuthSpec.TYPE_ALL;
@@ -147,24 +138,24 @@ class Authenticator
             spec = new IPAuthSpec();
             spec.type = AuthSpec.TYPE_IP;
 
-            if( !el.hasAttribute("list") )
+            if( !el.hasAttr("list") )
                 throw new DynaXMLException( 
                     "Auth IP 'list' not specified by docReqParserSheet" );
             ((IPAuthSpec)spec).ipList = 
-                DynaXML.getRealPath( el.getAttribute("list") );
+                DynaXML.getRealPath( el.attrValue("list") );
         }
         else if( type.equals("LDAP") ) {
             LdapAuthSpec lspec = new LdapAuthSpec();
             spec = lspec;
             spec.type = AuthSpec.TYPE_LDAP;
 
-            lspec.realm        = el.getAttribute( "realm" );
-            lspec.server       = el.getAttribute( "server" );
-            lspec.bindName     = el.getAttribute( "bindName" );
-            lspec.bindPassword = el.getAttribute( "bindPassword" );
-            lspec.queryName    = el.getAttribute( "queryName" );
-            lspec.matchField   = el.getAttribute( "matchField" );
-            lspec.matchValue   = el.getAttribute( "matchValue" );
+            lspec.realm        = el.attrValue( "realm" );
+            lspec.server       = el.attrValue( "server" );
+            lspec.bindName     = el.attrValue( "bindName" );
+            lspec.bindPassword = el.attrValue( "bindPassword" );
+            lspec.queryName    = el.attrValue( "queryName" );
+            lspec.matchField   = el.attrValue( "matchField" );
+            lspec.matchValue   = el.attrValue( "matchValue" );
 
             if( isEmpty(lspec.server) )
                 throw new DynaXMLException(
@@ -197,8 +188,8 @@ class Authenticator
             spec = espec;
             spec.type = AuthSpec.TYPE_EXTERNAL;
 
-            espec.url       = el.getAttribute( "url" );
-            espec.secretKey = el.getAttribute( "key" );
+            espec.url       = el.attrValue( "url" );
+            espec.secretKey = el.attrValue( "key" );
 
             if( isEmpty(espec.url) )
                 throw new DynaXMLException(
@@ -214,12 +205,12 @@ class Authenticator
                 "' specified by docReqParserSheet" );
 
         // Make sure an access mode (allow or deny) has been specified.
-        if( !el.hasAttribute("access") )
+        if( !el.hasAttr("access") )
             throw new DynaXMLException( "Auth access (allow or deny) " +
                 "must be specified by docReqParserSheet" );
 
         // Record it.
-        String access = el.getAttribute( "access" );
+        String access = el.attrValue( "access" );
         if( access.equals("allow") )
             spec.access = AuthSpec.ACCESS_ALLOW;
         else if( access.equals("deny") )

@@ -42,10 +42,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.Configuration;
+import net.sf.saxon.om.AllElementStripper;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tree.TreeBuilder;
 
 import org.apache.lucene.ngram.NgramQueryRewriter;
 import org.apache.lucene.ngram.NgramStopFilter;
@@ -66,10 +69,6 @@ import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * Runs a series of regression tests. These take a set of test files and index
@@ -96,6 +95,7 @@ public class RegressTest
     File filterDir;
     File filterFile;
     LinkedList failedTests = new LinkedList();
+    Configuration config = new Configuration();
     
     public static void main( String[] args )
     {
@@ -291,11 +291,10 @@ public class RegressTest
         File testFile = new File(testFilePath);
         
         // Okay, read the input file. It contains a query.
-        Document queryDoc = null;
+        NodeInfo queryDoc = null;
         try {
-            DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = fac.newDocumentBuilder();
-            queryDoc = builder.parse( inFile );
+            Source src = new StreamSource( inFile.toString() );
+            queryDoc = TreeBuilder.build( src, AllElementStripper.getInstance(), config );
         }
         catch( Exception e ) {
             Trace.error( "Unexpected exception while reading " + 
@@ -309,8 +308,7 @@ public class RegressTest
         try {
             String         inSpec    = readFile( inFile );
             QueryProcessor processor = new QueryProcessor();
-            Element        root      = queryDoc.getDocumentElement();
-            QueryRequest   request   = new QueryRequest( root, new File(dir) );
+            QueryRequest   request   = new QueryRequest( queryDoc, new File(dir) );
 
             if( inSpec.indexOf("regress-search-tree") >= 0 ) {
     
@@ -349,7 +347,7 @@ public class RegressTest
                 OutputStreamWriter ow = new OutputStreamWriter(
                     new FileOutputStream(testFile), "UTF-8" );
                 PrintWriter out = new PrintWriter( ow );
-                String strVersion = XMLWriter.toString( (Node)tree );
+                String strVersion = XMLWriter.toString( tree );
                 out.println( strVersion );
                 out.close();
             }
@@ -357,7 +355,7 @@ public class RegressTest
             {
                 // Now run the query to obtain hits.
                 QueryResult result = 
-                    processor.processReq( new QueryRequest(root, new File(dir)) );
+                    processor.processReq( new QueryRequest(queryDoc, new File(dir)) );
                 
                 // Write the hits to a file.
                 writeHits( testFile, result );

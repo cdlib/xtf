@@ -1,34 +1,5 @@
 package org.cdlib.xtf.lazyTree;
 
-/**
- * Copyright (c) 2004, Regents of the University of California
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met:
- *
- * - Redistributions of source code must retain the above copyright notice, 
- *   this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, 
- *   this list of conditions and the following disclaimer in the documentation 
- *   and/or other materials provided with the distribution.
- * - Neither the name of the University of California nor the names of its
- *   contributors may be used to endorse or promote products derived from this 
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
 import net.sf.saxon.Configuration;
 import net.sf.saxon.style.StandardNames;
 import net.sf.saxon.expr.Expression;
@@ -55,10 +26,10 @@ import net.sf.saxon.value.AtomicValue;
 import net.sf.saxon.value.NumericValue;
 import net.sf.saxon.value.StringValue;
 import net.sf.saxon.value.Value;
-import net.sf.saxon.xpath.DynamicError;
-import net.sf.saxon.xpath.XPathException;
+import net.sf.saxon.trans.DynamicError;
 import net.sf.saxon.trans.KeyDefinition;
 import net.sf.saxon.trans.KeyManager;
+import net.sf.saxon.trans.XPathException;
 
 import javax.xml.transform.TransformerConfigurationException;
 import java.io.File;
@@ -485,8 +456,8 @@ public class LazyKeyManager extends KeyManager {
         Pattern match = keydef.getMatch();
         Expression use = keydef.getUse();
         Collator collator = keydef.getCollation();
-        NodeInfo sourceRoot = doc;
-        NodeInfo curr = sourceRoot;
+
+        NodeInfo curr;
         XPathContextMajor xc = context.newContext();
         xc.setOrigin(keydef);
 
@@ -624,7 +595,7 @@ public class LazyKeyManager extends KeyManager {
                     break;
                 }
                 try {
-                    val = item.convert(soughtItemType, xc);
+                    val = item.convert(soughtItemType);
                 } catch (XPathException err) {
                     // ignore values that can't be converted to the required type
                     break;
@@ -700,7 +671,7 @@ public class LazyKeyManager extends KeyManager {
                 itemType == StandardNames.XS_DECIMAL ||
                 itemType == StandardNames.XS_FLOAT) {
             itemType = StandardNames.XS_DOUBLE;
-            value = value.convert(itemType, context);
+            value = value.convert(itemType);
         }
         
         // Alert! since our indexes on disk are always string, convert to

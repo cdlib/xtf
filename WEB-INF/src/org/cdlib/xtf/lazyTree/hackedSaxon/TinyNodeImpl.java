@@ -1,25 +1,29 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.Configuration;
-import net.sf.saxon.om.*;
-import net.sf.saxon.pattern.NodeTest;
-import net.sf.saxon.pattern.NameTest;
-import net.sf.saxon.pattern.AnyNodeTest;
+import net.sf.saxon.Err;
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.om.*;
+import net.sf.saxon.pattern.AnyNodeTest;
+import net.sf.saxon.pattern.NameTest;
+import net.sf.saxon.pattern.NodeTest;
+import net.sf.saxon.trans.DynamicError;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.type.SchemaType;
 import net.sf.saxon.type.Type;
+import net.sf.saxon.value.UntypedAtomicValue;
 
-import org.w3c.dom.Node;
-import net.sf.saxon.xpath.XPathException;
+import javax.xml.transform.SourceLocator;
 
 
 /**
-  * A node in the XML parse tree representing an XML element, character content, or attribute.<P>
+  * A node in a TinyTree representing an XML element, character content, or attribute.<P>
   * This is the top-level class in the implementation class hierarchy; it essentially contains
   * all those methods that can be defined using other primitive methods, without direct access
   * to data.
   * @author Michael H. Kay
   */
 
-public abstract class TinyNodeImpl extends AbstractNode {
+public abstract class TinyNodeImpl implements NodeInfo, FingerprintedNode, SourceLocator {
 
     // CDL-HACK: All private and protected members changed to public, so that
     //           the contents of this structure can be re-used.
@@ -27,6 +31,72 @@ public abstract class TinyNodeImpl extends AbstractNode {
     public TinyTree tree;
     public int nodeNr;
     public TinyNodeImpl parent = null;
+
+    /**
+    * Chararacteristic letters to identify each type of node, indexed using the node type
+    * values. These are used as the initial letter of the result of generate-id()
+    */
+
+    public static final char[] NODE_LETTER =
+        {'x', 'e', 'a', 't', 'x', 'x', 'x', 'p', 'c', 'r', 'x', 'x', 'x', 'n'};
+
+    /**
+     * Get the value of the item as a CharSequence. This is in some cases more efficient than
+     * the version of the method that returns a String.
+     */
+
+    public CharSequence getStringValueCS() {
+        return getStringValue();
+    }
+
+    /**
+    * Get the type annotation of this node, if any
+    */
+
+    public int getTypeAnnotation() {
+        return -1;
+    }
+
+    /**
+    * Get the column number of the node.
+    * The default implementation returns -1, meaning unknown
+    */
+
+    public int getColumnNumber() {
+        return -1;
+    }
+
+    /**
+    * Get the public identifier of the document entity containing this node.
+    * The default implementation returns null, meaning unknown
+    */
+
+    public String getPublicId() {
+        return null;
+    }
+
+    /**
+     * Get the typed value of this node.
+     * If there is no type annotation, we return the string value, as an instance
+     * of xdt:untypedAtomic
+    */
+
+    public SequenceIterator getTypedValue() throws XPathException {
+        int annotation = getTypeAnnotation();
+        if (annotation==-1) {
+            return SingletonIterator.makeIterator(new UntypedAtomicValue(getStringValue()));
+        } else {
+            SchemaType stype = getConfiguration().getSchemaType(annotation);
+            if (stype == null) {
+                String typeName = getNamePool().getDisplayName(annotation);
+                throw new DynamicError("Unknown type annotation " +
+                        Err.wrap(typeName) + " in document instance");
+            } else {
+                return stype.getTypedValue(this);
+            }
+        }
+    }
+
 
     /**
     * Set the system id of this node. <br />
@@ -86,14 +156,6 @@ public abstract class TinyNodeImpl extends AbstractNode {
         return (getParent()).getBaseURI();
     }
 
-	/**
-	* Get the node corresponding to this javax.xml.transform.dom.DOMLocator
-	*/
-
-    public Node getOriginatingNode() {
-        return this;
-    }
-
     /**
     * Get the line number of the node within its source document entity
     */
@@ -126,10 +188,15 @@ public abstract class TinyNodeImpl extends AbstractNode {
 
     public final int compareOrder(NodeInfo other) {
         long a = getSequenceNumber();
-        long b = ((TinyNodeImpl)other).getSequenceNumber();
-        if (a<b) return -1;
-        if (a>b) return +1;
-        return 0;
+        if (other instanceof TinyNodeImpl) {
+            long b = ((TinyNodeImpl)other).getSequenceNumber();
+            if (a<b) return -1;
+            if (a>b) return +1;
+            return 0;
+        } else {
+            // it must be a namespace node
+            return 0 - other.compareOrder(this);
+        }
     }
 
 	/**
@@ -232,22 +299,10 @@ public abstract class TinyNodeImpl extends AbstractNode {
         int type = getNodeKind();
         switch (axisNumber) {
             case Axis.ANCESTOR:
-                //if (type != Type.ATtree.depth[nodeNr] == 0) {
-                //    return EmptyIterator.getInstance();
-                //} else {
-                    return new AncestorEnumeration(this, nodeTest, false);
-                //}
+                 return new AncestorEnumeration(this, nodeTest, false);
 
             case Axis.ANCESTOR_OR_SELF:
-//                if (tree.depth[nodeNr] == 0) {
-//                    if (nodeTest.matches(getNodeKind(), getFingerprint(), getTypeAnnotation())) {
-//                        return SingletonIterator.makeIterator(this);
-//                    } else {
-//                        return EmptyIterator.getInstance();
-//                    }
-//                } else {
-                    return new AncestorEnumeration(this, nodeTest, true);
-//                }
+                 return new AncestorEnumeration(this, nodeTest, true);
 
             case Axis.ATTRIBUTE:
                  if (type!=Type.ELEMENT) {
@@ -307,7 +362,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
                 if (type!=Type.ELEMENT) {
                     return EmptyIterator.getInstance();
                 }
-                return new NamespaceEnumeration((TinyElementImpl)this, nodeTest);
+                return new NamespaceIterator(this, nodeTest);
 
             case Axis.PARENT:
                  NodeInfo parent = getParent();
@@ -343,7 +398,9 @@ public abstract class TinyNodeImpl extends AbstractNode {
                 if (type==Type.DOCUMENT) {
                     return EmptyIterator.getInstance();
                 } else if (type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
-                    return new PrecedingEnumeration(tree, (TinyNodeImpl)getParent(), nodeTest, true);
+                    // See test numb32.
+                    TinyNodeImpl el = (TinyNodeImpl)getParent();
+                    return new PrependIterator(el, new PrecedingEnumeration(tree, el, nodeTest, true));
                 } else {
                     return new PrecedingEnumeration(tree, this, nodeTest, true);
                 }
@@ -397,18 +454,6 @@ public abstract class TinyNodeImpl extends AbstractNode {
 
     public boolean hasChildNodes() {
         // overridden in TinyParentNodeImpl
-        return false;
-    }
-
-    /**
-     * Returns whether this node has any attributes.
-     * @return <code>true</code> if this node has any attributes,
-     *   <code>false</code> otherwise.
-     * @since DOM Level 2
-     */
-
-    public boolean hasAttributes() {
-        // overridden in TinyElementImpl
         return false;
     }
 
@@ -467,13 +512,32 @@ public abstract class TinyNodeImpl extends AbstractNode {
     * Output all namespace nodes associated with this element. Does nothing if
     * the node is not an element.
     * @param out The relevant outputter
-    * @param includeAncestors True if namespaces declared on ancestor elements must
-    * be output; false if it is known that these are already on the result tree
-    */
+     * @param includeAncestors True if namespaces declared on ancestor elements must
+     */
 
-    public void outputNamespaceNodes(Receiver out, boolean includeAncestors)
+    public void sendNamespaceDeclarations(Receiver out, boolean includeAncestors)
         throws XPathException
     {}
+
+    /**
+     * Get all namespace undeclarations and undeclarations defined on this element.
+     *
+     * @param buffer If this is non-null, and the result array fits in this buffer, then the result
+     *               may overwrite the contents of this array, to avoid the cost of allocating a new array on the heap.
+     * @return An array of integers representing the namespace declarations and undeclarations present on
+     *         this element. For a node other than an element, return null. Otherwise, the returned array is a
+     *         sequence of namespace codes, whose meaning may be interpreted by reference to the name pool. The
+     *         top half word of each namespace code represents the prefix, the bottom half represents the URI.
+     *         If the bottom half is zero, then this is a namespace undeclaration rather than a declaration.
+     *         The XML namespace is never included in the list. If the supplied array is larger than required,
+     *         then the first unused entry will be set to -1.
+     *         <p/>
+     *         <p>For a node other than an element, the method returns null.</p>
+     */
+
+    public int[] getDeclaredNamespaces(int[] buffer) {
+        return null;
+    }
 
     /**
     * Get a character string that uniquely identifies this node

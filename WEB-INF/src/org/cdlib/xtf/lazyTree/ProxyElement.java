@@ -29,15 +29,19 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import javax.xml.transform.SourceLocator;
+
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Receiver;
-import net.sf.saxon.om.AbstractNode;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
+import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.om.FingerprintedNode;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
-import net.sf.saxon.xpath.XPathException;
+import net.sf.saxon.trans.XPathException;
 
 /**
  * A very lazy element. It assumes the attributes of the element can be known
@@ -48,7 +52,8 @@ import net.sf.saxon.xpath.XPathException;
  * 
  * @author Martin Haye
  */
-public final class ProxyElement extends AbstractNode implements SearchElement
+public final class ProxyElement 
+    implements NodeInfo, FingerprintedNode, SourceLocator, SearchElement
 {
     /** The actual element (null until loaded */
     ElementImpl   element = null;
@@ -211,5 +216,55 @@ public final class ProxyElement extends AbstractNode implements SearchElement
     /** Loads the real node and defers to it */
     public void setSystemId( String systemId ) {
         real().setSystemId( systemId );
+    }
+    /** Loads the real node and defers to it */
+    public String getDisplayName() {
+        return real().getDisplayName();
+    }
+    /** Loads the real node and defers to it */
+    public int getDocumentNumber() {
+        return real().getDocumentNumber();
+    }
+    /** Loads the real node and defers to it */
+    public DocumentInfo getDocumentRoot() {
+        return real().getDocumentRoot();
+    }
+    /** Loads the real node and defers to it */
+    public NodeInfo getRoot() {
+        return real().getRoot();
+    }
+    /** Loads the real node and defers to it */
+    public int getTypeAnnotation() {
+        return real().getTypeAnnotation();
+    }
+    /** Loads the real node and defers to it */
+    public void sendNamespaceDeclarations(Receiver out, boolean includeAncestors)
+        throws XPathException 
+    {
+        real().sendNamespaceDeclarations(out, includeAncestors);
+    }
+    /** Loads the real node and defers to it */
+    public int getColumnNumber() {
+        return real().getColumnNumber();
+    }
+    /** Loads the real node and defers to it */
+    public int[] getDeclaredNamespaces(int[] buffer) {
+        return real().getDeclaredNamespaces(buffer);
+    }
+    /** Loads the real node and defers to it */
+    public int getLineNumber() {
+        return real().getLineNumber();
+    }
+    /** Loads the real node and defers to it */
+    public String getPublicId() {
+        return real().getPublicId();
+    }
+    /** Loads the real node and defers to it */
+    public CharSequence getStringValueCS() {
+        return real().getStringValueCS();
+    }
+    /** Loads the real node and defers to it */
+    public SequenceIterator getTypedValue() throws XPathException {
+        return real().getTypedValue();
     }
 } // ProxyElement

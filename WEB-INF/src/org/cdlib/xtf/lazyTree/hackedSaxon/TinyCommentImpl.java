@@ -1,8 +1,7 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
-import net.sf.saxon.xpath.XPathException;
-import org.w3c.dom.Comment;
 
 
 /**
@@ -11,7 +10,7 @@ import org.w3c.dom.Comment;
   */
 
 
-final class TinyCommentImpl extends TinyNodeImpl implements Comment {
+final class TinyCommentImpl extends TinyNodeImpl {
 
     public TinyCommentImpl(TinyTree tree, int nodeNr) {
         this.tree = tree;

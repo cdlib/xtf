@@ -26,7 +26,7 @@ final class PrecedingEnumeration extends TreeEnumeration {
         // ASSERT: we'll never test the root node, because it's always
         // an ancestor, so nextAncestor will never be null.
         if (node!=null) {
-            if (node.isSameNode(nextAncestor)) {
+            if (node.isSameNodeInfo(nextAncestor)) {
                 nextAncestor = (NodeImpl)nextAncestor.getParent();
                 return false;
             }

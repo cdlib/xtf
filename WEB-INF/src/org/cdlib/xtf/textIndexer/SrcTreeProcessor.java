@@ -38,19 +38,20 @@ import java.util.Iterator;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
 
 import net.sf.saxon.om.NamePool;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tree.TreeBuilder;
+import net.sf.saxon.type.Type;
 
 import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IdxConfigUtil;
+import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -254,35 +255,34 @@ public class SrcTreeProcessor
             Trace.debug( "" );
         }
         
-        DOMResult result = new DOMResult();
+        TreeBuilder tree = new TreeBuilder();
         Transformer docSelectorTrans = docSelector.newTransformer();
-        docSelectorTrans.transform( new SAXSource(docSelectorInput), result );
+        docSelectorTrans.transform( new SAXSource(docSelectorInput), tree );
+        NodeInfo result = tree.getCurrentRoot();
         
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** docSelector output ***\n" + 
-                         XMLWriter.toString(result.getNode()) );
+                         XMLWriter.toString(result) );
             Trace.debug( "" );
         }
         
         // Iterate the result, and queue any files to index.
-        Node node;
-        for( node = result.getNode().getFirstChild();
-             node != null;
-             node = node.getNextSibling() )
-        {
-            if( node.getNodeType() != Node.ELEMENT_NODE )
+        EasyNode root = new EasyNode( result );
+        for( int i = 0; i < root.nChildren(); i++ ) {
+            EasyNode node = root.child( i );
+            if( node.getWrappedNode().getNodeKind() != Type.ELEMENT )
                 continue;
     
-            Element el      = (Element) node;
-            String  tagName = el.getTagName();
+            String  tagName = node.name();
             
             if( tagName.equalsIgnoreCase("indexFiles") ) {
-                node = node.getFirstChild();
+                root = node;
+                i = -1;
                 continue;
             }
     
             if( tagName.equalsIgnoreCase("indexFile") ) {
-                if( processFile(dirPath, el) )
+                if( processFile(dirPath, node) )
                     anyProcessed = true;
             }
             else {
@@ -291,7 +291,7 @@ public class SrcTreeProcessor
                 return;
             }
             
-        } // for node
+        } // while
         
     } // if nFiles > 0
     
@@ -331,46 +331,76 @@ public class SrcTreeProcessor
    *                       class. <br><br>
    * 
    */
-  public boolean processFile( String dir, Element parentEl ) throws Exception 
+  public boolean processFile( String dir, EasyNode parentEl ) throws Exception 
   
   {
     // Gather all the info from the element's attributes.
     SrcTextInfo info = new SrcTextInfo();
+    String fileName = null;
     
-    // First, get the file name and check it.
-    String fileName = parentEl.getAttribute( "fileName" );
-    if( fileName != null && fileName.length() > 0 ) {
-        String srcPath = Path.normalizeFileName(dir+fileName);
-        info.source    = new InputSource( srcPath ); 
-        File srcFile   = new File( srcPath );
-        if( !srcFile.canRead() ) {
-            Trace.error( "Error: cannot read input document '" + srcPath + "'" );
+    for( int i = 0; i < parentEl.nAttrs(); i++ ) {
+        String attrName = parentEl.attrName( i );
+        String attrVal  = parentEl.attrValue( i );
+        
+        // Get the file name and check it.
+        if( attrName.equalsIgnoreCase("fileName") ) {
+            fileName = attrVal; // for extension checking only
+            String srcPath = Path.normalizeFileName(dir+attrVal);
+            info.source    = new InputSource( srcPath ); 
+            File srcFile   = new File( srcPath );
+            if( !srcFile.canRead() ) {
+                Trace.error( "Error: cannot read input document '" + srcPath + "'" );
+                return false;
+            }
+        }
+        
+        // Is there an input filter specified?
+        else if( attrName.equalsIgnoreCase("preFilter") ) {
+            String preFilterPath = 
+                Path.resolveRelOrAbs(cfgInfo.xtfHomePath, attrVal);
+            info.preFilter  = stylesheetCache.find( preFilterPath );
+        }
+        
+        // If there a display stylesheet specified?
+        else if( attrName.equalsIgnoreCase("displayStyle") ) {
+            String displayPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, attrVal);
+            info.displayStyle = stylesheetCache.find( displayPath );
+        }
+    
+        // Is there a format specified?
+        else if( attrName.equalsIgnoreCase("type") ) {
+            info.format = attrVal;
+            if( info.format.equalsIgnoreCase("XML") )
+                info.format = "XML";
+            else if( info.format.equalsIgnoreCase("PDF") )
+                info.format = "PDF";
+            else if( info.format.equalsIgnoreCase("HTML") )
+                info.format = "HTML";
+            else if( info.format.equalsIgnoreCase("Text") )
+                info.format = "Text";
+            else {
+                Trace.error( "Error: docSelector returned unknown format: '" +
+                             info.format + "'" );
+                return false;
+            }
+        }
+        
+        // Other attributes are in error.
+        else {
+            Trace.error( "Error: docSelector returned unknown attribute: '" +
+                         attrName + "'" );
             return false;
         }
-    }
-    else {
+    } // while
+    
+    // Make sure the filename was specified.
+    if( info.source == null ) {
         Trace.error( "Error: docSelector must return 'fileName' attribute" );
         return false;
     }
     
-    // Optional attributes come after. Is there an input filter specified?
-    String strVal = parentEl.getAttribute( "preFilter" );
-    if( strVal != null && strVal.length() > 0 ) {
-        String preFilterPath = 
-            Path.resolveRelOrAbs(cfgInfo.xtfHomePath, strVal);
-        info.preFilter  = stylesheetCache.find( preFilterPath );
-    }
-    
-    // If there a display stylesheet specified?
-    strVal = parentEl.getAttribute( "displayStyle" );
-    if( strVal != null && strVal.length() > 0 ) {
-        String displayPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, strVal);
-        info.displayStyle = stylesheetCache.find( displayPath );
-    }
-    
-    // Is there a format specified?
-    strVal = parentEl.getAttribute( "format" );
-    if( strVal == null || strVal.length() == 0 ) {
+    // If no format was specified, make a guess.
+    if( info.format == null && fileName != null ) {
         String lcFileName = fileName.toLowerCase();
         if( lcFileName.endsWith(".xml") )
             info.format = "XML";
@@ -386,22 +416,7 @@ public class SrcTreeProcessor
             return false;
         }
     }
-    else {
-        info.format = strVal;
-        if( info.format.equalsIgnoreCase("XML") )
-            info.format = "XML";
-        else if( info.format.equalsIgnoreCase("PDF") )
-            info.format = "PDF";
-        else if( info.format.equalsIgnoreCase("HTML") )
-            info.format = "HTML";
-        else if( info.format.equalsIgnoreCase("Text") )
-            info.format = "Text";
-        else {
-            Trace.error( "Error: docSelector returned unknown format: '" +
-                         info.format + "'" );
-            return false;
-        }
-    }
+    
     
     // We need to refer to the file in a way that isn't dependent on the
     // particular location the index is at right now. So calculate a key
@@ -415,7 +430,7 @@ public class SrcTreeProcessor
     
     // Call the XML text file processor to do the work.    
     textProcessor.checkAndQueueText( info );
-    
+
     // Let the caller know we didn't skip the file.
     return true;
         

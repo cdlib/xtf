@@ -35,10 +35,7 @@ import java.util.Properties;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Node;
 
 /**
  * Simple utility class that takes a Node or Source (representing an XML
@@ -53,7 +50,7 @@ public class XMLWriter
     /**
      * Prints the node, in XML format, to Trace.debug()
      */
-    public static void debug( Node node )
+    public static void debug( EasyNode node )
     {
         Trace.debug( toString(node) );
     }
@@ -74,9 +71,9 @@ public class XMLWriter
      * 
      * @param node  Base node to format.
      */
-    public static String toString( Node node )
+    public static String toString( EasyNode node )
     {
-        return toString( new DOMSource(node) );
+        return toString( node.getWrappedNode() );
     }
     
     /** 

@@ -46,11 +46,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
-import net.sf.saxon.dom.DocumentWrapper;
 import net.sf.saxon.instruct.Executable;
+import net.sf.saxon.om.AllElementStripper;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.trans.KeyManager;
 import net.sf.saxon.tree.TreeBuilder;
@@ -138,10 +139,10 @@ public class TestableDynaXML extends DynaXML
     // tree.
     //
     Configuration config = new Configuration();
-    DocumentWrapper docWrapper = new DocumentWrapper(doc, sourcePath, config);
+    Source src = new DOMSource( doc );
     config.setErrorListener( new XTFSaxonErrorListener() );
     prevAnnotatedTree = (DocumentInfo)
-        TreeBuilder.build( docWrapper, null, config );
+        TreeBuilder.build( src, AllElementStripper.getInstance(), config );
     prevAnnotatedPath = sourcePath;
     return prevAnnotatedTree;
     
