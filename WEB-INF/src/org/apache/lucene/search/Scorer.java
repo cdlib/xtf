@@ -46,9 +46,10 @@ public abstract class Scorer {
         recordSpans(fieldSpans);
         if (fieldSpans.isEmpty()) {
           skipRecording = true;
-          fieldSpans = null;
+          hc.collect(doc(), score());
         }
-        ((SpanHitCollector)hc).collect(doc(), score(), fieldSpans);
+        else
+          ((SpanHitCollector)hc).collect(doc(), score(), fieldSpans);
       }
     }
   }
