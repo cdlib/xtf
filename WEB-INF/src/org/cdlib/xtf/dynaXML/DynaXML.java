@@ -202,6 +202,13 @@ public class DynaXML extends TextServlet
             }
         }
 
+        // Some broken proxies prepend "unknown" to the real IP address.
+        // To work around these, skip all characters until we hit a digit.
+        //
+        while( ip.length() > 0 && !Character.isDigit(ip.charAt(0)) )
+            ip = ip.substring( 1 );
+
+        // All done!
         return ip;
 
     } // getClientIP()
