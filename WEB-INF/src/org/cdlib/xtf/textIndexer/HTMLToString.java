@@ -28,8 +28,9 @@ package org.cdlib.xtf.textIndexer;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
-import java.io.FileInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
 import org.w3c.tidy.Tidy;
 
 import org.cdlib.xtf.util.*;
@@ -62,7 +63,7 @@ public class HTMLToString {
    *      HTML file. If an error occurred, this method returns <code>null</code>.
    * 
    */
-  static public String convert( String HTMLFileName )
+  static public String convert( InputStream HTMLInputStream )
  
   {
 
@@ -80,14 +81,11 @@ public class HTMLToString {
         
     try {
         
-        // Get hold of the source file.
-        FileInputStream in = new FileInputStream( HTMLFileName );
-        
         // Create a buffer to output the XML to.
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         
         // Convert the HTML to XML.
-        tidy.parse( in, out );
+        tidy.parse( HTMLInputStream, out );
         
         // Get a string version of the resulting XML.
         String retStr = out.toString();

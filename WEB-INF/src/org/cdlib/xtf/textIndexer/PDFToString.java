@@ -29,6 +29,8 @@ package org.cdlib.xtf.textIndexer;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.InputStream;
+
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
 
@@ -73,7 +75,7 @@ public class PDFToString {
    *      PDF file. If an error occurred, this method returns <code>null</code>.
    * 
    */
-  static String convert( String PDFFilePath )
+  static String convert( InputStream PDFInputStream )
 
   {
     String xmlStr = null;
@@ -99,7 +101,7 @@ public class PDFToString {
         try {
           
             // Get hold of the PDF document to convert.
-            pdfDoc = PDDocument.load( PDFFilePath );
+            pdfDoc = PDDocument.load( PDFInputStream );
     
             // If the document is encrypted, we've got a problem.
             if( pdfDoc.isEncrypted() ) {
@@ -123,7 +125,6 @@ public class PDFToString {
             //   
             xmlStr += FormatXML.beginTag( 
                           "pdfDocument", 
-                          FormatXML.attr( "file", PDFFilePath ) +
                           FormatXML.attr( "pageCount", pageCount ) );
             
             // Process each page in the PDF document.   
