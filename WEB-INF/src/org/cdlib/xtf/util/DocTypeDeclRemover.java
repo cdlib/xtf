@@ -53,10 +53,25 @@ public class DocTypeDeclRemover extends BufferedInputStream
       super( in, BLOCK_SIZE );
   }
   
-  /** Read a single byte: we don't support this */
+  /**
+   * See
+   * the general contract of the <code>read</code>
+   * method of <code>InputStream</code>.
+   * 
+   * @return     the next byte of data, or <code>-1</code> if the end of the
+   *             stream is reached.
+   * @exception  IOException  if an I/O error occurs.
+   * @see        java.io.FilterInputStream#in
+   */
   public int read() throws IOException {
-      throw new RuntimeException( 
-            "DocTypeDeclRemover not written to handle single-byte reads" );
+      if( firstTime ) {
+          byte[] buf = new byte[1];
+          if( read(buf, 0, 1) != 1 )
+              return -1;
+          return buf[0] & 0xff;
+      }
+      else
+          return super.read();
   }
   
   /** 
@@ -64,9 +79,12 @@ public class DocTypeDeclRemover extends BufferedInputStream
    * scanned for a DOCTYPE declaration, and if one is found it will be
    * converted to an XML comment.
    * 
-   * @param b   Buffer to read into
-   * @param off Byte offset to read into
-   * @param len Number of bytes to read
+   * @param b    Buffer to read into
+   * @param off  Byte offset to read into
+   * @param len  Number of bytes to read
+   * @return     Number of bytes read, or <code>-1</code> if the end of
+   *             the stream has been reached.
+   * @exception  IOException  if an I/O error occurs.
    */
   public int read( byte b[], int off, int len ) throws IOException 
   {
