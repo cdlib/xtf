@@ -34,13 +34,16 @@ import org.cdlib.xtf.util.GeneralException;
 
 
 /** Holds global configuration information for the crossQuery servlet. */
-class CrossQueryConfig extends TextConfig
+public class CrossQueryConfig extends TextConfig
 {
     /** 
      * The stylesheet used to parse a query from an HTTP request, into an XML
      * format usable by the text engine.
      */
     public String queryParserSheet;
+    
+    /** Default constructor */
+    public CrossQueryConfig() { }
     
     /**
      * Constructor - Reads and parses the global configuration file (XML) for 

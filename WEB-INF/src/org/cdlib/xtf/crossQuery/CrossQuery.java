@@ -69,7 +69,7 @@ import org.cdlib.xtf.util.XTFSaxonErrorListener;
 public class CrossQuery extends TextServlet
 {
     /** Holds global servlet configuration info */
-    private static CrossQueryConfig config;
+    protected static CrossQueryConfig config;
     
     /**
      * Called by the superclass to find out the name of our specific config
@@ -193,9 +193,9 @@ public class CrossQuery extends TextServlet
     *
     * @exception Exception  Passes on various errors that might occur.
     */
-    private void apply( AttribList          attribs,
-                        HttpServletRequest  req, 
-                        HttpServletResponse res )
+    protected void apply( AttribList          attribs,
+                          HttpServletRequest  req, 
+                          HttpServletResponse res )
         throws Exception
     {
         // Generate a query request document from the queryParser stylesheet.
@@ -219,8 +219,8 @@ public class CrossQuery extends TextServlet
      * @param req        The original HTTP request
      * @param attribs    Attributes to pass to the stylesheet.
      */
-    private Source generateQueryReq( HttpServletRequest req, 
-                                     AttribList attribs )
+    protected Source generateQueryReq( HttpServletRequest req, 
+                                       AttribList attribs )
         throws Exception
     {
         // Locate the query formatting stylesheet.
@@ -270,10 +270,10 @@ public class CrossQuery extends TextServlet
      * @param result        Hits resulting from the query request
      * @param displayStyle  Path of the resultFormatter stylesheet
      */
-    private void formatHits( HttpServletRequest  req,
-                             HttpServletResponse res,
-                             AttribList          attribs,
-                             QueryResult         result )
+    protected void formatHits( HttpServletRequest  req,
+                               HttpServletResponse res,
+                               AttribList          attribs,
+                               QueryResult         result )
         throws Exception
     {
         // Locate the display stylesheet.
