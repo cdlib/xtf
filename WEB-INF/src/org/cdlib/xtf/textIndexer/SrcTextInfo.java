@@ -37,16 +37,13 @@ import org.xml.sax.InputSource;
  * Simple data holder representing a single file to index, including where to
  * find it, its format, the input filter to use, and the index key.
  */
-class SrcTextInfo 
+public class SrcTextInfo 
 {  
   /** Source to read XML/PDF/HTML/etc. data from */
   public InputSource source;
   
-  /** Format of the input data ("XML", "PDF", etc.) */
+  /** Format of the input data: must be "XML", "PDF", "HTML", or "Text" */
   public String format;
-  
-  /** Prettified path suitable for printing to info displays */
-  public String prettyPath;
   
   /** Key used to identify this file in the index */
   public String key;
