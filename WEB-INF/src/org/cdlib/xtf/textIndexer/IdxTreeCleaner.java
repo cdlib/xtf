@@ -244,7 +244,7 @@ public class IdxTreeCleaner
             catch( Exception e ) {
                 Trace.tab();
                 Trace.warning( "*** Warning: Unable to Delete [ " +
-                               fileList[j].getCanonicalPath() + " ]." );
+                               fileList[j].toString() + " ]." );
                 Trace.untab();
                 deleteFailCount++;                 
             }
@@ -294,7 +294,7 @@ public class IdxTreeCleaner
             
                 Trace.tab();
                 Trace.info( "*** Warning: Unable to delete empty "       +
-                            "index directory [" + dir.getCanonicalPath() +
+                            "index directory [" + dir.getAbsolutePath() +
                             "]." );
                 Trace.untab();
                 return;

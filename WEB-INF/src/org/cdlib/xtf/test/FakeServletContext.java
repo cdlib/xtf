@@ -29,7 +29,6 @@ package org.cdlib.xtf.test;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -97,8 +96,8 @@ public class FakeServletContext implements ServletContext
   }
   public String getRealPath( String path )
   {
-    File homeDir = new File( System.getProperty("xtf.home") );
-    return Path.resolveRelOrAbs( homeDir, path ).getAbsolutePath();
+    String homeDir = System.getProperty("xtf.home");
+    return Path.resolveRelOrAbs( homeDir, path );
   }
   public RequestDispatcher getRequestDispatcher( String path )
   {

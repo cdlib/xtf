@@ -203,8 +203,7 @@ public class TextIndexer
                   // Make sure the configuration path is absolute
                   if( !(new File(cfgInfo.cfgFilePath).isAbsolute()) ) {
                       cfgInfo.cfgFilePath = Path.resolveRelOrAbs( 
-                          new File(cfgInfo.xtfHomePath), cfgInfo.cfgFilePath).
-                          toString();
+                          cfgInfo.xtfHomePath, cfgInfo.cfgFilePath);
                   }
 
                   // Get the configuration for the index specified by the 
@@ -265,8 +264,9 @@ public class TextIndexer
                   //if( !cfgInfo.mustClean ) {
                   
                   // Clean all indices below the root index directory. 
-                  File idxRootDir = Path.resolveRelOrAbs( xtfHomeFile,
-                                              cfgInfo.indexInfo.indexPath );
+                  File idxRootDir = new File(Path.resolveRelOrAbs( 
+                                                xtfHomeFile,
+                                                cfgInfo.indexInfo.indexPath) );
                   
                   Trace.info("");
                   Trace.info( "Purging Incomplete Documents From Indexes:" );
@@ -302,7 +302,7 @@ public class TextIndexer
               
 
               // Start at the root directory specified by the config file. 
-              File srcRootDir = Path.resolveRelOrAbs( xtfHomeFile,
+              String srcRootDir = Path.resolveRelOrAbs( xtfHomeFile,
                                           cfgInfo.indexInfo.sourcePath );
                 
               // If a sub-directory was specified, limit to just that.
@@ -314,7 +314,7 @@ public class TextIndexer
 
               // Process everything below it.
               srcTreeProcessor.open( cfgInfo );
-              srcTreeProcessor.processDir( srcRootDir );
+              srcTreeProcessor.processDir( new File(srcRootDir) );
               srcTreeProcessor.close();
 
               // Cull files which are present in the index but missing

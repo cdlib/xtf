@@ -130,9 +130,8 @@ public class IdxConfigUtil
     // Figure out the part of the source file's path that matches the index
     // data directory.
     //
-    File realXtfPath = xtfHome.getCanonicalFile();
-    File fullSourcePath = Path.resolveRelOrAbs( realXtfPath, 
-                                                idxInfo.sourcePath );
+    String fullSourcePath = Path.resolveRelOrAbs( xtfHome.toString(),
+                                                  idxInfo.sourcePath );
     String prefix = Path.calcPrefix( srcTextFile.getParent(),
                                      fullSourcePath.toString() );
     if( prefix == null ) {
@@ -149,8 +148,8 @@ public class IdxConfigUtil
     String lazyPath = idxInfo.indexPath + "lazy/" + 
                       idxInfo.indexName + "/" + after +
                       ".lazy";
-    File lazyFile = Path.resolveRelOrAbs(realXtfPath, lazyPath).
-                                getCanonicalFile();
+    lazyPath = Path.resolveRelOrAbs(xtfHome.toString(), lazyPath);
+    File lazyFile = new File(lazyPath);
     
     // If we've been asked to create the directory, do it now.
     if( createDir )
@@ -216,11 +215,9 @@ public class IdxConfigUtil
     // Figure out the part of the source file's path that matches the index
     // data directory.
     //
-    File realXtfHome = xtfHomeFile.getCanonicalFile();
-    File fullSourcePath = Path.resolveRelOrAbs(
-                                    realXtfHome, idxInfo.sourcePath );
-    String prefix = Path.calcPrefix( srcTextFile.getParent(),
-                                     fullSourcePath.toString() );
+    String fullSourcePath = Path.resolveRelOrAbs(
+                                    xtfHomeFile, idxInfo.sourcePath );
+    String prefix = Path.calcPrefix( srcTextFile.getParent(), fullSourcePath );
     if( prefix == null ) {
         throw new IOException( "XML source file " + srcTextFile +
                                " is not contained within " + 

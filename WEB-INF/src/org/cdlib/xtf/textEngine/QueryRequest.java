@@ -477,11 +477,7 @@ public class QueryRequest
         startDoc = Math.max( 0, startDoc-1 );
         
         // Make sure the stylesheet to format the results is present.
-        try {
-            displayStyle = Path.resolveRelOrAbs(baseDir, displayStyle).
-                                      getCanonicalPath();
-        }
-        catch( IOException e ) { }
+        displayStyle = Path.resolveRelOrAbs(baseDir, displayStyle);
 
         if( !(new File(displayStyle).exists()) && 
             displayStyle.indexOf("NullStyle.xsl") < 0 )
@@ -505,11 +501,7 @@ public class QueryRequest
             curCombo = cq;
             cq.indexPath = parseStringAttrib( el, "indexPath" );
             origIndexPath = cq.indexPath;
-            try {
-                cq.indexPath = Path.resolveRelOrAbs(baseDir, cq.indexPath).
-                                 getCanonicalPath();
-            }
-            catch( IOException e ) { }
+            cq.indexPath = Path.resolveRelOrAbs(baseDir, cq.indexPath);
             
             // Make sure it exists.
             if( !(new File(cq.indexPath).exists()) )

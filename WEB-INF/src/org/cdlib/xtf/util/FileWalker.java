@@ -179,13 +179,13 @@ public abstract class FileWalker
     // The current file is not a directory, so start by getting the absolute
     // representation of the base path for the current file.
     //
-    String basePath = Path.normalizePath( mBasePath.getCanonicalPath() );
+    String basePath = Path.normalizePath( mBasePath.getAbsolutePath() );
     
     // Next, determine the name of the current file.
     String fileName = theFile.getName();
 
     // Now get the entire path to the file.
-    String subPath = Path.normalizeFileName( theFile.getCanonicalPath() );
+    String subPath = Path.normalizeFileName( theFile.getAbsolutePath() );
 
     // And isolate the sub-path by subtracting out the base path and the name
     // of the file.

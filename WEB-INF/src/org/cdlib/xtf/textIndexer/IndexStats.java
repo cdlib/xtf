@@ -146,8 +146,7 @@ public class IndexStats
                   // Make sure the configuration path is absolute
                   if( !(new File(cfgInfo.cfgFilePath).isAbsolute()) ) {
                       cfgInfo.cfgFilePath = Path.resolveRelOrAbs( 
-                          new File(cfgInfo.xtfHomePath), cfgInfo.cfgFilePath).
-                          toString();
+                          cfgInfo.xtfHomePath, cfgInfo.cfgFilePath);
                   }
 
                   // Get the configuration for the index specified by the 
@@ -200,10 +199,12 @@ public class IndexStats
                           ", Overlap = "                   +
                           cfgInfo.indexInfo.getChunkOvlp() );
               
-              Trace.info( "Index Path = " + 
-                          fiddlePath(cfgInfo, cfgInfo.indexInfo.indexPath) );
+              Trace.info( "Index Path = " +
+                          Path.resolveRelOrAbs(cfgInfo.xtfHomePath, 
+                                               cfgInfo.indexInfo.indexPath) );
               Trace.info( "Data Path  = " + 
-                          fiddlePath(cfgInfo, cfgInfo.indexInfo.sourcePath) );
+                          Path.resolveRelOrAbs(cfgInfo.xtfHomePath, 
+                                               cfgInfo.indexInfo.sourcePath) );
               
               Trace.info( "Stop Words = " + cfgInfo.indexInfo.stopWords );
               
@@ -281,14 +282,14 @@ public class IndexStats
     throws IOException
   
   {
-    File      xtfHome = new File( cfgInfo.xtfHomePath );
     IndexInfo idxInfo = cfgInfo.indexInfo;
       
     // Try to open the index for reading. If we fail and throw, skip the 
     // index.
     //
-    File idxFile = Path.resolveRelOrAbs(xtfHome, idxInfo.indexPath);
-    String idxPath = Path.normalizePath( idxFile.getCanonicalPath() );
+    String idxPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, 
+                                          idxInfo.indexPath);
+    File   idxFile = new File( idxPath );
     IndexReader indexReader = IndexReader.open( idxPath );
     
     // Get a list of all the "header" chunks for documents in this
@@ -328,13 +329,14 @@ public class IndexStats
         }
       
         // Create a reference to the source XML document.
-        File sourceDir = Path.resolveRelOrAbs( xtfHome, 
-                                               idxInfo.sourcePath );
-        File currFile = Path.resolveRelOrAbs( sourceDir, relPath );
+        String sourceDir = Path.resolveRelOrAbs( cfgInfo.xtfHomePath, 
+                                                 idxInfo.sourcePath );
+        String currPath = Path.resolveRelOrAbs( sourceDir, relPath );
+        File   currFile = new File( currPath );
         
         // Also find the size of the lazy file, if any.
         File lazyFile = 
-            IdxConfigUtil.calcLazyPath( xtfHome,
+            IdxConfigUtil.calcLazyPath( new File(cfgInfo.xtfHomePath),
                                         idxInfo, 
                                         currFile, 
                                         false );
@@ -374,22 +376,5 @@ public class IndexStats
       
   } // printBig()
   
-  
-  //////////////////////////////////////////////////////////////////////////////
-
-  private static String fiddlePath( IndexerConfig cfgInfo, String path )
-  
-  {
-  
-    File xtfHome  = new File( cfgInfo.xtfHomePath );
-    File realPath = Path.resolveRelOrAbs( xtfHome, path );
-    try {
-        return realPath.getCanonicalPath();
-    }
-    catch( IOException e ) {
-        return realPath.getAbsolutePath();
-    }
-      
-  } // printBig()
   
 } // class IndexStats

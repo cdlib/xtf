@@ -89,16 +89,16 @@ public class IdxTreeOptimizer
   {
     
     // If the file we were passed was in fact a directory...
-    if( dir.getCanonicalFile().isDirectory() ) {
+    if( dir.getAbsoluteFile().isDirectory() ) {
       
       // And it contains an index, optimize it.
-      if( IndexReader.indexExists( dir.getCanonicalFile() ) )
+      if( IndexReader.indexExists( dir.getAbsoluteFile() ) )
         optimizeIndex( dir );
       
       else {
         
         // Get the list of files it contains.
-        String[] files = dir.getCanonicalFile().list();
+        String[] files = dir.getAbsoluteFile().list();
         
         // And process each of them.
         for( int i = 0; i < files.length; i++ )

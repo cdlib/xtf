@@ -178,7 +178,7 @@ public class LazyTreeBuilder
         
         // Now init the document (which loads the root node.)
         emptyDoc.init( namePool, file );
-        emptyDoc.setSystemId( persistFile.getCanonicalPath() );
+        emptyDoc.setSystemId( persistFile.getAbsolutePath() );
     }
 
     /**

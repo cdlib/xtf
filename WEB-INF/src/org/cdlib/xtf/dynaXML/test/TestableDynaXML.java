@@ -166,7 +166,7 @@ public class TestableDynaXML extends DynaXML
   {
     try {
         File file = new File( fileName );
-        Trace.info( "Dumping " + file.getCanonicalPath() );
+        Trace.info( "Dumping " + file.getAbsolutePath() );
         PrintWriter outWriter = new PrintWriter( new OutputStreamWriter(
                                    new FileOutputStream(file), "UTF-8" ) );
         

@@ -413,7 +413,7 @@ public class DynaXML extends TextServlet
             if( dump && sourceDoc instanceof SearchTree ) {
                 ((SearchTree)sourceDoc).pruneUnused();
                 File file = new File( "C:\\tmp\\tree.dump" );
-                Trace.info( "Dumping " + file.getCanonicalPath() );
+                Trace.info( "Dumping " + file.getAbsolutePath() );
                 PrintWriter outWriter = 
                     new PrintWriter( 
                         new OutputStreamWriter(
@@ -442,7 +442,7 @@ public class DynaXML extends TextServlet
         if( dump && sourceDoc instanceof SearchTree ) {
             ((SearchTree)sourceDoc).pruneUnused();
             File file = new File( "C:\\tmp\\tree.dump" );
-            Trace.info( "Dumping " + file.getCanonicalPath() );
+            Trace.info( "Dumping " + file.getAbsolutePath() );
             PrintWriter outWriter = 
                 new PrintWriter( 
                     new OutputStreamWriter(

@@ -108,8 +108,7 @@ public class IdxTreeCuller
         // Try to open the index for reading. If we fail and 
         // throw, skip the index.
         //
-        File idxFile = Path.resolveRelOrAbs(xtfHome, idxInfo.indexPath);
-        String idxPath = Path.normalizePath( idxFile.getCanonicalPath() );
+        String idxPath = Path.resolveRelOrAbs(xtfHome, idxInfo.indexPath);
         IndexReader indexReader = IndexReader.open( idxPath );
         
         // Get a list of all the "header" chunks for documents in this
@@ -146,9 +145,10 @@ public class IdxTreeCuller
             docCount++;
           
             // Create a reference to the source XML document.
-            File sourceDir = Path.resolveRelOrAbs( xtfHome, 
-                                                   idxInfo.sourcePath );
-            File currFile = Path.resolveRelOrAbs( sourceDir, relPath );
+            String sourceDir = Path.resolveRelOrAbs( xtfHome, 
+                                                     idxInfo.sourcePath );
+            String currPath = Path.resolveRelOrAbs( sourceDir, relPath );
+            File   currFile = new File( currPath ); 
              
             // If the source XML document doesn't exist...
             if( !currFile.exists() ) {
@@ -227,8 +227,8 @@ public class IdxTreeCuller
             }
 
             if( !anyNotDeleted ) {
-                deleteIndex( Path.resolveRelOrAbs(xtfHome, 
-                                                  idxInfo.indexPath) );
+                deleteIndex( new File(Path.resolveRelOrAbs(xtfHome, 
+                                                  idxInfo.indexPath)) );
                 indexDeleted = true;
             }
         } // if( docCount == cullCount )
@@ -289,7 +289,7 @@ public class IdxTreeCuller
         catch( Exception e ) {
             Trace.tab();
             Trace.warning( "*** Warning: Unable to Delete [ " +
-                           fileList[j].getCanonicalPath() + " ]." );
+                           Path.normalizeFileName(fileList[j].toString()) + " ]." );
             Trace.untab();
             deleteFailCount++;                 
         }
@@ -339,7 +339,7 @@ public class IdxTreeCuller
           
             Trace.tab();
             Trace.info( "*** Warning: Unable to delete empty "       +
-                        "index directory [" + dir.getCanonicalPath() +
+                        "index directory [" + dir.toString() +
                         "]." );
             Trace.untab();
             return;

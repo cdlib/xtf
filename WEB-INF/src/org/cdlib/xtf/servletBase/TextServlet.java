@@ -127,8 +127,7 @@ public abstract class TextServlet extends HttpServlet
         if( partialPath.length() > 1 && partialPath.charAt(1) == ':' )
             return partialPath;
         if( !isEmpty(baseDir) )
-            return Path.resolveRelOrAbs( 
-                            new File(baseDir), partialPath ).toString();
+            return Path.resolveRelOrAbs( baseDir, partialPath );
         return staticContext.getRealPath( partialPath );
     } // getRealPath()
 

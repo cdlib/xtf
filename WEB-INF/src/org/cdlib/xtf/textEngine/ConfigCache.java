@@ -34,6 +34,7 @@ import java.io.File;
 import org.cdlib.xtf.cache.GeneratingCache;
 import org.cdlib.xtf.textIndexer.IndexerConfig;
 import org.cdlib.xtf.textIndexer.XMLConfigParser;
+import org.cdlib.xtf.util.Path;
 
 
 /**
@@ -56,7 +57,7 @@ public class ConfigCache extends GeneratingCache
     throws Exception
   {
     ConfigCacheKey key = new ConfigCacheKey();
-    key.configPath = configFile.getCanonicalFile().toString();
+    key.configPath = Path.normalizeFileName(configFile.toString());
     key.indexName  = indexName;
     return (IndexerConfig) super.find( key );
   } // find()

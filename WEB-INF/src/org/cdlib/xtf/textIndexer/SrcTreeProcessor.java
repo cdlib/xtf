@@ -132,11 +132,11 @@ public class SrcTreeProcessor
     //
     if( !(NamePool.getDefaultNamePool() instanceof RecordingNamePool) )
         NamePool.setDefaultNamePool( new RecordingNamePool() );
-
+    
     // Make a transformer for the docSelector stylesheet.
-    File docSelFile = Path.resolveRelOrAbs(new File(cfgInfo.xtfHomePath),
-                                  cfgInfo.indexInfo.docSelectorPath);
-    Templates templates = stylesheetCache.find( docSelFile.getCanonicalPath() );
+    String docSelPath = Path.resolveRelOrAbs( cfgInfo.xtfHomePath,
+                                              cfgInfo.indexInfo.docSelectorPath);
+    Templates templates = stylesheetCache.find( docSelPath );
     docSelector = templates.newTransformer();
   
     // Give some feedback.
@@ -202,7 +202,7 @@ public class SrcTreeProcessor
   { 
     
     // We're looking at a directory. Get the list of files it contains.
-    String[] fileStrs = currFile.getCanonicalFile().list();
+    String[] fileStrs = currFile.getAbsoluteFile().list();
     ArrayList list = new ArrayList( fileStrs.length );
     for( int i = 0; i < fileStrs.length; i++ )
         list.add( fileStrs[i] );
@@ -217,7 +217,7 @@ public class SrcTreeProcessor
     int nFiles = 0;
     for( Iterator i = list.iterator(); i.hasNext(); ) {
         File subFile = new File( currFile, (String) i.next() );
-        if( !subFile.getCanonicalFile().isDirectory() ) {
+        if( !subFile.getAbsoluteFile().isDirectory() ) {
             docBuf.append( "  <file fileName=\"" + 
                            subFile.getName() + "\"/>\n" );
             ++nFiles;
@@ -288,7 +288,7 @@ public class SrcTreeProcessor
     // Didn't find any files to process. Try sub-directories.
     for( Iterator i = list.iterator(); i.hasNext(); ) {
         File subFile = new File( currFile, (String) i.next() );
-        if( subFile.getCanonicalFile().isDirectory() )
+        if( subFile.getAbsoluteFile().isDirectory() )
             processDir( subFile );
     }
 
@@ -317,18 +317,17 @@ public class SrcTreeProcessor
   public boolean processFile( String dir, Element parentEl ) throws Exception 
   
   {
-    File xtfHome = new File(cfgInfo.xtfHomePath);
-
     // Gather all the info from the element's attributes.
     SrcTextInfo info = new SrcTextInfo();
     
     // First, get the file name and check it.
     String fileName = parentEl.getAttribute( "fileName" );
     if( fileName != null && fileName.length() > 0 ) {
-        File srcFile = new File(dir+fileName).getCanonicalFile();
-        info.source  = new InputSource( Path.normalizeFileName(srcFile.toString()) );
+        String srcPath = Path.normalizeFileName(dir+fileName);
+        info.source    = new InputSource( srcPath ); 
+        File srcFile   = new File( srcPath );
         if( !srcFile.canRead() ) {
-            Trace.error( "Error: cannot read input document '" + srcFile.toString() + "'" );
+            Trace.error( "Error: cannot read input document '" + srcPath + "'" );
             return false;
         }
     }
@@ -340,15 +339,15 @@ public class SrcTreeProcessor
     // Optional attributes come after. Is there an input filter specified?
     String strVal = parentEl.getAttribute( "inputFilter" );
     if( strVal != null && strVal.length() > 0 ) {
-        File inFilterFile = Path.resolveRelOrAbs(xtfHome, strVal).getCanonicalFile();
-        info.inputFilter  = stylesheetCache.find( inFilterFile.toString() );
+        String inFilterPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, strVal);
+        info.inputFilter  = stylesheetCache.find( inFilterPath );
     }
     
     // If there a display stylesheet specified?
     strVal = parentEl.getAttribute( "displayStyle" );
     if( strVal != null && strVal.length() > 0 ) {
-        File displayFile  = Path.resolveRelOrAbs(xtfHome, strVal).getCanonicalFile();
-        info.displayStyle = stylesheetCache.find( displayFile.toString() );
+        String displayPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, strVal);
+        info.displayStyle = stylesheetCache.find( displayPath );
     }
     
     // Is there a format specified?

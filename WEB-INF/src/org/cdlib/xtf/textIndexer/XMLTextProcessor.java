@@ -472,8 +472,7 @@ public class XMLTextProcessor extends DefaultHandler
           //
           if( configInfo.xtfHomePath == null ) {
               configInfo.xtfHomePath = 
-                  new File(configInfo.cfgFilePath).getParentFile()
-                                                  .getCanonicalPath();
+                  new File(configInfo.cfgFilePath).getParentFile().toString();
           }
     
           // Determine where the index database is located.
@@ -3218,13 +3217,9 @@ public class XMLTextProcessor extends DefaultHandler
   
   {
 
-    File xtfHomeDir = new File(configInfo.xtfHomePath);
-    File idxFile = Path.resolveRelOrAbs(xtfHomeDir, 
-                                        configInfo.indexInfo.indexPath);
-    String path = Path.normalizePath( idxFile.getCanonicalPath() );
-    if( !path.endsWith("/") )
-        path += "/";
-    return path;
+    String idxPath = Path.resolveRelOrAbs(configInfo.xtfHomePath, 
+                                          configInfo.indexInfo.indexPath);
+    return Path.normalizePath( idxPath );
 
   } // private getIndexPath()
 

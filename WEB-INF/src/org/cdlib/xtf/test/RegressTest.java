@@ -110,6 +110,7 @@ public class RegressTest
         }
         
         // Test the libraries we depend on.
+        Path.tester.test();
         StructuredFile.tester.test();
         IntHash.tester.test();
         DiskHashWriter.tester.test();
@@ -139,9 +140,9 @@ public class RegressTest
         try {
             // If a specific test was specified, set that as a filter.
             if( args.length > 0 ) {
-                filterFile = new File(args[0]).getCanonicalFile();
+                filterFile = new File(args[0]).getAbsoluteFile();
                 if( !filterFile.exists() )
-                    filterFile = new File(args[0] + "-in.xml").getCanonicalFile();
+                    filterFile = new File(args[0] + "-in.xml").getAbsoluteFile();
                 if( !filterFile.exists() ) {
                     Trace.error( "Unable to locate " + args[0] );
                     System.exit( 1 );
@@ -234,7 +235,7 @@ public class RegressTest
         throws IOException
     {
         String dir = configFile.getParentFile().toString();
-        System.setProperty( "user.dir", new File(dir).getCanonicalPath() );
+        System.setProperty( "user.dir", new File(dir).getAbsolutePath() );
         
         // Blow away the old index directory.
         File indexDir = new File(dir, "IndexDB" );
