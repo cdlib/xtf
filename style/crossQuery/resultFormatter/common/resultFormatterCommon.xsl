@@ -144,6 +144,13 @@
   <xsl:param name="year-exclude"/>
   <xsl:param name="year-max"/>
 
+  <!-- Special XTF Metadata Field containing CDL Profile ARK -->
+  <xsl:param name="profile"/>
+  <xsl:param name="profile-join"/>
+  <xsl:param name="profile-prox"/>
+  <xsl:param name="profile-exclude"/>
+  <xsl:param name="profile-max"/>
+
   <!-- Structural Search -->
   <xsl:param name="sectionType"/>
 
@@ -180,7 +187,7 @@
   
   <xsl:param name="queryString">
     <xsl:call-template name="queryString">
-      <xsl:with-param name="textParams" select="'text text-join text-prox text-exclude text-max title title-join title-prox title-exclude title-max creator creator-join creator-prox creator-exclude creator-max subject subject-join subject-prox subject-exclude subject-max description description-join description-prox description-exclude description-max publisher publisher-join publisher-prox publisher-exclude publisher-max contributor contributor-join contributor-prox contributor-exclude contributor-max date date-join date-prox date-exclude date-max type type-join type-prox type-exclude type-max format format-join format-prox format-exclude format-max identifier identifier-join identifier-prox identifier-exclude identifier-max source source-join source-prox source-exclude source-max language language-join language-prox language-exclude language-max relation relation-join relation-prox relation-exclude relation-max coverage coverage-join coverage-prox coverage-exclude coverage-max rights rights-join rights-prox rights-exclude rights-max year year-join year-prox year-exclude year-max sectionType rmode '"/>
+      <xsl:with-param name="textParams" select="'text text-join text-prox text-exclude text-max title title-join title-prox title-exclude title-max creator creator-join creator-prox creator-exclude creator-max subject subject-join subject-prox subject-exclude subject-max description description-join description-prox description-exclude description-max publisher publisher-join publisher-prox publisher-exclude publisher-max contributor contributor-join contributor-prox contributor-exclude contributor-max date date-join date-prox date-exclude date-max type type-join type-prox type-exclude type-max format format-join format-prox format-exclude format-max identifier identifier-join identifier-prox identifier-exclude identifier-max source source-join source-prox source-exclude source-max language language-join language-prox language-exclude language-max relation relation-join relation-prox relation-exclude relation-max coverage coverage-join coverage-prox coverage-exclude coverage-max rights rights-join rights-prox rights-exclude rights-max year year-join year-prox year-exclude year-max profile profile-join profile-prox profile-exclude profile-max sectionType rmode '"/>
       <xsl:with-param name="count" select="1"/>
     </xsl:call-template>
   </xsl:param>
@@ -788,6 +795,41 @@
           <xsl:text>year-max=</xsl:text>
           <xsl:value-of select="$year-max"/>
         </xsl:when>
+        <xsl:when test="$param = 'profile' and $profile">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>profile=</xsl:text>
+          <xsl:value-of select="$profile"/>
+        </xsl:when>
+        <xsl:when test="$param = 'profile-join' and $profile-join">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>profile-join=</xsl:text>
+          <xsl:value-of select="$profile-join"/>
+        </xsl:when>
+        <xsl:when test="$param = 'profile-prox' and $profile-prox">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>profile-prox=</xsl:text>
+          <xsl:value-of select="$profile-prox"/>
+        </xsl:when>
+        <xsl:when test="$param = 'profile-exclude' and $profile-exclude">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>profile-exclude=</xsl:text>
+          <xsl:value-of select="$profile-exclude"/>
+        </xsl:when>
+        <xsl:when test="$param = 'profile-max' and $profile-max">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>profile-max=</xsl:text>
+          <xsl:value-of select="$profile-max"/>
+        </xsl:when>
         <xsl:when test="$param = 'sectionType' and $sectionType">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -1070,6 +1112,21 @@
     <xsl:if test="$year-max">
       <input type="hidden" name="year-max" value="{$year-max}"/>
     </xsl:if>
+    <xsl:if test="$profile">
+      <input type="hidden" name="profile" value="{$profile}"/>
+    </xsl:if>
+    <xsl:if test="$profile-join">
+      <input type="hidden" name="profile-join" value="{$profile-join}"/>
+    </xsl:if>
+    <xsl:if test="$profile-prox">
+      <input type="hidden" name="profile-prox" value="{$profile-prox}"/>
+    </xsl:if>
+    <xsl:if test="$profile-exclude">
+      <input type="hidden" name="profile-exclude" value="{$profile-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$profile-max">
+      <input type="hidden" name="profile-max" value="{$profile-max}"/>
+    </xsl:if>
     <xsl:if test="$sectionType">
       <input type="hidden" name="sectionType" value="{$sectionType}"/>
     </xsl:if>
@@ -1078,11 +1135,10 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace($queryString, 
+    <xsl:copy-of select="replace(replace(replace(replace(replace(replace($queryString, 
                           '&amp;rmode=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
-                          '&amp;relation=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
-                          '&amp;relation-join=([A-Za-z0-9&quot;\-\.\* ]+)', ''),  
-                          '&amp;relation-exclude=([A-Za-z0-9&quot;\-\.\* ]+)', ''),       
+                          '&amp;profile=([A-Za-z0-9&quot;\-\.\* ]+)', ''), 
+                          '&amp;profile-join=([A-Za-z0-9&quot;\-\.\* ]+)', ''),     
                           'year=([0-9]+)&amp;year-max=([0-9]+)', 'year=$1-$2'), 
                           '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\.\* ]+)', '$2 in $1'),
                           '&amp;', ' and ')"/>
@@ -1251,7 +1307,7 @@
   <!-- ====================================================================== -->
       
   <xsl:template match="subject">
-    <a href="{$servlet.path}?subject=%22{.}%22&amp;relation={$relation}&amp;relation-join={$relation-join}&amp;relation-exclude={$relation-exclude}&amp;rmode={$rmode}">
+    <a href="{$servlet.path}?subject=%22{.}%22&amp;profile={$profile}&amp;profile-join={$profile-join}&amp;rmode={$rmode}">
       <xsl:apply-templates/>
     </a>
     <xsl:if test="not(position() = last())">
