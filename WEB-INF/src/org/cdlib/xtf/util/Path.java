@@ -395,6 +395,8 @@ public class Path
   public static String resolveRelOrAbs( File parentDir, String childPath ) 
   
   {
+      if( parentDir == null )
+          return normalize( childPath );
       return resolveRelOrAbs( parentDir.toString(), childPath );
   } // resolveRelOrAbs()
 
@@ -412,8 +414,10 @@ public class Path
   public static String resolveRelOrAbs( String parentDir, String childPath ) 
   
   {
-      parentDir = normalizePath( parentDir );
       childPath = normalize( childPath );
+      if( parentDir == null )
+          return childPath;
+      parentDir = normalizePath( parentDir );
       
       // If the child path is absolute, just return it.
       if( childPath.startsWith("/") )
