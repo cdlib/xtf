@@ -220,12 +220,15 @@ class SpanRecordingScorer extends Scorer
     Arrays.sort(posOrder, 0, nSpans, SpanPosComparator.theInstance);
 
     // Record the links in start/end order.
-    ScoreOrder[] origScoreOrder = new ScoreOrder[nSpans];
-    System.arraycopy(scoreOrder, 0, origScoreOrder, 0, nSpans);
     for (int i=0; i<nSpans; i++) {
-      scoreOrder[i].span  = posOrder[i];
-      scoreOrder[i].prev = i-1;
-      scoreOrder[i].next = i+1;
+      scoreOrder[i].span = posOrder[i];
+      scoreOrder[i].posOrder = i;
+      scoreOrder[i].cancelled = false;
+      scoreOrder[i].prevInPosOrder = 
+          ((i-1) >= 0)     ? scoreOrder[i-1] : null;
+      scoreOrder[i].nextInPosOrder = 
+          ((i+1) < nSpans) ? scoreOrder[i+1] : null;
+      scoreOrder[i].nextDeduped = null;
     }
 
     // Now make a second sort, this time by descending score.
@@ -234,49 +237,73 @@ class SpanRecordingScorer extends Scorer
     // De-duplicate the score array, starting with the high scores first.
     int nDeduped = 0;
     totalDeduped = 0;
+    ScoreOrder firstDeduped = null;
+    ScoreOrder lastDeduped = null;
+    ScoreOrder o;
     for (int i=0; i<nSpans; i++) {
       // Skip entries that have already been cancelled.
-      final Span scoreSpan = scoreOrder[i].span;
-      if (scoreSpan == null) continue;
+      if (scoreOrder[i].cancelled)
+        continue;
 
-      // We found an entry we want to keep. Move it up.
+      // We found an entry we want to keep. Link it into our list.
       totalDeduped++;
-      if (nDeduped < maxSpans)
-        scoreOrder[nDeduped++] = scoreOrder[i];
+      if (nDeduped < maxSpans) {
+        if (firstDeduped == null)
+          firstDeduped = scoreOrder[i];
+        else
+          lastDeduped.nextDeduped = scoreOrder[i];
+        lastDeduped = scoreOrder[i];
+        nDeduped++;
+      }
 
       // Cancel any overlapping entries before this one, stopping at
       // one that doesn't overlap (all those behind it won't either).
       //
-      for (int j = scoreOrder[i].prev; j >= 0; j = origScoreOrder[j].prev) {
-        ScoreOrder o = origScoreOrder[j];
-        if (o.span != null && o.span.end > scoreSpan.start)
-          o.span = null;
+      final Span scoreSpan = scoreOrder[i].span;
+      o = scoreOrder[i].prevInPosOrder;
+      while (o != null && o.span.end > scoreSpan.start) {
+        o.cancelled = true;
+        assert o.posOrder == 0 ||
+               o.prevInPosOrder.posOrder == o.posOrder-1;
+        o = o.prevInPosOrder;
       }
 
       // Similarly, cancel overlapping entries after this one.
-      for (int j = scoreOrder[i].next; j < nSpans; j = origScoreOrder[j].next) {
-        ScoreOrder o = origScoreOrder[j];
-        if (o.span != null && o.span.start < scoreSpan.end)
-          o.span = null;
+      o = scoreOrder[i].nextInPosOrder; 
+      while (o != null && o.span.start < scoreSpan.end) {
+        o.cancelled = true;
+        assert o.posOrder == nSpans-1 ||
+               o.nextInPosOrder.posOrder == o.posOrder+1;
+        o = o.nextInPosOrder;
       }
     }
 
     // Build the final result array.
     ArrayList list = new ArrayList(nDeduped);
-    for (int i=0; i<nDeduped; i++) {
-      assert scoreOrder[i].span != null : "kept span was cancelled";
-      Span s = (Span) scoreOrder[i].span.clone();
-      s.rank = i;
+    int rank = 0;
+    float prevScore = Float.MAX_VALUE;
+    for (o = firstDeduped; o != null; o = o.nextDeduped) {
+      assert !o.cancelled : "kept span was cancelled";
+      Span s = (Span) o.span.clone();
+      assert s.score <= prevScore : "incorrect dedupe list linking";
+      if (rank == nDeduped-1)
+        assert o == lastDeduped;
+      prevScore = s.score;
+      s.rank = rank++;
       list.add(s);
     }
+    assert rank == nDeduped : "incorrect dedupe list linking";
     return list;
   }
 
-  /** Keep strack of the next and previous spans, in score order */
+  /** Keeps track of the next and previous spans, in score order */
   private class ScoreOrder {
-    Span span;
-    int  next;
-    int  prev;
+    Span       span;
+    int        posOrder;
+    boolean    cancelled;
+    ScoreOrder nextInPosOrder;
+    ScoreOrder prevInPosOrder;
+    ScoreOrder nextDeduped;
   }
 
   /** Used to sort spans by descending score, then by position */
