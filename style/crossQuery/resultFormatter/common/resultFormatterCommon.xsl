@@ -48,6 +48,13 @@
   <!-- Parameters                                                             -->
   <!-- ====================================================================== -->
 
+  <!-- Keyword Search (text and metadata) -->
+  <xsl:param name="keyword"/>
+  <xsl:param name="keyword-join"/>
+  <xsl:param name="keyword-prox"/>
+  <xsl:param name="keyword-exclude"/>
+  <xsl:param name="fieldList"/>
+  
   <!-- Full Text -->
   <xsl:param name="text"/>
   <xsl:param name="text-join"/>
@@ -199,7 +206,7 @@
   
   <xsl:param name="queryString">
     <xsl:call-template name="queryString">
-      <xsl:with-param name="textParams" select="'text text-join text-prox text-exclude text-max title title-join title-prox title-exclude title-max creator creator-join creator-prox creator-exclude creator-max subject subject-join subject-prox subject-exclude subject-max description description-join description-prox description-exclude description-max publisher publisher-join publisher-prox publisher-exclude publisher-max contributor contributor-join contributor-prox contributor-exclude contributor-max date date-join date-prox date-exclude date-max type type-join type-prox type-exclude type-max format format-join format-prox format-exclude format-max identifier identifier-join identifier-prox identifier-exclude identifier-max source source-join source-prox source-exclude source-max language language-join language-prox language-exclude language-max relation relation-join relation-prox relation-exclude relation-max coverage coverage-join coverage-prox coverage-exclude coverage-max rights rights-join rights-prox rights-exclude rights-max year year-join year-prox year-exclude year-max profile profile-join profile-prox profile-exclude profile-max sectionType rmode sort '"/>
+      <xsl:with-param name="textParams" select="'keyword keyword-join keyword-prox keyword-exclude fieldList text text-join text-prox text-exclude text-max title title-join title-prox title-exclude title-max creator creator-join creator-prox creator-exclude creator-max subject subject-join subject-prox subject-exclude subject-max description description-join description-prox description-exclude description-max publisher publisher-join publisher-prox publisher-exclude publisher-max contributor contributor-join contributor-prox contributor-exclude contributor-max date date-join date-prox date-exclude date-max type type-join type-prox type-exclude type-max format format-join format-prox format-exclude format-max identifier identifier-join identifier-prox identifier-exclude identifier-max source source-join source-prox source-exclude source-max language language-join language-prox language-exclude language-max relation relation-join relation-prox relation-exclude relation-max coverage coverage-join coverage-prox coverage-exclude coverage-max rights rights-join rights-prox rights-exclude rights-max year year-join year-prox year-exclude year-max profile profile-join profile-prox profile-exclude profile-max sectionType rmode sort '"/>
       <xsl:with-param name="count" select="1"/>
     </xsl:call-template>
   </xsl:param>
@@ -212,6 +219,41 @@
 
     <xsl:if test="$param != ''">
       <xsl:choose>
+        <xsl:when test="$param = 'keyword' and $keyword">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>keyword=</xsl:text>
+          <xsl:value-of select="$keyword"/>
+        </xsl:when>
+        <xsl:when test="$param = 'keyword-join' and $keyword-join">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>keyword-join=</xsl:text>
+          <xsl:value-of select="$keyword-join"/>
+        </xsl:when>
+        <xsl:when test="$param = 'keyword-prox' and $keyword-prox">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>keyword-prox=</xsl:text>
+          <xsl:value-of select="$keyword-prox"/>
+        </xsl:when>
+        <xsl:when test="$param = 'keyword-exclude' and $keyword-exclude">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>keyword-exclude=</xsl:text>
+          <xsl:value-of select="$keyword-exclude"/>
+        </xsl:when>
+        <xsl:when test="$param = 'fieldList' and $fieldList">
+          <xsl:if test="$count > 1">
+            <xsl:text>&amp;</xsl:text>
+          </xsl:if>
+          <xsl:text>fieldList=</xsl:text>
+          <xsl:value-of select="$fieldList"/>
+        </xsl:when>
         <xsl:when test="$param = 'text' and $text">
           <xsl:if test="$count > 1">
             <xsl:text>&amp;</xsl:text>
@@ -874,7 +916,22 @@
   
   <!-- Hidden Query String -->
 
-  <xsl:template name="hidden.query">    
+  <xsl:template name="hidden.query">   
+    <xsl:if test="$keyword">
+      <input type="hidden" name="keyword" value="{$keyword}"/>
+    </xsl:if>
+    <xsl:if test="$keyword-join">
+      <input type="hidden" name="keyword-join" value="{$keyword-join}"/>
+    </xsl:if>
+    <xsl:if test="$keyword-prox">
+      <input type="hidden" name="keyword-prox" value="{$keyword-prox}"/>
+    </xsl:if>
+    <xsl:if test="$keyword-exclude">
+      <input type="hidden" name="keyword-exclude" value="{$keyword-exclude}"/>
+    </xsl:if>
+    <xsl:if test="$fieldList">
+      <input type="hidden" name="fieldList" value="{$fieldList}"/>
+    </xsl:if>    
     <xsl:if test="$text">
       <input type="hidden" name="text" value="{$text}"/>
     </xsl:if>
@@ -1154,14 +1211,16 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString, 
+    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString, 
                           '&amp;rmode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
-                          '&amp;smode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
+                          '&amp;smode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),
                           '&amp;relation=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;profile=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
-                          '&amp;profile-join=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),     
+                          '&amp;profile-join=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
+                          '&amp;fieldList=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),      
                           'year=([0-9]+)&amp;year-max=([0-9]+)', 'year=$1-$2'),    
                           'text=([A-Za-z0-9&quot;\-\.\*\+ ]+)&amp;text-prox=([0-9]+)', '$1 within $2 words'), 
+                          'keyword=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'keywords=$1'), 
                           'text=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'keywords=$1'), 
                           'creator=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'author=$1'), 
                           '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'XX $2 in $1 XX'),
@@ -1466,8 +1525,18 @@
     <xsl:param name="fullark"/>
     <xsl:variable name="ark" select="substring($fullark, string-length($fullark)-9)"/>
     <xsl:variable name="subDir" select="substring($ark, 9, 2)"/>
+    <xsl:variable name="query">
+      <xsl:choose>
+        <xsl:when test="$keyword != ''">
+          <xsl:value-of select="$keyword"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$text"/>
+        </xsl:otherwise>
+      </xsl:choose>     
+    </xsl:variable>
     
-    <xsl:value-of select="concat($dynaxml.path, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
+    <xsl:value-of select="concat($dynaxml.path, '?docId=', $ark, '&amp;query=', replace($query, '&amp;', '%26'))"/>
     <!-- -join & -prox are mutually exclusive -->
     <xsl:choose>
       <xsl:when test="$text-prox">
@@ -1479,6 +1548,18 @@
     </xsl:choose>
     <xsl:if test="$text-exclude">
       <xsl:value-of select="concat('&amp;query-exclude=', $text-exclude)"/>
+    </xsl:if>
+    <!-- -join & -prox are mutually exclusive -->
+    <xsl:choose>
+      <xsl:when test="$keyword-prox">
+        <xsl:value-of select="concat('&amp;query-prox=', $keyword-prox)"/>
+      </xsl:when>
+      <xsl:when test="$keyword-join">
+        <xsl:value-of select="concat('&amp;query-join=', $keyword-join)"/>
+      </xsl:when>            
+    </xsl:choose>
+    <xsl:if test="$keyword-exclude">
+      <xsl:value-of select="concat('&amp;query-exclude=', $keyword-exclude)"/>
     </xsl:if>
     <xsl:if test="$sectionType">
       <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
@@ -1514,6 +1595,22 @@
           </xsl:call-template>
         </xsl:if>
       </xsl:when>
+      <xsl:when test="$selectType='keyword-prox'">    
+        <xsl:if test="$option != ''"> 
+          <option>
+            <xsl:attribute name="value"><xsl:value-of select="$option"/></xsl:attribute>
+            <xsl:if test="$keyword-prox = $option">
+              <xsl:attribute name="selected" select="'yes'"/>
+            </xsl:if>
+            <xsl:value-of select="$option"/>
+          </option>    
+          <xsl:call-template name="selectBuilder">
+            <xsl:with-param name="selectType" select="$selectType"/>
+            <xsl:with-param name="optionList" select="replace(substring-after($optionList, $option), '^::', '')"/>
+            <xsl:with-param name="count" select="$count + 1"/>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:when>     
       <xsl:when test="$selectType='text-prox'">    
         <xsl:if test="$option != ''"> 
           <option>

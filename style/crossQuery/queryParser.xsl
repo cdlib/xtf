@@ -51,6 +51,7 @@
                               exclude-result-prefixes="xsl dc mets xlink xs parse">
   
   <xsl:output method="xml" indent="yes" encoding="utf-8"/>
+  
   <xsl:strip-space elements="*"/>
   
 <!-- ====================================================================== -->
@@ -66,11 +67,13 @@
   <!-- sort mode -->
   <xsl:param name="sort"/>
   
-  <!-- raw XML dumpl flag -->
+  <!-- raw XML dump flag -->
   <xsl:param name="raw"/>
 
+  <!-- first hit on page -->
   <xsl:param name="startDoc" select="1"/>
   
+  <!-- documents per page -->
   <xsl:param name="docsPerPage">
     <xsl:choose>
       <xsl:when test="($smode = 'test') or $raw">
@@ -81,7 +84,10 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:param>
-  
+
+  <!-- list of keyword search fields -->
+  <xsl:param name="fieldList"/>
+   
 <!-- ====================================================================== -->
 <!-- Root Template                                                          -->
 <!-- ====================================================================== -->
@@ -90,103 +96,66 @@
     
     <xsl:variable name="stylesheet" select="'style/crossQuery/resultFormatter/default/resultFormatter.xsl'"/>
 
-    <!-- The top-level output element tells what stylesheet will be used to
+    <!-- The top-level query element tells what stylesheet will be used to
        format the results, which document to start on, and how many documents
        to display on this page. -->
-    <query style="{$stylesheet}" startDoc="{$startDoc}" maxDocs="{$docsPerPage}">
-      <!-- Assume we'll need to combine a full-text query with a meta-data
-      query. If it turns out there's only one or the other, the query
-      processor optimizes this out, so it's harmless -->
-      <combine indexPath="index" termLimit="1000" workLimit="500000">
-        <!-- KVH: Added to test Lucene sorting -->
-        <xsl:if test="$sort != ''">
-          <xsl:attribute name="sortMetaFields">
-            <xsl:choose>
-              <xsl:when test="$sort='title'">
-                <xsl:value-of select="'sort-title,sort-creator,sort-year'"/>
-              </xsl:when>
-              <xsl:when test="$sort='creator'">
-                <xsl:value-of select="'sort-creator,sort-year,sort-title'"/>
-              </xsl:when>
-              <xsl:when test="$sort='year'">
-                <xsl:value-of select="'sort-year,sort-title,sort-creator'"/>
-              </xsl:when>
-            </xsl:choose>
-          </xsl:attribute>
-        </xsl:if>
-        <!-- Process query -->
-        <xsl:apply-templates/>
-      </combine>
+    <query indexPath="index" termLimit="1000" workLimit="500000" style="{$stylesheet}" startDoc="{$startDoc}" maxDocs="{$docsPerPage}">
+
+      <!-- sort attribute -->
+      <xsl:if test="$sort">
+        <xsl:attribute name="sortMetaFields">
+          <xsl:choose>
+            <xsl:when test="$sort='title'">
+              <xsl:value-of select="'sort-title,sort-creator,sort-publisher,-sort-year'"/>
+            </xsl:when>
+            <xsl:when test="$sort='year'">
+              <xsl:value-of select="'-sort-year,sort-title,sort-creator,sort-publisher'"/>
+            </xsl:when>              
+            <xsl:when test="$sort='creator'">
+              <xsl:value-of select="'sort-creator,-sort-year,sort-title'"/>
+            </xsl:when>
+            <xsl:when test="$sort='publisher'">
+              <xsl:value-of select="'sort-publisher,sort-title,-sort-year'"/>
+            </xsl:when>              
+          </xsl:choose>
+        </xsl:attribute>
+      </xsl:if>
+      
+      <!-- process query -->
+      <xsl:apply-templates/>
+      
     </query>
   </xsl:template>
 
   <xsl:template match="parameters">
-    
+
     <!-- Scan for non-empty parameters (but skip "-exclude", "-join", "-prox", "-max", and "-ignore") -->
-    <xsl:variable name="queryParams" select="param[count(*) &gt; 0 and not(matches(@name, '.*-exclude')) and not(matches(@name, '.*-join')) and not(matches(@name, '.*-prox')) and not(matches(@name, '.*-max')) and not(matches(@name, '.*-ignore'))]"/>
-    
+    <xsl:variable name="queryParams" select="param[count(*) &gt; 0 and not(matches(@name, '.*-exclude')) 
+                                                                   and not(matches(@name, '.*-join')) 
+                                                                   and not(matches(@name, '.*-prox')) 
+                                                                   and not(matches(@name, '.*-max')) 
+                                                                   and not(matches(@name, '.*-ignore'))]"/>
+
     <!-- Find the full-text query, if any -->
     <xsl:variable name="textParam" select="$queryParams[matches(@name, 'text|query')]"/>
     
     <!-- Find the meta-data queries, if any -->
-    <xsl:variable name="metaParams" select="$queryParams[not(matches(@name, 'text*|rmode|smode|sort|startDoc|docsPerPages|sectionType|.*-ignore'))]"/>
-    
-    <!-- Process the meta-data queries, if any -->
-    <xsl:if test="count($metaParams) &gt; 0">
-      <meta>
-        <!-- KVH: Added to test Lucene sorting -->
-        <xsl:if test="$sort != ''">
-          <xsl:attribute name="sortMetaFields">
-            <xsl:choose>
-              <xsl:when test="$sort='title'">
-                <xsl:value-of select="'sort-title,sort-creator,sort-year'"/>
-              </xsl:when>
-              <xsl:when test="$sort='creator'">
-                <xsl:value-of select="'sort-creator,sort-year,sort-title'"/>
-              </xsl:when>
-              <xsl:when test="$sort='year'">
-                <xsl:value-of select="'sort-year,sort-title,sort-creator'"/>
-              </xsl:when>
-            </xsl:choose>
-          </xsl:attribute>
-        </xsl:if>        
-        <!-- 'AND' all the meta-data queries together. If there's only one,
-        the query processor optimizes this out, so it's harmless. -->
-        <and>
-          <xsl:apply-templates select="$metaParams"/>
-        </and>
-      </meta>
-    </xsl:if>
-    
-    <!-- Process the text query, if any -->
-    <xsl:if test="count($textParam) &gt; 0">
-      <text maxSnippets="3" maxContext="80">
-        <!-- KVH: Added to test Lucene sorting -->
-        <xsl:if test="$sort != ''">
-          <xsl:attribute name="sortMetaFields">
-            <xsl:choose>
-              <xsl:when test="$sort='title'">
-                <xsl:value-of select="'sort-title,sort-creator,sort-year'"/>
-              </xsl:when>
-              <xsl:when test="$sort='creator'">
-                <xsl:value-of select="'sort-creator,sort-year,sort-title'"/>
-              </xsl:when>
-              <xsl:when test="$sort='year'">
-                <xsl:value-of select="'sort-year,sort-title,sort-creator'"/>
-              </xsl:when>
-            </xsl:choose>
-          </xsl:attribute>
-        </xsl:if>
+    <xsl:variable name="metaParams" select="$queryParams[not(matches(@name, 'text*|query*|rmode|smode|sort|startDoc|docsPerPages|sectionType|fieldList|.*-ignore'))]"/>
+ 
+    <and>
+      <!-- Process the meta-data queries, if any -->
+      <xsl:if test="count($metaParams) &gt; 0">
+        <xsl:apply-templates select="$metaParams"/>
+      </xsl:if>       
+      <!-- Process the text query, if any -->
+      <xsl:if test="count($textParam) &gt; 0">
         <xsl:apply-templates select="$textParam"/>
-      </text>
-    </xsl:if>
-    
-    <!-- If there are no meta and no text queries, output a dummy -->
-    <xsl:if test="count($metaParams) = 0 and count($textParam) = 0">
-      <meta>
-        <term metaField="title">!@$$!@$</term>
-      </meta>
-    </xsl:if>
+      </xsl:if>     
+      <!-- If there are no meta and no text queries, output a dummy -->
+      <xsl:if test="count($metaParams) = 0 and count($textParam) = 0">
+        <term field="text">$!@$$@!$</term>
+      </xsl:if>
+    </and>
     
   </xsl:template>
   
@@ -205,10 +174,13 @@
     <xsl:variable name="join" select="//param[@name=concat($metaField, '-join')]"/>
     <xsl:variable name="prox" select="//param[@name=concat($metaField, '-prox')]"/>
     <xsl:variable name="max" select="//param[@name=concat($metaField, '-max')]"/>
-   
+    
     <xsl:variable name="op">
       <xsl:choose>
-         <xsl:when test="$max/@value != ''">
+        <xsl:when test="$metaField = 'keyword'">
+          <xsl:value-of select="'or'"/>
+        </xsl:when>
+        <xsl:when test="$max/@value != ''">
           <xsl:value-of select="'range'"/>
         </xsl:when>       
         <xsl:when test="$prox/@value != ''">
@@ -230,24 +202,58 @@
     <xsl:element name="{$op}">
       
       <!-- Specify the field name for meta-data queries -->
-      <xsl:if test="not(matches(@name, 'text|query'))">
-        <xsl:attribute name="metaField" select="$metaField"/>
-      </xsl:if>
-      
-      <!-- Specify the maximum term separation for a proximity query -->
-      <xsl:if test="$prox/@value != ''">
-        <xsl:attribute name="slop" select="$prox/@value"/>
-      </xsl:if>
-      
-      <!-- Process all the phrases and/or terms -->
-      <xsl:apply-templates/>
-      
-      <!-- If there is an 'exclude' parameter for this field, process it -->
-      <xsl:if test="$exclude/@value != ''">
-        <not>
-          <xsl:apply-templates select="$exclude/*"/>
-        </not>
-      </xsl:if>
+      <xsl:choose>
+        <xsl:when test="matches(@name, 'keyword')"/>
+        <xsl:when test="not(matches(@name, 'text|query'))">
+          <xsl:attribute name="field" select="$metaField"/>
+        </xsl:when>
+        <xsl:when test="matches(@name, 'text')">
+          <xsl:attribute name="field" select="'text'"/>
+          <xsl:attribute name="maxSnippets" select="'3'"/>
+          <xsl:attribute name="maxContext" select="'100'"/>
+        </xsl:when>
+        <xsl:when test="matches(@name, 'query')">
+          <xsl:attribute name="field" select="'text'"/>
+          <xsl:attribute name="maxSnippets" select="'-1'"/>
+          <xsl:attribute name="maxContext" select="'80'"/>
+        </xsl:when>
+      </xsl:choose>
+       
+      <xsl:choose>
+        <xsl:when test="matches(@name, 'keyword')">
+          <xsl:call-template name="keyQuery">
+            <xsl:with-param name="fieldList">
+              <xsl:choose>
+                <xsl:when test="$fieldList != ''">
+                  <xsl:value-of select="concat($fieldList, ' ')"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="'text title creator subject description publisher or contributor date type format identifier source language relation coverage rights year '"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:with-param>
+            <xsl:with-param name="prox" select="$prox"/>
+            <xsl:with-param name="join" select="$join"/>
+            <xsl:with-param name="exclude" select="$exclude"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <!-- Specify the maximum term separation for a proximity query -->
+          <xsl:if test="$prox/@value != ''">
+            <xsl:attribute name="slop" select="$prox/@value"/>
+          </xsl:if>
+          
+          <!-- Process all the phrases and/or terms -->
+          <xsl:apply-templates/>
+          
+          <!-- If there is an 'exclude' parameter for this field, process it -->
+          <xsl:if test="$exclude/@value != ''">
+            <not>
+              <xsl:apply-templates select="$exclude/*"/>
+            </not>
+          </xsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
       
     </xsl:element>
     
@@ -256,6 +262,70 @@
       <sectionType>
         <xsl:apply-templates select="//param[@name='sectionType']"/>
       </sectionType>
+    </xsl:if>
+    
+  </xsl:template>
+
+<!-- ====================================================================== -->
+<!-- Keyword query template                                                 -->
+<!--                                                                        -->
+<!-- Constructs a full combined text and metadata query from the following  -->
+<!-- URL constructs: keyword=foo, keyword-prox=20, keyword-exclude=bar.     -->
+<!-- ====================================================================== -->
+  
+  <xsl:template name="keyQuery">
+    
+    <xsl:param name="fieldList"/>
+    <xsl:param name="prox"/>
+    <xsl:param name="join"/>
+    <xsl:param name="exclude"/>
+    
+    <xsl:variable name="op">
+      <xsl:choose>   
+        <xsl:when test="$prox/@value != ''">
+          <xsl:value-of select="'near'"/>
+        </xsl:when>
+        <xsl:when test="$join/@value != ''">
+          <xsl:value-of select="$join/@value"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="'and'"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>    
+    
+    <xsl:variable name="field" select="substring-before($fieldList, ' ')"/>
+    
+    <xsl:if test="$field != ''">
+      <xsl:element name="{$op}">
+        
+        <xsl:attribute name="field" select="$field"/>
+        
+        <xsl:if test="$field = 'text'">
+          <xsl:attribute name="maxSnippets" select="'3'"/>
+          <xsl:attribute name="maxContext" select="'100'"/>
+        </xsl:if>
+        
+        <xsl:if test="$prox/@value != ''">
+          <xsl:attribute name="slop" select="$prox/@value"/>
+        </xsl:if>
+        
+        <xsl:apply-templates/>
+        
+        <xsl:if test="$exclude/@value != ''">
+          <not>
+            <xsl:apply-templates select="$exclude/*"/>
+          </not>
+        </xsl:if>
+        
+      </xsl:element>
+      
+      <xsl:call-template name="keyQuery">
+        <xsl:with-param name="fieldList" select="replace(substring-after($fieldList, $field), '^ ', '')"/>
+        <xsl:with-param name="prox" select="$prox"/>
+        <xsl:with-param name="join" select="$join"/>
+        <xsl:with-param name="exclude" select="$exclude"/>
+      </xsl:call-template>
     </xsl:if>
     
   </xsl:template>
