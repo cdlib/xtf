@@ -89,6 +89,8 @@ import org.cdlib.xtf.util.DocTypeDeclRemover;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
 import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.StructuredFile;
+import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
@@ -961,7 +963,7 @@ public class XMLTextProcessor extends DefaultHandler
         // that will be written to the lazy file.
         //
         lazyBuilder = new LazyTreeBuilder();
-        lazyReceiver = lazyBuilder.begin( lazyFile );
+        lazyReceiver = lazyBuilder.begin( StructuredFile.create(lazyFile) );
         
         lazyBuilder.setNamePool( namePool );
         
@@ -1332,7 +1334,8 @@ public class XMLTextProcessor extends DefaultHandler
     
     Transformer trans = pss.newTransformer();
     LazyKeyManager keyMgr = (LazyKeyManager) exec.getKeyManager();
-    LazyDocument doc = (LazyDocument) lazyBuilder.load( lazyFile );
+    StructuredStore treeStore = StructuredFile.open( lazyFile );
+    LazyDocument doc = (LazyDocument) lazyBuilder.load( treeStore );
     
     // For every xsl:key registered in the stylesheet, build the lazy key
     // hash.

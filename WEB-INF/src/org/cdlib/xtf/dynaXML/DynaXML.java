@@ -30,10 +30,8 @@ package org.cdlib.xtf.dynaXML;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -62,7 +60,7 @@ import net.sf.saxon.trans.KeyManager;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.IdxConfigUtil;
-import org.cdlib.xtf.util.DocTypeDeclRemover;
+import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
@@ -98,8 +96,11 @@ public class DynaXML extends TextServlet
 
     /** Holds global servlet configuration info */
     private static DynaXMLConfig config;
+    
+    /** Locator used to find lazy and non-lazy document files */
+    private DocLocator docLocator = createDocLocator();
 
-    /** Only allow lazy documents (set by TestableDynaXML only) */
+    /** Set to only allow lazy documents (set by TestableDynaXML only) */
     protected static boolean forceLazy = false;
     
     /**
@@ -496,130 +497,106 @@ public class DynaXML extends TextServlet
         throws IOException, SAXException, ParserConfigurationException,
                InvalidDocumentException
     {
-        // If no 'index' specified in the docInfo, then there's no way we can
-        // find the lazy file.
+        // See if we can find a lazy version of the document (for speed
+        // and searching)
         //
-        boolean useLazy = true;
-        if( docInfo.indexConfig == null || docInfo.indexName == null )
-            useLazy = false;
+        StructuredStore lazyStore = docLocator.getLazyStore( 
+            docInfo.indexConfig, docInfo.indexName, docInfo.source );
         
-        // If the source isn't a local file, we also can't use a lazy file.
-        boolean isExternalFile = docInfo.source.startsWith("http:") ||
-                                 docInfo.source.startsWith("https:");
-        if( isExternalFile )
-            useLazy = false;
-
-        File lazyFile = null;
-        if( useLazy ) {
-            
-            // Figure out where the lazy file is, and make sure it's actually
-            // there and that we can read it.
+        // If not found...
+        if( lazyStore == null ) 
+        {
+            // Can't perform queries without a lazy tree and its corresponding
+            // index.
             //
-            try {
-                lazyFile = IdxConfigUtil.calcLazyPath( 
-                                                  new File(getRealPath("")),
-                                                  new File(docInfo.indexConfig),
-                                                  docInfo.indexName,
-                                                  new File(docInfo.source),
-                                                  false );
-            }
-            catch( Exception e ) { }
-            if( lazyFile == null || !lazyFile.canRead() )
-                useLazy = false;
+            if( docInfo.query != null )
+                throw new UnsupportedQueryException(); 
+            
+            // If we're required to use a lazy store, throw an exception since
+            // we couldn't find one.
+            //
+            if( forceLazy )
+                throw new InvalidDocumentException();
+            
+            // Can't find a lazy store... just read the original source file.
+            XMLReader xmlReader = SAXParserFactory.newInstance().
+                newSAXParser().getXMLReader();
+            InputSource inSrc = docLocator.getInputSource( docInfo.source );
+            return new SAXSource( xmlReader, inSrc );
         }
 
-        if( !useLazy && forceLazy )
-            throw new InvalidDocumentException();
-
-        // Get a source stream of events. It might come from a plain file,
-        // URLConnection, or a lazy tree. If there is a query, it will also
-        // perform search filtering.
-        //
+        // Okay, let's use the lazy version of the document...
         Source sourceDoc = null;
-        if( useLazy ) {
-            try 
-            {
-                // If a query was specified, make a SearchTree; otherwise, make
-                // a normal lazy tree.
-                //
-                if( docInfo.query != null ) {
-                    String docKey = IdxConfigUtil.calcDocKey(
-                                              new File(getRealPath("")),
-                                              new File(docInfo.indexConfig),
-                                              docInfo.indexName,
-                                              new File(docInfo.source) );
-                    SearchTree tree = new SearchTree( docKey, lazyFile );
-                    tree.search( createQueryProcessor(), docInfo.query );
-                    sourceDoc = tree;
-                }
-                else {
-                    LazyTreeBuilder builder = new LazyTreeBuilder();
-                    builder.setNamePool( NamePool.getDefaultNamePool() );
-                    sourceDoc = builder.load( lazyFile );
-                }
-                
-                // We want to print out any indexes being created, because
-                // they should have all been done by the textIndexer.
-                //
-                ((LazyDocument)sourceDoc).setDebug( true );
-            }
-            catch( Exception e ) {
-                Trace.error( "Error building tree: " + e.toString() );
-                if( e instanceof IOException )
-                    throw (IOException)e;
-                throw new RuntimeException( e );
-            }
-            
-            // We need a special key manager on the lazy tree, so that we can
-            // use lazily stored keys on disk.
-            //
-            Controller c = (Controller) transformer;
-            Executable e = c.getExecutable();
-            KeyManager k = e.getKeyManager();
-            if( !(k instanceof LazyKeyManager) )
-                e.setKeyManager( new LazyKeyManager(k, c.getConfiguration()) );
-            
-            // All done.
-            return sourceDoc;
-            
-        } // if( useLazy )
-        
-        // Can't use the lazy file... just read the original source file.
-        XMLReader lastFilter = SAXParserFactory.newInstance().
-            newSAXParser().getXMLReader();
-        String url;
-        
-        InputSource inSrc;
-        if( isExternalFile ) {
-            url = docInfo.source;
-            inSrc = new InputSource( url );
+
+        // If a query was specified, make a SearchTree; otherwise, make
+        // a normal lazy tree.
+        //
+        if( docInfo.query != null ) {
+            String docKey = IdxConfigUtil.calcDocKey(
+                                      new File(getRealPath("")),
+                                      new File(docInfo.indexConfig),
+                                      docInfo.indexName,
+                                      new File(docInfo.source) );
+            SearchTree tree = new SearchTree( docKey, lazyStore );
+            tree.search( createQueryProcessor(), docInfo.query );
+            sourceDoc = tree;
         }
         else {
-            url = new File(docInfo.source).toURL().toString();
-        
-            InputStream inStream = new FileInputStream( docInfo.source );
-            
-            // Remove DOCTYPE declarations, since the XML reader will barf 
-            // if it can't resolve the entity reference, and we really 
-            // don't care one way or the other.
-            //
-            inStream = new DocTypeDeclRemover( inStream );
-            
-            inSrc = new InputSource( inStream );
-            inSrc.setSystemId( url );
+            LazyTreeBuilder builder = new LazyTreeBuilder();
+            builder.setNamePool( NamePool.getDefaultNamePool() );
+            sourceDoc = builder.load( lazyStore );
         }
-
-        sourceDoc = new SAXSource( lastFilter, inSrc );
         
-        // Can't perform queries without a lazy tree and its corresponding
-        // index.
+        // We want to print out any indexes being created, because
+        // they should have all been done by the textIndexer.
         //
-        if( docInfo.query != null )
-            throw new UnsupportedQueryException(); 
+        ((LazyDocument)sourceDoc).setDebug( true );
+        
+        // We need a special key manager on the lazy tree, so that we can
+        // use lazily stored keys on disk.
+        //
+        Controller c = (Controller) transformer;
+        Executable e = c.getExecutable();
+        KeyManager k = e.getKeyManager();
+        if( !(k instanceof LazyKeyManager) )
+            e.setKeyManager( new LazyKeyManager(k, c.getConfiguration()) );
         
         // All done.
         return sourceDoc;
+        
     } // getSourceDoc()
+    
+    
+    /** 
+     * Create a DocLocator. Checks the system property
+     * "org.cdlib.xtf.DocLocatorClass" to see if there is a user-
+     * supplied implementation. If not, a {@link DefaultDocLocator} is
+     * created.
+     */
+    public static DocLocator createDocLocator()
+    {
+        // Check the system property.
+        final String propName = "org.cdlib.xtf.DocLocatorClass";
+        String className = System.getProperty( propName );
+        Class theClass = DefaultDocLocator.class;
+        try {
+            // Try to create an object of the correct class.
+            if( className != null )
+                theClass = Class.forName(className);
+            return (DocLocator) theClass.newInstance();
+        }
+        catch( ClassCastException e ) {
+            Trace.error( "Error: Class '" + className + "' specified by " +
+                "the '" + propName + "' property does not support the " +
+                DocLocator.class.getName() + " interface" );
+            throw new RuntimeException( e );
+        }
+        catch( Exception e ) {
+            Trace.error( "Error creating instance of class '" + className +
+                "' specified by the '" + propName + "' property" );
+            throw new RuntimeException( e );
+        }
+    } // createDocLocator()
     
     
     /**
