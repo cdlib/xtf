@@ -107,6 +107,7 @@
 
         <include name="WebDocs/HTML/**/*"/>
 
+        <include name="WEB-INF/web.xml"/>
         <include name="WEB-INF/lib/*.jar"/>
         <exclude name="WEB-INF/lib/servlet.jet"/>
 
