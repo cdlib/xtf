@@ -607,13 +607,15 @@
           <div class="Sample">
             <span class="Code">$ TextIndexer -config conf/myTextIndexer.conf -clean -index default</span>
           </div> <br>
-
-          This example assumes that the config file is called<span class="Code"> myTextIndexer.conf</span>, and that it
-          is located in the<span class="Code"> XTF_HOME/conf </span>subdirectory under the main XTF directory. It also
-          assumes that the config file contains an entry for an index called <b>texts</b>, and that the user wants the
-          index to be rebuilt from scratch and then optimized (because of the presence of the <span
-          class="Code">-clean</span> argument, and the absence of the <span class="Code">-nooptimize</span> argument.)
-          <br><br>
+      This example assumes that the config file is called<span class="Code"> myTextIndexer.conf</span>, 
+      and that it is located in the<span class="Code"> XTF_HOME/conf </span>subdirectory 
+      under the main XTF directory. It also assumes that the config file contains 
+      an entry for an index called <b>default</b>, and that the user wants the 
+      index to be rebuilt from scratch and then optimized (because of the presence 
+      of the <span
+          class="Code">-clean</span> argument, and the absence of the <span class="Code">-nooptimize</span> 
+      argument.) <br>
+      <br>
 
           As is mentioned above, the <span class="Code">-config <span class="MacroCode">config-file-path</span></span>
           argument (if used) must be specified first. After that, all the arguments may be used as a set one or more
@@ -622,10 +624,11 @@
 <pre class="Sample"><b>TextIndexer -config conf/textIndexer.conf
             -clean -index default
             -incremental -nooptimize -index abstracts</b></pre>
-
-          In this example, the <code>textIndexer.conf</code>, file defines two indexes called <b>texts</b> and
-          <b>abstracts</b>, with the <b>texts </b>index created from scratch and optimized at the end, while the
-          <b>abstracts</b> index is updated incrementally and not optimized. <br><br><br>
+      In this example, the <code>textIndexer.conf</code>, file defines two indexes 
+      called <b>default</b> and <b>abstracts</b>, with the <b>default </b>index 
+      created from scratch and optimized at the end, while the <b>abstracts</b> 
+      index is updated incrementally and not optimized. <br>
+      <br><br>
 
           <b><u>The textIndexer Configuration File</u></b> <br>
       As noted above, first command line argument passed to the <b><i>textIndexer</i></b> 
@@ -789,20 +792,20 @@
 
 &lt;textIndexer-config&gt;
 
-    &lt;index name=&quot;texts&quot;/&gt;
+    &lt;index name=&quot;default&quot;/&gt;
         &lt;src path=&quot;./data&quot;/&gt;
         &lt;db path=&quot;./index&quot;/&gt;
         &lt;chunk size="200 overlap="20"/&gt;
-        &lt;stopwords path=&quot;./conf/stopWords.txt&quot;/&gt;
         &lt;docselector path="./style/textIndexer/docSelector.xsl"/&gt;
+        &lt;stopwords list="a an and are as at be but by for if in into is it no not of on or s such t that the their then there these they this to was will with"/&gt;
     &lt;/index&gt;
 
 &lt;/textIndexer-config&gt;</b></pre>
-      <p>In this example, we see that the index name is <span class="Code">texts</span>, 
+      <p>In this example, we see that the index name is <span class="Code">default</span>, 
         that the source and index paths are <span class="Code">../data </span>and 
         <span class="Code"> ../index </span> respectively, (relative to the directory 
-        in which the <b><i>textIndexer</i></b> configuration file resides), the chunk 
-        size and overlap are the recommended sizes of 200 and 20 <span class="Code"> 
+        in which the <b><i>textIndexer</i></b> configuration file resides), the 
+        chunk size and overlap are the recommended sizes of 200 and 20 <span class="Code"> 
         </span>words, a list of stop-words is active for the index, and the example 
         document selector has been specified.<br>
         <br>
