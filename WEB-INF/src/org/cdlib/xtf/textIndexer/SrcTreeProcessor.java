@@ -41,6 +41,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
 
+import net.sf.saxon.om.NamePool;
+
+import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
@@ -122,6 +125,13 @@ public class SrcTreeProcessor
     
     // Open the Lucene index specified by the config info.
     textProcessor.open( cfgInfo );
+
+    // We need to make sure to use a special name pool that records all
+    // possible name codes. We can use it later to iterate through and
+    // find all the registered keys (it's the only way.)
+    //
+    if( !(NamePool.getDefaultNamePool() instanceof RecordingNamePool) )
+        NamePool.setDefaultNamePool( new RecordingNamePool() );
 
     // Make a transformer for the docSelector stylesheet.
     Templates templates = stylesheetCache.find( 

@@ -1023,10 +1023,7 @@ public class XMLTextProcessor extends DefaultHandler
         // find all the registered keys (it's the only way.)
         //
         NamePool namePool = NamePool.getDefaultNamePool();
-        if( !(namePool instanceof RecordingNamePool) ) {
-            namePool = new RecordingNamePool();
-            NamePool.setDefaultNamePool( namePool );
-        }
+        assert namePool instanceof RecordingNamePool;
         
         // While we parse the source document, we're going to also build up a tree
         // that will be written to the lazy file.
