@@ -32,9 +32,11 @@ package org.cdlib.xtf.textEngine;
 import java.io.IOException;
 import java.util.Set;
 
+import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.ngram.NgramQueryRewriter;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
@@ -117,7 +119,6 @@ public class XtfSearcher
         // Okay, better re-open to get the fresh data.
         close();
         reader    = IndexReader.open( directory );
-        docNumMap = new DocNumMap( reader );
     
         // Fetch the chunk size and overlap from the index.
         Hits match = new IndexSearcher(reader).search( 
@@ -134,6 +135,10 @@ public class XtfSearcher
         if( chunkSize <= 0 || chunkOverlap <= 0 || chunkOverlap >= chunkSize )
             throw new IOException( "Invalid chunkSize/overlap in index" );
         
+        // Construct a map from doc # to chunk #'s (and vice-versa)
+        docNumMap = new XtfDocNumMap( reader, chunkSize, chunkOverlap );
+
+        // Get the stop-word set.
         String stopWords = doc.get( "stopWords" );
         stopSet = null;
         if( stopWords != null && stopWords.length() > 0 )

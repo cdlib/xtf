@@ -30,29 +30,28 @@ package org.cdlib.xtf.textEngine;
  */
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.lucene.chunk.DocNumMap;
+import org.apache.lucene.chunk.SpanChunkedNotQuery;
+import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.HitCollector;
+import org.apache.lucene.limit.LimIndexReader;
+import org.apache.lucene.mark.SpanHitCollector;
+import org.apache.lucene.mark.FieldSpans;
+import org.apache.lucene.ngram.NgramQueryRewriter;
+import org.apache.lucene.search.FieldSortedHitQueue;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.SparseStringComparator;
+import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.PriorityQueue;
-
-import org.cdlib.xtf.textEngine.dedupeSpans.SpanHit;
-import org.cdlib.xtf.textEngine.dedupeSpans.SpanHitCollector;
-import org.cdlib.xtf.textEngine.dedupeSpans.SpanQuery;
-import org.cdlib.xtf.textEngine.sort.FieldSortedHitQueue;
-import org.cdlib.xtf.textEngine.sort.SortField;
-import org.cdlib.xtf.textEngine.sort.SparseStringComparator;
-import org.cdlib.xtf.textEngine.workLimiter.LimIndexReader;
 import org.cdlib.xtf.util.Trace;
 
 /**
@@ -112,67 +111,136 @@ public class QueryProcessor
         //
         Vector hitVec = new Vector( 10 );
         
-        // Run each combo query in turn, until either we've gathered the 
-        // requested number of hits or we've run out of queries.
-        //
-        int skip = req.startDoc;
-        for( int i = 0; i < req.comboQueries.length; i++ ) 
-        {
-            String indexPath = req.comboQueries[i].indexPath;
-            
-            XtfSearcher xtfSearcher = null;
-            synchronized( searchers ) {
-                xtfSearcher = (XtfSearcher) searchers.get( indexPath );
-                if( xtfSearcher == null ) {
-                    Directory dir = FSDirectory.getDirectory( indexPath, false );
-                    xtfSearcher = new XtfSearcher( dir, 30 ); // 30-sec update chk
-                    searchers.put( indexPath, xtfSearcher );
-                }
+        String indexPath = req.indexPath;
+        
+        XtfSearcher xtfSearcher = null;
+        synchronized( searchers ) {
+            xtfSearcher = (XtfSearcher) searchers.get( indexPath );
+            if( xtfSearcher == null ) {
+                Directory dir = FSDirectory.getDirectory( indexPath, false );
+                xtfSearcher = new XtfSearcher( dir, 30 ); // 30-sec update chk
+                searchers.put( indexPath, xtfSearcher );
             }
-            
-            // Get a reader, searcher, and document number map that will all be
-            // consistent with each other and up-to-date.
-            //
-            synchronized( xtfSearcher ) {
-                xtfSearcher.update();
-                reader       = xtfSearcher.reader();
-                docNumMap    = xtfSearcher.docNumMap();
-                chunkSize    = xtfSearcher.chunkSize();
-                chunkOverlap = xtfSearcher.chunkOverlap();
-                stopSet      = xtfSearcher.stopSet();
-            }
-            
-            // Apply a work limit to the query if we were requested to.
-            if( req.comboQueries[i].workLimit > 0 ) {
-                reader = new LimIndexReader( reader, 
-                                             req.comboQueries[i].workLimit );
-            }
-            
-            // Make a Lucene searcher that will access the index according to
-            // our query.
-            //
-            searcher = new IndexSearcher( reader );
-            
-            // Establish the XTF similarity, if the default hasn't been
-            // overridden.
-            //
-            if( !(searcher.getSimilarity() instanceof XtfSimilarity) )
-                searcher.setSimilarity( new XtfSimilarity() );
-            
-            // Now for the big show: get a whole bunch of hits.
-            int nDocs  = req.maxDocs - hitVec.size();
-            int nFound = processCombo( req.comboQueries[i], skip, 
-                                       nDocs, hitVec );
-            skip = Math.max( 0, skip - nFound );
-            
-            // Done with that searcher
-            searcher.close();
-            searcher = null;
-            
-            // Did we get enough documents yet? If not, try the next query.
-            if( hitVec.size() >= req.maxDocs )
-                break;
         }
+        
+        // Get a reader, searcher, and document number map that will all be
+        // consistent with each other and up-to-date.
+        //
+        synchronized( xtfSearcher ) {
+            xtfSearcher.update();
+            reader       = xtfSearcher.reader();
+            docNumMap    = xtfSearcher.docNumMap();
+            chunkSize    = xtfSearcher.chunkSize();
+            chunkOverlap = xtfSearcher.chunkOverlap();
+            stopSet      = xtfSearcher.stopSet();
+        }
+        
+        // Apply a work limit to the query if we were requested to.
+        if( req.workLimit > 0 ) {
+            reader = new LimIndexReader( reader, 
+                                         req.workLimit );
+        }
+        
+        // Make a Lucene searcher that will access the index according to
+        // our query.
+        //
+        searcher = new IndexSearcher( reader );
+        
+        // Establish the XTF similarity, if the default hasn't been
+        // overridden.
+        //
+        if( !(searcher.getSimilarity() instanceof XtfSimilarity) )
+            searcher.setSimilarity( new XtfSimilarity() );
+        
+        // Translate -1 maxDocs to "essentially all"
+        int maxDocs = req.maxDocs;
+        if( maxDocs < 0 )
+            maxDocs = docNumMap.getDocCount();
+
+        // Make a queue that will accumulate the hits and pick the first
+        // load of them for us. If there is a sort field specification,
+        // do it in field-sorted order; otherwise, sort by score.
+        //
+        final PriorityQueue docHitQueue = createHitQueue( reader, req );
+        
+        // Rewrite the query for ngrams (if we have stop-words to deal with.)
+        final Query rewritten = (stopSet == null) ? req.query :
+            new NgramQueryRewriter(stopSet, chunkOverlap).
+                          rewriteQuery(req.query);
+        
+        if( rewritten == null ) {
+            QueryResult result = new QueryResult();
+            result.docHits = new DocHit[0];
+            return result;
+        }
+        
+        if( rewritten != req.query )
+            Trace.debug( "Query rewritten for n-grams: " + rewritten.toString() );
+
+        // Fix up all the "infinite" slop entries to be actually limited to
+        // the chunk overlap size. That way, we'll get consistent results and
+        // the user won't be able to tell where the chunk boundaries are.
+        //
+        fixupSlop( rewritten, docNumMap );
+        
+        // Now for the big show... go get the hits!
+        searcher.search( rewritten, null, new SpanHitCollector() {
+            public void collect( int doc, float score, FieldSpans fieldSpans ) 
+            {
+                // Ignore deleted entries.
+                if( score <= 0.0f )
+                    return;
+                
+                // Make sure this is really a document, not a chunk.
+                assert docNumMap.getFirstChunk(doc) >= 0;
+                
+                // Queue the hit.
+                DocHit docHit = new DocHit( doc, score, fieldSpans );
+                
+                // If the score is high enough, add it to the queue and bump
+                // the count of documents hit.
+                //
+                docHitQueue.insert( docHit );
+                nDocsHit++;
+            } // collect()
+            
+            // If no field marks, just record a null for them.
+            public void collect( int doc, float score ) {
+                collect( doc, score, null );
+            }
+        } );
+        
+        // Finally, take the high-ranking hits and add them to the hit vector.
+        // Note that they come out of the hit queue in backwards order.
+        //
+        int nFound = docHitQueue.size();
+        DocHit[] hitArray = new DocHit[nFound];
+        float maxDocScore = 0.0f;
+        for( int i = 0; i < nFound; i++ ) {
+            int index = nFound - i - 1;
+            hitArray[index] = (DocHit) docHitQueue.pop();
+            maxDocScore = Math.max( maxDocScore, hitArray[index].score );
+        }
+
+        // Calculate the document score normalization factor.
+        float docScoreNorm = 1.0f;
+        if( req.startDoc < nFound && nFound > 0 && maxDocScore > 0.0f )  
+            docScoreNorm = 1.0f / maxDocScore;
+
+        // Finish off the hits (read in the fields, normalize, make snippets).
+        SnippetMaker snippetMaker = new SnippetMaker( reader,
+                                                      docNumMap,
+                                                      stopSet,
+                                                      req.maxContext,
+                                                      req.termMode );
+        for( int i = req.startDoc; i < nFound; i++ ) {
+            hitArray[i].finish( snippetMaker, docScoreNorm );
+            hitVec.add( hitArray[i] );
+        }
+
+        // Done with that searcher
+        searcher.close();
+        searcher = null;
         
         assert req.maxDocs < 0 || hitVec.size() <= req.maxDocs;
         
@@ -191,6 +259,35 @@ public class QueryProcessor
         return result;
     } // processReq()
     
+    /**
+     * After index parameters are known, this method should be called to
+     * update the slop parameters of queries that need to know.
+     */
+    private void fixupSlop( Query query, DocNumMap docNumMap )
+    {
+        // First, fix up this query if necessary.
+        if( query instanceof SpanNearQuery ) {
+            SpanNearQuery nq = (SpanNearQuery) query;
+            nq.setSlop( Math.min(nq.getSlop(), docNumMap.getChunkOverlap()) );
+        }
+        else if( query instanceof SpanChunkedNotQuery ) {
+            SpanChunkedNotQuery nq = (SpanChunkedNotQuery) query;
+            nq.setSlop( 
+                Math.min(nq.getSlop(), docNumMap.getChunkOverlap()),
+                docNumMap.getChunkSize() - docNumMap.getChunkOverlap() ); 
+        }
+        else if( query instanceof SpanDechunkingQuery ) {
+            SpanDechunkingQuery dq = (SpanDechunkingQuery) query;
+            dq.setDocNumMap( docNumMap );
+        }
+        
+        // Now process any sub-queries it has.
+        Query[] subQueries = query.getSubQueries();
+        if( subQueries != null ) {
+            for( int i = 0; i < subQueries.length; i++ )
+                fixupSlop( subQueries[i], docNumMap );
+        }
+    } // fixupSlop()
     
     /**
      * QueryProcessor maintains a static cache of Lucene searchers, one for
@@ -207,123 +304,26 @@ public class QueryProcessor
     
     
     /**
-     * Processes a combination text/meta query, though one or the other may
-     * be absent.
-     * 
-     * @param combo     The query to process
-     * @param skip      How many hits to skip before adding to hitVec
-     * @param maxDocs   Max number of hits to add to hitVec
-     * @param hitVec    Vector for accumulating the hits
-     * @return          Number of hits found (including those skipped)
-     */
-    private int processCombo( ComboQuery combo,
-                              int        skip,
-                              int        maxDocs,
-                              Vector     hitVec )
-        throws IOException
-    {
-        // Fix up all the "infinite" slop entries to be actually limited to
-        // the chunk overlap size. That way, we'll get consistent results and
-        // the user won't be able to tell where the chunk boundaries are.
-        //
-        combo.fixupSlop( chunkOverlap, chunkSize - chunkOverlap );
-        
-        // Translate -1 maxDocs to "essentially all"
-        if( maxDocs < 0 )
-            maxDocs = docNumMap.getDocCount();
-
-        // Get a handy reference to the term map.
-        TermMap terms = combo.terms;
-        
-        // Make a queue that will accumulate the hits and pick the first
-        // load of them for us. If there is a sort field specification,
-        // do it in field-sorted order; otherwise, sort by score.
-        //
-        PriorityQueue docHitQueue = 
-                          createHitQueue( reader, combo, skip + maxDocs );
-        
-        // If there is a meta-query, get all of its hits first. Why? Because
-        // it will generally run faster than a text query, as there are many
-        // fewer documents than chunks. Also, the results can be used to 
-        // speed up the text query by skipping chunks in non-matching docs.
-        //
-        HashMap       docHitMap   = new HashMap();
-        
-        if( combo.metaQuery != null )
-            gatherMetaHits( combo.metaQuery,
-                            (combo.textQuery != null) ? docHitMap : null,
-                            (combo.textQuery == null) ? docHitQueue : null );
-        
-        // Now run the text query if there is one.
-        if( combo.textQuery != null )
-            gatherTextHits( combo.textQuery,
-                            combo.sectionTypeQuery,
-                            terms,
-                            (combo.metaQuery != null) ? docHitMap : null,
-                            docHitQueue,
-                            combo.maxSnippets,
-                            combo.maxContext );
-        
-        // Making snippets is a lot of work; we need a helper.
-        SnippetMaker snippetMaker = new SnippetMaker( 
-            reader, docNumMap, 
-            chunkSize, chunkOverlap,
-            stopSet,
-            combo.maxContext, 
-            terms );
-
-        // Finally, take the high-ranking hits and add them to the hit vector.
-        // Note that they come out of the hit queue in backwards order.
-        //
-        int nFound = docHitQueue.size();
-        DocHit[] hitArray = new DocHit[nFound];
-        float maxDocScore = 0.0f;
-        for( int i = 0; i < nFound; i++ ) {
-            int index = nFound - i - 1;
-            hitArray[index] = (DocHit) docHitQueue.pop();
-            maxDocScore = Math.max( maxDocScore, hitArray[index].score );
-        }
-
-        // Calculate the document score normalization factor.
-        float docScoreNorm = 1.0f;
-        if( skip < nFound && nFound > 0 && maxDocScore > 0.0f )  
-            docScoreNorm = 1.0f / maxDocScore;
-
-        // Calculate the chunk score norm factor as well.
-        float chunkScoreNorm = 1.0f;
-        if( maxSpanScore != 0.0f )
-            chunkScoreNorm = 1.0f / maxSpanScore;      
-
-        // Finish off the hits (read in the fields, normalize, make snippets).
-        for( int i = skip; i < nFound; i++ ) {
-            hitArray[i].finish( snippetMaker, 
-                                docScoreNorm, chunkScoreNorm );
-            hitVec.add( hitArray[i] );
-        }
-
-        // And we're done.
-        return nFound;
-    } // processCombo()
-
-    /**
      * Creates either a standard score-sorting hit queue, or a field-sorting
-     * hit queue, depending on the combo query.
-     * 
-     * @param combo     The query being processed
-     * @return          An appropriate hit queue
+     * hit queue, depending on whether the query is to be sorted.
+     *
+     * @param reader  will be used to read the field contents
+     * @param req     contains the parameters (startDoc, maxDoc, sort fields)
+     * @return        an appropriate hit queue
      */
-    private PriorityQueue createHitQueue( IndexReader reader,
-                                          ComboQuery  combo, 
-                                          int         nDocs )
+    private PriorityQueue createHitQueue( IndexReader  reader,
+                                          QueryRequest req )
         throws IOException
     {
+        int nDocs = req.startDoc + req.maxDocs;
+
         // If no sort fields, do a simple score sort.
-        if( combo.sortMetaFields == null )
+        if( req.sortMetaFields == null )
             return new HitQueue( nDocs );
         
         // Parse out the list of fields to sort by.
         Vector fieldNames = new Vector();
-        StringTokenizer st = new StringTokenizer( combo.sortMetaFields, 
+        StringTokenizer st = new StringTokenizer( req.sortMetaFields, 
                                                   " \t\r\n,;" );
         while( st.hasMoreTokens() )
             fieldNames.add( st.nextToken() );
@@ -363,207 +363,4 @@ public class QueryProcessor
 
     } // createHitQueue()
 
-
-    /**
-     * Processes a meta-data query, adding the hits to a DocHitQueue (and to
-     * a map of all doc hits).
-     * 
-     * @param metaQuery     Meta-data query to run
-     * @param docHitMap     Map to add document hits to
-     * @param docHitQueue   Queue that keeps hits in ranked order
-     * @throws IOException
-     */
-    private void gatherMetaHits( final Query         metaQuery,
-                                 final HashMap       docHitMap, 
-                                 final PriorityQueue docHitQueue )
-        throws IOException
-    {
-        final Query rewritten = (stopSet == null) ? metaQuery :
-            new NgramQueryRewriter(stopSet, chunkOverlap).rewriteQuery(metaQuery);
-        
-        if( rewritten == null )
-            return;
-
-        searcher.search( rewritten, null, new HitCollector() {
-            public void collect( int doc, float score ) 
-            {
-                // Ignore deleted entries.
-                if( score <= 0.0f )
-                    return;
-                
-                // Make sure this is really a document, not a chunk.
-                assert docNumMap.getFirstChunk(doc) >= 0;
-                
-                // Add the doc hit to the hit map if necessary.
-                DocHit docHit = new DocHit( doc, score );
-                if( docHitMap != null )
-                    docHitMap.put( new Integer(doc), docHit );
-                
-                // If the score is high enough, add it to the queue and bump
-                // the count of documents hit.
-                //
-                if( docHitQueue != null ) {
-                    docHitQueue.insert( docHit );
-                    nDocsHit++;
-                }
-            } // collect()
-        } );
-    } // gatherMetaHits()
-
-    /**
-     * Runs a full-text query (possibly constrained by a sectionType query),
-     * adding the results to one or more document hits.
-     * 
-     * @param textQuery             Text query to run
-     * @param sectionTypeQuery      Optional sectionType query, or null
-     * @param termMap               Map to add matched terms to
-     * @param docHitMap             Map to add hits to
-     * @param docHitQueue           Queue that maintains a ranked list of hits
-     * @param maxSnippets           Max # snippets for any given document
-     * @param maxContext            Target # characters for a snippet
-     * 
-     * @return                      A HashMap of all the text hits
-     * 
-     * @throws IOException          If something goes wrong reading the index
-     */
-    private HashMap gatherTextHits( final Query         textQuery,
-                                    final SpanQuery     sectionTypeQuery,
-                                    final TermMap       termMap,
-                                    final HashMap       docHitMap,
-                                    final PriorityQueue docHitQueue,
-                                    final int           maxSnippets,
-                                    final int           maxContext )
-        throws IOException
-    {
-        final HashMap textHits = new HashMap();
-        
-        // Apply n-gram transformations if stop-words have been removed in the
-        // index.
-        //
-        final Query rewritten = (stopSet == null) ? textQuery :
-          new NgramQueryRewriter(stopSet, chunkOverlap).rewriteQuery(textQuery);
-        
-        // If we ended up removing all the query clauses (probably because they
-        // were all stop words), there will be no hits to collect.
-        //
-        if( rewritten == null )
-            return textHits;
-        
-        // If a sectionType query was specified, filter the text hits
-        // with it.
-        //
-        SpanQuery queryToRun;
-        if( sectionTypeQuery != null )
-            queryToRun = new SpanSectionTypeFilterQuery( 
-                    (SpanQuery) rewritten, sectionTypeQuery );
-        else
-            queryToRun = (SpanQuery) rewritten;
-
-        // If we're merging our results with a meta-search, we can optimize by
-        // skipping all chunks that don't belong to the matching documents.
-        //
-        if( docHitMap != null )
-            queryToRun = new SpanDocFilterQuery( docHitMap, docNumMap, 
-                                                 queryToRun );
-        
-        queryToRun.setCollector( new SpanHitCollector() {
-            private int    curDoc = -99;
-            private DocHit docHit = null;
-            
-            public void collectTerms( Collection terms )
-            {
-                for( Iterator iter = terms.iterator(); iter.hasNext(); )
-                    termMap.put( (Term)iter.next() );
-            } // collectTerms()
-                
-            public void collectSpan( SpanHit span ) 
-            {
-                assert !reader.isDeleted( span.chunk );
-
-                // Are we looking at a new main document?
-                final int chunk = span.chunk;
-                if( chunk > curDoc ) 
-                {
-                    // Finish the document we were working on.
-                    flushDoc();
-                    
-                    // Figure out the ID of the new document.
-                    curDoc = docNumMap.getDocNum( chunk );
-                    if( curDoc < 0 ) {
-                        Trace.error( 
-                            "Unable to map chunk num " + chunk + 
-                            "-> document num " +
-                            "(possibly due to indexing in progress.)" );
-                        return;
-                    }
-                    
-                    // If we're merging with meta hits, find the document hit
-                    // to add to. Otherwise, make a new hit.
-                    //
-                    if( docHitMap != null )
-                    {
-                        Integer key = new Integer( curDoc );
-                        docHit = (DocHit) docHitMap.get( key );
-                        assert docHit != null : "failed to filter docs properly";
-                    }
-                    else
-                        docHit = new DocHit( curDoc, 0.0f );
-                    
-                    // Add an appropriate chunk list.
-                    if( docHit.spanHitList == null )
-                        docHit.spanHitList = new RankedSpanList( maxSnippets );
-                }
-                    
-                // Add this span hit to the document's list (this also 
-                // accumulates the total score of all spans.)
-                //
-                docHit.spanHitList.add( span );
-                
-                // Maintain the max score, for normalization purposes.
-                maxSpanScore = Math.max( maxSpanScore, span.score );
-            } // collect()
-                
-            public void finish() {
-                flushDoc();
-            }
-            
-            private void flushDoc()
-            {
-                // If no document yet, there's nothing to do.
-                if( docHit == null )
-                    return;
-                                
-                // Now let's make a combined score for the document. Use a
-                // special XtfSimilarity class so that the exact computation
-                // can be overridden by simply setting a different default
-                // similarity.
-                //
-                XtfSimilarity sim = (XtfSimilarity) searcher.getSimilarity();
-                float spansScore = sim.spanFreq( 
-                                          docHit.spanHitList.totalScore );
-                docHit.score = sim.combine( docHit.score, spansScore );
-                
-                // And add it to the document queue.
-                docHitQueue.insert( docHit );
-                docHit = null;
-
-                // Bump the number of documents hit.
-                nDocsHit++;
-            } // flushDoc()
-
-            public int getChunkSize() {
-                return chunkSize;
-            }
-
-            public int getChunkOverlap() {
-                return chunkOverlap;
-            }
-        } );
-        
-        searcher.search( queryToRun, null, new HitCollector() {
-            public void collect( int chunk, float score ) { }
-        } );
-        return textHits;
-    } // gatherTextHits()
-    
 } // class QueryProcessor

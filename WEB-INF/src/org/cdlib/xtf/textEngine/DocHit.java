@@ -31,14 +31,15 @@ package org.cdlib.xtf.textEngine;
 
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.lucene.document.DateField;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.mark.FieldSpans;
+import org.apache.lucene.mark.SpanDocument;
 import org.apache.lucene.search.ScoreDoc;
-import org.cdlib.xtf.textEngine.dedupeSpans.SpanHit;
+import org.apache.lucene.search.spans.Span;
+import org.cdlib.xtf.textIndexer.XtfSpecialTokensFilter;
 import org.cdlib.xtf.util.AttribList;
 
 /**
@@ -56,8 +57,10 @@ public class DocHit extends ScoreDoc
     /** Used to load and format snippets */
     SnippetMaker snippetMaker;
     
-    /** List of snippets, ordered by score */
-    SpanList spanHitList;
+    private static final String FIELD = "text";
+    
+    /** Spans per field */
+    private FieldSpans fieldSpans;
     
     /** 
      * Number of snippets found in the document (not just those that scored
@@ -66,7 +69,13 @@ public class DocHit extends ScoreDoc
     private int totalSnippets; // >= number of snippets
     
     /** Sorted array of spans */
-    private SpanHit[] spanHits;
+    private Span[] spans;
+    
+    /** Array of chunk # per span */
+    private int[] chunks;
+    
+    /** Array of pre-built snippets */
+    private Snippet[] snippets;
      
     /** Index key for this document */
     private String docKey;
@@ -80,6 +89,9 @@ public class DocHit extends ScoreDoc
     /** Document's meta-data fields (copied from the docInfo chunk) */
     private AttribList metaData;
     
+    /** Bump marker used to denote different meta-data fields w/ same name */
+    private char bumpMarker = XtfSpecialTokensFilter.bumpMarker;
+    
     /**
      * Construct a document hit. Package-private because these should only
      * be constructed inside the text engine.
@@ -87,8 +99,10 @@ public class DocHit extends ScoreDoc
      * @param docNum    Lucene ID for the document info chunk
      * @param score     Score for this hit
      */
-    DocHit( int docNum, float score ) {
-        super( docNum, score );
+    DocHit( int docNum, float score, FieldSpans spans ) {
+        super(docNum, score);
+        this.score      = score;
+        this.fieldSpans = spans;
     }
     
     /**
@@ -98,11 +112,9 @@ public class DocHit extends ScoreDoc
      * @param snippetMaker    Will be used later by snippet() to actually
      *                        create the snippets.
      * @param docScoreNorm    Multiplied into the document's score
-     * @param chunkScoreNorm  Multiplied into the score for each chunk
      */
     void finish( SnippetMaker snippetMaker,
-                 float        docScoreNorm,
-                 float        chunkScoreNorm )
+                 float        docScoreNorm )
     {
         // Record the snippet maker... we'll use it later if loading is
         // necessary.
@@ -112,31 +124,14 @@ public class DocHit extends ScoreDoc
         // Adjust our score.
         score *= docScoreNorm;
 
+        // Get the span hits.
+        totalSnippets = fieldSpans != null ? fieldSpans.getSpanTotal(FIELD) : 0;
+        
         // If no span hits, we're done.
-        if( spanHitList == null ) {
-            spanHits = new SpanHit[0];
+        if( totalSnippets == 0 ) {
+            spans = new Span[0];
             return;
         }
-        
-        totalSnippets = spanHitList.totalHits;
-        
-        // Adjust the chunk scores
-        spanHits = new SpanHit[spanHitList.size()];
-        int hitNum = 0;
-        for( Iterator iter = spanHitList.iterator(); iter.hasNext(); ) 
-        {
-            // Adjust the score
-            SpanHit sp = (SpanHit) iter.next();
-            sp.score *= chunkScoreNorm;
-            
-            // Record it.
-            spanHits[hitNum++] = sp;
-        } // for iter
-        
-        // No need for the list any more, now that we have a nice array. Might
-        // as well free it up so it can be garbage-collected.
-        //
-        spanHitList = null;
     } // finish()
     
     /**
@@ -146,9 +141,10 @@ public class DocHit extends ScoreDoc
     private void load()
     {
         // Read in our fields
-        Document fields;
+        SpanDocument spanDoc;
         try {
-            fields = snippetMaker.reader.document( doc );
+            spanDoc = new SpanDocument( snippetMaker.reader.document(doc),
+                                        fieldSpans );
         }
         catch( IOException e ) {
             throw new HitLoadException( e );
@@ -156,7 +152,7 @@ public class DocHit extends ScoreDoc
         
         // Record the ones of interest.
         metaData = new AttribList();
-        for( Enumeration e = fields.fields(); e.hasMoreElements(); ) {
+        for( Enumeration e = spanDoc.fields(); e.hasMoreElements(); ) {
             Field f = (Field) e.nextElement();
             String name = f.name();
             String value = f.stringValue();
@@ -167,8 +163,44 @@ public class DocHit extends ScoreDoc
                 fileDate = DateField.stringToTime( value );
             else if( name.equals("chunkCount") )
                 chunkCount = Integer.parseInt( value );
-            else if( !name.equals("docInfo") )
-                metaData.put( name, snippetMaker.makeFull(value, f.name()) );
+            else if( !name.equals("docInfo") ) 
+            {
+                // Lucene will fail subtly if we add two fields with the same 
+                // name. Basically, the terms for each field are added at 
+                // overlapping positions, causing a phrase search to easily 
+                // span them. To counter this, the text indexer artificially 
+                // introduces bump markers between them. And now, we reverse 
+                // the process so it's invisible to the end-user.
+                //
+                String markedValue = 
+                            snippetMaker.markField(spanDoc, name, value);
+                if( markedValue.indexOf(bumpMarker) < 0 ) {
+                    metaData.put( name, markedValue );
+                    continue;
+                }
+                    
+                int startPos = 0;
+                while( startPos < markedValue.length() ) {
+                    int bumpPos = markedValue.indexOf( bumpMarker, startPos );
+                    if( bumpPos < 0 ) {
+                        metaData.put( name, markedValue.substring(startPos) );
+                        break;
+                    }
+                    
+                    String val = markedValue.substring(startPos, bumpPos);
+                    metaData.put( name, val );
+                    
+                    startPos = 1 + markedValue.indexOf( bumpMarker, bumpPos+1 );
+                    if( Character.isWhitespace(markedValue.charAt(startPos)) )
+                        startPos++; 
+                }
+                
+                String fixedName;
+                if( name.indexOf('~') >= 0 )
+                    fixedName = name.substring( 0, name.indexOf('~') );
+                else
+                    fixedName = name;
+            }
         }
         
         // We should have gotten at least the special fields.
@@ -181,9 +213,9 @@ public class DocHit extends ScoreDoc
      * Fetch a map that can be used to check whether a given term is present
      * in the original query that produced this hit.
      */
-    public TermMap terms()
+    public Set terms()
     {
-        return snippetMaker.terms();
+        return fieldSpans.getTerms("text");
     }
     
     /**
@@ -234,7 +266,9 @@ public class DocHit extends ScoreDoc
      *  specified in the query.)
      */
     public final int totalSnippets() {
-        return totalSnippets;
+        if( fieldSpans == null )
+            return 0;
+        return fieldSpans.getSpanTotal("text");
     }
     
     /**
@@ -242,7 +276,9 @@ public class DocHit extends ScoreDoc
      * in the original query.)
      */
     public final int nSnippets() {
-        return spanHits.length;
+        if( fieldSpans == null )
+            return 0;
+        return fieldSpans.getSpanCount("text");
     }
     
     /**
@@ -252,16 +288,17 @@ public class DocHit extends ScoreDoc
      * @param getText   true to fetch the snippet text in context, false to
      *                  only fetch the rank, score, etc.
      */
-    public final Snippet snippet( int hitNum, boolean getText ) {
-        try {
-            Snippet snippet = snippetMaker.make( doc, spanHits[hitNum], 
-                                                 getText );
-            snippet.rank = hitNum;
-            return snippet;
-        }
-        catch( IOException e ) {
-            throw new HitLoadException( e );
-        }
+    public final Snippet snippet( int hitNum, boolean getText ) 
+    {
+        // If we haven't built the snippets yet (or if we didn't get the
+        // text for them), do so now.
+        //
+        if( snippets == null || snippets[hitNum].text == null )
+            snippets = snippetMaker.makeSnippets( fieldSpans, doc, 
+                                                  "text", getText );
+        
+        // Return the pre-built snippet.
+        return snippets[hitNum];
     } // snippet()
     
 } // class DocHit

@@ -33,8 +33,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Properties;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,17 +52,19 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.chunk.SpanChunkedNotQuery;
+import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.mark.SpanDocument;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanOrQuery;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanRangeQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.search.spans.SpanWildcardQuery;
 
-import org.cdlib.xtf.textEngine.dedupeSpans.SpanNearQuery;
-import org.cdlib.xtf.textEngine.dedupeSpans.SpanNotQuery;
-import org.cdlib.xtf.textEngine.dedupeSpans.SpanOrQuery;
-import org.cdlib.xtf.textEngine.dedupeSpans.SpanQuery;
-import org.cdlib.xtf.textEngine.dedupeSpans.SpanTermQuery;
-import org.cdlib.xtf.textEngine.dedupeSpans.SpanWildcardTermQuery;
 import org.cdlib.xtf.textIndexer.XTFTextAnalyzer;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
@@ -69,8 +74,10 @@ import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
@@ -81,26 +88,40 @@ import org.w3c.dom.Node;
  */
 public class QueryRequest
 {
-    /** 
-     * One or more combined meta/text queries. This is an array because it's
-     * possible to concatenate results from multiple indexes.
-     */
-    public ComboQuery[] comboQueries;
-    
     /** Path (base dir relative) for the resultFormatter stylesheet */
-    public String       displayStyle;
+    public String     displayStyle;
     
     /** Document rank to start with (0-based) */
-    public int          startDoc;
+    public int        startDoc     = 0;
     
     /** Max # documents to return from this query */
-    public int          maxDocs;
-
-    /** Mode: processing meta-data query */ 
-    private final static int MODE_META = 1;
+    public int        maxDocs      = 10;
     
-    /** Mode: processing text query */
-    private final static int MODE_TEXT = 2;
+    /** Path to the Lucene index we want to search */
+    public String     indexPath;
+
+    /** The Lucene query to perform */
+    public Query      query;
+    
+    /** Optional list of fields to sort documents by */
+    public String     sortMetaFields;
+
+    /** Target size, in characters, for snippets */
+    public int        maxContext   = 80;
+    
+    /** Limit on the total number of terms allowed */
+    public int        termLimit    =  50;
+    
+    /** Limit on the total amount of "work" */
+    public int        workLimit    =   0;
+    
+    /** Term marking mode */
+    public int        termMode     = SpanDocument.MARK_SPAN_TERMS;
+    
+    /** List of queries that need some sort of fix-up after certain parameters
+     *  (like index chunk size) are known.
+     */
+    private LinkedList slopFixups = new LinkedList();
     
     /** 
      * During tokenization, the '*' wildcard has to be changed to a word
@@ -114,15 +135,6 @@ public class QueryRequest
      */
     private static final String SAVE_WILD_QMARK   = "vkyqxw";
 
-    /** ComboQuery currently being worked on */
-    private ComboQuery curCombo;
-    
-    /** 
-     * Used to enforce index path being the same on combo query as it is
-     * on its embedded meta- or text-query.
-     */
-    private String origIndexPath;
-    
     /** 
      * Keeps track of the servlet base directory, used to map relative
      * file paths.
@@ -330,7 +342,7 @@ public class QueryRequest
         // Otherwise, use a tokenizer to break up the string.
         try {
             StringBuffer buf = new StringBuffer( str );
-            XTFTextAnalyzer analyzer = new XTFTextAnalyzer( null, -1, buf );
+            XTFTextAnalyzer analyzer = new XTFTextAnalyzer( null, -1 );
             TokenStream toks = analyzer.tokenStream( "text", new StringReader(str) );
             int prevEnd = 0;
             while( true ) {
@@ -457,103 +469,142 @@ public class QueryRequest
      * Processes the main query node, turning it into a Lucene query.
      * 
      * @param main The 'query' element
-     * @return The resulting Lucene query
      */
     private void parseOutput( Element main )
     {
-        Vector queryVec = new Vector();
-        
-        String name = main.getLocalName();
-
-        if( name.equals("error") )
+        if( main.getLocalName().equals("error") )
             throw new QueryFormatError( main.getAttribute("message") );
         
-        // Check for required parameters
-        displayStyle = parseStringAttrib( main, "style", "NullStyle.xsl" );
-        startDoc     = parseIntAttrib   ( main, "startDoc",  1 );
-        maxDocs      = parseIntAttrib   ( main, "maxDocs",  -1 );
-        
-        // Adjust for 1-based start doc.
-        startDoc = Math.max( 0, startDoc-1 );
-        
-        // Make sure the stylesheet to format the results is present.
-        displayStyle = Path.resolveRelOrAbs(baseDir, displayStyle);
+        // Process all the top-level attributes.
+        NamedNodeMap attrs = main.getAttributes();
+        for( int i = 0; i < attrs.getLength(); i++ ) {
+            Attr   attr = (Attr) attrs.item( i );
+            String name = attr.getName();
+            String val  = attr.getValue();
+            parseMainAttrib( main, name, val );
+        }
 
-        if( !(new File(displayStyle).exists()) && 
-            displayStyle.indexOf("NullStyle.xsl") < 0 )
+        // Process the children. If we find an old <combine> element,
+        // traverse it just like a top-level query.
+        //
+        int childCount = 0;
+        for( ElementIter iter = new ElementIter(main); iter.hasNext(); ) 
         {
-            error( "Style \"" + displayStyle + 
-                   "\" specified in '" + name + "' element " +
-                   "does not exist" );
+            Element el = iter.next();
+            
+            childCount++;
+            if( childCount > 1 ) {
+                error( "<" + main.getNodeName() + "> element must have " +
+                       " exactly one child element" );
+            }
+            
+            query = deChunk( parseQuery(el, null, Integer.MAX_VALUE) );
+        }
+
+        if( childCount != 1 ) {
+            error( "<" + main.getNodeName() + "> element must have " +
+                   " exactly one child element" );
         }
         
-        // Iterate through the query elements
-        for( ElementIter iter = new ElementIter(main); iter.hasNext(); ) {
-            Element el   = iter.next();
-            name = el.getLocalName();
-
-            if( !name.matches("^combine$|^meta$|^text$") )
-                error( "Expected: 'combine', 'meta', or 'text' but found '" +
-                       name + "'" );
-            
-            // Get the path to the index
-            ComboQuery cq = new ComboQuery();
-            curCombo = cq;
-            cq.indexPath = parseStringAttrib( el, "indexPath" );
-            origIndexPath = cq.indexPath;
-            cq.indexPath = Path.resolveRelOrAbs(baseDir, cq.indexPath);
-            
-            // Make sure it exists.
-            if( !(new File(cq.indexPath).exists()) )
-                error( "Index path \"" + cq.indexPath + 
-                       "\" specified in '" + name + "' element " +
-                       "does not exist" );
-            
-            // Optionally, the query might specify a term limit and/or a
-            // work limit.
-            //
-            cq.termLimit = parseIntAttrib( el, "termLimit", 50 );
-            cq.workLimit = parseIntAttrib( el, "workLimit", -1 );
-            
-            // Optionally, a meta-query might contain a list of sort fields.
-            cq.sortMetaFields = parseStringAttrib( el, "sortMetaFields", "" );
-
-            // Create the map that will be used to store all the terms (and
-            // to enforce the term limit.)
-            //
-            cq.terms = new TermMap( cq.termLimit );
-            
-            // Now parse a meta-query, text query, or combination.
-            if( name.equals("combine") )
-                parseCombine(el, cq);
-            else if( name.equals("meta") )
-                cq.metaQuery = parseQuery(el, null, MODE_META, true);
-            else if( name.equals("text") ) {
-                cq.maxSnippets  = parseIntAttrib( el, "maxSnippets",   3 );
-                cq.maxContext = parseIntAttrib( el, "maxContext", 80 );
-                cq.textQuery = (SpanQuery) parseQuery(el, "text", MODE_TEXT, true);
-                cq.sectionTypeQuery = parseSectionType( el );
-            }
-            else
-                assert false : "forgot to handle case";
-                
-            queryVec.add( cq );
-        } // for iter
+        if( main.getLocalName().equals("query") &&
+            Trace.getOutputLevel() >= Trace.debug )
+        {
+            Trace.debug( "Lucene query as parsed: " + query.toString() );
+        }
         
-        // Make sure at least one query was specified, and that the display
-        // sheet was defined.
-        //
-        if( queryVec.size() == 0 )
-            error( "At least one query must be specified" );
-        if( displayStyle == null || displayStyle.length() == 0 )
-            error( "queryGen stylesheet failed to specify 'style'" );
+        // Check that we got the required parameters.
+        if( main.getLocalName().equals("query") ) {
+            if( indexPath == null )
+                error( "'indexPath' attribute missing from <query> element" );
+        }
         
-        // Transform the vector to an easy-to-use array.
-        comboQueries = (ComboQuery[]) queryVec.toArray( new ComboQuery[0] );
-
     } // parseOutput()
     
-    
+    /**
+     * Parse an attribute on the main query element (or, for backward
+     * compatability, on its immediate children.)
+     * 
+     * If the attribute isn't recognized, an error exception is thrown.
+     */
+    void parseMainAttrib( Element el, String name, String val )
+    {
+        if( name.equals("style") ) {
+            displayStyle = Path.resolveRelOrAbs(baseDir, val);
+            if( !(new File(displayStyle).canRead()) &&
+                !val.equals("NullStyle.xsl") ) 
+            {
+                error( "Style \"" + displayStyle + 
+                       "\" specified in '" + name + "' element " +
+                    
+                "does not exist" );
+            }
+        }
+
+        else if( name.equals("startDoc") ) {
+            startDoc = parseIntAttrib( el, "startDoc" );
+            
+            // Adjust for 1-based start doc.
+            startDoc = Math.max( 0, startDoc-1 );
+        }
+        
+        else if( name.equals("maxDocs") )
+            maxDocs = parseIntAttrib( el, "maxDocs" );
+        
+        else if( name.equals("indexPath") ) {
+            indexPath = Path.resolveRelOrAbs(baseDir, val);
+            if( !(new File(indexPath).exists()) )
+                error( "Index path \"" + indexPath + 
+                       "\" specified in '" + name + "' element " +
+                       "does not exist" );
+        }
+        
+        else if( name.equals("termLimit") )
+            termLimit = parseIntAttrib( el, "termLimit" );
+        
+        else if( name.equals("workLimit") )
+            workLimit = parseIntAttrib( el, "workLimit" );
+        
+        else if( name.equals("sortMetaFields") )
+            sortMetaFields = val;
+        
+        else if( name.equals("maxContext") )
+            maxContext = parseIntAttrib( el, "maxContext" );
+        
+        // Backward compatability.
+        else if( name.equals("contextChars") )
+            maxContext = parseIntAttrib( el, "contextChars" );
+        
+        else if( name.equals("termMode") ) {
+            if( val.equalsIgnoreCase("none") )
+                termMode = SpanDocument.MARK_NO_TERMS;
+            else if( val.equalsIgnoreCase("hits") )
+                termMode = SpanDocument.MARK_SPAN_TERMS;
+            else if( val.equalsIgnoreCase("context") )
+                termMode = SpanDocument.MARK_CONTEXT_TERMS;
+            else if( val.equalsIgnoreCase("all") )
+                termMode = SpanDocument.MARK_ALL_TERMS;
+            else
+                error( "Unknown value for 'termMode'; expecting " +
+                       "'none', 'hits', 'context', or 'all'" ); 
+        }
+        
+        else if( name.equals("field") || name.equals("metaField") )
+            ; // handled elsewhere
+        
+        else if( name.equals("inclusive") &&
+                 el.getLocalName().equals("range") )
+            ; // handled elsewhere
+        
+        else if( name.equals("slop") &&
+                 el.getLocalName().equals("near") )
+            ; // handled elsewhere
+        
+        else {
+            error( "Unrecognized attribute \"" + name + "\" " +
+                   "on <" + el.getLocalName() + "> element" );
+        }
+    } // parseMainAttrib()
+
     /**
      * Locate the named attribute and retrieve its value as an integer.
      * If not found, an error exception is thrown.
@@ -680,46 +731,6 @@ public class QueryRequest
     
     
     /**
-     * Parses a 'combine' element, which is used to fuse the results of a meta-
-     * query with those of a text query.
-     * 
-     * @param parent The 'combine' element
-     * @param iq The ComboQuery to add to.
-     * @return A combined query
-     */
-    private void parseCombine( Element parent, ComboQuery iq )
-        throws QueryGenException
-    {
-        for( ElementIter iter = new ElementIter(parent); iter.hasNext(); ) {
-            Element el   = iter.next();
-            String  name = el.getLocalName();
-            
-            if( name.equals("meta") ) {
-                if( iq.metaQuery != null )
-                    error( "Only one 'meta' allowed per 'combine' element" );
-                iq.metaQuery = parseQuery( el, null, MODE_META, true );
-            }
-            else if( name.equals("text") ) {
-                if( iq.textQuery != null )
-                    error( "Only one 'text' allowed per 'combine' element" );
-                iq.maxSnippets  = parseIntAttrib( el, "maxSnippets",   3 );
-                iq.maxContext = parseIntAttrib( el, "maxContext", 80 );
-                iq.textQuery = (SpanQuery) parseQuery( el, "text", 
-                                                       MODE_TEXT, true );
-                iq.sectionTypeQuery = parseSectionType( el );
-            }
-            else
-                error( "Expected 'meta' or 'text'; found '" + name );
-        } // for iter
-        
-        // Make sure at least one was specified.
-        if( iq.metaQuery == null && iq.textQuery == null )
-            error( "Must have 'meta', 'text', or both in 'combine' element" );
-
-    } // parseCombine()
-    
-
-    /**
      * If the given element has a 'field' attribute, return its value;
      * otherwise return 'parentField'. Also checks that field cannot be
      * specified if parentField has already been.
@@ -729,110 +740,28 @@ public class QueryRequest
     {
         if( !el.hasAttribute("metaField") && !el.hasAttribute("field") )
             return parentField;
-        String attVal = el.getAttribute("metaField");
+        String attVal = el.getAttribute("field");
         if( attVal == null || attVal.length() == 0 )
-            attVal = el.getAttribute( "field" );
+            attVal = el.getAttribute( "metaField" );
         
         if( attVal.length() == 0 )
-            error( "'metaField' attribute cannot be empty" );
-        if( "text".equals(parentField) && !attVal.equals("text") )
-            error( "Within a text query, the 'metaField' attribute " +
-                   "must be absent or have the value 'text'" );
-        if( attVal.equals("text") )
-            error( "Meta queries cannot access the 'text' field" );
+            error( "'field' attribute cannot be empty" );
+        if( attVal.equals("sectionType") )
+            error( "'sectionType' is not valid for the 'field' attribute" );
         if( parentField != null && !parentField.equals(attVal) )
-            error( "Cannot override ancestor 'metaField' attribute" );
+            error( "Cannot override ancestor 'field' attribute" );
         
         return attVal;
     }
 
     
     /**
-     * Parse a 'meta' or 'text' query element.
+     * Parse a 'sectionType' query element, if one is present. If not, 
+     * simply returns null.
      */
-    private Query parseQuery( Element parent, String field, int mode,
-                              boolean addTerms )
-        throws QueryGenException
-    {
-        // Record a field name if specified
-        field = parseField( parent, field );
-        
-        // If indexPath, termLimit, or workLimit are specified, they
-        // had better match the top-level combo query.
-        //
-        if( parent.hasAttribute("indexPath") &&
-            !origIndexPath.equals(parent.getAttribute("indexPath")) )
-        {
-            error( "'" + parent.getLocalName() + 
-                    "' element indexPath attribute must match its parent" );
-        }
-        
-        String curTermLimit = Integer.toString( curCombo.termLimit );
-        if( parent.hasAttribute("termLimit") &&
-            !curTermLimit.equals(parent.getAttribute("termLimit")) )
-        {
-            error( "'" + parent.getLocalName() + 
-                    "' element termLimit attribute must match its parent" );
-        }
-        
-        String curWorkLimit = Integer.toString( curCombo.workLimit );
-        if( parent.hasAttribute("workLimit") &&
-            !curWorkLimit.equals(parent.getAttribute("workLimit")) )
-        {
-            error( "'" + parent.getLocalName() + 
-                    "' element workLimit attribute must match its parent" );
-        }
-        
-        // The 'sortMetaFields' attribute can be specified either here or in 
-        // the parent.
-        //
-        if( parent.hasAttribute("sortMetaFields") ) 
-        {
-            String newVal = parent.getAttribute( "sortMetaFields" );
-            if( curCombo.sortMetaFields.length() > 0 &&
-               !curCombo.sortMetaFields.equals(newVal) )
-            {
-                error( "'" + parent.getLocalName() + 
-                        "' element sortMetaFields attribute must match its parent" );
-            }
-            curCombo.sortMetaFields = newVal;
-        }
-
-        // We require exactly one child element.
-        int count = 0;
-        Element child = null;
-        Element sectionType = null;
-        for( ElementIter iter = new ElementIter(parent); iter.hasNext(); ) 
-        {
-            Element el = iter.next();
-            if( el.getNodeName().equals("sectionType") && mode == MODE_TEXT )
-                sectionType = el;
-            else {
-                child = el;
-                count++;
-            }
-        }
-        if( count != 1 ) {
-            if( mode == MODE_TEXT )
-                error( "'" + parent.getLocalName() + "' element requires exactly " +
-                       "one child element (other than optional sectionType)" );
-            else
-                error( "'" + parent.getLocalName() + "' element requires exactly " +
-                       "one child element" );
-        }
-        
-        // Here comes the main work.
-        return parseBoolean( child, field, mode, addTerms );
-    } // parseQuery()
-    
-    
-    /**
-     * Parse a 'sectionType' query element. Note that this query is parsed
-     * as a span query, because the query processing logic requires it to
-     * return documents in ascending ID order (something which the normal
-     * BooleanQuery does not do.)
-     */
-    private SpanQuery parseSectionType( Element parent )
+    private SpanQuery parseSectionType( Element parent, 
+                                        String field,
+                                        int maxSnippets )
         throws QueryGenException
     {
         // Find the sectionType element (if any)
@@ -850,6 +779,10 @@ public class QueryRequest
         if( sectionType == null )
             return null;
         
+        // These sectionType queries only belong in the "text" field.
+        if( !(field.equals("text")) )
+            error( "'sectionType' element is only appropriate in queries on the 'text' field" );
+        
         // Make sure it only has one child.
         int count = 0;
         Element child = null;
@@ -862,39 +795,285 @@ public class QueryRequest
             error( "'sectionType' element requires exactly " +
                    "one child element" );
         
-        return (SpanQuery) 
-            parseBoolean( child, "sectionType", MODE_TEXT, false );
+        return (SpanQuery) parseQuery( child, "sectionType", maxSnippets );
     } // parseSectionType()
     
-    
     /**
-     * Parse a regular boolean element.
+     * Recursively parse a query.
      */
-    private Query parseBoolean( Element parent, String field, int mode,
-                                boolean addTerms )
+    private Query parseQuery( Element parent, String field, int maxSnippets )
         throws QueryGenException
     {
-        assert (mode == MODE_META || mode == MODE_TEXT) : "Must set mode first";
-
         String name = parent.getLocalName();
-        if( !name.matches("^term$|^all$|^range$|^phrase$|^near$|^and$|^or$|^not$") )
-            error( "Expected: 'term', 'all', 'range', 'phrase', 'near', " +
-                   "'and', 'or', or 'not'; found '" + name + "'" );
+        if( !name.matches(
+                "^query$|^term$|^all$|^range$|^phrase$|^near$" +
+                "|^and$|^or$|^not$" +
+                "|^combine$|^meta$|^text$") ) // old stuff, for compatability
+        {
+            error( "Expected: 'query', 'term', 'all', 'range', 'phrase', " +
+                   "'near', 'and', 'or', or 'not'; found '" + name + "'" );
+        }
+        
+        // Old stuff, for compatability.
+        if( name.equals("text") )
+            field = "text";
 
         // 'not' queries are handled at the level above.
         assert( !name.equals("not") );
+        
+        // Default to no boost.
+        float boost = 1.0f;
+        
+        // Validate all attributes.
+        NamedNodeMap attrs = parent.getAttributes();
+        for( int i = 0; i < attrs.getLength(); i++ ) {
+            Attr   attr     = (Attr) attrs.item( i );
+            String attrName = attr.getName();
+            String attrVal  = attr.getValue();
+            
+            if( attrName.equals("boost") ) {
+                try {
+                    boost = Float.parseFloat( attrVal );
+                }
+                catch( NumberFormatException e ) {
+                    error( "Invalid float value \"" + attrVal + "\" for " +
+                           "'boost' attribute" );
+                }
+            }
+            else if( attrName.equals("maxSnippets") )
+                maxSnippets = parseIntAttrib( parent, attrName );
+            else
+                parseMainAttrib( parent, attrName, attrVal );
+        }
+        
+        // Do the bulk of the parsing below...
+        Query result = parseQuery2( parent, name, field, maxSnippets );
+        
+        // And set any boost that was specified.
+        if( boost != 1.0f )
+            result.setBoost( boost );
+        
+        // If a sectionType query was specified, add that to the mix.
+        SpanQuery secType = parseSectionType( parent, field, maxSnippets );
+        if( secType != null ) {
+            SpanQuery combo = 
+                 new SpanSectionTypeQuery( (SpanQuery)result, secType );
+            combo.setSpanRecording( ((SpanQuery)result).getSpanRecording() );
+            result = combo;
+        }
+        
+        // All done!
+        return result;
+        
+    } // parseQuery()
+    
+    /** 
+     * Main work of recursively parsing a query. 
+     */
+    private Query parseQuery2( Element parent, String name, String field,
+                               int maxSnippets )
+        throws QueryGenException
+    {
+        // Term query is the simplest kind.
+        if( name.equals("term") ) {
+            Term term = parseTerm( parent, field, "term" );
+            SpanQuery q = isWildcardTerm(term) ? 
+                new SpanWildcardQuery( term, termLimit ) :
+                new SpanTermQuery( term );
+            q.setSpanRecording( maxSnippets );
+            return q;
+        }
+        
+        // Get field name if specified.
+        field = parseField( parent, field );
+        
+        // Range queries are also pretty simple.
+        if( name.equals("range") )
+            return parseRange( parent, field, maxSnippets );
 
-        // We have to make different sorts of queries depending on whether
-        // we're looking at meta-data or full text.
+        // For text queries, 'all', 'phrase', and 'near' can be viewed
+        // as phrase queries with different slop values.
         //
-        if( mode == MODE_META )
-            return parseMetaBoolean( parent, name, field, addTerms );
-        else
-            return parseTextBoolean( parent, name, field, addTerms );
+        // 'all' means essentially infinite slop (limited to the actual
+        //          chunk overlap at runtime.)
+        // 'phrase' means zero slop
+        // 'near' allows specifying the slop (again limited to the actual
+        //          chunk overlap at runtime.)
+        //
+        if( name.equals("all") || name.equals("phrase") || name.equals("near"))
+        {   
+            int slop = name.equals("all") ? 999999 :
+                       name.equals("phrase") ? 0 :
+                       parseIntAttrib( parent, "slop" );
+            return makeProxQuery( parent, slop, field, maxSnippets );
+        }
+        
+        // All other cases fall through to here: and, or. Use our special
+        // de-duplicating span logic. First, get all the sub-queries.
+        //
+        Vector subVec = new Vector();
+        Vector notVec = new Vector();
+        for( ElementIter iter = new ElementIter(parent); iter.hasNext(); ) {
+            Element el = iter.next();
+            if( el.getLocalName().equals("sectionType") )
+                ; // handled elsewhere
+            else if( el.getLocalName().equals("not") ) { 
+                Query q = parseQuery2(el, name, field, maxSnippets);
+                if( q != null )
+                    notVec.add( q );
+            }
+            else {
+                Query q = parseQuery(el, field, maxSnippets);
+                if( q != null )
+                    subVec.add( q );
+            }
+        }
+        
+        // If no sub-queries, return an empty query.
+        if( subVec.isEmpty() )
+            return null;
+        
+        // If only one sub-query, just return that.
+        if( subVec.size() == 1 && notVec.isEmpty() )
+            return (Query) subVec.get(0);
+        
+        // Divide up the queries by field name.
+        HashMap fieldQueries = new HashMap();
+        for( int i = 0; i < subVec.size(); i++ ) {
+            Query q = (Query) subVec.get(i);
+            field = (q instanceof SpanQuery) ? 
+                         ((SpanQuery)q).getField() : "<none>";
+            if( !fieldQueries.containsKey(field) )
+                fieldQueries.put( field, new Vector() );
+            ((Vector)fieldQueries.get(field)).add( q );
+        } // for i
+        
+        // Same with the "not" queries.
+        HashMap fieldNots = new HashMap();
+        for( int i = 0; i < notVec.size(); i++ ) {
+            Query q = (Query) notVec.get(i);
+            field = (q instanceof SpanQuery) ? 
+                         ((SpanQuery)q).getField() : "<none>";
+            if( !fieldNots.containsKey(field) )
+                fieldNots.put( field, new Vector() );
+            ((Vector)fieldNots.get(field)).add( q );
+        } // for i
+        
+        // If we have only queries for the same field, our work is simple.
+        if( fieldQueries.size() == 1 ) {
+            Vector queries = (Vector) fieldQueries.values().iterator().next();
+            Vector nots;
+            if( fieldNots.isEmpty() )
+                nots = new Vector();
+            else {
+                assert fieldNots.size() == 1 : "case not handled";
+                nots = (Vector) fieldNots.values().iterator().next();
+                assert nots.get(0) instanceof SpanQuery : "case not handled";
+                String notField = ((SpanQuery)nots.get(0)).getField();
+                String mainField = ((SpanQuery)queries.get(0)).getField();
+                assert notField.equals(mainField) : "case not handled";
+            }
+            return processSpanJoin(name, queries, nots, maxSnippets);
+        }
+        
+        // Now form a BooleanQuery containing grouped span queries where
+        // appropriate.
+        //
+        BooleanQuery bq = new BooleanQuery();
+        boolean require = !name.equals("or");
+        TreeSet keySet = new TreeSet( fieldQueries.keySet() );
+        for( Iterator i = keySet.iterator(); i.hasNext(); ) {
+            field = (String) i.next();
+            Vector queries = (Vector) fieldQueries.get( field );
+            Vector nots = (Vector) fieldNots.get( field );
+            if( nots == null )
+                nots = new Vector();
 
-    } // parseBoolean()
+            if( field.equals("<none>") ||
+                (queries.size() == 1 && nots.isEmpty()) )
+            {
+                for( int j = 0; j < queries.size(); j++ )
+                    bq.add( deChunk((Query)queries.get(j)), require, false );
+                for( int j = 0; j < nots.size(); j++ )
+                    bq.add( deChunk((Query)queries.get(j)), false, true );
+                continue;
+            }
+
+            // Span query/queries. Join them into a single span query.
+            SpanQuery sq = processSpanJoin(name, queries, nots, maxSnippets); 
+            bq.add( deChunk(sq), require, false );
+        } // for i
+
+        // And we're done.
+        return bq;        
+    } // parseBoolean() 
+        
     
-    
+    /**
+     * Joins a number of span queries together using a span query.
+     * 
+     * @param name    'and', 'or', 'near', etc.
+     * @param subVec  Vector of sub-clauses
+     * @param notVec  Vector of not clauses (may be empty)
+     * 
+     * @return        A new Span query joining the sub-clauses.
+     */
+    private SpanQuery processSpanJoin( String name, Vector subVec, 
+                                       Vector notVec, int maxSnippets )
+    {
+        SpanQuery[] subQueries = 
+            (SpanQuery[]) subVec.toArray( new SpanQuery[0] ); 
+        
+        // Now make the top-level query.
+        SpanQuery q;
+        if( subQueries.length == 1 )
+            q = subQueries[0];
+        else if( !name.equals("or") ) {
+            // We can't know the actual slop until the query is run against
+            // an index (the slop will be equal to max proximity). So set
+            // it to a big value for now, and it will be clamped by
+            // fixupSlop() later whent he query is run.
+            //
+            q = new SpanNearQuery( subQueries, 999999, false );
+        }
+        else
+            q = new SpanOrQuery( subQueries );
+
+        q.setSpanRecording( maxSnippets );
+        
+        // Finish up by handling any not clauses found.
+        return processTextNots( q, notVec, maxSnippets );
+        
+    } // processSpanJoin()
+
+    /**
+     * Ensures that the given query, if it is a span query on the "text"
+     * field, is wrapped by a de-chunking query.
+     */
+    private Query deChunk( Query q )
+    {
+        // We only need to de-chunk span queries, not other queries.
+        if( !(q instanceof SpanQuery) )
+            return q;
+        
+        // Furthermore, we only need to de-chunk queries on the "text"
+        // field.
+        //
+        SpanQuery sq = (SpanQuery) q;
+        if( !sq.getField().equals("text") )
+            return q;
+        
+        // If it's already de-chunked, no need to do it again.
+        if( sq instanceof SpanDechunkingQuery )
+            return q;
+        
+        // Okay, wrap it.
+        SpanDechunkingQuery dq = new SpanDechunkingQuery( sq );
+        dq.setSpanRecording( sq.getSpanRecording() );
+        return dq;
+        
+    } // deChunk()  
+      
     /** Determines if the term contains a wildcard character ('*' or '?') */
     private boolean isWildcardTerm( Term term )
     {
@@ -904,88 +1083,11 @@ public class QueryRequest
             return true;
         return false;
     } // isWildcardTerm()
-    
-    /**
-     * Parse a boolean query on a meta-data field. No span logic is required
-     * for these, since no snippets are generated.
-     */
-    private Query parseMetaBoolean( Element parent, String name, String field,
-                                    boolean addTerms )
-        throws QueryGenException
-    {
-        // Term query is the simplest kind.
-        if( name.equals("term") ) {
-            Term term = parseTerm( parent, field, "term", addTerms );
-            if( isWildcardTerm(term) )
-                return new LimitedWildcardQuery( term, curCombo.termLimit, 
-                                                 curCombo.terms );
-            else {
-                if( addTerms )
-                    curCombo.terms.put( term );
-                return new TermQuery( term );
-            }
-        }
-    
-        // Get field name if specified.
-        field = parseField( parent, field );
-        
-        // 'all', 'phrase', and 'near' can be viewed as phrase queries with
-        // different slop values.
-        //
-        // 'all' means essentially infinite slop (limited to the actual
-        //          chunk overlap at runtime.
-        // 'phrase' means zero slop
-        // 'near' allows specifying the slop (again limited to the actual
-        //          chunk overlap at runtime.
-        //
-        if( name.equals("all") || 
-            name.equals("phrase") || 
-            name.equals("near"))
-        {   
-            int slop = name.equals("all") ? Integer.MAX_VALUE :
-                       name.equals("phrase") ? 0 :
-                       parseIntAttrib( parent, "slop" );
-                       
-            // Since Lucene's PhraseQuery doesn't allow any flexibility in
-            // terms of including arbitrary queries below it, just use the
-            // span logic.
-            //
-            return makeAllQuery( parent, slop, field, addTerms );
-        }
-        
-        // Range queries are pretty specialized.
-        if( name.equals("range") )
-            return parseRange( parent, field );
-        
-        // All other cases fall through to here: and, or. Handle the 'not'
-        // sub-clauses along the way.
-        //
-        BooleanQuery bq = new BooleanQuery();
-        boolean require = name.equals("and");
-        for( ElementIter iter = new ElementIter(parent); iter.hasNext(); ) {
-            Element el = iter.next();
-            if( el.getLocalName().equals("not") ) 
-            {
-                // Make sure terms used in the 'not' query aren't added to
-                // the term map (since it would be silly to hilight them.)
-                //
-                bq.add( parseQuery(el, field, MODE_META, false), 
-                        false, true );
-            }
-            else
-                bq.add( parseBoolean(el, field, MODE_META, addTerms), 
-                        require, false );
-        }
-        
-        return bq;
-    } // parseMetaBoolean()
-
 
     /**
-     * Parse a boolean query on the full text. Since snippets will be
-     * generated, this requires use of the fancy span de-duplication logic.
+     * Parse a range query.
      */
-    private Query parseRange( Element parent, String field )
+    private Query parseRange( Element parent, String field, int maxSnippets )
         throws QueryGenException
     {
         // Inclusive or exclusive?
@@ -1006,12 +1108,12 @@ public class QueryRequest
             if( name.equals("lower") ) {
                 if( lower != null )
                     error( "'lower' only allowed once as child of 'range' element" );
-                lower = parseTerm( child, field, "lower", false );
+                lower = parseTerm( child, field, "lower" );
             }
             else if( name.equals("upper") ) {
                 if( upper != null )
                     error( "'upper' only allowed once as child of 'range' element" );
-                upper = parseTerm( child, field, "upper", false );
+                upper = parseTerm( child, field, "upper" );
             }
             else
                 error( "'range' element may only have 'lower' and/or 'upper' " +
@@ -1023,98 +1125,17 @@ public class QueryRequest
             error( "'range' element must have 'lower' and/or 'upper' child element(s)" );
         
         // And we're done.
-        return new LimitedRangeQuery( lower, upper, inclusive, 
-                                      curCombo.termLimit, curCombo.terms );
+        SpanQuery q = new SpanRangeQuery( lower, upper, inclusive, termLimit );
+        q.setSpanRecording( maxSnippets );
+        return q;
     } // parseRange()
 
-    /**
-     * Parse a boolean query on the full text. Since snippets will be
-     * generated, this requires use of the fancy span de-duplication logic.
-     */
-    private Query parseTextBoolean( Element parent, String name, String field,
-                                    boolean addTerms )
-        throws QueryGenException
-    {
-        // 'not' queries are handled at the parent's level.
-        assert !name.equals("not");
-        
-        // Range queries aren't allowed for the text.
-        if( name.equals("range") )
-            error( "Range queries not allowed on text, only on meta-info" );
-        
-        // Term query is the simplest kind.
-        if( name.equals("term") ) {
-            Term term = parseTerm( parent, field, "term", addTerms );
-            if( isWildcardTerm(term) )
-                return new SpanWildcardTermQuery( term, curCombo.termLimit );
-            else
-                return new SpanTermQuery( term );
-        }
-
-        // Get field name if specified.
-        field = parseField( parent, field );
-        
-        // For text queries, 'all', 'phrase', and 'near' can be viewed
-        // as phrase queries with different slop values.
-        //
-        // 'all' means essentially infinite slop (limited to the actual
-        //          chunk overlap at runtime.
-        // 'phrase' means zero slop
-        // 'near' allows specifying the slop (again limited to the actual
-        //          chunk overlap at runtime.
-        //
-        if( name.equals("all") || name.equals("phrase") || name.equals("near"))
-        {   
-            int slop = name.equals("all") ? Integer.MAX_VALUE :
-                       name.equals("phrase") ? 0 :
-                       parseIntAttrib( parent, "slop" );
-            return makeAllQuery( parent, slop, field, addTerms );
-        }
-        
-        // All other cases fall through to here: and, or. Use our special
-        // de-duplicating span logic. First, get all the sub-queries.
-        //
-        Vector subVec = new Vector();
-        Vector notVec = new Vector();
-        for( ElementIter iter = new ElementIter(parent); iter.hasNext(); ) {
-            Element el = iter.next();
-            if( el.getLocalName().equals("not") ) 
-            {
-                // Make sure that we don't add the terms from the 'not' query
-                // to the term map, since it would be silly to hilight them.
-                //
-                notVec.add( parseQuery(el, field, MODE_TEXT, false) );
-            }
-            else
-                subVec.add( parseBoolean(el, field, MODE_TEXT, addTerms) );
-        }
-        SpanQuery[] subQueries = 
-            (SpanQuery[]) subVec.toArray( new SpanQuery[0] ); 
-        
-        // Now make the top-level query.
-        SpanQuery q;
-        if( name.equals("and") ) {
-            q = new SpanNearQuery( subQueries, Integer.MAX_VALUE );
-            
-            // We can't know the actual slop until the query is run against
-            // an index (the slop will be equal to max proximity). So add it
-            // to a list of queries that need slop fixing.
-            //
-            curCombo.addSlopFixup( q, Integer.MAX_VALUE ); 
-        }
-        else
-            q = new SpanOrQuery( subQueries );
-        
-        // Finish up by handling any not clauses found.
-        return processTextNots( q, notVec );
-    } // parseTextBoolean()
-    
-    
     /**
      * If any 'not' clauses are present, this builds a query that filters them
      * out of the main query.
      */
-    SpanQuery processTextNots( SpanQuery query, Vector notClauses ) 
+    SpanQuery processTextNots( SpanQuery query, Vector notClauses,
+                               int maxSnippets ) 
     {
         // If there aren't any 'not' clauses, we're done.
         if( notClauses.isEmpty() )
@@ -1130,13 +1151,14 @@ public class QueryRequest
             SpanQuery[] subs = (SpanQuery[]) 
                 notClauses.toArray( new SpanQuery[0] );
             subQuery = new SpanOrQuery( subs );
+            subQuery.setSpanRecording( maxSnippets );
         }
         
         // Now make the final 'not' query. Note that the actual slop will have
         // to be fixed when the query is run.
         //
-        SpanQuery nq = new SpanNotQuery( query, subQuery, Integer.MAX_VALUE );
-        curCombo.addSlopFixup( nq, Integer.MAX_VALUE );
+        SpanQuery nq = new SpanChunkedNotQuery( query, subQuery, 9999999 );
+        nq.setSpanRecording( maxSnippets );
         return nq;
     } // processTextNots();
     
@@ -1147,8 +1169,8 @@ public class QueryRequest
      * 
      * @param parent The element containing the field name and terms.
      */
-    Query makeAllQuery( Element parent, int slop, String field, 
-                        boolean addTerms )
+    Query makeProxQuery( Element parent, int slop, String field,
+                         int maxSnippets )
         throws QueryGenException
     {
         Vector terms  = new Vector();
@@ -1162,19 +1184,21 @@ public class QueryRequest
                 // Make sure to avoid adding the 'not' terms to the term map,
                 // since it would be silly to hilight them.
                 //
-                notVec.add( parseQuery(el, field, MODE_TEXT, false) );
+                notVec.add( parseQuery(el, field, maxSnippets) );
             }
             else {
+                SpanQuery q;
                 if( slop == 0 ) {
-                    Term t = parseTerm( el, field, "term", addTerms );
+                    Term t = parseTerm( el, field, "term" );
                     if( isWildcardTerm(t) )
-                        terms.add( 
-                             new SpanWildcardTermQuery(t, curCombo.termLimit) );
+                        q = new SpanWildcardQuery(t, termLimit);
                     else
-                        terms.add( new SpanTermQuery(t) );
+                        q = new SpanTermQuery(t);
+                    q.setSpanRecording( maxSnippets );
+                    terms.add( q );
                 }
                 else
-                    terms.add( parseBoolean(el, field, MODE_TEXT, addTerms) );
+                    terms.add( parseQuery(el, field, maxSnippets) );
             }
         }
         
@@ -1192,14 +1216,9 @@ public class QueryRequest
         boolean inOrder = (slop == 0);
         SpanQuery q = new SpanNearQuery( 
                                   (SpanQuery[]) terms.toArray(new SpanQuery[0]), 
-                                  slop );
-        
-        // Set slop according to requested exactness. If it's not exact,
-        // infinite, it will have to be restricted to use the actual chunk
-        // overlap when the query is run.
-        //
-        if( slop != 0 )
-            curCombo.addSlopFixup( q, slop );
+                                  slop,
+                                  false );
+        q.setSpanRecording( maxSnippets );
         
         // And we're done.
         return q;
@@ -1212,8 +1231,7 @@ public class QueryRequest
      * 
      * @param parent The element to parse
      */
-    private Term parseTerm( Element parent, String field, String expectedName,
-                            boolean recordTerms )
+    private Term parseTerm( Element parent, String field, String expectedName )
         throws QueryGenException
     {
         // Get field name if specified.
@@ -1236,12 +1254,6 @@ public class QueryRequest
         
         // Make a term out of the field and the text.
         Term term = new Term( field, termText );
-        
-        // Add the term to the map (used in highlighting), except if it's
-        // part of a range query.
-        //
-        if( expectedName.equals("term") && recordTerms )
-            curCombo.terms.put( term );
         
         return term;
         
@@ -1280,7 +1292,6 @@ public class QueryRequest
         return text;
     } // getText()
     
-
     /**
      * Prints the node, in XML format, to System.err
      */
