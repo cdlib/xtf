@@ -90,7 +90,7 @@ public class XMLWriter
         try {
             StringWriter writer = new StringWriter();
             StreamResult tmp = new StreamResult( writer );
-            TransformerFactory factory = TransformerFactory.newInstance();
+            TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
             Transformer trans = factory.newTransformer();
             Properties props = trans.getOutputProperties();
             props.put( "indent", "yes" );

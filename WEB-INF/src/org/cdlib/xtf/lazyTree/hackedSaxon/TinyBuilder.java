@@ -3,7 +3,9 @@ package org.cdlib.xtf.lazyTree.hackedSaxon;
 import java.io.IOException;
 
 import net.sf.saxon.event.Builder;
+import net.sf.saxon.event.LocationProvider;
 import net.sf.saxon.event.ReceiverOptions;
+import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.type.Type;
 import net.sf.saxon.xpath.DynamicError;
 import net.sf.saxon.xpath.XPathException;
@@ -21,6 +23,8 @@ import org.cdlib.xtf.util.Subfile;
   */
 
 public class TinyBuilder extends Builder  {
+
+    private TinyTree tree;
 
     private int currentDepth = 0;
     private int nodeNr = 0;             // this is the local sequence within this document
@@ -49,67 +53,100 @@ public class TinyBuilder extends Builder  {
     public Subfile getTextFile() {
         return textFile;
     }
-
+    
     private int[] prevAtDepth = new int[100];
             // this array is scaffolding used while constructing the tree, it is
             // not present in the final tree.
 
-    public void createDocument () {
-        if (sizeParameters==null) {
-            currentDocument = new TinyDocumentImpl();
-        } else {
-            currentDocument = new TinyDocumentImpl(sizeParameters[0],
-                                    sizeParameters[1], sizeParameters[2], sizeParameters[3]);
-        }
-        TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
-        doc.setSystemId(getSystemId());
-        doc.setConfiguration(config);
+    public TinyTree getTree() {
+        return tree;
     }
 
     /**
-    * Callback interface for SAX: not for application use
+     * Set the root (document) node to use. This method is used to support
+     * the JAXP facility to attach transformation output to a supplied Document
+     * node. It must be called before startDocument(), and the type of document
+     * node must be compatible with the type of Builder used.
+     */
+
+    public void setRootNode(DocumentInfo doc) {
+        currentRoot = doc;
+        if (doc instanceof TinyDocumentImpl) {
+            tree = ((TinyDocumentImpl)doc).getTree();
+            currentDepth = 1;
+            prevAtDepth[0] = 0;
+            prevAtDepth[1] = -1;
+            tree.next[0] = -1;
+        }
+    }
+
+
+    /**
+     * Open the event stream
+     */
+
+    public void open() throws XPathException {
+        if (started) {
+            // this happens when using an IdentityTransformer
+            return;
+        }
+        if (tree == null) {
+            if (sizeParameters==null) {
+                tree = new TinyTree();
+            } else {
+                tree = new TinyTree(sizeParameters[0],
+                                        sizeParameters[1], sizeParameters[2], sizeParameters[3]);
+            }
+            tree.setConfiguration(config);
+            currentDepth = 0;
+            if (lineNumbering) {
+                tree.setLineNumbering();
+            }
+        }
+        super.open();
+    }
+
+    /**
+    * Write a document node to the tree
     */
 
-    public void open () throws XPathException
-    {
-        // System.err.println("Builder: " + this + " Start document");
-        //failed = false;
+    public void startDocument (int properties) throws XPathException {
+//        if (currentDepth == 0 && tree.numberOfNodes != 0) {
+//            System.err.println("**** FOREST DOCUMENT ****");
+//        }
         if (started) {
             // this happens when using an IdentityTransformer
             return;
         }
         started = true;
 
-        if (currentDocument==null) {
+        if (currentRoot==null) {
             // normal case
-            createDocument();
+            currentRoot = new TinyDocumentImpl(tree);
+            TinyDocumentImpl doc = (TinyDocumentImpl)currentRoot;
+            doc.setSystemId(getSystemId());
+            doc.setConfiguration(config);
+            //tree.document = doc;
         } else {
             // document node supplied by user
-            if (!(currentDocument instanceof TinyDocumentImpl)) {
-                throw new DynamicError("Root node supplied is of wrong type");
+            if (!(currentRoot instanceof TinyDocumentImpl)) {
+                throw new DynamicError("Document node supplied is of wrong kind");
             }
-            if (currentDocument.hasChildNodes()) {
+            if (currentRoot.hasChildNodes()) {
                 throw new DynamicError("Supplied document is not empty");
             }
-            currentDocument.setConfiguration(config);
+            //currentRoot.setConfiguration(config);
         }
 
-        //currentNode = currentDocument;
         currentDepth = 0;
-
-        TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
-        if (lineNumbering) {
-            doc.setLineNumbering();
-        }
-
-        doc.addNode(Type.DOCUMENT, 0, 0, 0, -1);
+        tree.addDocumentNode((TinyDocumentImpl)currentRoot);
         prevAtDepth[0] = 0;
         prevAtDepth[1] = -1;
-        doc.next[0] = -1;
+        tree.next[0] = -1;
 
         currentDepth++;
 
-        super.open();
+        super.startDocument(0);
 
     }
 
@@ -117,8 +154,7 @@ public class TinyBuilder extends Builder  {
     * Callback interface for SAX: not for application use
     */
 
-    public void close () throws XPathException
-    {
+    public void endDocument () throws XPathException {
              // System.err.println("TinyBuilder: " + this + " End document");
 
         if (ended) return;  // happens when using an IdentityTransformer
@@ -126,8 +162,13 @@ public class TinyBuilder extends Builder  {
 
         prevAtDepth[currentDepth] = -1;
 
-        ((TinyDocumentImpl)currentDocument).condense();
 
+
+        //super.close();
+    }
+
+    public void close() throws XPathException {
+        tree.condense();
         super.close();
     }
 
@@ -137,22 +178,28 @@ public class TinyBuilder extends Builder  {
 
     public void startElement (int nameCode, int typeCode, int locationId, int properties) throws XPathException
     {
-        //System.err.println("TinyBuilder Start element (" + nameCode + "," + typeCode + ")");
-
-        TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
-
-		nodeNr = doc.addNode(Type.ELEMENT, currentDepth, -1, -1, nameCode);
+//        if (currentDepth == 0 && tree.numberOfNodes != 0) {
+//            System.err.println("**** FOREST ELEMENT ****");
+//        }
+		nodeNr = tree.addNode(Type.ELEMENT, currentDepth, -1, -1, nameCode);
 
 		if (typeCode != -1) {
-		    doc.setElementAnnotation(nodeNr, typeCode);
+		    tree.setElementAnnotation(nodeNr, typeCode);
 		}
 
-        int prev = prevAtDepth[currentDepth];
-        if (prev > 0) {
-            doc.next[prev] = nodeNr;
+        if (currentDepth == 0) {
+            prevAtDepth[0] = 0;
+            prevAtDepth[1] = -1;
+            tree.next[0] = -1;
+            currentRoot = tree.getNode(nodeNr);
+        } else {
+            int prev = prevAtDepth[currentDepth];
+            if (prev > 0) {
+                tree.next[prev] = nodeNr;
+            }
+            tree.next[nodeNr] = prevAtDepth[currentDepth - 1];   // *O* owner pointer in last sibling
+            prevAtDepth[currentDepth] = nodeNr;
         }
-        doc.next[nodeNr] = prevAtDepth[currentDepth - 1];   // *O* owner pointer in last sibling
-        prevAtDepth[currentDepth] = nodeNr;
         currentDepth++;
 
         if (currentDepth == prevAtDepth.length) {
@@ -162,16 +209,17 @@ public class TinyBuilder extends Builder  {
         }
         prevAtDepth[currentDepth] = -1;
 
+        LocationProvider locator = pipe.getLocationProvider();
         if (locator != null) {
-            doc.setSystemId(nodeNr, locator.getSystemId(locationId));
+            tree.setSystemId(nodeNr, locator.getSystemId(locationId));
             if (lineNumbering) {
-                doc.setLineNumber(nodeNr, locator.getLineNumber(locationId));
+                tree.setLineNumber(nodeNr, locator.getLineNumber(locationId));
             }
         }
     }
 
     public void namespace(int namespaceCode, int properties) throws XPathException {
-        ((TinyDocumentImpl)currentDocument).addNamespace( nodeNr, namespaceCode );
+        tree.addNamespace( nodeNr, namespaceCode );
     }
 
     public void attribute(int nameCode, int typeCode, CharSequence value, int locationId, int properties)
@@ -184,8 +232,7 @@ public class TinyBuilder extends Builder  {
             throw err;
         }
 
-        ((TinyDocumentImpl)currentDocument).addAttribute(
-                nodeNr, nameCode, typeCode, value, properties);
+        tree.addAttribute(currentRoot, nodeNr, nameCode, typeCode, value, properties);
     }
 
     public void startContent() {
@@ -210,8 +257,6 @@ public class TinyBuilder extends Builder  {
 
     public void characters (CharSequence chars, int locationId, int properties) throws XPathException
     {
-         // System.err.println("Characters: " + chars.toString());
-        TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
         if (chars.length()>0) {
             if ((properties & ReceiverOptions.DISABLE_ESCAPING) != 0) {
                 DynamicError err = new DynamicError("Cannot disable output escaping when writing a tree");
@@ -230,15 +275,15 @@ public class TinyBuilder extends Builder  {
                 throw new DynamicError( e );
             }
             
-            nodeNr = doc.addNode(Type.TEXT, currentDepth, 
-                                 (int)startPos, textBuf.length(),
-                                 -1);
+            nodeNr = tree.addNode(Type.TEXT, currentDepth, 
+                                  (int)startPos, textBuf.length(),
+                                  -1);
 
             int prev = prevAtDepth[currentDepth];
             if (prev > 0) {
-                doc.next[prev] = nodeNr;
+                tree.next[prev] = nodeNr;
             }
-            doc.next[nodeNr] = prevAtDepth[currentDepth - 1];   // *O* owner pointer in last sibling
+            tree.next[nodeNr] = prevAtDepth[currentDepth - 1];   // *O* owner pointer in last sibling
             prevAtDepth[currentDepth] = nodeNr;
         }
     }
@@ -249,27 +294,24 @@ public class TinyBuilder extends Builder  {
 
     public void processingInstruction (String piname, CharSequence remainder, int locationId, int properties) throws XPathException
     {
-    	// System.err.println("Builder: PI " + piname);
-
-        TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
-        if (doc.commentBuffer==null) {
-            doc.commentBuffer = new StringBuffer();
+        if (tree.commentBuffer==null) {
+            tree.commentBuffer = new StringBuffer(200);
         }
-        int s = doc.commentBuffer.length();
-        doc.commentBuffer.append(remainder.toString());
+        int s = tree.commentBuffer.length();
+        tree.commentBuffer.append(remainder.toString());
         int nameCode = namePool.allocate("", "", piname);
 
-        nodeNr = doc.addNode(Type.PROCESSING_INSTRUCTION, currentDepth, s, remainder.length(),
+        nodeNr = tree.addNode(Type.PROCESSING_INSTRUCTION, currentDepth, s, remainder.length(),
         			 nameCode);
 
         int prev = prevAtDepth[currentDepth];
         if (prev > 0) {
-            doc.next[prev] = nodeNr;
+            tree.next[prev] = nodeNr;
         }
-        doc.next[nodeNr] = prevAtDepth[currentDepth - 1];   // *O* owner pointer in last sibling
+        tree.next[nodeNr] = prevAtDepth[currentDepth - 1];   // *O* owner pointer in last sibling
         prevAtDepth[currentDepth] = nodeNr;
 
-            // SaxonTODO: handle PI Base URI
+            // TODO: handle PI Base URI
             //if (locator!=null) {
             //    pi.setLocation(locator.getSystemId(), locator.getLineNumber());
             //}
@@ -280,19 +322,18 @@ public class TinyBuilder extends Builder  {
     */
 
     public void comment (CharSequence chars, int locationId, int properties) throws XPathException {
-        TinyDocumentImpl doc = (TinyDocumentImpl)currentDocument;
-        if (doc.commentBuffer==null) {
-            doc.commentBuffer = new StringBuffer();
+        if (tree.commentBuffer==null) {
+            tree.commentBuffer = new StringBuffer(200);
         }
-        int s = doc.commentBuffer.length();
-        doc.commentBuffer.append(chars.toString());
-        nodeNr = doc.addNode(Type.COMMENT, currentDepth, s, chars.length(), -1);
+        int s = tree.commentBuffer.length();
+        tree.commentBuffer.append(chars.toString());
+        nodeNr = tree.addNode(Type.COMMENT, currentDepth, s, chars.length(), -1);
 
         int prev = prevAtDepth[currentDepth];
         if (prev > 0) {
-            doc.next[prev] = nodeNr;
+            tree.next[prev] = nodeNr;
         }
-        doc.next[nodeNr] = prevAtDepth[currentDepth - 1];   // *O* owner pointer in last sibling
+        tree.next[nodeNr] = prevAtDepth[currentDepth - 1];   // *O* owner pointer in last sibling
         prevAtDepth[currentDepth] = nodeNr;
 
     }
@@ -302,7 +343,7 @@ public class TinyBuilder extends Builder  {
     */
 
     public void setUnparsedEntity(String name, String uri, String publicId) {
-        ((TinyDocumentImpl)currentDocument).setUnparsedEntity(name, uri, publicId);
+        ((TinyDocumentImpl)currentRoot).setUnparsedEntity(name, uri, publicId);
     }
 
 }
@@ -310,16 +351,15 @@ public class TinyBuilder extends Builder  {
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
 // The Original Code is: most of this file. 
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
 // Portions created by Martin Haye are Copyright (C) Regents of the University 
 // of California. All Rights Reserved. 

@@ -1,4 +1,5 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
+import net.sf.saxon.Configuration;
 import net.sf.saxon.om.*;
 import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.pattern.NameTest;
@@ -23,7 +24,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
     // CDL-HACK: All private and protected members changed to public, so that
     //           the contents of this structure can be re-used.
     //
-    public TinyDocumentImpl document;
+    public TinyTree tree;
     public int nodeNr;
     public TinyNodeImpl parent = null;
 
@@ -35,11 +36,11 @@ public abstract class TinyNodeImpl extends AbstractNode {
     */
 
     public void setSystemId(String uri) {
-        short type = document.nodeKind[nodeNr];
+        short type = tree.nodeKind[nodeNr];
         if (type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
             getParent().setSystemId(uri);
         } else {
-            document.setSystemId(nodeNr, uri);
+            tree.setSystemId(nodeNr, uri);
         }
     }
 
@@ -62,7 +63,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
     public boolean isSameNodeInfo(NodeInfo other) {
         if (this==other) return true;
         if (!(other instanceof TinyNodeImpl)) return false;
-        if (this.document != ((TinyNodeImpl)other).document) return false;
+        if (this.tree != ((TinyNodeImpl)other).tree) return false;
         if (this.nodeNr != ((TinyNodeImpl)other).nodeNr) return false;
         if (this.getNodeKind() != other.getNodeKind()) return false;
         return true;
@@ -73,7 +74,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
     */
 
     public String getSystemId() {
-        return document.getSystemId(nodeNr);
+        return tree.getSystemId(nodeNr);
     }
 
     /**
@@ -98,7 +99,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
     */
 
     public int getLineNumber() {
-        return document.getLineNumber(nodeNr);
+        return tree.getLineNumber(nodeNr);
     }
 
     /**
@@ -147,7 +148,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
 
 	public int getNameCode() {
 	    // overridden for attributes and namespace nodes.
-		return document.nameCode[nodeNr];
+		return tree.nameCode[nodeNr];
 	}
 
     /**
@@ -156,10 +157,10 @@ public abstract class TinyNodeImpl extends AbstractNode {
     */
 
     public String getPrefix() {
-        int code = document.nameCode[nodeNr];
+        int code = tree.nameCode[nodeNr];
         if (code<0) return "";
         if ((code>>20 & 0xff) == 0) return "";
-        return document.getNamePool().getPrefix(code);
+        return tree.getNamePool().getPrefix(code);
     }
 
     /**
@@ -170,34 +171,34 @@ public abstract class TinyNodeImpl extends AbstractNode {
     */
 
     public String getURI() {
-        int code = document.nameCode[nodeNr];
+        int code = tree.nameCode[nodeNr];
         if (code<0) return "";
-        return document.getNamePool().getURI(code);
+        return tree.getNamePool().getURI(code);
     }
 
     /**
-    * Get the display name of this node. For elements and attributes this is [prefix:]localname.
-    * For unnamed nodes, it is an empty string.
+    * Get the display name of this node (a lexical QName). For elements and attributes this is [prefix:]localname.
+    * The original prefix is retained. For unnamed nodes, the result is an empty string.
     * @return The display name of this node.
     * For a node with no name, return an empty string.
     */
 
     public String getDisplayName() {
-        int code = document.nameCode[nodeNr];
+        int code = tree.nameCode[nodeNr];
         if (code<0) return "";
-        return document.getNamePool().getDisplayName(code);
+        return tree.getNamePool().getDisplayName(code);
     }
 
     /**
-    * Get the local name of this node.
+    * Get the local part of the name of this node.
     * @return The local name of this node.
     * For a node with no name, return "".
     */
 
     public String getLocalPart() {
-        int code = document.nameCode[nodeNr];
+        int code = tree.nameCode[nodeNr];
         if (code<0) return "";
-        return document.getNamePool().getLocalName(code);
+        return tree.getNamePool().getLocalName(code);
     }
 
     /**
@@ -210,7 +211,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
         // fast path for child axis
         if (axisNumber == Axis.CHILD) {
              if (hasChildNodes()) {
-                return new SiblingEnumeration(document, this, null, true);
+                return new SiblingEnumeration(tree, this, null, true);
              } else {
                 return EmptyIterator.getInstance();
              }
@@ -228,40 +229,38 @@ public abstract class TinyNodeImpl extends AbstractNode {
 
     public AxisIterator iterateAxis(byte axisNumber, NodeTest nodeTest) {
 
-        // System.err.println("Get enumeration of axis " + axisNumber + " from " + generateId());
-
         int type = getNodeKind();
         switch (axisNumber) {
             case Axis.ANCESTOR:
-                if (type==Type.DOCUMENT) {
-                    return EmptyIterator.getInstance();
-                } else {
-                    return new AncestorEnumeration(document, this, nodeTest, false);
-                }
+                //if (type != Type.ATtree.depth[nodeNr] == 0) {
+                //    return EmptyIterator.getInstance();
+                //} else {
+                    return new AncestorEnumeration(this, nodeTest, false);
+                //}
 
             case Axis.ANCESTOR_OR_SELF:
-                if (type==Type.DOCUMENT) {
-                    if (nodeTest.matches(getNodeKind(), getFingerprint(), getTypeAnnotation())) {
-                        return SingletonIterator.makeIterator(this);
-                    } else {
-                        return EmptyIterator.getInstance();
-                    }
-                } else {
-                    return new AncestorEnumeration(document, this, nodeTest, true);
-                }
+//                if (tree.depth[nodeNr] == 0) {
+//                    if (nodeTest.matches(getNodeKind(), getFingerprint(), getTypeAnnotation())) {
+//                        return SingletonIterator.makeIterator(this);
+//                    } else {
+//                        return EmptyIterator.getInstance();
+//                    }
+//                } else {
+                    return new AncestorEnumeration(this, nodeTest, true);
+//                }
 
             case Axis.ATTRIBUTE:
                  if (type!=Type.ELEMENT) {
                      return EmptyIterator.getInstance();
                  }
-                 if (document.alpha[nodeNr]<0) {
+                 if (tree.alpha[nodeNr]<0) {
                      return EmptyIterator.getInstance();
                  }
-                 return new AttributeEnumeration(document, nodeNr, nodeTest);
+                 return new AttributeEnumeration(tree, nodeNr, nodeTest);
 
             case Axis.CHILD:
                  if (hasChildNodes()) {
-                    return new SiblingEnumeration(document, this, nodeTest, true);
+                    return new SiblingEnumeration(tree, this, nodeTest, true);
                  } else {
                     return EmptyIterator.getInstance();
                  }
@@ -270,45 +269,44 @@ public abstract class TinyNodeImpl extends AbstractNode {
                 if (type==Type.DOCUMENT &&
                         nodeTest instanceof NameTest &&
                         nodeTest.getPrimitiveType()==Type.ELEMENT) {
-                    return ((TinyDocumentImpl)this).getAllElements(
-                                nodeTest.getFingerprint());
+                    return ((TinyDocumentImpl)this).getAllElements(nodeTest.getFingerprint());
                 } else if (hasChildNodes()) {
-                    return new DescendantEnumeration(document, this, nodeTest, false);
+                    return new DescendantEnumeration(tree, this, nodeTest, false);
                 } else {
                     return EmptyIterator.getInstance();
                 }
 
             case Axis.DESCENDANT_OR_SELF:
-                 if (hasChildNodes()) {
-                    return new DescendantEnumeration(document, this, nodeTest, true);
-                 } else {
+                if (hasChildNodes()) {
+                    return new DescendantEnumeration(tree, this, nodeTest, true);
+                } else {
                     if (nodeTest.matches(getNodeKind(), getFingerprint(), getTypeAnnotation())) {
                         return SingletonIterator.makeIterator(this);
                     } else {
                         return EmptyIterator.getInstance();
                     }
-                 }
+                }
+
             case Axis.FOLLOWING:
-                if (type==Type.DOCUMENT) {
+                if (type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
+                    return new FollowingEnumeration(tree, (TinyNodeImpl)getParent(), nodeTest, true);
+                } else if (tree.depth[nodeNr] == 0) {
                     return EmptyIterator.getInstance();
-                } else if (type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
-                    return new FollowingEnumeration(
-                                document, (TinyNodeImpl)getParent(), nodeTest, true);
                 } else {
-                    return new FollowingEnumeration(
-                                document, this, nodeTest, false);
+                    return new FollowingEnumeration(tree, this, nodeTest, false);
                 }
 
             case Axis.FOLLOWING_SIBLING:
-                if (type==Type.DOCUMENT || type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
+                if (type==Type.ATTRIBUTE || type==Type.NAMESPACE || tree.depth[nodeNr] == 0) {
                     return EmptyIterator.getInstance();
                 } else {
-                    return new SiblingEnumeration(
-                                document, this, nodeTest, false);
+                    return new SiblingEnumeration(tree, this, nodeTest, false);
                 }
 
             case Axis.NAMESPACE:
-                if (type!=Type.ELEMENT) return EmptyIterator.getInstance();
+                if (type!=Type.ELEMENT) {
+                    return EmptyIterator.getInstance();
+                }
                 return new NamespaceEnumeration((TinyElementImpl)this, nodeTest);
 
             case Axis.PARENT:
@@ -320,22 +318,19 @@ public abstract class TinyNodeImpl extends AbstractNode {
                  return EmptyIterator.getInstance();
 
             case Axis.PRECEDING:
-                if (type==Type.DOCUMENT) {
+                if (type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
+                    return new PrecedingEnumeration(tree, (TinyNodeImpl)getParent(), nodeTest, false);
+                } else if (tree.depth[nodeNr] == 0) {
                     return EmptyIterator.getInstance();
-                } else if (type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
-                    return new PrecedingEnumeration(
-                                document, (TinyNodeImpl)getParent(), nodeTest, false);
                 } else {
-                    return new PrecedingEnumeration(
-                                document, this, nodeTest, false);
+                    return new PrecedingEnumeration(tree, this, nodeTest, false);
                 }
 
             case Axis.PRECEDING_SIBLING:
-                if (type==Type.DOCUMENT || type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
+                if (type==Type.ATTRIBUTE || type==Type.NAMESPACE || tree.depth[nodeNr] == 0) {
                     return EmptyIterator.getInstance();
                 } else {
-                    return new PrecedingSiblingEnumeration(
-                                document, this, nodeTest);
+                    return new PrecedingSiblingEnumeration(tree, this, nodeTest);
                 }
 
             case Axis.SELF:
@@ -348,11 +343,9 @@ public abstract class TinyNodeImpl extends AbstractNode {
                 if (type==Type.DOCUMENT) {
                     return EmptyIterator.getInstance();
                 } else if (type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
-                    return new PrecedingEnumeration(
-                                document, (TinyNodeImpl)getParent(), nodeTest, true);
+                    return new PrecedingEnumeration(tree, (TinyNodeImpl)getParent(), nodeTest, true);
                 } else {
-                    return new PrecedingEnumeration(
-                                document, this, nodeTest, true);
+                    return new PrecedingEnumeration(tree, this, nodeTest, true);
                 }
 
             default:
@@ -367,8 +360,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
 
     public NodeInfo getParent()  {
 
-        // Test if this node is registered as the effective root of the tree
-        if (nodeNr == document.rootNode) {
+        if (tree.depth[nodeNr] == 0) {
             parent = null;
             return null;
         }
@@ -389,11 +381,11 @@ public abstract class TinyNodeImpl extends AbstractNode {
         */
 
         // if parent is unknown, follow the next-sibling pointers until we reach a backwards pointer
-        int p = document.next[nodeNr];
+        int p = tree.next[nodeNr];
         while (p > nodeNr) {
-            p = document.next[p];
+            p = tree.next[p];
         }
-        parent = document.getNode(p);
+        parent = tree.getNode(p);
         return parent;
     }
 
@@ -421,26 +413,13 @@ public abstract class TinyNodeImpl extends AbstractNode {
     }
 
     /**
-     * Find the value of a given attribute of this node. <BR>
-     * This method is defined on all nodes to meet XSL requirements, but for nodes
-     * other than elements it will always return null.
-     * @param uri the namespace uri of an attribute
-     * @param localName the local name of an attribute
-     * @return the value of the attribute, if it exists, otherwise null
-     */
-
-//    public String getAttributeValue( String uri, String localName ) {
-//        return null;
-//    }
-
-    /**
     * Get the value of a given attribute of this node
     * @param fingerprint The fingerprint of the attribute name
     * @return the attribute value if it exists or null if not
     */
 
     public String getAttributeValue(int fingerprint) {
-        // overridden in TElementImpl
+        // overridden in TinyElementImpl
     	return null;
     }
 
@@ -450,7 +429,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
     */
 
     public NodeInfo getRoot() {
-        return document.getRoot();
+        return tree.getNode(0);
     }
 
     /**
@@ -459,7 +438,20 @@ public abstract class TinyNodeImpl extends AbstractNode {
     */
 
     public DocumentInfo getDocumentRoot() {
-        return document.getDocumentRoot();
+        NodeInfo root = getRoot();
+        if (root instanceof DocumentInfo) {
+            return (DocumentInfo)root;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the configuration
+     */
+
+    public Configuration getConfiguration() {
+        return tree.getConfiguration();
     }
 
     /**
@@ -468,7 +460,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
      */
 
     public NamePool getNamePool() {
-        return document.getNamePool();
+        return tree.getNamePool();
     }
 
     /**
@@ -489,7 +481,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
     */
 
     public String generateId() {
-        return document.generateId() +
+        return "d" + tree.getDocumentNumber() +
                 NODE_LETTER[getNodeKind()] +
                 nodeNr;
     }
@@ -500,7 +492,7 @@ public abstract class TinyNodeImpl extends AbstractNode {
      */
 
     public int getDocumentNumber() {
-        return document.getDocumentNumber();
+        return tree.getDocumentNumber();
     }
 
 }
@@ -508,16 +500,15 @@ public abstract class TinyNodeImpl extends AbstractNode {
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
 // The Original Code is: most of this file. 
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
 // Portions created by Martin Haye are Copyright (C) Regents of the University 
 // of California. All Rights Reserved. 

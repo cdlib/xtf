@@ -173,7 +173,7 @@ public class XTFSaxonErrorListener implements ErrorListener {
         String message = "";
 
         if (err instanceof XPathException) {
-            String code = ((XPathException)err).getErrorCode();
+            String code = ((XPathException)err).getErrorCode().toString();
             if (code != null) {
                 message = code;
             }

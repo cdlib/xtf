@@ -38,6 +38,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
+import net.sf.saxon.value.StringValue;
+
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.util.AttribList;
@@ -145,7 +147,7 @@ class DocInfoCache extends GeneratingCache
         for( Iterator iter = params.iterator(); iter.hasNext(); ) {
             String paramName = (String) iter.next();
             String paramVal  = (String) iter.next();
-            trans.setParameter( paramName, paramVal );
+            trans.setParameter( paramName, new StringValue(paramVal) );
             attrList.put( paramName, paramVal );
         }
         

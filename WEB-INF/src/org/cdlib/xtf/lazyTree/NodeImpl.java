@@ -36,6 +36,7 @@ import java.io.IOException;
 
 import org.w3c.dom.Node;
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.pattern.NameTest;
 import net.sf.saxon.pattern.AnyNodeTest;
@@ -184,6 +185,14 @@ abstract public class NodeImpl extends AbstractNode {
         if (a<b) return -1;
         if (a>b) return +1;
         return 0;
+    }
+
+    /**
+     * Get the configuration
+     */
+
+    public Configuration getConfiguration() {
+        return getDocumentRoot().getConfiguration();
     }
 
     /**

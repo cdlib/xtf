@@ -5,66 +5,71 @@ import net.sf.saxon.om.AxisIteratorImpl;
 import net.sf.saxon.om.SequenceIterator;
 
 /**
-* Enumerate the following axis starting at a given node.
+* Iterate over the following axis starting at a given node.
 * The start node must not be a namespace or attribute node.
 */
 
 final class FollowingEnumeration extends AxisIteratorImpl {
 
-    private TinyDocumentImpl document;
+    private TinyTree tree;
     private TinyNodeImpl startNode;
-    private int nextNodeNr;
     private NodeTest test;
     private boolean includeDescendants;
 
-    public FollowingEnumeration(TinyDocumentImpl doc, TinyNodeImpl node,
+    /**
+     * Create an iterator over the following axis
+     * @param doc the containing TinyTree
+     * @param node the start node. If the actual start was an attribute or namespace node, this will
+     * be the parent element of that attribute or namespace
+     * @param nodeTest condition that all the returned nodes must satisfy
+     * @param includeDescendants true if descendants of the start node are to be included. This will
+     * be false if the actual start was an element node, true if it was an attribute or namespace node
+     * (since the children of their parent follow the attribute or namespace in document order).
+     */
+
+    public FollowingEnumeration(TinyTree doc, TinyNodeImpl node,
                                  NodeTest nodeTest, boolean includeDescendants) {
-        document = doc;
+        tree = doc;
         test = nodeTest;
         startNode = node;
-        nextNodeNr = node.nodeNr;
         this.includeDescendants = includeDescendants;
-        int depth = doc.depth[nextNodeNr];
-
-        // skip the descendant nodes if any
-        if (includeDescendants) {
-            nextNodeNr++;
-        } else {
-            do {
-                nextNodeNr++;
-                if (nextNodeNr >= doc.numberOfNodes) {
-                    nextNodeNr = -1;
-                    return;
-                }
-            } while (doc.depth[nextNodeNr] > depth);
-        }
-
-        if (!test.matches(doc.nodeKind[nextNodeNr], doc.nameCode[nextNodeNr],
-                            doc.getElementAnnotation(nextNodeNr))) {
-            advance();
-            // SaxonTODO: no longer need to look ahead
-        }
-    }
-
-    private void advance() {
-        do {
-            nextNodeNr++;
-            if (nextNodeNr >= document.numberOfNodes) {
-                nextNodeNr = -1;
-                return;
-            }
-        } while (!test.matches(document.nodeKind[nextNodeNr], document.nameCode[nextNodeNr],
-                    document.getElementAnnotation(nextNodeNr)));
     }
 
     public Item next() {
-        if (nextNodeNr >= 0) {
-            position++;
-            current = document.getNode(nextNodeNr);
-            advance();
-            return current;
+        int nodeNr;
+        if (position == 0) {
+            // first time call
+            nodeNr = startNode.nodeNr;
+            int depth = tree.depth[nodeNr];
+
+            // skip the descendant nodes if any
+            if (includeDescendants) {
+                nodeNr++;
+            } else {
+                do {
+                    nodeNr++;
+                    if (tree.depth[nodeNr] == 0) {
+                        current = null;
+                        return null;
+                    }
+                } while (tree.depth[nodeNr] > depth);
+            }
         } else {
-            return null;
+            nodeNr = ((TinyNodeImpl)current).nodeNr + 1;
+        }
+
+        while (true) {
+            if (tree.depth[nodeNr] == 0) {
+                current = null;
+                return null;
+            }
+            if (test.matches(tree.nodeKind[nodeNr], tree.nameCode[nodeNr],
+                    tree.getElementAnnotation(nodeNr))) {
+                position++;
+                current = tree.getNode(nodeNr);
+                return current;
+            }
+            nodeNr++;
         }
     }
 
@@ -73,7 +78,7 @@ final class FollowingEnumeration extends AxisIteratorImpl {
     */
 
     public SequenceIterator getAnother() {
-        return new FollowingEnumeration(document, startNode, test, includeDescendants);
+        return new FollowingEnumeration(tree, startNode, test, includeDescendants);
     }
 }
 
@@ -81,19 +86,17 @@ final class FollowingEnumeration extends AxisIteratorImpl {
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
-// The Original Code is: most of this file. 
+// The Original Code is: all this file.
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-// Contributor(s): Martin Haye. 
+// Contributor(s): none.
 //

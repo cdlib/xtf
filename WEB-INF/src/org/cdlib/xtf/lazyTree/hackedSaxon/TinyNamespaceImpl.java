@@ -1,9 +1,8 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
-import net.sf.saxon.om.*;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceiverOptions;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.type.Type;
-
 import net.sf.saxon.xpath.XPathException;
 /**
   * A node in the XML parse tree representing a Namespace. Note that this is
@@ -24,10 +23,15 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
 								// namecode is NOT the same as the namespace code, which
 								// identifies the prefix/uri pair
 
-    public TinyNamespaceImpl(TinyDocumentImpl doc, int nodeNr) {
-        document = doc;
+    public TinyNamespaceImpl(TinyTree tree, int nodeNr) {
+        this.tree = tree;
         this.nodeNr = nodeNr;
-        nameCode = document.getNamePool().allocate("", "", getLocalPart());
+        String prefix = getLocalPart();
+        if ("".equals(prefix)) {
+            nameCode = -1;
+        } else {
+            nameCode = tree.getNamePool().allocate("", "", prefix);
+        }
     }
 
     /**
@@ -35,7 +39,7 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
     */
 
     public int getNamespaceCode() {
-        return document.namespaceCode[nodeNr];
+        return tree.namespaceCode[nodeNr];
     }
 
     /**
@@ -50,7 +54,7 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
     * Set the parent element for this namespace node
     */
 
-    protected void setParentNode(int nodeNr) {
+    void setParentNode(int nodeNr) {
         parentNode = nodeNr;
     }
 
@@ -87,8 +91,8 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
     */
 
     public String getLocalPart() {
-        return document.getNamePool().getPrefixFromNamespaceCode(
-        				document.namespaceCode[nodeNr]);
+        return tree.getNamePool().getPrefixFromNamespaceCode(
+        				tree.namespaceCode[nodeNr]);
     }
 
     /**
@@ -105,7 +109,7 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
     */
 
     public NodeInfo getParent() {
-        return document.getNode(parentNode);
+        return tree.getNode(parentNode);
     }
 
     /**
@@ -119,7 +123,7 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
         if (this==other) return true;
         TinyNamespaceImpl otherN = (TinyNamespaceImpl)other;
         return (this.parentNode==((TinyNamespaceImpl)other).parentNode &&
-             this.document==otherN.document &&
+             this.tree==otherN.tree &&
              this.nodeNr==((TinyNamespaceImpl)other).nodeNr);
     }
 
@@ -138,8 +142,8 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
     */
 
     public final String getStringValue() {
-        return document.getNamePool().getURIFromNamespaceCode(
-        				document.namespaceCode[nodeNr]);
+        return tree.getNamePool().getURIFromNamespaceCode(
+        				tree.namespaceCode[nodeNr]);
     }
 
     /**
@@ -156,7 +160,13 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
     */
 
     public String generateId() {
-        return (getParent()).generateId() + "n" + getNameCode();
+        String suffix;
+        if (nameCode < 0) {
+            suffix = "";
+        } else {
+            suffix = ""+nameCode;
+        }
+        return (getParent()).generateId() + 'n' + suffix;
         // we previously used the namespace prefix as part of the id, but this breaks
         // the rule that the result of generate-id() must consist entirely of alphanumeric
         // ASCII characters.
@@ -186,19 +196,17 @@ final class TinyNamespaceImpl extends TinyNodeImpl {
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
-// The Original Code is: most of this file. 
+// The Original Code is: all this file.
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-// Contributor(s): Martin Haye. 
+// Contributor(s): none.
 //

@@ -2,6 +2,7 @@ package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.om.AxisIteratorImpl;
 import net.sf.saxon.om.Item;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
 
 /**
@@ -11,55 +12,32 @@ import net.sf.saxon.om.SequenceIterator;
 
 final class AncestorEnumeration extends AxisIteratorImpl {
 
-    //private int nextNodeNr;
-    private TinyNodeImpl next;
-    private TinyDocumentImpl document;
     private TinyNodeImpl startNode;
     private NodeTest test;
-    private TinyNodeImpl first = null;
     private boolean includeSelf;
 
-    public AncestorEnumeration(TinyDocumentImpl doc, TinyNodeImpl node,
-                                NodeTest nodeTest, boolean includeSelf) {
-        document = doc;
+    public AncestorEnumeration(TinyNodeImpl node, NodeTest nodeTest, boolean includeSelf) {
         test = nodeTest;
         this.startNode = node;
         this.includeSelf = includeSelf;
-        if (includeSelf && nodeTest.matches(node.getNodeKind(), node.getFingerprint(), node.getTypeAnnotation())) {
-            first = node;
-        }
-
-        // this code is designed to catch the case where the first node
-        // is an attribute or namespace node
-
-        next = (TinyNodeImpl)node.getParent();
-        if (next != null &&
-                !nodeTest.matches(next.getNodeKind(), next.getFingerprint(), next.getTypeAnnotation())) {
-            advance();
-            // SaxonTODO: lookahead no longer needed
-        }
+        current = startNode;
     }
 
     public Item next() {
-        if (first==null && next==null) {
-            return null;
-        }
-        position++;
-        if (first!=null) {
-            current = first;
-            first = null;
+        if (position==0 && includeSelf &&
+                test.matches(startNode.getNodeKind(), startNode.getFingerprint(), startNode.getTypeAnnotation())) {
+            current = startNode;
+            position = 1;
             return current;
         } else {
-            current = next;
-            advance();
+            NodeInfo node = ((NodeInfo)current).getParent();
+            while (node != null && !test.matches(node.getNodeKind(), node.getFingerprint(), node.getTypeAnnotation())) {
+                node = node.getParent();
+            }
+            current = node;
+            position++;
             return current;
         }
-    }
-
-    private void advance() {
-        do {
-            next = (TinyNodeImpl)next.getParent();
-        } while (next != null && !test.matches(next.getNodeKind(), next.getFingerprint(), next.getTypeAnnotation()));
     }
 
     /**
@@ -67,30 +45,25 @@ final class AncestorEnumeration extends AxisIteratorImpl {
     */
 
     public SequenceIterator getAnother() {
-        return new AncestorEnumeration(document, startNode, test, includeSelf);
+        return new AncestorEnumeration(startNode, test, includeSelf);
     }
 
-
 }
-
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
-// The Original Code is: most of this file. 
+// The Original Code is: all this file.
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-// Contributor(s): Martin Haye. 
+// Contributor(s): none.
 //

@@ -1,12 +1,13 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.om.Navigator;
 import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.style.StandardNames;
 import net.sf.saxon.tree.DOMExceptionImpl;
 import net.sf.saxon.type.Type;
 import net.sf.saxon.xpath.XPathException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
+
 
 /**
   * A node in the XML parse tree representing an XML element.<P>
@@ -22,8 +23,8 @@ final class TinyElementImpl extends TinyParentNodeImpl
     * Constructor
     */
 
-    public TinyElementImpl(TinyDocumentImpl doc, int nodeNr) {
-        this.document = doc;
+    public TinyElementImpl(TinyTree tree, int nodeNr) {
+        this.tree = tree;
         this.nodeNr = nodeNr;
     }
 
@@ -42,21 +43,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
     */
 
     public String getBaseURI() {
-        String xmlBase = getAttributeValue(StandardNames.XML_BASE);
-        if (xmlBase!=null) {
-            return xmlBase;
-        }
-        String startSystemId = getSystemId();
-        NodeInfo parent = getParent();
-        if (parent==null) {
-            return startSystemId;
-        }
-        String parentSystemId = parent.getSystemId();
-        if (startSystemId.equals(parentSystemId)) {
-            return parent.getBaseURI();
-        } else {
-            return startSystemId;
-        }
+        return Navigator.getBaseURI(this);
     }
 
     /**
@@ -65,7 +52,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
     */
 
     public int getTypeAnnotation() {
-        return document.getElementAnnotation(nodeNr);
+        return tree.getElementAnnotation(nodeNr);
     }
 
     /**
@@ -79,11 +66,11 @@ final class TinyElementImpl extends TinyParentNodeImpl
     public void outputNamespaceNodes(Receiver out, boolean includeAncestors)
                 throws XPathException {
 
-        int ns = document.beta[nodeNr]; // by convention
+        int ns = tree.beta[nodeNr]; // by convention
         if (ns>0 ) {
-            while (ns < document.numberOfNamespaces &&
-                    document.namespaceParent[ns] == nodeNr ) {
-                int nscode = document.namespaceCode[ns];
+            while (ns < tree.numberOfNamespaces &&
+                    tree.namespaceParent[ns] == nodeNr ) {
+                int nscode = tree.namespaceCode[ns];
                 out.namespace(nscode, 0);
                 ns++;
             }
@@ -92,7 +79,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
         // now add the namespaces defined on the ancestor nodes. We rely on the receiver
         // to eliminate multiple declarations of the same prefix
 
-        if (includeAncestors && document.isUsingNamespaces()) {
+        if (includeAncestors) {
             NodeInfo parent = getParent();
             if (parent != null) {
                 parent.outputNamespaceNodes(out, true);
@@ -109,7 +96,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
      */
 
     public boolean hasAttributes() {
-        return document.alpha[nodeNr] >= 0;
+        return tree.alpha[nodeNr] >= 0;
     }
 
     /**
@@ -119,11 +106,11 @@ final class TinyElementImpl extends TinyParentNodeImpl
     */
 
     public String getAttributeValue(int fingerprint) {
-        int a = document.alpha[nodeNr];
+        int a = tree.alpha[nodeNr];
         if (a<0) return null;
-        while (a < document.numberOfAttributes && document.attParent[a] == nodeNr) {
-            if ((document.attCode[a] & 0xfffff) == fingerprint ) {
-                return document.attValue[a].toString();
+        while (a < tree.numberOfAttributes && tree.attParent[a] == nodeNr) {
+            if ((tree.attCode[a] & 0xfffff) == fingerprint ) {
+                return tree.attValue[a].toString();
             }
             a++;
         }
@@ -158,7 +145,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
 		// control vars
 		short level = -1;
 		boolean closePending = false;
-		short startLevel = document.depth[nodeNr];
+		short startLevel = tree.depth[nodeNr];
 		boolean first = true;
 		int next = nodeNr;
 
@@ -167,7 +154,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
         do {
 
 			// determine node depth
-			short nodeLevel = document.depth[next];
+			short nodeLevel = tree.depth[next];
 
 			// extra close required?
 			if (closePending) {
@@ -183,12 +170,12 @@ final class TinyElementImpl extends TinyParentNodeImpl
 			level = nodeLevel;
 
 			// output depends on node type
-			switch (document.nodeKind[next]) {
+			switch (tree.nodeKind[next]) {
 				case Type.ELEMENT : {
 
 					// start element
-					receiver.startElement(document.nameCode[next],
-					                        (copyAnnotations ? document.getElementAnnotation(next): -1),
+					receiver.startElement(tree.nameCode[next],
+					                        (copyAnnotations ? tree.getElementAnnotation(next): -1),
                             locationId, 0);
 					                        //(first ? ReceiverOptions.DISINHERIT_NAMESPACES : 0));
 
@@ -200,11 +187,11 @@ final class TinyElementImpl extends TinyParentNodeImpl
                         if (first) {
                             outputNamespaceNodes(receiver, whichNamespaces==ALL_NAMESPACES);
                         } else {
-                            int ns = document.beta[next]; // by convention
+                            int ns = tree.beta[next]; // by convention
                             if (ns>0 ) {
-                                while (ns < document.numberOfNamespaces &&
-                                        document.namespaceParent[ns] == next ) {
-                                    int nscode = document.namespaceCode[ns];
+                                while (ns < tree.numberOfNamespaces &&
+                                        tree.namespaceParent[ns] == next ) {
+                                    int nscode = tree.namespaceCode[ns];
                                     receiver.namespace(nscode, 0);
                                     ns++;
                                 }
@@ -215,12 +202,12 @@ final class TinyElementImpl extends TinyParentNodeImpl
 
 					// output attributes
 
-					int att = document.alpha[next];
+					int att = tree.alpha[next];
 					if (att >= 0) {
-                        while (att < document.numberOfAttributes && document.attParent[att] == next ) {
-                            int attCode = document.attCode[att];
-                            int attType = (copyAnnotations ? document.getAttributeAnnotation(att) : -1);
-                            receiver.attribute(attCode, attType, document.attValue[att], locationId, 0);
+                        while (att < tree.numberOfAttributes && tree.attParent[att] == next ) {
+                            int attCode = tree.attCode[att];
+                            int attType = (copyAnnotations ? tree.getAttributeAnnotation(att) : -1);
+                            receiver.attribute(attCode, attType, tree.attValue[att], locationId, 0);
                             att++;
                         }
                     }
@@ -235,9 +222,9 @@ final class TinyElementImpl extends TinyParentNodeImpl
 					closePending = false;
 
 					// output characters
-                    int start = document.alpha[next];
-                    int len = document.beta[next];
-                    receiver.characters(new CharSlice(document.charBuffer, start, len), locationId, 0);
+                    int start = tree.alpha[next];
+                    int len = tree.beta[next];
+                    receiver.characters(new CharSlice(tree.charBuffer, start, len), locationId, 0);
 					break;
                 }
 				case Type.COMMENT : {
@@ -246,10 +233,10 @@ final class TinyElementImpl extends TinyParentNodeImpl
 					closePending = false;
 
 					// output copy of comment
-                    int start = document.alpha[next];
-                    int len = document.beta[next];
+                    int start = tree.alpha[next];
+                    int len = tree.beta[next];
                     if (len>0) {
-                        receiver.comment(document.commentBuffer.substring(start, start+len), locationId, 0);
+                        receiver.comment(tree.commentBuffer.substring(start, start+len), locationId, 0);
                     } else {
                         receiver.comment("", 0, 0);
                     }
@@ -261,7 +248,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
 					closePending = false;
 
 					// output copy of PI
-					NodeInfo pi = document.getNode(next);
+					NodeInfo pi = tree.getNode(next);
 					receiver.processingInstruction(pi.getLocalPart(), pi.getStringValue(), locationId, 0);
 					break;
                 }
@@ -269,7 +256,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
 
 			next++;
 
-		} while (next < document.numberOfNodes && document.depth[next] > startLevel);
+		} while (next < tree.numberOfNodes && tree.depth[next] > startLevel);
 
 		// close all remaining elements
 		if (closePending) {
@@ -333,8 +320,7 @@ final class TinyElementImpl extends TinyParentNodeImpl
 //
 // The new copy() routine (in version 7.4.1) is contributed by Ruud Diterwich
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-// Contributor(s): Ruud Diterwich, Martin Haye
+// Contributor(s): none.
 //

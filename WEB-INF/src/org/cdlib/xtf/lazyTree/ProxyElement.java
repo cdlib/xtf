@@ -29,6 +29,7 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.AbstractNode;
 import net.sf.saxon.om.Axis;
@@ -118,6 +119,9 @@ public final class ProxyElement extends AbstractNode implements SearchElement
     /** Loads the real node and defers to it */
     public int compareOrder( NodeInfo other ) {
         return real().compareOrder( other );
+    }
+    public Configuration getConfiguration() {
+        return real().getConfiguration();
     }
     /** Loads the real node and defers to it */
     public String generateId() {

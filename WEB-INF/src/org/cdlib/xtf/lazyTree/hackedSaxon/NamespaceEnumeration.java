@@ -1,12 +1,9 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.Item;
-import net.sf.saxon.om.NamePool;
-import net.sf.saxon.pattern.NodeTest;
+import net.sf.saxon.om.*;
 import net.sf.saxon.pattern.NodeKindTest;
-import net.sf.saxon.om.AxisIteratorImpl;
-import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.type.Type;
+
 import java.util.ArrayList;
 
 /**
@@ -15,30 +12,28 @@ import java.util.ArrayList;
 
 final class NamespaceEnumeration extends AxisIteratorImpl {
 
-    private TinyDocumentImpl document;
+    private TinyTree tree;
     private TinyElementImpl element;
     private NamePool pool;
     private int owner;
     private int currentElement;
     private int index;
-    private ArrayList list = new ArrayList();
+    private ArrayList list = new ArrayList(10);
     private NodeTest nodeTest;
     private int xmlNamespace;
 
     /**
     * Constructor. Note: this constructor will only be called if the owning
-    * node is an element. Otherwise, an EmptyEnumeration will be returned
+    * node is an element. Otherwise, an EmptyIterator will be returned
     */
 
-    protected NamespaceEnumeration(TinyElementImpl node, NodeTest nodeTest) {
-        // System.err.println("new NS enum, nodetest = " + nodeTest.getClass());
+    NamespaceEnumeration(TinyElementImpl node, NodeTest nodeTest) {
         element = node;
         owner = node.nodeNr;
-        document = node.document;
-        // document.diagnosticDump();
-        pool = document.getNamePool();
+        tree = node.tree;
+        pool = tree.getNamePool();
         currentElement = owner;
-        index = document.beta[currentElement]; // by convention
+        index = tree.beta[currentElement]; // by convention
         this.nodeTest = nodeTest;
         xmlNamespace = pool.allocate("", "", "xml");
     }
@@ -48,10 +43,10 @@ final class NamespaceEnumeration extends AxisIteratorImpl {
             index = -1;
             return;
         } else if (index > 0) {
-            while (index < document.numberOfNamespaces &&
-                            document.namespaceParent[index] == currentElement) {
+            while (index < tree.numberOfNamespaces &&
+                            tree.namespaceParent[index] == currentElement) {
 
-                int nsCode = document.namespaceCode[index];
+                int nsCode = tree.namespaceCode[index];
 
                 // don't return a namespace undeclaration (xmlns="" or xmlns:p=""), but add it to the list
                 // of prefixes encountered, to suppress outer xmlns="xyz" declarations
@@ -84,7 +79,7 @@ final class NamespaceEnumeration extends AxisIteratorImpl {
             }
         }
 
-        NodeInfo parent = document.getNode(currentElement).getParent();
+        NodeInfo parent = tree.getNode(currentElement).getParent();
         if (parent==null || parent.getNodeKind()==Type.DOCUMENT) {
             if (nodeTest.matches(Type.NAMESPACE, xmlNamespace, -1)) {
                 index = 0;
@@ -93,7 +88,7 @@ final class NamespaceEnumeration extends AxisIteratorImpl {
             }
         } else {
             currentElement = ((TinyElementImpl)parent).nodeNr;
-            index = document.beta[currentElement]; // by convention
+            index = tree.beta[currentElement]; // by convention
             advance();
         }
 
@@ -113,7 +108,7 @@ final class NamespaceEnumeration extends AxisIteratorImpl {
         advance();
         if (index >= 0) {
             position++;
-            current = document.getNamespaceNode(index);
+            current = tree.getNamespaceNode(index);
             ((TinyNamespaceImpl)current).setParentNode(owner);
             return current;
         } else {
@@ -136,19 +131,17 @@ final class NamespaceEnumeration extends AxisIteratorImpl {
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
-// The Original Code is: most of this file. 
+// The Original Code is: all this file.
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-// Contributor(s): Martin Haye. 
+// Contributor(s): none.
 //

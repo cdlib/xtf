@@ -989,7 +989,7 @@ public class XMLTextProcessor extends DefaultHandler
         
         lazyHandler = new ReceivingContentHandler();
         lazyHandler.setReceiver( lazyReceiver );
-        lazyHandler.setConfiguration( lazyReceiver.getConfiguration() );
+        lazyHandler.setPipelineConfiguration( lazyReceiver.getPipelineConfiguration() );
     }
     else {
         lazyBuilder  = null;

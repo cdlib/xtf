@@ -31,30 +31,35 @@ final class AttributeEnumeration extends AxisIteratorImpl implements LookaheadIt
 
         this.nodeTest = nodeTest;
 
-        if( node.getNodeType() != Type.ELEMENT )
-            return;
+        if (node.getNodeKind()==Type.ELEMENT) {
+            element = (ElementImpl)node;
         
-        element = (ElementImpl)node;
-        
-        if( element.attrNames == null )
-            return;
+            if( element.attrNames == null )
+                return;
 
-        if (nodeTest instanceof NameTest) {
-            NameTest test = (NameTest)nodeTest;
-            int fingerprint = test.getFingerprint();
-            for( int i = 0; i < element.attrNames.length; i++ ) {
-                if( (element.attrNames[i] & 0xfffff) == fingerprint ) {
-                    next = new AttributeImpl( element, i );
-                    return;
+            if (nodeTest instanceof NameTest) {
+                NameTest test = (NameTest)nodeTest;
+                int fingerprint = test.getFingerprint();
+                for( int i = 0; i < element.attrNames.length; i++ ) {
+                    if( (element.attrNames[i] & 0xfffff) == fingerprint ) {
+                        next = new AttributeImpl( element, i );
+                        return;
+                    }
                 }
-            }
             
-            next = null;
-        } else  {
-            length = element.attrNames.length;
-            advance();
+                next = null;
+            } else  {
+                length = element.attrNames.length;
+                advance();
+            }
         }
-    } // constructor
+        else {      // if it's not an element, or if we're not looking for attributes,
+                    // then there's nothing to find
+            next = null;
+            index = 0;
+            length = 0;
+        }
+    }
 
     /**
     * Test if there are mode nodes still to come.
@@ -112,16 +117,15 @@ final class AttributeEnumeration extends AxisIteratorImpl implements LookaheadIt
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
 // The Original Code is: most of this file. 
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
 // Portions created by Martin Haye are Copyright (C) Regents of the University 
 // of California. All Rights Reserved. 

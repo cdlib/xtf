@@ -33,42 +33,31 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.sax.SAXSource;
-
-import org.xml.sax.InputSource;
-
 import net.sf.saxon.Configuration;
-import net.sf.saxon.event.ProxyReceiver;
+import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.Receiver;
-import net.sf.saxon.event.Sender;
-import net.sf.saxon.om.AllElementStripper;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.type.Type;
 
 import org.cdlib.xtf.lazyTree.hackedSaxon.TinyBuilder;
-import org.cdlib.xtf.lazyTree.hackedSaxon.TinyDocumentImpl;
 import org.cdlib.xtf.lazyTree.hackedSaxon.TinyNodeImpl;
-import org.cdlib.xtf.util.*;
+import org.cdlib.xtf.lazyTree.hackedSaxon.TinyTree;
 import org.cdlib.xtf.util.ConsecutiveMap;
 import org.cdlib.xtf.util.PackedByteBuf;
+import org.cdlib.xtf.util.StructuredFile;
+import org.cdlib.xtf.util.Subfile;
+import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
 /**
  * <p>Creates and/or loads a disk-based representation of an XML tree. Once 
  * created, the persistent version can be quickly and incrementally loaded
  * into memory.</p>
  * 
- * <p>To build a tree, there are two methods:</p>
- * 
- * <p>Method 1: Simply instatiate an instance, then call
- * {@link #build(File, File)}, which does all the work of loading a file
- * and saving it to a persistent file.</p>
- * 
- * <p>Method 2: Call the {@link #begin(File)} method to start the process.
- * Using the Receiver it returns, pass all the SAX events gathered from
- * parsing the document. Finally, {@link #finish(Receiver)} will complete
- * the process.</p>
+ * <p>To build a tree, call the {@link #begin(File)} method to start the 
+ * process. Using the Receiver it returns, pass all the SAX events gathered 
+ * from parsing the document. Finally, {@link #finish(Receiver)} will 
+ * complete the process.</p>
  * 
  * <p>To load a tree that was built previously, use either load method:
  * {@link #load(File)} or {@link #load(File, LazyDocument)}.
@@ -78,7 +67,7 @@ import org.cdlib.xtf.util.PackedByteBuf;
 public class LazyTreeBuilder
 {
     /** The Saxon 'tiny' document, used to load the input tree */
-    private TinyDocumentImpl doc;
+    private TinyTree         tree;
     
     /** Name pool used to map namecodes */
     private NamePool         namePool;
@@ -88,6 +77,9 @@ public class LazyTreeBuilder
     
     /** Saxon configuration used for tree loading */
     private Configuration    config;
+    
+    /** Pipeline configuration */
+    private PipelineConfiguration pipe;
 
     
     /** File version stored in the persistent file. */
@@ -98,49 +90,15 @@ public class LazyTreeBuilder
     {
         config = new Configuration();
         config.setErrorListener( new XTFSaxonErrorListener() );
+        pipe = new PipelineConfiguration();
+        pipe.setConfiguration( config );
+        pipe.setErrorListener( config.getErrorListener() );
     }
-
-
+    
     /** Establishes the name pool used to resolve namecodes */
     public void setNamePool( NamePool pool ) {
         namePool = pool;
     }
-    
-    /**
-     * Builds a tree that's loaded on-demand from a persistent disk file. If
-     * the persistent file doesn't exist or is out-of-date, it is rebuilt
-     * from scratch (which takes some time.)
-     * 
-     * @param sourceFile    The original XML document
-     * @param persistFile   Location for the persistent version of that doc
-     * 
-     * @return              The root node of the document
-     */
-    public NodeInfo build( File sourceFile, File persistFile )
-        throws TransformerException, IOException
-    {
-        assert namePool != null : "Must setNamePool() before building LazyTree";
-        
-        // Check for existence and up-to-dateness of the persistent file.
-        if( !persistFile.exists() ||
-            persistFile.lastModified() < sourceFile.lastModified() )
-        {
-            persistFile.delete();
-            generate( sourceFile, persistFile );
-        }
-        
-        // Now load it.
-        try {
-            return load( persistFile );
-        }
-        catch( Throwable t ) {
-            // Maybe the file was corrupt. Rebuild and give it one more try.
-            persistFile.delete();
-            generate( sourceFile, persistFile );
-            return load( persistFile );
-        }
-    } // build()
-    
     
     /**
      * Load a persistent document using the default loader.
@@ -199,7 +157,7 @@ public class LazyTreeBuilder
         TinyBuilder builder = new TinyBuilder();
         if( namePool == null ) 
             namePool = NamePool.getDefaultNamePool();
-        builder.setConfiguration( config );
+        builder.setPipelineConfiguration( pipe );
 
         // We're going to make a structured file to contain the entire tree.
         // To save memory, we'll write the character data directly to it
@@ -227,8 +185,8 @@ public class LazyTreeBuilder
      */
     public int getNodeNum( Receiver inBuilder ) {
         TinyBuilder builder = (TinyBuilder)inBuilder;
-        doc = (TinyDocumentImpl) builder.getCurrentDocument();
-        return doc.numberOfNodes;
+        tree = builder.getTree();
+        return tree.numberOfNodes;
     } // getNodeNum()
 
     /**
@@ -243,13 +201,13 @@ public class LazyTreeBuilder
         StructuredFile treeFile = builder.getTreeFile();
         File persistFile = treeFile.getFile();
         
-        doc = (TinyDocumentImpl) builder.getCurrentDocument();
+        tree = builder.getTree();
          
         // Done with the text file now.
         builder.getTextFile().close();
         
         // If the build failed, delete the file.
-        if( doc == null ) {
+        if( tree == null ) {
             treeFile.close();
             persistFile.delete();
             return;
@@ -265,30 +223,10 @@ public class LazyTreeBuilder
          
         // All done!
         treeFile.close();
-        doc      = null;
+        tree      = null;
         names    = null;
     }
     
-    /** 
-     * Build a new persistent disk file from scratch, using the sourceFile
-     * as input.
-     */
-    private void generate( File sourceFile, File persistFile ) 
-        throws TransformerException, IOException
-    {
-        Receiver builder = begin( persistFile );
-
-        SAXSource source = new SAXSource(
-                new InputSource(sourceFile.toURL().toString()));
-
-        ProxyReceiver stripper = AllElementStripper.getInstance();
-        stripper.setUnderlyingReceiver( builder );
-        
-        new Sender(config).send( source, stripper );
-        
-        finish( builder );
-    } // generate()
-
     /** 
      * Build and write out the table of names referenced by the tree. Also
      * includes the namespaces.
@@ -301,23 +239,23 @@ public class LazyTreeBuilder
         PackedByteBuf buf = new PackedByteBuf( 1000 );
         
         // Write out all the namespaces.
-        buf.writeInt( doc.numberOfNamespaces );
-        for( int i = 0; i < doc.numberOfNamespaces; i++ ) {
-            int code = doc.namespaceCode[i];
+        buf.writeInt( tree.numberOfNamespaces );
+        for( int i = 0; i < tree.numberOfNamespaces; i++ ) {
+            int code = tree.namespaceCode[i];
             buf.writeString( namePool.getPrefixFromNamespaceCode(code) );
             buf.writeString( namePool.getURIFromNamespaceCode(code) );
-            buf.writeInt( doc.namespaceParent[i] );
+            buf.writeInt( tree.namespaceParent[i] );
         }
         
         // Add all the namecodes from elements and attributes.
-        for( int i = 0; i < doc.numberOfNodes; i++ ) {
-            if( doc.nameCode[i] >= 0 )
-                names.put( new Integer(doc.nameCode[i]) );
+        for( int i = 0; i < tree.numberOfNodes; i++ ) {
+            if( tree.nameCode[i] >= 0 )
+                names.put( new Integer(tree.nameCode[i]) );
         }
         
-        for( int i = 0; i < doc.numberOfAttributes; i++ ) {  
-            if( doc.attCode[i] >= 0 )
-                names.put( new Integer(doc.attCode[i]) );
+        for( int i = 0; i < tree.numberOfAttributes; i++ ) {  
+            if( tree.attCode[i] >= 0 )
+                names.put( new Integer(tree.attCode[i]) );
         }
         
         // Write out all the namecodes.
@@ -345,32 +283,32 @@ public class LazyTreeBuilder
     throws IOException
     {
         // Write the root node's number
-        out.writeInt( doc.rootNode ); 
+        out.writeInt( 0 ); 
 
         // Pack up each node. That way we can calculate the maximum size of
         // any particular one, and they can be randomly accessed by multiplying
         // the node number by that size.
         //
-        PackedByteBuf[] nodeBufs = new PackedByteBuf[doc.numberOfNodes];
+        PackedByteBuf[] nodeBufs = new PackedByteBuf[tree.numberOfNodes];
         int maxSize = 0;
-        doc.ensurePriorIndex();
-        for( int i = 0; i < doc.numberOfNodes; i++ ) {
+        tree.ensurePriorIndex();
+        for( int i = 0; i < tree.numberOfNodes; i++ ) {
             PackedByteBuf buf = nodeBufs[i] = new PackedByteBuf( 20 );
             
             // Kind
-            buf.writeByte( doc.nodeKind[i] );
+            buf.writeByte( tree.nodeKind[i] );
             
             // Flag
-            NodeInfo node     = doc.getNode( i );
-            int      nameCode = doc.nameCode[i];
+            NodeInfo node     = tree.getNode( i );
+            int      nameCode = tree.nameCode[i];
             int      parent   = (node.getParent() != null) ?
                                 (((TinyNodeImpl)node.getParent()).nodeNr) :
                                  -1;
-            int      prevSib  = doc.prior[i];
-            int      nextSib  = (doc.next[i] > i) ? doc.next[i] : -1;
+            int      prevSib  = tree.prior[i];
+            int      nextSib  = (tree.next[i] > i) ? tree.next[i] : -1;
             int      child    = node.hasChildNodes() ? (i+1) : -1;
-            int      alpha    = doc.alpha[i];
-            int      beta     = doc.beta[i];
+            int      alpha    = tree.alpha[i];
+            int      beta     = tree.beta[i];
 
             int flags = ((nameCode != -1) ? Flag.HAS_NAMECODE     : 0) |
                         ((parent   != -1) ? Flag.HAS_PARENT       : 0) |
@@ -408,9 +346,9 @@ public class LazyTreeBuilder
             
             // Alpha and beta
             if( alpha != -1 )
-                buf.writeInt( doc.alpha[i] );
+                buf.writeInt( tree.alpha[i] );
             if( beta != -1 )
-                buf.writeInt( doc.beta[i] );
+                buf.writeInt( tree.beta[i] );
             
             // Now calculate the size of the buffer, and bump the max if needed
             buf.compact();
@@ -420,10 +358,10 @@ public class LazyTreeBuilder
         // Okay, we're ready to write out the node table now. First comes the
         // number of nodes, followed by the size in bytes of each one.
         //
-        out.writeInt( doc.numberOfNodes );
+        out.writeInt( tree.numberOfNodes );
         out.writeInt( maxSize );
         
-        for( int i = 0; i < doc.numberOfNodes; i++ )
+        for( int i = 0; i < tree.numberOfNodes; i++ )
             nodeBufs[i].output( out, maxSize );
         
         // All done.
@@ -445,12 +383,12 @@ public class LazyTreeBuilder
         // Write out each attrib, and record their offsets and lengths.
         int maxSize = 0;
         PackedByteBuf buf = new PackedByteBuf( 100 );
-        for( int i = 0; i < doc.numberOfAttributes; ) 
+        for( int i = 0; i < tree.numberOfAttributes; ) 
         {
             // Figure out how many attributes for this parent.
             int j;
-            for( j = i+1; j < doc.numberOfAttributes; j++ ) {
-                if( doc.attParent[j] != doc.attParent[i] )
+            for( j = i+1; j < tree.numberOfAttributes; j++ ) {
+                if( tree.attParent[j] != tree.attParent[i] )
                     break;
             }
             
@@ -462,18 +400,18 @@ public class LazyTreeBuilder
             for( j = i; j < i+nAttrs; j++ ) {
             
                 // Name code
-                int nameIdx = names.get( new Integer(doc.attCode[j]) );
+                int nameIdx = names.get( new Integer(tree.attCode[j]) );
                 assert nameIdx >= 0 : "A name was missed when writing name codes";
                 buf.writeInt( nameIdx );
                 
                 // Value
-                buf.writeString( doc.attValue[j].toString() );
+                buf.writeString( tree.attValue[j].toString() );
             }
             
             // Record the offset in the attribute file.
-            int parent = doc.attParent[i];
-            assert doc.nodeKind[parent] == Type.ELEMENT;
-            doc.alpha[parent] = (int) out.getFilePointer();
+            int parent = tree.attParent[i];
+            assert tree.nodeKind[parent] == Type.ELEMENT;
+            tree.alpha[parent] = (int) out.getFilePointer();
             
             // Write out the data, and bump the max if necessary.
             buf.output( out );
@@ -504,13 +442,7 @@ public class LazyTreeBuilder
     private void checkSupport()
         throws IOException
     {
-        if( doc.idTable != null )
-            throw new IOException( "LazyTree does not support idTable yet" );
-        if( doc.elementList != null )
-            throw new IOException( "LazyTree does not support elementList yet" );
-        if( doc.entityTable != null )
-            throw new IOException( "LazyTree does not support entityTable yet" );
-        if( doc.attTypeCode != null )
+        if( tree.attTypeCode != null )
             throw new IOException( "LazyTree does not support attribute type annotations yet" );
     } // checkSupport()
     

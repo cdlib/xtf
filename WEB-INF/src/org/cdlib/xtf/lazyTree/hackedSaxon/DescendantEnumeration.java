@@ -3,7 +3,6 @@ import net.sf.saxon.om.AxisIteratorImpl;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
-import net.sf.saxon.type.Type;
 
 /**
 * This class supports both the descendant:: and descendant-or-self:: axes, which are
@@ -14,71 +13,56 @@ import net.sf.saxon.type.Type;
 
 final class DescendantEnumeration extends AxisIteratorImpl {
 
-    private TinyDocumentImpl document;
+    private TinyTree tree;
     private TinyNodeImpl startNode;
     private boolean includeSelf;
     private int nextNodeNr;
     private int startDepth;
     private NodeTest test;
 
-    protected DescendantEnumeration(TinyDocumentImpl doc, TinyNodeImpl node,
-                                    NodeTest nodeTest, boolean includeSelf) {
-        document = doc;
+    /**
+     * Create an iterator over the descendant axis
+     * @param doc the containing TinyTree
+     * @param node the node whose descendants are required
+     * @param nodeTest test to be satisfied by each returned node
+     * @param includeSelf true if the start node is to be included
+     */
+
+    DescendantEnumeration(TinyTree doc, TinyNodeImpl node, NodeTest nodeTest, boolean includeSelf) {
+        tree = doc;
         startNode = node;
         this.includeSelf = includeSelf;
         test = nodeTest;
         nextNodeNr = node.nodeNr;
         startDepth = doc.depth[nextNodeNr];
-        if (includeSelf) {          // descendant-or-self:: axis
-            // no action
-        } else {                    // descendant:: axis
-            nextNodeNr++;
-            if (doc.depth[nextNodeNr] <= startDepth) {
-                nextNodeNr = -1;
-            }
-        }
-
-        // check if this matches the conditions
-        if (nextNodeNr >= 0 &&
-                nextNodeNr < doc.numberOfNodes &&
-                !nodeTest.matches(document.nodeKind[nextNodeNr],
-                              document.nameCode[nextNodeNr],
-                              (document.nodeKind[nextNodeNr] == Type.ELEMENT ?
-                                    document.getElementAnnotation(nextNodeNr) :
-                                    -1))) {
-            advance();
-            // SaxonTODO: no longer need to look ahead.
-        }
     }
 
     public Item next() {
-        if (nextNodeNr >= 0) {
+        if (position==0 && includeSelf && test.matches(startNode)) {
+            current = startNode;
             position++;
-            if (isAtomizing() && document.getTypeAnnotation()==-1) {
-                current = document.getUntypedAtomicValue(nextNodeNr);
-            } else {
-                current = document.getNode(nextNodeNr);
-            }
-            advance();
             return current;
-        } else {
-            return null;
         }
-    }
 
-    private void advance() {
         do {
             nextNodeNr++;
-            if (nextNodeNr >= document.numberOfNodes ||
-                document.depth[nextNodeNr] <= startDepth) {
+            if (tree.depth[nextNodeNr] <= startDepth) {
                 nextNodeNr = -1;
-                return;
+                current = null;
+                return null;
             }
-        } while (!test.matches(document.nodeKind[nextNodeNr],
-                                document.nameCode[nextNodeNr],
-                               (document.nodeKind[nextNodeNr] == Type.ELEMENT ?
-                                    document.getElementAnnotation(nextNodeNr) :
-                                    -1)));
+        } while (!test.matches(tree.nodeKind[nextNodeNr],
+                                tree.nameCode[nextNodeNr],
+                                tree.getElementAnnotation(nextNodeNr)));
+
+        position++;
+        if (isAtomizing() && tree.getElementAnnotation(nextNodeNr)==-1) {
+            current = tree.getUntypedAtomicValue(nextNodeNr);
+        } else {
+            current = tree.getNode(nextNodeNr);
+        }
+
+        return current;
     }
 
     /**
@@ -86,7 +70,7 @@ final class DescendantEnumeration extends AxisIteratorImpl {
     */
 
     public SequenceIterator getAnother() {
-        return new DescendantEnumeration(document, startNode, test, includeSelf);
+        return new DescendantEnumeration(tree, startNode, test, includeSelf);
     }
 }
 
@@ -94,19 +78,17 @@ final class DescendantEnumeration extends AxisIteratorImpl {
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
-// The Original Code is: most of this file. 
+// The Original Code is: all this file.
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-// Contributor(s): Martin Haye. 
+// Contributor(s): none.
 //

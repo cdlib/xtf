@@ -2,10 +2,8 @@ package org.cdlib.xtf.lazyTree.hackedSaxon;
 //import net.sf.saxon.om.*;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.type.Type;
-
 import net.sf.saxon.xpath.XPathException;
 import org.w3c.dom.ProcessingInstruction;
-import org.w3c.dom.DOMException;
 
 /**
   * TProcInstImpl is an implementation of ProcInstInfo
@@ -16,19 +14,19 @@ import org.w3c.dom.DOMException;
 
 final class TinyProcInstImpl extends TinyNodeImpl implements ProcessingInstruction {
 
-    public TinyProcInstImpl(TinyDocumentImpl doc, int nodeNr) {
-        this.document = doc;
+    public TinyProcInstImpl(TinyTree tree, int nodeNr) {
+        this.tree = tree;
         this.nodeNr = nodeNr;
     }
 
     public String getStringValue() {
-        int start = document.alpha[nodeNr];
-        int len = document.beta[nodeNr];
+        int start = tree.alpha[nodeNr];
+        int len = tree.beta[nodeNr];
         if (len==0) {
         	return "";	// need to special-case this for the Microsoft JVM
         }
         char[] dest = new char[len];
-        document.commentBuffer.getChars(start, start+len, dest, 0);
+        tree.commentBuffer.getChars(start, start+len, dest, 0);
         return new String(dest, 0, len);
     }
 
@@ -66,35 +64,23 @@ final class TinyProcInstImpl extends TinyNodeImpl implements ProcessingInstructi
         return getStringValue();
     }
 
-    /**
-     * Set the content of this PI. Always fails.
-     * @exception DOMException
-     *    NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
-     */
-
-    public void setData(String data) throws DOMException {
-        disallowUpdate();
-    }
-
 }
 
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
-// The Original Code is: most of this file. 
+// The Original Code is: all this file.
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-// Contributor(s): Martin Haye. 
+// Contributor(s): none.
 //

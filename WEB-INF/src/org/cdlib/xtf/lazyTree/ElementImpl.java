@@ -4,11 +4,12 @@ package org.cdlib.xtf.lazyTree;
 //                 net.sf.saxon.tinytree.TinyElementImpl.java
 //
 
+import net.sf.saxon.event.LocationCopier;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
+import net.sf.saxon.om.Navigator;
 import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.style.StandardNames;
 import net.sf.saxon.tree.DOMExceptionImpl;
 import net.sf.saxon.type.Type;
 import net.sf.saxon.xpath.XPathException;
@@ -83,21 +84,7 @@ class ElementImpl extends ParentNodeImpl
      */
 
     public String getBaseURI() {
-        String xmlBase = getAttributeValue( StandardNames.XML_BASE );
-        if( xmlBase != null ) {
-            return xmlBase;
-        }
-        String startSystemId = getSystemId();
-        NodeInfo parent = getParent();
-        if (parent==null) {
-            return startSystemId;
-        }
-        String parentSystemId = parent.getSystemId();
-        if( startSystemId.equals(parentSystemId) ) {
-            return parent.getBaseURI();
-        } else {
-            return startSystemId;
-        }
+        return Navigator.getBaseURI(this);
     }
 
     /**
@@ -197,6 +184,10 @@ class ElementImpl extends ParentNodeImpl
     public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
 
         int typeCode = (copyAnnotations ? getTypeAnnotation() : 0);
+        if (locationId == 0 && out instanceof LocationCopier) {
+            out.setSystemId(getSystemId());
+            ((LocationCopier)out).setLineNumber(getLineNumber());
+        }
         out.startElement( nameCode, typeCode, locationId, 0 );
 
         // output the namespaces

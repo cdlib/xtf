@@ -15,51 +15,49 @@ import net.sf.saxon.om.SequenceIterator;
 
 final class PrecedingEnumeration extends AxisIteratorImpl {
 
-    private TinyDocumentImpl document;
+    private TinyTree tree;
     private TinyNodeImpl startNode;
     private NodeTest test;
-    private int nextNodeNr;
     private int nextAncestorDepth;
     private boolean includeAncestors;
 
-    public PrecedingEnumeration(TinyDocumentImpl doc, TinyNodeImpl node,
+    public PrecedingEnumeration(TinyTree doc, TinyNodeImpl node,
                                 NodeTest nodeTest, boolean includeAncestors) {
 
         this.includeAncestors = includeAncestors;
         test = nodeTest;
-        document = doc;
+        tree = doc;
         startNode = node;
-        nextNodeNr = node.nodeNr;
-        nextAncestorDepth = doc.depth[nextNodeNr] - 1;
-        advance();
-        // SaxonTODO: no longer need to look ahead
+        current = startNode;
+        nextAncestorDepth = doc.depth[node.nodeNr] - 1;
     }
 
     public Item next() {
-        if (nextNodeNr >= 0) {
-            position++;
-            current = document.getNode(nextNodeNr);
-            advance();
-            return current;
-        } else {
-            return null;
-        }
-    }
-
-    private void advance() {
-        do {
+        int nextNodeNr = ((TinyNodeImpl)current).nodeNr;
+        while (true) {
             nextNodeNr--;
             if (!includeAncestors) {
                 // skip over ancestor elements
-                while (nextNodeNr >= 0 && document.depth[nextNodeNr] == nextAncestorDepth) {
-                    nextAncestorDepth--;
+                while (nextAncestorDepth >= 0 && tree.depth[nextNodeNr] == nextAncestorDepth) {
+                    if (--nextAncestorDepth <= 0) {
+                        current = null;
+                        return null;
+                    };
                     nextNodeNr--;
                 }
             }
-        } while ( nextNodeNr >= 0 &&
-                !test.matches(document.nodeKind[nextNodeNr],
-                              document.nameCode[nextNodeNr],
-                              document.getElementAnnotation(nextNodeNr)));
+            if (test.matches(tree.nodeKind[nextNodeNr],
+                              tree.nameCode[nextNodeNr],
+                              tree.getElementAnnotation(nextNodeNr))) {
+                position++;
+                current = tree.getNode(nextNodeNr);
+                return current;
+            }
+            if (tree.depth[nextNodeNr] == 0) {
+                current = null;
+                return null;
+            }
+        }
     }
 
     /**
@@ -67,7 +65,7 @@ final class PrecedingEnumeration extends AxisIteratorImpl {
     */
 
     public SequenceIterator getAnother() {
-        return new PrecedingEnumeration(document, startNode, test, includeAncestors);
+        return new PrecedingEnumeration(tree, startNode, test, includeAncestors);
     }
 }
 
@@ -77,19 +75,17 @@ final class PrecedingEnumeration extends AxisIteratorImpl {
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
-// The Original Code is: most of this file. 
+// The Original Code is: all this file.
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-// Contributor(s): Martin Haye. 
+// Contributor(s): none.
 //

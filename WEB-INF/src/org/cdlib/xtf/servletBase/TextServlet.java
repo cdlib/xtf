@@ -50,6 +50,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.value.StringValue;
+
 import org.apache.lucene.limit.ExcessiveWorkException;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
@@ -313,7 +315,7 @@ public abstract class TextServlet extends HttpServlet
                 }
                 catch( UnsupportedEncodingException e ) { }
             }
-            trans.setParameter( name, value );
+            trans.setParameter( name, new StringValue(value) );
         }
         
         stuffSpecialAttribs( req, trans );
@@ -332,7 +334,7 @@ public abstract class TextServlet extends HttpServlet
     {
         for( Iterator i = list.iterator(); i.hasNext(); ) {
             Attrib a = (Attrib) i.next();
-            trans.setParameter( a.key, a.value );
+            trans.setParameter( a.key, new StringValue(a.value) );
         }
     } // stuffAttribs()
 
@@ -352,7 +354,7 @@ public abstract class TextServlet extends HttpServlet
         String uri = req.getRequestURI();
         if( uri.indexOf('?') >= 0 )
             uri = uri.substring(0, uri.indexOf('?') );
-        trans.setParameter( "servlet.path", uri );
+        trans.setParameter( "servlet.path", new StringValue(uri) );
         
         // Another useful parameter is the path to this instance in the
         // servlet container, for other resources such as icons and
@@ -372,17 +374,17 @@ public abstract class TextServlet extends HttpServlet
                                    rootPath.length() - lookFor.length() );
         
         rootPath = rootPath + "/";
-        trans.setParameter( "root.path", rootPath );
+        trans.setParameter( "root.path", new StringValue(rootPath) );
         
         // Stuff all the HTTP request parameters for the stylesheet to
         // use if it wants to.
         //
         Enumeration i = req.getHeaderNames();
-        trans.setParameter( "http.URL", req.getRequestURI() );
+        trans.setParameter( "http.URL", new StringValue(req.getRequestURI()) );
         while( i.hasMoreElements() ) {
             String name = (String) i.nextElement();
             String value = req.getHeader( name );
-            trans.setParameter( "http." + name, value );
+            trans.setParameter( "http." + name, new StringValue(value) );
         }
         
     } // stuffSpecialAttribs()
@@ -438,7 +440,7 @@ public abstract class TextServlet extends HttpServlet
             String  tagName = el.getTagName();
             String  strVal  = getText( el );
 
-            targetTrans.setParameter( tagName, strVal );
+            targetTrans.setParameter( tagName, new StringValue(strVal) );
 
         } // for node
 
@@ -554,13 +556,13 @@ public abstract class TextServlet extends HttpServlet
             //
             StringBuffer doc = new StringBuffer( 2048 );
             doc.append( "<" + className + ">\n" );
-            trans.setParameter( "exception", className );
+            trans.setParameter( "exception", new StringValue(className) );
 
             // Give the message (if any)
             String msg = makeHtmlString( exc.getMessage() );
             if( !isEmpty(msg) ) {
                 doc.append( "<message>" + msg + "</message>\n" );
-                trans.setParameter( "message", msg );
+                trans.setParameter( "message", new StringValue(msg) );
             }
 
             // Add any attributes if this is a GeneralException
@@ -572,7 +574,7 @@ public abstract class TextServlet extends HttpServlet
                     doc.append( "<" + a.key + ">" );
                         doc.append( a.value );
                     doc.append( "</" + a.key + ">\n" );
-                    trans.setParameter( a.key, a.value );
+                    trans.setParameter( a.key, new StringValue(a.value) );
                 }
             }
 
@@ -587,7 +589,8 @@ public abstract class TextServlet extends HttpServlet
                 doc.append( "<stackTrace>\n" + 
                             htmlStackTrace + 
                             "</stackTrace>\n" );
-                trans.setParameter( "stackTrace", htmlStackTrace );
+                trans.setParameter( "stackTrace", 
+                                    new StringValue(htmlStackTrace) );
             }
 
             doc.append( "</" + className + ">\n" );

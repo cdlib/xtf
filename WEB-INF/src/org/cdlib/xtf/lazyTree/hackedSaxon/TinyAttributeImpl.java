@@ -1,11 +1,9 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
-import net.sf.saxon.om.*;
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.type.Type;
-
-import org.w3c.dom.Attr;
-
 import net.sf.saxon.xpath.XPathException;
+import org.w3c.dom.Attr;
 
 
 /**
@@ -16,8 +14,8 @@ import net.sf.saxon.xpath.XPathException;
 
 final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
 
-    public TinyAttributeImpl(TinyDocumentImpl doc, int nodeNr) {
-        this.document = doc;
+    public TinyAttributeImpl(TinyTree tree, int nodeNr) {
+        this.tree = tree;
         this.nodeNr = nodeNr;
     }
 
@@ -26,13 +24,13 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     */
 
     public NodeInfo getParent() {
-        return document.getNode(document.attParent[nodeNr]);
+        return tree.getNode(tree.attParent[nodeNr]);
     }
 
     /**
     * Get the node sequence number (in document order). Sequence numbers are monotonic but not
-    * consecutive. In the current implementation, elements have a zero
-    * least-significant word, and attributes and namespaces use the same value in the top word as
+    * consecutive. In this implementation, elements have a zero
+    * least-significant word, while attributes and namespaces use the same value in the top word as
     * the containing element, and use the bottom word to hold
     * a sequence number, which numbers namespaces first and then attributes.
     */
@@ -42,7 +40,7 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
         long z =
             ((TinyNodeImpl)getParent()).getSequenceNumber()
             + 0x8000 +
-            (nodeNr - document.alpha[document.attParent[nodeNr]]);
+            (nodeNr - tree.alpha[tree.attParent[nodeNr]]);
         return z;
         // note the 0x8000 is to leave room for namespace nodes
     }
@@ -62,7 +60,7 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     */
 
     public String getStringValue() {
-        return document.attValue[nodeNr].toString();
+        return tree.attValue[nodeNr].toString();
     }
 
 	/**
@@ -70,7 +68,7 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
 	*/
 
 	public int getFingerprint() {
-		return document.attCode[nodeNr] & 0xfffff;
+		return tree.attCode[nodeNr] & 0xfffff;
 	}
 
 	/**
@@ -78,7 +76,7 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
 	*/
 
 	public int getNameCode() {
-		return document.attCode[nodeNr];
+		return tree.attCode[nodeNr];
 	}
 
     /**
@@ -87,9 +85,9 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     */
 
     public String getPrefix() {
-    	int code = document.attCode[nodeNr];
+    	int code = tree.attCode[nodeNr];
     	if ((code>>20 & 0xff) == 0) return "";
-    	return document.getNamePool().getPrefix(code);
+    	return tree.getNamePool().getPrefix(code);
     }
 
     /**
@@ -100,7 +98,7 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     */
 
     public String getDisplayName() {
-        return document.getNamePool().getDisplayName(document.attCode[nodeNr]);
+        return tree.getNamePool().getDisplayName(tree.attCode[nodeNr]);
     }
 
 
@@ -111,7 +109,7 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     */
 
     public String getLocalPart() {
-        return document.getNamePool().getLocalName(document.attCode[nodeNr]);
+        return tree.getNamePool().getLocalName(tree.attCode[nodeNr]);
     }
 
     /**
@@ -121,7 +119,7 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     */
 
     public final String getURI() {
-        return document.getNamePool().getURI(document.attCode[nodeNr]);
+        return tree.getNamePool().getURI(tree.attCode[nodeNr]);
     }
 
     /**
@@ -130,7 +128,7 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     */
 
     public int getTypeAnnotation() {
-        return document.getAttributeAnnotation(nodeNr);
+        return tree.getAttributeAnnotation(nodeNr);
     }
 
     /**
@@ -138,7 +136,7 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     */
 
     public String generateId() {
-        return (getParent()).generateId() + "a" + document.attCode[nodeNr];
+        return (getParent()).generateId() + 'a' + tree.attCode[nodeNr];
         // we previously used the attribute name. But this breaks the requirement
         // that the result of generate-id consists entirely of alphanumeric ASCII
         // characters
@@ -149,7 +147,7 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
     */
 
     public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
-		int nameCode = document.attCode[nodeNr];
+		int nameCode = tree.attCode[nodeNr];
 		int typeCode = (copyAnnotations ? getTypeAnnotation() : -1);
         out.attribute(nameCode, typeCode, getStringValue(), 0, 0);
     }
@@ -167,19 +165,17 @@ final class TinyAttributeImpl extends TinyNodeImpl implements Attr {
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
 // you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/ 
+// License at http://www.mozilla.org/MPL/
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License. 
+// See the License for the specific language governing rights and limitations under the License.
 //
-// The Original Code is: most of this file. 
+// The Original Code is: all this file.
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-// Contributor(s): Martin Haye. 
+// Contributor(s): none.
 //
