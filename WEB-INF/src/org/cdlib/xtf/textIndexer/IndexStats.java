@@ -269,6 +269,13 @@ public class IndexStats
         e.printStackTrace( System.out );
     }
       
+    catch( Throwable t ) {
+        Trace.error( "*** Last Chance Exception: " + t.getClass() );
+        Trace.error( "             With message: " + t );
+        Trace.error( "" );
+        t.printStackTrace( System.out );
+    }
+      
     // Exit successfully.
     return;
       

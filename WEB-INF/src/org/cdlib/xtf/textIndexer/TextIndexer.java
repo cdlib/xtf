@@ -396,9 +396,9 @@ public class TextIndexer
     } // try
     
     // Log any unhandled exceptions.    
-    catch( Exception e ) {
-        Trace.error( "*** Last Chance Exception: " + e.getClass() );
-        Trace.error( "             With message: " + e.getMessage() );
+    catch( Throwable t ) {
+        Trace.error( "*** Last Chance Exception: " + t.getClass() );
+        Trace.error( "             With message: " + t.getMessage() );
     }
       
     // Exit successfully.

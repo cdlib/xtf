@@ -156,7 +156,7 @@ public class IdxTreeCleaner
     try {
         indexReader = IndexReader.open( idxDirToClean );
     }
-    catch( Exception e ) {
+    catch( Throwable t ) {
       
         Trace.warning( "*** Warning: Unable to Open Index [" + 
                        idxDirToClean + "] for Cleaning." );
@@ -212,6 +212,20 @@ public class IdxTreeCleaner
             // And pass the exception up the call chain.
             throw e;
         }
+        catch( Throwable t ) {
+          
+            // Log the problem.
+            Trace.tab();
+            Trace.error( "*** Exception Purging Incomplete Document: " +
+                         t.getMessage() );
+            Trace.untab();
+           
+            // Close the index.
+            indexReader.close();
+            
+            // And pass the exception up the call chain.
+            throw new RuntimeException( t );
+        }
         
          cleanCount++;
          lastChunk--;        
@@ -241,7 +255,7 @@ public class IdxTreeCleaner
             // If we could not, display a warning and track the delete
             // failure count.
             //
-            catch( Exception e ) {
+            catch( Throwable t ) {
                 Trace.tab();
                 Trace.warning( "*** Warning: Unable to Delete [ " +
                                fileList[j].toString() + " ]." );
@@ -290,7 +304,7 @@ public class IdxTreeCleaner
             // since we can't continue to delete parent directories if
             // the current one can't be deleted.
             //
-            catch( Exception e ) {
+            catch( Throwable t ) {
             
                 Trace.tab();
                 Trace.info( "*** Warning: Unable to delete empty "       +
@@ -299,7 +313,7 @@ public class IdxTreeCleaner
                 Trace.untab();
                 return;
           
-            } // catch( Exception e )
+            } // catch( Throwable t )
           
             // Then back up to the parent and repeat.
             dir = parentDir;

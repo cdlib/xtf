@@ -1067,10 +1067,10 @@ public class XMLTextProcessor extends DefaultHandler
                 catch( IOException e ) {
                     throw e;
                 }
-                catch( Exception e ) {
+                catch( Throwable t ) {
                     throw new IOException( 
                         "Error pre-caching XSL keys from " +
-                        "display stylesheet \"" + displayStyle + "\": " + e );
+                        "display stylesheet \"" + displayStyle + "\": " + t );
                 }
             }
         }
@@ -1269,15 +1269,15 @@ public class XMLTextProcessor extends DefaultHandler
 
     } // try
     
-    catch( Exception e ) {
+    catch( Throwable t ) {
       
         // Tell the caller (and the user) that ther was an error..      
         Trace.more( Trace.info, "Skipping Due to Errors." );
 
-        Trace.debug( "*** XML Parser Exception: " + 
-            e.getClass() + "\n"  +
+        Trace.info( "*** XML Parser Exception: " + 
+            t.getClass() + "\n"  +
             "    With message: " + 
-            e.getMessage() );
+            t.getMessage() );
         
         return -1;
       
@@ -1979,7 +1979,13 @@ public class XMLTextProcessor extends DefaultHandler
             
         } // try( to process next word in token list )
         
-        catch( Exception e ) {}
+        catch( Throwable t ) {
+          
+            // Log the error caught.
+            Trace.tab();
+            Trace.error( "*** Exception (Ignored) Processing text: " + t );
+            Trace.untab();
+        }
       
     } // for(;;)
     
@@ -2532,11 +2538,11 @@ public class XMLTextProcessor extends DefaultHandler
     }
     
     // If anything went wrong...
-    catch( Exception e ) {
+    catch( Throwable t ) {
         
         // Log the error.
         Trace.tab();
-        Trace.error( "*** Exception Compacting Virtual Words: " + e );
+        Trace.error( "*** Exception Compacting Virtual Words: " + t );
         Trace.untab();
         
         // And exit early.
@@ -2599,11 +2605,11 @@ public class XMLTextProcessor extends DefaultHandler
     }
     
     // If anything went wrong adding the document to the index...
-    catch( Exception e ) {
+    catch( Throwable t ) {
         
         // Log the error.
         Trace.tab();
-        Trace.error( "*** Exception Adding Text to Index: " + e );
+        Trace.error( "*** Exception Adding Text to Index: " + t );
         Trace.untab();
           
         // And bail.
@@ -3168,11 +3174,11 @@ public class XMLTextProcessor extends DefaultHandler
     }
 
     // If something went wrong...
-    catch( Exception e ) {
+    catch( Throwable t ) {
       
         // Log the problem.
         Trace.tab();
-        Trace.error( "*** Exception Adding docInfo to Index: " + e );
+        Trace.error( "*** Exception Adding docInfo to Index: " + t );
         Trace.untab();
     }
     

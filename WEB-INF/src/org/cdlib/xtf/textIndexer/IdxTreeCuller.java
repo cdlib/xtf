@@ -286,7 +286,7 @@ public class IdxTreeCuller
         // If we could not, display a warning and track the delete
         // failure count.
         //
-        catch( Exception e ) {
+        catch( Throwable t ) {
             Trace.tab();
             Trace.warning( "*** Warning: Unable to Delete [ " +
                            Path.normalizeFileName(fileList[j].toString()) + " ]." );
@@ -335,7 +335,7 @@ public class IdxTreeCuller
         // since we can't continue to delete parent directories if
         // the current one can't be deleted.
         //
-        catch( Exception e ) {
+        catch( Throwable t ) {
           
             Trace.tab();
             Trace.info( "*** Warning: Unable to delete empty "       +
@@ -344,7 +344,7 @@ public class IdxTreeCuller
             Trace.untab();
             return;
         
-        } // catch( Exception e )
+        } // catch( Throwable t )
         
         // Then back up to the parent and repeat.
         dir = parentDir;

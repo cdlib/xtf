@@ -180,7 +180,10 @@ public class PDFToString {
       } // try
      
       // Shunt out any other exceptions.
-      catch( Exception e ) {}
+      catch( Throwable t ) {
+          Trace.error( "*** PDFToXML.convert() Exception: " + t.getClass() );
+          Trace.error( "                    With message: " + t.getMessage() );
+      }
       
       // Return the resulting XML string to the caller.
       return xmlStr;

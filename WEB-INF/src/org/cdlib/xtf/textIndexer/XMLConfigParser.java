@@ -200,15 +200,16 @@ public class XMLConfigParser extends DefaultHandler
         
     } // try
     
-    catch( Exception e ) {
+    catch( Throwable t ) {
       
         // Log what happened.
         Trace.error( "*** Caught an XML Parser Exception: " + 
-                     e.getClass() + "\n"  +
+                     t.getClass() + "\n"  +
                      "    With message: " + 
-                     e.getMessage() );
+                     t.getMessage() );
                             
-        throw e;
+        throw (t instanceof Exception) ? (Exception)t : 
+                                         new RuntimeException(t);
     }
   
   
