@@ -258,9 +258,9 @@ public class SnippetMaker
         BasicWordIter wordIter = 
                           new BoundedWordIter( value, stream, chunkOverlap );
         
-        Trace.debug( "Mark field \"" + fieldName + "\": orig text \"" + 
-                     value + "\"" );
-        Trace.debug( "    " );
+        //Trace.debug( "Mark field \"" + fieldName + "\": orig text \"" + 
+        //             value + "\"" );
+        //Trace.debug( "    " );
         
         // Process all the marks as they come
         doc.markField( fieldName, wordIter, maxContext, 
@@ -275,7 +275,7 @@ public class SnippetMaker
             private void copyUpTo( MarkPos pos ) {
               if( prevPos != null ) {
                   String toAdd = prevPos.getTextTo( pos );
-                  Trace.more( Trace.debug, "[" + toAdd + "]");
+                  //Trace.more( Trace.debug, "[" + toAdd + "]");
                   buf.append( mapXMLChars(toAdd) );
                   if( inContext )
                       contextSize += toAdd.length();
