@@ -30,8 +30,10 @@ package org.cdlib.xtf.dynaXML.test;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.LinkedList;
@@ -57,6 +59,7 @@ import org.cdlib.xtf.dynaXML.DocInfo;
 import org.cdlib.xtf.dynaXML.DynaXML;
 import org.cdlib.xtf.dynaXML.InvalidDocumentException;
 import org.cdlib.xtf.lazyTree.LazyKeyManager;
+import org.cdlib.xtf.util.DocTypeDeclRemover;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
@@ -124,7 +127,15 @@ public class TestableDynaXML extends DynaXML
     // First, read in the source in DOM format.
     DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = fac.newDocumentBuilder();
-    Document doc = builder.parse( new File(sourcePath) );
+
+    // Convert our XML text file into a SAXON input source.
+    //
+    // Remove DOCTYPE declarations, since the XML reader will barf if it
+    // can't resolve the entity reference, and we really don't care.
+    //
+    InputStream inStream = new FileInputStream( new File(sourcePath) );
+    inStream = new DocTypeDeclRemover( inStream );
+    Document doc = builder.parse( inStream );
 
     // Annotate the tree with search results.
     TreeAnnotater annotater = new TreeAnnotater();
