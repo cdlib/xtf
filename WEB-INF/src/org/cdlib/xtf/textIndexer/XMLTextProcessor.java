@@ -1192,7 +1192,17 @@ public class XMLTextProcessor extends DefaultHandler
             // Remove DOCTYPE declarations, since the XML reader will barf if it
             // can't resolve the entity reference, and we really don't care.
             //
-            inSrc = new InputSource( new DocTypeDeclRemover(inStream) );
+            inStream = new DocTypeDeclRemover( inStream );
+            
+            // Work around a nasty bug in the Apache Crimson parser. If it
+            // finds a ']' character at the end of its 8193-byte buffer,
+            // and that is preceded by a '>' character then it crashes. The 
+            // following filter inserts a space in such cases.
+            //
+            inStream = new CrimsonBugWorkaround( inStream );
+            
+            // Now we're ready to make the InputSource out of the InputStream
+            inSrc = new InputSource( inStream );
         }
         
         // If the file is plain text...
