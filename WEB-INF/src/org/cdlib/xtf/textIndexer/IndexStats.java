@@ -9,7 +9,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
-import org.cdlib.xtf.textEngine.IdxConfigUtil;
+import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
@@ -338,7 +338,7 @@ public class IndexStats
         
         // Also find the size of the lazy file, if any.
         File lazyFile = 
-            IdxConfigUtil.calcLazyPath( new File(cfgInfo.xtfHomePath),
+            IndexUtil.calcLazyPath( new File(cfgInfo.xtfHomePath),
                                         idxInfo, 
                                         currFile, 
                                         false );

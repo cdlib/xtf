@@ -38,7 +38,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.Hits;
 
-import org.cdlib.xtf.textEngine.IdxConfigUtil;
+import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
@@ -181,7 +181,7 @@ public class IdxTreeCuller
                 // empty parent directories as well.
                 //
                 File lazyFile = 
-                    IdxConfigUtil.calcLazyPath( xtfHome,
+                    IndexUtil.calcLazyPath( xtfHome,
                                                 idxInfo, 
                                                 currFile, 
                                                 false );

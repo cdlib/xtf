@@ -55,7 +55,7 @@ import org.apache.lucene.ngram.NgramStopFilter;
 import org.cdlib.xtf.crossQuery.CrossQuery;
 import org.cdlib.xtf.lazyTree.SearchTree;
 import org.cdlib.xtf.textEngine.DocHit;
-import org.cdlib.xtf.textEngine.IdxConfigUtil;
+import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryResult;
@@ -324,7 +324,7 @@ public class RegressTest
                 // Calculate the persistent path.
                 String configPath = Path.normalizeFileName(
                                        dir + "/" + "IndexConfig.xml" );
-                File lazyFile = IdxConfigUtil.calcLazyPath(
+                File lazyFile = IndexUtil.calcLazyPath(
                                                inFile.getParentFile(),
                                                new File(configPath),
                                                "all",
@@ -335,7 +335,7 @@ public class RegressTest
                 // snippets because the scoring algorithm changes often and
                 // we don't really care exactly what the scores are.
                 //
-                String docKey = IdxConfigUtil.calcDocKey(
+                String docKey = IndexUtil.calcDocKey(
                                                inFile.getParentFile(),
                                                new File(configPath),
                                                "all",

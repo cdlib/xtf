@@ -56,7 +56,7 @@ import org.cdlib.xtf.cache.Dependency;
 import org.cdlib.xtf.cache.FileDependency;
 import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.servletBase.StylesheetCache;
-import org.cdlib.xtf.textEngine.IdxConfigUtil;
+import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
@@ -432,7 +432,7 @@ public class SrcTreeProcessor
     if( level == 0 )
         dirKey = cfgInfo.indexInfo.indexName + ":/"; 
     else
-        dirKey = IdxConfigUtil.calcDocKey( new File(cfgInfo.xtfHomePath),
+        dirKey = IndexUtil.calcDocKey( new File(cfgInfo.xtfHomePath),
                                            cfgInfo.indexInfo, currFile );
     if( nFiles == 0 )
         runStylesheet = false;
@@ -635,7 +635,7 @@ public class SrcTreeProcessor
     // index's data directory.
     //
     File srcFile = new File( info.source.getSystemId() );
-    String key = IdxConfigUtil.calcDocKey( new File(cfgInfo.xtfHomePath),
+    String key = IndexUtil.calcDocKey( new File(cfgInfo.xtfHomePath),
                                            cfgInfo.indexInfo, srcFile );
     info.key = key;
     
