@@ -307,7 +307,7 @@ public class DefaultQueryProcessor extends QueryProcessor
      * Calling this method forces new changes to an index to be immediately
      * recognized.
      */
-    public static void resetCache()
+    public void resetCache()
     {
         searchers.clear();
     } // resetCache()

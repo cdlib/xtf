@@ -65,4 +65,11 @@ public abstract class QueryProcessor
     {
         return processReq( req.getSource(), req.getBaseDir() );
     }
+    
+    /** 
+     * Optional method: hint to the query processor to clear any cached
+     * index data, so that recently indexed documents will appear in
+     * search results.
+     */
+    public void resetCache() { }
 }
