@@ -11,7 +11,7 @@
   <property name="lib"     location="lib"/>
   <property name="bin"     location="bin"/>
   <property name="doc"     location="javadoc"/>
-  <property name="saxon"   location="${lib}/saxon-8.0.jar"/>
+  <property name="saxon"   location="${lib}/saxonb-8.1.1.jar"/>
   <property name="lucene"  location="${lib}/lucene-1.4.1.jar"/>
   <property name="servlet" location="${lib}/servlet.jar"/>
 
