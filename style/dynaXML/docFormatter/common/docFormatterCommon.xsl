@@ -32,8 +32,6 @@
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                               xmlns:xtf="http://cdlib.org/xtf">
-  
-  <xsl:include href="debug.xsl"/>
 
   <xsl:param name="servlet.path"/>
   

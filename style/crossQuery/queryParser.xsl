@@ -65,12 +65,15 @@
 
   <!-- sort mode -->
   <xsl:param name="sort"/>
+  
+  <!-- raw XML dumpl flag -->
+  <xsl:param name="raw"/>
 
   <xsl:param name="startDoc" select="1"/>
   
   <xsl:param name="docsPerPage">
     <xsl:choose>
-      <xsl:when test="($smode = 'test') or ($smode='debug')">
+      <xsl:when test="($smode = 'test') or $raw">
         <xsl:value-of select="10000"/>
       </xsl:when>
       <xsl:otherwise>

@@ -61,11 +61,6 @@
   
   <xsl:template match="/">
     <xsl:choose>
-      <xsl:when test="$smode = 'debug'">
-        <pre>
-          <xsl:apply-templates select="*" mode="debug"/>
-        </pre>
-      </xsl:when>
       <xsl:when test="$smode = 'test'">
         <xsl:apply-templates select="crossQueryResult" mode="test"/>
       </xsl:when>

@@ -166,6 +166,7 @@
   <!-- Search and Result Behavior URL Parameters -->
   <xsl:param name="smode"/>
   <xsl:param name="rmode"/>
+  <xsl:param name="raw"/>
   <xsl:param name="sort"/>
 
   <!-- Paging Parameters-->  
@@ -173,7 +174,7 @@
   <!-- Documents per Page -->
   <xsl:param name="docsPerPage" as="xs:integer">
     <xsl:choose>
-      <xsl:when test="$smode = 'test' or $smode = 'debug'">
+      <xsl:when test="$smode = 'test' or $raw">
         <xsl:value-of select="10000"/>
       </xsl:when>
       <xsl:otherwise>
@@ -1591,48 +1592,5 @@
       </body>
     </html>
   </xsl:template>
-    
-  <!-- ====================================================================== -->
-  <!-- Debugging Templates                                                    -->
-  <!-- ====================================================================== -->
-  
-  <xsl:template match="*" mode="debug">
-    <xsl:call-template name="write-starttag"/>
-    <xsl:apply-templates mode="debug"/>   
-    <xsl:if test="*|text()|comment()|processing-instruction()">
-      <xsl:call-template name="write-endtag"/>
-    </xsl:if>
-  </xsl:template>
-  
-  <xsl:template name="write-starttag">
-    <span style="color: green">
-      <xsl:text>&lt;</xsl:text>
-      <xsl:value-of select="name()"/>
-      <xsl:for-each select="@*">
-        <xsl:call-template name="write-attribute"/>
-      </xsl:for-each>
-      <xsl:if test="not(*|text()|comment()|processing-instruction())"> /</xsl:if>
-      <xsl:text>&gt;</xsl:text>
-    </span>
-  </xsl:template>
-  
-  <xsl:template name="write-endtag">
-    <span style="color: green">
-      <xsl:text>&lt;/</xsl:text>
-      <xsl:value-of select="name()"/>
-      <xsl:text>&gt;</xsl:text>
-    </span>
-  </xsl:template>
-  
-  <xsl:template name="write-attribute">
-    <span style="color: orange">
-      <xsl:text> </xsl:text>
-      <xsl:value-of select="name()"/>
-      <xsl:text>="</xsl:text>
-      <xsl:value-of select="."/>
-      <xsl:text>"</xsl:text>
-    </span>
-  </xsl:template>
-  
 
 </xsl:stylesheet>
