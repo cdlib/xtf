@@ -62,6 +62,9 @@ public class LimitedWildcardQuery extends WildcardQuery
     /** Stop-words for the current index (e.g. the, a, and, etc.) */
     private Set stopWords;
     
+    /** true on the first time through only */
+    private boolean first = true;
+    
     /**
      * Construct a query on the given wildcard term specification, enforcing
      * a limit on the total number of terms. Each term is added to the
@@ -113,12 +116,18 @@ public class LimitedWildcardQuery extends WildcardQuery
         public boolean next() throws IOException
         {
             while( true ) {
-                boolean more = super.next();
-                if( !more ) {
-                    curTerm = null;
-                    return false;
+                if( first )
+                    first = false;
+                else {
+                    if( !super.next() ) {
+                        curTerm = null;
+                        return false;
+                    }
                 }
+
                 curTerm = super.term();
+                if( curTerm == null )
+                    return false;
                 
                 // If no stop-word set is active, this is the term 
                 // we want.
@@ -143,6 +152,8 @@ public class LimitedWildcardQuery extends WildcardQuery
                         termLimit + ")");
             }
             termMap.put( curTerm );
+            
+            System.out.println( "Wildcard term: " + curTerm );
             
             return true;
         }
