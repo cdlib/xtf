@@ -49,6 +49,7 @@ import org.apache.lucene.chunk.SpanChunkedNotQuery;
 import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.mark.SpanDocument;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanNearQuery;
@@ -963,6 +964,34 @@ public class QueryRequest implements Cloneable
             SpanQuery sq = processSpanJoin(name, queries, nots, maxSnippets); 
             bq.add( deChunk(sq), require, false );
         } // for i
+        
+        // Simplify BooleanQuery that has only required clauses.
+        BooleanClause[] clauses = bq.getClauses();
+        boolean allAnd = true;
+        boolean anyBoolSubs = false;
+        for( int i = 0; i < clauses.length; i++ ) {
+            if( clauses[i].query instanceof BooleanQuery )
+                anyBoolSubs = true;
+            if( !clauses[i].required )
+                allAnd = false;
+            else if( clauses[i].prohibited )
+                allAnd = false;
+            else if( clauses[i].query.getBoost() != 1.0f )
+                allAnd = false;
+        }
+        if( allAnd && anyBoolSubs ) {
+            bq = new BooleanQuery();
+            for( int i = 0; i < clauses.length; i++ ) {
+                if( clauses[i].query instanceof BooleanQuery ) {
+                    BooleanQuery    subQuery = (BooleanQuery) clauses[i].query;
+                    BooleanClause[] subClauses = subQuery.getClauses();
+                    for( int j = 0; j < subClauses.length; j++ )
+                        bq.add( subClauses[j] );
+                }
+                else
+                    bq.add( clauses[i] );
+            }
+        }
 
         // And we're done.
         return bq;        
