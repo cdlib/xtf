@@ -34,6 +34,14 @@
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
                               xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <!-- ====================================================================== -->
+  <!-- Output Parameters                                                      -->
+  <!-- ====================================================================== -->
+
+  <xsl:output method="xhtml" indent="yes" encoding="UTF-8" media-type="text/html" 
+              doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
+              doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 
   <!-- ====================================================================== -->
   <!-- Parameters                                                             -->
@@ -1135,13 +1143,15 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace($queryString, 
+    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString, 
                           '&amp;rmode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;smode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;relation=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;profile=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;profile-join=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),     
-                          'year=([0-9]+)&amp;year-max=([0-9]+)', 'year=$1-$2'), 
+                          'year=([0-9]+)&amp;year-max=([0-9]+)', 'year=$1-$2'),    
+                          'text=([A-Za-z0-9&quot;\-\.\*\+ ]+)&amp;text-prox=([0-9]+)', '$1 within $2 words'), 
+                          'text=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'keywords=$1'), 
                           '([A-Za-z0-9&quot;\- ]+)=([A-Za-z0-9&quot;\-\.\*\+ ]+)', 'XX $2 in $1 XX'),
                           '&amp;', ' and ')"/>
   </xsl:param>
@@ -1158,7 +1168,26 @@
       <xsl:matching-substring>
         <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
         <xsl:text> in </xsl:text>
-        <em><xsl:value-of select="regex-group(2)"/></em>
+        <strong><xsl:value-of select="regex-group(2)"/></strong>
+      </xsl:matching-substring>
+      <xsl:non-matching-substring>
+        <xsl:value-of select="."/>
+      </xsl:non-matching-substring>
+    </xsl:analyze-string>
+    
+  </xsl:template>
+
+  <!-- How do I chain the one above and this one? -->
+  <xsl:template name="format-proximity">
+    
+    <xsl:param name="query"/>
+
+    <xsl:analyze-string select="$query" regex="([A-Za-z0-9&quot;\-\.\*\+ ]+?) within ([0-9]+) words">
+      <xsl:matching-substring>
+        <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
+        <xsl:text> within </xsl:text>
+        <strong><xsl:value-of select="regex-group(2)"/></strong>
+        <xsl:text> words</xsl:text>
       </xsl:matching-substring>
       <xsl:non-matching-substring>
         <xsl:value-of select="."/>
@@ -1363,28 +1392,28 @@
     <select size="1" name="sort">
       <xsl:choose>
         <xsl:when test="$sort = ''">
-          <option value="" selected="selected">Relevance</option>
-          <option value="title">Title</option>
-          <option value="creator">Author</option>
-          <option value="year">Year</option>
+          <option value="" selected="selected">relevance</option>
+          <option value="title">title</option>
+          <option value="creator">author</option>
+          <option value="year">publication date</option>
         </xsl:when>
         <xsl:when test="$sort = 'title'">
-          <option value="">Relevance</option>
-          <option value="title" selected="selected">Title</option>
-          <option value="creator">Author</option>
-          <option value="year">Year</option>
+          <option value="">relevance</option>
+          <option value="title" selected="selected">title</option>
+          <option value="creator">author</option>
+          <option value="year">publication date</option>
         </xsl:when>
         <xsl:when test="$sort = 'creator'">
-          <option value="">Relevance</option>
-          <option value="title">Title</option>
-          <option value="creator" selected="selected">Author</option>
-          <option value="year">Year</option>
+          <option value="">relevance</option>
+          <option value="title">title</option>
+          <option value="creator" selected="selected">author</option>
+          <option value="year">publication date</option>
         </xsl:when>
         <xsl:when test="$sort = 'year'">
-          <option value="">Relevance</option>
-          <option value="title">Title</option>
-          <option value="creator">Author</option>
-          <option value="year" selected="selected">Year</option>
+          <option value="">relevance</option>
+          <option value="title">title</option>
+          <option value="creator">author</option>
+          <option value="year" selected="selected">publication date</option>
         </xsl:when>
       </xsl:choose>
     </select>
@@ -1399,12 +1428,12 @@
     <select size="1" name="rights">
       <xsl:choose>
         <xsl:when test="$rights = ''">
-          <option value="" selected="selected">All</option>
-          <option value="public">Public</option> 
+          <option value="" selected="selected">all books</option>
+          <option value="public">public access books</option> 
         </xsl:when>
         <xsl:when test="$rights = 'public'">
-          <option value="">All</option>
-          <option value="public" selected="selected">Public</option> 
+          <option value="">all books</option>
+          <option value="public" selected="selected">public access books</option> 
         </xsl:when>
       </xsl:choose>
     </select>
