@@ -1376,14 +1376,14 @@
       <xsl:when test="matches(string(.) , '.{300}')">
         <xsl:value-of select="replace(., '(.{300}).+', '$1')"/>
         <xsl:text> . . . </xsl:text>
-        <a href="{$servlet.path}?{$moreString}">[more]</a>                
+        <a href="{$servlet.path}?{$moreString}">[more]</a>  
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-    
+
   <!-- ====================================================================== -->
   <!-- Sort Options                                                           -->
   <!-- ====================================================================== -->
