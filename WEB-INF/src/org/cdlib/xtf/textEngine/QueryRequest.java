@@ -725,37 +725,96 @@ public class QueryRequest implements Cloneable
             bq.add( deChunk(sq), require, false );
         } // for i
         
-        // Simplify BooleanQuery that has only required clauses.
-        BooleanClause[] clauses = bq.getClauses();
-        boolean allAnd = true;
+        // Simplify the BooleanQuery (if possible), for instance collapsing
+        // an AND query inside another AND query.
+        //
+        return simplifyBooleanQuery( bq );
+        
+    } // parseBoolean() 
+        
+        
+    /**
+     * Simplify a BooleanQuery that contains other BooleanQuery/ies with the
+     * same type of clauses. If there's any boosting involved, don't do
+     * the optimization.
+     */
+    private Query simplifyBooleanQuery( BooleanQuery bq )
+    {
+        boolean anyBoosting = false;
         boolean anyBoolSubs = false;
-        for( int i = 0; i < clauses.length; i++ ) {
-            if( clauses[i].query instanceof BooleanQuery )
+        boolean allSame = true;
+        boolean first = true;
+        boolean prevRequired = true;
+        boolean prevProhibited = true;
+        
+        // Scan each clause.
+        BooleanClause[] clauses = bq.getClauses();
+        for( int i = 0; i < clauses.length; i++ ) 
+        {
+            // See if this clause is the same as the previous one.
+            if( !first && 
+                (prevRequired   != clauses[i].required ||
+                 prevProhibited != clauses[i].prohibited ) )
+                allSame = false;
+            
+            prevRequired   = clauses[i].required;
+            prevProhibited = clauses[i].prohibited;
+            first = false;
+          
+            // Detect any boosting
+            if( clauses[i].query.getBoost() != 1.0f )
+                anyBoosting = true;
+            
+            // If the clause is a BooleanQuery, check the sub-clauses...
+            if( clauses[i].query instanceof BooleanQuery ) 
+            {
+                BooleanQuery    subQuery = (BooleanQuery) clauses[i].query;
+                BooleanClause[] subClauses = subQuery.getClauses();
+                
+                // Scan each sub-clause
+                for( int j = 0; j < subClauses.length; j++ ) 
+                {
+                    // Make sure it's the same as the previous clause.
+                    if( prevRequired   != subClauses[j].required ||
+                        prevProhibited != subClauses[j].prohibited )
+                        allSame = false;
+                    
+                    prevRequired = subClauses[j].required;
+                    prevProhibited = subClauses[j].prohibited;
+                    
+                    // Detect any boosting.
+                    if( clauses[j].query.getBoost() != 1.0f )
+                        anyBoosting = true;
+                } // for j
+                
+                // Note that we found at least one BooleanQuery clause.
                 anyBoolSubs = true;
-            if( !clauses[i].required )
-                allAnd = false;
-            else if( clauses[i].prohibited )
-                allAnd = false;
-            else if( clauses[i].query.getBoost() != 1.0f )
-                allAnd = false;
-        }
-        if( allAnd && anyBoolSubs ) {
-            bq = new BooleanQuery();
-            for( int i = 0; i < clauses.length; i++ ) {
-                if( clauses[i].query instanceof BooleanQuery ) {
-                    BooleanQuery    subQuery = (BooleanQuery) clauses[i].query;
-                    BooleanClause[] subClauses = subQuery.getClauses();
-                    for( int j = 0; j < subClauses.length; j++ )
-                        bq.add( subClauses[j] );
-                }
-                else
-                    bq.add( clauses[i] );
             }
+        } // for i
+        
+        // If the main BooleanQuery doesn't meet all of our criteria for
+        // simplification, simply return it unmodified.
+        //
+        if( !anyBoolSubs || !allSame || anyBoosting )
+            return bq;
+        
+        // Create a new, simplified, query.
+        bq = new BooleanQuery();
+        for( int i = 0; i < clauses.length; i++ ) {
+            if( clauses[i].query instanceof BooleanQuery ) {
+                BooleanQuery    subQuery = (BooleanQuery) clauses[i].query;
+                BooleanClause[] subClauses = subQuery.getClauses();
+                for( int j = 0; j < subClauses.length; j++ )
+                    bq.add( subClauses[j] );
+            }
+            else
+                bq.add( clauses[i] );
         }
 
         // And we're done.
-        return bq;        
-    } // parseBoolean() 
+        return bq;
+        
+    } // simplifyBooleanQuery()
         
     
     /**
