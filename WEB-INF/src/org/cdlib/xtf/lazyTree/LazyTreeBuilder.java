@@ -190,7 +190,7 @@ public class LazyTreeBuilder
      * (which must come from begin()) has been sent all the SAX events for 
      * the input document.
      */
-    public void finish( Receiver inBuilder )
+    public void finish( Receiver inBuilder, boolean closeStore )
         throws IOException
     {
         TinyBuilder builder = (TinyBuilder)inBuilder;
@@ -215,9 +215,12 @@ public class LazyTreeBuilder
         writeNames   ( treeStore.createSubStore("names") );
         writeAttrs   ( treeStore.createSubStore("attributes") ); // must be before nodes
         writeNodes   ( treeStore.createSubStore("nodes") );
-         
+        
+        // Close the store if requested.
+        if( closeStore )
+            treeStore.close();
+        
         // All done!
-        treeStore.close();
         tree      = null;
         names    = null;
     }
