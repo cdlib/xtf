@@ -261,22 +261,22 @@ public class TextIndexer
               //
               if( firstIndex ) {
 
-                  //if( !cfgInfo.mustClean ) {
+                  if( !cfgInfo.mustClean ) {
                   
-                  // Clean all indices below the root index directory. 
-                  File idxRootDir = new File(Path.resolveRelOrAbs( 
-                                                xtfHomeFile,
-                                                cfgInfo.indexInfo.indexPath) );
-                  
-                  Trace.info("");
-                  Trace.info( "Purging Incomplete Documents From Indexes:" );
-                  Trace.tab();
-        
-                  indexCleaner.processDir( idxRootDir );
-        
-                  Trace.untab();
-                  Trace.info( "Done." );
-                  //}
+                      // Clean all indices below the root index directory. 
+                      File idxRootDir = new File(Path.resolveRelOrAbs( 
+                                                    xtfHomeFile,
+                                                    cfgInfo.indexInfo.indexPath) );
+                      
+                      Trace.info("");
+                      Trace.info( "Purging Incomplete Documents From Indexes:" );
+                      Trace.tab();
+            
+                      indexCleaner.processDir( idxRootDir );
+            
+                      Trace.untab();
+                      Trace.info( "Done." );
+                  }
                         
                   Trace.info("");
                   Trace.info( "Indexing New/Updated Documents:" );
