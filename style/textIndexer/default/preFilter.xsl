@@ -3,6 +3,7 @@
         xmlns:xtf="http://cdlib.org/xtf"
         xmlns:date="http://exslt.org/dates-and-times"
         xmlns:parse="http://cdlib.org/xtf/parse"
+        xmlns:mets="http://www.loc.gov/METS/"
         extension-element-prefixes="date"
         exclude-result-prefixes="#all">
 
@@ -78,7 +79,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <!-- Structural Indexing -->
+  <!-- sectionType Indexing and Element Boosting -->
   
   <xsl:template match="head[parent::*[self::div1 or self::div2 or self::div3 or self::div4 or self::div5 or self::div6 or self::div7]]">
     <xsl:copy>
@@ -88,7 +89,15 @@
       <xsl:apply-templates/>
     </xsl:copy>
   </xsl:template>
-
+  
+  <xsl:template match="titlePart[ancestor::titlePage]">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:attribute name="xtf:wordBoost" select="100.0"/>
+      <xsl:apply-templates/>
+    </xsl:copy>
+  </xsl:template>
+  
 <!-- ====================================================================== -->
 <!-- Metadata Indexing                                                      -->
 <!-- ====================================================================== -->
@@ -98,7 +107,11 @@
     <xsl:variable name="docpath" select="saxon:system-id()"/>
     <xsl:variable name="base" select="substring-before($docpath, '.xml')"/>
     <xsl:variable name="dcpath" select="concat($base, '.dc.xml')"/>
-    <xsl:apply-templates select="document($dcpath)" mode="inmeta"/>
+    <xsl:variable name="metspath" select="concat($base, '.mets.xml')"/>
+    <xtf:meta>
+      <xsl:apply-templates select="document($dcpath)" mode="inmeta"/>
+      <xsl:apply-templates select="document($metspath)" mode="inmeta"/>
+    </xtf:meta>
   </xsl:template>
   
   <!-- Process DC -->
@@ -114,6 +127,23 @@
     <xsl:apply-templates select="creator" mode="sort"/>
     <xsl:apply-templates select="date" mode="sort"/>
     
+  </xsl:template>
+  
+  <xsl:template match="xsubject|ntitle|lastmod" mode="inmeta">
+    <xsl:element name="{name()}">
+        <xsl:attribute name="xtf:meta" select="'no'"/>
+      <xsl:value-of select="string()"/>
+    </xsl:element>    
+  </xsl:template>
+  
+  <!-- Process METS -->
+  <xsl:template match="mets:mets" mode="inmeta">
+    <xsl:variable name="profile" select="substring(@PROFILE, string-length(@PROFILE)-9)"/>
+    <profile>
+      <xsl:attribute name="xtf:meta" select="'true'"/>
+      <xsl:attribute name="xtf:tokenize" select="'no'"/>      
+      <xsl:value-of select="$profile"/>
+    </profile>
   </xsl:template>
 
   <!-- generate sort-title -->
