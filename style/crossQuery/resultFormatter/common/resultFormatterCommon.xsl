@@ -1720,7 +1720,7 @@
       <search count="{@totalDocs}" queryString="{$queryString}">
         <xsl:for-each select="docHit">
           <xsl:sort select="number(@rank)" />
-          <hit ark="{substring(meta/identifier, string-length(meta/identifier)-9)}"
+          <hit ark="{replace(@path, '.+/([A-Za-z0-9]+)\.xml$', '$1')}"
             rank="{@rank}"
             score="{@score}"
             totalHits="{@totalHits}"/>
