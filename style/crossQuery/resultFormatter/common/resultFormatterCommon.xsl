@@ -43,6 +43,8 @@
               doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
               doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" 
               omit-xml-declaration="yes"/>
+  
+  <xsl:output name="xml" method="xml" indent="yes" media-type="text/xml"/>
 
   <!-- ====================================================================== -->
   <!-- Parameters                                                             -->
@@ -1714,24 +1716,17 @@
   <!-- Leave indenting as is in the following template! -->
 
   <xsl:template match="crossQueryResult" mode="test">
-    <html>
-      <head>
-        <title>XTF: Test Results</title>
-      </head>
-      <body>
-        <h1>XTF: Test Results</h1>
-        <pre>
-          <xsl:for-each select="docHit">
-            <xsl:sort select="substring(meta/identifier, string-length(meta/identifier)-9)"/>
-<xsl:text>
-</xsl:text>
-<xsl:value-of select="substring(meta/identifier, string-length(meta/identifier)-9)"/>
-          </xsl:for-each>
-<xsl:text>
-</xsl:text>
-        </pre>
-      </body>
-    </html>
+    <xsl:result-document format="xml" exclude-result-prefixes="#all">
+      <search count="{@totalDocs}" queryString="{$queryString}">
+        <xsl:for-each select="docHit">
+          <xsl:sort select="number(@rank)" />
+          <hit ark="{substring(meta/identifier, string-length(meta/identifier)-9)}"
+            rank="{@rank}"
+            score="{@score}"
+            totalHits="{@totalHits}"/>
+        </xsl:for-each>
+      </search>
+    </xsl:result-document>
   </xsl:template>
 
 </xsl:stylesheet>
