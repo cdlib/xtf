@@ -1,7 +1,7 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <!--
-   Copyright (c) 2004, Regents of the University of California
+   Copyright (c) 2005, Regents of the University of California
    All rights reserved.
  
    Redistribution and use in source and binary forms, with or without 
