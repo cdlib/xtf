@@ -2121,11 +2121,41 @@
       found for the most recent query. The <b>Search Result Formatter</b> stylesheet 
       uses these input tags to generate the HTML for the actual search result web-page 
       viewed by the user. <br>
+      <br> 
+      <div class="Sample"> <b><u>Raw Dump URL Parameter<a name="crossQuery_QueryResultTag"></a></u></b><br>
+        <!-----------------------------------------------------------------------> 
+        While technically not an XML tag, the<span class="Code"> RAW </span>URL 
+        parameter can be helpful when debugging a <b>Search Result Formatter</b> 
+        stylesheet. This parameter is added to a query URL, and has the form:<br>
+        <br>
+        <div class="IndentLR"> <span class="Code"> <font color="#999999">http://<font face="Times New Roman, Times, serif"><i>yourserver</i></font>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?text=<font face="Times New Roman, Times, serif"><i>TextToFind</i></font>&</font><b>raw=</b><span class="MacroCode">YesOrNo</span></span> 
+        </div>
+        <p>where <br>
+        </p>
+        <div class="IndentLR"> 
+          <table cellspacing="8px">
+            <tr> 
+              <td width="218" align="right" valign="top" class="Code"> <span class="MacroCode">YesOrNo</span> 
+              </td>
+              <td width="1132"> <span class="BaseStyle"> specifies whether or 
+                not raw XML search results are sent to your browser. If set to 
+                <b class="Code">yes</b> , the <b>Search Result Formatter</b> stylesheet 
+                is disabled for the query, and raw XML search results are sent 
+                to your browser. If set to<span class="Code"><b> no</b></span> 
+                , the XML search results are sent to the<b> Search Result Formatter 
+                </b>stylesheet for processing, and its output in turn is sent 
+                to the browser.</span></td>
+            </tr>
+          </table>
+          <br>
+        </div>
+      </div>
       <br>
       <div class="Sample"> <b><u>Query Result Tag<a name="crossQuery_QueryResultTag"></a></u></b><br>
         <!-----------------------------------------------------------------------> 
         This tag is the outer-most container tag for the results produced by the crossQuery 
-        servlet. It has the form: 
+        servlet. It has the form:<br> 
+        <br>
         <div class="IndentLR"> 
           <pre class="Code">&lt;crossQueryResult totalDocs="<span class="MacroCode">NumberOfDocs</span>" startDoc="<span class="MacroCode">FirstDocNumber</span>" endDoc="<span class="MacroCode">LastDocNumber</span>"&gt;
     <img src="../Common_Art/vDotDotDot.gif">
@@ -2168,7 +2198,8 @@
       <div class="Sample"> <b><u>Document Hit Tag<a name="crossQuery_DocHitTag"></a></u></b><br>
         <!------------------------------------------------------------------> This 
         tag identifies a document containing one or more matches for the current query. 
-        This tag has the form: 
+        This tag has the form:<br>
+        <br> 
         <div class="IndentLR"> 
           <pre class="Code">&lt;docHit rank="<span class="MacroCode">DocRelevanceRank</span>" path="<span class="MacroCode">DocumentLocation</span>" score="<span class="MacroCode">DocRelevanceScore</span>"&gt;
     <img src="../Common_Art/vDotDotDot.gif">
@@ -2216,7 +2247,8 @@
       <div class="Sample"> <b><u>Document Meta-Data Tag<a name="crossQuery_DocMetaTag"></a></u></b><br>
         <!------------------------------------------------------------------> This 
         tag identifies a block of meta-data for a matching document. This tag has 
-        the form: 
+        the form: <br>
+        <br>
         <div class="IndentLR"> 
           <pre class="Code">&lt;meta&gt;
    <img src="../Common_Art/vDotDotDot.gif">
