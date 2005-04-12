@@ -360,6 +360,9 @@ public class XMLTextProcessor extends DefaultHandler
    */
   private IndexWriter indexWriter;
   
+  /** Maximum number of document deletions to do in a single batch */
+  private static final int MAX_DELETION_BATCH = 50;
+  
   /** A buffer containing the "blurbified" text to be stored in the index. For
    *  more about how text is "blurbified", see the 
    * {@link XMLTextProcessor#blurbify(StringBuffer,boolean) blurbify()}
@@ -701,34 +704,35 @@ public class XMLTextProcessor extends DefaultHandler
     int ret = checkFile( srcInfo );
     if( ret == 1 ) return;
     
-    // Figure out where to put the lazy tree file. If an old one already
-    // exists, toss it.
-    //
-    File srcFile = new File( srcInfo.source.getSystemId() );
-    File lazyFile = IndexUtil.calcLazyPath( 
-            new File(xtfHomePath),
-            indexInfo,
-            srcFile,
-            true );
-    if( lazyFile.canRead() )
-        lazyFile.delete();
-    
     // If we've been asked to build a lazy file...
     if( buildLazyFile )
     {
+        // Figure out where to put the lazy tree file.
+        File srcFile = new File( srcInfo.source.getSystemId() );
+        File lazyFile = IndexUtil.calcLazyPath( 
+                new File(xtfHomePath),
+                indexInfo,
+                srcFile,
+                true );
+        
         // Use a file proxy so that we don't actually open the file handle
         // until the queued file is actually indexed.
         //
         srcInfo.lazyStore = new StructuredFileProxy( lazyFile );
     }
     
-    // Otherwise, queue it to be indexed.
-    queueText( srcInfo );
+    // Otherwise, queue it to be indexed. If an older version is already in
+    // the index, make sure it will get deleted before re-indexing it.
+    //
+    boolean deleteFirst = (ret == 2);
+    queueText( srcInfo, deleteFirst );
 
   } // checkAndQueueText()
   
   
-  /** Queue a source text file for (re)indexing. <br><br>
+  /** Queue a source text file for indexing. Old chunks with the same
+   *  key will not be deleted first, so this method should only be used
+   *  for new texts, or to append chunks for an existing text. <br><br>
    * 
    *  @param srcInfo  The source XML text file to add to the queue of 
    *                  files to be indexed/reindexed. <br><br>
@@ -743,9 +747,29 @@ public class XMLTextProcessor extends DefaultHandler
 
   {
 
-    fileQueue.add( srcInfo );
+    queueText( srcInfo, false );
 
-  } // queueText()
+  } // queueText( SrcTextInfo )
+  
+  
+  /** Queue a source text file for (re)indexing. <br><br>
+   * 
+   *  @param srcInfo  The source XML text file to add to the queue of 
+   *                  files to be indexed/reindexed. <br><br>
+   *  
+   *  @.notes
+   *    For more about why source text files are queued, see the 
+   *    {@link XMLTextProcessor#processQueuedTexts() processQueuedTexts()} 
+   *    method. <br><br>
+   *     
+   */
+  public void queueText( SrcTextInfo srcInfo, boolean deleteFirst )
+
+  {
+
+    fileQueue.add( new FileQueueEntry(srcInfo, deleteFirst) );
+
+  } // queueText( SrcTextInfo, boolean )
   
   
   ////////////////////////////////////////////////////////////////////////////
@@ -840,6 +864,52 @@ public class XMLTextProcessor extends DefaultHandler
   
   ////////////////////////////////////////////////////////////////////////////
 
+  /** If the first entry in the file queue requires deletion, we start up
+   *  a batch delete up to {@link #MAX_DELETION_BATCH} deletions. We batch
+   *  these up because in Lucene, you can only delete with an IndexReader.
+   *  It costs time to close our IndexWriter, open an IndexReader for
+   *  the deletions, and then reopen the IndexWriter.
+   * 
+   *  @throws 
+   *    IOException   Any I/O exceptions encountered when reading the source
+   *                  text file or writing to the Lucene index. <br><br>
+   */
+
+  public void batchDelete() throws IOException
+  {
+    
+    // If the first queue entry doesn't need deletion, don't do anything.
+    if( fileQueue.isEmpty() ||
+        !((FileQueueEntry)fileQueue.getFirst()).deleteFirst )
+        return;
+    
+    // Okay, we need an index reader for the deletions. This has the effect
+    // of closing the index writer, but it will be reopened after the 
+    // deletions.
+    //
+    openIdxForReading();
+    
+    // Let's do it.
+    int batchSize = 0;
+    Iterator iter = fileQueue.iterator();
+    while( iter.hasNext() && batchSize < MAX_DELETION_BATCH ) {
+        FileQueueEntry ent = (FileQueueEntry) iter.next();
+        batchSize++;
+        
+        // Skip entries that don't need deleting.
+        if( !ent.deleteFirst )
+            continue;
+        
+        // Okay, delete chunks from the old document, and clear the flag.
+        indexReader.delete( new Term( "key", ent.textInfo.key) );
+        ent.deleteFirst = false;
+    }
+    
+  } // public batchDelete()
+  
+  
+  ////////////////////////////////////////////////////////////////////////////
+
   /** Process the list of files queued for indexing or reindexing. <br><br>
    * 
    *  This method iterates through the list of queued source text files,
@@ -891,18 +961,27 @@ public class XMLTextProcessor extends DefaultHandler
       accumText          = new StringBuffer( bufStartSize );
       compactedAccumText = new StringBuffer( bufStartSize );
       
-      // Open the index writer.
-      openIdxForWriting();
-      
       int nFiles  = fileQueue.size();
       int fileNum = 0;
       
       // Process each queued file.
       while( !fileQueue.isEmpty() ) 
       {
-          SrcTextInfo idxFile = (SrcTextInfo) fileQueue.removeFirst();
-          int percent = (nFiles <= 1) ? -1 :
-                        ((fileNum+1) * 100 / nFiles);
+          // Process deletions in batches.
+          batchDelete();
+        
+          // Open the index writer (which might have been closed by a batch
+          // deletion.)
+          //
+          openIdxForWriting();
+          
+          // Index the next entry.
+          FileQueueEntry ent     = (FileQueueEntry) fileQueue.removeFirst(); 
+          SrcTextInfo    idxFile = ent.textInfo;
+          int            percent = (nFiles <= 1) ? 
+                                   -1 : ((fileNum+1) * 100 / nFiles);
+          assert !ent.deleteFirst; // Should have been processed by batchDelete()
+          
           processText( idxFile, percent );
           fileNum++;
       }
@@ -3302,9 +3381,6 @@ public class XMLTextProcessor extends DefaultHandler
         // If the dates are different...
         if( fileDateStr.compareTo(indexDateStr) != 0 ) {                    
             
-            // Delete the old chunks.
-            indexReader.delete( new Term( "key", srcInfo.key ) );
-            
             // Delete the old lazy file, if any. Might as well delete any
             // empty parent directories as well.
             //
@@ -3348,16 +3424,8 @@ public class XMLTextProcessor extends DefaultHandler
    */
   public void optimizeIndex() throws IOException
   {
-      // Close the reader and searcher, since doing so will make optimization 
-      // go much more quickly.
-      //
-      if( indexSearcher != null ) indexSearcher.close();
-      if( indexReader   != null ) indexReader.close();
-      indexSearcher = null;
-      indexReader   = null;
-
       try {
-          // Open the index writer.
+          // Open the index writer (which closes the reader and searcher).
           openIdxForWriting();
 
           // Run the optimizer.
@@ -3480,4 +3548,19 @@ public class XMLTextProcessor extends DefaultHandler
 
   } // private class MetaField
 
+
+  ////////////////////////////////////////////////////////////////////////////
+
+  private class FileQueueEntry {
+    
+    public SrcTextInfo textInfo;
+    public boolean     deleteFirst;
+    
+    public FileQueueEntry( SrcTextInfo textInfo, boolean deleteFirst ) {
+        this.textInfo    = textInfo;
+        this.deleteFirst = deleteFirst;
+    }
+    
+  } // private class FileQueueEntry
+    
 } // class XMLTextProcessor
