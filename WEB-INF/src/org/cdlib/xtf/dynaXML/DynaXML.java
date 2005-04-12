@@ -34,7 +34,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -258,21 +257,12 @@ public class DynaXML extends TextServlet
                 String name = st.nextToken();
                 
                 // Deal with screwy URL encoding of Unicode strings on
-                // many browsers. Someday we'll do this more robustly.
+                // many browsers.
                 //
                 String value = req.getParameter( name );
                 if( value != null ) {
-                    if( value.indexOf('\u00c2') >= 0 ||
-                        value.indexOf('\u00c3') >= 0) 
-                    {
-                        try {
-                            byte[] bytes = value.getBytes("ISO-8859-1");
-                            value = new String(bytes, "UTF-8");
-                        }
-                        catch( UnsupportedEncodingException e ) { }
-                    }
                     docKey.add( name );
-                    docKey.add( value );
+                    docKey.add( convertUTF8inURL(value) );
                 }
             }
             

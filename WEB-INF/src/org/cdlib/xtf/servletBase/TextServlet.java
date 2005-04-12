@@ -339,17 +339,9 @@ public abstract class TextServlet extends HttpServlet
                 continue;
             
             // Deal with screwy URL encoding of Unicode strings on
-            // many browsers. Someday we'll do this more robustly.
+            // many browsers.
             //
-            if( value.indexOf('\u00c2') >= 0 ||
-                value.indexOf('\u00c3') >= 0) 
-            {
-                try {
-                    byte[] bytes = value.getBytes("ISO-8859-1");
-                    value = new String(bytes, "UTF-8");
-                }
-                catch( UnsupportedEncodingException e ) { }
-            }
+            value = convertUTF8inURL( value );
             trans.setParameter( name, new StringValue(value) );
         }
         
@@ -573,6 +565,90 @@ public abstract class TextServlet extends HttpServlet
             throw new RuntimeException( e );
         }
     } // createQueryProcessor()
+    
+
+    /**
+     * Although not completely standardized yet, most modern browsers
+     * encode Unicode characters above U+007F to UTF8 in the URL. This
+     * method looks for probably UTF8 encodings and converts them back
+     * to normal Unicode characters.
+     * 
+     * @param value   value to convert
+     * @return        equivalent value with UTF8 decoded to Unicode
+     */
+    public static String convertUTF8inURL( String value )
+    {
+        // Scan the string, looking for likely UTF8.
+        char[] chars = value.toCharArray();
+        boolean foundUTF = false;
+        for( int i = 0; i < chars.length; i++ ) 
+        {
+            char c = chars[i];
+            
+            // If somehow we already have 2-byte chars, this probably isn't
+            // a UTF8 string.
+            //
+            if( (c & 0xFF00) != 0 )
+                return value;
+            
+            // Skip the ASCII chars
+            if( c <= 0x7F )
+                continue;
+            
+            // Look for a two-byte sequence
+            if( c >= 0xC0 && c <= 0xDF &&
+                i+1 < chars.length &&
+                chars[i+1] >= 0x80 && chars[i+1] <= 0xBF )
+            {
+                foundUTF = true;
+                i++;
+            }
+            
+            // Look for a three-byte sequence
+            else if( c >= 0xE0 && c <= 0xEF &&
+                     i+2 < chars.length &&
+                     chars[i+1] >= 0x80 && chars[i+1] <= 0xBF &&
+                     chars[i+2] >= 0x80 && chars[i+2] <= 0xBF )
+            {
+                foundUTF = true;
+                i += 2;
+            }
+            
+            // Look for a four-byte sequence
+            else if( c >= 0xF0 && c <= 0xF7 &&
+                     i+3 < chars.length &&
+                     chars[i+1] >= 0x80 && chars[i+1] <= 0xBF &&
+                     chars[i+2] >= 0x80 && chars[i+2] <= 0xBF &&
+                     chars[i+3] >= 0x80 && chars[i+3] <= 0xBF )
+            {
+                foundUTF = true;
+                i += 3;
+            }
+                     
+            // Trailing bytes without leading bytes are illegal, and thus
+            // likely this string isn't UTF8 encoded.
+            //
+            else if( c >= 0x80 && c <= 0xBF )
+                return value;
+            
+            // Certain other bytes are also illegal.
+            else if( c >= 0xF8 && c <= 0xFF )
+                return value;
+        }
+        
+        // No UTF8 chars found? Nothing to do.
+        if( !foundUTF )
+            return value;
+
+        // Okay, convert the UTF8 value to Unicode.
+        try {
+            byte[] bytes = value.getBytes("ISO-8859-1");
+            return new String(bytes, "UTF-8");
+        }
+        catch( UnsupportedEncodingException e ) {
+            return value;
+        }
+    } // convertUTF8inURL()
     
     
     /**

@@ -3,36 +3,35 @@ package org.cdlib.xtf.crossQuery;
 /**
  * Copyright (c) 2004, Regents of the University of California
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
+ *
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * - Redistributions of source code must retain the above copyright notice, 
+ * - Redistributions of source code must retain the above copyright notice,
  *   this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, 
- *   this list of conditions and the following disclaimer in the documentation 
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
  * - Neither the name of the University of California nor the names of its
- *   contributors may be used to endorse or promote products derived from this 
+ *   contributors may be used to endorse or promote products derived from this
  *   software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
@@ -70,13 +69,13 @@ public class CrossQuery extends TextServlet
 {
     /** Holds global servlet configuration info */
     protected static CrossQueryConfig config;
-    
+
     /**
      * Called by the superclass to find out the name of our specific config
      * file.
      */
     protected String getConfigName() { return "conf/crossQuery.conf"; }
-    
+
 
     /**
      * Loads the specific configuration file for crossQuery.
@@ -88,7 +87,7 @@ public class CrossQuery extends TextServlet
     {
         // Load the configuration file.
         config = new CrossQueryConfig( configPath );
-        
+
         // And we're done.
         return config;
     } // readConfig()
@@ -100,7 +99,7 @@ public class CrossQuery extends TextServlet
      */
     protected TextConfig getConfig() { return config; }
 
-        
+
     /**
      * Handles the HTTP 'get' method. Initializes the servlet if nececssary,
      * then parses the HTTP request and processes it appropriately.
@@ -109,7 +108,7 @@ public class CrossQuery extends TextServlet
      * @param     res            The HTTP response (out)
      * @exception IOException    If unable to read an index or data file, or
      *                           if unable to write the output stream.
-     */ 
+     */
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws IOException
     {
@@ -128,34 +127,25 @@ public class CrossQuery extends TextServlet
             res.setContentType("text/html");
 
             // Output extended debugging info if requested.
-            Trace.debug( "Processing request: " + 
+            Trace.debug( "Processing request: " +
                 req.getRequestURL().toString() + "?" + req.getQueryString());
-            
+
             // Translate the URL parameters to an AttribList
             AttribList attribs = new AttribList();
             Enumeration p = req.getParameterNames();
             while( p.hasMoreElements() ) {
                 String name = (String) p.nextElement();
-                
+
                 // Deal with screwy URL encoding of Unicode strings on
-                // many browsers. Someday we'll do this more robustly.
+                // many browsers.
                 //
                 String value = req.getParameter( name );
-                if( value.indexOf('\u00c2') >= 0 ||
-                    value.indexOf('\u00c3') >= 0) 
-                {
-                    try {
-                        byte[] bytes = value.getBytes("ISO-8859-1");
-                        value = new String(bytes, "UTF-8");
-                    }
-                    catch( UnsupportedEncodingException e ) { }
-                }
-                attribs.put( name, value );
+                attribs.put( name, convertUTF8inURL(value) );
             }
 
-            // This is useful so the stylesheet can be entirely 
-            // portable... it can call itself in new URLs by simply using 
-            // this path. Some servlet containers include the parameters, 
+            // This is useful so the stylesheet can be entirely
+            // portable... it can call itself in new URLs by simply using
+            // this path. Some servlet containers include the parameters,
             // so strip those if present.
             //
             String uri = req.getRequestURI();
@@ -165,7 +155,7 @@ public class CrossQuery extends TextServlet
 
             // This does the bulk of the work.
             apply( attribs, req, res );
-        } 
+        }
         catch( Exception e ) {
             genErrorPage( req, res, e );
             return;
@@ -194,76 +184,76 @@ public class CrossQuery extends TextServlet
     * @exception Exception  Passes on various errors that might occur.
     */
     protected void apply( AttribList          attribs,
-                          HttpServletRequest  req, 
+                          HttpServletRequest  req,
                           HttpServletResponse res )
         throws Exception
     {
         // Generate a query request document from the queryParser stylesheet.
         Source queryReqDoc = generateQueryReq( req, attribs );
-        
+
         // Process it to generate result document hits
         QueryProcessor proc = createQueryProcessor();
-        QueryResult result = proc.processReq( queryReqDoc, 
+        QueryResult result = proc.processReq( queryReqDoc,
                                               new File(getRealPath("")) );
-        
+
         // Format the hits for the output document.
         formatHits( req, res, attribs, result );
-        
+
     } // apply()
 
-    
+
     /**
-     * Creates a query request using the queryParser stylesheet and the given 
+     * Creates a query request using the queryParser stylesheet and the given
      * attributes.
-     * 
+     *
      * @param req        The original HTTP request
      * @param attribs    Attributes to pass to the stylesheet.
      */
-    protected Source generateQueryReq( HttpServletRequest req, 
+    protected Source generateQueryReq( HttpServletRequest req,
                                        AttribList attribs )
         throws Exception
     {
         // Locate the query formatting stylesheet.
         Templates genSheet = stylesheetCache.find( config.queryParserSheet );
-        
+
         // Make a transformer for this specific query.
         Transformer trans = genSheet.newTransformer();
-        
+
         // Stuff all the common config properties into the transformer in
         // case the query generator needs access to them.
         //
         stuffAttribs( trans, config.attribs );
-        
+
         // Also stuff the URL parameters, in case it wants them that way
         // instead of tokenized.
         //
         stuffAttribs( trans, attribs );
-        
+
         // Add the special computed attributes.
         stuffSpecialAttribs( req, trans );
-        
+
         NodeInfo    input  = tokenizeParams( attribs );
         TreeBuilder output = new TreeBuilder();
-        
+
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** queryParser input ***" );
             Trace.debug( XMLWriter.toString(input) );
         }
-        
+
         // Make sure errors get directed to the right place.
         if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
             trans.setErrorListener( new XTFSaxonErrorListener() );
 
         // Now perform the transformation.
         trans.transform( input, output );
-        
+
         // And return the output tree.
         return output.getCurrentRoot();
     } // generateQueryReq()
-    
+
     /**
      * Formats a list of hits using the resultFormatter stylesheet.
-     * 
+     *
      * @param req           The original HTTP request
      * @param res           Where to send the HTML response
      * @param attribs       Parameters to pass to the stylesheet
@@ -278,18 +268,18 @@ public class CrossQuery extends TextServlet
     {
         // Locate the display stylesheet.
         Templates displaySheet = stylesheetCache.find( result.formatter );
-        
+
         // Make a transformer for this specific query.
         Transformer trans = displaySheet.newTransformer();
-        
+
         // If we are in raw mode, use a null transform instead of the
         // stylesheet.
         //
         String raw = req.getParameter("raw");
-        if( "yes".equals(raw) || "true".equals(raw) || "1".equals(raw) ) 
+        if( "yes".equals(raw) || "true".equals(raw) || "1".equals(raw) )
         {
             res.setContentType("text/xml");
-            
+
             TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
             trans = factory.newTransformer();
             Properties props = trans.getOutputProperties();
@@ -297,21 +287,21 @@ public class CrossQuery extends TextServlet
             props.put( "method", "xml" );
             trans.setOutputProperties( props );
         }
-            
+
         // Stuff all the common config properties into the transformer in
         // case the query generator needs access to them.
         //
         stuffAttribs( trans, config.attribs );
-        
+
         // Also stuff the URL parameters (in case stylesheet wants them)
         stuffAttribs( trans, attribs );
-        
+
         // Add the special computed parameters.
         stuffSpecialAttribs( req, trans );
-        
+
         // Make an input document for it based on the document hits.
-        Source sourceDoc = structureHits( result ); 
-        
+        Source sourceDoc = structureHits( result );
+
         // Make sure errors get directed to the right place.
         if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
             trans.setErrorListener( new XTFSaxonErrorListener() );
@@ -319,25 +309,25 @@ public class CrossQuery extends TextServlet
         // Do it!
         trans.transform( sourceDoc, new StreamResult(res.getOutputStream()) );
     } // formatHits()
-    
+
     /**
      * Makes an XML document out of the list of document hits, and returns a
      * Source object that represents it.
-     * 
+     *
      * @param result    Hits resulting from the query
      * @return          XML Source containing all the hits and snippets.
      */
     private Source structureHits( QueryResult result )
     {
         StringBuffer buf = new StringBuffer( 1000 );
-        
+
         buf.append( "<crossQueryResult" +
                     " totalDocs=\"" + result.totalDocs + "\" " +
-                    " startDoc=\"" + 
-                        (result.totalDocs > 0 ? result.startDoc+1 : 0) + "\" " + 
+                    " startDoc=\"" +
+                        (result.totalDocs > 0 ? result.startDoc+1 : 0) + "\" " +
                         // Note above: 1-based start
                     " endDoc=\"" + result.endDoc + "\">" );
-        
+
         if( result.docHits != null ) {
             for( int i = 0; i < result.docHits.length; i++ ) {
                 DocHit docHit = result.docHits[i];
@@ -359,31 +349,31 @@ public class CrossQuery extends TextServlet
                     buf.append( "    </meta>\n" );
                 }
 
-                for( int j = 0; j < docHit.nSnippets(); j++ ) 
+                for( int j = 0; j < docHit.nSnippets(); j++ )
                 {
                     Snippet  snippet = docHit.snippet( j, true );
-                    buf.append( 
-                        "    <snippet rank=\"" + (j+1) + "\" score=\"" + 
+                    buf.append(
+                        "    <snippet rank=\"" + (j+1) + "\" score=\"" +
                         Math.round(snippet.score * 100) + "\"" );
-                    
+
                     if( snippet.sectionType != null )
                         buf.append( " sectionType=\"" + snippet.sectionType + "\"" );
-                    
-                    buf.append( ">" + 
-                        makeHtmlString(snippet.text, true) + 
+
+                    buf.append( ">" +
+                        makeHtmlString(snippet.text, true) +
                         "</snippet>\n" );
                 }
-                    
+
                 buf.append( "  </docHit>\n\n" );
             } // for i
         }
-            
+
         buf.append( "</crossQueryResult>\n" );
-        
+
         // Now parse that into a document that can be fed to the stylesheet.
         String str = buf.toString();
         return new StreamSource( new StringReader(str) );
-        
+
     } // structureHits()
-    
+
 } // class CrossQuery
