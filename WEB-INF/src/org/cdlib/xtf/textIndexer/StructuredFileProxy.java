@@ -70,12 +70,14 @@ public class StructuredFileProxy implements StructuredStore
     if( realStore != null )
         realStore.close();
     realStore = null;
+    path = null;
   }
   
   public void delete() throws IOException {
     if( realStore != null )
         realStore.delete();
     realStore = null;
+    path = null;
   }
   
   public String getSystemId() {
@@ -93,8 +95,11 @@ public class StructuredFileProxy implements StructuredStore
   private StructuredFile realStore()
   {
     try {
-        if( realStore == null )
+        if( realStore == null ) {
+            if( path.canRead() )
+                path.delete();
             realStore = StructuredFile.create( path );
+        }
         return realStore;
     }
     catch( IOException e ) {
