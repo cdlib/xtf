@@ -23,20 +23,17 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.apache.lucene.chunk.SpanChunkedNotQuery;
-import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryRewriter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanRangeQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.SpanWildcardQuery;
 
-import org.cdlib.xtf.textEngine.SpanSectionTypeQuery;
 import org.cdlib.xtf.util.Tester;
 import org.cdlib.xtf.util.Trace;
 
@@ -46,17 +43,17 @@ import org.cdlib.xtf.util.Trace;
  * process, as n-gramming across NEAR and OR queries is complex.
  *
  * @author  Martin Haye
- * @version $Id: NgramQueryRewriter.java,v 1.2 2005-02-15 01:42:27 mhaye Exp $
+ * @version $Id: NgramQueryRewriter.java,v 1.3 2005-04-19 23:04:27 mhaye Exp $
  */
-public class NgramQueryRewriter {
+public class NgramQueryRewriter extends QueryRewriter {
   /** Set of stop-words (e.g. "the", "a", "and", etc.) to remove */
-  private Set stopSet;
+  protected Set stopSet;
 
   /** Maximum slop to allow in a query, based on the index being queried */
-  private int maxSlop;
+  protected int maxSlop;
 
   /** Keeps track of all stop-words removed from the query */
-  private HashSet removedTerms = new HashSet();
+  protected HashSet removedTerms = new HashSet();
 
   /**
    * Constructs a rewriter using the given stopword set.
@@ -111,49 +108,6 @@ public class NgramQueryRewriter {
   } // isNgram()
 
   /**
-   * Rewrite a query of any supported type. Stop words will either be
-   * removed or n-grammed.
-   * 
-   * @param q   Query to rewrite
-   * @return    A new query, or 'q' unchanged if no change was needed.
-   */
-  public Query rewriteQuery(Query q) {
-    if (q instanceof BooleanQuery)
-      return rewriteBoolean((BooleanQuery) q);
-    if (q instanceof SpanNearQuery)
-      return rewriteNear((SpanNearQuery) q);
-    if (q instanceof SpanOrQuery)
-      return rewriteOr((SpanOrQuery) q);
-    if (q instanceof SpanChunkedNotQuery)
-      return rewriteNot((SpanChunkedNotQuery) q);
-    if (q instanceof SpanDechunkingQuery)
-      return rewriteDechunk((SpanDechunkingQuery) q);
-    if (q instanceof SpanSectionTypeQuery)
-      return rewriteSecType((SpanSectionTypeQuery) q);
-    if (q instanceof TermQuery)
-      return q;
-
-    // Term, wildcard and range queries simply need to be told which 
-    // words to remove.
-    //
-    if (q instanceof SpanTermQuery) {
-      ((SpanTermQuery) q).setStopWords(stopSet);
-      return q;
-    }
-    if (q instanceof SpanWildcardQuery) {
-      ((SpanWildcardQuery) q).setStopWords(stopSet);
-      return q;
-    }
-    if (q instanceof SpanRangeQuery) {
-      ((SpanRangeQuery) q).setStopWords(stopSet);
-      return q;
-    }
-
-    assert false : "unsupported query type for rewriting";
-    return null;
-  } // rewriteQuery()
-
-  /**
    * Rewrite a BooleanQuery. Prohibited or allowed (not required) clauses
    * that are single stop words will be removed. Required clauses will
    * have n-gramming applied.
@@ -161,7 +115,7 @@ public class NgramQueryRewriter {
    * @param bq  The query to rewrite
    * @return    Rewritten version, or 'bq' unchanged if no changed needed.
    */
-  private Query rewriteBoolean(BooleanQuery bq) {
+  protected Query rewrite(BooleanQuery bq) {
     // Classify all the clauses as required, prohibited, or just allowed.
     // Rewrite them along the way.
     //
@@ -237,7 +191,7 @@ public class NgramQueryRewriter {
 
     return bq;
 
-  } // rewriteBoolean()
+  } // rewrite()
 
   /**
    * Rewrite a span NEAR query. Stop words will be n-grammed into adjacent
@@ -246,7 +200,7 @@ public class NgramQueryRewriter {
    * @param nq  The query to rewrite
    * @return    Rewritten version, or 'nq' unchanged if no changed needed.
    */
-  private Query rewriteNear(SpanNearQuery nq) {
+  protected Query rewrite(SpanNearQuery nq) {
     // Rewrite each clause and make a vector of the new ones.
     SpanQuery[] clauses = nq.getClauses();
     Vector newClauses = new Vector();
@@ -291,7 +245,7 @@ public class NgramQueryRewriter {
     return copyBoost(nq, new SpanNearQuery((SpanQuery[]) newClauses
         .toArray(newArray), nq.getSlop(), false));
 
-  } // rewriteNear()
+  } // rewrite()
 
   /**
    * Rewrite a span-based OR query. The procedure in this case is simple:
@@ -300,7 +254,7 @@ public class NgramQueryRewriter {
    * @param oq  The query to rewrite
    * @return    Rewritten version, or 'oq' unchanged if no changed needed.
    */
-  private Query rewriteOr(SpanOrQuery oq) {
+  protected Query rewrite(SpanOrQuery oq) {
     // Rewrite each clause. Along the way, recognize and n-gram sequences of
     // terms.
     //
@@ -345,77 +299,8 @@ public class NgramQueryRewriter {
     return copyBoost(oq, new SpanOrQuery((SpanQuery[]) newClauses
         .toArray(newArray)));
 
-  } // rewriteOr()
-
-  /**
-   * Rewrite a span-based NOT query. The procedure in this case is simple:
-   * simply rewrite both the include and exclude clauses.
-   * 
-   * @param nq  The query to rewrite
-   * @return    Rewritten version, or 'nq' unchanged if no changed needed.
-   */
-  private Query rewriteNot(SpanChunkedNotQuery nq) {
-    // Rewrite the sub-queries
-    SpanQuery include = (SpanQuery) rewriteQuery(nq.getInclude());
-    SpanQuery exclude = (SpanQuery) rewriteQuery(nq.getExclude());
-
-    // If the sub-queries didn't change, then neither does this NOT.
-    if (include == nq.getInclude() && exclude == nq.getExclude())
-      return nq;
-
-    // Make a new NOT query
-    Query newq = new SpanChunkedNotQuery(include, exclude, nq.getSlop());
-    copyBoost(nq, newq);
-    return newq;
-
-  } // rewriteNot()
-
-  /**
-   * Rewrite a span dechunking query. If's very simple: simply rewrite the
-   * clause the query wraps.
-   * 
-   * @param nq  The query to rewrite
-   * @return    Rewritten version, or 'nq' unchanged if no changed needed.
-   */
-  private Query rewriteDechunk(SpanDechunkingQuery nq) {
-    // Rewrite the sub-queries
-    SpanQuery sub = (SpanQuery) rewriteQuery(nq.getWrapped());
-
-    // If the sub-query didn't change, then neither does the main query.
-    if (sub == nq.getWrapped())
-      return nq;
-
-    // Make a new dechunking query
-    Query newq = new SpanDechunkingQuery(sub);
-    copyBoost(nq, newq);
-    return newq;
-
-  } // rewriteDechunk()
-
-  /**
-   * Rewrite a span dechunking query. If's very simple: simply rewrite the
-   * clause the query wraps.
-   * 
-   * @param stq  The query to rewrite
-   * @return     Rewritten version, or 'nq' unchanged if no changed needed.
-   */
-  private Query rewriteSecType(SpanSectionTypeQuery stq) {
-    // Rewrite the sub-queries
-    SpanQuery textQuery = (SpanQuery) rewriteQuery(stq.getTextQuery());
-    SpanQuery secTypeQuery = (SpanQuery) rewriteQuery(stq.getSectionTypeQuery());
-
-    // If the sub-queries didn't change, then neither does the main query.
-    if (textQuery == stq.getTextQuery()
-        && secTypeQuery == stq.getSectionTypeQuery())
-      return stq;
-
-    // Make a new dechunking query
-    Query newq = new SpanSectionTypeQuery(textQuery, secTypeQuery);
-    copyBoost(stq, newq);
-    return newq;
-
-  } // rewriteSecType()
-
+  } // rewrite()
+  
   /**
    * Removes stop words from a set of consecutive queries by combining
    * them with adjacent non-stop-words.
@@ -534,7 +419,7 @@ public class NgramQueryRewriter {
    * 
    * @return        A new query possibly containing n-grams
    */
-  private SpanQuery ngramTermsInexact(Query[] queries, String[] terms, int slop) {
+  protected SpanQuery ngramTermsInexact(Query[] queries, String[] terms, int slop) {
     SpanQuery[] clauses = new SpanQuery[terms.length * 2];
     int nClauses = 0;
 
@@ -615,7 +500,7 @@ public class NgramQueryRewriter {
    * @param q   Query to convert (span or non-span)
    * @return    Equivalent SpanQuery.
    */
-  private SpanQuery convertToSpanQuery(Query q) {
+  protected SpanQuery convertToSpanQuery(Query q) {
     if (q instanceof SpanQuery)
       return (SpanQuery) q;
     if (q instanceof TermQuery) {
@@ -636,7 +521,7 @@ public class NgramQueryRewriter {
    * 
    * @return        A properly constructed Term, never a stop-word.
    */
-  private Term newTerm(String text, String field) {
+  protected Term newTerm(String text, String field) {
     assert !stopSet.contains(text) : "cannot directly query a stop-word";
     return new Term(text, field);
   } // newTerm()
@@ -656,7 +541,7 @@ public class NgramQueryRewriter {
    * 
    * @return        A new query possibly containing n-grams
    */
-  private SpanQuery ngramTermsExact(Query[] queries, String[] terms, int slop) {
+  protected SpanQuery ngramTermsExact(Query[] queries, String[] terms, int slop) {
     Vector newQueries = new Vector(queries.length * 2);
 
     // Process each term in turn, looking at its relation to the next term.
@@ -729,7 +614,7 @@ public class NgramQueryRewriter {
    * @param q2  Second query
    * @return    A query representing the join.
    */
-  private Query glomQueries(Query q1, Query q2) {
+  protected Query glomQueries(Query q1, Query q2) {
     // If they're both terms, our work is easy.
     if (q1 instanceof SpanTermQuery && q2 instanceof SpanTermQuery) {
       SpanTermQuery st1 = (SpanTermQuery) q1;
@@ -783,7 +668,7 @@ public class NgramQueryRewriter {
    * @param before  true to prepend the term, false to append.
    * @return        A new glommed query.
    */
-  private SpanQuery glomInside(SpanOrQuery oq, SpanTermQuery term,
+  protected SpanQuery glomInside(SpanOrQuery oq, SpanTermQuery term,
       boolean before) {
     SpanQuery[] clauses = oq.getClauses();
     boolean anyChanges = false;
@@ -825,7 +710,7 @@ public class NgramQueryRewriter {
    * @param before  true to prepend the term, false to append.
    * @return        A new glommed query.
    */
-  private SpanQuery glomInside(SpanChunkedNotQuery nq, SpanTermQuery term,
+  protected SpanQuery glomInside(SpanChunkedNotQuery nq, SpanTermQuery term,
       boolean before) {
     // Only glom into the 'include' clause. The 'exclude' clause is entirely
     // independent.
@@ -855,7 +740,7 @@ public class NgramQueryRewriter {
    * @param obj   String, Term, TermQuery, or SpanTermQuery to check
    * @return      text of the term
    */
-  private String extractTermText(Object obj) {
+  protected String extractTermText(Object obj) {
     if (obj instanceof String)
       return (String) obj;
     Term t = extractTerm(obj);
@@ -872,7 +757,7 @@ public class NgramQueryRewriter {
    * @param obj   Term, TermQuery, or SpanTermQuery to check
    * @return      the Term
    */
-  private Term extractTerm(Object obj) {
+  protected Term extractTerm(Object obj) {
     if (obj instanceof Term)
       return (Term) obj;
     if (obj instanceof TermQuery)
@@ -881,66 +766,6 @@ public class NgramQueryRewriter {
       return ((SpanTermQuery) obj).getTerm();
     return null;
   } // extractTerm()
-
-  /**
-   * Copies the boost value from an old query to a newly created one. Also
-   * copies the spanRecording attribute.
-   * 
-   * Returns the new query for ease of chaining.
-   * 
-   * @param oldQuery    Query to copy from
-   * @param newQuery    Query to copy to
-   * @return            Value of 'newQuery' (useful for chaining)
-   */
-  private Query copyBoost(Query oldQuery, Query newQuery) {
-    newQuery.setBoost(oldQuery.getBoost());
-    if (newQuery instanceof SpanQuery && oldQuery instanceof SpanQuery) {
-      ((SpanQuery) newQuery).setSpanRecording(
-          ((SpanQuery) oldQuery).getSpanRecording());
-    }
-    return newQuery;
-  } // copyBoost()
-
-  /**
-   * Copies the max boost value from two old queries to a newly created one. 
-   * Also copies the spanRecording attribute.
-   * 
-   * Returns the new query for ease of chaining.
-   * 
-   * @param oldQuery1    First query to copy from
-   * @param oldQuery2    Second query to copy from
-   * @param newQuery     Query to copy to
-   * @return             Value of 'newQuery' (useful for chaining)
-   */
-  private Query copyBoost(Query oldQuery1, Query oldQuery2, Query newQuery) {
-    newQuery.setBoost(Math.max(oldQuery1.getBoost(), oldQuery2.getBoost()));
-    if (newQuery instanceof SpanQuery) {
-      ((SpanQuery) newQuery).setSpanRecording(
-          Math.max(((SpanQuery) oldQuery1).getSpanRecording(), 
-                   ((SpanQuery) oldQuery2).getSpanRecording()));
-    }
-    return newQuery;
-  } // copyBoost()
-
-  /**
-   * Combines the boost value from an old query with that of a newly created 
-   * one. Also preserves the spanRecording attribute.
-   * 
-   * Returns the new query for ease of chaining.
-   * 
-   * @param oldQuery    Query to combine from
-   * @param newQuery    Query to combine to
-   * @return            Value of 'newQuery' (useful for chaining)
-   */
-  private Query combineBoost(Query oldQuery, Query newQuery) {
-    newQuery.setBoost(oldQuery.getBoost() * newQuery.getBoost());
-    if (newQuery instanceof SpanQuery && oldQuery instanceof SpanQuery) {
-      ((SpanQuery)newQuery).setSpanRecording(
-          Math.max(((SpanQuery)oldQuery).getSpanRecording(), 
-                   ((SpanQuery)newQuery).getSpanRecording()));
-    }
-    return newQuery;
-  } // copyBoost()
 
   /**
    * Basic regression test
