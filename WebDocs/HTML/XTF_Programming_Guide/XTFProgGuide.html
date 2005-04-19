@@ -147,6 +147,8 @@
     <br>
     <li> <b><a href="#XTF_Tag_Ref">XTF Stylesheet Tag Reference</a></b> 
       <ul class="NoBullets">
+        <li class="ListItem"> <a href="#Request_Param_Ref">HTTP Request Parameter 
+          Reference</a></li>
         <li class="ListItem"> <a href="#textIndexer_Tag_Ref">textIndexer Tag Reference</a> 
           <ul class="NoBullets">
             <li><a href="#textIndexer_DocSelector_Tags">Document Selector Tags</a></li>
@@ -1013,12 +1015,152 @@
     Output<br>
   </div>
   <br>
-  <!-- dynaXML --> <!---------------------------------------------------------------------------------------------------------------> 
+  <!-- dynaXML --> 
+  <!---------------------------------------------------------------------------------------------------------------> 
   <p class="Heading1">XTF Stylesheet Tag Reference<a name="XTF_Tag_Ref"></a></p>
   <p>This section provides a quick reference to the various XTF sytlesheet tags recognized 
     by the <b><i>textIndexer</i></b> tool, and the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> 
     servlets. <br>
   </p>
+  <div class="IndentL"> 
+    <p class="Heading2">HTTP Request Parameter Reference<a name="Request_Param_Ref"></a></p>
+    <!-------------------------------------------------------------------------------------------------------------> 
+    <p>This section summarizes the standard HTTP request fields available to every 
+      stylesheet used by the <i><b>crossQuery</b></i> and <i><b>dynaXML</b></i> 
+      servlets. These fields are presented to a servlet stylesheet as XSL parameters 
+      with the prefix<span class="Code"> http. </span>and refer to the original 
+      request URL sent to the XTF system.</p>
+    
+    <div class="GreyList"> <b><u>Request URL</u></b><br>
+      This field identifies the full URL passed to the XTF system for the current 
+      request. It is accessed via the XSL parameter<br>
+      <br>
+        
+      <div class="IndentLR"><span class="code">http.URL</span></div><br>
+      This field contains a URL string of the form:<br>
+      <br>
+   
+      <div class="IndentLR"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:<span class="MacroCode">yourport</span>/xtf/servlet/<span class="MacroCode">servlet</span>?<span class="MacroCode">queryparms</span> 
+        </span><br>
+      </div><br>
+      
+      where 
+      <div class="IndentLR"> 
+        <table cellpadding="0" cellspacing="8">
+          <tr> 
+            <td width="20%" align="right" valign="top" class="MacroCode"> yourserver 
+            </td>
+            <td width="80%"><span class="BaseStyle">is the name of your XTF server</span></td>
+          </tr>
+          <tr> 
+            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">yourport</span></td>
+            <td width="80%"> <span class="BaseStyle"> is the port through which 
+              XTF requests are routed (typically 8080)</span> </td>
+          </tr>
+          <tr> 
+            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">servlet</span></td>
+            <td width="80%"> <span class="BaseStyle"> is the name of the servlet 
+              to which the request is being sent. Normally, this is either</span><br>
+              <div class="IndentLR">
+                <span class="Code">org.cdlib.xtf.crossQuery.CrossQuery</span>
+              </div>
+              or
+              <div class="IndentLR">
+                <span class="Code">org.cdlib.xtf.dynaXML.DynaXML</span>
+              </div>
+            </td>
+          </tr>
+           <tr> 
+            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">queryparms</span></td>
+            <td width="80%"> <span class="BaseStyle"> is the list of parameters 
+              that defines the actual request being sent to the servlet.</span> 
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <br>
+    <div class="GreyList"> <b><u>User-Agent Identifier</u></b><br>
+      This field identifies the browser that issued the current request. It is 
+      accessed via the XSL parameter<br>
+      <br>
+        
+      <div class="IndentLR">
+        <span class="code">http.User-Agent</span>
+      </div><br>
+      This field contains a string that identifies the browser that made the current request. For example:
+      <br><br>
+      <div class="IndentLR"> <span class="Code">Mozilla/4.0 
+        (compatible; MSIE 5.0; Windows 98; DigExt; empas)</span>
+      var</div><br>
+      Note that the contents of this field vary widely depending on which browser 
+      made the request, and a detailed description is beyond the scope of this 
+      document. </div>
+    <br>
+    <div class="GreyList"> <b><u>Referer Identifier</u></b><br>
+      This field identifies the web page from which the request URL was issued. 
+      It is accessed via the XSL parameter<br>
+      <br>
+        
+      <div class="IndentLR"><span class="code">http.Referer</span></div>
+      <br>
+      This contents of this field is a URL string identifying the web page that 
+      issued the request.<br>
+   
+      <div class="IndentLR"> <span class="Code"> </span></div>
+    </div><br>
+    <div class="GreyList"> <b><u>If-Modified-Since Identifier</u></b><br>
+      This field identifies the last time a particular request URL was issued 
+      by a browser. This field can be used by an XTF stylesheet to determine if 
+      a request needs to be processed because the XTF database has changed, or 
+      whether the requesting browser can use its previously cached results. This 
+      field is accessed via the XSL parameter<br>
+      <br>
+        
+      <div class="IndentLR"><span class="code">http.If-Modified-Since</span></div>
+      <br>
+      This contents of this time string of the form:<br>
+      <br>
+   
+      <div class="IndentLR"> <span class="Code"> <span class="MacroCode">weekday</span>, 
+        <span class="MacroCode">dd</span>-<span class="MacroCode">mmm</span>-<span class="MacroCode">yy</span> 
+        <span class="MacroCode">hh</span>:<span class="MacroCode">mm</span>:<span class="MacroCode">ss</span> 
+        <span class="MacroCode">timezone</span> </span><br>
+      </div><br>
+      
+      where 
+      <div class="IndentLR"> 
+        <table cellpadding="0" cellspacing="8">
+          <tr> 
+            <td width="20%" align="right" valign="top" class="MacroCode"> weekday 
+            </td>
+            <td width="80%"><span class="BaseStyle">is the day of the week the 
+              request was last issued</span></td>
+          </tr>
+          <tr> 
+            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">dd</span>-<span class="MacroCode">mmm</span>-<span class="MacroCode">yy</span></td>
+            <td width="80%"> <span class="BaseStyle"> is the day, three letter 
+              month abbreviation, and year the request was last issued</span></td>
+          </tr>
+          <tr> 
+            <td width="20%" align="right" valign="top" class="Code" height="25"> 
+              <span class="MacroCode">hh</span>:<span class="MacroCode">mm</span>:<span class="MacroCode">ss</span></td>
+            <td width="80%" height="25"> <span class="BaseStyle"> is the time 
+              the request was last issued, represented as a 24 hour GMT based 
+              time</span><span class="Code"></span> </td>
+          </tr>
+           <tr> 
+            <td width="20%" align="right" valign="top" class="Code" height="20"> 
+              <span class="MacroCode">timezone</span></td>
+            <td width="80%" height="20"> <span class="BaseStyle"> is the offset 
+              in hours of the timezone from which the request was last issued.</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <p><br>
+    </p>
+    </div>
   <div class="IndentL"> 
     <p class="Heading2">textIndexer Tag Reference<a name="textIndexer_Tag_Ref"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
