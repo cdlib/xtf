@@ -29,8 +29,12 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.document.Document;
@@ -41,6 +45,9 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.cdlib.xtf.util.CharMap;
+import org.cdlib.xtf.util.WordMap;
 
 /**
  * Used to keep a set of searcher, reader, and doc-num-map that are consistent 
@@ -50,6 +57,9 @@ import org.apache.lucene.store.Directory;
  */
 public class XtfSearcher
 {
+    /** Path to the index directory */
+    private String        indexPath;
+  
     /** The index directory to read from */
     private Directory     directory;
     
@@ -77,16 +87,23 @@ public class XtfSearcher
     /** Stop-words associated with the index (e.g. "the", "a", "and", etc.) */
     private Set           stopSet;
     
+    /** Map of plural words to singular words */
+    private WordMap       pluralMap;
+    
+    /** Map of accented chars to remove diacritics from */
+    private CharMap       accentMap;
+    
     /** 
      * Construct a searcher set on the given directory.
      * 
      * @param dir                   Directory to load index data from
      * @param updateCheckSeconds    How often to check for an updated index
      */
-    public XtfSearcher( Directory dir, int updateCheckSeconds )
+    public XtfSearcher( String indexPath, int updateCheckSeconds )
         throws IOException
     {
-        this.directory = dir;
+        this.indexPath = indexPath;
+        directory = FSDirectory.getDirectory( indexPath, false );
         curVersion = -99;
         updatePeriod = ((long)updateCheckSeconds) * 1000;
         update();
@@ -143,6 +160,23 @@ public class XtfSearcher
         stopSet = null;
         if( stopWords != null && stopWords.length() > 0 )
             stopSet = NgramQueryRewriter.makeStopSet( stopWords );
+        
+        // If there's a plural map specified, load it.
+        String pluralMapName = doc.get( "pluralMap" );
+        if( pluralMapName != null && pluralMapName.length() > 0 ) {
+            File pluralFile = new File( indexPath, pluralMapName );
+            InputStream stream = new FileInputStream( pluralFile );
+            if( pluralMapName.endsWith(".gz") )
+                stream = new GZIPInputStream( stream );
+            pluralMap = new WordMap( stream );
+        }
+
+        // If there's an accent map specified, load it.
+        String accentMapName = doc.get( "accentMap" );
+        if( accentMapName != null && accentMapName.length() > 0 ) {
+            File accentFile = new File( indexPath, accentMapName );
+            accentMap = new CharMap( accentFile );
+        }
 
         // Remember the version that we've checked.
         curVersion = ver;
@@ -186,6 +220,22 @@ public class XtfSearcher
      */
     public Set stopSet() {
         return stopSet;
+    }
+
+    
+    /**
+     * Find out the plural mapping, or null if none.
+     */
+    public WordMap pluralMap() {
+        return pluralMap;
+    }
+
+    
+    /**
+     * Find out the accent mapping, or null if none.
+     */
+    public CharMap accentMap() {
+        return accentMap;
     }
 
     

@@ -35,8 +35,10 @@ import java.util.Set;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.ngram.NgramStopFilter;
+import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
+import org.cdlib.xtf.util.WordMap;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -114,6 +116,12 @@ public class XTFTextAnalyzer extends Analyzer {
   /** The list of stop-words currently set for this filter. */
   private Set stopSet;
   
+  /** The set of words to change from plural to singular */
+  private WordMap pluralMap;
+  
+  /** The set of accented chars to remove diacritics from */
+  private CharMap accentMap;
+  
   /** The max size of chunks */
   private int chunkSize;
   
@@ -134,6 +142,14 @@ public class XTFTextAnalyzer extends Analyzer {
    *  @param  stopSet   The set of stop-words to be used when filtering text.
    *                    For more information about stop-words, see the 
    *                    {@link XTFTextAnalyzer} class description.
+   *                    
+   *  @param  pluralMap The set of plural words to de-pluralize when
+   *                    filtering text. See {@link IndexInfo#pluralMapPath}
+   *                    for more information.
+   * 
+   *  @param  accentMap The set of accented chars to remove diacritics from
+   *                    when filtering text. See 
+   *                    {@link IndexInfo#accentMapPath} for more information.
    * 
    *  @param  chunkSize The size (in words) of each chunk.<br><br>
    * 
@@ -146,11 +162,19 @@ public class XTFTextAnalyzer extends Analyzer {
    */
 
   public XTFTextAnalyzer( Set          stopSet,
+                          WordMap      pluralMap,
+                          CharMap      accentMap,
                           int          chunkSize )
   {
     
     // Record the set of stop words to use and the combine distance
     this.stopSet         = stopSet;
+    
+    // Record the plural words to change from plural to singular
+    this.pluralMap       = pluralMap;
+    
+    // Record the chars to remove diacritics from
+    this.accentMap       = accentMap;
     
     // Record the chunk size (used for checking)
     this.chunkSize       = chunkSize;
@@ -201,6 +225,16 @@ public class XTFTextAnalyzer extends Analyzer {
     
     // Normalize everything to be lowercase.
     result = new LowerCaseFilter( result );
+    
+    // If a plural map was specified, fold plural and singular words together.
+    if( pluralMap != null )
+        result = new PluralFoldingFilter( result, pluralMap );
+    
+    // If an accent map was specified, fold accented and unaccented chars
+    // together.
+    //
+    if( accentMap != null )
+        result = new AccentFoldingFilter( result, accentMap );
     
     // Convert stop-words to n-grams (if any stop words were specified). We must
     // do this after XtfSpecialTokensFilter to ensure that special tokens don't

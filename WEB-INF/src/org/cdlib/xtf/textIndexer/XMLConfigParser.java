@@ -441,6 +441,24 @@ public class XMLConfigParser extends DefaultHandler
         return;
     }
     
+    // If the current tag tells us to map plural words...
+    if( qName.compareToIgnoreCase("pluralmap") == 0 ) {
+
+        // Save the path.
+        configInfo.indexInfo.pluralMapPath = 
+            Path.normalizePath( atts.getValue("path") );
+        return;
+    }
+    
+    // If the current tag tells us to map accented chars...
+    if( qName.compareToIgnoreCase("accentmap") == 0 ) {
+
+        // Save the path.
+        configInfo.indexInfo.accentMapPath = 
+            Path.normalizePath( atts.getValue("path") );
+        return;
+    }
+    
     Trace.error( "Unknown config option: '" + qName + "'" );
     System.exit( 1 );
                        

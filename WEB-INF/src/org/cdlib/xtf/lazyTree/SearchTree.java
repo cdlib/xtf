@@ -66,11 +66,13 @@ import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.textEngine.Snippet;
+import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.CheckingTokenStream;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
 import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.WordMap;
 
 
 /**
@@ -102,6 +104,12 @@ public class SearchTree extends LazyDocument
     
     /** Set of "stop-words" (i.e. short words like "the", "and", "a", etc.) */
     Set stopSet;
+    
+    /** Set of plural words to change from plural to singular */
+    WordMap pluralMap;
+    
+    /** Set of accented chars to remove diacritics from */
+    CharMap accentMap;
     
     /** Document hit from the text engine, containing snippets for this doc */
     DocHit docHit;
@@ -364,8 +372,10 @@ public class SearchTree extends LazyDocument
         if( nHits > 0 ) {
             termMap = docHit.terms();
             
-            // We also need the stopword set.
-            stopSet = docHit.stopSet();
+            // We also need the stopword set, and the plural map.
+            stopSet   = docHit.stopSet();
+            pluralMap = docHit.pluralMap();
+            accentMap = docHit.accentMap();
         }
 
         // Make a second array of the hits, this time sorted by location.
@@ -644,11 +654,29 @@ public class SearchTree extends LazyDocument
             if( token != null && snippet != null && snippet.startNode == num )
                 endChar = token.startOffset();
             
+            // Convert the term to lower-case, and depluralize if necessary.
+            String mappedTerm = null;
+            if( token != null ) {
+                mappedTerm = token.termText().toLowerCase();
+                if( pluralMap != null ) {
+                    String singular = pluralMap.lookup( mappedTerm );
+                    if( singular != null )
+                        mappedTerm = singular;
+                }
+                if( accentMap != null ) {
+                    String unaccented = accentMap.mapWord( mappedTerm );
+                    if( unaccented != null )
+                        mappedTerm = unaccented;
+                }
+            }
+            
             // Are we at the start of a hit?
             if( wordOffset == hitStart ) {
 
+                boolean assertEnabled = false;
+                assert assertEnabled = true;
                 assert snippet.startNode != num
-                       || termMap.contains( token.termText().toLowerCase() ) : 
+                       || termMap.contains(mappedTerm) : 
                        "first hit token must be in search terms";
                 assert !inHit;
                 inHit = true;
@@ -680,12 +708,12 @@ public class SearchTree extends LazyDocument
 
             // If the token matches a query term, mark it.
             if( termMap != null && 
-                termMap.contains(token.termText().toLowerCase()) &&
+                termMap.contains(mappedTerm) &&
                 (termMode == SpanDocument.MARK_ALL_TERMS ||
                  (termMode >= SpanDocument.MARK_SPAN_TERMS && inHit)) &&
                 (inHit || 
                  stopSet == null || 
-                 !stopSet.contains(token.termText().toLowerCase())) ) 
+                 !stopSet.contains(mappedTerm)) ) 
             {
                 final int soff = token.startOffset();
                 final int eoff = token.endOffset();
@@ -712,7 +740,7 @@ public class SearchTree extends LazyDocument
                 continue;
             
             assert snippet.endNode != num
-                   || termMap.contains( token.termText().toLowerCase() ) : 
+                   || termMap.contains( mappedTerm ) : 
                    "last hit token must be a search term";
             assert inHit;
             inHit = false;

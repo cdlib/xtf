@@ -1,9 +1,11 @@
-package org.cdlib.xtf.textIndexer;
+package org.cdlib.xtf.util;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,16 +64,25 @@ public class WordMap
     public WordMap( File f ) 
         throws IOException
     {
-        readFile( f );
+        readFile( new BufferedReader(new FileReader(f)) );
+    }
+    
+    /** Construct a word map by reading from an InputStream. */
+    public WordMap( InputStream s )
+        throws IOException
+    {
+        readFile( new BufferedReader(new InputStreamReader(s)) );
     }
     
     /** Look up a word, and return the corresponding value, or null if none. */
     public String lookup( String word )
     {
         // Have we already looked up this word? If so, save time.
-        String val = (String) cache.get( word );
-        if( val != null )
+        String val = null;
+        if( cache.containsKey(word) ) {
+            val = (String) cache.get(word);
             return val;
+        }
         
         // Find the appropriate block.
         int blockNum = Collections.binarySearch( blockHeads, word );
@@ -121,16 +132,15 @@ public class WordMap
      * Read in the contents of a word file, forming blocks of 128 entries per
      * block. The file need not be in sorted order.
      * 
-     * @param f     The file to read
+     * @param  reader  Reader to get the data from
      * @throws IOException
      */
-    private void readFile( File f ) 
+    private void readFile( BufferedReader reader ) 
         throws IOException
     {
         TreeMap entries  = new TreeMap();
         HashMap randomCheck = new HashMap();
         
-        BufferedReader reader = new BufferedReader( new FileReader(f) );
         while( true ) {
             String line = reader.readLine();
             if( line == null )

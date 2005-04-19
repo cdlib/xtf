@@ -42,6 +42,7 @@ import java.io.StringReader;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -81,10 +82,12 @@ import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
 import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.textEngine.IndexUtil;
+import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.WordMap;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -259,6 +262,16 @@ public class XMLTextProcessor extends DefaultHandler
    *  {@link IndexInfo#stopWords} for details.
    */
   private Set stopSet = null;
+  
+  /** The set of plural words to de-pluralize while indexing. See
+   *  {@link IndexInfo#pluralMapPath} for details.
+   */
+  private WordMap pluralMap = null;
+  
+  /** The set of accented chars to remove diacritics from. See
+   *  {@link IndexInfo#accentMapPath} for details.
+   */
+  private CharMap accentMap = null;
   
   /** Flag indicating that a new chunk needs to be created. Set to <code>true</code>
    *  when a node's section name changes or a <code>proximitybreak</code> attribute
@@ -482,7 +495,7 @@ public class XMLTextProcessor extends DefaultHandler
               Path.createPath( indexPath );
           
               // And then create the index.
-              createIndex( indexPath );
+              createIndex( indexInfo );
           }
           
           // Otherwise...
@@ -497,9 +510,9 @@ public class XMLTextProcessor extends DefaultHandler
               FSDirectory idxDir = FSDirectory.getDirectory( indexPath, false );
             
               // If an index doesn't exist there, create it.
-              if( !IndexReader.indexExists( idxDir ) ) createIndex( indexPath );              
+              if( !IndexReader.indexExists( idxDir ) ) createIndex( indexInfo );
             
-          } // else( !configInfo.clean )
+          } // else( !clean )
 
           // Try to open the index for reading and searching.
           openIdxForReading();
@@ -547,6 +560,28 @@ public class XMLTextProcessor extends DefaultHandler
                          indexInfo.stopWords + ")" );
           }
           
+          // Read in the plural map, if there is one.
+          String pluralMapName = doc.get( "pluralMap" );
+          if( pluralMapName != null && pluralMapName.length() > 0 ) 
+          {
+              File pluralMapFile = new File( 
+                  Path.normalizePath(indexPath + pluralMapName) ); 
+              InputStream stream = new FileInputStream( pluralMapFile );
+
+              if( pluralMapName.endsWith(".gz") )
+                  stream = new GZIPInputStream( stream );
+          
+              pluralMap = new WordMap( stream );
+          }
+
+          // Read in the accent map, if there is one.
+          String accentMapName = doc.get( "accentMap" );
+          if( accentMapName != null && accentMapName.length() > 0 ) 
+          {
+              File accentMapFile = new File( 
+                  Path.normalizePath(indexPath + accentMapName) ); 
+              accentMap = new CharMap( accentMapFile );
+          }
       } // try
       
       catch( IOException e ) {
@@ -623,7 +658,7 @@ public class XMLTextProcessor extends DefaultHandler
    * 
    */
   
-  private void createIndex( String indexPath ) throws IOException
+  private void createIndex( IndexInfo indexInfo ) throws IOException
 
   {
 
@@ -635,7 +670,8 @@ public class XMLTextProcessor extends DefaultHandler
         // First, make the index.
         indexWriter = new IndexWriter( 
                      indexPath, 
-                     new XTFTextAnalyzer( stopSet, indexInfo.getChunkSize() ),
+                     new XTFTextAnalyzer( stopSet, pluralMap, accentMap, 
+                                          indexInfo.getChunkSize() ),
                      true );
         
         // Then add the index info chunk to it.
@@ -646,12 +682,39 @@ public class XMLTextProcessor extends DefaultHandler
         doc.add( Field.UnIndexed( "chunkOvlp", 
                                   indexInfo.getChunkOvlpStr()) );
         
+        // If a plural map was specified, copy it to the index directory.
+        if( indexInfo.pluralMapPath != null && 
+            indexInfo.pluralMapPath.length() > 0 ) 
+        {
+            String fileName = new File(indexInfo.pluralMapPath).getName();
+            String sourcePath = 
+                Path.normalizeFileName(xtfHomePath + indexInfo.pluralMapPath);
+            String targetPath = 
+                Path.normalizeFileName(indexPath + fileName);
+            Path.copyFile( new File(sourcePath), new File(targetPath) );
+            doc.add( Field.UnIndexed("pluralMap", fileName) );
+        }
+        
+        // If an accent map was specified, copy it to the index directory.
+        if( indexInfo.accentMapPath != null && 
+            indexInfo.accentMapPath.length() > 0 ) 
+        {
+            String fileName = new File(indexInfo.accentMapPath).getName();
+            String sourcePath = 
+                Path.normalizeFileName(xtfHomePath + indexInfo.accentMapPath);
+            String targetPath = 
+                Path.normalizeFileName(indexPath + fileName);
+            Path.copyFile( new File(sourcePath), new File(targetPath) );
+            doc.add( Field.UnIndexed("accentMap", fileName) );
+        }
+        
+        // Copy the stopwords to the index
         String stopWords = indexInfo.stopWords;
         if( stopWords == null )
             stopWords = "";
         doc.add( Field.UnIndexed( "stopWords", stopWords ) );
         indexWriter.addDocument( doc );
-    
+        
     } // try
     
     finally {
@@ -3509,14 +3572,13 @@ public class XMLTextProcessor extends DefaultHandler
         return;
 
     // Create an index writer, using the selected index db Path
-    // and create mode. Pass it our own text analyzer, currently 
-    // with an empty stop-word list (not null, as we interpret
-    // null to mean the standard stopword list), and the original
-    // blurbed text for XTF special token processing. 
+    // and create mode. Pass it our own text analyzer. 
     //
     indexWriter = new IndexWriter( 
                      indexPath,
-                     new XTFTextAnalyzer( stopSet, 
+                     new XTFTextAnalyzer( stopSet,
+                                          pluralMap,
+                                          accentMap,
                                           indexInfo.getChunkSize() ),
                                           false );
       

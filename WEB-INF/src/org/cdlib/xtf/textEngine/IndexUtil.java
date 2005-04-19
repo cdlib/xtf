@@ -123,6 +123,11 @@ public class IndexUtil
         throw new RuntimeException( e );
     }
     
+    // If we couldn't find the index name, throw an exception.
+    if( idxCfg.indexInfo == null || idxCfg.indexInfo.sourcePath == null )
+        throw new RuntimeException( "Index name '" + idxName + 
+                                    "' not found in index config file" );
+    
     // Use the other form of calcLazyPath() to do the rest of the work.
     return calcLazyPath( xtfHome, idxCfg.indexInfo,
                          srcTextFile, createDir );

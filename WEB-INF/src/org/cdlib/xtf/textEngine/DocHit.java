@@ -40,6 +40,8 @@ import org.apache.lucene.mark.SpanDocument;
 import org.apache.lucene.search.ScoreDoc;
 import org.cdlib.xtf.textIndexer.XtfSpecialTokensFilter;
 import org.cdlib.xtf.util.AttribList;
+import org.cdlib.xtf.util.CharMap;
+import org.cdlib.xtf.util.WordMap;
 
 /**
  * Represents a query hit at the document level. May contain {@link Snippet}s
@@ -195,6 +197,22 @@ public class DocHit extends ScoreDoc
     public Set stopSet()
     {
         return snippetMaker.stopSet();
+    }
+    
+    /**
+     * Fetch the plural map used when processing the query.
+     */
+    public WordMap pluralMap()
+    {
+        return snippetMaker.pluralMap();
+    }
+    
+    /**
+     * Fetch the accent map used when processing the query.
+     */
+    public CharMap accentMap()
+    {
+        return snippetMaker.accentMap();
     }
     
     /**

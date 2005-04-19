@@ -98,6 +98,35 @@ public class IndexInfo
    */
   public String stopWords;
   
+  /** Path to a mapping from plural words to their corresponding singular 
+   *  forms that the textIndexer should fold together. This can yield better 
+   *  search results. For instance, if a user searches for "cat" they probably 
+   *  also would like results for "cats."
+   *            
+   *  The file should be a plain text file, with one word pair per line. 
+   *  First is the plural form of a word, followed by a "|" character, 
+   *  followed by the singular form. All should be lowercase, even in the 
+   *  case of acronyms.
+   *
+   * Optionally, the file may be compressed in GZIP format, in which case 
+   * it must end in the extension ".gz".
+   * 
+   * Non-ASCII characters should be encoded in UTF-8 format.
+   */
+  public String pluralMapPath;
+  
+  /** Path to a mapping from accented characters to their corresponding
+   *  chars with teh diacritics removed. These chars will be folded together
+   *  which can yield better search results. For instance, a German user
+   *  on an American keyboard might want to find "Hüt" but can't type it.
+   *  This way, if they type "hat" they'll still get a match on "Hüt".
+   *            
+   *  The file should be a plain text file, with one code pair per line. 
+   *  First is the 4-digit hex Unicode point for the accented character,
+   *  followed by "|", then the 4-digit hex code for the unaccented form.
+   */
+  public String accentMapPath;
+  
   /** Text chunk attribute array. Currently this array consists of two entries:
    *  <br><br>
    * 

@@ -52,10 +52,10 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.SparseStringComparator;
 import org.apache.lucene.search.spans.SpanNearQuery;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.PriorityQueue;
+import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.WordMap;
 
 /**
  * Takes a QueryRequest, rewrites the queries if necessary to remove stop-
@@ -86,6 +86,12 @@ public class DefaultQueryProcessor extends QueryProcessor
     
     /** Stop-words to remove (e.g. "the", "a", "and", etc.) */
     private Set            stopSet;
+    
+    /** Mapping of plural words to singular words */
+    private WordMap        pluralMap;
+    
+    /** Mapping of accented chars to chars without diacritics */
+    private CharMap        accentMap;
     
     /** Total number of documents hit (not just those that scored high) */
     private int            nDocsHit = 0;
@@ -130,8 +136,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         synchronized( searchers ) {
             xtfSearcher = (XtfSearcher) searchers.get( indexPath );
             if( xtfSearcher == null ) {
-                Directory dir = FSDirectory.getDirectory( indexPath, false );
-                xtfSearcher = new XtfSearcher( dir, 30 ); // 30-sec update chk
+                xtfSearcher = new XtfSearcher( indexPath, 30 ); // 30-sec update chk
                 searchers.put( indexPath, xtfSearcher );
             }
         }
@@ -146,6 +151,8 @@ public class DefaultQueryProcessor extends QueryProcessor
             chunkSize    = xtfSearcher.chunkSize();
             chunkOverlap = xtfSearcher.chunkOverlap();
             stopSet      = xtfSearcher.stopSet();
+            pluralMap    = xtfSearcher.pluralMap();
+            accentMap    = xtfSearcher.accentMap();
         }
         
         // Apply a work limit to the query if we were requested to.
@@ -170,28 +177,39 @@ public class DefaultQueryProcessor extends QueryProcessor
         //
         final PriorityQueue docHitQueue = createHitQueue( reader, req );
         
-        // Rewrite the query for ngrams (if we have stop-words to deal with.)
-        final Query rewritten = (stopSet == null) ? req.query :
-            new NgramQueryRewriter(stopSet, chunkOverlap).
-                          rewriteQuery(req.query);
+        // If a plural map is present, change plural words to non-plural.
+        Query query = req.query;
+        if( pluralMap != null )
+            query = new PluralFoldingRewriter(pluralMap).rewriteQuery(query);
         
-        if( rewritten == null ) {
+        // If an accent map is present, remove diacritics.
+        if( accentMap != null )
+            query = new AccentFoldingRewriter(accentMap).rewriteQuery(query);
+        
+        // Rewrite the query for ngrams (if we have stop-words to deal with.)
+        if( stopSet != null )
+            query = new NgramQueryRewriter(stopSet, chunkOverlap).
+                            rewriteQuery(query);
+        
+        final Query finalQuery = query;
+        
+        if( finalQuery == null ) {
             QueryResult result = new QueryResult();
             result.docHits = new DocHit[0];
             return result;
         }
         
-        if( rewritten != req.query )
-            Trace.debug( "Query rewritten for n-grams: " + rewritten.toString() );
+        if( finalQuery != req.query )
+            Trace.debug( "Rewritten query: " + finalQuery.toString() );
 
         // Fix up all the "infinite" slop entries to be actually limited to
         // the chunk overlap size. That way, we'll get consistent results and
         // the user won't be able to tell where the chunk boundaries are.
         //
-        fixupSlop( rewritten, docNumMap );
+        fixupSlop( finalQuery, docNumMap );
         
         // Now for the big show... go get the hits!
-        searcher.search( rewritten, null, new SpanHitCollector() {
+        searcher.search( finalQuery, null, new SpanHitCollector() {
             public void collect( int doc, float score, FieldSpans fieldSpans ) 
             {
                 // Ignore deleted entries.
@@ -239,6 +257,8 @@ public class DefaultQueryProcessor extends QueryProcessor
         SnippetMaker snippetMaker = new SnippetMaker( reader,
                                                       docNumMap,
                                                       stopSet,
+                                                      pluralMap,
+                                                      accentMap,
                                                       req.maxContext,
                                                       req.termMode );
         for( int i = req.startDoc; i < nFound; i++ ) {

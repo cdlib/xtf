@@ -1,0 +1,5 @@
+successors|successor
+wars|war
+killings|killing
+problems|problem
+scholars|scholar

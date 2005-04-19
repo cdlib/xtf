@@ -45,6 +45,8 @@ import org.apache.lucene.mark.MarkPos;
 import org.apache.lucene.mark.SpanDocument;
 import org.apache.lucene.search.spans.Span;
 import org.cdlib.xtf.textIndexer.XTFTextAnalyzer;
+import org.cdlib.xtf.util.CharMap;
+import org.cdlib.xtf.util.WordMap;
 
 /**
  * Does the heavy lifting of interpreting span hits using the actual document
@@ -76,6 +78,12 @@ public class SnippetMaker
     /** Set of stop-words removed (e.g. "the", "a", "and", etc.) */
     private Set          stopSet;
     
+    /** Plural words to convert to singular */
+    private WordMap      pluralMap;
+    
+    /** Accented chars to remove diacritics from */
+    private CharMap      accentMap;
+    
     /** Target # of characters to include in the snippet. */
     private int          maxContext;
     
@@ -94,12 +102,16 @@ public class SnippetMaker
      * @param reader        Index reader to fetch text data from
      * @param docNumMap     Maps chunk numbers to document numbers
      * @param stopSet       Stop words removed (e.g. "the", "a", "and", etc.)
+     * @param pluralMap     Plural words to convert to singular
+     * @param accentMap     Accented chars to remove diacritics from
      * @param maxContext    Target # chars for hit + context
      * @param termMode      Where to mark terms (all, only in spans, etc.)
      */
     public SnippetMaker( IndexReader reader,
                          DocNumMap   docNumMap,
                          Set         stopSet,
+                         WordMap     pluralMap,
+                         CharMap     accentMap,
                          int         maxContext,
                          int         termMode )
     {
@@ -108,13 +120,15 @@ public class SnippetMaker
         this.chunkSize      = docNumMap.getChunkSize();
         this.chunkOverlap   = docNumMap.getChunkOverlap();
         this.stopSet        = stopSet;
+        this.pluralMap      = pluralMap;
+        this.accentMap      = accentMap;
         this.maxContext     = maxContext;
         this.termMode       = termMode;
         
         // Use the indexer's actual analyzer, so that our results always
         // agree (especially the positions which are critical.)
         //
-        analyzer = new XTFTextAnalyzer( null, -1 );
+        analyzer = new XTFTextAnalyzer( null, pluralMap, accentMap, -1 );
     } // constructor
     
     /** 
@@ -123,6 +137,20 @@ public class SnippetMaker
      */
     public Set stopSet() {
         return stopSet;
+    }
+    
+    /** 
+     * Obtain the set of plural words to convert to singular form.
+     */
+    public WordMap pluralMap() {
+        return pluralMap;
+    }
+    
+    /** 
+     * Obtain the set of accented chars to remove diacritics from.
+     */
+    public CharMap accentMap() {
+        return accentMap;
     }
     
     /** Obtain the document number map used to make snippets */
