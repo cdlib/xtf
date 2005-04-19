@@ -123,7 +123,7 @@
   <!-- METS -->
   
   <xsl:param name="sourceDir" select="concat('data/', $subDir, '/', $docId, '/')"/>
-  <xsl:param name="METS" select="document(concat('../../../../../', $sourceDir, $docId, '.mets.xml'))"/>  
+  <xsl:param name="METS" select="document(concat('../../../../', $sourceDir, $docId, '.mets.xml'))"/>  
   
   <!-- Brand Parameter -->
   
