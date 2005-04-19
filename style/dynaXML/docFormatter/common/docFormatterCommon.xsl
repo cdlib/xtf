@@ -45,6 +45,7 @@
   <xsl:param name="root.path"/>
 
   <xsl:param name="serverURL" select="$root.path"/>
+  <xsl:param name="baseURL" select="replace($serverURL, ':[0-9]+.+', '/')"/>
 
   <xsl:param name="docId"/>
 
