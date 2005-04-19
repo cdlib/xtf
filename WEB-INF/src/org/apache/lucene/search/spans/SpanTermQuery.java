@@ -57,8 +57,12 @@ public class SpanTermQuery extends SpanQuery {
           return false;
   }
   
-  public void setStopWords( Set set ) {
+  public void setStopWords(Set set) {
       this.stopSet = set;
+  }
+  
+  public Set getStopWords() {
+      return stopSet;
   }
 
   public String getField() { return term.field(); }
