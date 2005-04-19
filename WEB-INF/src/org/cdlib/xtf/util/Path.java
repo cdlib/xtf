@@ -399,6 +399,7 @@ public class Path
           return normalize( childPath );
       return resolveRelOrAbs( parentDir.toString(), childPath );
   } // resolveRelOrAbs()
+  
 
   /**
    * Utility function to resolve a child path against a parent path. Unlike
@@ -429,6 +430,28 @@ public class Path
       return parentDir + childPath;
       
   } // resolveRelOrAbs()
+  
+
+  /** Copies a source file to the specified destination. Creates the
+   *  destination file if it doesn't exist; overwrites it otherwise.
+   */
+  public static void copyFile( File src, File dst ) throws IOException 
+  
+  {
+  
+      InputStream  in  = new FileInputStream ( src );
+      OutputStream out = new FileOutputStream( dst );
+  
+      // Transfer bytes from in to out
+      byte[] buf = new byte[1024];
+      int len;
+      while( (len = in.read(buf)) > 0 )
+          out.write(buf, 0, len);
+      in.close();
+      out.close();
+      
+  } // copyFile()
+  
 
   // Perform a basic regression test on the Path routines.
   public static final Tester tester = new Tester("Path") {
