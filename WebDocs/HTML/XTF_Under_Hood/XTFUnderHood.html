@@ -189,10 +189,10 @@
       </ul>
     </li>
     <br>
-    <li> <b><a href="#LazyFiles">Lazy Files</a></b> 
+    <li> <b><a href="#LazyFiles">Lazy Trees</a></b> 
       <ul class="NoBullets">
         <li><a href="#Large_Documents">The Problem of Large Documents</a></li>
-        <li><a href="#What_is_lazy">What is a &quot;Lazy File&quot;?</a></li>
+        <li><a href="#What_is_lazy">What is a &quot;Lazy Tree&quot;?</a></li>
         <li><a href="#Search_results_in_context">Search Results in Context</a></li>
         <li><a href="#Stylesheet_considerations">Stylesheet Considerations</a></li>
       </ul>
@@ -1329,11 +1329,11 @@ to fill its bottomless gullet.</pre>
       the previous two sections. </div>
   </div>
   <!-- BaseStyle --> 
-  <p class="Heading1">Lazy Files<a name="LazyFiles"></a></p>
+  <p class="Heading1">Lazy Trees<a name="LazyFiles"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
   To accelerate processing of large documents and to enable highlighting search 
-  results within a document, <b><i>XTF</i></b> creates and utilizes <i>lazy files</i>. 
-  This section describes what lazy files are, how they aid processing, and how 
+  results within a document, <b><i>XTF</i></b> creates and utilizes <i>lazy trees</i>. 
+  This section describes what lazy trees are, how they aid processing, and how 
   stylesheets should optimize for their use. 
   <div class="IndentL"> 
     <p class="Heading2">The Problem of Large Documents<a name="Large_Documents"></a></p>
@@ -1342,7 +1342,7 @@ to fill its bottomless gullet.</pre>
       then jumping to an appendix, then another section, etc. Each time the servlet 
       produces one of these “pages”, it must read and process the entire source 
       document, even though only a small portion contributes to the output. This 
-      is the key observation underlying lazy files.</p>
+      is the key observation underlying lazy trees.</p>
     <p>When a document is processed through a set of stylesheets, the XSLT processor 
       spends significant time reading and parsing the XML document, building indexes 
       of parent-child relationships, creating identifier cross-references, and 
@@ -1386,46 +1386,48 @@ to fill its bottomless gullet.</pre>
       element (“bib12”) must be included. </p>
     <p>In general, the only parts of the document needed are those the stylesheet 
       actually references while generating a given page. This leads to the central 
-      idea of lazy files: only load those parts of the document.</p>
-    <p class="Heading2">What is a &quot;Lazy File&quot;?<a name="What_is_lazy"></a></p>
+      idea of lazy trees: only load those parts of the document that are needed.</p>
+    <p class="Heading2">What is a &quot;Lazy Tree&quot;?<a name="What_is_lazy"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     <p></p>
     <p>Unfortunately it's not easy to randomly load only pieces of an XML document. 
       In general, one can't tell where the end tag for an element is without scanning 
       all the text until it's found. So <i><b>XTF </b></i>creates a binary version 
-      of each XML document, containing all the original contents, plus an index 
-      telling it where each element starts and ends.</p>
+      of each XML document, called a &quot;lazy tree&quot;. The tree is stored 
+      in a file containing all the original contents of the document, plus an 
+      index telling <i><b>XTF </b></i>where each element starts and ends.</p>
     <p>Processing begins by loading only the root element of the document. If 
       the stylesheet references the children of that element (in an XPath expression 
       for instance), then <b><i>XTF</i></b> knows right where to find them in 
-      the lazy file. It loads only those children, but not their descendants. 
+      the lazy tree's file. It loads only those children, but not their descendants. 
       Processing then proceeds again until the stylesheet needs another node that 
       hasn't been loaded yet. In this way, a typical page generation ends up loading 
       only a small portion of the document.</p>
     <p>This strategy makes it possible to quickly generate pages for any size 
       document (tested up to at least 60 gigabytes).</p>
-    <p>Lazy files are stored under the index directory, in a folder hierarchy 
+    <p>Lazy tree files are stored under the index directory, in a folder hierarchy 
       parallel to that of the original data directories. They are typically a 
       bit smaller than the source document, since the text within them is compressed.</p>
     <p class="Heading2">Search Results in Context<a name="Search_results_in_context"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    <p>The other main benefit of lazy files is that they enable <b><i>XTF</i></b> 
+    <p>The other main benefit of lazy trees is that they enable <b><i>XTF</i></b> 
       to show search results in context. At first the link might seem unobvious. 
       Remember that <b><i>XTF</i></b> reports, for each element, the total number 
       of hits found in that element <i>and all of its descendants</i>. Without 
-      a lazy file, the system would have to read in the entire XML file to determine 
-      the parent-child relationships. With a lazy file, each search hit can be 
-      directly attributed to the correct XML elements by simply looking them up 
-      in the cross-index stored in the lazy file.</p>
+      a lazy tree, the system would have to read in the entire XML document to 
+      determine the parent-child relationships. With a lazy tree, each search 
+      hit can be directly attributed to the correct XML elements by simply looking 
+      them up in the cross-index stored in the lazy tree's file.</p>
     <p>For this reason and for speed of processing, <b><i>dynaXML</i></b> always 
-      reads in the lazy file if one exists. If it doesn't exist, <b><i>dynaXML</i></b> 
-      will attempt to create one at run-time. If this pause is unacceptable, the 
-      <b><i>textIndexer</i></b> can create lazy files at index time (in fact, 
-      this is the default behavior.) One caution: be sure that <b>docSelector.xsl</b> 
-      (used by the <b><i>textIndexer</i></b>) and <b>docReqParser.xsl</b> (used 
-      by <b><i>dynaXML</i></b>) both specify the same prefilter to use. Otherwise, 
-      search results from the index won't match the index in the lazy file, and 
-      strange random errors will occur.</p>
+      uses the lazy tree if one has been created. If it doesn't exist yet, <b><i>dynaXML</i></b> 
+      will attempt to create it at run-time. This introduces a pause, which can 
+      be avoided by having the <b><i>textIndexer</i></b> can create lazy trees 
+      at index time (and in fact, this is the default behavior.) One caution: 
+      if pre-building of lazy trees by the <b><i>textIndexer</i></b> is disabled, 
+      be sure that <b>docSelector.xsl</b> and <b>docReqParser.xsl</b> both specify 
+      the same prefilter to use. Otherwise, <b><i>dynaXML</i></b> will build a 
+      lazy tree that doesn't match the index, and strange random errors will occur 
+      when highlighting search hits in the document.</p>
     <p></p>
     <p class="Heading2">Stylesheet Considerations<a name="Stylesheet_considerations"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
@@ -1435,10 +1437,10 @@ to fill its bottomless gullet.</pre>
       practices to obtain maximum processing speed.</p>
     <p>First, avoid using XSL constructs that scan the entire input document. 
       Generally, any XPath instruction beginning with &quot;//&quot; will scan 
-      every element of the document, defeating any gains of using a lazy file. 
-      Also, using the &quot;descendant&quot; and &quot;descendant-or-self&quot; 
-      axes will generally cause all of the descendants to be loaded, again counteracting 
-      the benefit of lazy files.</p>
+      every element of the document, defeating any gains of using a lazy tree. 
+      Also, using &quot;descendant::&quot; and &quot;descendant-or-self::&quot; 
+      in an XPath expression will generally cause all of the descendants to be 
+      loaded, again counteracting the benefit of lazy trees.</p>
     <p>Instead, try to replace these constructs with the use of XSL keys, declared 
       with the &lt;xsl:key&gt; element at the top-level of the stylesheet. You 
       might ask, &quot;Doesn't xsl:key need to scan every element of the document 
