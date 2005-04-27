@@ -296,10 +296,11 @@
       This is an optional attribute that defines the <b>Document Formatter </b>stylesheet 
       associated with the given file. If specified, the <i><b>textIndexer</b></i> 
       will create a special cache that is used by the <i> <b>dynaXML</b></i> servlet 
-      to display selected documents more quickly. If not specified, the cache for 
-      the current file is not created. For more details, see the discussion of <a href="../XTF_Under_Hood/XTFUnderHood.html#LazyDocs">Lazy 
-      Document Handling</a> in the <a href="../XTF_Under_Hood/XTFUnderHood.html">XTF 
-      Under the Hood</a> guide.</div>
+      to display selected documents more quickly. If not specified, the cache 
+      for the current file is not created. For more details, see the discussion 
+      of <a href="../XTF_Under_Hood/XTFUnderHood.html#LazyFiles">Lazy Document 
+      Handling</a> in the <a href="../XTF_Under_Hood/XTFUnderHood.html">XTF Under 
+      the Hood</a> guide.</div>
     <p>Using these XML input and output specifications shown, a simple document selector 
       might look something like this:</p>
     <pre class="Sample">&lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"&gt;
@@ -900,8 +901,8 @@
       Once the search field been identified, the single word we actually wish 
       to find should substituted for <span class="MacroCode">WordToFind</span>.<br>
       <br>
-      The next simplest query to perform is a <i><b>phrase query element</b></i>. 
-      It has the form:</p>
+      The next simplest query to perform is a <i><b>phrase query</b></i>. It has 
+      the form:</p>
     <pre class="Sample"><b>&lt;phrase field=&quot;<span class="MacroCode">FieldToSearch</span>&quot;&gt;
     <span class="MacroCode">Term</span>
     <span class="MacroCode">Term</span>
@@ -917,9 +918,9 @@
     &lt;term&gt; War &lt;/term&gt;
 &lt;/phrase&gt;</b></pre>
     <p>It should be noted from this example the <span class="Code">field=&quot;<span class="MacroCode">FieldToSearch</span>&quot;</span> 
-      attribute for the <span class="Code">&lt;term...&gt;</span> fields doesn't 
-      need to be specified, since the enclosing <span class="Code">&lt;phrase...&gt;</span> 
-      element has already identified the field to be searched.</p>
+      attribute doesn't need to be specified in each of the <span class="Code">&lt;term...&gt;</span> 
+      tags, since the enclosing <span class="Code">&lt;phrase...&gt;</span> tag 
+      has already identified the field to be searched.</p>
     <p>The one remaining query element that we would need to construct a complete 
       query for our man and war not &quot;Man of War&quot; example is the <i><b>query 
       clause</b></i>. It has the form: </p>
@@ -1362,7 +1363,7 @@
                     will create a special cache that is used by the <i> <b>dynaXML</b></i> 
                     servlet to display the current file more quickly. If this 
                     attribute is omitted, the cache is not created. For more details, 
-                    see the discussion of <a href="../XTF_Under_Hood/XTFUnderHood.html#LazyDocs">Lazy 
+                    see the discussion of <a href="../XTF_Under_Hood/XTFUnderHood.html#LazyFiles">Lazy 
                     Document Handling</a> in the <a href="../XTF_Under_Hood/XTFUnderHood.html">XTF 
                     Under the Hood</a> guide.</span></div>
                 </td>
@@ -1495,24 +1496,56 @@
     <p class="Heading2">crossQuery Tag Reference<a name="crossQuery_Tag_Ref"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     This section summarizes the XTF specific tags for the <b><i>crossQuery</i></b> 
-    <b>Query Parser</b> stylesheet and the <b>Result Formatter</b> stylesheet. <br>
+    <a href="#crossQuery_QueryParser_Tags"><b>Query Parser</b></a> stylesheet 
+    and the <b><a href="#crossQuery_ResultFormatter_Tags">Result Formatter</a></b> 
+    stylesheet. <br>
     <div class="IndentL"> 
       <p class="Heading3">Query Parser Tags<a name="crossQuery_QueryParser_Tags"></a></p>
       <!-----------------------------------------------------------------------------------------------------------> 
-      The tags listed here are XML tags associated with the <b>Query Parser</b> stylesheet. 
-      The tags are divided into two categories: input tags and output tags. The input 
-      tags are used by the <b><i>crossQuery</i></b> Servlet to translate the original 
-      query URL into a simple XML representation that can act as input to the <b>Query 
-      Parser</b> stylesheet. The output tags are then used by the <b>Query Parser</b> 
-      stylesheet to form the actual XML query passed to the <b><i>crossQuery</i></b> 
-      servlet's <b>Text Search Engine</b> for processing. <br>
+      The tags listed here are XML tags associated with the <b>Query Parser</b> 
+      stylesheet. The tags are divided into two categories: <a href="#crossQuery_QueryParser_InputTags">input 
+      tags</a> and <a href="#crossQuery_QueryParser_OutputTags">output tags</a>. 
+      The input tags are used by the <b><i>crossQuery</i></b> Servlet to translate 
+      the original query URL into a simple XML representation that can act as 
+      input to the <b>Query Parser</b> stylesheet. The output tags are then used 
+      by the <b>Query Parser</b> stylesheet to form the actual XML query passed 
+      to the <b><i>crossQuery</i></b> servlet's <b>Text Search Engine</b> for 
+      processing. <br>
       <div class="IndentL"> 
-        <p class="Heading3">Input Tags</p>
-        The following tags make up the XML input for the <b>Query Parser</b> stylesheet. 
-        They constitute a simple XML representation of the query URL supplied to the 
-        <b><i>crossQuery</i></b> servlet from the user query web-page. <br>
+        <p class="Heading3">Input Tags<a name="crossQuery_QueryParser_InputTags"></a></p>
+        <p>The following tags make up the XML input for the <b>Query Parser</b> 
+          stylesheet. They constitute a simple XML representation of the query 
+          URL supplied to the <b><i>crossQuery</i></b> servlet from the user query 
+          web-page. </p>
+        <table width="90%" border="0" cellspacing="8" cellpadding="0">
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_QueryParser_InputTags_parameters">&lt;parameters&gt;</a></div>
+            </td>
+            <td width="91%">Main container tag for query parameters.</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_QueryParser_InputTags_param">&lt;param...&gt;</a></div>
+            </td>
+            <td width="91%">Input tag describing a single query parameter.</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_QueryParser_InputTags_token">&lt;token...&gt;</a></div>
+            </td>
+            <td width="91%">Input tag describing a single word or token from a 
+              query.</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_QueryParser_InputTags_phrase">&lt;phrase...&gt;</a></div>
+            </td>
+            <td width="91%">Input tag specifying a single phrase from a query.</td>
+          </tr>
+        </table>
         <br>
-        <div class="Sample"> <b><u>Container Tag</u></b><br>
+        <div class="Sample"> <b><u>Container Tag</u></b><a name="crossQuery_QueryParser_InputTags_parameters"></a><br>
           This tag is the outer-most tag for the XML input fragment sent to the <b>Query 
           Parser</b> stylesheet for translation. It has the form:<br>
           <br>
@@ -1525,7 +1558,7 @@
           </div>
         </div>
         <br>
-        <div class="Sample"> <b><u>Parameter Block Tag</u></b><br>
+        <div class="Sample"> <b><u>Parameter Block Tag</u></b><a name="crossQuery_QueryParser_InputTags_param"></a><br>
           This tag is the XML input to the <span class="Code">queryParser.xsl</span> 
           for a single parameter in a user query URL. It has the form:<br>
           <br>
@@ -1565,7 +1598,7 @@
           This allows query parameters to be accessed either through th standard template 
           driven XML or through stylesheet parameters. </div>
         <br>
-        <div class="Sample"> <b><u>Token Tag</u></b><br>
+        <div class="Sample"> <b><u>Token Tag</u></b><a name="crossQuery_QueryParser_InputTags_token"></a><br>
           This tag identifies a single word or token taken from the query URL. It 
           has the form: <br>
           <br>
@@ -1592,7 +1625,7 @@
           </div>
         </div>
         <br>
-        <div class="Sample"> <b><u>Phrase Tag</u></b><br>
+        <div class="Sample"> <b><u>Phrase Tag</u></b><a name="crossQuery_QueryParser_InputTags_phrase"></a><br>
           This tag identifies a literal phrase taken from the query URL. It has the 
           form: <br>
           <br>
@@ -1624,15 +1657,81 @@
           </div>
         </div>
         <br>
-        <p class="Heading3">Output Tags<a name="crossQuery_QueryParserOutputTags"></a></p>
-        These tags are used by the <b>Query Parser</b> stylesheet to form the XML 
-        query passed to the <b><i>crossQuery</i></b> <b>Text Search Engine</b> for 
-        processing. <br>
+        <p class="Heading3">Output Tags<a name="crossQuery_QueryParser_OutputTags"></a></p>
+        These tags are used by the <b>Query Parser</b> stylesheet to form the 
+        XML query passed to the <b><i>crossQuery</i></b> search engine<b> </b>for 
+        processing.<br>
+        <br>
+        <table width="90%" border="0" cellspacing="8" cellpadding="0">
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_QueryTag">&lt;query...&gt;</a></div>
+            </td>
+            <td width="91%">Main container tag for queries sent to the <i><b>crossQuery</b></i> 
+              search engine.</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_ErrorTag">&lt;error...&gt;</a></div>
+            </td>
+            <td width="91%">Error tag used to signal Query Parser errors to the 
+              crossQuery servlet.</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_TermTag">&lt;term...&gt;</a></div>
+            </td>
+            <td width="91%">Term tag defining a single search word or term to 
+              find.</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_PhraseTag">&lt;phrase...&gt;</a></div>
+            </td>
+            <td width="91%">Phrase tag defining a single phrase to find.</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_AndTag">&lt;and...&gt;</a></div>
+            </td>
+            <td width="91%">AND clause defining a set of elements that must all 
+              be found.</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code" height="5"> 
+              <p align="right"><a href="#crossQuery_OrTag">&lt;or...&gt;</a></p>
+            </td>
+            <td width="91%" height="5">OR clause defining a set of elements from 
+              which one or more must be found..</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_NotTag">&lt;not...&gt;</a></div>
+            </td>
+            <td width="91%">NOT clause defining a set of elements that must not 
+              be found.</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code" height="4"> 
+              <div align="right"><a href="#crossQuery_NearTag">&lt;near...&gt;</a></div>
+            </td>
+            <td width="91%" height="4">NEAR clause defining a set of elements 
+              that must be found near eachother.</td>
+          </tr>
+          <tr> 
+            <td width="9%" class="Code"> 
+              <div align="right"><a href="#crossQuery_RangeTag">&lt;range...&gt;</a></div>
+            </td>
+            <td width="91%">RANGE clause defining a set of elements that brackets 
+              a range of items to find.</td>
+          </tr>
+        </table>
+        <br>
         <br>
         <div class="Sample"> <b><u>Query Tag</u></b><a name="crossQuery_QueryTag"></a><br>
-          <!----------------------------------------------------------> This tag is 
-          outer-most tag in an XML query sent to the <b><i>crossQuery</i></b> servlet's 
-          <b>Text Search Engine</b>. It has the form:<br>
+          <!----------------------------------------------------------> This tag 
+          is outer-most tag in an XML query sent to the <b><i>crossQuery</i></b> 
+          servlet's search engine. It has the form:<br>
           <br>
           <div class="IndentLR"> 
             <pre class="Code">&lt;query indexPath        = &quot;<b><span class="MacroCode">IndexDBLocation</span></b>&quot;
@@ -1645,7 +1744,7 @@
        <i>{</i>maxSnippets     = "<span class="MacroCode">SnippetsToOutput</span>"<i>}
        {</i>field           = &quot;<span class="MacroCode">FieldToSearch</span>&quot;<i>}</i><i></i>&gt;
 
-    <span class="MacroCode">QueryElements</span>
+    <span class="MacroCode">QueryElement</span>
 
 &lt;/query&gt;</pre>
           </div>
@@ -1697,19 +1796,17 @@
               </tr>
               <tr> 
                 <td align="right" valign="top"> 
-                  <<span class="BaseStyle">startDoc="<span class="MacroCode">FirstDocToReturn</span>" 
+                  <span class="Code">startDoc="<span class="MacroCode">FirstDocToReturn</span>" 
                     </span>
                 </td>
-                <td valign="baseline"> <span class="BaseStyle"> is 
-                  an optional attribute specifying the ordinal number of the first 
-                  matching document to pass on to the <b>Result Formatter</b> 
-                  If not specified, this attribute defaults to 1, meaning the 
-                  first document that contains matches for the specified query. 
-                  </span> </td>
+                <td valign="baseline"> <span class="BaseStyle"> is an optional 
+                  attribute specifying the ordinal number of the first matching 
+                  document to pass on to the <b>Result Formatter</b>. If not specified, 
+                  this attribute defaults to 1, meaning the first document that 
+                  contains matches for the specified query. </span> </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"> 
-                  maxDocs="<span class="MacroCode">MaxDocsToReturnt</span>"
+                <td align="right" valign="top" class="Code"> maxDocs="<span class="MacroCode">MaxDocsToReturn</span>" 
                 </td>
                 <td valign="baseline"> <span class="BaseStyle"> is 
                   an optional attribute specifying the number of matching documents 
@@ -1757,8 +1854,8 @@
                 <td align="right" valign="top" class="Code"> 
                   maxContext="<span class="MacroCode">MaxContextChars</span>"
                 </td>
-                <td valign="baseline"><span class="BaseStyle">identifies 
-                  the size of a snippet to pass on to the <b>Result Formatter</b><span class="Code"> 
+                <td valign="baseline"><span class="BaseStyle">identifies the size 
+                  of a snippet to pass in the <b>Result Formatter</b><span class="Code"> 
                   <a href="#crossQuery_SnippetTag">snippet</a> </span>tag. If 
                   not specified, this attribute defaults to 80 characters. Note 
                   that the context length is the total number of characters for 
@@ -1833,14 +1930,13 @@
      <img src="../Common_Art/vDotDotDot.gif">
  &lt;/query&gt;</pre>
           </div>
-          The <span class="MacroCode">QueryElements</span> specified within this 
+          The <span class="MacroCode">QueryElement</span> specified within this 
           tag identifies the query to be performed. This can be a<span class="Code"> 
           <a href="#crossQuery_TermTag">term</a> </span> query tag, a<span class="Code"> 
           <a href="#crossQuery_PhraseTag">phrase</a> </span> query tag, or an<span class="Code"> 
           <a href="#crossQuery_AndTag">and</a></span>,<span class="Code"> <a href="#crossQuery_OrTag">or</a></span>,<span class="Code"> 
-          <a href="#crossQuery_NearTag">near</a></span>,<span class="Code"> <a href="#crossQuery_RangeTag">range</a></span>, 
-          or<span class="Code"> <a href="#crossQuery_NotTag">not</a> </span>tag. 
-          <br>
+          <a href="#crossQuery_NearTag">near</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_RangeTag">range</a> </span>tag.<br>
           <br>
           Note that the <b>Query Parser</b> stylesheet can issue a single top-level<span class="Code"> 
           <a href="#crossQuery_ErrorTag">error</a> </span>tag instead of a<span class="Code"> 
@@ -1890,7 +1986,7 @@
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
                     or <span class="Code">subject</span>.</p>
                   <p>It should be mentioned that the field name specified by a 
-                    &lt;<span class="Code">term...&gt;</span> tag<i><b> must</b></i> 
+                    <span class="Code">&lt;term...&gt;</span> tag<i><b> must</b></i> 
                     match the field name set by any tags that contain it. Otherwise, 
                     an error will be generated.</p>
                   </td>
@@ -1927,16 +2023,20 @@
                   </td>
               </tr>
             </table>
-            <br>
           </div>
-          Note that if any symbols exist in <span class="MacroCode">WordToFind</span> 
-          (e.g., quotes, punctuation characters, parentheses, etc.) no matches will 
-          be found in the index. This is because the index removes all symbols from 
-          a term before indexing it. Also, the<span class="Code"> term </span>tag 
-          is case-insensitive, so matches with capitalization different from that 
-          given in<span class="MacroCode"> WordToFind </span> may appear in the resulting 
-          list of matches. <br>
-          <br>
+          <p><br>
+            Note that aside from letters and numbers, only a few select symbols 
+            may appear in <span class="MacroCode">WordToFind</span> (e.g., apostrophes, 
+            periods as part of decimal numbers, etc.) If any other symbols appear 
+            in the word to find, no matches will be found in the index. This is 
+            because the index removes all other types symbols from a term before 
+            indexing it. For a complete list of symbols that may appear in a term, 
+            see the <a href="../XTF_Under_Hood/XTFUnderHood.html">XTF Under the 
+            Hood</a> guide.</p>
+          <p>Also, the<span class="Code"> term </span>tag is case-insensitive, 
+            so matches with capitalization different from that given in<span class="MacroCode"> 
+            WordToFind </span> may appear in the resulting list of matches. <br>
+          </p>
           <div class="Note"> (Note: Any non-leading or trailing whitespace characters 
             in <span class="MacroCode"> WordToFind </span>(i.e, space, tab, carriage-return, 
             line-feed, etc.) will produce unpredictable search results.) </div>
@@ -1970,7 +2070,7 @@
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
                     or <span class="Code">subject</span>.</p>
                   <p>It should be mentioned that the field name specified by a 
-                    &lt;<span class="Code">phrase...&gt;</span> tag<i><b> must</b></i> 
+                    <span class="Code">&lt;phrase...&gt;</span> tag<i><b> must</b></i> 
                     match the field name set by any tags that contain it. Otherwise, 
                     an error will be generated. If no parent tags specify a field 
                     name, any field name can be used by the <span class="Code">&lt;phrase...&gt;</span> 
@@ -2023,9 +2123,9 @@
                 <td width="16%" align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                 <td valign="baseline"> 
                   <p>is an optional attribute that specifies a relevance boost 
-                    multiplier for this term in the query. Boost values higher 
-                    than 1.0 increase the relevance of a term, while boost values 
-                    between 0.0 and 1.0 decrease the relevance of a term. Boost 
+                    multiplier for this phrase in the query. Boost values higher 
+                    than 1.0 increase the relevance of a phrase, while boost values 
+                    between 0.0 and 1.0 decrease the relevance of a phrase. Boost 
                     values less than zero will generate an error.</p>
                   <p>Note that boost values multiply. That is, if tags within 
                     a <span class="Code">&lt;phrase...&gt;</span> tag have boost 
@@ -2045,9 +2145,9 @@
           <a href="#crossQuery_RangeTag">range</a></span>, or<span class="Code"> <a href="#crossQuery_NotTag">not</a> 
           </span>tag. <br>
           <br>
-          Note that text will only match a phrase phrase query, if all the terms 
-          in the<span class="Code"> phrase </span>tag appear in the document in 
-          same order, with no other intervening words. </div>
+          Note that text will only match a phrase query if all the terms in the<span class="Code"> 
+          phrase </span>tag appear in the document in same order, with no other 
+          intervening words. </div>
         <br>
         <!-- Phrase Tag --> 
         <div class="Sample"> <b><u>AND Search Tag<a name="crossQuery_AndTag"></a></u></b><br>
@@ -2123,9 +2223,9 @@
                 <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                 <td valign="baseline"> 
                   <p>is an optional attribute that specifies a relevance boost 
-                    multiplier for this term in the query. Boost values higher 
-                    than 1.0 increase the relevance of a term, while boost values 
-                    between 0.0 and 1.0 decrease the relevance of a term. Boost 
+                    multiplier for this clause in the query. Boost values higher 
+                    than 1.0 increase the relevance of a clause, while boost values 
+                    between 0.0 and 1.0 decrease the relevance of a clause. Boost 
                     values less than zero will generate an error.</p>
                   <p>Note that boost values multiply. That is, if tags within 
                     an <span class="Code">&lt;and...&gt;</span> tag have boost 
@@ -2218,11 +2318,12 @@
               <tr> 
                  <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                  <td valign="baseline"> 
-                      <p>is an optional attribute that specifies a relevance boost 
-                        multiplier for this term in the query. Boost values higher 
-                        than 1.0 increase the relevance of a term, while boost 
-                        values between 0.0 and 1.0 decrease the relevance of a 
-                        term. Boost values less than zero will generate an error.</p>
+                      
+                  <p>is an optional attribute that specifies a relevance boost 
+                    multiplier for this clause in the query. Boost values higher 
+                    than 1.0 increase the relevance of a clause, while boost values 
+                    between 0.0 and 1.0 decrease the relevance of a clause. Boost 
+                    values less than zero will generate an error.</p>
                       
                   <p>Note that boost values multiply. That is, if tags within 
                     an <span class="Code">&lt;or...&gt;</span> tag have boost 
@@ -2316,11 +2417,12 @@
               <tr> 
                  <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                  <td valign="baseline"> 
-                      <p>is an optional attribute that specifies a relevance boost 
-                        multiplier for this term in the query. Boost values higher 
-                        than 1.0 increase the relevance of a term, while boost 
-                        values between 0.0 and 1.0 decrease the relevance of a 
-                        term. Boost values less than zero will generate an error.</p>
+                      
+                  <p>is an optional attribute that specifies a relevance boost 
+                    multiplier for this clause in the query. Boost values higher 
+                    than 1.0 increase the relevance of a clause, while boost values 
+                    between 0.0 and 1.0 decrease the relevance of a clause. Boost 
+                    values less than zero will generate an error.</p>
                       
                   <p>Note that boost values multiply. That is, if tags within 
                     an <span class="Code">&lt;not...&gt;</span> tag have boost 
@@ -2331,14 +2433,30 @@
                   </tr>
                 </table>
               </div>
-              <br>
-          Within the<span class="Code"> not </span>tag, <span class="MacroCode">Term</span> 
-          is a<span class="Code"> <a href="#crossQuery_TermTag">term</a> </span>tag, 
-          <span class="MacroCode">Phrase</span> is a<span class="Code"> <a href="#crossQuery_PhraseTag">phrase</a> 
-          </span>tag, and <span class="MacroCode">Clause</span> is an<span class="Code"> 
-          <a href="#crossQuery_AndTag">and</a></span>,<span class="Code"> <a href="#crossQuery_OrTag">or</a></span>,<span class="Code"> 
-          <a href="#crossQuery_NearTag">near</a></span>,<span class="Code"> <a href="#crossQuery_RangeTag">range</a></span>, 
-          or<span class="Code"> <a href="#crossQuery_NotTag">not</a> </span>tag. 
+              
+          <p><br>
+            Within the<span class="Code"> not </span>tag, <span class="MacroCode">Term</span> 
+            is a<span class="Code"> <a href="#crossQuery_TermTag">term</a> </span>tag, 
+            <span class="MacroCode">Phrase</span> is a<span class="Code"> <a href="#crossQuery_PhraseTag">phrase</a> 
+            </span>tag, and <span class="MacroCode">Clause</span> is an<span class="Code"> 
+            <a href="#crossQuery_AndTag">and</a></span>,<span class="Code"> <a href="#crossQuery_OrTag">or</a></span>,<span class="Code"> 
+            <a href="#crossQuery_NearTag">near</a></span>,<span class="Code"> 
+            <a href="#crossQuery_RangeTag">range</a></span>, or<span class="Code"> 
+            <a href="#crossQuery_NotTag">not</a> </span>tag.</p>
+          <p>It is also important to note that when applied to the text field, 
+            the <span class="Code">&lt;not...&gt;</span> clause in reality operates 
+            as a <b>&quot;not near.&quot;</b> That is, the items to not be found 
+            are localized to other terms in the search query. Why? Consider a 
+            query for <b>&quot;bat&quot; not &quot;cave&quot;</b>. Imagine a document 
+            where <b>&quot;bat man&quot; </b>appears in Chapter 1. Would you really 
+            want to ignore that match if the word &quot;cave&quot; appears in 
+            a wholly unrelated passage somewhere in Chapter 12? Probably not. 
+            Consequently, search elements specified within a <span class="Code">&lt;not...&gt;</span> 
+            clause are considered relevant if they are within the same chunk as 
+            other elements in the query. For more about document chunks sizing, 
+            see <b><a href="../XTF_Deployment_Guide/XTFDeployGuide.html#textIndexer_Config_File">textIndexer 
+            Configuration File</a></b> section in the <b><a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF 
+            Deployment Guide</a></b>.</p>
         </div><br>
         <!-- Not Tag --> 
         <div class="Sample"> <b><u>Near Search Tag<a name="crossQuery_NearTag"></a></u></b><br>
@@ -2384,29 +2502,34 @@
                   slop </span> attribute of the<span class="Code"> near </span>tag, 
                   the potential match is ignored. <br>
                   <br>
-                  Note that a setting the<span class="Code"> slop </span>value 
-                  for the<span class="Code"> near </span>tag to zero effectively 
-                  produces an exact phrase search, and is in fact how the<span class="Code"> 
+                  Note that setting the<span class="Code"> slop </span>value for 
+                  the<span class="Code"> near </span>tag to zero effectively produces 
+                  an exact phrase search, and is in fact how the<span class="Code"> 
                   phrase </span>tag is implemented internally. </span> </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"> field="<span class="MacroCode">FieldName</span>"</td>
-                <td valign="baseline"> <span class="BaseStyle"> </span> 
+                <td align="right" valign="top" class="Code" height="248"> field="<span class="MacroCode">FieldName</span>"</td>
+                <td valign="baseline" height="248"> <span class="BaseStyle"> </span> 
                   <p>is an optional attribute that identifies which field in the 
                     index to search. Normally, this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
                     or <span class="Code">subject</span>.</p>
-                  <p>It should be mentioned that if the <span class="Code">field</span> 
-                    attribute appears in any tags outside it, the field name in 
-                    the <span class="Code">&lt;near...&gt;</span> tag <i><b>must</b></i> 
-                    match the value set in the outer tags. Otherwise, an error 
-                    will be generated. </p>
-                  <p>However, if the <span class="Code">&lt;not...&gt;</span> 
-                    tag does not specifiy a field name, and no tags outside it 
-                    specify a field name, then the tags directly below the <span class="Code">&lt;near...&gt;</span> 
-                    tag may have any combination of field names desired. This 
-                    is how mixed queries of document text and meta data are formed.</p>
+                  <p>It should be mentioned that the field name specified by a 
+                    <span class="Code">&lt;near...&gt;</span> tag<i><b> must</b></i> 
+                    match the field name set by any tags that contain it. Otherwise, 
+                    an error will be generated. If no parent tags specify a field 
+                    name, any field name can be used by the <span class="Code">&lt;near...&gt;</span> 
+                    tag.</p>
+                  <p>Similarly, any tags within a <span class="Code">&lt;near...&gt;</span> 
+                    tag must either specify the same field name as the near clause, 
+                    or specify no field name at all. Otherwise, an error will 
+                    be generated.</p>
+                  <p class="Note">(Note: Allowing nested copies of the <span class="Code">field</span> 
+                    attribute doesn't serve a purpose other than to make it easier 
+                    to write <b>docReqParser.xsl</b> stylesheets in a uniform 
+                    way. Effectively, the outermost <span class="Code">field</span> 
+                    value is always used.)</p>
                 </td>
               </tr>
               <tr> 
@@ -2443,9 +2566,9 @@
                 <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                 <td valign="baseline"> 
                   <p>is an optional attribute that specifies a relevance boost 
-                    multiplier for this term in the query. Boost values higher 
-                    than 1.0 increase the relevance of a term, while boost values 
-                    between 0.0 and 1.0 decrease the relevance of a term. Boost 
+                    multiplier for this clause in the query. Boost values higher 
+                    than 1.0 increase the relevance of a clause, while boost values 
+                    between 0.0 and 1.0 decrease the relevance of a clause. Boost 
                     values less than zero will generate an error.</p>
                   <p>Note that boost values multiply. That is, if tags within 
                     an <span class="Code">&lt;near...&gt;</span> tag have boost 
@@ -2497,8 +2620,8 @@
                   </span> </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"> field="<span class="MacroCode">FieldName</span>"</td>
-                <td valign="baseline"> <span class="BaseStyle"> </span> 
+                <td align="right" valign="top" class="Code" height="94"> field="<span class="MacroCode">FieldName</span>"</td>
+                <td valign="baseline" height="94"> <span class="BaseStyle"> </span> 
                   <p>is an optional attribute that identifies which field in the 
                     index to search. Normally, this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
@@ -2508,17 +2631,17 @@
                     attribute appears in any tags outside it, the field name in 
                     the <span class="Code">&lt;range...&gt;</span> tag <i><b>must</b></i> 
                     match the value set in the outer tags. Otherwise, an error 
-                    will be generated. </p>
-                  <p>However, if the <span class="Code">&lt;range...&gt;</span> 
-                    tag does not specifiy a field name, and no tags outside it 
-                    specify a field name, then the tags directly below the <span class="Code">&lt;range...&gt;</span> 
-                    tag may have any combination of field names desired. This 
-                    is how mixed queries of document text and meta data are formed.</p>
+                    will be generated.</p>
+                  <p class="Note">(Note: Allowing nested copies of the <span class="Code">maxSnippets</span> 
+                    attribute doesn't serve a purpose other than to make it easier 
+                    to write <b>docReqParser.xsl</b> stylesheets in a uniform 
+                    way. Effectively, the outermost <span class="Code">maxSnippets</span> 
+                    value is always used.)</p>
                 </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
-                <td valign="baseline"> 
+                <td align="right" valign="top" class="Code" height="151">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
+                <td valign="baseline" height="151"> 
                   <p><span class="BaseStyle">identifies the number of snippets 
                     to pass on to the <b>Result Formatter</b> stylesheet for display. 
                     A snippet is defined as the matching text found in a document 
@@ -2535,10 +2658,7 @@
                     the <span class="Code">maxSnippets</span> attribute appears 
                     in any containing tags, the value set for it in the <span class="Code">&lt;range...&gt;</span> 
                     tag <i><b>must</b></i> match the value set in the containing 
-                    tags. Otherwise, an error will be generated. Similarly, any 
-                    occurences of the <span class="Code">maxSnippets</span> attribute 
-                    in tags within the <span class="Code">&lt;range...&gt;</span> 
-                    tag must have the same value as their containing tags.</p>
+                    tags. Otherwise, an error will be generated.</p>
                   <p class="Note">(Note: Allowing nested copies of the <span class="Code">maxSnippets</span> 
                     attribute doesn't serve a purpose other than to make it easier 
                     to write <b>docReqParser.xsl</b> stylesheets in a uniform 
@@ -2547,19 +2667,14 @@
                 </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
-                <td valign="baseline"> 
+                <td align="right" valign="top" class="Code" height="44"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
+                <td valign="baseline" height="44"> 
                   <p>is an optional attribute that specifies a relevance boost 
-                    multiplier for this term in the query. Boost values higher 
-                    than 1.0 increase the relevance of a term, while boost values 
-                    between 0.0 and 1.0 decrease the relevance of a term. Boost 
+                    multiplier for this clause in the query. Boost values higher 
+                    than 1.0 increase the relevance of a clause, while boost values 
+                    between 0.0 and 1.0 decrease the relevance of a clause. Boost 
                     values less than zero will generate an error.</p>
-                  <p>Note that boost values multiply. That is, if tags within 
-                    an <span class="Code">&lt;range...&gt;</span> tag have boost 
-                    attributes, their individual boost values will be multiplied 
-                    by the boost set for the containing <span class="Code">&lt;range...&gt;</span> 
-                    tag.</p>
-                </td>
+                  </td>
               </tr>
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> <span class="MacroCode">FirstTermToFind</span> 
