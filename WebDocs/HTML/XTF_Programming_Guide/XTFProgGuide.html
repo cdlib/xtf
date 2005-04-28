@@ -760,15 +760,16 @@
     after the <b>?</b> symbol) defines the search to be performed. Also notice that 
     search to be performed is represented by two parameters: <br>
     <br>
-    <table width="606" cellpadding="0" cellspacing="8">
+    <table width="606" cellpadding="0" cellspacing="12">
       <tr> 
-        <td width="213" align="right" valign="top" class="Code">text=man+war</td>
-        <td width="246"><span class="BaseStyle">The list of words search for.</span></td>
+        <td width="213" align="right" valign="baseline" class="Code">text=man+war</td>
+        <td width="246" valign="baseline"><span class="BaseStyle">The list of 
+          words search for.</span></td>
       </tr>
       <tr> 
-        <td width="213" align="right" valign="top" class="Code">text-exclude=%22Man+of+War%22</td>
-        <td width="246"><span class="BaseStyle">The phrase to exclude from the 
-          search.</span></td>
+        <td width="213" align="right" valign="baseline" class="Code">text-exclude=%22Man+of+War%22</td>
+        <td width="246" valign="baseline"><span class="BaseStyle">The phrase to 
+          exclude from the search.</span></td>
       </tr>
     </table>
     <br>
@@ -800,7 +801,7 @@
       <br>
       where <br>
       <br>
-      <table cellpadding="0" cellspacing="8">
+      <table cellpadding="0" cellspacing="12">
         <tr> 
           <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">Word</span>" 
           </td>
@@ -828,7 +829,7 @@
 </pre>
       where <br>
       <br>
-      <table cellpadding="0" cellspacing="8">
+      <table cellpadding="0" cellspacing="12">
         <tr> 
           <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">StringOfWords</span>" 
           </td>
@@ -1078,7 +1079,7 @@
       
       where 
       <div class="IndentLR"> 
-        <table cellpadding="0" cellspacing="8">
+        <table cellpadding="0" cellspacing="12">
           <tr> 
             <td width="20%" align="right" valign="top" class="MacroCode"> yourserver 
             </td>
@@ -1162,7 +1163,7 @@
       
       where 
       <div class="IndentLR"> 
-        <table cellpadding="0" cellspacing="8">
+        <table cellpadding="0" cellspacing="12">
           <tr> 
             <td width="20%" align="right" valign="top" class="MacroCode"> weekday 
             </td>
@@ -1222,7 +1223,7 @@
           </div>
           where 
           <div class="IndentLR"> 
-            <table cellpadding="0" cellspacing="8">
+            <table cellpadding="0" cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> dirPath="<span class="MacroCode">DirectoryPath</span>" 
                 </td>
@@ -1282,11 +1283,10 @@
           </div>
           where 
           <div class="IndentLR"> 
-            <table width="715">
+            <table width="715" cellspacing="12">
               <tr> 
                 <td width="234" align="right" valign="top" class="Code"> <span class="MacroCode">FileToIndex, 
                   FileToIndex</span>... </td>
-                <td width="10">&nbsp;</td>
                 <td width="558"> <span class="BaseStyle"> is zero or more <a href="#textIndexer_Output_FileTag">File 
                   To Index Tags</a>, one for each file found in the directory.</span> 
                 </td>
@@ -1307,7 +1307,7 @@
 </i>      <i>{</i>displayStyle = "<span class="MacroCode">DocumentFormatterPath</span>"<i>}</i>/&gt;</pre>
             where<br>
             <br>
-            <table cellpadding="0" cellspacing="8">
+            <table cellpadding="0" cellspacing="12">
               <tr> 
                 <td align="right" valign="top" class="Code"> 
                   fileName="<span class="MacroCode">FileName</span>"
@@ -1517,7 +1517,7 @@
           stylesheet. They constitute a simple XML representation of the query 
           URL supplied to the <b><i>crossQuery</i></b> servlet from the user query 
           web-page. </p>
-        <table width="90%" border="0" cellspacing="8" cellpadding="0">
+        <table width="90%" border="0" cellspacing="12" cellpadding="0">
           <tr> 
             <td width="9%" class="Code"> 
               <div align="right"><a href="#crossQuery_QueryParser_InputTags_parameters">&lt;parameters&gt;</a></div>
@@ -1572,7 +1572,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellpadding="0" cellspacing="8">
+            <table cellpadding="0" cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> name="<span class="MacroCode">ParamName</span>" 
                 </td>
@@ -1607,7 +1607,7 @@
           <br>
           where <br>
           <div class="IndentLR"> 
-            <table cellpadding="0" cellspacing="8">
+            <table cellpadding="0" cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">Word</span>" 
                 </td>
@@ -1639,7 +1639,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellpadding="0" cellspacing="8">
+            <table cellpadding="0" cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">StringOfWords</span>" 
                 </td>
@@ -1662,7 +1662,7 @@
         XML query passed to the <b><i>crossQuery</i></b> search engine<b> </b>for 
         processing.<br>
         <br>
-        <table width="90%" border="0" cellspacing="8" cellpadding="0">
+        <table width="90%" border="0" cellspacing="12" cellpadding="0">
           <tr> 
             <td width="9%" class="Code"> 
               <div align="right"><a href="#crossQuery_QueryTag">&lt;query...&gt;</a></div>
@@ -1742,6 +1742,7 @@
        {workLimit       = "<span class="MacroCode">MaxWorkToAllow</span>"<i>}</i>
        <i>{</i>maxContext      = "<span class="MacroCode">MaxContextChars</span>"<i>}</i>
        <i>{</i>maxSnippets     = "<span class="MacroCode">SnippetsToOutput</span>"<i>}
+       {</i>termMode        = &quot;<span class="MacroCode">TermMarkMode</span>&quot;<i>}</i><i>
        {</i>field           = &quot;<span class="MacroCode">FieldToSearch</span>&quot;<i>}</i><i></i>&gt;
 
     <span class="MacroCode">QueryElement</span>
@@ -1750,31 +1751,28 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="10" cellpadding="0">
+            <table cellspacing="12" cellpadding="0">
               <tr> 
-                <td align="right" valign="top" class="Code"> 
-                  indexPath="<span class="MacroCode">IndexDBLocation</span>"
+                <td align="right" valign="top" class="Code"> indexPath="<span class="MacroCode">IndexDBLocation</span>" 
                 </td>
-                <td valign="baseline"><span class="BaseStyle">is 
-                  the path to the <b>Index Database</b> to use when performing 
-                  the search. If this path is not specified as an absolute path, 
-                  it is assumed to be relative to the XTF base installation directory 
-                  (i.e., <span class="Code">XTF_HOME</span>.) </span></td>
+                <td valign="baseline"><span class="BaseStyle">is the path to the 
+                  <b>Index Database</b> to use when performing the search. If 
+                  this path is not specified as an absolute path, it is assumed 
+                  to be relative to the XTF base installation directory (i.e., 
+                  <span class="Code">XTF_HOME</span>.) </span></td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"> 
-                  style="<span class="MacroCode">ResultFormatterLocation</span>"
+                <td align="right" valign="top" class="Code"> style="<span class="MacroCode">ResultFormatterLocation</span>" 
                 </td>
-                <td valign="baseline"> <span class="BaseStyle"> is 
-                  the path to the <b>Result Formatter</b> stylesheet to use to 
-                  display the results generated by the current query. If this 
-                  path is not specified as an absolute path, it is assumed to 
-                  be relative to the XTF base installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
+                <td valign="baseline"> <span class="BaseStyle"> is the path to 
+                  the <b>Result Formatter</b> stylesheet to use to display the 
+                  results generated by the current query. If this path is not 
+                  specified as an absolute path, it is assumed to be relative 
+                  to the XTF base installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
                   </span> </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"> 
-                  sortMetaFields="<span class="MacroCode">ListOfMetaFields</span>"
+                <td align="right" valign="top" class="Code"> sortMetaFields="<span class="MacroCode">ListOfMetaFields</span>" 
                 </td>
                 <td valign="baseline"> 
                   <p><span class="BaseStyle"> is an optional attribute specifying 
@@ -1795,10 +1793,8 @@
                 </td>
               </tr>
               <tr> 
-                <td align="right" valign="top"> 
-                  <span class="Code">startDoc="<span class="MacroCode">FirstDocToReturn</span>" 
-                    </span>
-                </td>
+                <td align="right" valign="top"> <span class="Code">startDoc="<span class="MacroCode">FirstDocToReturn</span>" 
+                  </span> </td>
                 <td valign="baseline"> <span class="BaseStyle"> is an optional 
                   attribute specifying the ordinal number of the first matching 
                   document to pass on to the <b>Result Formatter</b>. If not specified, 
@@ -1808,21 +1804,20 @@
               <tr> 
                 <td align="right" valign="top" class="Code"> maxDocs="<span class="MacroCode">MaxDocsToReturn</span>" 
                 </td>
-                <td valign="baseline"> <span class="BaseStyle"> is 
-                  an optional attribute specifying the number of matching documents 
-                  to pass on to the <b>Result Formatter</b>. If not specified, 
-                  this attribute defaults to -1, meaning all the documents with 
-                  matches for the specified query. </span> </td>
+                <td valign="baseline"> <span class="BaseStyle"> is an optional 
+                  attribute specifying the number of matching documents to pass 
+                  on to the <b>Result Formatter</b>. If not specified, this attribute 
+                  defaults to -1, meaning all the documents with matches for the 
+                  specified query. </span> </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"> 
-                  termLimit="<span class="MacroCode">MaxTermsToAllow</span>"
+                <td align="right" valign="top" class="Code"> termLimit="<span class="MacroCode">MaxTermsToAllow</span>" 
                 </td>
-                <td valign="baseline"> <span class="BaseStyle"> is 
-                  an optional attribute that limits the number of terms permitted 
-                  in a query. If not specified, this attribute defaults to -1, 
-                  meaning no limit is enforced. This attribute is used primarily 
-                  to prevent wildcard expansions like<span class="code"> &lt;term&gt;a*&lt;/term&gt 
+                <td valign="baseline"> <span class="BaseStyle"> is an optional 
+                  attribute that limits the number of terms permitted in a query. 
+                  If not specified, this attribute defaults to -1, meaning no 
+                  limit is enforced. This attribute is used primarily to prevent 
+                  wildcard expansions like<span class="code"> &lt;term&gt;a*&lt;/term&gt 
                   </span>from overloading the <b><i>crossQuery</i></b> servlet. 
                   If the query does in fact exceed the limit specified by this 
                   attribute, a<span class="Code"> <a href="#crossQuery_TermLimitErrorTag">TermLimit</a> 
@@ -1833,10 +1828,10 @@
                 <td align="right" valign="top" class="Code"> 
                   <div align="right">workLimit="<span class="MacroCode">MaxWorkToAllow</span>"</div>
                 </td>
-                <td valign="baseline"> <span class="BaseStyle"> is 
-                  an optional attribute that limits the amount of "work" that 
-                  may be performed in a query. If not specified, this attribute 
-                  defaults to -1, meaning no limit is enforced. <br>
+                <td valign="baseline"> <span class="BaseStyle"> is an optional 
+                  attribute that limits the amount of "work" that may be performed 
+                  in a query. If not specified, this attribute defaults to -1, 
+                  meaning no limit is enforced. <br>
                   <br>
                   This attribute is used primarily to prevent queries from overloading 
                   the <b><i>crossQuery</i></b> servlet, which would adversly impact 
@@ -1851,8 +1846,7 @@
                   seems to work well. </span> </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"> 
-                  maxContext="<span class="MacroCode">MaxContextChars</span>"
+                <td align="right" valign="top" class="Code"> maxContext="<span class="MacroCode">MaxContextChars</span>" 
                 </td>
                 <td valign="baseline"><span class="BaseStyle">identifies the size 
                   of a snippet to pass in the <b>Result Formatter</b><span class="Code"> 
@@ -1863,8 +1857,7 @@
                   text surrounding it. </span> </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"> 
-                  maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"
+                <td align="right" valign="top" class="Code"> maxSnippets="<span class="MacroCode">SnippetsToOutput</span>" 
                 </td>
                 <td valign="baseline"> 
                   <p><span class="BaseStyle">identifies the number of snippets 
@@ -1893,8 +1886,45 @@
                 </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"> 
-                  field=&quot;<span class="MacroCode">FieldToSearch</span>&quot;                </td>
+                <td align="right" valign="top" class="Code">termMode=&quot;<span class="MacroCode">TermMarkMode</span>&quot;</td>
+                <td valign="baseline"> 
+                  <p>is an optional parameter that specifies how terms should 
+                    be marked in the search results. Valid values for this option 
+                    are:</p>
+                  <table border="0" cellspacing="12" cellpadding="0" align="center">
+                    <tr> 
+                      <td align="right" class="Code" valign="baseline">&quot;none&quot;</td>
+                      <td>Do not mark matching terms anywhere in the search results. 
+                      </td>
+                    </tr>
+                    <tr> 
+                      <td align="right" class="Code" valign="baseline">&quot;hits&quot;</td>
+                      <td>Mark matching terms in the search results only if they 
+                        appear inside <span class="Code">&lt;hit...&gt; </span>tags.</td>
+                    </tr>
+                    <tr> 
+                      <td align="right" class="Code" valign="baseline">&quot;context&quot;</td>
+                      <td>Mark matching terms in the search results only if they 
+                        appear inside <span class="Code">&lt;snippet...&gt; </span>or 
+                        <span class="Code">&lt;hit...&gt;</span> tags.</td>
+                    </tr>
+                    <tr> 
+                      <td align="right" class="Code" valign="baseline">&quot;all&quot;</td>
+                      <td>Mark matching terms in search results anywhere they 
+                        occur. </td>
+                    </tr>
+                  </table>
+                  <p>If not specified, the default value used is<span class="Code"> 
+                    &quot;hits&quot;</span>. </p>
+                  <p>Note that when term marking is enabled, matching terms in 
+                    the search results are placed inside <span class="Code">&lt;term&gt; 
+                    <span class="BaseStyle">...</span> &lt;/term&gt;</span> tag 
+                    sets.</p>
+                </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code"> field=&quot;<span class="MacroCode">FieldToSearch</span>&quot; 
+                </td>
                 <td valign="baseline"> 
                   <p>is an optional parameter that identifies which field in the 
                     index to search. Normally, this attribute is set to <span class="Code">text</span> 
@@ -1975,7 +2005,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px" cellpadding="0">
+            <table cellspacing="12" cellpadding="0">
               <tr> 
                 <td align="right" valign="top" class="Code"> 
                   field="<span class="MacroCode">FieldName</span>"</td>
@@ -2059,7 +2089,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px" cellpadding="0">
+            <table cellspacing="12" cellpadding="0">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code" height="224"> 
                   field="<span class="MacroCode">FieldName</span>"</td>
@@ -2167,7 +2197,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px" cellpadding="0">
+            <table cellspacing="12" cellpadding="0">
               <tr> 
                 <td align="right" valign="top" class="Code"> 
                   field="<span class="MacroCode">FieldName</span>"</td>
@@ -2263,7 +2293,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px" cellpadding="0">
+            <table cellspacing="12" cellpadding="0">
               <tr> 
                 <td align="right" valign="top" class="Code"> field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline"> <span class="BaseStyle"> </span> 
@@ -2362,7 +2392,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px" cellpadding="0">
+            <table cellspacing="12" cellpadding="0">
               <tr> 
                 <td align="right" valign="top" class="Code"> field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline"> <span class="BaseStyle"> </span> 
@@ -2478,7 +2508,7 @@
           </div>
           where 
           <div class="IndentLR"> 
-            <table cellspacing="8px">
+            <table cellspacing="12">
               <tr> 
                 <td align="right" valign="top" class="Code"> slop="<span class="MacroCode">MaxMatchDistance</span>" 
                 </td>
@@ -2610,7 +2640,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px">
+            <table cellspacing="12">
               <tr> 
                 <td align="right" valign="top" class="Code"> inclusive="<span class="MacroCode">YesOrNo</span>" 
                 </td>
@@ -2726,18 +2756,17 @@
         <p>where <br>
         </p>
         <div class="IndentLR"> 
-          <table cellspacing="8px">
+          <table cellspacing="12">
             <tr> 
-              <td width="218" align="right" valign="top" class="Code"> <span class="MacroCode">YesOrNo</span> 
+              <td align="right" valign="top" class="Code"> <span class="MacroCode">YesOrNo</span> 
               </td>
-              <td width="1132"> <span class="BaseStyle"> specifies whether or 
-                not raw XML search results are sent to your browser. If set to 
-                <b class="Code">yes</b> , the <b>Search Result Formatter</b> stylesheet 
-                is disabled for the query, and raw XML search results are sent 
-                to your browser. If set to<span class="Code"><b> no</b></span> 
-                , the XML search results are sent to the<b> Search Result Formatter 
-                </b>stylesheet for processing, and its output in turn is sent 
-                to the browser.</span></td>
+              <td> <span class="BaseStyle"> specifies whether or not 
+                raw XML search results are sent to your browser. If set to <b class="Code">yes</b> 
+                , the <b>Search Result Formatter</b> stylesheet is disabled for 
+                the query, and raw XML search results are sent to your browser. 
+                If set to<span class="Code"><b> no</b></span> , the XML search 
+                results are sent to the<b> Search Result Formatter </b>stylesheet 
+                for processing, and its output in turn is sent to the browser.</span></td>
             </tr>
           </table>
           <br>
@@ -2756,7 +2785,7 @@
         </div>
         where <br>
         <div class="IndentLR"> 
-          <table cellspacing="8px">
+          <table cellspacing="12">
             <tr> 
               <td width="218" align="right" valign="top" class="Code"> totalDocs="<span class="MacroCode">NumberOfDocs</span>" 
               </td>
@@ -2800,7 +2829,7 @@
         </div>
         where <br>
         <div class="IndentLR"> 
-          <table cellspacing="8px">
+          <table cellspacing="12">
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> rank="<span class="MacroCode">DocRelevanceRank</span>" 
               </td>
@@ -2875,7 +2904,7 @@
         </div>
         where <br>
         <div class="IndentLR"> 
-          <table cellspacing="8px">
+          <table cellspacing="12">
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> rank="<span class="MacroCode">MatchRelevanceRank</span>" 
               </td>
@@ -2970,7 +2999,7 @@
       <br>
       <div class="IndentLR"> 
         <div class="Sample"> 
-          <table class="Sample" cellspacing="8px">
+          <table class="Sample" cellspacing="12">
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> $exception 
               </td>
@@ -3113,7 +3142,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellpadding="0" cellspacing="8">
+            <table cellpadding="0" cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> name="<span class="MacroCode">ParamName</span>" 
                 </td>
@@ -3155,7 +3184,7 @@
           <br>
           where <br>
           <div class="IndentLR"> 
-            <table>
+            <table cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">Word</span>" 
                 </td>
@@ -3189,7 +3218,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table>
+            <table cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">StringOfWords</span>" 
                 </td>
@@ -3222,7 +3251,7 @@
           <pre class="Code">&lt;style path="<span class="MacroCode">DocFormatterLocation</span>"/&gt;</pre>
           where <br>
           <div class="IndentLR"> 
-            <table cellpadding="0" cellspacing="8">
+            <table cellpadding="0" cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> path="<span class="MacroCode">DocFormatterLocation</span>" 
                 </td>
@@ -3244,7 +3273,7 @@
           <pre class="Code">&lt;source path="<span class="MacroCode">SrcDocLocation</span>"/&gt;</pre>
           where <br>
           <div class="IndentLR"> 
-            <table cellpadding="0" cellspacing="8">
+            <table cellpadding="0" cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> path="<span class="MacroCode">SrcDocLocation</span>" 
                 </td>
@@ -3265,7 +3294,7 @@
           <pre class="Code">&lt;brand path="<span class="MacroCode">BrandStylesheetLocation</span>"/&gt;</pre>
           where <br>
           <div class="IndentLR"> 
-            <table cellpadding="0" cellspacing="8">
+            <table cellpadding="0" cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> path="<span class="MacroCode">BrandStylesheetLocation</span>" 
                 </td>
@@ -3296,7 +3325,7 @@
           <pre class="Code">&lt;index configPath="<span class="MacroCode">TextIndexerConfigLocation</span>" name="<span class="MacroCode">IndexName</span>"/&gt;</pre>
           where <br>
           <div class="IndentLR"> 
-            <table cellpadding="0" cellspacing="8">
+            <table cellpadding="0" cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> configPath="<span class="MacroCode">TextIndexerConfigLocation</span>" 
                 </td>
@@ -3369,7 +3398,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px">
+            <table cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> access="<span class="MacroCode">AllowOrDeny</span>" 
                 </td>
@@ -3401,7 +3430,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px">
+            <table cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> access="<span class="MacroCode">AllowOrDeny</span>" 
                 </td>
@@ -3449,7 +3478,7 @@
           </div>
           where <br>
           <div class="IndentLR"> 
-            <table cellspacing="8px">
+            <table cellspacing="12">
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"> server="<span class="MacroCode">LDAPServerURL</span>" 
                 </td>
@@ -3669,7 +3698,7 @@
         </div>
         where <br>
         <div class="IndentLR"> 
-          <table cellspacing="8px">
+          <table cellspacing="12">
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> hitNum="<span class="MacroCode">HitNumber</span>" 
               </td>
@@ -3726,7 +3755,7 @@
         </div>
         where <br>
         <div class="IndentLR"> 
-          <table cellspacing="8px">
+          <table cellspacing="12">
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> xtf: </td>
               <td width="10">&nbsp;</td>
@@ -3813,7 +3842,7 @@
         </div>
         where <br>
         <div class="IndentLR"> 
-          <table cellspacing="8px">
+          <table cellspacing="12">
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> xtf: </td>
               <td width="10">&nbsp;</td>
@@ -3877,7 +3906,7 @@
         </div>
         where <br>
         <div class="IndentLR"> 
-          <table cellspacing="8px">
+          <table cellspacing="12">
             <tr> 
               <td width="5%" align="right" valign="top" class="Code"> xtf: </td>
               <td width="10">&nbsp;</td>
@@ -3907,7 +3936,7 @@
       <br>
       <div class="IndentLR"> 
         <div class="Sample"> 
-          <table class="Sample" cellspacing="8px">
+          <table class="Sample" cellspacing="12">
             <tr> 
               <td width="16%" align="right" valign="top" class="Code"> $exception 
               </td>
