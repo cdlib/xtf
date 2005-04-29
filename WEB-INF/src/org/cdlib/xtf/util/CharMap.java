@@ -82,20 +82,24 @@ public class CharMap
             return val;
         }
         
-        // Map the chars in the word.
+        // Map the chars in the word. 
         char[] oldChars = word.toCharArray();
         char[] newChars = new char[ word.length() ];
         boolean anyChanges = false;
         
-        for( int i = 0; i < oldChars.length; i++ ) {
+        for( int i = 0; i < oldChars.length; i++ ) 
+        {
             char oldChar = oldChars[i];
-            char newChar = map[oldChar];
-            if( newChar != 0 ) {
-                newChars[i] = newChar;
+            char newChar = oldChars[i];
+            
+            // Map this character. Note this has to be done repeatedly until
+            // we reach a non-mapped char.
+            //
+            while( map[newChar] != 0 ) {
+                newChar = map[newChar];
                 anyChanges = true;
             }
-            else
-                newChars[i] = oldChar;
+            newChars[i] = newChar;
         }
     
         // If no mapped chars were found, record that fact in the cache,
@@ -128,22 +132,21 @@ public class CharMap
             if( line == null )
                 break;
             
-            // Skip blank lines, and comments.
-            line = line.trim();
-            if( line.length() == 0 ||
-                line.startsWith("//") || 
-                line.startsWith("#") )
-            {
-                continue;
-            }
+            // Strip off any trailing comment.
+            if( line.indexOf("//") >= 0 )
+                line = line.substring( 0, line.indexOf("//") );
+            if( line.indexOf("#") >= 0 )
+                line = line.substring( 0, line.indexOf("#") );
+            if( line.indexOf(";") >= 0 )
+                line = line.substring( 0, line.indexOf(";") );
             
-            // Break out the two fields
+            // Break out the two fields. If no bar, skip this line.
             int barPos = line.indexOf( '|' );
             if( barPos < 0 )
                 continue;
             
-            String key = line.substring( 0, barPos );
-            String val = line.substring( barPos+1 );
+            String key = line.substring(0, barPos).trim();
+            String val = line.substring(barPos+1).trim();
             
             if( key.length() == 0 || val.length() == 0 )
                 continue;
