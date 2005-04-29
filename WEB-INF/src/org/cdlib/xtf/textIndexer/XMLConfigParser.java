@@ -31,8 +31,12 @@ package org.cdlib.xtf.textIndexer;
 
 //import java.io.IOException;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.zip.GZIPInputStream;
 
 // import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -418,11 +422,14 @@ public class XMLConfigParser extends DefaultHandler
         // Was a path specified?
         else if( path != null && path.length() > 0 ) {
         
-            path = Path.normalizePath( atts.getValue("path") );
+            path = Path.normalizeFileName( atts.getValue("path") );
             File file = new File( new File(configInfo.xtfHomePath), path );
             
             try {
-                FileReader reader = new FileReader( file );
+                InputStream stream = new FileInputStream( file );
+                if( path.endsWith(".gz") )
+                    stream = new GZIPInputStream( stream );
+                Reader reader = new InputStreamReader(stream);
                 char[] buf = new char[(int) file.length()];
                 int length = reader.read( buf );
                 configInfo.indexInfo.stopWords = new String(buf, 0, length);
