@@ -580,7 +580,12 @@ public class XMLTextProcessor extends DefaultHandler
           {
               File accentMapFile = new File( 
                   Path.normalizePath(indexPath + accentMapName) ); 
-              accentMap = new CharMap( accentMapFile );
+              InputStream stream = new FileInputStream( accentMapFile );
+
+              if( accentMapName.endsWith(".gz") )
+                  stream = new GZIPInputStream( stream );
+              
+              accentMap = new CharMap( stream );
           }
       } // try
       
