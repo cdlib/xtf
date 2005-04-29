@@ -175,7 +175,10 @@ public class XtfSearcher
         String accentMapName = doc.get( "accentMap" );
         if( accentMapName != null && accentMapName.length() > 0 ) {
             File accentFile = new File( indexPath, accentMapName );
-            accentMap = new CharMap( accentFile );
+            InputStream stream = new FileInputStream( accentFile );
+            if( accentMapName.endsWith(".gz") )
+                stream = new GZIPInputStream( stream );
+            accentMap = new CharMap( stream );
         }
 
         // Remember the version that we've checked.
