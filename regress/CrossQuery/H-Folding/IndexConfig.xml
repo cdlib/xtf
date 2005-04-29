@@ -9,7 +9,7 @@
        <chunk size="40" overlap="20"/>
        <stopwords list="fribble snoot smarmy"/>
        <pluralmap path="./pluralMap.txt"/>
-       <accentmap path="./accentMap.txt"/>
+       <accentmap path="./accentMap.txt.gz"/>
   </index>
 
 </textIndexer-config>
