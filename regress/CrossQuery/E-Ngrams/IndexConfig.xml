@@ -7,7 +7,7 @@
        <src path="./data"/>
        <docSelector path="../Common/docSelector.xsl"/>
        <chunk size="40" overlap="20"/>
-       <stopwords path="./stopwords.txt"/>
+       <stopwords path="./stopwords.txt.gz"/>
   </index>
 
 </textIndexer-config>
