@@ -31,6 +31,7 @@ package org.cdlib.xtf.textEngine;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -114,6 +115,14 @@ public class QueryRequest implements Cloneable
     
     /** The top-level source node */
     private NodeInfo topNode;
+    
+    /** Global attributes that were actually specified in the query */
+    private HashSet specifiedGlobalAttrs = new HashSet();
+    
+    /** Default value for maxSnippets, so we can recognize difference between
+     *  the default and a user-specified value.
+     */
+    private static final int DEFAULT_MAX_SNIPPETS = 888888888; 
     
     /**
      * Produce a Lucene query from the intermediate format that is normally
@@ -255,7 +264,7 @@ public class QueryRequest implements Cloneable
         
         for( int i = 0; i < main.nChildren(); i++ ) {
             EasyNode el = main.child( i );
-            query = deChunk( parseQuery(el, null, Integer.MAX_VALUE) );
+            query = deChunk( parseQuery(el, null, DEFAULT_MAX_SNIPPETS) );
         }
 
         
@@ -273,268 +282,6 @@ public class QueryRequest implements Cloneable
         
     } // parseOutput()
     
-    /**
-     * Parse an attribute on the main query element (or, for backward
-     * compatability, on its immediate children.)
-     * 
-     * If the attribute isn't recognized, an error exception is thrown.
-     */
-    void parseMainAttrib( EasyNode el, String name, String val )
-    {
-        if( name.equals("style") ) {
-            displayStyle = Path.resolveRelOrAbs(baseDir, val);
-            if( !(new File(displayStyle).canRead()) &&
-                !val.equals("NullStyle.xsl") ) 
-            {
-                error( "Style \"" + displayStyle + 
-                       "\" specified in '" + name + "' element " +
-                    
-                "does not exist" );
-            }
-        }
-
-        else if( name.equals("startDoc") ) {
-            startDoc = parseIntAttrib( el, "startDoc" );
-            
-            // Adjust for 1-based start doc.
-            startDoc = Math.max( 0, startDoc-1 );
-        }
-        
-        else if( name.equals("maxDocs") )
-            maxDocs = parseIntAttrib( el, "maxDocs" );
-        
-        else if( name.equals("indexPath") ) {
-            indexPath = Path.resolveRelOrAbs(baseDir, val);
-            if( !(new File(indexPath).exists()) )
-                error( "Index path \"" + indexPath + 
-                       "\" specified in '" + name + "' element " +
-                       "does not exist" );
-        }
-        
-        else if( name.equals("termLimit") )
-            termLimit = parseIntAttrib( el, "termLimit" );
-        
-        else if( name.equals("workLimit") )
-            workLimit = parseIntAttrib( el, "workLimit" );
-        
-        else if( name.equals("sortMetaFields") )
-            sortMetaFields = val;
-        
-        else if( name.equals("maxContext") )
-            maxContext = parseIntAttrib( el, "maxContext" );
-        
-        // Backward compatability.
-        else if( name.equals("contextChars") )
-            maxContext = parseIntAttrib( el, "contextChars" );
-        
-        else if( name.equals("termMode") ) {
-            if( val.equalsIgnoreCase("none") )
-                termMode = SpanDocument.MARK_NO_TERMS;
-            else if( val.equalsIgnoreCase("hits") )
-                termMode = SpanDocument.MARK_SPAN_TERMS;
-            else if( val.equalsIgnoreCase("context") )
-                termMode = SpanDocument.MARK_CONTEXT_TERMS;
-            else if( val.equalsIgnoreCase("all") )
-                termMode = SpanDocument.MARK_ALL_TERMS;
-            else
-                error( "Unknown value for 'termMode'; expecting " +
-                       "'none', 'hits', 'context', or 'all'" ); 
-        }
-        
-        else if( name.equals("field") || name.equals("metaField") )
-            ; // handled elsewhere
-        
-        else if( name.equals("inclusive") &&
-                 el.name().equals("range") )
-            ; // handled elsewhere
-        
-        else if( name.equals("slop") &&
-                 el.name().equals("near") )
-            ; // handled elsewhere
-        
-        else {
-            error( "Unrecognized attribute \"" + name + "\" " +
-                   "on <" + el.name() + "> element" );
-        }
-    } // parseMainAttrib()
-
-    /**
-     * Locate the named attribute and retrieve its value as an integer.
-     * If not found, an error exception is thrown.
-     * 
-     * @param el Element to search
-     * @param attribName Attribute to find
-     */
-    private int parseIntAttrib( EasyNode el, String attribName )
-        throws QueryGenException
-    {
-        return parseIntAttrib( el, attribName, false, 0 );
-    }
-    
-    /**
-     * Locate the named attribute and retrieve its value as an integer.
-     * If not found, return a default value.
-     * 
-     * @param el EasyNode to search
-     * @param attribName Attribute to find
-     * @param defaultVal If not found and useDefault is true, return this 
-     *                   value.
-     */
-    private int parseIntAttrib( EasyNode el, 
-                                String attribName, 
-                                int defaultVal  )
-        throws QueryGenException
-    {
-        return parseIntAttrib( el, attribName, true, defaultVal );
-    }
-    
-    /**
-     * Locate the named attribute and retrieve its value as an integer.
-     * Handles default processing if requested.
-     * 
-     * @param el EasyNode to search
-     * @param attribName Attribute to find
-     * @param useDefault true to supply a default value if none found,
-     *                   false to throw an exception if not found.
-     * @param defaultVal If not found and useDefault is true, return this 
-     *                   value.
-     */
-    private int parseIntAttrib( EasyNode el, String attribName, 
-                                boolean useDefault, int defaultVal )
-        throws QueryGenException
-    {
-        String elName = el.name();
-        String str = parseStringAttrib( el, 
-                                        attribName,
-                                        useDefault,
-                                        null );
-        if( str == null && useDefault )
-            return defaultVal;
-        
-        try {
-            return Integer.parseInt( str );
-        } catch( Exception e ) {
-            error( "'" + attribName + "' attribute of '" + elName + 
-                   "' element is not a valid integer" );
-            return 0;
-        }
-    } // parseIntAttrib()
-    
-    
-    /**
-     * Locate the named attribute and retrieve its value as a string. If
-     * not found, an error exception is thrown.
-     * 
-     * @param el EasyNode to search
-     * @param attribName Attribute to find
-     */
-    private String parseStringAttrib( EasyNode el, 
-                                      String  attribName ) 
-        throws QueryGenException
-    {
-        return parseStringAttrib( el, attribName, false, null );
-    }
-    
-    /**
-     * Locate the named attribute and retrieve its value as a string. If
-     * not found, return a default value.
-     * 
-     * @param el EasyNode to search
-     * @param attribName Attribute to find
-     * @param defaultVal If not found, return this value.
-     */
-    private String parseStringAttrib( EasyNode el, 
-                                      String  attribName,
-                                      String  defaultVal ) 
-        throws QueryGenException
-    {
-        return parseStringAttrib( el, attribName, true, defaultVal );
-    }
-    
-    /**
-     * Locate the named attribute and retrieve its value as a string.
-     * Handles default processing if requested.
-     * 
-     * @param el EasyNode to search
-     * @param attribName Attribute to find
-     * @param useDefault true to supply a default value if none found,
-     *                   false to throw an exception if not found.
-     * @param defaultVal If not found and useDefault is true, return this 
-     *                   value.
-     */
-    private String parseStringAttrib( EasyNode el, 
-                                      String  attribName, 
-                                      boolean useDefault,
-                                      String  defaultVal )
-        throws QueryGenException
-    {
-        String elName = el.name();
-        String str = el.attrValue( attribName );
-
-        if( str == null || str.length() == 0 ) {
-            if( !useDefault )
-                error( "'" + elName + "' element must specify '" + 
-                       attribName + "' attribute" );
-            return defaultVal;
-        }
-        
-        return str;
-        
-    } // parseStringAttrib()
-    
-    
-    /**
-     * If the given element has a 'field' attribute, return its value;
-     * otherwise return 'parentField'. Also checks that field cannot be
-     * specified if parentField has already been.
-     */
-    private String parseField( EasyNode el, String parentField )
-        throws QueryGenException
-    {
-        if( !el.hasAttr("metaField") && !el.hasAttr("field") )
-            return parentField;
-        String attVal = el.attrValue("field");
-        if( attVal == null || attVal.length() == 0 )
-            attVal = el.attrValue( "metaField" );
-        
-        if( attVal.length() == 0 )
-            error( "'field' attribute cannot be empty" );
-        if( attVal.equals("sectionType") &&
-            (parentField == null || !parentField.equals("sectionType")) )
-            error( "'sectionType' is not valid for the 'field' attribute" );
-        if( parentField != null && !parentField.equals(attVal) )
-            error( "Cannot override ancestor 'field' attribute" );
-        
-        return attVal;
-    }
-
-    
-    /**
-     * Parse a 'sectionType' query element, if one is present. If not, 
-     * simply returns null.
-     */
-    private SpanQuery parseSectionType( EasyNode parent, 
-                                        String field,
-                                        int maxSnippets )
-        throws QueryGenException
-    {
-        // Find the sectionType element (if any)
-        EasyNode sectionType = parent.child( "sectionType" );
-        if( sectionType == null )
-            return null;
-        
-        // These sectionType queries only belong in the "text" field.
-        if( !(field.equals("text")) )
-            error( "'sectionType' element is only appropriate in queries on the 'text' field" );
-        
-        // Make sure it only has one child.
-        if( sectionType.nChildren() != 1 )
-            error( "'sectionType' element requires exactly " +
-                   "one child element" );
-        
-        return (SpanQuery) parseQuery( sectionType.child(0), 
-                                       "sectionType", maxSnippets );
-    } // parseSectionType()
     
     /**
      * Recursively parse a query.
@@ -577,11 +324,20 @@ public class QueryRequest implements Cloneable
                     error( "Invalid float value \"" + attrVal + "\" for " +
                            "'boost' attribute" );
                 }
+                if( boost < 0.0 )
+                    error( "Value of 'boost' attribute cannot be negative" );
             }
             else if( attrName.equals("maxSnippets") ) {
+                int oldVal = maxSnippets;
                 maxSnippets = parseIntAttrib( parent, attrName );
                 if( maxSnippets < 0 )
                     maxSnippets = 999999999;
+                if( oldVal != DEFAULT_MAX_SNIPPETS &&
+                    maxSnippets != oldVal )
+                {
+                    error( "Value specified for 'maxSnippets' attribute " +
+                           "differs from that of an ancestor element." );
+                }
             }
             else
                 parseMainAttrib( parent, attrName, attrVal );
@@ -607,6 +363,7 @@ public class QueryRequest implements Cloneable
         return result;
         
     } // parseQuery()
+   
     
     /** 
      * Main work of recursively parsing a query. 
@@ -750,7 +507,7 @@ public class QueryRequest implements Cloneable
         //
         return simplifyBooleanQuery( bq );
         
-    } // parseBoolean() 
+    } // parseQuery2() 
         
         
     /**
@@ -836,6 +593,136 @@ public class QueryRequest implements Cloneable
         
     } // simplifyBooleanQuery()
         
+    
+    /**
+     * Parse an attribute on the main query element (or, for backward
+     * compatability, on its immediate children.)
+     * 
+     * If the attribute isn't recognized, an error exception is thrown.
+     */
+    void parseMainAttrib( EasyNode el, String attrName, String val )
+    {
+        if( attrName.equals("style") )
+            displayStyle = onceOnlyPath( displayStyle, el, attrName );
+
+        else if( attrName.equals("startDoc") ) {
+            startDoc = onceOnlyAttrib( startDoc+1, el, attrName );
+            
+            // Adjust for 1-based start doc.
+            startDoc = Math.max( 0, startDoc-1 );
+        }
+        
+        else if( attrName.equals("maxDocs") )
+            maxDocs = onceOnlyAttrib( maxDocs, el, attrName );
+        
+        else if( attrName.equals("indexPath") )
+            indexPath = onceOnlyPath( indexPath, el, attrName );
+        
+        else if( attrName.equals("termLimit") )
+            termLimit = onceOnlyAttrib( termLimit, el, attrName );
+        
+        else if( attrName.equals("workLimit") )
+            workLimit = onceOnlyAttrib( workLimit, el, attrName );
+        
+        else if( attrName.equals("sortMetaFields") )
+            sortMetaFields = onceOnlyAttrib( sortMetaFields, el, attrName );
+        
+        else if( attrName.equals("maxContext") || attrName.equals("contextChars") )
+            maxContext = onceOnlyAttrib( maxContext, el, attrName );
+        
+        else if( attrName.equals("termMode") ) {
+            int oldTermMode = termMode;
+            if( val.equalsIgnoreCase("none") )
+                termMode = SpanDocument.MARK_NO_TERMS;
+            else if( val.equalsIgnoreCase("hits") )
+                termMode = SpanDocument.MARK_SPAN_TERMS;
+            else if( val.equalsIgnoreCase("context") )
+                termMode = SpanDocument.MARK_CONTEXT_TERMS;
+            else if( val.equalsIgnoreCase("all") )
+                termMode = SpanDocument.MARK_ALL_TERMS;
+            else
+                error( "Unknown value for 'termMode'; expecting " +
+                       "'none', 'hits', 'context', or 'all'" );
+            
+            if( specifiedGlobalAttrs.contains(attrName) && 
+                termMode != oldTermMode )
+            {
+                error( "'termMode' attribute should only be specified once." );
+            }
+            specifiedGlobalAttrs.add( attrName );
+        }
+        
+        else if( attrName.equals("field") || attrName.equals("metaField") )
+            ; // handled elsewhere
+        
+        else if( attrName.equals("inclusive") &&
+                 el.name().equals("range") )
+            ; // handled elsewhere
+        
+        else if( attrName.equals("slop") &&
+                 el.name().equals("near") )
+            ; // handled elsewhere
+        
+        else {
+            error( "Unrecognized attribute \"" + attrName + "\" " +
+                   "on <" + el.name() + "> element" );
+        }
+    } // parseMainAttrib()
+    
+    
+    /**
+     * Parse a 'sectionType' query element, if one is present. If not, 
+     * simply returns null.
+     */
+    private SpanQuery parseSectionType( EasyNode parent, 
+                                        String field,
+                                        int maxSnippets )
+        throws QueryGenException
+    {
+        // Find the sectionType element (if any)
+        EasyNode sectionType = parent.child( "sectionType" );
+        if( sectionType == null )
+            return null;
+        
+        // These sectionType queries only belong in the "text" field.
+        if( !(field.equals("text")) )
+            error( "'sectionType' element is only appropriate in queries on the 'text' field" );
+        
+        // Make sure it only has one child.
+        if( sectionType.nChildren() != 1 )
+            error( "'sectionType' element requires exactly " +
+                   "one child element" );
+        
+        return (SpanQuery) parseQuery( sectionType.child(0), 
+                                       "sectionType", maxSnippets );
+    } // parseSectionType()
+
+    
+    /**
+     * If the given element has a 'field' attribute, return its value;
+     * otherwise return 'parentField'. Also checks that field cannot be
+     * specified if parentField has already been.
+     */
+    private String parseField( EasyNode el, String parentField )
+        throws QueryGenException
+    {
+        if( !el.hasAttr("metaField") && !el.hasAttr("field") )
+            return parentField;
+        String attVal = el.attrValue("field");
+        if( attVal == null || attVal.length() == 0 )
+            attVal = el.attrValue( "metaField" );
+        
+        if( attVal.length() == 0 )
+            error( "'field' attribute cannot be empty" );
+        if( attVal.equals("sectionType") &&
+            (parentField == null || !parentField.equals("sectionType")) )
+            error( "'sectionType' is not valid for the 'field' attribute" );
+        if( parentField != null && !parentField.equals(attVal) )
+            error( "Cannot override ancestor 'field' attribute" );
+        
+        return attVal;
+    }
+
     
     /**
      * Joins a number of span queries together using a span query.
@@ -1095,7 +982,6 @@ public class QueryRequest implements Cloneable
         
     } // parseTerm()
     
-    
     /**
      * Ensures that the element has only a single child node (ignoring
      * attributes), and that it's a text node.
@@ -1127,6 +1013,210 @@ public class QueryRequest implements Cloneable
         
         return text;
     } // getText()
+    
+    /**
+     * Like parseIntAttrib(), but adds additional processing to ensure that
+     * global parameters are only specified once (or if multiple times, that
+     * the same value is used each time.)
+     * 
+     * @param oldVal      Current value of the global parameter
+     * @param el          Element to get the attribute from
+     * @param attribName  Name of the attribute
+     * @return            New value for the parameter
+     */
+    private int onceOnlyAttrib( int oldVal, EasyNode el, String attribName )
+    {
+        int newVal = parseIntAttrib( el, attribName );
+        if( specifiedGlobalAttrs.contains(attribName) && newVal != oldVal ) {
+            error( "'" + attribName + 
+                   "' attribute should only be specified once." );
+        }
+        specifiedGlobalAttrs.add( attribName );
+        return newVal;
+    } // onceOnlyAttrib()
+
+    /**
+     * Like parseStringAttrib(), but adds additional processing to ensure that
+     * global parameters are only specified once (or if multiple times, that
+     * the same value is used each time.)
+     * 
+     * @param oldVal      Current value of the global parameter
+     * @param el          Element to get the attribute from
+     * @param attribName  Name of the attribute
+     * @return            New value for the parameter
+     */
+    private String onceOnlyAttrib( String oldVal, 
+                                   EasyNode el, 
+                                   String attribName )
+    {
+        String newVal = parseStringAttrib( el, attribName );
+        if( specifiedGlobalAttrs.contains(attribName) && 
+            !oldVal.equals(newVal) )
+        {
+            error( "'" + attribName + 
+                   "' attribute should only be specified once." );
+        }
+        specifiedGlobalAttrs.add( attribName );
+        return newVal;
+    } // onceOnlyAttrib()
+
+    /**
+     * Like onceOnlyAttrib(), but also ensures that the given file can
+     * actually be resolved as a path that can be read.
+     * 
+     * @param oldVal      Current value of the global parameter
+     * @param el          Element to get the attribute from
+     * @param attribName  Name of the attribute
+     * @return            New value for the parameter
+     */
+    private String onceOnlyPath( String oldVal, 
+                                 EasyNode el, 
+                                 String attribName )
+    {
+        String newVal = parseStringAttrib( el, attribName );
+        String path = Path.resolveRelOrAbs( baseDir, newVal );
+        if( specifiedGlobalAttrs.contains(attribName) && 
+            !oldVal.equals(path) )
+        {
+            error( "'" + attribName + 
+                   "' attribute should only be specified once." );
+        }
+        specifiedGlobalAttrs.add( attribName );
+
+        if( !(new File(path).canRead()) &&
+            !newVal.equals("NullStyle.xsl") ) 
+        {
+            error( "File \"" + newVal + "\" specified in '" + 
+                   el.name() + "' element " + "does not exist" );
+        }
+        
+        return path;
+    } // onceOnlyPath()
+
+    /**
+     * Locate the named attribute and retrieve its value as an integer.
+     * If not found, an error exception is thrown.
+     * 
+     * @param el Element to search
+     * @param attribName Attribute to find
+     */
+    private int parseIntAttrib( EasyNode el, String attribName )
+        throws QueryGenException
+    {
+        return parseIntAttrib( el, attribName, false, 0 );
+    }
+    
+    /**
+     * Locate the named attribute and retrieve its value as an integer.
+     * If not found, return a default value.
+     * 
+     * @param el EasyNode to search
+     * @param attribName Attribute to find
+     * @param defaultVal If not found and useDefault is true, return this 
+     *                   value.
+     */
+    private int parseIntAttrib( EasyNode el, 
+                                String attribName, 
+                                int defaultVal  )
+        throws QueryGenException
+    {
+        return parseIntAttrib( el, attribName, true, defaultVal );
+    }
+    
+    /**
+     * Locate the named attribute and retrieve its value as an integer.
+     * Handles default processing if requested.
+     * 
+     * @param el EasyNode to search
+     * @param attribName Attribute to find
+     * @param useDefault true to supply a default value if none found,
+     *                   false to throw an exception if not found.
+     * @param defaultVal If not found and useDefault is true, return this 
+     *                   value.
+     */
+    private int parseIntAttrib( EasyNode el, String attribName, 
+                                boolean useDefault, int defaultVal )
+        throws QueryGenException
+    {
+        String elName = el.name();
+        String str = parseStringAttrib( el, 
+                                        attribName,
+                                        useDefault,
+                                        null );
+        if( str == null && useDefault )
+            return defaultVal;
+        
+        try {
+            return Integer.parseInt( str );
+        } catch( Exception e ) {
+            error( "'" + attribName + "' attribute of '" + elName + 
+                   "' element is not a valid integer" );
+            return 0;
+        }
+    } // parseIntAttrib()
+    
+    
+    /**
+     * Locate the named attribute and retrieve its value as a string. If
+     * not found, an error exception is thrown.
+     * 
+     * @param el EasyNode to search
+     * @param attribName Attribute to find
+     */
+    private String parseStringAttrib( EasyNode el, 
+                                      String  attribName ) 
+        throws QueryGenException
+    {
+        return parseStringAttrib( el, attribName, false, null );
+    }
+    
+    /**
+     * Locate the named attribute and retrieve its value as a string. If
+     * not found, return a default value.
+     * 
+     * @param el EasyNode to search
+     * @param attribName Attribute to find
+     * @param defaultVal If not found, return this value.
+     */
+    private String parseStringAttrib( EasyNode el, 
+                                      String  attribName,
+                                      String  defaultVal ) 
+        throws QueryGenException
+    {
+        return parseStringAttrib( el, attribName, true, defaultVal );
+    }
+    
+    /**
+     * Locate the named attribute and retrieve its value as a string.
+     * Handles default processing if requested.
+     * 
+     * @param el EasyNode to search
+     * @param attribName Attribute to find
+     * @param useDefault true to supply a default value if none found,
+     *                   false to throw an exception if not found.
+     * @param defaultVal If not found and useDefault is true, return this 
+     *                   value.
+     */
+    private String parseStringAttrib( EasyNode el, 
+                                      String  attribName, 
+                                      boolean useDefault,
+                                      String  defaultVal )
+        throws QueryGenException
+    {
+        String elName = el.name();
+        String str = el.attrValue( attribName );
+
+        if( str == null || str.length() == 0 ) {
+            if( !useDefault )
+                error( "'" + elName + "' element must specify '" + 
+                       attribName + "' attribute" );
+            return defaultVal;
+        }
+        
+        return str;
+        
+    } // parseStringAttrib()
+    
     
     /**
      * Exception class used to report errors from the query generator.
