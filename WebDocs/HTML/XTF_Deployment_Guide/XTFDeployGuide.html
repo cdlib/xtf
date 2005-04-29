@@ -610,26 +610,22 @@
       by the <i><b>textIndexer</b></i>. The possible output levels are defined 
       as follows: <br>
       <br>
-      <table>
+      <table cellspacing="12">
         <tr> 
           <td width="16%" align="right" valign="top" class="Code">errors</td>
-          <td width="10">&nbsp;</td>
           <td><span class="BaseStyle">Only error messages are displayed.</span></td>
         </tr>
         <tr> 
           <td width="16%" align="right" valign="top" class="Code">warnings</td>
-          <td width="10">&nbsp;</td>
           <td><span class="BaseStyle">Both error and warning messages are displayed.</span></td>
         </tr>
         <tr> 
           <td width="16%" align="right" valign="top" class="Code">info</td>
-          <td width="10">&nbsp;</td>
           <td><span class="BaseStyle">Error, warning, and informational messages 
             are displayed</span></td>
         </tr>
         <tr> 
           <td width="16%" align="right" valign="top" class="Code">debug</td>
-          <td width="10">&nbsp;</td>
           <td> <span class="BaseStyle"> Low level debug output is displayed in 
             addition to error, warning, and informational messages. </span> </td>
         </tr>
@@ -732,6 +728,8 @@
         &lt;chunk size="<span class="MacroCode">TextChunkSize</span> overlap="<span class="MacroCode">TextChunkOverlap</span>"/&gt;
         &lt;stopwords path="<span class="MacroCode">LocationOfStopWordFile</span>"/&gt;
         &lt;docselector path="<span class="MacroCode">LocationOfDocSelector</span>"/&gt;
+        &lt;pluralmap path="<span class="MacroCode">LocationOfPluralMapFile</span>"/&gt;
+        &lt;accentmap path="<span class="MacroCode">LocationOfAccentMapFile</span>"/&gt;
     &lt;/index&gt;
         <img src="../Common_Art/vDotDotDot2.gif">
     &lt;index name="<span class="MacroCode">NameOfIndexN</span>"/&gt;
@@ -840,26 +838,102 @@
       <div class="IndentL"> <i>or</i> </div>
       <span class="Code">&lt;stopwords list="<span class="MacroCode">StopWordList</span>"&gt;</span><br>
       <br>
-      <div class="IndentLR"> The first variant of this attribute specifies the 
-        path to a file containing a list of words that the <b><i>textIndexer</i></b> 
-        should not add to the index. As with other paths, if a relative path is 
-        used, it is considered to be relative to the base XTF installation directory 
-        (i.e., <span class="Code">XTF_HOME</span>.) The second variant simply 
-        accepts the list of stop words as a string, with stop words separated 
-        from each other by spaces (i.e., "a an and the".)<br>
-        <br>
-        Eliminating stop-words from an index improves search speed for an index. 
-        This is because the search doesn't need to sift through all the occurences 
-        of the stop-words in the document library. Consequently, adding words 
-        like <i><b>a</b></i>, <i> <b>an</b></i>, <i><b>the</b></i>, <i><b>and</b></i>, 
-        etc. to the stop-word list, which occur frequently in documents but are 
-        relatively uninteresting to search for, can speed up the search for more 
-        interesting words enormously. The one caveat is that searches for any 
-        single stop-word by itself will yield<b> no matches</b>, so it is important 
-        to pick stop-words that people aren't usually interested in finding. Note 
-        however that due to an internal process called <i>n-gramming</i>, stop 
-        words will still be found as part of larger phrases, like <b>of</b> in 
-        <b>Man of War</b>, or <b>the</b> in <b>The Terminator</b>. </div>
+      <div class="IndentLR"> 
+        <p>The first variant of this attribute specifies the path to a file containing 
+          a list of words that the <b><i>textIndexer</i></b> should not add to 
+          the index. As with other paths, if a relative path is used, it is considered 
+          to be relative to the base XTF installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
+          The second variant simply accepts the list of stop words as a string, 
+          with stop words separated from each other by spaces (i.e., "a an and 
+          the".)<br>
+          <br>
+          Eliminating stop-words from an index improves search speed for an index. 
+          This is because the search doesn't need to sift through all the occurences 
+          of the stop-words in the document library. Consequently, adding words 
+          like <i><b>a</b></i>, <i> <b>an</b></i>, <i><b>the</b></i>, <i><b>and</b></i>, 
+          etc. to the stop-word list, which occur frequently in documents but 
+          are relatively uninteresting to search for, can speed up the search 
+          for more interesting words enormously. The one caveat is that searches 
+          for any single stop-word by itself will yield<b> no matches</b>, so 
+          it is important to pick stop-words that people aren't usually interested 
+          in finding. Note however that due to an internal process called <i>n-gramming</i>, 
+          stop words will still be found as part of larger phrases, like <b>of</b> 
+          in <b>Man of War</b>, or <b>the</b> in <b>The Terminator</b>.</p>
+        <p>Finally, if a stop-word file is used, the file itself may be stored 
+          in GZIP compressed format (and correspondingly labeled with a <i><b>.gz</b></i> 
+          extension) if desired. </p>
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;pluralmap path="<span class="MacroCode">LocationOfPluralMapFile</span>"&gt; 
+      </span><br>
+      <div class="IndentLR"> 
+        <p>This tag identifies the location of a file containing a list of plural 
+          words and their corresponding singular forms that should be considered 
+          the same by the <i><b>textIndexer</b></i>. This file is primarily used 
+          to improve search results by finding plural forms of words when only 
+          the singular form has been specified (or vice versa.) </p>
+        <p>Since the it was designed to be language independent, the <i><b>textIndexer</b></i> 
+          relies on this file to supply all plural information used during indexing, 
+          including simple plurals (i.e, words ending in <i><b>s</b></i> or <i><b>es</b></i>.) 
+          Consequently, if this file is not specified or if a plural mapping is 
+          not found in the file, the singular and plural forms of a word <i class="Red"> 
+          <b>will not both be matched in a search.</b></i> </p>
+        <p>The contents of the file should consist of the plural form of a word 
+          followed immediately by the 'pipe' character ( | ) and then by the singular 
+          form of the word. Like this:</p>
+        <div class="IndentLR"> <span class="Code">mice|mouse</span> </div>
+        <p>There should be only one plural to singular mapping per line in the 
+          file (although multiple plural mappings may exist for a singular form), 
+          and no white-space should be present within a definition line. </p>
+        <p>The path specified for the document selector must be a valid path and 
+          file name for the operating system on which the tool is being run (e.g., 
+          Windows, Mac, Linux, etc.) If a relative path is used, it is considered 
+          to be relative to the base XTF installation directory (i.e., <span class="Code">XTF_HOME</span>. 
+        </p>
+        <p>Finally, the file itself may be stored in GZIP compressed format (and 
+          correspondingly labeled with a <i><b>.gz</b></i> extension) if desired.</p>
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;accentmap path="<span class="MacroCode">LocationOfAccentMapFile</span>"&gt; 
+      </span><br>
+      <div class="IndentLR"> 
+        <p>This tag identifies the location of a file containing a list of accented 
+          characters and their corresponding un-accented forms that should be 
+          considered the same by the <i><b>textIndexer</b></i>. This file is primarily 
+          used to improve search results by finding un-accented forms of words 
+          when only the accented form has been specified (or vice versa.) </p>
+        <p>Since the it was designed to be language independent, the <i><b>textIndexer</b></i> 
+          relies on this file to supply all accent mapping information used during 
+          indexing. Consequently, if this file is not specified or if an accent 
+          mapping is not found in the file, the accented and un-accented forms 
+          of a letter <i class="Red"> <b>will not both be matched in a search.</b></i> 
+        </p>
+        <p>The contents of the file should consist of the <i>16-bit Unicode value</i> 
+          for an accented form of a letter followed immediately by the 'pipe' 
+          character (&nbsp;|&nbsp;) and then by the <i>16-bit Unicode value</i> 
+          for the un-accented form of the letter. Like so:</p>
+        <div class="IndentLR"> 
+          <p class="Code">00C8|0045<br>
+            00C9|0045<br>
+            00CA|0045<br>
+            00CB|0045</p>
+        </div>
+        <p>There should be only one accented to unaccented mapping per line in 
+          the file (although multiple accent mappings may exist for an un-accented 
+          form), and no white-space should be present within a definition line. 
+        </p>
+        <p>The path specified for the document selector must be a valid path and 
+          file name for the operating system on which the tool is being run (e.g., 
+          Windows, Mac, Linux, etc.) If a relative path is used, it is considered 
+          to be relative to the base XTF installation directory (i.e., <span class="Code">XTF_HOME</span>.)<br>
+        </p>
+        <p>Finally, the file itself may be stored in GZIP compressed format (and 
+          correspondingly labeled with a <i><b>.gz</b></i> extension) if desired. 
+        </p>
+        <p><span class="Note">Note: Currently, only single letter mappings are 
+          supported. A future version of the XTF system will allow multiple letter 
+          mappings like the German mapping of <b><i>&ouml;</i></b> to <i><b>oe</b></i></span>.</p>
+        </div>
     </div>
     <br>
     An example of a working <b><i>textIndexer</i></b> configuration file is the 
@@ -876,6 +950,8 @@
         &lt;chunk size="200 overlap="20"/&gt;
         &lt;docselector path="./style/textIndexer/docSelector.xsl"/&gt;
         &lt;stopwords list="a an and are as at be but by for if in into is it no not of on or s such t that the their then there these they this to was will with"/&gt;
+        &lt;pluralmap path="./conf/pluralFolding/pluralMap.txt.gz"/&gt;
+        &lt;accentmap path="./conf/accentFolding/accentMap.txt"/&gt;
     &lt;/index&gt;
 
 &lt;/textIndexer-config&gt;</b></pre>
