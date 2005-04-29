@@ -879,9 +879,9 @@
           not found in the file, the singular and plural forms of a word <i class="Red"> 
           <b>will not both be matched in a search.</b></i> </p>
         <p>The contents of the file should consist of the plural form of a word 
-          followed immediately by the 'pipe' character ( | ) and then by the singular 
-          form of the word. Like this:</p>
-        <div class="IndentLR"> <span class="Code">mice|mouse</span> </div>
+          followed by the 'pipe' character ( | ) and then by the singular form 
+          of the word. Like this:</p>
+        <div class="IndentLR"> <span class="Code">mice | mouse</span> </div>
         <p>There should be only one plural to singular mapping per line in the 
           file (although multiple plural mappings may exist for a singular form), 
           and no white-space should be present within a definition line. </p>
@@ -900,8 +900,9 @@
         <p>This tag identifies the location of a file containing a list of accented 
           characters and their corresponding un-accented forms that should be 
           considered the same by the <i><b>textIndexer</b></i>. This file is primarily 
-          used to improve search results by finding un-accented forms of words 
-          when only the accented form has been specified (or vice versa.) </p>
+          used to map accented characters to un-accented ones so that searches 
+          can still be performed on words with characters not implemented on localized 
+          keyboards. </p>
         <p>Since the it was designed to be language independent, the <i><b>textIndexer</b></i> 
           relies on this file to supply all accent mapping information used during 
           indexing. Consequently, if this file is not specified or if an accent 
@@ -909,15 +910,20 @@
           of a letter <i class="Red"> <b>will not both be matched in a search.</b></i> 
         </p>
         <p>The contents of the file should consist of the <i>16-bit Unicode value</i> 
-          for an accented form of a letter followed immediately by the 'pipe' 
-          character (&nbsp;|&nbsp;) and then by the <i>16-bit Unicode value</i> 
-          for the un-accented form of the letter. Like so:</p>
+          for an accented form of a letter followed by the 'pipe' character (&nbsp;|&nbsp;) 
+          and then by the <i>16-bit Unicode value</i> for the un-accented form 
+          of the letter. Optionally, you can also add a comment at the end of 
+          the line, where a comment starts with a semicolon. Like so:</p>
         <div class="IndentLR"> 
-          <p class="Code">00C8|0045<br>
-            00C9|0045<br>
-            00CA|0045<br>
-            00CB|0045</p>
-        </div>
+          <p class="Code">00C8 | 0045 ; Latin Capital Letter E With Grave | Latin 
+            Capital Letter E<br>
+            00C9 | 0045 ; Latin Capital Letter E With Acute | Latin Capital Letter 
+            E<br>
+            00CA | 0045 ; Latin Capital Letter E With Circumflex | Latin Capital 
+            Letter E<br>
+            00CB | 0045 ; Latin Capital Letter E With Diaeresis | Latin Capital 
+            Letter E </p>
+          </div>
         <p>There should be only one accented to unaccented mapping per line in 
           the file (although multiple accent mappings may exist for an un-accented 
           form), and no white-space should be present within a definition line. 
