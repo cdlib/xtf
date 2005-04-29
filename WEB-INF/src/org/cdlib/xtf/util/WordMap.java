@@ -146,22 +146,21 @@ public class WordMap
             if( line == null )
                 break;
             
-            // Skip blank lines, and comments.
-            line = line.trim();
-            if( line.length() == 0 ||
-                line.startsWith("//") || 
-                line.startsWith("#") )
-            {
-                continue;
-            }
+            // Strip off any trailing comment.
+            if( line.indexOf("//") >= 0 )
+                line = line.substring( 0, line.indexOf("//") );
+            if( line.indexOf("#") >= 0 )
+                line = line.substring( 0, line.indexOf("#") );
+            if( line.indexOf(";") >= 0 )
+                line = line.substring( 0, line.indexOf(";") );
             
             // Break out the two fields
             int barPos = line.indexOf( '|' );
             if( barPos < 0 )
                 continue;
             
-            String key = line.substring( 0, barPos );
-            String val = line.substring( barPos+1 );
+            String key = line.substring(0, barPos).trim();
+            String val = line.substring(barPos+1).trim();
             
             if( key.length() == 0 || val.length() == 0 )
                 continue;
