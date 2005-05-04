@@ -140,7 +140,6 @@ public class DocTypeDeclRemover extends BufferedInputStream
       char inQuote = 0;
       for( int i = start; i < s.length(); i++ ) {
           char c = s.charAt( i );
-          String endStr = s.substring( i ); // TODO: Remove this!!!
           if( inQuote != 0 && c == inQuote )
               inQuote = 0;
           else if( c == '\'' || c == '\"' )
