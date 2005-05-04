@@ -352,16 +352,20 @@ public class IndexUtil
    * 
    * @param inStream    Document stream to filter
    * @param saxParser   Parser that will be used to parse the document
+   * @param removeDoctypeDecl true to remove DOCTYPE declaration; false to
+   *                          leave them alone.
    * 
    * @return            Filtered input stream
    */
   public static InputStream filterXMLDocument( InputStream inStream, 
-                                               SAXParser   saxParser )
+                                               SAXParser   saxParser,
+                                               boolean     removeDoctypeDecl )
   {
       // Remove DOCTYPE declarations, since the XML reader will barf if it
       // can't resolve the entity reference, and we really don't care.
       //
-      inStream = new DocTypeDeclRemover( inStream );
+      if( removeDoctypeDecl )
+          inStream = new DocTypeDeclRemover( inStream );
       
       // Work around a nasty bug in the Apache Crimson parser. If it
       // finds a ']' character at the end of its 8193-byte buffer,
