@@ -71,4 +71,7 @@ public class SrcTextInfo
    */
   public StructuredStore lazyStore;
   
+  /** Set this to remove DOCTYPE declaration from an XML document */
+  public boolean removeDoctypeDecl = false;
+  
 } // class SrcTextInfo

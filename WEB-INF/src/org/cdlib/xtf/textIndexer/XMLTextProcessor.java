@@ -1318,7 +1318,8 @@ public class XMLTextProcessor extends DefaultHandler
           
             // Apply the standard set of document filters.
             inSrc = new InputSource( 
-                IndexUtil.filterXMLDocument(inStream, xmlParser) );
+                IndexUtil.filterXMLDocument(inStream, xmlParser, 
+                                            file.removeDoctypeDecl ) );
         }
         
         // If the file is plain text...
@@ -3473,12 +3474,12 @@ public class XMLTextProcessor extends DefaultHandler
             
         } // if( fileDateStr.compareTo(indexDateStr) != 0 ) 
         
-      } // else( match.next() )
+      } // if( match.length() > 0 )
     
-    // Now let the caller know the status.
-    if( !docInIndex ) return 0;
-    if( !docChanged ) return 1;
-    return 2;
+      // Now let the caller know the status.
+      if( !docInIndex ) return 0;
+      if( !docChanged ) return 1;
+      return 2;
     
   } // checkFile()
   

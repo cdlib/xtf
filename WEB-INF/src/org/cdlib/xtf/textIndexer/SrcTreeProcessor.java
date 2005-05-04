@@ -198,15 +198,17 @@ public class SrcTreeProcessor
   public void close() throws IOException
   
   {
-      // Save the doc selector cache.
-      saveCache();
-    
       // Done scanning now.
       Trace.more( " Done." );
 
       // Flush the remaining open documents.    
       textProcessor.processQueuedTexts();
       
+      // Save the doc selector cache. We do this *after* processing the texts,
+      // in case something catastrophic happens in there.
+      //
+      saveCache();
+    
       // Let go of the config info now that we're done with it.
       cfgInfo = null;
 
@@ -598,6 +600,21 @@ public class SrcTreeProcessor
             else {
                 Trace.error( "Error: docSelector returned unknown format: '" +
                              info.format + "'" );
+                return false;
+            }
+        }
+        
+        // Is DOCTYPE declaration removal specified?
+        else if( attrName.equalsIgnoreCase("removeDoctypeDecl") ) {
+            if( attrVal.matches("^yes$|^true$") )
+                info.removeDoctypeDecl = true;
+            else if( attrVal.matches("^no$|^false$") )
+                info.removeDoctypeDecl = false;
+            else {
+                Trace.error( "Error: docSelector returned invalid value for " +
+                             attrName + " attribute: " +
+                             "expected 'true', 'yes', 'false', or 'no', but found '" + 
+                             attrVal + "'" );
                 return false;
             }
         }

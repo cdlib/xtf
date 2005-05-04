@@ -503,7 +503,7 @@ public class DynaXML extends TextServlet
         //
         StructuredStore lazyStore = docLocator.getLazyStore( 
             docInfo.indexConfig, docInfo.indexName, docInfo.source,
-            preFilter );
+            preFilter, docInfo.removeDoctypeDecl );
         
         // If not found...
         if( lazyStore == null ) 
@@ -523,7 +523,8 @@ public class DynaXML extends TextServlet
             // Can't find a lazy store... just read the original source file.
             XMLReader xmlReader = SAXParserFactory.newInstance().
                 newSAXParser().getXMLReader();
-            InputSource inSrc = docLocator.getInputSource( docInfo.source );
+            InputSource inSrc = docLocator.getInputSource( 
+                                   docInfo.source, docInfo.removeDoctypeDecl );
             return new SAXSource( xmlReader, inSrc );
         }
 

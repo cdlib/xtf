@@ -54,6 +54,7 @@ public class DocInfo
         brand       = other.brand;
         authSpecs   = new Vector(other.authSpecs);
         preFilter   = other.preFilter;
+        removeDoctypeDecl = other.removeDoctypeDecl;
     }
 
     /** Path to the display stylesheet (relative to servlet base dir) */
@@ -85,6 +86,9 @@ public class DocInfo
      *  for no pre-filtering.)
      */
     public String preFilter;
+    
+    /** Whether to remove DOCTYPE declaration from the XML document */
+    public boolean removeDoctypeDecl = false;
     
     /** Text query to run on the document, or null for none. */
     public QueryRequest query;

@@ -75,6 +75,8 @@ public class DefaultDocLocator implements DocLocator
      * @param indexName       Name of the index being searched
      * @param sourcePath      Path to the source document
      * @param preFilter       Prefilter stylesheet to run (or null for none)
+     * @param removeDoctypeDecl Set to true to remove DOCTYPE declaration from
+     *                          the XML document.
      * 
      * @return                Store containing the tree, or null if none
      *                        could be found.
@@ -82,7 +84,8 @@ public class DefaultDocLocator implements DocLocator
     public StructuredStore getLazyStore( String    indexConfigPath, 
                                          String    indexName,
                                          String    sourcePath,
-                                         Templates preFilter ) 
+                                         Templates preFilter,
+                                         boolean   removeDoctypeDecl ) 
         throws IOException 
     {
         // If no 'index' specified in the docInfo, then there's no way we can
@@ -108,7 +111,8 @@ public class DefaultDocLocator implements DocLocator
         
         // If we can't read it, try to build it instead.
         if( !lazyFile.canRead() )
-            buildLazyStore( lazyFile, sourcePath, preFilter );
+            buildLazyStore( lazyFile, sourcePath, preFilter,
+                            removeDoctypeDecl );
         
         // Cool. Open the lazy file.
         return StructuredFile.open( lazyFile );
@@ -119,10 +123,13 @@ public class DefaultDocLocator implements DocLocator
      * Retrieve the data stream for an XML source document. 
      * 
      * @param sourcePath  Path to the source document
+     * @param removeDoctypeDecl Set to true to remove DOCTYPE declaration from
+     *                          the XML document.
      * 
      * @return            Data stream for the document.
      */
-    public InputSource getInputSource( String sourcePath ) 
+    public InputSource getInputSource( String sourcePath,
+                                       boolean removeDoctypeDecl ) 
         throws IOException 
     {
         // If it's non-local, load the URL.
@@ -139,7 +146,8 @@ public class DefaultDocLocator implements DocLocator
         // if it can't resolve the entity reference, and we really 
         // don't care one way or the other.
         //
-        inStream = new DocTypeDeclRemover( inStream );
+        if( removeDoctypeDecl )
+            inStream = new DocTypeDeclRemover( inStream );
         
         // Make the input source, and give it a real system ID.
         InputSource inSrc = new InputSource( inStream );
@@ -163,7 +171,8 @@ public class DefaultDocLocator implements DocLocator
      */
     private void buildLazyStore( File lazyFile, 
                                  String sourcePath,
-                                 Templates preFilter )
+                                 Templates preFilter,
+                                 boolean removeDoctypeDecl )
         throws IOException
     {
         // While we parse the source document, we're going to also build up 
@@ -188,7 +197,8 @@ public class DefaultDocLocator implements DocLocator
           
         // Apply the standard set of document filters.
         InputSource inSrc = new InputSource( 
-            IndexUtil.filterXMLDocument(inStream, xmlParser) );
+            IndexUtil.filterXMLDocument(inStream, xmlParser,
+                                        removeDoctypeDecl) );
         
         // Put a proper system ID onto the InputSource.
         inSrc.setSystemId( new File(sourcePath).toURL().toString() );

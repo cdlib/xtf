@@ -41,7 +41,7 @@ import net.sf.saxon.tree.TreeBuilder;
 import net.sf.saxon.value.StringValue;
 
 import org.cdlib.xtf.servletBase.TextServlet;
-import org.cdlib.xtf.textEngine.QueryRequest;
+import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.GeneralException;
@@ -211,11 +211,25 @@ class DocInfoCache extends GeneratingCache
             else if( tagName.equals("auth") )
                 info.authSpecs.add( 
                         DynaXML.authenticator.processAuthTag(el) );
-            else if( tagName.equals("query") )
-                info.query = new QueryRequest( el.getWrappedNode(), 
-                                               new File(TextServlet.getRealPath("")) );
+            else if( tagName.equals("query") ) {
+                info.query = new QueryRequestParser().parseRequest( 
+                                el.getWrappedNode(), 
+                                new File(TextServlet.getRealPath("")) );
+            }
             else if( tagName.equalsIgnoreCase("preFilter") )
                 info.preFilter = DynaXML.getRealPath( el.attrValue("path") );
+            else if( tagName.equalsIgnoreCase("removeDoctypeDecl") ) {
+                String val = el.attrValue( "flag" );
+                if( val.matches("^yes$|^true$") )
+                    info.removeDoctypeDecl = true;
+                else if( val.matches("^no$|^false$") )
+                    info.removeDoctypeDecl = false;
+                else
+                    throw new DynaXMLException( "Expected 'true', 'false', " +
+                        "'yes', or 'no' for flag attribute of " + tagName + 
+                        " tag specified by docReqParser, but found '" + 
+                        val + "'" );
+            }
             else
                 throw new DynaXMLException( "Unknown tag '" + tagName +
                     "' specified by docReqParser" );

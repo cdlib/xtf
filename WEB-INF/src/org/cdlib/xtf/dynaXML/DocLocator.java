@@ -61,6 +61,8 @@ public interface DocLocator
      * @param indexConfigPath Path to the index configuration file
      * @param indexName       Name of the index being searched
      * @param preFilter       Stylesheet to filter the document with
+     * @param removeDoctypeDecl Set to true to remove DOCTYPE declaration from
+     *                          the XML document.
      * 
      * @return                Store containing the tree, or null if none
      *                        could be found.
@@ -68,16 +70,22 @@ public interface DocLocator
     StructuredStore getLazyStore( String indexConfigPath,
                                   String indexName,
                                   String sourcePath,
-                                  Templates preFilter ) throws IOException;
+                                  Templates preFilter,
+                                  boolean removeDoctypeDecl ) 
+        throws IOException;
     
 
     /**
      * Retrieve the data stream for an XML source document. 
      * 
      * @param sourcePath  Path to the source document
+     * @param removeDoctypeDecl Set to true to remove DOCTYPE declaration from
+     *                          the XML document.
      * 
      * @return            Data stream for the document.
      */
-    InputSource getInputSource( String sourcePath ) throws IOException;
+    InputSource getInputSource( String sourcePath,
+                                boolean removeDoctypeDecl ) 
+        throws IOException;
 
 } // interface DocLocator
