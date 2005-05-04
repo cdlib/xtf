@@ -40,6 +40,8 @@ import net.sf.saxon.om.NodeInfo;
 import org.cdlib.xtf.crossQuery.CrossQuery;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.textEngine.QueryProcessor;
+import org.cdlib.xtf.textEngine.QueryRequest;
+import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.EasyNode;
@@ -104,9 +106,11 @@ public class SRU extends CrossQuery
             return;
         
         // Process it to generate result document hits
-        QueryProcessor proc = createQueryProcessor();
-        QueryResult result = proc.processReq( queryReqDoc, 
-                                              new File(getRealPath("")) );
+        QueryProcessor proc     = createQueryProcessor();
+        QueryRequest   queryReq = new QueryRequestParser().parseRequest(
+                                          queryReqDoc, 
+                                          new File(getRealPath("")) ); 
+        QueryResult    result   = proc.processRequest( queryReq );
         
         // Format the hits for the output document.
         formatHits( req, res, attribs, result );

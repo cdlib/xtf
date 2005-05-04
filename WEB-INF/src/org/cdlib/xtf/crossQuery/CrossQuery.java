@@ -52,6 +52,8 @@ import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.DocHit;
 import org.cdlib.xtf.textEngine.QueryProcessor;
+import org.cdlib.xtf.textEngine.QueryRequest;
+import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.textEngine.Snippet;
 import org.cdlib.xtf.util.Attrib;
@@ -192,10 +194,11 @@ public class CrossQuery extends TextServlet
         Source queryReqDoc = generateQueryReq( req, attribs );
 
         // Process it to generate result document hits
-        QueryProcessor proc = createQueryProcessor();
-        QueryResult result = proc.processReq( queryReqDoc,
-                                              new File(getRealPath("")) );
-
+        QueryProcessor proc     = createQueryProcessor();
+        QueryRequest   queryReq = new QueryRequestParser().parseRequest(
+                                         queryReqDoc,
+                                         new File(getRealPath("")) );
+        QueryResult    result   = proc.processRequest( queryReq ); 
         // Format the hits for the output document.
         formatHits( req, res, attribs, result );
 

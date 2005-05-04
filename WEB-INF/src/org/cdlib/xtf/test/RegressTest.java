@@ -57,7 +57,9 @@ import org.cdlib.xtf.lazyTree.SearchTree;
 import org.cdlib.xtf.textEngine.DocHit;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
+import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
+import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.textEngine.Snippet;
 import org.cdlib.xtf.textIndexer.TextIndexer;
@@ -308,8 +310,9 @@ public class RegressTest
         //
         try {
             String         inSpec    = readFile( inFile );
-            DefaultQueryProcessor processor = new DefaultQueryProcessor();
-            QueryRequest   request   = new QueryRequest( queryDoc, new File(dir) );
+            QueryProcessor processor = new DefaultQueryProcessor();
+            QueryRequest   request   = new QueryRequestParser().parseRequest( 
+                                               queryDoc, new File(dir) );
 
             if( inSpec.indexOf("regress-search-tree") >= 0 ) {
     
@@ -356,8 +359,9 @@ public class RegressTest
             else
             {
                 // Now run the query to obtain hits.
-                QueryResult result = processor.processReq( 
-                    new QueryRequest(queryDoc, new File(dir)) );
+                QueryRequest req = new QueryRequestParser().parseRequest(
+                                           queryDoc, new File(dir) ); 
+                QueryResult result = processor.processRequest( req ); 
                 
                 // Write the hits to a file.
                 writeHits( testFile, result );

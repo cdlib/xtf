@@ -360,7 +360,7 @@ public class SearchTree extends LazyDocument
         req.query = bq;
 
         // Run the query and get the results.
-        QueryResult result = processor.processReq( req );
+        QueryResult result = processor.processRequest( req );
         assert result.docHits.length <= 1;
         docHit = (result.docHits.length > 0) ? result.docHits[0] : null;
         nHits  = (docHit != null) ? docHit.nSnippets() : 0;
