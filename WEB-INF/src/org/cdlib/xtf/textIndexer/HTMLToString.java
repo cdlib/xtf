@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
+import org.w3c.tidy.Configuration;
 import org.w3c.tidy.Tidy;
 
 import org.cdlib.xtf.util.*;
@@ -87,6 +88,9 @@ public class HTMLToString {
     // replace them with &#160; below to avoid problems parsing the XML.
     //
     tidy.setQuoteNbsp( true );
+    
+    // Default to UTF-8 character encoding.
+    tidy.setCharEncoding( Configuration.UTF8 );
         
     try {
         
@@ -446,7 +450,7 @@ public class HTMLToString {
         // Find the end of the code.
         int start = i + 1;
         int end = start;
-        while( end < inChars.length && Character.isLetter(inChars[end]) )
+        while( end < inChars.length && Character.isLetterOrDigit(inChars[end]) )
             end++;
         if( end == inChars.length || inChars[end] != ';' ) {
             out.append( inChars[i++] );
