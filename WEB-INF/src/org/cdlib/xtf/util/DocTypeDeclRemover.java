@@ -46,7 +46,7 @@ public class DocTypeDeclRemover extends BufferedInputStream
   private boolean firstTime = true;
   
   /** How many bytes to scan before giving up */
-  private static final int BLOCK_SIZE = 1024;
+  private static final int BLOCK_SIZE = 16384;
   
   /** Default constructor: records the input stream to filter. */
   public DocTypeDeclRemover( InputStream in ) {
@@ -104,17 +104,24 @@ public class DocTypeDeclRemover extends BufferedInputStream
           
           // Now look for a DOCTYPE declaration.
           int start = s.indexOf( "<!DOCTYPE" );
-          int end = s.indexOf( ">", start+1 );
-          if( start >= 0 && end >= 0 ) 
-          {
-              // We found one... change it into an XML comment.
-              buf[start+2] = '-';
-              buf[start+3] = '-';
-              for( int i = start+4; i < end-2; i++ )
-                  buf[i] = 'z';
-              buf[end-1] = '-';
-              buf[end-2] = '-';
+          if( start >= 0 ) {
+              int end = findEnd( s, start+1 );
+              if( end >= 0 ) 
+              {
+                  // We found one... change it into an XML comment.
+                  buf[start+2] = '-';
+                  buf[start+3] = '-';
+                  for( int i = start+4; i < end-2; i++ )
+                      buf[i] = 'z';
+                  buf[end-1] = '-';
+                  buf[end-2] = '-';
+              }
           }
+
+          cbuf = new char[count];
+          for( int i = 0; i < count; i++ )
+              cbuf[i] = (char) (((int)buf[i]) & 0xff);
+          s = new String( cbuf );
 
           // Reset the file position so the client will see the modified
           // data.
@@ -126,5 +133,29 @@ public class DocTypeDeclRemover extends BufferedInputStream
       return super.read( b, off, len );
       
   } // read( byte[], int, int )
+  
+  private int findEnd( String s, int start ) 
+  {
+      int level = 0;
+      char inQuote = 0;
+      for( int i = start; i < s.length(); i++ ) {
+          char c = s.charAt( i );
+          String endStr = s.substring( i ); // TODO: Remove this!!!
+          if( inQuote != 0 && c == inQuote )
+              inQuote = 0;
+          else if( c == '\'' || c == '\"' )
+              inQuote = c;
+          else if( inQuote != 0 )
+              continue;
+          else if( c == '<' )
+              level++;
+          else if( c == '>' ) {
+              level--;
+              if( level < 0 )
+                  return i;
+          }
+      }
+      return -1;
+  }
   
 } // class DocTypeDeclRemover
