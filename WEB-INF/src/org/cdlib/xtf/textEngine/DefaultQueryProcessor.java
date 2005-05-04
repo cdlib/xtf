@@ -29,14 +29,11 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
-import javax.xml.transform.Source;
 
 import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.chunk.SpanChunkedNotQuery;
@@ -100,29 +97,13 @@ public class DefaultQueryProcessor extends QueryProcessor
         new SparseStringComparator(); 
     
     /**
-     * This is the main entry point. Takes a query request and handles
+     * This is main entry point. Takes a pre-parsed query request and handles 
      * searching the index and forming the results.
-     * 
-     * @param queryReqDoc   The request to process, in XML format
-     * @param baseDir       Directory to use for resolving relative paths
-     *                      (if any)
-     * @return              Zero or more document hits
-     */
-    public QueryResult processReq( Source queryReqDoc, File baseDir )
-        throws IOException
-    {
-        return processReq( new QueryRequest(queryReqDoc, baseDir) );
-    }
-     
-    
-    /**
-     * This is an alternate entry point. Takes a pre-parsed query request 
-     * and handles searching the index and forming the results.
      * 
      * @param queryReq      The pre-parsed request to process
      * @return              Zero or more document hits
      */
-    public QueryResult processReq( QueryRequest req )
+    public QueryResult processRequest( QueryRequest req )
         throws IOException
     {
         // Make an vector to store the hits (we'll make it into an array

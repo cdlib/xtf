@@ -1,7 +1,5 @@
 package org.cdlib.xtf.textEngine;
 
-import java.io.IOException;
-
 /*
  * Copyright (c) 2004, Regents of the University of California
  * All rights reserved.
@@ -30,34 +28,48 @@ import java.io.IOException;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
-/*
- * This file created on Mar 1, 2005 by Martin Haye
- */
 
 /**
- * Takes a QueryRequest, rewrites the queries if necessary to remove stop-
- * words and form n-grams, then consults the index(es), and produces a 
- * QueryResult.
+ * Stores a grouping specification, as part of a {@link QueryRequest}.
  * 
  * @author Martin Haye
  */
-public abstract class QueryProcessor 
+public class GroupSpec 
 {
-    /**
-     * Takes a query request and handles searching the index and forming 
-     * the results.
-     * 
-     * @param queryReq   The request to process
-     * @return           Zero or more document hits
-     */
-    public abstract QueryResult processRequest( QueryRequest req )
-        throws IOException;
-    
-    /** 
-     * Optional method: hint to the query processor to clear any cached
-     * index data, so that recently indexed documents will appear in
-     * search results.
-     */
-    public void resetCache() { }
-}
+  /** Name of the meta-data field to group by */
+  public String field;
+  
+  /** How to sort the groups. Currently "value" and "count" are the only
+   *  permissible values.
+   */
+  public String sortGroupsBy = "count";
+  
+  /** Set this non-null to expand the named group. If null, none of the 
+   *  groups will be expanded. A special value, {@link #EXPAND_FIRST}, is 
+   *  recognized to mean that the first group in sort order should be 
+   *  expanded. 
+   */ 
+  public String expandValue;
+  
+  /** Special string allowed in {@link #expandValue} field to denote that
+   *  the first group, in sort order, should be expanded.
+   */
+  public static final String EXPAND_FIRST = "#first";
+  
+  /** If {@link #expandValue} is non-null, this field specifies which 
+   *  meta-data field(s) to sort the documents by. If null, they are sorted
+   *  in descending order by score.
+   */
+  public String sortDocsBy;
+  
+  /** If {@link #expandValue} is non-null, this field specifies the
+   *  first document hit to return (zero-based) 
+   */
+  public int startDoc = 0;
+  
+  /** If {@link #expandValue} is non-null, this field specifies the 
+   *  max # of documents to return
+   */
+  public int maxDocs = 10;
+  
+} // class GroupSpec
