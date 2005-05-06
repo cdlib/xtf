@@ -44,32 +44,41 @@ public class GroupSpec
    */
   public String sortGroupsBy = "count";
   
-  /** Set this non-null to expand the named group. If null, none of the 
-   *  groups will be expanded. A special value, {@link #EXPAND_FIRST}, is 
-   *  recognized to mean that the first group in sort order should be 
-   *  expanded. 
-   */ 
-  public String expandValue;
+  /** Subset specifications */
+  public Subset[] subsets;
   
-  /** Special string allowed in {@link #expandValue} field to denote that
-   *  the first group, in sort order, should be expanded.
-   */
-  public static final String EXPAND_FIRST = "#first";
-  
-  /** If {@link #expandValue} is non-null, this field specifies which 
-   *  meta-data field(s) to sort the documents by. If null, they are sorted
-   *  in descending order by score.
-   */
-  public String sortDocsBy;
-  
-  /** If {@link #expandValue} is non-null, this field specifies the
-   *  first document hit to return (zero-based) 
-   */
-  public int startDoc = 0;
-  
-  /** If {@link #expandValue} is non-null, this field specifies the 
-   *  max # of documents to return
-   */
-  public int maxDocs = 10;
+  /** A target subset of the groups for a single field */
+  public static class Subset
+  {
+      /** Target a specific, named group for counting or reporting. If non-
+       *  null, then {@link #maxGroups} should be set to zero.
+       */
+      public String value;
+      
+      /** First group to count or report (zero-based.) */
+      public int startGroup;
+      
+      /** Max # of groups to count or report. If non-zero, {@link #value}
+       *  should be null.
+       */
+      public int maxGroups;
+      
+      /** Rank of first document to report in the selected groups 
+       * (zero-based) 
+       */
+      public int startDoc;
+      
+      /** Max # of documents to report in the selected groups. Zero means
+       *  to only count the documents but not report them.
+       */
+      public int maxDocs;
+      
+      /** If {@link #maxDocs} is >= 0, this field specifies which meta-data 
+       *  field(s) to sort the documents by. If null, they are sorted in 
+       *  descending order by score.
+       */
+      public String sortDocsBy;
+
+  } // class Subset
   
 } // class GroupSpec

@@ -242,7 +242,7 @@ public class QueryRequestParser
         int nChildQueries = 0;
         for( int i = 0; i < main.nChildren(); i++ ) {
             EasyNode el = main.child( i );
-            if( "groupBy".equals(el.name()) )
+            if( "groupField".equals(el.name()) )
                 parseGroupSpec( el );
             else {
                 req.query = 
@@ -272,9 +272,9 @@ public class QueryRequestParser
     
     
     /**
-     * Parses a 'groupBy' element and adds a GroupSpec to the query.
+     * Parses a 'groupField' element and adds a GroupSpec to the query.
      * 
-     * @param el  The 'groupBy' element to parse
+     * @param el  The 'groupField' element to parse
      */
     void parseGroupSpec( EasyNode el ) 
     {
@@ -299,68 +299,85 @@ public class QueryRequestParser
                        "' on '" + el.name() + "' element" );
         } // for i
         
-        // See if there's an <expand> node child.
-        boolean expandFound = false;
+        // Make sure a field name was specified.
+        if( gs.field == null || gs.field.length() == 0 )
+            error( "'" + el.name() + "' element requires 'field' attribute" );
+        
+        // Make sure there is only one groupField element per field.
+        for( int i = 0; i < groupSpecs.size(); i++ ) {
+            GroupSpec other = ((GroupSpec)groupSpecs.elementAt(i));
+            if( other.field.equalsIgnoreCase(gs.field) )
+                error( "Specifying two '" + el.name() + "' elements for the " +
+                       "same field is illegal" );
+        }
+        
+        // Check for subsets below the <groupField> node.
+        Vector subsets = new Vector();
         for( int i = 0; i < el.nChildren(); i++ )
         {
-            // Get the child, and make sure it's an <expand> element.
+            // Get the child, and check the name.
             EasyNode child = el.child( i );
-            if( !"expand".equalsIgnoreCase(child.name()) )
+            boolean countOnly = false;
+            if( child.name().equalsIgnoreCase("countGroups") )
+                countOnly = true;
+            else if( child.name().equalsIgnoreCase("groupHits") )
+                countOnly = false;
+            else
                 error( "Unrecognized child element '" + child.name() +
                        "' under '" + el.name() + "' element." );
             
-            // Allow only one <expand> per group node.
-            if( expandFound )
-                error( "Only one <expand> element allowed within '" +
-                       el.name() + "' element." );
-            expandFound = true;
-            
-            // Parse the attributes of the <expand>
+            // Process the attributes.
+            GroupSpec.Subset subset = new GroupSpec.Subset();
+            boolean gotValue     = false;
+            boolean gotMaxGroups = false;
+            boolean gotMaxDocs   = false;
             for( int j = 0; j < child.nAttrs(); j++ ) 
             {
                 String attrName = child.attrName( j );
                 String attrVal  = child.attrValue( j );
-                if( attrName.equalsIgnoreCase("first") ) {
-                    if( attrVal.matches("^yes$|^true$") ) {
-                        if( gs.expandValue != null ) {
-                            error( "Either 'first' or 'value' attribute " +
-                                   "(but not both) must be specified on '" +
-                                   child.name() + "element" );
-                        }
-                        gs.expandValue = GroupSpec.EXPAND_FIRST;
-                    }
-                    else {
-                        error( "Only 'yes' or 'true' are valid for the " +
-                               "attribute 'first' on the '" + child.name() + 
-                               "element" );
-                    }
+                if( attrName.equalsIgnoreCase("startGroup") )
+                    subset.startGroup = parseIntAttrib(child, attrName) - 1;
+                else if( attrName.equalsIgnoreCase("maxGroups") ) {
+                    subset.maxGroups = parseIntAttrib(child, attrName);
+                    gotMaxGroups = true;
                 }
                 else if( attrName.equalsIgnoreCase("value") ) {
-                    if( gs.expandValue != null ) {
-                        error( "Either 'first' or 'value' attribute " +
-                               "(but not both) must be specified on '" +
-                               child.name() + "element" );
-                    }
-                    gs.expandValue = attrVal;
+                    gotValue = true;
+                    subset.value = attrVal;
                 }
-                else if( attrName.equalsIgnoreCase("startDoc") ) {
-                    gs.startDoc = parseIntAttrib(child, attrName) - 1;
-                    if( gs.startDoc < 0 )
+                else if( attrName.equalsIgnoreCase("startDoc") && !countOnly) {
+                    if( countOnly )
+                    subset.startDoc = parseIntAttrib(child, attrName) - 1;
+                    if( subset.startDoc < 0 )
                         error( "'" + attrName + "' attribute on '" +
                                child.name() + "' element must be >= 1" );
                 }
-                else if( attrName.equalsIgnoreCase("maxDocs") )
-                    gs.maxDocs = parseIntAttrib( child, attrName );
-                else if( attrName.equalsIgnoreCase("sortDocsBy") )
-                    gs.sortDocsBy = attrVal;
+                else if( attrName.equalsIgnoreCase("maxDocs") && !countOnly ) {
+                    subset.maxDocs = parseIntAttrib( child, attrName );
+                    gotMaxDocs = true;
+                }
+                else if( attrName.equalsIgnoreCase("sortDocsBy") && !countOnly )
+                    subset.sortDocsBy = attrVal;
+                else
+                    error( "Unrecognized attribute '" + attrName + "' on '" +
+                           child.name() + "' element" );
             } // for j
             
-            if( gs.expandValue != null )
-            {
-                error( "Either 'first' or 'value' attribute " +
-                       "(but not both) must be specified on '" +
-                       child.name() + "element" );
-            }
+            // 'value' is mutually exclusive with 'startGroup'/'maxGroups'
+            if( gotValue && gotMaxGroups )
+                error( "It doesn't make sense to specify both 'value' and " +
+                       "'startGroup/maxGroups' on '" + child.name() + "element" );
+            
+            // If neither was specified, default to maxGroups=all
+            if( !gotValue && !gotMaxGroups )
+                subset.maxGroups = 999999999;
+            
+            // If maxDocs wasn't specified on <groupHits>, default to 10.
+            if( !countOnly && !gotMaxDocs )
+                subset.maxDocs = 10;
+            
+            // Add this subset to our list.
+            subsets.add( subset );
         } // for i
         
         // Finally, add the new group spec to the query.
@@ -373,7 +390,7 @@ public class QueryRequestParser
      * Recursively parse a query.
      */
     private Query parseQuery( EasyNode parent, String field, int maxSnippets )
-        throws QueryGenException
+       throws QueryGenException
     {
         String name = parent.name();
         if( !name.matches(
@@ -1232,6 +1249,9 @@ public class QueryRequestParser
                                         null );
         if( str == null && useDefault )
             return defaultVal;
+        
+        if( str.equals("all") )
+            return 999999999;
         
         try {
             return Integer.parseInt( str );
