@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
@@ -69,6 +70,20 @@ public class SpanSectionTypeQuery extends SpanQuery
     public SpanQuery getTextQuery() { return textQuery; }
     
     public SpanQuery getSectionTypeQuery() { return typeQuery; }
+
+    // inherit javadoc
+    public Query rewrite( IndexReader reader ) throws IOException 
+    {
+        SpanQuery rewrittenText = (SpanQuery)textQuery.rewrite( reader );
+        SpanQuery rewrittenType = (SpanQuery)typeQuery.rewrite( reader );
+        if (rewrittenText == textQuery && rewrittenType == typeQuery )
+            return this;
+        SpanSectionTypeQuery clone = (SpanSectionTypeQuery)this.clone();
+        clone.textQuery = rewrittenText;
+        clone.typeQuery = rewrittenType;
+        return clone;
+    }
+  
     
     /** 
      * Iterate all the spans from the text query that match the sectionType
