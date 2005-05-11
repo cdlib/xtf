@@ -44,7 +44,7 @@
               doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" 
               omit-xml-declaration="yes"/>
   
-  <xsl:output name="xml" method="xml" indent="yes" media-type="text/xml"/>
+  <xsl:output name="xml" method="xml" indent="yes" media-type="text/xml" encoding="UTF-8"/>
 
   <!-- ====================================================================== -->
   <!-- Parameters                                                             -->
@@ -220,11 +220,11 @@
 
   <!-- Path Parameters -->
   <xsl:param name="servlet.path"/>
-  <!-- remove select when moving into production -->
   <xsl:param name="root.path"/>
-  <xsl:param name="serverURL" select="$root.path"/>
-  <xsl:param name="baseURL" select="replace($serverURL, ':[0-9]+.+', '/')"/>
-  <xsl:param name="dynaxml.path" select="if (matches($servlet.path, 'org.cdlib.xtf.crossQuery.CrossQuery')) then 'org.cdlib.xtf.dynaXML.DynaXML' else 'view'"/>
+  <xsl:param name="xtfURL" select="$root.path"/>
+  <xsl:param name="serverURL" select="replace($xtfURL, '(http://.+)[:/].+', '$1/')"/>
+  <xsl:param name="crossqueryPath" select="if (matches($servlet.path, 'org.cdlib.xtf.dynaXML.DynaXML')) then 'org.cdlib.xtf.crossQuery.CrossQuery' else 'search'"/>
+  <xsl:param name="dynaxmlPath" select="if (matches($servlet.path, 'org.cdlib.xtf.crossQuery.CrossQuery')) then 'org.cdlib.xtf.dynaXML.DynaXML' else 'view'"/>
 
   <!-- Query String -->
   
@@ -1401,14 +1401,14 @@
       <!-- Paging by Blocks -->
       <xsl:variable name="prevBlock" as="xs:integer" select="(($blockStart - $blockSize) * $docsPerPage) - ($docsPerPage - 1)"/>
       <xsl:if test="($pageNum = 1) and ($prevBlock &gt;= 1)">
-        <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$prevBlock}">&lt;&lt;</a>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$prevBlock}">&lt;&lt;</a>
         <xsl:text>&#160;&#160;</xsl:text>
       </xsl:if>
 
       <!-- Individual Paging -->
       <!-- xsl:if test="($pageNum = 1) and ($pageStart != $startDoc)">
         <xsl:variable name="prevPage" as="xs:integer" select="$startDoc - $docsPerPage"/>
-        <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$prevPage}">&lt;&lt;</a>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$prevPage}">&lt;&lt;</a>
         <xsl:text>&#160;&#160;</xsl:text>
       </xsl:if -->
                 
@@ -1418,7 +1418,7 @@
         <xsl:choose>
           <!-- Make a hyperlink if it's not the page we're currently on. -->
           <xsl:when test="($pageStart != $startDoc)">
-            <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$pageStart}">
+            <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$pageStart}">
               <xsl:value-of select="$pageNum"/>
             </a>
             <xsl:if test="$pageNum &lt; $showPages">
@@ -1438,14 +1438,14 @@
       <!-- xsl:if test="($pageNum = $showPages) and ($pageStart != $startDoc)">
         <xsl:variable name="nextPage" as="xs:integer" select="$startDoc + $docsPerPage"/>
         <xsl:text>&#160;&#160;</xsl:text>
-        <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$nextPage}">&gt;&gt;</a>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$nextPage}">&gt;&gt;</a>
       </xsl:if -->
 
       <!-- Paging by Blocks -->   
       <xsl:variable name="nextBlock" as="xs:integer" select="(($blockStart + $blockSize) * $docsPerPage) - ($docsPerPage - 1)"/>
       <xsl:if test="($pageNum = $showPages) and (($showPages * $docsPerPage) &gt; $nextBlock)">
         <xsl:text>&#160;&#160;</xsl:text>
-        <a href="{$servlet.path}?{$pageQueryString}&amp;startDoc={$nextBlock}">&gt;&gt;</a>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$nextBlock}">&gt;&gt;</a>
       </xsl:if>
 
     </xsl:for-each>
@@ -1457,7 +1457,7 @@
   <!-- ====================================================================== -->
       
   <xsl:template match="subject">
-    <a href="{$servlet.path}?subject=%22{.}%22&amp;profile={$profile}&amp;profile-join={$profile-join}&amp;style={$style}&amp;smode={$smode}&amp;rmode={$rmode}&amp;brand={$brand}">
+    <a href="{$xtfURL}{$crossqueryPath}?subject=%22{.}%22&amp;profile={$profile}&amp;profile-join={$profile-join}&amp;style={$style}&amp;smode={$smode}&amp;rmode={$rmode}&amp;brand={$brand}">
       <xsl:apply-templates/>
     </a>
     <xsl:if test="not(position() = last())">
@@ -1479,7 +1479,7 @@
       <xsl:when test="(contains($rmode, 'showDescrip')) and (matches(string() , '.{500}'))">
         <xsl:apply-templates select="$block"/>
         <xsl:text>&#160;&#160;&#160;</xsl:text>
-        <a href="{$servlet.path}?{$hideString}&amp;startDoc={$startDoc}#{$identifier}">[brief]</a>         
+        <a href="{$xtfURL}{$crossqueryPath}?{$hideString}&amp;startDoc={$startDoc}#{$identifier}">[brief]</a>         
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates select="$block" mode="crop">
@@ -1499,7 +1499,7 @@
       <xsl:when test="matches(string(.) , '.{300}')">
         <xsl:value-of select="replace(., '(.{300}).+', '$1')"/>
         <xsl:text> . . . </xsl:text>
-        <a href="{$servlet.path}?{$moreString}&amp;startDoc={$startDoc}#{$identifier}">[more]</a>  
+        <a href="{$xtfURL}{$crossqueryPath}?{$moreString}&amp;startDoc={$startDoc}#{$identifier}">[more]</a>  
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates/>
@@ -1583,7 +1583,7 @@
       </xsl:choose>     
     </xsl:variable>
     
-    <xsl:value-of select="concat($dynaxml.path, '?docId=', $ark, '&amp;query=', replace($query, '&amp;', '%26'))"/>
+    <xsl:value-of select="concat($dynaxmlPath, '?docId=', $ark, '&amp;query=', replace($query, '&amp;', '%26'))"/>
     <!-- -join & -prox are mutually exclusive -->
     <xsl:choose>
       <xsl:when test="$text-prox">

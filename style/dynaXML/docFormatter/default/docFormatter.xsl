@@ -35,12 +35,18 @@
 <xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xtf="http://cdlib.org/xtf">
+
+<!-- ====================================================================== -->
+<!-- Import Common Templates                                                -->
+<!-- ====================================================================== -->
   
-  <xsl:output method="html"
-              indent="yes"
-              encoding="utf-8"
-              media-type="text/html"
-              doctype-public="-//W3C//DTD HTML 4.0//EN"/>
+<xsl:import href="../../common/docFormatterCommon.xsl"/>
+  
+<xsl:output method="html"
+            indent="yes"
+            encoding="utf-8"
+            media-type="text/html"
+            doctype-public="-//W3C//DTD HTML 4.0//EN"/>
   
 <!-- ====================================================================== -->
 <!-- Strip Space                                                            -->
@@ -51,8 +57,6 @@
 <!-- ====================================================================== -->
 <!-- Included Stylesheets                                                   -->
 <!-- ====================================================================== -->
-
-<xsl:include href="../common/docFormatterCommon.xsl"/>
 
 <xsl:include href="autotoc.xsl"/>
 <xsl:include href="component.xsl"/>
@@ -108,41 +112,39 @@
 <!-- Frames Template                                                        -->
 <!-- ====================================================================== -->
 
-<xsl:template name="frames">
-
-  <xsl:variable name="bbar.href"><xsl:value-of select="$query.string"/>&#038;doc.view=bbar&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/></xsl:variable>
-
-  <xsl:variable name="toc.href"><xsl:value-of select="$query.string"/>&#038;doc.view=toc&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/>#X</xsl:variable>
-
-  <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>&#038;doc.view=content&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$anchor.id"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/></xsl:variable>
-
-  <html>
-    <head>
-      <title>
-	<xsl:value-of select="$doc.title"/>
-      </title>
-    </head>
-    <frameset rows="80,*" border="2" framespacing="2" frameborder="1">
-      <frame scrolling="no" title="Navigation Bar">
-	<xsl:attribute name="name">bbar</xsl:attribute>
-	<xsl:attribute name="src"><xsl:value-of select="$servlet.path"/>?<xsl:value-of select="$bbar.href"/></xsl:attribute>
-      </frame>
-      <frameset cols="35%,65%" border="2" framespacing="2" frameborder="1">
-	<frame title="Table of Contents">
-	  <xsl:attribute name="name">toc</xsl:attribute>
-	  <xsl:attribute name="src"><xsl:value-of select="$servlet.path"/>?<xsl:value-of select="$toc.href"/></xsl:attribute>
-	</frame>
-	<frame title="Content">
-	  <xsl:attribute name="name">content</xsl:attribute>
-          <xsl:attribute name="src"><xsl:value-of select="$servlet.path"/>?<xsl:value-of select="$content.href"/></xsl:attribute>
-	</frame>
+  <xsl:template name="frames">
+    
+    <xsl:variable name="bbar.href"><xsl:value-of select="$query.string"/>&#038;doc.view=bbar&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/></xsl:variable> 
+    <xsl:variable name="toc.href"><xsl:value-of select="$query.string"/>&#038;doc.view=toc&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/>#X</xsl:variable>
+    <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>&#038;doc.view=content&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$anchor.id"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/></xsl:variable>
+    
+    <html>
+      <head>
+        <title>
+          <xsl:value-of select="$doc.title"/>
+        </title>
+      </head>
+      <frameset rows="80,*" border="2" framespacing="2" frameborder="1">
+        <frame scrolling="no" title="Navigation Bar">
+          <xsl:attribute name="name">bbar</xsl:attribute>
+          <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$bbar.href"/></xsl:attribute>
+        </frame>
+        <frameset cols="35%,65%" border="2" framespacing="2" frameborder="1">
+          <frame title="Table of Contents">
+            <xsl:attribute name="name">toc</xsl:attribute>
+            <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$toc.href"/></xsl:attribute>
+          </frame>
+          <frame title="Content">
+            <xsl:attribute name="name">content</xsl:attribute>
+            <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/></xsl:attribute>
+          </frame>
+        </frameset>
       </frameset>
-    </frameset>
-    <noframes>
-      <h1>Sorry, your browser doesn't support frames...</h1>
-    </noframes>
-  </html>
-</xsl:template>
+      <noframes>
+        <h1>Sorry, your browser doesn't support frames...</h1>
+      </noframes>
+    </html>
+  </xsl:template>
 
 <!-- ====================================================================== -->
 <!-- Anchor Template                                                        -->
@@ -381,7 +383,7 @@
             <td width="2"><img src="{$icon.path}spacer.gif" width="2"/></td>
 
             <!-- BEGIN TOPNAV CENTER -->
-            <form action="{$servlet.path}" target="{$target}" method="GET">
+            <form action="{$xtfURL}{$dynaxmlPath}" target="{$target}" method="GET">
               <input type="hidden" name="docId">
                 <xsl:attribute name="value">
                   <xsl:value-of select="$docId"/>
@@ -496,7 +498,7 @@
           </xsl:when>
           <xsl:when test="$formula.id != '0'">
             <div align="center">
-              <applet code="HotEqn.class" archive="{$serverURL}applets/HotEqn.jar" height="550" width="550" name="{$formula.id}" align="middle">
+              <applet code="HotEqn.class" archive="{$xtfURL}applets/HotEqn.jar" height="550" width="550" name="{$formula.id}" align="middle">
                 <param name="equation">
                   <xsl:attribute name="value">
                     <xsl:value-of select="key('formula-id', $formula.id)"/>

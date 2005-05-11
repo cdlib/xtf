@@ -53,7 +53,7 @@
   <!-- Local Parameters                                                       -->
   <!-- ====================================================================== -->
 
-  <xsl:param name="css.path" select="concat($serverURL, 'css/default/')"/>
+  <xsl:param name="css.path" select="concat($xtfURL, 'css/default/')"/>
     
   <!-- ====================================================================== -->
   <!-- Root Template                                                          -->
@@ -162,7 +162,7 @@
               <span class="heading">Sorted by:</span>
             </td>
             <td width="1%"/>
-            <form class="search-form" method="get" action="{$servlet.path}">
+            <form class="search-form" method="get" action="{$xtfURL}{$crossqueryPath}">
               <td align="left" valign="bottom">
                 <xsl:call-template name="sort.options"/>
                 <xsl:call-template name="hidden.query"/>
@@ -177,11 +177,11 @@
           </tr> 
           <tr>
             <td colspan="3" align="center">
-              <a class="highlight" href="{$servlet.path}?{$modifyString}">
+              <a class="highlight" href="{$xtfURL}{$crossqueryPath}?{$modifyString}">
                 <xsl:text>Modify Search</xsl:text>
               </a>
               <xsl:text>&#160;&#160;</xsl:text>
-              <a class="highlight" href="{$servlet.path}">
+              <a class="highlight" href="{$xtfURL}{$crossqueryPath}">
                 <xsl:text>Begin New Search</xsl:text>
               </a>
             </td>
@@ -227,7 +227,7 @@
             </td>
           </tr>
         </table>  
-        <form method="get" action="{$servlet.path}">
+        <form method="get" action="{$xtfURL}{$crossqueryPath}">
           <table width="90%" cellpading="0" cellspacing="2" bgcolor="ivory" border="0">
             <tr>
               <td colspan="3"><h4>Full Text</h4></td>
@@ -433,7 +433,7 @@
               <td width="120" colspan="2"/>
               <td height="40">
                 <input type="submit" value="Search"/>
-                <input type="reset" OnClick="location.href='{$servlet.path}'" value="Clear"/>
+                <input type="reset" OnClick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
               </td>
             </tr>
           </table>
@@ -501,7 +501,7 @@
       <td align="left">
         <a>
           <xsl:attribute name="href">
-            <xsl:value-of select="concat($dynaxml.path, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
+            <xsl:value-of select="concat($dynaxmlPath, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
             <!-- -join & -prox are mutually exclusive -->
             <xsl:choose>
               <xsl:when test="$text-prox">
@@ -641,7 +641,7 @@
     <xsl:variable name="collection" select="string(meta/collection)"/>
     <xsl:variable name="hit.rank"><xsl:value-of select="ancestor::snippet/@rank"/></xsl:variable>
     <xsl:variable name="snippet.link">
-      <xsl:value-of select="concat($dynaxml.path, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
+      <xsl:value-of select="concat($dynaxmlPath, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
       <!-- -join & -prox are mutually exclusive -->
       <xsl:choose>
         <xsl:when test="$text-prox">

@@ -40,12 +40,13 @@
   xmlns:parse="http://cdlib.org/parse"
   exclude-result-prefixes="xsl dc mets mods xlink parse">
 
+  <!-- Path Parameters -->
   <xsl:param name="servlet.path"/>
-  
   <xsl:param name="root.path"/>
-
-  <xsl:param name="serverURL" select="$root.path"/>
-  <xsl:param name="baseURL" select="replace($serverURL, ':[0-9]+.+', '/')"/>
+  <xsl:param name="xtfURL" select="$root.path"/>
+  <xsl:param name="serverURL" select="replace($xtfURL, '(http://.+)[:/].+', '$1/')"/>
+  <xsl:param name="crossqueryPath" select="if (matches($servlet.path, 'org.cdlib.xtf.dynaXML.DynaXML')) then 'org.cdlib.xtf.crossQuery.CrossQuery' else 'search'"/>
+  <xsl:param name="dynaxmlPath" select="if (matches($servlet.path, 'org.cdlib.xtf.crossQuery.CrossQuery')) then 'org.cdlib.xtf.dynaXML.DynaXML' else 'view'"/>
 
   <xsl:param name="docId"/>
 
@@ -62,11 +63,11 @@
 
   <xsl:param name="query.string" select="concat('docId=', $docId, $sourceStr)"/>
 
-  <xsl:param name="doc.path"><xsl:value-of select="$servlet.path"/>?<xsl:value-of select="$query.string"/></xsl:param>
+  <xsl:param name="doc.path"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$query.string"/></xsl:param>
 
-  <xsl:param name="figure.path" select="concat($serverURL, 'data/', $subDir, '/', $docId, '/figures/')"/>
+  <xsl:param name="figure.path" select="concat($xtfURL, 'data/', $subDir, '/', $docId, '/figures/')"/>
 
-  <xsl:param name="pdf.path" select="concat($serverURL, 'data/', $subDir, '/', $docId, '/pdfs/')"/>
+  <xsl:param name="pdf.path" select="concat($xtfURL, 'data/', $subDir, '/', $docId, '/pdfs/')"/>
 
   <xsl:param name="doc.view" select="'0'"/>
 
