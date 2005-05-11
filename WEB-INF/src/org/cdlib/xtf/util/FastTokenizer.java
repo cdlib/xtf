@@ -119,6 +119,75 @@ public class FastTokenizer extends Tokenizer
         charType['-']  = 'p';
         charType['/']  = 'p';
         charType[',']  = 'p';
+        
+        // Currency Symbols
+        charType['\u0024'] = 's'; // Dollar
+        charType['\u00a2'] = 's'; // Cent
+        charType['\u00a3'] = 's'; // Pound Sterling
+        charType['\u00a4'] = 's'; // currency symbol
+        charType['\u00a5'] = 's'; // Yen
+        charType['\u0192'] = 's'; // Florin currency symbol (Dutch)
+        charType['\u20a3'] = 's'; // Franc
+        charType['\u20a4'] = 's'; // Lira
+        charType['\u20a7'] = 's'; // Peseta
+        charType['\u20ac'] = 's'; // Euro
+        
+        // Fractions
+        charType['\u00bc'] = 's'; // one quarter
+        charType['\u00bd'] = 's'; // one half
+        charType['\u00be'] = 's'; // three quarters
+        charType['\u2153'] = 's'; // one third
+        charType['\u2154'] = 's'; // two thirds
+        charType['\u2155'] = 's'; // one fifth
+        charType['\u2156'] = 's'; // two fifths
+        charType['\u2157'] = 's'; // three fifths
+        charType['\u2158'] = 's'; // four fifths
+        charType['\u2159'] = 's'; // one sixth
+        charType['\u215a'] = 's'; // five sixths
+        charType['\u215b'] = 's'; // one eighth
+        charType['\u215c'] = 's'; // three eighths
+        charType['\u215d'] = 's'; // five eighths
+        charType['\u215e'] = 's'; // seven eighths
+        
+        // Math symbols
+        charType['\u002b'] = 's'; // plus
+        charType['\u2212'] = 's'; // minus
+        charType['\u003d'] = 's'; // equals
+        charType['\u2260'] = 's'; // not equal
+        charType['\u003c'] = 's'; // less than
+        charType['\u003e'] = 's'; // greater than
+        charType['\u2264'] = 's'; // less than or equal
+        charType['\u2265'] = 's'; // greater than or equal
+        charType['\u00b1'] = 's'; // plus/minus
+        charType['\u00d7'] = 's'; // multiply
+        charType['\u00f7'] = 's'; // divide
+        charType['\u2219'] = 's'; // period-centered bullet operator
+        charType['\u00b7'] = 's'; // mid-dot (same as period-centered bullet operator)
+        charType['\u007e'] = 's'; // tilde
+        charType['\u005e'] = 's'; // circumflex
+        charType['\u00b0'] = 's'; // degree
+        charType['\u00ac'] = 's'; // logical not
+        charType['\u2248'] = 's'; // approximately equal
+        charType['\u00b5'] = 's'; // micro
+        charType['\u221e'] = 's'; // infinity
+        charType['\u2202'] = 's'; // partial differential
+        charType['\u220f'] = 's'; // product
+        charType['\u03c0'] = 's'; // lower-case greek pi
+        charType['\u222b'] = 's'; // integral
+        charType['\u2126'] = 's'; // ohm
+        charType['\u221a'] = 's'; // radical
+        charType['\u2206'] = 's'; // increment
+        charType['\u2211'] = 's'; // summation
+        charType['\u25ca'] = 's'; // lozenge
+        charType['\u212e'] = 's'; // estimate
+        charType['\u2032'] = 's'; // single prime
+        charType['\u2033'] = 's'; // double prime
+        charType['\u2116'] = 's'; // numero
+        
+        // Other symbols
+        charType['\u00ae'] = 's'; // registered trademark
+        charType['\u00a9'] = 's'; // copyright
+        charType['\u2122'] = 's'; // trademark
     };
     
     /** Utility method used when setting up the character type table */
@@ -146,30 +215,45 @@ public class FastTokenizer extends Tokenizer
     public Token next()
         throws IOException
     {
-        // Skip til we hit an alpha-numeric.
+        // Skip whitespace and punctuation.
         int tpos = pos;
         final int tlen = source.length;
-        while( tpos < tlen && charType[source[tpos]] != 'a' )
+        char type = 0;
+        while( tpos < tlen ) {
+            type = charType[source[tpos]];
+            if( type == 'a' || type == 's' )
+                break;
             tpos++;
+        }
         
         final int start = tpos;
         
-        // Eat until we hit a non-alpha-numeric.
-        while( tpos < tlen && charType[source[tpos]] == 'a' )
+        // If we hit a symbol, gobble just that character (we'll make a 
+        // single-char token out of it.)
+        //
+        if( type == 's' )
             tpos++;
+        else 
+        {
+            // Gobble up a string of alpha-numeric characters.
+            while( tpos < tlen ) {
+                type = charType[source[tpos]];
+                if( type != 'a' )
+                    break;
+                tpos++;
+            }
+        }
         
         pos = tpos;
         
-        if( start == pos )
+        // If at end of string, return null to mark the fact.
+        if( pos == start )
             return null;
-
+        
         // The only situation where our stupid but fast implementation might make
         // a mistake is when there is punctuation followed by alpha-numeric.
         //
-        if( tpos >= tlen-1 ||
-            charType[source[tpos]] != 'p' ||
-            charType[source[tpos+1]] != 'a' )
-        {
+        if( tpos >= tlen-1 || type != 'p' || charType[source[tpos+1]] != 'a' ) { 
             return new Token( new String(source, start, pos-start),
                               start, pos );
         }
@@ -182,10 +266,9 @@ public class FastTokenizer extends Tokenizer
             stdTokenizer = new XTFTokenizer( dribbleReader );
         }
         
-        char c;
         for( ; pos < source.length; pos++ ) {
-            c = source[pos];
-            if( c < charType.length && charType[c] == 'w' )
+            type = charType[source[pos]];
+            if( type == 'w' )
                 break;
         }
         
