@@ -26,7 +26,7 @@ import java.util.Set;
  * <p>Created: Dec 6, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: FieldSpans.java,v 1.2 2005-02-24 05:15:27 mhaye Exp $
+ * @version $Id: FieldSpans.java,v 1.3 2005-05-11 03:24:15 mhaye Exp $
  */
 public class FieldSpans
 {
@@ -57,6 +57,11 @@ public class FieldSpans
   public void addSpans(FieldSpans other)
   {
     entries.putAll(other.entries);
+  }
+  
+  /** Get a set of all the field names */
+  public Set getFields() {
+    return entries.keySet();
   }
   
   /** Retrieve the total number of spans which matched the field */
