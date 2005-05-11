@@ -45,6 +45,9 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
     case NUM:
       token = jj_consume_token(NUM);
       break;
+    case SYMBOL:
+      token = jj_consume_token(SYMBOL);
+      break;
     case CJK:
       token = jj_consume_token(CJK);
       break;
@@ -77,7 +80,7 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
       jj_la1_0();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x10ff,};
+      jj_la1_0 = new int[] {0x21ff,};
    }
 
   public XTFTokenizer(CharStream stream) {
@@ -156,8 +159,8 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[15];
-    for (int i = 0; i < 15; i++) {
+    boolean[] la1tokens = new boolean[16];
+    for (int i = 0; i < 16; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
@@ -173,7 +176,7 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
         }
       }
     }
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 16; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

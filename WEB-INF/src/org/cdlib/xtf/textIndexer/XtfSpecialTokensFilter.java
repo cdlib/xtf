@@ -72,12 +72,12 @@ public class XtfSpecialTokensFilter extends TokenFilter
 {
   
   /** The character used to mark the start/end of a special bump token. */ 
-  public static final char bumpMarker = 0xAC;
+  public static final char bumpMarker = '\uEBBB';
   
   /** The special marker used to track the location of nodes within 
    *  a chunk of text to be indexed.
    */
-  public static final char nodeMarker = 0xA6;
+  public static final char nodeMarker = '\uE90D';
   
   /** The string used to represent a virtual word in a chunk of text. This
    *  string is chosen in such a way to be an unlikely combination of 

@@ -159,6 +159,7 @@ TOKEN : {					  // token patterns
       "\u2265", // greater than or equal
       "\u00b1", // plus/minus
       "\u00d7", // multiply
+      "\u00f7", // divide
       "\u2219", // period-centered bullet operator
       "\u00b7", // mid-dot (same as period-centered bullet operator)
       "\u007e", // tilde
@@ -257,6 +258,7 @@ org.apache.lucene.analysis.Token next() throws java.io.IOException :
     token = <EMAIL> |
     token = <HOST> |
     token = <NUM> |
+    token = <SYMBOL> |
     token = <CJK> |
     token = <EOF>
    )

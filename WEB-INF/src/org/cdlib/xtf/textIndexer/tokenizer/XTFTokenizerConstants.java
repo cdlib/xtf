@@ -11,13 +11,14 @@ public interface XTFTokenizerConstants {
   int EMAIL = 5;
   int HOST = 6;
   int NUM = 7;
-  int P = 8;
-  int HAS_DIGIT = 9;
-  int ALPHA = 10;
-  int LETTER = 11;
-  int CJK = 12;
-  int DIGIT = 13;
-  int NOISE = 14;
+  int SYMBOL = 8;
+  int P = 9;
+  int HAS_DIGIT = 10;
+  int ALPHA = 11;
+  int LETTER = 12;
+  int CJK = 13;
+  int DIGIT = 14;
+  int NOISE = 15;
 
   int DEFAULT = 0;
 
@@ -30,6 +31,7 @@ public interface XTFTokenizerConstants {
     "<EMAIL>",
     "<HOST>",
     "<NUM>",
+    "<SYMBOL>",
     "<P>",
     "<HAS_DIGIT>",
     "<ALPHA>",

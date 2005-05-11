@@ -35,6 +35,7 @@ import java.util.Set;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.ngram.NgramStopFilter;
+import org.cdlib.xtf.textIndexer.tokenizer.XTFTokenizer;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
