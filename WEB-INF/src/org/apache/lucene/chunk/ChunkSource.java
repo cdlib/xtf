@@ -33,7 +33,7 @@ import org.apache.lucene.index.IndexReader;
  * <p>Created: Jan 15, 2005</p>
  *
  * @author  Martin Haye
- * @version $Id: ChunkSource.java,v 1.2 2005-03-02 21:07:12 mhaye Exp $
+ * @version $Id: ChunkSource.java,v 1.3 2005-05-11 03:25:51 mhaye Exp $
  */
 public class ChunkSource 
 {
@@ -46,6 +46,12 @@ public class ChunkSource
   /** The main document number */
   protected int mainDocNum;
 
+  /** Max number of words per chunk */
+  protected int chunkSize;
+  
+  /** Numer of words one chunk overlaps with the next */
+  protected int chunkOverlap;
+  
   /** Number of words per chunk minus the overlap */
   protected int chunkBump;
 
@@ -89,7 +95,9 @@ public class ChunkSource
     this.field = field;
     this.analyzer = analyzer;
 
-    chunkBump = docNumMap.getChunkSize() - docNumMap.getChunkOverlap();
+    chunkSize = docNumMap.getChunkSize();
+    chunkOverlap = docNumMap.getChunkOverlap();
+    chunkBump = chunkSize - chunkOverlap;
     firstChunk = docNumMap.getFirstChunk(mainDocNum);
     lastChunk = docNumMap.getLastChunk(mainDocNum);
   }
@@ -185,5 +193,11 @@ public class ChunkSource
       throw new RuntimeException(e);
     }
   }
+  
+  /** Retrieve the max number of words per chunk */
+  public int getChunkSize() { return chunkSize; }
+  
+  /** Retrieve the number of words one chunk overlaps with the next */
+  public int getChunkOverlap() { return chunkOverlap; }
 
 } // class ChunkSource
