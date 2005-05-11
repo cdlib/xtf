@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit file="doc1.xml">
+      <meta>
+         <testMeta>x</testMeta>
+      </meta>
+      <snippet sectionType="20-a">e1 e2 e3 <hit>
+            <term>e4</term> 
+            <term>e8</term>
+         </hit> e9 e10</snippet>
+   </docHit>
+</crossQueryResult>

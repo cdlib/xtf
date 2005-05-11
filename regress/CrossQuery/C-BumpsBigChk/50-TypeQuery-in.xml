@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <and field="text">
+    <term>ix</term>
+    <sectionType>
+      <and>
+        <term>50</term>
+        <or>
+          <term>b</term>
+          <term>d</term>
+        </or>
+      </and>
+    </sectionType>
+  </and>
+</query>
