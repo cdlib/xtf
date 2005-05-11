@@ -200,7 +200,7 @@ public class CrossQuery extends TextServlet
                                          new File(getRealPath("")) );
         QueryResult    result   = proc.processRequest( queryReq ); 
         // Format the hits for the output document.
-        formatHits( req, res, attribs, result );
+        formatHits( req, res, attribs, result, queryReq.displayStyle );
 
     } // apply()
 
@@ -266,11 +266,12 @@ public class CrossQuery extends TextServlet
     protected void formatHits( HttpServletRequest  req,
                                HttpServletResponse res,
                                AttribList          attribs,
-                               QueryResult         result )
+                               QueryResult         result,
+                               String              displayStyle )
         throws Exception
     {
         // Locate the display stylesheet.
-        Templates displaySheet = stylesheetCache.find( result.formatter );
+        Templates displaySheet = stylesheetCache.find( displayStyle );
 
         // Make a transformer for this specific query.
         Transformer trans = displaySheet.newTransformer();
@@ -337,7 +338,7 @@ public class CrossQuery extends TextServlet
                 buf.append( "  <docHit" +
                             " rank=\"" + (i+result.startDoc+1) + "\"" +
                             " path=\"" + docHit.filePath() + "\"" +
-                            " score=\"" + Math.round(docHit.score() * 100) + "\"" +
+                            " score=\"" + Math.round(docHit.score * 100) + "\"" +
                             " totalHits=\"" + docHit.totalSnippets() + "\"" +
                             ">\n" );
                 if( !docHit.metaData().isEmpty() ) {
