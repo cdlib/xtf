@@ -29,7 +29,7 @@ import org.apache.lucene.analysis.TokenStream;
  * <p>Created: Dec 13, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: BasicWordIter.java,v 1.2 2005-02-24 05:15:06 mhaye Exp $
+ * @version $Id: BasicWordIter.java,v 1.3 2005-05-11 03:24:59 mhaye Exp $
  */
 public class BasicWordIter implements WordIter, Cloneable
 {
@@ -121,7 +121,7 @@ public class BasicWordIter implements WordIter, Cloneable
   public void seekFirst(int targetPos, boolean force) {
     // Move backward if we have to.
     while (targetPos <= wordPos) {
-      if (!prev(force))
+      if (!prev(force && targetPos < wordPos))
         break;
     }
 
@@ -136,7 +136,7 @@ public class BasicWordIter implements WordIter, Cloneable
   public void seekLast(int targetPos, boolean force) {
     // Move forward if we have to.
     while (targetPos >= wordPos) {
-      if (!next(force))
+      if (!next(force && targetPos > wordPos))
         break;
     }
 
