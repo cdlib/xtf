@@ -370,12 +370,12 @@ public class SearchTree extends LazyDocument
         
         // We'll need the term map later when we're marking hits.
         if( nHits > 0 ) {
-            termMap = docHit.terms();
+            termMap = result.textTerms;
             
             // We also need the stopword set, and the plural map.
-            stopSet   = docHit.stopSet();
-            pluralMap = docHit.pluralMap();
-            accentMap = docHit.accentMap();
+            stopSet   = result.context.stopSet;
+            pluralMap = result.context.pluralMap;
+            accentMap = result.context.accentMap;
         }
 
         // Make a second array of the hits, this time sorted by location.
