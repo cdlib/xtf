@@ -113,7 +113,7 @@ public class SRU extends CrossQuery
         QueryResult    result   = proc.processRequest( queryReq );
         
         // Format the hits for the output document.
-        formatHits( req, res, attribs, result );
+        formatHits( req, res, attribs, result, queryReq.displayStyle );
     }
     
     
