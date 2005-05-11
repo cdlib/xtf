@@ -37,6 +37,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sf.saxon.FeatureKeys;
+import net.sf.saxon.om.NodeInfo;
+
 /**
  * Simple utility class that takes a Node or Source (representing an XML
  * document) and produces an indented string representation of it. This is
@@ -88,6 +91,13 @@ public class XMLWriter
             StringWriter writer = new StringWriter();
             StreamResult tmp = new StreamResult( writer );
             TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
+            
+            // Avoid NamePool translation, as it triggers a Saxon bug. 
+            if( node instanceof NodeInfo ) {
+                factory.setAttribute( FeatureKeys.NAME_POOL, 
+                    ((NodeInfo)node).getNamePool() );
+            }
+            
             Transformer trans = factory.newTransformer();
             Properties props = trans.getOutputProperties();
             props.put( "indent", "yes" );
