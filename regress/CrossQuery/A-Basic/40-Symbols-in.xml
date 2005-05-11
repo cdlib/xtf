@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <or field="text" maxSnippets="100" contextChars="80">
+    <phrase><term>£</term><term>200</term></phrase>
+    <term>©</term>
+    <near slop="10"><term>¾</term><term>÷</term></near>
+  </or>
+</query>

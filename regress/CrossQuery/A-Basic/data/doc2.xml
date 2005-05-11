@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <testMeta xtf:meta="true">test</testMeta>
+    <symbols>
+      Pardon me sir, our bill is £200.
+      Gimme $1000 or I'll shoot.
+      Copyright © 2005.
+      Eat a new WhizBangKlap® today!
+      How full -- ¼, ½, or ¾?
+      What is 42÷6?
+    </symbols>  
+</document>

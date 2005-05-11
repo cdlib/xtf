@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit file="doc2.xml">
+      <meta>
+         <testMeta>test</testMeta>
+      </meta>
+      <snippet>Pardon me sir, our bill is <hit>
+            <term>£</term>
+            <term>200</term>
+         </hit>. Gimme $1000</snippet>
+      <snippet>or I'll shoot. Copyright <hit>
+            <term>©</term>
+         </hit> 2005. Eat a new WhizBangKlap®</snippet>
+      <snippet>today! How full -- ¼, ½, or <hit>
+            <term>¾</term>? What is 42<term>÷</term>
+         </hit>6?</snippet>
+   </docHit>
+</crossQueryResult>
