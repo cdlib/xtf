@@ -1,8 +1,6 @@
 package org.cdlib.xtf.textEngine;
 
-import java.util.Set;
-
-/**
+/*
  * Copyright (c) 2004, Regents of the University of California
  * All rights reserved.
  * 
@@ -32,44 +30,28 @@ import java.util.Set;
  */
 
 /**
- * Represents the results of a query. This consists of a few statistics,
- * followed by an array of document hit(s).
+ * Records field-grouped results from a single query.
  * 
  * @author Martin Haye
  */
-public class QueryResult
+public class ResultField 
 {
-    /** 
-     * Context of the query (including stop word list, and maps for
-     * plurals and accents). CrossQuery doesn't use the context, but dynaXML 
-     * does.
-     */
-    public QueryContext context;
-    
-    /** 
-     * A set that can be used to check whether a given term is present
-     * in the original query that produced this hit. Only applies to the "text"
-     * field (i.e. the full text of the document.) CrossQuery doesn't use 
-     * the text term set, but dynaXML does.
-     */
-    public Set textTerms;
-    
-    /** 
-     * Total number of documents matched by the query (possibly many more
-     * than are returned in this particular request.)
-     */
-    public int totalDocs;
-    
-    /** Ordinal rank of the first document hit returned (0-based) */
-    public int startDoc;
-    
-    /** Oridinal rank of the last document hit returned, plus 1 */
-    public int endDoc;
-    
-    /** One hit per document */
-    public DocHit[] docHits;
-    
-    /** Results grouped by field value (if grouping specified in query) */
-    public ResultField[] fields;
-    
-} // class QueryResult
+  /** Name of the meta-data field by which the results are grouped */
+  public String field;
+  
+  /** 
+   * Total number of groups (possibly many more than are returned in the 
+   * current request.
+   */
+  public int totalGroups;
+  
+  /** Ordinal rank of the first group returned (zero-based) */
+  public int startGroup;
+  
+  /** Ordinal rank of last group returned, plus one */
+  public int endGroup;
+  
+  /** The actual groups (some of which contain hits if specified in query) */
+  public ResultGroup[] groups;
+  
+} // class ResultField

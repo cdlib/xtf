@@ -158,8 +158,21 @@ public class DefaultQueryProcessor extends QueryProcessor
         //
         final PriorityQueue docHitQueue = createHitQueue( reader, req );
         
-        // If a plural map is present, change plural words to non-plural.
+        // Start making the result by filling in its context.
+        QueryResult result = new QueryResult();
+        result.context = new QueryContext();
+        result.context.accentMap = accentMap;
+        result.context.pluralMap = pluralMap;
+        result.context.stopSet   = stopSet;
+        
+        // If no query was specified, then there will be no results.
         Query query = req.query;
+        if( query == null ) {
+            result.docHits = new DocHit[0];
+            return result;
+        }
+        
+        // If a plural map is present, change plural words to non-plural.
         if( pluralMap != null )
             query = new PluralFoldingRewriter(pluralMap).rewriteQuery(query);
         
@@ -173,13 +186,6 @@ public class DefaultQueryProcessor extends QueryProcessor
                             rewriteQuery(query);
         
         final Query finalQuery = query;
-        
-        if( finalQuery == null ) {
-            QueryResult result = new QueryResult();
-            result.docHits = new DocHit[0];
-            return result;
-        }
-        
         if( finalQuery != req.query )
             Trace.debug( "Rewritten query: " + finalQuery.toString() );
 
@@ -201,13 +207,8 @@ public class DefaultQueryProcessor extends QueryProcessor
                 if( docNumMap.getFirstChunk(doc) < 0 )
                     return;
                 
-                // Queue the hit.
-                DocHit docHit = new DocHit( doc, score, fieldSpans );
-                
-                // If the score is high enough, add it to the queue and bump
-                // the count of documents hit.
-                //
-                docHitQueue.insert( docHit );
+                // Queue the hit and bump the count of documents hit.
+                docHitQueue.insert( new DocHitImpl(doc, score, fieldSpans) );
                 nDocsHit++;
             } // collect()
             
@@ -221,11 +222,11 @@ public class DefaultQueryProcessor extends QueryProcessor
         // Note that they come out of the hit queue in backwards order.
         //
         int nFound = docHitQueue.size();
-        DocHit[] hitArray = new DocHit[nFound];
+        DocHitImpl[] hitArray = new DocHitImpl[nFound];
         float maxDocScore = 0.0f;
         for( int i = 0; i < nFound; i++ ) {
             int index = nFound - i - 1;
-            hitArray[index] = (DocHit) docHitQueue.pop();
+            hitArray[index] = (DocHitImpl) docHitQueue.pop();
             maxDocScore = Math.max( maxDocScore, hitArray[index].score );
         }
 
@@ -244,6 +245,8 @@ public class DefaultQueryProcessor extends QueryProcessor
                                                       req.termMode );
         for( int i = req.startDoc; i < nFound; i++ ) {
             hitArray[i].finish( snippetMaker, docScoreNorm );
+            if( result.textTerms == null )
+                result.textTerms = hitArray[i].textTerms();
             hitVec.add( hitArray[i] );
         }
 
@@ -254,8 +257,6 @@ public class DefaultQueryProcessor extends QueryProcessor
         assert req.maxDocs < 0 || hitVec.size() <= req.maxDocs;
         
         // And we're done. Pack up the results into a tidy array.
-        QueryResult result = new QueryResult();
-        result.formatter = req.displayStyle;
         if( hitVec.isEmpty() ) {
             result.docHits = new DocHit[0];
             return result;

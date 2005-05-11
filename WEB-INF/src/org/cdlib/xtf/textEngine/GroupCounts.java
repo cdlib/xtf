@@ -45,8 +45,13 @@ import org.apache.lucene.util.PriorityQueue;
 public class GroupCounts 
 {
   private GroupData     data;
+  
   private String        hitGroupName;
   private PriorityQueue hitQueue;
+  private int           hitStartDoc;
+  private int           hitMaxDocs;
+  private int           hitTotalDocs;
+  
   private int[]         counts;
   
   /** Construct an object with all counts at zero */
@@ -56,9 +61,16 @@ public class GroupCounts
   }
   
   /** Record hits for a single group only */
-  public void recordHits( String value, PriorityQueue hitQueue ) {
-    hitGroupName = value.intern();
-    this.hitQueue = hitQueue;
+  public void recordHits( String value, 
+                          PriorityQueue hitQueue,
+                          int startDoc,
+                          int maxDocs ) 
+  {
+    hitGroupName     = value.intern();
+    this.hitQueue    = hitQueue;
+    this.hitStartDoc = startDoc;
+    this.hitMaxDocs  = maxDocs;
+    hitTotalDocs     = 0;
   }
   
   /** Add a document hit to the counts */
@@ -77,8 +89,10 @@ public class GroupCounts
             counts[group]++;
             
             // If this is the group we're recording hits for, do it.
-            if( data.name(group) == hitGroupName )
-                hitQueue.insert( new DocHit(doc, score, spans) );
+            if( data.name(group) == hitGroupName ) {
+                hitQueue.insert( new DocHitImpl(doc, score, spans) );
+                hitTotalDocs++;
+            }
         } // for group
     } // for link
     
@@ -87,33 +101,39 @@ public class GroupCounts
   /**
    * Retrieve all or a subset of the groups and their associated counts.
    * 
-   * @param sortBy  How to sort the groups: "count" or "value" are the
-   *                only permissible options.
-   * @param start   First group to return (zero-based)
-   * @param max     Max # of groups to return
-   * @return        Array of the groups
+   * @param sortBy      How to sort the groups: "count" or "value" are the
+   *                    only permissible options.
+   * @param startGroup  Ordinal rank of first group to return (zero-based)
+   * @param maxGroups   Max # of groups to return
+   * @return            Array of the groups
    */
-  public Group[] getGroups( String sortBy, int start, int max )
+  public ResultField getGroups( String sortBy, int startGroup, int maxGroups )
   {
-    // Locate the highest level in the hierarchy with differences.
+    // Create an empty result to start with
+    ResultField resultField = new ResultField();
+    resultField.field = data.field();
+    
+    // Locate the highest level in the hierarchy with differences. If the root
+    // is the only node with a count, return an empty result set.
+    //
     int parent = findBestParent( 0 );
-    if( parent < 0 )
-        return new Group[0];
+    if( parent < 0 ) {
+        resultField.groups = new ResultGroup[0];
+        return resultField;
+    }
     
     // Build an array of the groups at that level.
     ArrayList groups = new ArrayList();
-    int rank = 0;
     for( int kid = data.child(parent); kid >= 0; kid = data.sibling(kid) ) 
     {
         if( counts[kid] == 0 )
             continue;
         
-        Group g = new Group();
-        g.rank = rank++;
+        ResultGroup g = new ResultGroup();
         g.value = data.name( kid );
-        g.count = counts[kid];
+        g.totalDocs = counts[kid];
         if( g.value == hitGroupName )
-            g.docHits = makeDocHits();
+            makeDocHits( g );
         
         groups.add( g );
     }
@@ -122,21 +142,29 @@ public class GroupCounts
     if( sortBy.equals("count") ) {
         Collections.sort( groups, new Comparator() { 
             public int compare( Object o1, Object o2 ) {
-                Group g1 = (Group) o1;
-                Group g2 = (Group) o2;
-                if( g1.count != g2.count )
-                    return g1.count - g2.count;
+                ResultGroup g1 = (ResultGroup) o1;
+                ResultGroup g2 = (ResultGroup) o2;
+                if( g1.totalDocs != g2.totalDocs )
+                    return g1.totalDocs - g2.totalDocs;
                 return g1.value.compareTo( g2.value );
             }
         } );
     }
+    else
+        assert sortBy.equals("value") : "Unsupported sortGroupsBy option";
     
     // Now extract just the requested part.
-    int from = Math.min( groups.size(), start );
-    int to   = Math.min( groups.size(), start + max );
+    int from = Math.min( groups.size(), startGroup );
+    int to   = Math.min( groups.size(), startGroup + maxGroups );
     int n    = to - from;
-    Group[] array = (Group[]) groups.subList(from, to).toArray(new Group[n]);
-    return array;
+    
+    resultField.totalGroups = groups.size();
+    resultField.startGroup  = from;
+    resultField.endGroup    = to;
+    resultField.groups      = (ResultGroup[]) groups.subList(from, to)
+                                                  .toArray(new ResultGroup[n]);
+    
+    return resultField;
     
   } // getGroups()
   
@@ -167,22 +195,23 @@ public class GroupCounts
   } // findBestParent()
   
   /** Construct the array of doc hits for the hit group. */
-  private DocHit[] makeDocHits()
+  private void makeDocHits( ResultGroup group )
   {
-    int nHits = hitQueue.size();
-    DocHit[] hits = new DocHit[nHits];
-    for( int i = 0; i < nHits; i++ )
-        hits[i] = (DocHit) hitQueue.pop();
-    return hits;
+    int i;
+    
+    for( i = 0; i < hitStartDoc; i++ )
+        hitQueue.pop();
+    
+    int nHits = Math.min( hitQueue.size(), hitMaxDocs );
+    group.docHits = new DocHit[nHits];
+    
+    group.totalDocs = hitTotalDocs;
+    group.startDoc  = hitStartDoc;
+    group.endDoc    = hitStartDoc + nHits;
+
+    for( i = 0; i < nHits; i++ )
+        group.docHits[i] = (DocHit) hitQueue.pop();
+    
   } // makeDocHits()
   
-  /** Contains all the information for a single group */
-  public static class Group
-  {
-    int      rank;
-    String   value;
-    int      count;
-    DocHit[] docHits;
-  } // class Group
-
 } // class GroupCounts

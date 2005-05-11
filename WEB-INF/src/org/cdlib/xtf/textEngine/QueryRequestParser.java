@@ -448,6 +448,8 @@ public class QueryRequestParser
         
         // Do the bulk of the parsing below...
         Query result = parseQuery2( parent, name, field, maxSnippets );
+        if( result == null )
+            return null;
         
         // And set any boost that was specified.
         if( boost != 1.0f )

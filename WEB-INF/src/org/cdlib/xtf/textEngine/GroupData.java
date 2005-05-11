@@ -50,6 +50,8 @@ import org.apache.lucene.index.TermEnum;
  */
 public class GroupData 
 {
+  private String   field;
+  
   private int[]    docs;
   private int[]    links;
   private String[] groups;
@@ -69,6 +71,8 @@ public class GroupData
    */
   public GroupData( IndexReader reader, String field ) throws IOException
   { 
+    this.field = field;
+   
     TermPositions termPositions = reader.termPositions();
     TermEnum      termEnum      = reader.terms(new Term(field, ""));
     
@@ -343,6 +347,11 @@ public class GroupData
     int n = links[linkId];
     return (n < 0) ? -n : n;
   } // getLinkGroup()
+
+  /** Get the name of the grouping field */
+  public final String field() {
+    return field;
+  }
   
   /** Get the total number of groups */
   public final int nGroups() {

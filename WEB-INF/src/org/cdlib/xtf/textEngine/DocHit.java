@@ -29,19 +29,8 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Set;
-
-import org.apache.lucene.document.DateField;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.mark.FieldSpans;
-import org.apache.lucene.mark.SpanDocument;
 import org.apache.lucene.search.ScoreDoc;
-import org.cdlib.xtf.textIndexer.XtfSpecialTokensFilter;
 import org.cdlib.xtf.util.AttribList;
-import org.cdlib.xtf.util.CharMap;
-import org.cdlib.xtf.util.WordMap;
 
 /**
  * Represents a query hit at the document level. May contain {@link Snippet}s
@@ -49,36 +38,8 @@ import org.cdlib.xtf.util.WordMap;
  * 
  * @author Martin Haye
  */
-public class DocHit extends ScoreDoc
+public abstract class DocHit extends ScoreDoc
 {
-    // The following are package-private, not class-private, because they are
-    // accessed by DocHitQueue or other package classes.
-    //
-    
-    /** Used to load and format snippets */
-    SnippetMaker snippetMaker;
-    
-    /** Spans per field */
-    private FieldSpans fieldSpans;
-    
-    /** Array of pre-built snippets */
-    private Snippet[] snippets;
-     
-    /** Index key for this document */
-    private String docKey;
-    
-    /** Date the original source XML document was last modified */
-    private long fileDate = -1;
-    
-    /** Total number of chunks for this document */
-    private int chunkCount = -1;
-    
-    /** Document's meta-data fields (copied from the docInfo chunk) */
-    private AttribList metaData;
-    
-    /** Bump marker used to denote different meta-data fields w/ same name */
-    private char bumpMarker = XtfSpecialTokensFilter.bumpMarker;
-    
     /**
      * Construct a document hit. Package-private because these should only
      * be constructed inside the text engine.
@@ -86,208 +47,46 @@ public class DocHit extends ScoreDoc
      * @param docNum    Lucene ID for the document info chunk
      * @param score     Score for this hit
      */
-    DocHit( int docNum, float score, FieldSpans spans ) {
+    DocHit( int docNum, float score ) {
         super(docNum, score);
-        this.score      = score;
-        this.fieldSpans = spans;
-    }
-    
-    /**
-     * Called after all hits have been gathered to normalize the scores and
-     * associate a snippetMaker for later use.
-     * 
-     * @param snippetMaker    Will be used later by snippet() to actually
-     *                        create the snippets.
-     * @param docScoreNorm    Multiplied into the document's score
-     */
-    void finish( SnippetMaker snippetMaker,
-                 float        docScoreNorm )
-    {
-        // Record the snippet maker... we'll use it later if loading is
-        // necessary.
-        //
-        this.snippetMaker = snippetMaker;
-
-        // Adjust our score.
-        score *= docScoreNorm;
-    } // finish()
-    
-    /**
-     * Read in the document info chunk and record the path, date, etc. that
-     * we find there.
-     */
-    private void load()
-    {
-        // Read in our fields
-        SpanDocument spanDoc;
-        try {
-            assert !snippetMaker.reader.isDeleted( doc );
-            spanDoc = new SpanDocument( snippetMaker.reader.document(doc),
-                                        fieldSpans );
-        }
-        catch( IOException e ) {
-            throw new HitLoadException( e );
-        }
-        
-        // Record the ones of interest.
-        metaData = new AttribList();
-        for( Enumeration e = spanDoc.fields(); e.hasMoreElements(); ) {
-            Field f = (Field) e.nextElement();
-            String name = f.name();
-            String value = f.stringValue();
-            
-            if( name.equals("key") )
-                docKey = value;
-            else if( name.equals("fileDate") )
-                fileDate = DateField.stringToTime( value );
-            else if( name.equals("chunkCount") )
-                chunkCount = Integer.parseInt( value );
-            else if( !name.equals("docInfo") ) 
-            {
-                // Lucene will fail subtly if we add two fields with the same 
-                // name. Basically, the terms for each field are added at 
-                // overlapping positions, causing a phrase search to easily 
-                // span them. To counter this, the text indexer artificially 
-                // introduces bump markers between them. And now, we reverse 
-                // the process so it's invisible to the end-user.
-                //
-                String markedValue = 
-                            snippetMaker.markField(spanDoc, name, value);
-                if( markedValue.indexOf(bumpMarker) < 0 ) {
-                    metaData.put( name, markedValue );
-                    continue;
-                }
-                    
-                int startPos = 0;
-                while( startPos < markedValue.length() ) {
-                    int bumpPos = markedValue.indexOf( bumpMarker, startPos );
-                    if( bumpPos < 0 ) {
-                        metaData.put( name, markedValue.substring(startPos) );
-                        break;
-                    }
-                    
-                    String val = markedValue.substring(startPos, bumpPos);
-                    metaData.put( name, val );
-                    
-                    startPos = 1 + markedValue.indexOf( bumpMarker, bumpPos+1 );
-                    if( Character.isWhitespace(markedValue.charAt(startPos)) )
-                        startPos++; 
-                }
-            }
-        }
-        
-        // We should have gotten at least the special fields.
-        assert docKey     != null : "Incomplete data in index - missing 'key'";
-        assert chunkCount != -1   : "Incomplete data in index - missing 'chunkCount'";
-
-    } // finish()
-    
-    /**
-     * Fetch a map that can be used to check whether a given term is present
-     * in the original query that produced this hit.
-     */
-    public Set terms()
-    {
-        return fieldSpans.getTerms("text");
-    }
-    
-    /**
-     * Fetch the set of stopwords used when processing the query.
-     */
-    public Set stopSet()
-    {
-        return snippetMaker.stopSet();
-    }
-    
-    /**
-     * Fetch the plural map used when processing the query.
-     */
-    public WordMap pluralMap()
-    {
-        return snippetMaker.pluralMap();
-    }
-    
-    /**
-     * Fetch the accent map used when processing the query.
-     */
-    public CharMap accentMap()
-    {
-        return snippetMaker.accentMap();
-    }
-    
-    /**
-     * Return the relevance score (0.0 to 1.0) for this hit, as computed by
-     * Lucene.
-     */
-    public final float score() {
-        return score;
-    }
-    
-    /**
-     * Return the date (as the number of milliseconds since Jan 1, 1970) of
-     * the source file as recorded in the index.
-     */
-    public final long fileDate() {
-        if( fileDate < 0 ) load();
-        return fileDate;
     }
     
     /**
      * Retrieve the original file path as recorded in the index (if any.)
      */
-    public final String filePath()
-    {
-        if( docKey == null ) load();
-        return docKey;
-    } // filePath()
+    public abstract String filePath();
     
     /**
      * Retrieve a list of all meta-data name/value pairs associated with this
      * document.
      */
-    public final AttribList metaData() {
-        if( docKey == null ) load();
-        return metaData;
-    }
+    public abstract AttribList metaData();
 
     /** Return the total number of snippets found for this document (not the
      *  number actually returned, which is limited by the max # of snippets
      *  specified in the query.)
      */
-    public final int totalSnippets() {
-        if( fieldSpans == null )
-            return 0;
-        return fieldSpans.getSpanTotal("text");
-    }
+    public abstract int totalSnippets();
     
     /**
      * Return the number of snippets available (limited by the max # specified
      * in the original query.)
      */
-    public final int nSnippets() {
-        if( fieldSpans == null )
-            return 0;
-        return fieldSpans.getSpanCount("text");
-    }
+    public abstract int nSnippets();
     
     /**
-     * Retrieve the specified snippet.
-     * 
+     * Retrieve the specified snippet. In general, crossQuery will set getText
+     * to 'true', while dynaXML may set it either way, depending on whether 
+     * the document result formatter stylesheet references the &lt;snippet&gt;
+     * elements in the SearchTree. It's always safe, but not quite as 
+     * efficient, to assume 'true'. 
+     *
      * @param hitNum    0..nSnippets()
      * @param getText   true to fetch the snippet text in context, false to
-     *                  only fetch the rank, score, etc.
-     */
-    public final Snippet snippet( int hitNum, boolean getText ) 
-    {
-        // If we haven't built the snippets yet (or if we didn't get the
-        // text for them), do so now.
-        //
-        if( snippets == null || (getText && snippets[hitNum].text == null) )
-            snippets = snippetMaker.makeSnippets( fieldSpans, doc, 
-                                                  "text", getText );
-        
-        // Return the pre-built snippet.
-        return snippets[hitNum];
-    } // snippet()
-    
+     *                  optionally skip that work and only fetch the rank, 
+     *                  score, etc. 
+     *                  
+     */ 
+    public abstract Snippet snippet( int hitNum, boolean getText ); 
+
 } // class DocHit
