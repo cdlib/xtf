@@ -449,7 +449,7 @@
   
   <xsl:template match="docHit">
 
-    <xsl:variable name="fullark" select="meta/identifier"/>
+    <xsl:variable name="fullark" select="meta/identifier[1]"/>
     <xsl:variable name="ark" select="substring($fullark, string-length($fullark)-9)"/>
     <xsl:variable name="collection" select="string(meta/collection)"/>
 
