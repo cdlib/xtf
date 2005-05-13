@@ -1,18 +1,5 @@
 package org.cdlib.xtf.textEngine;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Vector;
-
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermPositions;
-import org.apache.lucene.index.TermEnum;
-
 /*
  * Copyright (c) 2004, Regents of the University of California
  * All rights reserved.
@@ -42,6 +29,22 @@ import org.apache.lucene.index.TermEnum;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Vector;
+import java.util.WeakHashMap;
+
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermPositions;
+import org.apache.lucene.index.TermEnum;
+import org.cdlib.xtf.util.Trace;
+
 /**
  * This class contains the mapping, for a given field, from documents to
  * one or more term values in that document.
@@ -50,16 +53,66 @@ import org.apache.lucene.index.TermEnum;
  */
 public class GroupData 
 {
+  /** The particular field we have data from */
   private String   field;
   
+  /** Array of document IDs */
   private int[]    docs;
+  
+  /** 
+   * Array of links: 0..docs.length is either positive to indicate a single group
+   * for this doc, or negative to indicate a link later in the array to a list
+   * of groups. docs.length..links.length holds the extra groups; each entry is
+   * a group number, negative to mean end of the groups for a single doc.
+   */ 
   private int[]    links;
+  
+  /** Array of group names */
   private String[] groups;
   
-  // Hierarchy relationships
+  /** The parent of each group, or -1 for none */
   private int[]    groupParents;
+  
+  /** The first child of each group, or -1 for none. */
   private int[]    groupChildren;
+  
+  /** The next sibling of each group, or -1 for none. */
   private int[]    groupSiblings;
+  
+  /** Cached data. If the reader goes away, our cache will too. */
+  private static WeakHashMap cache = new WeakHashMap();
+  
+  /**
+   * Retrieves GroupData for a given field from a given reader. Maintains a cache
+   * so that if the same field is requested again for this reader, we don't have
+   * to re-read the group data.
+   * 
+   * @param reader  Where to read the data from
+   * @param field   Which field to read
+   * @return        Group data for the specified field
+   */
+  public static GroupData getCachedData( IndexReader reader, String field )
+    throws IOException
+  {
+    // See if we have a cache for this reader.
+    HashMap readerCache = (HashMap) cache.get( reader );
+    if( readerCache == null ) {
+        readerCache = new HashMap();
+        cache.put( reader, readerCache );
+    }
+    
+    // Now see if we've already read data for this field.
+    GroupData data = (GroupData) readerCache.get( field );
+    if( data == null )
+    {
+        // Don't have cached data, so read and remember it.
+        data = new GroupData( reader, field );
+        readerCache.put( field, data );
+    }
+    
+    return data;
+    
+  } // getCachedData()
   
   /**
    * Read in the term data for a given field, and build up the various arrays
@@ -95,8 +148,8 @@ public class GroupData
   
         do {
             Term term = termEnum.term();
-            if( term.field() != field )
-              break;
+            if( !term.field().equals(field) )
+                break;
     
             // Add a group key for this term. Also, if it's hierarchical,
             // find the ancestor groups and add them to the child map.
@@ -126,29 +179,6 @@ public class GroupData
                 
                 docGroups.add( termKey );
                 nLinks++;
-                
-                // Check that the term appears only at position zero. If it
-                // doesn't, that's a strong indication that the field was
-                // tokenized, and we don't support that.
-                //
-                // Note that iterating the positions does take some time,
-                // but it seems worth it to avoid the confusion that results
-                // when people try to sort by a tokenized field, as they seem
-                // to do quite often when starting out.
-                //
-                int freq = termPositions.freq();
-                for( int i = 0; i < freq; i++ ) {
-                    int pos = termPositions.nextPosition();
-                    if( pos != 0 ) {
-                        throw new RuntimeException( 
-                            "Cannot group/sort by tokenized field '" +
-                            field + "'. Suggestion: make tokenzied and " +
-                            "un-tokenized versions of the field at index " +
-                            "time (with different field names). Search on " +
-                            "the tokenized field, sort/group on the " +
-                            "un-tokenized field." );
-                    }
-                } // for i
             } // while( termPositions.next() )
         } while (termEnum.next());
     } finally {
@@ -208,12 +238,12 @@ public class GroupData
         // between the parent and its child
         //
         else {
-            Vector parentChildVec = (Vector) childMap.get( parentKey );
-            if( parentChildVec == null ) {
-                parentChildVec = new Vector();
-                childMap.put( parentKey, parentChildVec );
+            HashSet parentChildSet = (HashSet) childMap.get( parentKey );
+            if( parentChildSet == null ) {
+                parentChildSet = new HashSet();
+                childMap.put( parentKey, parentChildSet );
             }
-            parentChildVec.add( childKey );
+            parentChildSet.add( childKey );
         }
         
         // Stop when we reach the root.
@@ -255,12 +285,17 @@ public class GroupData
     for( Iterator iter = childMap.keySet().iterator(); iter.hasNext(); ) {
         Integer parentKey = (Integer) iter.next();
         int     parent    = parentKey.intValue();
-        Vector  childVec  = (Vector) childMap.get( parentKey );
+        HashSet childSet  = (HashSet) childMap.get( parentKey );
+        
+        assert groupChildren[parent] < 0 : "multiple child lists for parent"; 
 
         int prev = -1;
-        for( int i = 0; i < childVec.size(); i++ ) {
-            int child = ((Integer) childVec.get(i)).intValue();
+        ArrayList children = new ArrayList( childSet );
+        Collections.sort( children );
+        for( int i = 0; i < children.size(); i++ ) {
+            int child = ((Integer) children.get(i)).intValue();
             groupParents[child] = parent;
+            assert child != prev;
             if( prev < 0 )
                 groupChildren[parent] = child;
             else
@@ -294,9 +329,9 @@ public class GroupData
         // record a link to a list of groups.
         //
         if( docGroups.size() == 1 )
-            links[docNum] = ((Integer)docGroups.get(0)).intValue();
+            links[i] = ((Integer)docGroups.get(0)).intValue();
         else {
-            links[docNum] = -topLink;
+            links[i] = -topLink;
             for( Iterator iter = docGroups.iterator(); iter.hasNext(); ) {
                 int groupNum = ((Integer)iter.next()).intValue();
                 if( !iter.hasNext() )
@@ -377,4 +412,17 @@ public class GroupData
   public final int sibling( int groupId ) {
     return groupSiblings[groupId]; 
   }
+  
+  /** Output the groups to the info trace stream */
+  public void debugGroups( int parent ) 
+  {
+    Trace.info( groups[parent] );
+    Trace.tab();
+    for( int kid = groupChildren[parent]; kid >= 0; kid = groupSiblings[kid] ) {
+        assert groupParents[kid] == parent;
+        debugGroups( kid );
+    }
+    Trace.untab();
+  } // debugGroups()
+  
 } // GroupData

@@ -39,10 +39,10 @@ public class GroupSpec
   /** Name of the meta-data field to group by */
   public String field;
   
-  /** How to sort the groups. Currently "value" and "count" are the only
+  /** How to sort the groups. Currently "value" and "totalDocs" are the only
    *  permissible values.
    */
-  public String sortGroupsBy = "count";
+  public String sortGroupsBy = "totalDocs";
   
   /** Subset specifications */
   public Subset[] subsets;

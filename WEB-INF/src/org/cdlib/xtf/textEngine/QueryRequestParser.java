@@ -285,10 +285,10 @@ public class QueryRequestParser
             if( el.attrName(i).equalsIgnoreCase("field") )
                 gs.field = el.attrValue( i );
             else if( el.attrName(i).equalsIgnoreCase("sortGroupsBy") ) {
-                if( el.attrValue(i).matches("^count$|^value$") )
+                if( el.attrValue(i).matches("^totalDocs$|^value$") )
                     gs.sortGroupsBy = el.attrValue( i );
                 else {
-                    error( "Expected 'count' or 'value' for '" +
+                    error( "Expected 'totalDocs' or 'value' for '" +
                            el.attrName(i) + "' attribute, but found '" +
                            el.attrValue(i) + "' (on '" + el.name() + 
                            " element)" );
@@ -346,7 +346,6 @@ public class QueryRequestParser
                     subset.value = attrVal;
                 }
                 else if( attrName.equalsIgnoreCase("startDoc") && !countOnly) {
-                    if( countOnly )
                     subset.startDoc = parseIntAttrib(child, attrName) - 1;
                     if( subset.startDoc < 0 )
                         error( "'" + attrName + "' attribute on '" +
@@ -354,6 +353,8 @@ public class QueryRequestParser
                 }
                 else if( attrName.equalsIgnoreCase("maxDocs") && !countOnly ) {
                     subset.maxDocs = parseIntAttrib( child, attrName );
+                    if( subset.maxDocs < 0 )
+                        subset.maxDocs = 999999999;
                     gotMaxDocs = true;
                 }
                 else if( attrName.equalsIgnoreCase("sortDocsBy") && !countOnly )
@@ -379,6 +380,12 @@ public class QueryRequestParser
             // Add this subset to our list.
             subsets.add( subset );
         } // for i
+        
+        // If any subsets, convert to an array.
+        if( !subsets.isEmpty() ) {
+            gs.subsets = (GroupSpec.Subset[]) subsets.toArray(
+                new GroupSpec.Subset[subsets.size()] );
+        }
         
         // Finally, add the new group spec to the query.
         groupSpecs.add( gs );

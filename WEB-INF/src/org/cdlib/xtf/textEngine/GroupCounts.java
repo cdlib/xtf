@@ -53,11 +53,15 @@ public class GroupCounts
   private int           hitTotalDocs;
   
   private int[]         counts;
+  private int[]         marks;
+  
+  private int           curMark = 1000;
   
   /** Construct an object with all counts at zero */
   public GroupCounts( GroupData groupData ) {
     this.data = groupData;
     counts = new int[data.nGroups()];
+    marks  = new int[data.nGroups()];
   }
   
   /** Record hits for a single group only */
@@ -77,6 +81,9 @@ public class GroupCounts
   public void addDoc( int doc, float score, FieldSpans spans )
   {
     int link, group;
+    
+    // Use a unique mark for each doc.
+    curMark++;
 
     // Process each group this document is in.
     for( link = data.firstLink(doc); link >= 0; link = data.nextLink(link) )
@@ -86,7 +93,15 @@ public class GroupCounts
              group >= 0; 
              group = data.parent(group) )
         {
+            // Don't count the same doc twice for one group.
+            if( marks[group] == curMark )
+                break;
+            
+            // Bump the count, and mark this group so we don't do it for this
+            // doc again.
+            //
             counts[group]++;
+            marks[group] = curMark;
             
             // If this is the group we're recording hits for, do it.
             if( data.name(group) == hitGroupName ) {
@@ -132,6 +147,8 @@ public class GroupCounts
         ResultGroup g = new ResultGroup();
         g.value = data.name( kid );
         g.totalDocs = counts[kid];
+        
+        // Expand one group specified by name.
         if( g.value == hitGroupName )
             makeDocHits( g );
         
@@ -139,13 +156,13 @@ public class GroupCounts
     }
     
     // If sorting by count, we have to reorder.
-    if( sortBy.equals("count") ) {
+    if( sortBy.equals("totalDocs") ) {
         Collections.sort( groups, new Comparator() { 
             public int compare( Object o1, Object o2 ) {
                 ResultGroup g1 = (ResultGroup) o1;
                 ResultGroup g2 = (ResultGroup) o2;
                 if( g1.totalDocs != g2.totalDocs )
-                    return g1.totalDocs - g2.totalDocs;
+                    return g2.totalDocs - g1.totalDocs;
                 return g1.value.compareTo( g2.value );
             }
         } );
@@ -161,6 +178,7 @@ public class GroupCounts
     resultField.totalGroups = groups.size();
     resultField.startGroup  = from;
     resultField.endGroup    = to;
+    resultField.totalDocs   = counts[parent]; 
     resultField.groups      = (ResultGroup[]) groups.subList(from, to)
                                                   .toArray(new ResultGroup[n]);
     
@@ -197,20 +215,23 @@ public class GroupCounts
   /** Construct the array of doc hits for the hit group. */
   private void makeDocHits( ResultGroup group )
   {
-    int i;
+    int nFound = hitQueue.size();
+    DocHitImpl[] hitArray = new DocHitImpl[nFound];
+    float maxDocScore = 0.0f;
+    for( int i = 0; i < nFound; i++ ) {
+        int index = nFound - i - 1;
+        hitArray[index] = (DocHitImpl) hitQueue.pop();
+    }
     
-    for( i = 0; i < hitStartDoc; i++ )
-        hitQueue.pop();
-    
-    int nHits = Math.min( hitQueue.size(), hitMaxDocs );
+    int nHits = Math.min( nFound, hitMaxDocs );
     group.docHits = new DocHit[nHits];
     
     group.totalDocs = hitTotalDocs;
     group.startDoc  = hitStartDoc;
     group.endDoc    = hitStartDoc + nHits;
 
-    for( i = 0; i < nHits; i++ )
-        group.docHits[i] = (DocHit) hitQueue.pop();
+    for( int i = hitStartDoc; i < nFound; i++ )
+        group.docHits[i-hitStartDoc] = hitArray[i];
     
   } // makeDocHits()
   

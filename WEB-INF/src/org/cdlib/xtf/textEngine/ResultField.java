@@ -51,6 +51,9 @@ public class ResultField
   /** Ordinal rank of last group returned, plus one */
   public int endGroup;
   
+  /** Total number of documents that had some value for this field */
+  public int totalDocs;
+  
   /** The actual groups (some of which contain hits if specified in query) */
   public ResultGroup[] groups;
   
