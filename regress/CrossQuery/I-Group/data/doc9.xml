@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <title xtf:tokenize="no" xtf:meta="yes">Document 9 is absolutely cool</title>
+    <subject xtf:tokenize="no" xtf:meta="true">Classics</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">Ancient History</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">Politics</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">Classical History</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">Classical Religions</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">Classical Politics</subject>
+    <type xtf:meta="true">text</type>
+    <collection xtf:meta="true">UC</collection>
+    <geography xtf:meta="true">US:California:Oakland</geography>
+    <geography-sort xtf:meta="true" xtf:tokenize="false">US:California:Oakland</geography-sort>
+    Document 9 text here. Blah blah blah.
+</document>

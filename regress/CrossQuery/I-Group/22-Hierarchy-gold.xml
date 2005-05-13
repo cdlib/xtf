@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
+   <groupedField field="geography-sort" totalGroups="3" startGroup="1" endGroup="3">
+      <group value="US:California" totalDocs="6" startDoc="0" endDoc="0"/>
+      <group value="US:Nevada" totalDocs="2" startDoc="1" endDoc="2">
+         <docHit file="doc4.xml">
+            <meta>
+               <title>Why? Document 4</title>
+               <subject>Classics</subject>
+               <subject>Ancient History</subject>
+               <subject>Politics</subject>
+               <subject>Classical History</subject>
+               <subject>Classical Religions</subject>
+               <subject>Classical Politics</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US:Nevada:Las Vegas</geography>
+               <geography-sort>US:Nevada:Las Vegas</geography-sort>
+            </meta>
+         </docHit>
+         <docHit file="doc5.xml">
+            <meta>
+               <title>This is Document 5</title>
+               <subject>Environmental Studies</subject>
+               <subject>California and the West</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US:Nevada:Reno</geography>
+               <geography-sort>US:Nevada:Reno</geography-sort>
+            </meta>
+         </docHit>
+      </group>
+      <group value="US:Oregon" totalDocs="1" startDoc="0" endDoc="0"/>
+   </groupedField>
+</crossQueryResult>

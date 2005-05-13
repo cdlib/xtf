@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <title xtf:tokenize="no" xtf:meta="yes">Don't read Document 6</title>
+    <subject xtf:tokenize="no" xtf:meta="true">Environmental Studies</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">African History</subject>
+    <type xtf:meta="true">text</type>
+    <collection xtf:meta="true">UC</collection>
+    <geography xtf:meta="true">US:Oregon:Grants Pass</geography>
+    <geography-sort xtf:meta="true" xtf:tokenize="false">US:Oregon:Grants Pass</geography-sort>
+    Document 6 text here. Blah blah blah.
+</document>

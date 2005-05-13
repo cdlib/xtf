@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TEI.2 id="ft1c6003wp" xmlns:xtf="http://cdlib.org/xtf">
+    <title xtf:tokenize="no" xtf:meta="yes">Document 10 rocks</title>
+    <subject xtf:tokenize="no" xtf:meta="true">Environmental Studies</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">California and the West</subject>
+    <type xtf:meta="true">text</type>
+    <collection xtf:meta="true">UC</collection>
+    <geography xtf:meta="true">US:California:Berkeley</geography>
+    <geography-sort xtf:meta="true" xtf:tokenize="false">US:California:Berkeley</geography-sort>
+    Document 10 text here. Blah blah blah.
+</TEI.2>

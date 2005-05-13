@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
+  <groupField field="geography-sort">
+    <groupHits value="US:California:Berkeley"/>
+  </groupField>
+  <and>
+    <term field="collection" maxSnippets="0">UC</term>
+    <phrase field="geography" maxSnippets="0">
+      <term>US</term>
+      <term>California</term>
+    </phrase>
+  </and>
+</query>

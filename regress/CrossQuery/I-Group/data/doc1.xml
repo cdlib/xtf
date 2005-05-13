@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <title xtf:tokenize="no" xtf:meta="yes">XYZ: Document 1</title>
+    <subject xtf:tokenize="no" xtf:meta="yes">African Studies</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">Politics</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">African History</subject>
+    <type xtf:meta="true">text</type>
+    <collection xtf:meta="true">UC</collection>
+    <geography xtf:meta="true">US:California:Berkeley</geography>
+    <geography-sort xtf:meta="true" xtf:tokenize="false">US:California:Berkeley</geography-sort>
+    Document 1 text here. Blah blah blah.
+</document>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
+   <groupedField field="subject" totalGroups="16" startGroup="6" endGroup="10">
+      <group value="Environmental Studies" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="African History" totalDocs="2" startDoc="0" endDoc="0"/>
+      <group value="California and the West" totalDocs="2" startDoc="0" endDoc="0"/>
+      <group value="Classical Politics" totalDocs="2" startDoc="0" endDoc="0"/>
+      <group value="Urban Studies" totalDocs="2" startDoc="0" endDoc="0"/>
+   </groupedField>
+</crossQueryResult>

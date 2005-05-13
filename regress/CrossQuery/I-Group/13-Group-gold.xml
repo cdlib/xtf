@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
+   <groupedField field="subject" totalGroups="16" startGroup="1" endGroup="5">
+      <group value="Politics" totalDocs="7" startDoc="2" endDoc="4">
+         <docHit file="doc7.xml">
+            <meta>
+               <title>Do read Document 7</title>
+               <subject>Politics</subject>
+               <subject>Classics</subject>
+               <subject>Ancient History</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US:California:Mendocino</geography>
+               <geography-sort>US:California:Mendocino</geography-sort>
+            </meta>
+         </docHit>
+         <docHit file="doc8.xml">
+            <meta>
+               <title>Document 8 is cool</title>
+               <subject>Politics</subject>
+               <subject>Politics</subject>
+               <subject>Classical History</subject>
+               <subject>Classical Religions</subject>
+               <subject>Urban Studies</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US:California:Santa Cruz</geography>
+               <geography-sort>US:California:Santa Cruz</geography-sort>
+            </meta>
+         </docHit>
+         <docHit file="doc9.xml">
+            <meta>
+               <title>Document 9 is absolutely cool</title>
+               <subject>Classics</subject>
+               <subject>Ancient History</subject>
+               <subject>Politics</subject>
+               <subject>Classical History</subject>
+               <subject>Classical Religions</subject>
+               <subject>Classical Politics</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US:California:Oakland</geography>
+               <geography-sort>US:California:Oakland</geography-sort>
+            </meta>
+         </docHit>
+      </group>
+      <group value="Ancient History" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Classical History" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Classical Religions" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Classics" totalDocs="3" startDoc="0" endDoc="0"/>
+   </groupedField>
+</crossQueryResult>

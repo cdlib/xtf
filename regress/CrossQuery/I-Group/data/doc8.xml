@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <title xtf:tokenize="no" xtf:meta="yes">Document 8 is cool</title>
+    <subject xtf:tokenize="no" xtf:meta="true">Politics</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">Politics</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">Classical History</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">Classical Religions</subject>
+    <subject xtf:tokenize="no" xtf:meta="true">Urban Studies</subject>
+    <type xtf:meta="true">text</type>
+    <collection xtf:meta="true">UC</collection>
+    <geography xtf:meta="true">US:California:Santa Cruz</geography>
+    <geography-sort xtf:meta="true" xtf:tokenize="false">US:California:Santa Cruz</geography-sort>
+    Document 8 text here. Blah blah blah.
+</document>
