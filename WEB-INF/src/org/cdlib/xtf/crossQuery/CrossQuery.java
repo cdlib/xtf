@@ -55,6 +55,8 @@ import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
+import org.cdlib.xtf.textEngine.ResultField;
+import org.cdlib.xtf.textEngine.ResultGroup;
 import org.cdlib.xtf.textEngine.Snippet;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
@@ -332,46 +334,41 @@ public class CrossQuery extends TextServlet
                         // Note above: 1-based start
                     " endDoc=\"" + result.endDoc + "\">" );
 
-        if( result.docHits != null ) {
-            for( int i = 0; i < result.docHits.length; i++ ) {
-                DocHit docHit = result.docHits[i];
-                buf.append( "  <docHit" +
-                            " rank=\"" + (i+result.startDoc+1) + "\"" +
-                            " path=\"" + docHit.filePath() + "\"" +
-                            " score=\"" + Math.round(docHit.score * 100) + "\"" +
-                            " totalHits=\"" + docHit.totalSnippets() + "\"" +
-                            ">\n" );
-                if( !docHit.metaData().isEmpty() ) {
-                    buf.append( "    <meta>\n" );
-                    for( Iterator atts = docHit.metaData().iterator(); atts.hasNext(); )
-                    {
-                        Attrib attrib = (Attrib) atts.next();
-                        buf.append( "      <" + attrib.key + ">" );
-                        buf.append( makeHtmlString(attrib.value, true) );
-                        buf.append( "</" + attrib.key + ">\n" );
-                    } // for atts
-                    buf.append( "    </meta>\n" );
-                }
+        // Add the top-level doc hits.
+        structureDocHits( result.docHits, result.startDoc, buf );
 
-                for( int j = 0; j < docHit.nSnippets(); j++ )
-                {
-                    Snippet  snippet = docHit.snippet( j, true );
-                    buf.append(
-                        "    <snippet rank=\"" + (j+1) + "\" score=\"" +
-                        Math.round(snippet.score * 100) + "\"" );
-
-                    if( snippet.sectionType != null )
-                        buf.append( " sectionType=\"" + snippet.sectionType + "\"" );
-
-                    buf.append( ">" +
-                        makeHtmlString(snippet.text, true) +
-                        "</snippet>\n" );
-                }
-
-                buf.append( "  </docHit>\n\n" );
+        // If grouping was specified, add that info too.
+        if( result.fields != null ) 
+        {
+            // Process each field in turn
+            for( int i = 0; i < result.fields.length; i++ ) 
+            {
+                ResultField field = result.fields[i];
+                buf.append( 
+                    "<groupedField field=\"" + field.field + "\" " +
+                    "totalGroups=\"" + field.totalGroups + "\" " +
+                    "startGroup=\"" + (field.endGroup > 0 ? field.startGroup+1 : 0) + "\" " +
+                    "endGroup=\"" + (field.endGroup) + "\">" );
+                if( field.groups == null )
+                    continue;
+                
+                // Process each group within the field.
+                for( int j = 0; j < field.groups.length; j++ ) {
+                    ResultGroup group = field.groups[j];
+                    buf.append( 
+                        "<group value=\"" + group.value + "\" " +
+                        "totalDocs=\"" + group.totalDocs + "\" " +
+                        "startDoc=\"" + (group.endDoc > 0 ? group.startDoc+1 : 0) + "\" " +
+                        "endDoc=\"" + (group.endDoc) + "\">" );
+                    if( group.docHits != null )
+                        structureDocHits( group.docHits, group.startDoc, buf );
+                    buf.append( "</group>" );
+                } // for j
+                buf.append( "</groupedField>" );
             } // for i
-        }
-
+        } // if
+        
+        // Add the final tag.
         buf.append( "</crossQueryResult>\n" );
 
         // Now parse that into a document that can be fed to the stylesheet.
@@ -379,5 +376,59 @@ public class CrossQuery extends TextServlet
         return new StreamSource( new StringReader(str) );
 
     } // structureHits()
+
+
+    /**
+     * Does the work of turning DocHits into XML.
+     * 
+     * @param docHits Array of DocHits to structure
+     * @param buf     Buffer to add the XML to
+     */
+    private void structureDocHits( DocHit[]     docHits, 
+                                   int          startDoc, 
+                                   StringBuffer buf ) 
+    {
+        if( docHits == null )
+            return;
+        
+        for( int i = 0; i < docHits.length; i++ ) {
+            DocHit docHit = docHits[i];
+            buf.append( "  <docHit" +
+                        " rank=\"" + (i+startDoc+1) + "\"" +
+                        " path=\"" + docHit.filePath() + "\"" +
+                        " score=\"" + Math.round(docHit.score * 100) + "\"" +
+                        " totalHits=\"" + docHit.totalSnippets() + "\"" +
+                        ">\n" );
+            if( !docHit.metaData().isEmpty() ) {
+                buf.append( "    <meta>\n" );
+                for( Iterator atts = docHit.metaData().iterator(); atts.hasNext(); )
+                {
+                    Attrib attrib = (Attrib) atts.next();
+                    buf.append( "      <" + attrib.key + ">" );
+                    buf.append( makeHtmlString(attrib.value, true) );
+                    buf.append( "</" + attrib.key + ">\n" );
+                } // for atts
+                buf.append( "    </meta>\n" );
+            }
+  
+            for( int j = 0; j < docHit.nSnippets(); j++ )
+            {
+                Snippet  snippet = docHit.snippet( j, true );
+                buf.append(
+                    "    <snippet rank=\"" + (j+1) + "\" score=\"" +
+                    Math.round(snippet.score * 100) + "\"" );
+  
+                if( snippet.sectionType != null )
+                    buf.append( " sectionType=\"" + snippet.sectionType + "\"" );
+  
+                buf.append( ">" +
+                    makeHtmlString(snippet.text, true) +
+                    "</snippet>\n" );
+            } // for j
+  
+            buf.append( "  </docHit>\n\n" );
+        } // for i
+        
+    } // structureDocHits()
 
 } // class CrossQuery
