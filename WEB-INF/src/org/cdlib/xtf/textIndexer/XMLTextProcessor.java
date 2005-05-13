@@ -1677,10 +1677,14 @@ public class XMLTextProcessor extends DefaultHandler
         // this, we stick them all together in one field, but add word bump
         // separators to keep hits from occurring across one and the next.
         //
+        // Of course, we only need to do this work for tokenized fields (as
+        // we must assume that untokenized fields will be used for sorting and
+        // grouping only, and glomming things together would mess that up.)
+        //
         boolean add = true;
         for( Iterator i = metaInfo.iterator(); i.hasNext(); ) {
             MetaField mf = (MetaField) i.next();
-            if( mf.name.equals(metaField.name) ) {
+            if( mf.name.equals(metaField.name) && mf.tokenize ) {
                 StringBuffer buf = new StringBuffer();
                 buf.append( mf.value );
                 buf.append( XtfSpecialTokensFilter.bumpMarker );
@@ -3340,7 +3344,7 @@ public class XMLTextProcessor extends DefaultHandler
             // Get the next meta field.
             MetaField field = (MetaField) metaIter.next();
             
-            // Add it to the document as stored, indexed, and tokenized.
+            // Add it to the document as stored, indexed, and maybe tokenized.
             doc.add( new Field( field.name,
                                 field.value,
                                 true, true, field.tokenize ) );
