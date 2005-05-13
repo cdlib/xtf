@@ -402,7 +402,7 @@ public class RegressTest
     private void writeHits( File outFile, QueryResult result )
         throws IOException
     {
-        Source hitDoc = structureHits( result, false );
+        Source hitDoc = structureHits( result );
         PrintWriter out = new PrintWriter( new OutputStreamWriter(
                                 new FileOutputStream(outFile), "UTF-8") );
         out.println( XMLWriter.toString(hitDoc) );
@@ -413,7 +413,7 @@ public class RegressTest
      * Makes an XML document out of the list of document hits, and returns a
      * Source object that represents it.
      */
-    private Source structureHits( QueryResult result, boolean includeScores )
+    private Source structureHits( QueryResult result )
     {
         StringBuffer buf = new StringBuffer( 1000 );
         
@@ -424,11 +424,15 @@ public class RegressTest
                         // Note above: 1-based start
                     "endDoc=\"" + result.endDoc + "\">" );
         
+        // Add the top-level doc hits.
         structureDocHits( result.docHits, buf );
         
         // If grouping was specified, add that info too.
-        if( result.fields != null ) {
-            for( int i = 0; i < result.fields.length; i++ ) {
+        if( result.fields != null ) 
+        {
+            // Process each field in turn
+            for( int i = 0; i < result.fields.length; i++ ) 
+            {
                 ResultField field = result.fields[i];
                 buf.append( 
                     "<groupedField field=\"" + field.field + "\" " +
@@ -437,6 +441,8 @@ public class RegressTest
                     "endGroup=\"" + (field.endGroup) + "\">" );
                 if( field.groups == null )
                     continue;
+                
+                // Process each group within the field.
                 for( int j = 0; j < field.groups.length; j++ ) {
                     ResultGroup group = field.groups[j];
                     buf.append( 
@@ -460,6 +466,7 @@ public class RegressTest
         return new StreamSource( new StringReader(str) );
         
     } // structureHits()
+
 
     /**
      * Does the work of turning DocHits into XML.
