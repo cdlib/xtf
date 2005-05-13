@@ -61,6 +61,8 @@ import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
+import org.cdlib.xtf.textEngine.ResultField;
+import org.cdlib.xtf.textEngine.ResultGroup;
 import org.cdlib.xtf.textEngine.Snippet;
 import org.cdlib.xtf.textIndexer.TextIndexer;
 import org.cdlib.xtf.util.Attrib;
@@ -422,8 +424,53 @@ public class RegressTest
                         // Note above: 1-based start
                     "endDoc=\"" + result.endDoc + "\">" );
         
-        for( int i = 0; i < result.docHits.length; i++ ) {
-            DocHit docHit = result.docHits[i];
+        structureDocHits( result.docHits, buf );
+        
+        // If grouping was specified, add that info too.
+        if( result.fields != null ) {
+            for( int i = 0; i < result.fields.length; i++ ) {
+                ResultField field = result.fields[i];
+                buf.append( 
+                    "<groupedField field=\"" + field.field + "\" " +
+                    "totalGroups=\"" + field.totalGroups + "\" " +
+                    "startGroup=\"" + (field.endGroup > 0 ? field.startGroup+1 : 0) + "\" " +
+                    "endGroup=\"" + (field.endGroup) + "\">" );
+                if( field.groups == null )
+                    continue;
+                for( int j = 0; j < field.groups.length; j++ ) {
+                    ResultGroup group = field.groups[j];
+                    buf.append( 
+                        "<group value=\"" + group.value + "\" " +
+                        "totalDocs=\"" + group.totalDocs + "\" " +
+                        "startDoc=\"" + (group.endDoc > 0 ? group.startDoc+1 : 0) + "\" " +
+                        "endDoc=\"" + (group.endDoc) + "\">" );
+                    if( group.docHits != null )
+                        structureDocHits( group.docHits, buf );
+                    buf.append( "</group>" );
+                } // for j
+                buf.append( "</groupedField>" );
+            } // for i
+        } // if
+        
+        // Add the final tag.
+        buf.append( "</crossQueryResult>" );
+        
+        // Now parse that into a document that can be fed to the stylesheet.
+        String str = buf.toString();
+        return new StreamSource( new StringReader(str) );
+        
+    } // structureHits()
+
+    /**
+     * Does the work of turning DocHits into XML.
+     * 
+     * @param docHits Array of DocHits to structure
+     * @param buf     Buffer to add the XML to
+     */
+    private void structureDocHits( DocHit[] docHits, StringBuffer buf ) 
+    {
+        for( int i = 0; i < docHits.length; i++ ) {
+            DocHit docHit = docHits[i];
             String key = docHit.filePath();
             assert key.indexOf(':') >= 0 : "Invalid key - missing ':'";
             String after = key.substring( key.indexOf(':') + 1 );
@@ -453,13 +500,7 @@ public class RegressTest
             buf.append( "</docHit>" );
         } // for i
         
-        buf.append( "</crossQueryResult>" );
-        
-        // Now parse that into a document that can be fed to the stylesheet.
-        String str = buf.toString();
-        return new StreamSource( new StringReader(str) );
-        
-    } // structureHits()
+    } // structureDocHits()
     
     /**
      * Breaks up a string by newlines into an array of strings, one per line.
