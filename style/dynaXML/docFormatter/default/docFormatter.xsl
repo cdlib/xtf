@@ -40,7 +40,7 @@
 <!-- Import Common Templates                                                -->
 <!-- ====================================================================== -->
   
-<xsl:import href="../../common/docFormatterCommon.xsl"/>
+<xsl:import href="../common/docFormatterCommon.xsl"/>
   
 <xsl:output method="html"
             indent="yes"
