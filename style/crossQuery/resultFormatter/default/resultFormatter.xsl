@@ -636,7 +636,7 @@
   <!-- ====================================================================== -->
  
   <xsl:template match="term">
-    <xsl:variable name="fullark" select="ancestor::docHit/meta/identifier"/>
+    <xsl:variable name="fullark" select="ancestor::docHit/meta/identifier[1]"/>
     <xsl:variable name="ark" select="substring($fullark, string-length($fullark)-9)"/>
     <xsl:variable name="collection" select="string(meta/collection)"/>
     <xsl:variable name="hit.rank"><xsl:value-of select="ancestor::snippet/@rank"/></xsl:variable>
