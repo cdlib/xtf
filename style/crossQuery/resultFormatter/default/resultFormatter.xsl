@@ -124,17 +124,11 @@
         <xsl:copy-of select="$brand.links"/>
       </head>
       <body bgcolor="ivory">
+        
         <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="ivory">
           <xsl:copy-of select="$brand.header"/>
-          <tr bgcolor="silver">
-            <td align="left">
-              <a href="/xtf/search">Search</a> | <a href="/xtf/search?relation=www.ucpress.edu&amp;sort=title">Browse</a>
-            </td>
-            <td align="right" colspan="2">
-              <a href="http://xtf.sourceforge.net/index.html#docs">Help</a>
-            </td>
-          </tr>
-        </table>          
+        </table>
+        
         <table style="margin-top: 1%; margin-bottom: 1%" width="100%" cellpadding="0" cellspacing="2" border="0" bgcolor="ivory">
           <tr>
             <td align="right" width="10%">
@@ -218,14 +212,6 @@
       <body bgcolor="ivory">
         <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="ivory">
           <xsl:copy-of select="$brand.header"/>
-          <tr bgcolor="silver">
-            <td align="left">
-              <a href="/xtf/search">Search</a> | <a href="/xtf/search?relation=www.ucpress.edu&amp;sort=title">Browse</a>
-            </td>
-            <td align="right" colspan="2">
-              <a href="http://xtf.sourceforge.net/index.html#docs">Help</a>
-            </td>
-          </tr>
         </table>  
         <form method="get" action="{$xtfURL}{$crossqueryPath}">
           <table width="90%" cellpading="0" cellspacing="2" bgcolor="ivory" border="0">
@@ -501,24 +487,9 @@
       <td align="left">
         <a>
           <xsl:attribute name="href">
-            <xsl:value-of select="concat($dynaxmlPath, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
-            <!-- -join & -prox are mutually exclusive -->
-            <xsl:choose>
-              <xsl:when test="$text-prox">
-                <xsl:value-of select="concat('&amp;query-prox=', $text-prox)"/>
-              </xsl:when>
-              <xsl:when test="$text-join">
-                <xsl:value-of select="concat('&amp;query-join=', $text-join)"/>
-              </xsl:when>            
-            </xsl:choose>
-            <xsl:if test="$text-exclude">
-              <xsl:value-of select="concat('&amp;query-exclude=', $text-exclude)"/>
-            </xsl:if>
-            <xsl:if test="$sectionType">
-              <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
-            </xsl:if>
-            <xsl:value-of select="'&amp;brand=default'"/>
-            <xsl:value-of select="'&amp;doc.view=frames'"/>
+            <xsl:call-template name="dynaxml.url">
+              <xsl:with-param name="fullark" select="$fullark"/>
+            </xsl:call-template>
           </xsl:attribute>
           <xsl:apply-templates select="meta/title[1]"/>
         </a>
@@ -640,25 +611,11 @@
     <xsl:variable name="ark" select="substring($fullark, string-length($fullark)-9)"/>
     <xsl:variable name="collection" select="string(meta/collection)"/>
     <xsl:variable name="hit.rank"><xsl:value-of select="ancestor::snippet/@rank"/></xsl:variable>
-    <xsl:variable name="snippet.link">
-      <xsl:value-of select="concat($dynaxmlPath, '?docId=', $ark, '&amp;query=', replace($text, '&amp;', '%26'))"/>
-      <!-- -join & -prox are mutually exclusive -->
-      <xsl:choose>
-        <xsl:when test="$text-prox">
-          <xsl:value-of select="concat('&amp;query-prox=', $text-prox)"/>
-        </xsl:when>
-        <xsl:when test="$text-join">
-          <xsl:value-of select="concat('&amp;query-join=', $text-join)"/>
-        </xsl:when>            
-      </xsl:choose>
-      <xsl:if test="$text-exclude">
-        <xsl:value-of select="concat('&amp;query-exclude=', $text-exclude)"/>
-      </xsl:if>
-      <xsl:if test="$sectionType">
-        <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
-      </xsl:if>
+    <xsl:variable name="snippet.link">    
+      <xsl:call-template name="dynaxml.url">
+        <xsl:with-param name="fullark" select="$fullark"/>
+      </xsl:call-template>
       <xsl:value-of select="concat('&amp;hit.rank=', $hit.rank)"/>
-      <xsl:value-of select="'&amp;doc.view=frames'"/>
     </xsl:variable>
     
     <xsl:choose>

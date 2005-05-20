@@ -15,13 +15,21 @@
         </a>
       </td>
       <td width="34%" height="44" align="center">
-        <h1 style="color: white">XTF Default Interface</h1>
+        <h1 style="color: white">XTF Default Interface XX</h1>
       </td>
       <td width="33%" height="44" align="right">
         <a href="http://www.sourceforge.net" target="_top">
           <img src="/xtf/icons/default/sflogo.php.png" border="0" alt="SourceForge"/>
           <img src="/xtf/icons/default/spacer.gif" border="0" width="15"/>
         </a>
+      </td>
+    </tr>
+    <tr bgcolor="silver">
+      <td align="left">
+        <a href="/xtf/search">Search</a> | <a href="/xtf/search?relation=www.ucpress.edu&amp;sort=title">Browse</a>
+      </td>
+      <td align="right" colspan="2">
+        <a href="http://xtf.sourceforge.net/index.html#docs">Help</a>
       </td>
     </tr>
   </header>

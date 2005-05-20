@@ -1610,8 +1610,21 @@
     </xsl:if>
     <xsl:if test="$sectionType">
       <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
-    </xsl:if>    
-
+    </xsl:if>
+    <xsl:if test="$brand">
+      <xsl:value-of select="concat('&amp;brand=',$brand)"/>
+    </xsl:if>
+    
+    <!-- Do I still need this? -->
+    <!--<xsl:choose>
+      <xsl:when test="ancestor::docHit/meta/relation[contains(.,'ucpress')]">
+        <xsl:value-of select="'&amp;brand=ucpress'"/>
+      </xsl:when>
+      <xsl:when test="ancestor::docHit/meta/relation[contains(.,'escholarship')]">
+        <xsl:value-of select="'&amp;brand=eschol'"/>
+      </xsl:when>
+    </xsl:choose>-->
+    
   </xsl:template>
     
   <!-- ====================================================================== -->
