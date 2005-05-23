@@ -223,7 +223,7 @@ public class GroupCounts
         hitArray[index] = (DocHitImpl) hitQueue.pop();
     }
     
-    int nHits = Math.min( nFound, hitMaxDocs );
+    int nHits = Math.min( nFound - hitStartDoc, hitMaxDocs );
     group.docHits = new DocHit[nHits];
     
     group.totalDocs = hitTotalDocs;
