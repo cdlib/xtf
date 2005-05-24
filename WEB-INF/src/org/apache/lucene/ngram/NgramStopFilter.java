@@ -39,15 +39,12 @@ import org.cdlib.xtf.util.Trace;
  * 50-zillion occurrences of "of" and "the".
  * 
  * @author Martin Haye
- * @version $Id: NgramStopFilter.java,v 1.1 2005-02-08 23:19:47 mhaye Exp $
+ * @version $Id: NgramStopFilter.java,v 1.2 2005-05-24 21:45:42 mhaye Exp $
  */
 public class NgramStopFilter extends TokenFilter 
 {
   /** Set of stop-words (e.g. "the", "a", "and", etc.) to remove */
   private Set stopSet;
-
-  /** Size of a chunk (in words) */
-  private int chunkSize;
 
   /** true before next() called for the first time */
   private boolean firstTime = true;
@@ -74,13 +71,12 @@ public class NgramStopFilter extends TokenFilter
    * @param stopSet     Set of stop words to filter out. This can be most easily
    *                    made by calling {@link #makeStopSet(String) makeStopSet()}.
    */
-  public NgramStopFilter(TokenStream input, Set stopSet, int chunkSize) {
+  public NgramStopFilter(TokenStream input, Set stopSet) {
     // Initialize the super-class
     super(input);
 
     // Record the set of stop words and the chunk size for later reference.
     this.stopSet = stopSet;
-    this.chunkSize = chunkSize;
 
   } // constructor
 
@@ -211,13 +207,8 @@ public class NgramStopFilter extends TokenFilter
    */
   private Token nextInput() throws IOException {
     Token t = input.next();
-    if (t != null) {
+    if (t != null)
       inputPos += t.getPositionIncrement();
-      if (chunkSize >= 0) {
-        if (inputPos > chunkSize)
-          assert inputPos <= chunkSize;
-      }
-    }
     return t;
   }
 
@@ -292,7 +283,7 @@ public class NgramStopFilter extends TokenFilter
      */
     private String testFilter(String in) throws IOException {
       StringTokenStream sts = new StringTokenStream(in, " .");
-      NgramStopFilter nsf = new NgramStopFilter(sts, stopSet, -1);
+      NgramStopFilter nsf = new NgramStopFilter(sts, stopSet);
 
       StringBuffer outBuf = new StringBuffer();
       while (true) {
