@@ -118,8 +118,9 @@ public class IndexInfo
   /** Path to a mapping from accented characters to their corresponding
    *  chars with teh diacritics removed. These chars will be folded together
    *  which can yield better search results. For instance, a German user
-   *  on an American keyboard might want to find "Hüt" but can't type it.
-   *  This way, if they type "hat" they'll still get a match on "Hüt".
+   *  on an American keyboard might want to find "Hut" with an umlaut over the
+   *  "u", but can't type the umlaut. This way, if they type "hat" they'll still 
+   *  get a match.
    *            
    *  The file should be a plain text file, with one code pair per line. 
    *  First is the 4-digit hex Unicode point for the accented character,
