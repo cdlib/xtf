@@ -41,7 +41,7 @@ import java.util.HashMap;
 
 
 /**
- * A simple structured file with a flat top-level directory. {@link Subfile}s 
+ * A simple structured file with a flat top-level directory. Subfiles 
  * can be added to an existing file.
  * 
  * @author Martin Haye

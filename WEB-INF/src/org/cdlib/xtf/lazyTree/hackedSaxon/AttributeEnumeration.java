@@ -22,9 +22,9 @@ final class AttributeEnumeration extends AxisIteratorImpl {
     * Constructor. Note: this constructor will only be called if the relevant node
     * is an element and if it has one or more attributes. Otherwise an EmptyEnumeration
     * will be constructed instead.
-    * @param tree: the containing TinyTree
-    * @param element: the node number of the element whose attributes are required
-    * @param nodeTest: condition to be applied to the names of the attributes selected
+    * @param tree the containing TinyTree
+    * @param element the node number of the element whose attributes are required
+    * @param nodeTest condition to be applied to the names of the attributes selected
     */
 
     AttributeEnumeration(TinyTree tree, int element, NodeTest nodeTest) {

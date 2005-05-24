@@ -55,7 +55,7 @@ public interface DocLocator
      * representation of a given document. Index parameters are specified,
      * since often the lazy file is stored along with the index. This method
      * is called first, and if it returns null, then 
-     * {@link #getInputSource(String)} will be called as a fall-back.
+     * {@link #getInputSource(String, boolean)} will be called as a fall-back.
      * 
      * @param sourcePath      Path to the source document
      * @param indexConfigPath Path to the index configuration file

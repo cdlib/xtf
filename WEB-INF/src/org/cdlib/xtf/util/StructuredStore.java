@@ -37,7 +37,8 @@ import java.io.IOException;
 
 /**
  * A simple structured storage with a flat top-level directory. 
- * {@link SubStore}s can be added to an existing storage.
+ * Substores can be added to an existing storage using {@link #createSubStore(String)},
+ * and accessed later using {@link #openSubStore(String)}.
  * 
  * @author Martin Haye
  */

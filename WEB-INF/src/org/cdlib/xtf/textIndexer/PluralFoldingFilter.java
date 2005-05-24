@@ -45,7 +45,7 @@ import org.cdlib.xtf.util.WordMap;
  * forms.
  * 
  * @author Martin Haye
- * @version $Id: PluralFoldingFilter.java,v 1.1 2005-04-19 23:08:33 mhaye Exp $
+ * @version $Id: PluralFoldingFilter.java,v 1.2 2005-05-24 21:50:42 mhaye Exp $
  */
 public class PluralFoldingFilter extends TokenFilter 
 {
@@ -53,11 +53,10 @@ public class PluralFoldingFilter extends TokenFilter
   private WordMap pluralMap;
 
   /**
-   * Construct a token stream to filter 'stopWords' out of 'input'.
+   * Construct a token stream to convert plural words to singular.
    * 
    * @param input       Input stream of tokens to process
-   * @param stopSet     Set of stop words to filter out. This can be most easily
-   *                    made by calling {@link #makeStopSet(String) makeStopSet()}.
+   * @param pluralMap   Mapping of plural words to their singular equivalents.
    */
   public PluralFoldingFilter( TokenStream input, WordMap pluralMap ) 
   {

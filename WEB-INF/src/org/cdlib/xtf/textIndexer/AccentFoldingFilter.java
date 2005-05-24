@@ -45,7 +45,7 @@ import org.cdlib.xtf.util.CharMap;
  * characters by removing diacritics.
  * 
  * @author Martin Haye
- * @version $Id: AccentFoldingFilter.java,v 1.1 2005-04-19 23:10:19 mhaye Exp $
+ * @version $Id: AccentFoldingFilter.java,v 1.2 2005-05-24 21:50:42 mhaye Exp $
  */
 public class AccentFoldingFilter extends TokenFilter 
 {
@@ -53,11 +53,11 @@ public class AccentFoldingFilter extends TokenFilter
   private CharMap accentMap;
 
   /**
-   * Construct a token stream to filter 'stopWords' out of 'input'.
+   * Construct a token stream to remove accents from the input tokens.
    * 
    * @param input       Input stream of tokens to process
-   * @param stopSet     Set of stop words to filter out. This can be most easily
-   *                    made by calling {@link #makeStopSet(String) makeStopSet()}.
+   * @param accentMap   Map of accented characters to their un-accented
+   *                    counterparts.
    */
   public AccentFoldingFilter( TokenStream input, CharMap accentMap ) 
   {

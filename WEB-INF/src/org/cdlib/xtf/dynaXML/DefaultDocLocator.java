@@ -69,7 +69,7 @@ public class DefaultDocLocator implements DocLocator
      * representation of a given document. Index parameters are specified,
      * since often the lazy file is stored along with the index. This method
      * is called first, and if it returns null, then 
-     * {@link #getInputSource(String)} will be called as a fall-back.
+     * {@link #getInputSource(String, boolean)} will be called as a fall-back.
      * 
      * @param indexConfigPath Path to the index configuration file
      * @param indexName       Name of the index being searched
@@ -163,8 +163,9 @@ public class DefaultDocLocator implements DocLocator
      * 
      * @param lazyFile      Lazy file to create
      * @param sourcePath    Path to the source document
-     * @param preFilterPath Path to a prefilter stylesheet (or null for
-     *                      no pre-filtering.)
+     * @param preFilter     A prefilter stylesheet (or null for no pre-filtering.)
+     * @param removeDoctypeDecl true to remove DOCTYPE declarations from the
+     *                          XML document
      * 
      * @return                Store containing the tree, or null if none
      *                        could be found.

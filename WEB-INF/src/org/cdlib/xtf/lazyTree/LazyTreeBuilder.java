@@ -29,7 +29,6 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -54,13 +53,13 @@ import org.cdlib.xtf.util.XTFSaxonErrorListener;
  * created, the persistent version can be quickly and incrementally loaded
  * into memory.</p>
  * 
- * <p>To build a tree, call the {@link #begin(File)} method to start the 
+ * <p>To build a tree, call the {@link #begin(StructuredStore)} method to start the 
  * process. Using the Receiver it returns, pass all the SAX events gathered 
- * from parsing the document. Finally, {@link #finish(Receiver)} will 
+ * from parsing the document. Finally, {@link #finish(Receiver, boolean)} will 
  * complete the process.</p>
  * 
  * <p>To load a tree that was built previously, use either load method:
- * {@link #load(File)} or {@link #load(File, LazyDocument)}.
+ * {@link #load(StructuredStore)} or {@link #load(StructuredStore, LazyDocument)}.
  * 
  * @author Martin Haye
  */
@@ -103,7 +102,7 @@ public class LazyTreeBuilder
     /**
      * Load a persistent document using the default loader.
      * 
-     * @param persistFile   The file to load from
+     * @param treeStore   The store to load from
      * 
      * @return The root node of the document (which implements DocumentInfo)
      */
@@ -120,7 +119,7 @@ public class LazyTreeBuilder
      * Load a pre-existing persistent tree and load it into an empty in-memory
      * document.
      * 
-     * @param persistFile   The file to load from
+     * @param treeStore     The store to load from
      * @param emptyDoc      An empty document object to initialize
      */
     public void load( StructuredStore treeStore, LazyDocument emptyDoc )
@@ -140,7 +139,7 @@ public class LazyTreeBuilder
      * Alternate way of constructing a lazy tree. First, begin() is called,
      * returning a Receiver that should receive all the SAX events from the
      * input. When all events have been sent, then call 
-     * {@link #finish(Receiver)}.
+     * {@link #finish(Receiver, boolean)}.
      */
     public Receiver begin( StructuredStore treeStore )
         throws IOException

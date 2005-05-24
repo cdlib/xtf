@@ -29,7 +29,6 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
@@ -86,7 +85,7 @@ import org.cdlib.xtf.util.WordMap;
  * needed, leaving as much as possible on disk.</p> 
  * 
  * <p>To use SearchTree, simply call the constructor:
- * {@link #SearchTree(String, File)}, passing it the key to use for index
+ * {@link #SearchTree(String, StructuredStore)}, passing it the key to use for index
  * lookups and the persistent file to load from. Then call the
  * {@link #search(QueryProcessor, QueryRequest)} method to perform the
  * actual search, and use the tree normally. As you access various parts of
@@ -320,7 +319,7 @@ public class SearchTree extends LazyDocument
      * Run the search and save the results for annotating the tree.
      * 
      * @param processor     Processor used to run the query
-     * @param req           Query to run
+     * @param origReq       Query to run
      * 
      * @throws IOException  If anything goes wrong reading from the Lucene
      *                      index or the lazy tree file.
