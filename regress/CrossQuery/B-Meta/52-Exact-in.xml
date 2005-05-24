@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <exact field="subject">
+    <term>african</term>
+  </exact>
+</query>
