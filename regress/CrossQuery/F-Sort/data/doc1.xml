@@ -12,8 +12,8 @@
     <identifier xtf:meta="true">http://ark.cdlib.org/ark:/13030/ft958009mm</identifier>
     <relation xtf:meta="true">http://www.ucpress.edu/</relation>
     <relation xtf:meta="true">http://escholarship.cdlib.org/</relation>
-    <rights xtf:meta="true">Public</rights>
-    <special xtf:meta="true">B</special>
+    <rights xtf:meta="true" xtf:tokenize="no">Public</rights>
+    <special xtf:meta="true" xtf:tokenize="false">B</special>
     <div1 id="ch1" type="chapter" n="1" org="uniform" part="N" sample="complete">
         <head type="main">Colonialism, Communalism, and Democracy</head>
         <head type="sub">South Africa in Comparative Perspective</head>

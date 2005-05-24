@@ -11,7 +11,7 @@
    <identifier xtf:meta="yes">http://ark.cdlib.org/ark:/13030/ft1c6003wp</identifier>
    <relation xtf:meta="true">http://www.ucpress.edu/</relation>
    <relation xtf:meta="yes">http://escholarship.cdlib.org/</relation>
-   <rights xtf:meta="true">Public</rights>
+   <rights xtf:meta="true" xtf:tokenize="no">Public</rights>
    <text>
       <front>
          <titlePage>

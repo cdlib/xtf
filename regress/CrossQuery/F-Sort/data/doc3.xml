@@ -12,8 +12,8 @@
     <identifier xtf:meta="true">http://ark.cdlib.org/ark:/13030/ft8v19p2pw</identifier>
     <relation xtf:meta="true">http://www.ucpress.edu/</relation>
     <relation xtf:meta="true">http://escholarship.cdlib.org/</relation>
-    <rights xtf:meta="true">Public</rights>
-    <special xtf:meta="true">A</special>
+    <rights xtf:meta="true" xtf:tokenize="no">Public</rights>
+    <special xtf:meta="true" xtf:tokenize="false">A</special>
     <div1 id="d0e123" type="fmsec" org="uniform" part="N" sample="complete">
         <head type="main" rend="Heading-Heading2">INTRODUCTION TO PAPERBACK EDITION</head>
         <p>Soon after I returned from years of reporting in far places and was beginning my work as a newspaper editor in New York City, I wrote a small book about a woman called Catherine Genovese.</p>

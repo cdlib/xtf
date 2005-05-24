@@ -15,8 +15,8 @@
     <identifier xtf:meta="true">http://ark.cdlib.org/ark:/13030/ft2s2004r1</identifier>
     <relation xtf:meta="true">http://www.ucpress.edu/</relation>
     <relation xtf:meta="true">http://escholarship.cdlib.org/</relation>
-    <rights xtf:meta="true">UCOnly</rights>
-    <special xtf:meta="true">C</special>
+    <rights xtf:meta="true" xtf:tokenize="no">UCOnly</rights>
+    <special xtf:meta="true" xtf:tokenize="false">C</special>
     <div1 type="chapter" rend="Heading-Heading2B" id="d0e727">
         <head>Introduction</head>
         <pb id="JD_Page_1" n="1"/>
