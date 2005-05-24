@@ -34,6 +34,7 @@ import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 
+import org.cdlib.xtf.textEngine.SpanExactQuery;
 import org.cdlib.xtf.util.Tester;
 import org.cdlib.xtf.util.Trace;
 
@@ -43,7 +44,7 @@ import org.cdlib.xtf.util.Trace;
  * process, as n-gramming across NEAR and OR queries is complex.
  *
  * @author  Martin Haye
- * @version $Id: NgramQueryRewriter.java,v 1.3 2005-04-19 23:04:27 mhaye Exp $
+ * @version $Id: NgramQueryRewriter.java,v 1.4 2005-05-24 21:46:02 mhaye Exp $
  */
 public class NgramQueryRewriter extends QueryRewriter {
   /** Set of stop-words (e.g. "the", "a", "and", etc.) to remove */
@@ -107,6 +108,19 @@ public class NgramQueryRewriter extends QueryRewriter {
     return true;
   } // isNgram()
 
+  /**
+   * Rewrite a query of any supported type. Stop words will either be
+   * removed or n-grammed.
+   * 
+   * @param q   Query to rewrite
+   * @return    A new query, or 'q' unchanged if no change was needed.
+   */
+  public Query rewriteQuery(Query q) {
+    if( q instanceof SpanExactQuery )
+        return rewrite((SpanExactQuery)q);
+    return super.rewriteQuery(q);
+  }
+  
   /**
    * Rewrite a BooleanQuery. Prohibited or allowed (not required) clauses
    * that are single stop words will be removed. Required clauses will
@@ -245,6 +259,59 @@ public class NgramQueryRewriter extends QueryRewriter {
     return copyBoost(nq, new SpanNearQuery((SpanQuery[]) newClauses
         .toArray(newArray), nq.getSlop(), false));
 
+  } // rewrite()
+
+  /**
+   * Rewrite a span EXACT query. Stop words will be n-grammed into adjacent
+   * terms.
+   * 
+   * @param eq  The query to rewrite
+   * @return    Rewritten version, or 'eq' unchanged if no changed needed.
+   */
+  protected Query rewrite(SpanExactQuery eq) {
+    // Rewrite each clause and make a vector of the new ones.
+    SpanQuery[] clauses = eq.getClauses();
+    Vector newClauses = new Vector();
+    boolean anyChanges = false;
+
+    for (int i = 0; i < clauses.length; i++) {
+      // Rewrite this clause, and record any difference.
+      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
+      if (clause != clauses[i])
+        anyChanges = true;
+
+      // If rewriting resulted in removing the query, toss it.
+      if (clause == null)
+        continue;
+
+      // Add it to the vector
+      newClauses.add(clause);
+    } // for i
+
+    // N-gram the rewritten clauses.
+    anyChanges |= ngramQueries(newClauses, 0);
+
+    // If no changes, just return the original query.
+    if (!anyChanges)
+      return eq;
+
+    // If we end up with no clauses, let the caller know.
+    if (newClauses.isEmpty())
+      return null;
+
+    // If we end up with a single clause, return just that.
+    if (newClauses.size() == 1) {
+
+      // Since we're getting rid of the parent, pass on its boost to the
+      // child.
+      //
+      return combineBoost(eq, (Query) newClauses.elementAt(0));
+    }
+
+    // Construct a new 'exact' query joining all the rewritten clauses.
+    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
+    return copyBoost(eq, 
+        new SpanExactQuery((SpanQuery[]) newClauses.toArray(newArray)));
   } // rewrite()
 
   /**
