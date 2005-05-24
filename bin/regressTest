@@ -48,4 +48,5 @@ chdir "$home/regress/CrossQuery";
 $cmd = "java -classpath $classpath -Xms50m -Xmx500m -enableassertions org.cdlib.xtf.test.RegressTest $args";
 
 print "$cmd\n";
-exec $cmd;
+system $cmd;
+print "\n";
