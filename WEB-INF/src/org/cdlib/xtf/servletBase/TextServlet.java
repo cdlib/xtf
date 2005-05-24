@@ -789,7 +789,7 @@ public abstract class TextServlet extends HttpServlet
         // Otherwise, use a tokenizer to break up the string.
         try {
             XTFTextAnalyzer analyzer = 
-                new XTFTextAnalyzer( null, null, null, -1 );
+                new XTFTextAnalyzer( null, null, null );
             TokenStream toks = analyzer.tokenStream( "text", new StringReader(str) );
             int prevEnd = 0;
             while( true ) {

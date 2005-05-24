@@ -401,12 +401,12 @@ public class QueryRequestParser
     {
         String name = parent.name();
         if( !name.matches(
-                "^query$|^term$|^all$|^range$|^phrase$|^near$" +
+                "^query$|^term$|^all$|^range$|^phrase$|^exact$|^near$" +
                 "|^and$|^or$|^not$" +
                 "|^combine$|^meta$|^text$") ) // old stuff, for compatability
         {
             error( "Expected: 'query', 'term', 'all', 'range', 'phrase', " +
-                   "'near', 'and', 'or', or 'not'; found '" + name + "'" );
+                   "'exact', 'near', 'and', 'or', or 'not'; found '" + name + "'" );
         }
         
         // Old stuff, for compatability.
@@ -501,19 +501,21 @@ public class QueryRequestParser
         if( name.equals("range") )
             return parseRange( parent, field, maxSnippets );
 
-        // For text queries, 'all', 'phrase', and 'near' can be viewed
+        // For text queries, 'all', 'phrase', 'exact', and 'near' can be viewed
         // as phrase queries with different slop values.
         //
         // 'all' means essentially infinite slop (limited to the actual
         //          chunk overlap at runtime.)
         // 'phrase' means zero slop
+        // 'exact' means -1 slop (meaning use a SpanExactQuery)
         // 'near' allows specifying the slop (again limited to the actual
         //          chunk overlap at runtime.)
         //
-        if( name.equals("all") || name.equals("phrase") || name.equals("near"))
+        if( name.matches("^all$|^phrase$|^exact$|^near$") )
         {   
             int slop = name.equals("all") ? 999999999 :
                        name.equals("phrase") ? 0 :
+                       name.equals("exact") ? -1 :
                        parseIntAttrib( parent, "slop" );
             return makeProxQuery( parent, slop, field, maxSnippets );
         }
@@ -958,6 +960,13 @@ public class QueryRequestParser
         if( lower == null && upper == null )
             error( "'range' element must have 'lower' and/or 'upper' child element(s)" );
         
+        // If no upper specified, we're in danger of accidentally matching the
+        // secret 'END' token. So add a token that's just before it as the upper
+        // bound.
+        //
+        if( upper == null )
+            upper = new Term( lower.field(), SpanExactQuery.startTokenMinus );
+        
         // And we're done.
         SpanQuery q = new SpanRangeQuery( lower, upper, inclusive, req.termLimit );
         q.setSpanRecording( maxSnippets );
@@ -1012,8 +1021,8 @@ public class QueryRequestParser
         for( int i = 0; i < parent.nChildren(); i++ ) {
             EasyNode el = parent.child( i );
             if( el.name().equals("not") ) {
-                if( slop == 0 )
-                    error( "'not' clauses aren't supported in phrase queries" );
+                if( slop <= 0 )
+                    error( "'not' clauses aren't supported in phrase/exact queries" );
                 
                 // Make sure to avoid adding the 'not' terms to the term map,
                 // since it would be silly to hilight them.
@@ -1040,21 +1049,25 @@ public class QueryRequestParser
             error( "'" + parent.name() + "' element requires at " +
                    "least one term" );
         
+        // Handle 'exact' queries specially.
+        SpanQuery q;
+        SpanQuery[] termQueries = (SpanQuery[]) terms.toArray(
+                                                   new SpanQuery[terms.size()] ); 
+        if( slop < 0 )
+            q = new SpanExactQuery( termQueries );
+
         // Optimization: treat a single-term 'all' query as just a simple
         // term query.
         //
-        if( terms.size() == 1 )
-            return (SpanQuery) terms.elementAt(0);
+        else if( terms.size() == 1 )
+            q = (SpanQuery) terms.elementAt( 0 );
         
         // Make a 'near' query out of it. Zero slop implies in-order.
-        boolean inOrder = (slop == 0);
-        SpanQuery q = new SpanNearQuery( 
-                                  (SpanQuery[]) terms.toArray(new SpanQuery[0]), 
-                                  slop,
-                                  inOrder );
+        else
+            q = new SpanNearQuery( termQueries, slop, slop == 0 );
+
+        // All done.
         q.setSpanRecording( maxSnippets );
-        
-        // And we're done.
         return q;
         
     } // makeTextAllQuery()

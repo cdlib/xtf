@@ -136,6 +136,26 @@ public class DocHitImpl extends DocHit
                 chunkCount = Integer.parseInt( value );
             else if( !name.equals("docInfo") ) 
             {
+                // Strip the special start-of-field and end-of-field tokens.
+                if( value.indexOf(SpanExactQuery.startToken) >= 0 ||
+                    value.indexOf(SpanExactQuery.endToken) >= 0 )
+                {
+                    final char startChar = SpanExactQuery.startToken.charAt( 0 );
+                    final char endChar   = SpanExactQuery.endToken.charAt( 0 );
+                    
+                    char[] in  = value.toCharArray();
+                    char[] out = new char[ in.length ];
+                    int dst = 0;
+                    
+                    for( int i = 0; i < in.length; i++ ) {
+                        if( in[i] == startChar || in[i] == endChar )
+                            continue;
+                        out[dst++] = in[i];
+                    }
+                    
+                    value = new String( out, 0, dst );
+                }
+                
                 // Lucene will fail subtly if we add two fields with the same 
                 // name. Basically, the terms for each field are added at 
                 // overlapping positions, causing a phrase search to easily 
@@ -149,7 +169,7 @@ public class DocHitImpl extends DocHit
                     metaData.put( name, markedValue );
                     continue;
                 }
-                    
+                
                 int startPos = 0;
                 while( startPos < markedValue.length() ) {
                     int bumpPos = markedValue.indexOf( bumpMarker, startPos );
@@ -157,7 +177,7 @@ public class DocHitImpl extends DocHit
                         metaData.put( name, markedValue.substring(startPos) );
                         break;
                     }
-                    
+                
                     String val = markedValue.substring(startPos, bumpPos);
                     metaData.put( name, val );
                     
@@ -180,6 +200,8 @@ public class DocHitImpl extends DocHit
      */
     public Set textTerms()
     {
+        if( fieldSpans == null )
+            return null;
         return fieldSpans.getTerms("text");
     }
     

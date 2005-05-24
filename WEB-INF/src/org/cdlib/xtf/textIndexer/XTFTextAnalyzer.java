@@ -71,8 +71,20 @@ import org.cdlib.xtf.util.WordMap;
  *    first non-special tokens they preceed. For more about special token 
  *    filtering, see the {@link XtfSpecialTokensFilter} class. <br><br>
  * 
+ *    <u>Lowercase Conversion</u><br>
+ *    The next step performed by the <code>XTFTextAnalyzer</code> 
+ *    is to convert all the remaining tokens in the token list to lowercase. 
+ *    Converting indexed words search phrases to lowercase has the effect of  
+ *    making searches case insensitive. <br><br>
+ *    
+ *    <u>Plural and Accent Folding</u><br>
+ *    Next the <code>XTFTextAnalyzer</code> converts plural words to singular
+ *    form using a {@link WordMap}, and strips diacritics from the word using
+ *    an {@link CharMap}. These conversions can yield more complete search
+ *    results. <br><br>
+ *
  *    <u>Stop-Word Filtering</u><br>
- *    The third step performed by the <code>XTFTextAnalyzer</code> is to remove
+ *    The next step performed by the <code>XTFTextAnalyzer</code> is to remove
  *    certain words called <i>stop-words</i>. Stop-words are words that by 
  *    themselves are not worth indexing, such as <i>a</i>, <i>the</i>, 
  *    <i>and</i>, <i>of</i>, etc. These words appear so many times in English
@@ -100,11 +112,14 @@ import org.cdlib.xtf.util.WordMap;
  *    details about how n-grams actually work, see the {@link NgramStopFilter} 
  *    class. <br><br>
  * 
- *    <u>Lowercase Conversion</u><br>
- *    The fourth and final step performed by the <code>XTFTextAnalyzer</code> 
- *    is to convert all the remaining tokens in the token list to lowercase. 
- *    Converting indexed words search phrases to lowercase has the effect of  
- *    making searches case insensitive. <br><br>
+ *    <u>Adding End Tokens</u><br>
+ *    As a final step, the analyzer double-indexes the first and last tokens of
+ *    fields that contain the special start-of-field and end-of-field characters.
+ *    Essentially, those tokens are indexed with and without the markers. This 
+ *    enables exact matching at query time, since Lucene offers no other way to 
+ *    determine the end of a field. Note that this processing is only performed
+ *    on non-text fields (i.e. meta-data fields.)<br><br>
+ *
  *  </blockquote>
  *  
  *  Once the <code>XTFTextAnalyzer</code> has completed its work, it returns
@@ -121,9 +136,6 @@ public class XTFTextAnalyzer extends Analyzer {
   
   /** The set of accented chars to remove diacritics from */
   private CharMap accentMap;
-  
-  /** The max size of chunks */
-  private int chunkSize;
   
   /** A reference to the contiguous source text block to be tokenized and
    *  filtered. (Used by the {@link XTFTextAnalyzer#tokenStream(String,Reader) tokenStream()}
@@ -150,8 +162,9 @@ public class XTFTextAnalyzer extends Analyzer {
    *  @param  accentMap The set of accented chars to remove diacritics from
    *                    when filtering text. See 
    *                    {@link IndexInfo#accentMapPath} for more information.
-   * 
-   *  @param  chunkSize The size (in words) of each chunk.<br><br>
+   *                    
+   *  @param  addEndToken If set to true, a special end token will be added after
+   *                      the last token. This allows exact (whole-field) matching.
    * 
    *  @.notes
    *    Use this method to initialize an instance of an 
@@ -163,8 +176,7 @@ public class XTFTextAnalyzer extends Analyzer {
 
   public XTFTextAnalyzer( Set          stopSet,
                           WordMap      pluralMap,
-                          CharMap      accentMap,
-                          int          chunkSize )
+                          CharMap      accentMap )
   {
     
     // Record the set of stop words to use and the combine distance
@@ -175,9 +187,6 @@ public class XTFTextAnalyzer extends Analyzer {
     
     // Record the chars to remove diacritics from
     this.accentMap       = accentMap;
-    
-    // Record the chunk size (used for checking)
-    this.chunkSize       = chunkSize;
     
   } // public XTFTextAnalyzer( stopWords, blurbedText )
   
@@ -241,13 +250,16 @@ public class XTFTextAnalyzer extends Analyzer {
     // become part of any n-grams. Also, we must do it after the lower-case
     // filter so we can properly recognize the stop words.
     //
-    if( stopSet != null ) {
-        result = new NgramStopFilter( 
-                              result, 
-                              stopSet,
-                              fieldName.equals("text") ? chunkSize : -1 );
-    }
-
+    if( stopSet != null )
+        result = new NgramStopFilter( result, stopSet );
+    
+    // Index with and without the special start-of-field/end-of-field markers.
+    // If there aren't any, the filter doesn't do any harm. Also, there'll never
+    // be any on the 'text' field, so skip that.
+    //
+    if( !fieldName.equals("text") )
+        result = new StartEndFilter( result );
+    
     // Return the final list of tokens to the caller.
     return result;
 

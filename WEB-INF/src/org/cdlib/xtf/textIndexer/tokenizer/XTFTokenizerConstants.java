@@ -18,7 +18,8 @@ public interface XTFTokenizerConstants {
   int LETTER = 12;
   int CJK = 13;
   int DIGIT = 14;
-  int NOISE = 15;
+  int XTF_SPECIAL = 15;
+  int NOISE = 16;
 
   int DEFAULT = 0;
 
@@ -38,6 +39,7 @@ public interface XTFTokenizerConstants {
     "<LETTER>",
     "<CJK>",
     "<DIGIT>",
+    "<XTF_SPECIAL>",
     "<NOISE>",
   };
 

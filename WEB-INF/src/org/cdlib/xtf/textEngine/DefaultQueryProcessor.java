@@ -100,8 +100,8 @@ public class DefaultQueryProcessor extends QueryProcessor
      * This is main entry point. Takes a pre-parsed query request and handles 
      * searching the index and forming the results.
      * 
-     * @param queryReq      The pre-parsed request to process
-     * @return              Zero or more document hits
+     * @param req      The pre-parsed request to process
+     * @return         Zero or more document hits
      */
     public QueryResult processRequest( QueryRequest req )
         throws IOException
@@ -451,9 +451,11 @@ public class DefaultQueryProcessor extends QueryProcessor
      * Creates either a standard score-sorting hit queue, or a field-sorting
      * hit queue, depending on whether the query is to be sorted.
      *
-     * @param reader  will be used to read the field contents
-     * @param req     contains the parameters (startDoc, maxDoc, sort fields)
-     * @return        an appropriate hit queue
+     * @param reader     will be used to read the field contents
+     * @param startDoc   first document to return (zero for first)
+     * @param maxDocs    max # of documents to return
+     * @param sortFields space or comma delimited list of fields to sort by
+     * @return           an appropriate hit queue
      */
     private PriorityQueue createHitQueue( IndexReader  reader,
                                           int          startDoc,

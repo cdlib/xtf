@@ -128,7 +128,7 @@ public class SnippetMaker
         // Use the indexer's actual analyzer, so that our results always
         // agree (especially the positions which are critical.)
         //
-        analyzer = new XTFTextAnalyzer( null, pluralMap, accentMap, -1 );
+        analyzer = new XTFTextAnalyzer( null, pluralMap, accentMap );
     } // constructor
     
     /** 
@@ -329,14 +329,14 @@ public class SnippetMaker
             
             public void term(MarkPos startPos, MarkPos endPos, String term) {
               copyUpTo( startPos );
+              String toAdd = startPos.getTextTo(endPos) ; 
               buf.append( "<term>" );
               //Trace.more( Trace.debug, "{" + startPos.getTextTo(endPos) + "}");
-              String toAdd = startPos.getTextTo(endPos) ; 
               buf.append( toAdd );
               buf.append( "</term>" );
-              prevPos = endPos;
               if( inContext )
                   contextSize += toAdd.length();
+              prevPos = endPos;
             }
             
             public void beginSpan(MarkPos pos, Span span) {

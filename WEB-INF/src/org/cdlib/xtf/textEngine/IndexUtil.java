@@ -276,18 +276,9 @@ public class IndexUtil
   
   
   /**
-   * Given an index within a config file and the path to the source XML text
-   * of a document, this method infers the correct document key that should be
-   * stored in the index.
-   * 
-   * @param xtfHomeFile     The XTF_HOME directory
-   * @param idxInfo         Configuration info for the index in question.
-   * @param srcTextFile     Source text file of interest
-   * 
-   * @return                Document key to store or look for in the index
-   *    
-   * @throws Exception      If the config file cannot be loaded, or the
-   *                        paths are invalid.        
+   * Create a SAX parser using the best implementation we can find. We prefer
+   * the new parser supplied by Java 1.5. Failing that, we try for the Crimson
+   * parser, and if that's not found, we try the default.        
    */
   public static SAXParser createSAXParser()
   {

@@ -104,6 +104,10 @@ public class FastTokenizer extends Tokenizer
         setCharType( 'a', '\u0ed0', '\u0ed9' );
         setCharType( 'a', '\u1040', '\u1049' );
         
+        // XTF internal markers
+        charType['\uEBEB'] = 'a'; // start-of-field marker
+        charType['\uEE1D'] = 'a'; // end-of-field marker
+
         // Whitespace
         charType[' ' ] = 'w';
         charType['\t'] = 'w';

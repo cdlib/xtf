@@ -82,6 +82,7 @@ import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
 import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.textEngine.IndexUtil;
+import org.cdlib.xtf.textEngine.SpanExactQuery;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
@@ -645,7 +646,7 @@ public class XMLTextProcessor extends DefaultHandler
    * Utility function to create a new Lucene index database for reading or 
    * searching. <br><br>
    * 
-   * This method is used by the {@link XMLTextProcessor#createIndex(String) createIndex() }
+   * This method is used by the {@link XMLTextProcessor#createIndex(IndexInfo) createIndex() }
    * method to create a new or clean index for reading and searching. <br><br>
    * 
    * @.notes
@@ -675,8 +676,7 @@ public class XMLTextProcessor extends DefaultHandler
         // First, make the index.
         indexWriter = new IndexWriter( 
                      indexPath, 
-                     new XTFTextAnalyzer( stopSet, pluralMap, accentMap, 
-                                          indexInfo.getChunkSize() ),
+                     new XTFTextAnalyzer( stopSet, pluralMap, accentMap ),
                      true );
         
         // Then add the index info chunk to it.
@@ -1671,6 +1671,15 @@ public class XMLTextProcessor extends DefaultHandler
     if( inMeta == 1 ) {
         metaField.value = metaBuf.toString().trim();
         
+        // If tokenized, add the special start-of-field and end-of-field tokens
+        // to the meta-data value.
+        //
+        if( metaField.tokenize ) {
+            metaField.value = SpanExactQuery.startToken +
+                              metaField.value +
+                              SpanExactQuery.endToken;
+        }
+        
         // Lucene will fail subtly if we add two fields with the same name.
         // Basically, the terms for each field are added at overlapping
         // positions, causing a phrase search to easily span them. To counter
@@ -1698,7 +1707,7 @@ public class XMLTextProcessor extends DefaultHandler
         }
 
         if( add )
-            metaInfo.add( metaField );
+        metaInfo.add( metaField );
         
         metaField = null;
         metaBuf.setLength( 0 );
@@ -3348,7 +3357,7 @@ public class XMLTextProcessor extends DefaultHandler
             doc.add( new Field( field.name,
                                 field.value,
                                 true, true, field.tokenize ) );
-        
+            
         } // while(  metaIter.hasNext() )
    
     } // else( metaInfo != null && !metaInfo.isEmpty() )
@@ -3585,12 +3594,9 @@ public class XMLTextProcessor extends DefaultHandler
     // and create mode. Pass it our own text analyzer. 
     //
     indexWriter = new IndexWriter( 
-                     indexPath,
-                     new XTFTextAnalyzer( stopSet,
-                                          pluralMap,
-                                          accentMap,
-                                          indexInfo.getChunkSize() ),
-                                          false );
+                           indexPath,
+                           new XTFTextAnalyzer(stopSet, pluralMap, accentMap),
+                           false );
       
     // Since we end up adding tons of little 'documents' to Lucene, it's much 
     // faster to queue up a bunch in RAM before sorting and writing them out. 

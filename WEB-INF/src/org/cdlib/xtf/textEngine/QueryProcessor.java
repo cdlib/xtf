@@ -48,8 +48,8 @@ public abstract class QueryProcessor
      * Takes a query request and handles searching the index and forming 
      * the results.
      * 
-     * @param queryReq   The request to process
-     * @return           Zero or more document hits
+     * @param req   The request to process
+     * @return      Zero or more document hits
      */
     public abstract QueryResult processRequest( QueryRequest req )
         throws IOException;

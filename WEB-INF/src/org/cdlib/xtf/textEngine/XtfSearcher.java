@@ -96,7 +96,7 @@ public class XtfSearcher
     /** 
      * Construct a searcher set on the given directory.
      * 
-     * @param dir                   Directory to load index data from
+     * @param indexPath             Directory to load index data from
      * @param updateCheckSeconds    How often to check for an updated index
      */
     public XtfSearcher( String indexPath, int updateCheckSeconds )
