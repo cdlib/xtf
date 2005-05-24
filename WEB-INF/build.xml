@@ -29,6 +29,7 @@
            debug="true"
            classpath="${libs}"
            srcdir="${src}" 
+           encoding="UTF-8"
            excludes="**/.sf/**/*,**/.cdl/**/*"
            destdir="${build}"/>
   </target>
