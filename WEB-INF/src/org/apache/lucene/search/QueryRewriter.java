@@ -40,7 +40,7 @@ import org.cdlib.xtf.textEngine.SpanSectionTypeQuery;
  * rewrite, and the base will take care of gluing them together properly. 
  *
  * @author  Martin Haye
- * @version $Id: QueryRewriter.java,v 1.1 2005-04-19 23:06:09 mhaye Exp $
+ * @version $Id: QueryRewriter.java,v 1.2 2005-05-25 00:50:39 mhaye Exp $
  */
 public abstract class QueryRewriter {
 
@@ -66,10 +66,10 @@ public abstract class QueryRewriter {
       return rewrite((SpanSectionTypeQuery) q);
     if (q instanceof TermQuery)
       return rewrite((TermQuery)q);
+    if (q instanceof SpanWildcardQuery) // must be before SpanTermQuery
+      return rewrite((SpanWildcardQuery)q);
     if (q instanceof SpanTermQuery)
       return rewrite((SpanTermQuery)q);
-    if (q instanceof SpanWildcardQuery)
-      return rewrite((SpanWildcardQuery)q);
     if (q instanceof SpanRangeQuery)
       return rewrite((SpanRangeQuery)q);
 
