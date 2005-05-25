@@ -31,7 +31,7 @@ import org.cdlib.xtf.textEngine.TermLimitException;
 /** Matches spans containing a wildcard term.
  * 
  * @author  Martin Haye
- * @version $Id: SpanWildcardQuery.java,v 1.2 2005-02-23 05:14:09 mhaye Exp $
+ * @version $Id: SpanWildcardQuery.java,v 1.3 2005-05-25 00:51:23 mhaye Exp $
  */
 public class SpanWildcardQuery extends SpanTermQuery {
 
@@ -52,6 +52,11 @@ public class SpanWildcardQuery extends SpanTermQuery {
   public SpanWildcardQuery(Term term, int termLimit) { 
     super(term); 
     this.termLimit = termLimit;
+  }
+  
+  /** Retrieve the term limit this was constructed with */
+  public int getTermLimit() {
+    return termLimit;
   }
   
   /**
@@ -118,5 +123,9 @@ public class SpanWildcardQuery extends SpanTermQuery {
     throws IOException
   {
     throw new UnsupportedOperationException();
+  }
+  
+  public String toString(String field) {
+    return "wild(" + super.toString(field) + ")";
   }
 }
