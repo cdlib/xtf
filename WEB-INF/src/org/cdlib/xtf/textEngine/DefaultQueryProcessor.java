@@ -49,6 +49,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.SparseStringComparator;
 import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanRangeQuery;
+import org.apache.lucene.search.spans.SpanWildcardQuery;
 import org.apache.lucene.util.PriorityQueue;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.Trace;
@@ -194,7 +196,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         // the chunk overlap size. That way, we'll get consistent results and
         // the user won't be able to tell where the chunk boundaries are.
         //
-        fixupSlop( finalQuery, docNumMap );
+        fixupSlop( finalQuery, docNumMap, stopSet );
         
         // If grouping was specified by the query, read in all the group data.
         // Note that the GroupData class holds its own cache so we don't have
@@ -405,9 +407,10 @@ public class DefaultQueryProcessor extends QueryProcessor
     
     /**
      * After index parameters are known, this method should be called to
-     * update the slop parameters of queries that need to know.
+     * update the slop parameters of queries that need to know. Also informs
+     * wildcard and range queries of the stopword set.
      */
-    private void fixupSlop( Query query, DocNumMap docNumMap )
+    private void fixupSlop( Query query, DocNumMap docNumMap, Set stopSet )
     {
         // First, fix up this query if necessary.
         if( query instanceof SpanNearQuery ) {
@@ -424,12 +427,20 @@ public class DefaultQueryProcessor extends QueryProcessor
             SpanDechunkingQuery dq = (SpanDechunkingQuery) query;
             dq.setDocNumMap( docNumMap );
         }
+        else if( query instanceof SpanWildcardQuery ) {
+            SpanWildcardQuery wq = (SpanWildcardQuery) query;
+            wq.setStopWords( stopSet );
+        }
+        else if( query instanceof SpanRangeQuery ) {
+            SpanRangeQuery rq = (SpanRangeQuery) query;
+            rq.setStopWords( stopSet );
+        }
         
         // Now process any sub-queries it has.
         Query[] subQueries = query.getSubQueries();
         if( subQueries != null ) {
             for( int i = 0; i < subQueries.length; i++ )
-                fixupSlop( subQueries[i], docNumMap );
+                fixupSlop( subQueries[i], docNumMap, stopSet );
         }
     } // fixupSlop()
     

@@ -34,6 +34,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryRewriter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.search.spans.SpanWildcardQuery;
 import org.cdlib.xtf.util.CharMap;
 
 /*
@@ -78,6 +79,22 @@ public class AccentFoldingRewriter extends QueryRewriter
     
     Term newTerm = new Term( t.field(), mapped );
     return copyBoost( q, new SpanTermQuery(newTerm, q.getStopWords()) ); 
+  }
+  
+  /** 
+   * Rewrite a wildcard term query. Removes diacritics from words.
+   * 
+   * @param q  The query to rewrite
+   * @return   Rewritten version, or 'q' unchanged if no changed needed.
+   */
+  protected Query rewrite( SpanWildcardQuery q ) {
+    Term t = q.getTerm();
+    String mapped = accentMap.mapWord( t.text() );
+    if( mapped == null )
+        return q;
+    
+    Term newTerm = new Term( t.field(), mapped );
+    return copyBoost( q, new SpanWildcardQuery(newTerm, q.getTermLimit()) ); 
   }
   
 } // class AccentFoldingRewriter
