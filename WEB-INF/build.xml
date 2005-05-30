@@ -6,7 +6,7 @@
 
   <!-- set global properties for this build -->
   <property name="src"     location="src"/>
-  <property name="build"   location="classes"/>
+  <property name="classes" location="classes"/>
   <property name="dist"    location="dist"/>
   <property name="lib"     location="lib"/>
   <property name="bin"     location="bin"/>
@@ -17,13 +17,13 @@
     <!-- Create the time stamp -->
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}"/>
+    <mkdir dir="${classes}"/>
   </target>
 
   <!-- ================================================== compile -->
   <target name="compile" depends="init"
         description="compile the source " >
-    <!-- Compile the java code from ${src} into ${build} -->
+    <!-- Compile the java code from ${src} into ${classes} -->
     <javac target="1.4" 
            source="1.4" 
            debug="true"
@@ -31,7 +31,7 @@
            srcdir="${src}" 
            encoding="UTF-8"
            excludes="**/.sf/**/*,**/.cdl/**/*"
-           destdir="${build}"/>
+           destdir="${classes}"/>
   </target>
 	
   <target name="tokenizer" description="compile the XTF tokenizer">
@@ -39,9 +39,17 @@
   	        javacchome="${lib}"/>
   </target>
 
+  <!-- ================================================== jar -->
+  <target name="jar" depends="compile"
+          description="generate a JAR file">
+    <!-- Make a jar file containing the XTF classes -->
+    <mkdir dir="${dist}"/>
+    <jar jarfile="${dist}/xtf.jar" basedir="${classes}"/>
+  </target>
+
   <!-- ================================================== dist -->
-  <target name="dist" depends="compile,docs"
-        description="generate the distribution" >
+  <target name="dist" depends="jar,docs"
+          description="generate the distribution" >
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}"/>
 
@@ -51,8 +59,8 @@
     <mkdir dir="build-tmp/WEB-INF"/>
     <mkdir dir="build-tmp/WEB-INF/lib"/>
 
-    <!-- Make a jar file containing the XTF classes -->
-    <jar jarfile="build-tmp/WEB-INF/lib/xtf.jar" basedir="${build}"/>
+    <!-- Copy the jar file containing the XTF classes -->
+    <copy todir="build-tmp/WEB-INF/lib" file="${dist}/xtf.jar"/>
 
     <!-- Zip up the regression tests -->
     <zip zipfile="build-tmp/regress.zip">
@@ -108,17 +116,11 @@
 
         <include name="WebDocs/HTML/**/*"/>
 
+        <include name="WEB-INF/build.xml"/>
         <include name="WEB-INF/web.xml"/>
         <include name="WEB-INF/lib/*.jar"/>
         <exclude name="WEB-INF/lib/servlet.jet"/>
 
-      </fileset>
-    </copy>
-
-    <!-- Copy sample files (some will overwrite) -->
-    <copy todir="build-tmp">
-      <fileset dir="../sample">
-        <include name="**/*"/>
       </fileset>
     </copy>
 
@@ -131,6 +133,7 @@
     </jar>
 
     <delete dir="build-tmp" quiet="true"/>
+    <delete file="${dist}/xtf.jar" quiet="true"/>
   </target>
 
   <!-- ================================================== docs -->
@@ -140,6 +143,7 @@
              private="true" 
              breakiterator="yes"
              source="1.4"
+             encoding="UTF-8"
              classpath="${libs}"
              sourcepath="${src}"
     		 noqualifier="all">
@@ -154,11 +158,9 @@
   <!-- ================================================== clean -->
   <target name="clean"
         description="clean up" >
-    <!-- Delete the ${build} and ${dist} directory trees -->
-    <delete dir="${build}" quiet="true"/>
-    <delete quiet="true">
-      <fileset dir="${dist}" includes="**/xtf-dev-*.war"/>
-    </delete>
+    <!-- Delete the ${classes} and ${dist} directory trees -->
+    <delete dir="${classes}" quiet="true"/>
+    <delete dir="${dist}" quiet="true"/>
     <delete dir="${doc}" quiet="true"/>
   </target>
 </project>
