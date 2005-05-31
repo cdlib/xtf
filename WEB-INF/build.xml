@@ -149,8 +149,16 @@
     		 noqualifier="all">
       <tag name=".notes" description="Notes:"/>
       <tag name=".warnings" description="Warnings:"/>
+      <tag name="todo" description="To Do:"/>
       <packageset dir="${src}">
         <include name="**"/>
+        <exclude name="**/.sf/**"/>
+        <exclude name="**/.cdl/**"/>
+
+        <!-- Exclude the generated code because it has javadoc warnings
+             we can't fix.
+        -->
+        <exclude name="**/org/cdlib/xtf/textIndexer/tokenizer/**"/>
       </packageset>
     </javadoc>
   </target>
