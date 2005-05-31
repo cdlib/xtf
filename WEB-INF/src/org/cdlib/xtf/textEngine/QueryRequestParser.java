@@ -195,7 +195,6 @@ public class QueryRequestParser
      * 
      * @param output The stylesheet output, whose first (and only) child
      *               should be a 'query' element.
-     * @return The resulting Lucene query
      */
     private void parseOutputTop( EasyNode output )
         throws QueryGenException, QueryFormatError

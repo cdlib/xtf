@@ -166,9 +166,6 @@ public class DefaultDocLocator implements DocLocator
      * @param preFilter     A prefilter stylesheet (or null for no pre-filtering.)
      * @param removeDoctypeDecl true to remove DOCTYPE declarations from the
      *                          XML document
-     * 
-     * @return                Store containing the tree, or null if none
-     *                        could be found.
      */
     private void buildLazyStore( File lazyFile, 
                                  String sourcePath,
