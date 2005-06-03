@@ -29,7 +29,7 @@ import org.apache.lucene.analysis.TokenStream;
  * <p>Created: Dec 13, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: BasicWordIter.java,v 1.3 2005-05-11 03:24:59 mhaye Exp $
+ * @version $Id: BasicWordIter.java,v 1.4 2005-06-03 01:36:16 mhaye Exp $
  */
 public class BasicWordIter implements WordIter, Cloneable
 {
@@ -176,22 +176,16 @@ public class BasicWordIter implements WordIter, Cloneable
       // Last character (plus one) of the current word
       case WordIter.TERM_END:
         bm.wordPos = wordPos;
-        bm.charPos = tokens[tokNum].startOffset() 
-                   + tokens[tokNum].endOffset()
-                   - tokens[tokNum].startOffset();
+        bm.charPos = tokens[tokNum].endOffset();
         break;
         
       // End of word plus spaces and punctuation
       case WordIter.TERM_END_PLUS:
         bm.wordPos = wordPos;
         if (tokNum < tokens.length - 1)
-          bm.charPos = tokens[tokNum].startOffset()
-                     + tokens[tokNum + 1].startOffset() 
-                     - tokens[tokNum].startOffset();
+          bm.charPos = tokens[tokNum + 1].startOffset(); 
         else
-          bm.charPos = tokens[tokNum].startOffset() 
-                     + tokens[tokNum].endOffset()
-                     - tokens[tokNum].startOffset();
+          bm.charPos = text.length();
         break;
         
       // End of field.
