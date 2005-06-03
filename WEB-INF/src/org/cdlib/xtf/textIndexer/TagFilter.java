@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.cdlib.xtf.textEngine.Constants;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.Tester;
 import org.cdlib.xtf.util.Trace;
@@ -284,9 +285,9 @@ public class TagFilter extends TokenFilter
         assert testFilter("<element att1=\"foo bar\" att2=\"wow\">hello there</element>").
                    equals(":<element:att1=:\"foo\":\"bar\":att2=:\"wow\":>:hello:there:</element:>");
         
-        String bump = XtfSpecialTokensFilter.bumpMarker +
+        String bump = Constants.BUMP_MARKER +
                       "5" +
-                      XtfSpecialTokensFilter.bumpMarker;
+                      Constants.BUMP_MARKER;
         
         assert testFilter("x" + bump + "<element att=\"a\"/>").
                    equals(":x::::::<element:att=:\"a\":/>");

@@ -37,7 +37,6 @@ import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.mark.FieldSpans;
 import org.apache.lucene.mark.SpanDocument;
-import org.cdlib.xtf.textIndexer.XtfSpecialTokensFilter;
 import org.cdlib.xtf.util.AttribList;
 
 /**
@@ -70,7 +69,7 @@ public class DocHitImpl extends DocHit
     private AttribList metaData;
     
     /** Bump marker used to denote different meta-data fields w/ same name */
-    private char bumpMarker = XtfSpecialTokensFilter.bumpMarker;
+    private char bumpMarker = Constants.BUMP_MARKER;
     
     /**
      * Construct a document hit. Package-private because these should only
@@ -169,7 +168,7 @@ public class DocHitImpl extends DocHit
         boolean startFound = false;
         for( int i = 0; i < markedValue.length(); i++ ) {
             char c = markedValue.charAt( i );
-            if( c == SpanExactQuery.startToken ) {
+            if( c == Constants.FIELD_START_MARKER ) {
                 startFound = true;
                 if( i > 0 && markedValue.charAt(i-1) == '>' ) {
                     int tagStart = buf.lastIndexOf( "< " );
@@ -183,7 +182,7 @@ public class DocHitImpl extends DocHit
                     buf.append( ">" );
                 }
             }
-            else if( c == SpanExactQuery.endToken ) {
+            else if( c == Constants.FIELD_END_MARKER ) {
                 buf.append( "</" );
                 buf.append( name );
                 buf.append( ">" );

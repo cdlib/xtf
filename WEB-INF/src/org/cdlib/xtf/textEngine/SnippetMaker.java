@@ -423,8 +423,8 @@ public class SnippetMaker
         // attach the position increment to the next token.
         //
         String term = t.termText();
-        boolean isStartToken = (term.charAt(0) == SpanExactQuery.startToken);
-        boolean isEndToken   = (term.charAt(term.length()-1) == SpanExactQuery.endToken);
+        boolean isStartToken = (term.charAt(0) == Constants.FIELD_START_MARKER);
+        boolean isEndToken   = (term.charAt(term.length()-1) == Constants.FIELD_END_MARKER);
         if( isStartToken || isEndToken ) {
             Token nextTok = input.next();
             assert term.indexOf(nextTok.termText()) >= 0;

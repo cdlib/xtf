@@ -963,8 +963,11 @@ public class QueryRequestParser
         // secret 'END' token. So add a token that's just before it as the upper
         // bound.
         //
-        if( upper == null )
-            upper = new Term( lower.field(), SpanExactQuery.startTokenMinus );
+        if( upper == null ) {
+            char[] tmp = new char[1];
+            tmp[0] = Constants.FIELD_START_MARKER - 1;
+            upper = new Term( lower.field(), new String(tmp) );
+        }
         
         // And we're done.
         SpanQuery q = new SpanRangeQuery( lower, upper, inclusive, req.termLimit );

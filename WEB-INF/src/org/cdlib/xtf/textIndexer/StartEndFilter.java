@@ -34,7 +34,7 @@ import java.io.IOException;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.cdlib.xtf.textEngine.SpanExactQuery;
+import org.cdlib.xtf.textEngine.Constants;
 
 /**
  * Ensures that the tokens at the start and end of the stream are indexed both
@@ -79,8 +79,8 @@ public class StartEndFilter extends TokenFilter
     // without it.
     //
     String term = t.termText();
-    boolean isStartToken = (term.charAt(0) == SpanExactQuery.startToken);
-    boolean isEndToken   = (term.charAt(term.length()-1) == SpanExactQuery.endToken);
+    boolean isStartToken = (term.charAt(0) == Constants.FIELD_START_MARKER);
+    boolean isEndToken   = (term.charAt(term.length()-1) == Constants.FIELD_END_MARKER);
     if( isStartToken || isEndToken ) {
         if( isStartToken )
             term = term.substring( 1 );

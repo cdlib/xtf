@@ -34,6 +34,7 @@ import java.io.IOException;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.TokenFilter;
+import org.cdlib.xtf.textEngine.Constants;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -70,21 +71,6 @@ import org.apache.lucene.analysis.TokenFilter;
 public class XtfSpecialTokensFilter extends TokenFilter 
 
 {
-  
-  /** The character used to mark the start/end of a special bump token. */ 
-  public static final char bumpMarker = '\uEBBB';
-  
-  /** The special marker used to track the location of nodes within 
-   *  a chunk of text to be indexed.
-   */
-  public static final char nodeMarker = '\uE90D';
-  
-  /** The string used to represent a virtual word in a chunk of text. This
-   *  string is chosen in such a way to be an unlikely combination of 
-   *  characters in typical western texts. Initially, the characters <b>qw</b>
-   *  were selected as a mnemonic for a "quiet word".
-   */ 
-  public  static final String virtualWord = "qw";
   
   /** A reference to the original contiguous text that the input token list
    *  corresponds. See the 
@@ -174,7 +160,8 @@ public class XtfSpecialTokensFilter extends TokenFilter
         // If the current token isn't flanked on both sides by special token
         // markers...
         //    
-        if( startMark != bumpMarker || endMark != bumpMarker ) {
+        if( startMark != Constants.BUMP_MARKER || endMark != Constants.BUMP_MARKER )
+        {
           
             // Set the word increment (bump value) for the non-special
             // token encountered to the default word bump.

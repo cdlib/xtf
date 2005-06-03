@@ -1,7 +1,5 @@
 package org.cdlib.xtf.textEngine;
 
-import org.apache.lucene.mark.BasicMarkPos;
-
 /*
  * Copyright (c) 2004, Regents of the University of California
  * All rights reserved.
@@ -32,33 +30,32 @@ import org.apache.lucene.mark.BasicMarkPos;
  */
 
 /**
- * Helps with marking fields that contain bump markers.
+ * Holds global constants for the XTF text system.
  * 
  * @author Martin Haye
  */
-public class BoundedMarkPos extends BasicMarkPos
+public class Constants 
 {
-  public void stripMarkers(int termEnd)
-  {
-      // Remove bump markers.
-      while( true ) {
-          int tmp = fullText.lastIndexOf( Constants.BUMP_MARKER, 
-                                          charPos - 1 );
-          if( tmp < termEnd )
-            break;
-          charPos = tmp;
-      }
-      
-      // Remove trailing whitespace and end markers.
-      for( ; charPos > termEnd; charPos-- ) {
-          char c = fullText.charAt( charPos-1 );
-          if( !Character.isWhitespace(fullText.charAt(charPos-1)) &&
-              c != Constants.FIELD_END_MARKER )
-          {
-              break;
-          }
-      } // for
-      
-  } // stripMarkers()
 
-} // class BoundedMarkPos()
+  /** The character used to mark the start/end of a special bump token. */ 
+  public static final char BUMP_MARKER = '\uEBBB';
+  
+  /** The special marker used to track the location of nodes within 
+   *  a chunk of text to be indexed.
+   */
+  public static final char NODE_MARKER = '\uE90D';
+  
+  /** The string used to represent a virtual word in a chunk of text. This
+   *  string is chosen in such a way to be an unlikely combination of 
+   *  characters in typical western texts. Initially, the characters <b>qw</b>
+   *  were selected as a mnemonic for a "quiet word".
+   */ 
+  public  static final String VIRTUAL_WORD = "qw";
+  
+  // Special token that marks the start of a field
+  public static final char FIELD_START_MARKER = '\uEBEB';
+  
+  // Special token that marks the end of a field
+  public static final char FIELD_END_MARKER   = '\uEE1D';
+
+} // class XtfConstants

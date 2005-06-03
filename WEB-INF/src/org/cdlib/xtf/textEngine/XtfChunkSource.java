@@ -9,7 +9,6 @@ import org.apache.lucene.chunk.ChunkSource;
 import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.cdlib.xtf.textIndexer.XtfSpecialTokensFilter;
 import org.cdlib.xtf.util.Trace;
 
 /*
@@ -49,8 +48,8 @@ import org.cdlib.xtf.util.Trace;
 /** Performs special loading duties for our XTF chunks */
 class XtfChunkSource extends ChunkSource
 {
-  private static final char bumpMarker = XtfSpecialTokensFilter.bumpMarker;
-  private static final char nodeMarker = XtfSpecialTokensFilter.nodeMarker;
+  private static final char bumpMarker = Constants.BUMP_MARKER;
+  private static final char nodeMarker = Constants.NODE_MARKER;
 
   /** Construct a chunk source */
   XtfChunkSource( IndexReader reader,

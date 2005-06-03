@@ -80,7 +80,7 @@ class BoundedWordIter extends BasicWordIter
     
     // Don't advance past 'end-of-field' token
     int offset = tokens[tokNum].endOffset();
-    if( offset < text.length() && text.charAt(offset) == SpanExactQuery.endToken )
+    if( offset < text.length() && text.charAt(offset) == Constants.FIELD_END_MARKER )
         return false;
     
     return super.next( force );
@@ -102,7 +102,7 @@ class BoundedWordIter extends BasicWordIter
     
     // Don't back past 'start-of-field' token
     int offset = tokens[tokNum].startOffset();
-    if( offset > 0 && text.charAt(offset-1) == SpanExactQuery.startToken )
+    if( offset > 0 && text.charAt(offset-1) == Constants.FIELD_START_MARKER )
         return false;
     
     return super.prev( force );

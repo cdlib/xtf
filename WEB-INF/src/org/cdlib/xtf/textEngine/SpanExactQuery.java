@@ -52,17 +52,6 @@ import org.apache.lucene.search.spans.Spans;
  */
 public class SpanExactQuery extends SpanQuery
 {
-    // Special token guaranteed to be less than startToken, but greater than any
-    // normal token.
-    //
-    public static final String startTokenMinus = "\uE000";
-
-    // Special token that marks the start of a field
-    public static final char startToken = '\uEBEB';
-    
-    // Special token that marks the end of a field
-    public static final char endToken   = '\uEE1D';
-  
     // The clauses to match (not including the special start and end tokens)
     private SpanQuery[] clauses;
     
@@ -140,11 +129,11 @@ public class SpanExactQuery extends SpanQuery
             
             // If this is the first clause, add the start-of-field marker.
             if( i == 0 )
-                term = startToken + term;
+                term = Constants.FIELD_START_MARKER + term;
             
             // If this is the last clause, add the end-of-field marker.
             if( i == clauses.length-1 )
-                term = term + endToken;
+                term = term + Constants.FIELD_END_MARKER;
             
             // Construct the new clause.
             SpanTermQuery newClause = new SpanTermQuery(

@@ -82,7 +82,7 @@ import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
 import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.textEngine.IndexUtil;
-import org.cdlib.xtf.textEngine.SpanExactQuery;
+import org.cdlib.xtf.textEngine.Constants;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
@@ -1658,7 +1658,7 @@ public class XMLTextProcessor extends DefaultHandler
       // snippet maker can detect the change of node.
       //
       if( accumText.length() > 0 )
-          accumText.append( XtfSpecialTokensFilter.nodeMarker );
+          accumText.append( Constants.NODE_MARKER );
       
   } // private incrementNode()
   
@@ -1734,14 +1734,14 @@ public class XMLTextProcessor extends DefaultHandler
             {
                 int insertPoint = metaField.value.indexOf('>') + 1;
                 metaField.value = metaField.value.substring(0, insertPoint) +
-                                  SpanExactQuery.startToken + 
+                                  Constants.FIELD_START_MARKER + 
                                   metaField.value.substring(insertPoint) +
-                                  SpanExactQuery.endToken;
+                                  Constants.FIELD_END_MARKER;
             }
             else {
-                metaField.value = SpanExactQuery.startToken +
+                metaField.value = Constants.FIELD_START_MARKER +
                                   metaField.value +
-                                  SpanExactQuery.endToken;
+                                  Constants.FIELD_END_MARKER;
             }
         }
         
@@ -1761,9 +1761,9 @@ public class XMLTextProcessor extends DefaultHandler
             if( mf.name.equals(metaField.name) && mf.tokenize ) {
                 StringBuffer buf = new StringBuffer();
                 buf.append( mf.value );
-                buf.append( XtfSpecialTokensFilter.bumpMarker );
+                buf.append( Constants.BUMP_MARKER );
                 buf.append( Integer.toString(indexInfo.getChunkOvlp()) );
-                buf.append( XtfSpecialTokensFilter.bumpMarker );
+                buf.append( Constants.BUMP_MARKER );
                 buf.append( ' ' );
                 buf.append( metaField.value );
                 mf.value = buf.toString();
@@ -2125,7 +2125,7 @@ public class XMLTextProcessor extends DefaultHandler
             //
             chunkWordCount++;
             nextChunkWordCount++;
-            if( !word.termText().equals(XtfSpecialTokensFilter.virtualWord) )
+            if( !word.termText().equals(Constants.VIRTUAL_WORD) )
                 nodeWordCount++;
 
             // If we've got all the words required for the current chunk...
@@ -2390,8 +2390,8 @@ public class XMLTextProcessor extends DefaultHandler
         // some other spacing (but not actually a space character), replace
         // it so as to not cause problems in the blurb.
         //
-        if( theChar == XtfSpecialTokensFilter.bumpMarker ||
-            theChar == XtfSpecialTokensFilter.nodeMarker ||
+        if( theChar == Constants.BUMP_MARKER ||
+            theChar == Constants.NODE_MARKER ||
             ( theChar != ' ' && Character.isWhitespace(theChar) ) ) 
             text.setCharAt( i, ' ' );
 
@@ -2531,7 +2531,7 @@ public class XMLTextProcessor extends DefaultHandler
     // Get a spaced representation of the virtual word that we can use 
     // over and over again.
     //
-    String vWord = XtfSpecialTokensFilter.virtualWord + " ";
+    String vWord = Constants.VIRTUAL_WORD + " ";
               
     // Determine the length of the text to adjust.
     int len = text.length();
@@ -2948,8 +2948,8 @@ public class XMLTextProcessor extends DefaultHandler
     // Get convienient versions of the special bump token marker and the 
     // virtual word string.
     // 
-    char   marker = XtfSpecialTokensFilter.bumpMarker;
-    String vWord  = XtfSpecialTokensFilter.virtualWord;
+    char   marker = Constants.BUMP_MARKER;
+    String vWord  = Constants.VIRTUAL_WORD;
 
     // Start by setting the compacted text buffer to the contents of the
     // accumulated text buffer.
