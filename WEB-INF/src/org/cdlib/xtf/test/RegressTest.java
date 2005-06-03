@@ -64,6 +64,7 @@ import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.textEngine.ResultField;
 import org.cdlib.xtf.textEngine.ResultGroup;
 import org.cdlib.xtf.textEngine.Snippet;
+import org.cdlib.xtf.textIndexer.TagFilter;
 import org.cdlib.xtf.textIndexer.TextIndexer;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.CircularQueue;
@@ -122,6 +123,7 @@ public class RegressTest
         CircularQueue.tester.test();
         NgramStopFilter.tester.test();
         NgramQueryRewriter.tester.test();
+        TagFilter.tester.test();
         
         // Go for it.
         RegressTest test = new RegressTest();
@@ -133,15 +135,6 @@ public class RegressTest
     
     public void run( String[] args )
     {
-        // For some evil reason, Resin overrides the default transformer
-        // and document builder implementations with its own, deeply inferior,
-        // versions. Screw that.
-        //
-        System.setProperty( "javax.xml.parsers.TransformerFactory",
-                            "net.sf.saxon.TransformerFactoryImpl" );
-        System.setProperty( "javax.xml.parsers.DocumentBuilderFactory",
-                            "net.sf.saxon.om.DocumentBuilderFactoryImpl" );
-        
         try {
             // If a specific test was specified, set that as a filter.
             if( args.length > 0 ) {
@@ -487,9 +480,7 @@ public class RegressTest
                 for( Iterator atts = docHit.metaData().iterator(); atts.hasNext(); )
                 {
                     Attrib attrib = (Attrib) atts.next();
-                    buf.append( "<" + attrib.key + ">" );
                     buf.append( attrib.value );
-                    buf.append( "</" + attrib.key + ">" );
                 } // for atts
                 buf.append( "</meta>" );
             }

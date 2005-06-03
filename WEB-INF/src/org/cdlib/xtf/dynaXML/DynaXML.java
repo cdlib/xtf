@@ -42,12 +42,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -399,8 +397,7 @@ public class DynaXML extends TextServlet
         {
             res.setContentType("text/html");
             
-            TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
-            transformer = factory.newTransformer();
+            transformer = IndexUtil.createTransformer();
             Properties props = transformer.getOutputProperties();
             props.put( "indent", "yes" );
             props.put( "method", "xml" );
@@ -521,8 +518,7 @@ public class DynaXML extends TextServlet
                 throw new InvalidDocumentException();
             
             // Can't find a lazy store... just read the original source file.
-            XMLReader xmlReader = SAXParserFactory.newInstance().
-                newSAXParser().getXMLReader();
+            XMLReader xmlReader = IndexUtil.createXMLReader();
             InputSource inSrc = docLocator.getInputSource( 
                                    docInfo.source, docInfo.removeDoctypeDecl );
             return new SAXSource( xmlReader, inSrc );

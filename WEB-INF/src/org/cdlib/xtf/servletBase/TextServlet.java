@@ -219,32 +219,6 @@ public abstract class TextServlet extends HttpServlet
             if( isInitted )
                 return;
 
-            // For some evil reason, Resin overrides the default transformer
-            // and parser implementations with its own, deeply inferior,
-            // versions. Screw that.
-            //
-            System.setProperty( "javax.xml.parsers.TransformerFactory",
-                                "net.sf.saxon.TransformerFactoryImpl" );
-            
-            // Our first choice is the new parser supplied by Java 1.5.
-            // Second choice is the older (but reliable) Crimson parser.
-            //
-            try {
-                Class.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-                System.setProperty( "javax.xml.parsers.SAXParserFactory",
-                                    "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl" );
-            }
-            catch( ClassNotFoundException e ) {
-                try {
-                    Class.forName("org.apache.crimson.jaxp.SAXParserFactoryImpl");
-                    System.setProperty( "javax.xml.parsers.SAXParserFactory",
-                                        "org.apache.crimson.jaxp.SAXParserFactoryImpl" );
-                }
-                catch( ClassNotFoundException e2 ) {
-                    ; // Okay, accept whatever the default is.
-                }
-            }
-            
             // Read in the configuration file.
             TextConfig config = readConfig( configPath );
 

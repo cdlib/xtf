@@ -40,6 +40,7 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 
@@ -66,6 +67,7 @@ public class IndexUtil
 {
   private static ConfigCache configCache = new ConfigCache();
   private static SAXParserFactory saxParserFactory = null;
+  private static TransformerFactory transformerFactory = null;
   
   /**
    * Given an index configuration file and the name of an index within that file,
@@ -285,34 +287,37 @@ public class IndexUtil
     // If we don't have a factory yet, make one...
     if( saxParserFactory == null ) 
     {
-        // For some evil reason, Resin overrides the default transformer
-        // and parser implementations with its own, deeply inferior,
-        // versions. Screw that.
-        //
-        System.setProperty( "javax.xml.parsers.TransformerFactory",
-                            "net.sf.saxon.TransformerFactoryImpl" );
-        
         // Our first choice is the new parser supplied by Java 1.5.
         // Second choice is the older (but reliable) Crimson parser.
         //
         try {
-            Class.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-            System.setProperty( "javax.xml.parsers.SAXParserFactory",
-                                "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl" );
+            Class factoryClass = Class.forName(
+                "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
+            saxParserFactory = (SAXParserFactory) factoryClass.newInstance();
         }
         catch( ClassNotFoundException e ) {
             try {
-                Class.forName("org.apache.crimson.jaxp.SAXParserFactoryImpl");
-                System.setProperty( "javax.xml.parsers.SAXParserFactory",
-                                    "org.apache.crimson.jaxp.SAXParserFactoryImpl" );
+                Class factoryClass = Class.forName(
+                    "org.apache.crimson.jaxp.SAXParserFactoryImpl");
+                saxParserFactory = (SAXParserFactory) factoryClass.newInstance();
             }
             catch( ClassNotFoundException e2 ) {
-                ; // Okay, accept whatever the default is.
+                // Okay, accept whatever the default is.
+                saxParserFactory = SAXParserFactory.newInstance();
+            }
+            catch( InstantiationException e2 ) {
+                throw new RuntimeException( e2 );
+            }
+            catch( IllegalAccessException e2 ) {
+                throw new RuntimeException( e2 );
             }
         }
-        
-        // Create a SAX parser factory.
-        saxParserFactory = SAXParserFactory.newInstance();
+        catch( InstantiationException e ) {
+            throw new RuntimeException( e );
+        }
+        catch( IllegalAccessException e ) {
+            throw new RuntimeException( e );
+        }
     }
     
     // Use the parser factory to make a new parser.
@@ -336,6 +341,44 @@ public class IndexUtil
     
   } // createSaxParser() 
     
+  
+  /**
+   * Create an XML reader using the best implementation we can find. We prefer
+   * the new parser supplied by Java 1.5. Failing that, we try for the Crimson
+   * parser, and if that's not found, we try the default.        
+   */
+  public static XMLReader createXMLReader()
+  {
+      try {
+          SAXParser parser = createSAXParser();
+          return parser.getXMLReader();
+      }
+      catch( SAXException e ) {
+          throw new RuntimeException( e );
+      }
+  } // createXMLReader()
+  
+  
+  /**
+   * Create a Saxon transformer.
+   */
+  public static Transformer createTransformer()
+  {
+      // If we don't have a factory yet, make one.
+      if( transformerFactory != null ) 
+          transformerFactory = new net.sf.saxon.TransformerFactoryImpl();
+      
+      // And make the new transformer that was requested.
+      try {
+          return transformerFactory.newTransformer();
+      }
+      catch( TransformerConfigurationException e ) {
+          throw new RuntimeException( e );
+      }
+      
+  } // createTransformer()
+  
+  
   /**
    * Applies the standard set of filters for an XML document. In our case,
    * this involves removing document type declarations, and working around

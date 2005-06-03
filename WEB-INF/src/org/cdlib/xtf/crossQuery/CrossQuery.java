@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -51,6 +50,7 @@ import net.sf.saxon.tree.TreeBuilder;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.DocHit;
+import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
@@ -286,8 +286,7 @@ public class CrossQuery extends TextServlet
         {
             res.setContentType("text/xml");
 
-            TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
-            trans = factory.newTransformer();
+            trans = IndexUtil.createTransformer();
             Properties props = trans.getOutputProperties();
             props.put( "indent", "yes" );
             props.put( "method", "xml" );
