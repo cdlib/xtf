@@ -24,8 +24,8 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
   final public org.apache.lucene.analysis.Token next() throws ParseException, java.io.IOException {
   Token token = null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case ALPHANUM:
-      token = jj_consume_token(ALPHANUM);
+    case BASIC:
+      token = jj_consume_token(BASIC);
       break;
     case APOSTROPHE:
       token = jj_consume_token(APOSTROPHE);
@@ -80,7 +80,7 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
       jj_la1_0();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x21ff,};
+      jj_la1_0 = new int[] {0x41ff,};
    }
 
   public XTFTokenizer(CharStream stream) {
@@ -159,8 +159,8 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[17];
-    for (int i = 0; i < 17; i++) {
+    boolean[] la1tokens = new boolean[18];
+    for (int i = 0; i < 18; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
@@ -176,7 +176,7 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
         }
       }
     }
-    for (int i = 0; i < 17; i++) {
+    for (int i = 0; i < 18; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

@@ -87,7 +87,7 @@ PARSER_END(XTFTokenizer)
 TOKEN : {					  // token patterns
 
   // basic word: a sequence of digits & letters
-  <ALPHANUM: (<LETTER>|<DIGIT>|<XTF_SPECIAL>)+ >
+  <BASIC: (<XTF_SPECIAL>)? (<LETTER>|<DIGIT>)+ (<XTF_SPECIAL>)? >
 
   // internal apostrophes: O'Reilly, you're, O'Reilly's
   // use a post-filter to remove possesives
@@ -190,6 +190,8 @@ TOKEN : {					  // token patterns
      ]
   >
     	
+| <#ALPHANUM: (<LETTER>|<DIGIT>)+ >
+
 | <#P: ("_"|"/"|"."|",") >
 | <#HAS_DIGIT:					  // at least one digit
     (<LETTER>|<DIGIT>)*
@@ -257,7 +259,7 @@ org.apache.lucene.analysis.Token next() throws java.io.IOException :
   Token token = null;
 }
 {
-  ( token = <ALPHANUM> |
+  ( token = <BASIC> |
     token = <APOSTROPHE> |
     token = <ACRONYM> |
     token = <COMPANY> |

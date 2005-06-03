@@ -4,7 +4,7 @@ package org.cdlib.xtf.textIndexer.tokenizer;
 public interface XTFTokenizerConstants {
 
   int EOF = 0;
-  int ALPHANUM = 1;
+  int BASIC = 1;
   int APOSTROPHE = 2;
   int ACRONYM = 3;
   int COMPANY = 4;
@@ -12,20 +12,21 @@ public interface XTFTokenizerConstants {
   int HOST = 6;
   int NUM = 7;
   int SYMBOL = 8;
-  int P = 9;
-  int HAS_DIGIT = 10;
-  int ALPHA = 11;
-  int LETTER = 12;
-  int CJK = 13;
-  int DIGIT = 14;
-  int XTF_SPECIAL = 15;
-  int NOISE = 16;
+  int ALPHANUM = 9;
+  int P = 10;
+  int HAS_DIGIT = 11;
+  int ALPHA = 12;
+  int LETTER = 13;
+  int CJK = 14;
+  int DIGIT = 15;
+  int XTF_SPECIAL = 16;
+  int NOISE = 17;
 
   int DEFAULT = 0;
 
   String[] tokenImage = {
     "<EOF>",
-    "<ALPHANUM>",
+    "<BASIC>",
     "<APOSTROPHE>",
     "<ACRONYM>",
     "<COMPANY>",
@@ -33,6 +34,7 @@ public interface XTFTokenizerConstants {
     "<HOST>",
     "<NUM>",
     "<SYMBOL>",
+    "<ALPHANUM>",
     "<P>",
     "<HAS_DIGIT>",
     "<ALPHA>",
