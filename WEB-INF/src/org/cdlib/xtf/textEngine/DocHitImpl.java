@@ -135,64 +135,105 @@ public class DocHitImpl extends DocHit
             else if( name.equals("chunkCount") )
                 chunkCount = Integer.parseInt( value );
             else if( !name.equals("docInfo") ) 
-            {
-                // Strip the special start-of-field and end-of-field tokens.
-                if( value.indexOf(SpanExactQuery.startToken) >= 0 ||
-                    value.indexOf(SpanExactQuery.endToken) >= 0 )
-                {
-                    final char startChar = SpanExactQuery.startToken.charAt( 0 );
-                    final char endChar   = SpanExactQuery.endToken.charAt( 0 );
-                    
-                    char[] in  = value.toCharArray();
-                    char[] out = new char[ in.length ];
-                    int dst = 0;
-                    
-                    for( int i = 0; i < in.length; i++ ) {
-                        if( in[i] == startChar || in[i] == endChar )
-                            continue;
-                        out[dst++] = in[i];
-                    }
-                    
-                    value = new String( out, 0, dst );
-                }
-                
-                // Lucene will fail subtly if we add two fields with the same 
-                // name. Basically, the terms for each field are added at 
-                // overlapping positions, causing a phrase search to easily 
-                // span them. To counter this, the text indexer artificially 
-                // introduces bump markers between them. And now, we reverse 
-                // the process so it's invisible to the end-user.
-                //
-                String markedValue = 
-                            snippetMaker.markField(spanDoc, name, value);
-                if( markedValue.indexOf(bumpMarker) < 0 ) {
-                    metaData.put( name, markedValue );
-                    continue;
-                }
-                
-                int startPos = 0;
-                while( startPos < markedValue.length() ) {
-                    int bumpPos = markedValue.indexOf( bumpMarker, startPos );
-                    if( bumpPos < 0 ) {
-                        metaData.put( name, markedValue.substring(startPos) );
-                        break;
-                    }
-                
-                    String val = markedValue.substring(startPos, bumpPos);
-                    metaData.put( name, val );
-                    
-                    startPos = 1 + markedValue.indexOf( bumpMarker, bumpPos+1 );
-                    if( Character.isWhitespace(markedValue.charAt(startPos)) )
-                        startPos++; 
-                }
-            }
+                loadMetaField( name, value, spanDoc, metaData );
         }
         
         // We should have gotten at least the special fields.
         assert docKey     != null : "Incomplete data in index - missing 'key'";
         assert chunkCount != -1   : "Incomplete data in index - missing 'chunkCount'";
 
-    } // finish()
+    } // load()
+    
+    /**
+     * Performs all the manipulations and marking for a meta-data field.
+     * 
+     * @param name      Name of the field
+     * @param value     Raw string value of the field
+     * @param spanDoc   Spans to use for marking
+     * @param metaData  Where to put the resulting data
+     */
+    private void loadMetaField( String name, 
+                                String value, 
+                                SpanDocument spanDoc, 
+                                AttribList metaData )
+    {
+        String markedValue = 
+                    snippetMaker.markField(spanDoc, name, value);
+        
+        // First, preprocess the value. This involves two operations:
+        // (1) Strip the special start-of-field and end-of-field tokens; and
+        // (2) Insert proper <element>...</element> tags.
+        //
+        StringBuffer buf = new StringBuffer( markedValue.length() * 2 );
+        int prevStart = 0;
+        boolean startFound = false;
+        for( int i = 0; i < markedValue.length(); i++ ) {
+            char c = markedValue.charAt( i );
+            if( c == SpanExactQuery.startToken ) {
+                startFound = true;
+                if( i > 0 && markedValue.charAt(i-1) == '>' ) {
+                    int tagStart = buf.lastIndexOf( "< " );
+                    if( tagStart < prevStart )
+                        throw new RuntimeException( "Invalid tag data" );
+                    buf.insert( tagStart+1, name );
+                }
+                else {
+                    buf.append( "<" );
+                    buf.append( name );
+                    buf.append( ">" );
+                }
+            }
+            else if( c == SpanExactQuery.endToken ) {
+                buf.append( "</" );
+                buf.append( name );
+                buf.append( ">" );
+            }
+            else
+                buf.append( c );
+        } // for i
+        
+        // Un-tokenized fields won't have the start/end tokens. So add the
+        // <element>...</element> tags anyway.
+        //
+        if( !startFound ) {
+            buf.insert( 0, "<" + name + ">" );
+            buf.append( "</" + name + ">" );
+        }
+        
+        //System.out.println( "\n" );
+        //System.out.println( "Value: " + markedValue );
+        //System.out.println( "  -->: " + buf.toString() );
+        markedValue = buf.toString();
+      
+        // Lucene will fail subtly if we add two fields with the same 
+        // name. Basically, the terms for each field are added at 
+        // overlapping positions, causing a phrase search to easily 
+        // span them. To counter this, the text indexer artificially 
+        // introduces bump markers between them. And now, we reverse 
+        // the process so it's invisible to the end-user.
+        //
+        if( markedValue.indexOf(bumpMarker) < 0 ) {
+            metaData.put( name, markedValue );
+            return;
+        }
+        
+        int startPos = 0;
+        while( startPos < markedValue.length() ) {
+            int bumpPos = markedValue.indexOf( bumpMarker, startPos );
+            if( bumpPos < 0 ) {
+                metaData.put( name, markedValue.substring(startPos) );
+                break;
+            }
+        
+            String val = markedValue.substring(startPos, bumpPos);
+            metaData.put( name, val );
+            
+            startPos = 1 + markedValue.indexOf( bumpMarker, bumpPos+1 );
+            if( Character.isWhitespace(markedValue.charAt(startPos)) )
+                startPos++; 
+        }
+        
+    } // loadMetaField()
     
     /**
      * Fetch a map that can be used to check whether a given term is present

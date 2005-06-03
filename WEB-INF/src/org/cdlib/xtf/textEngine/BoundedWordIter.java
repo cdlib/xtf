@@ -68,11 +68,21 @@ class BoundedWordIter extends BasicWordIter
    */
   public final boolean next( boolean force )
   {
-    if( !force && tokNum < tokens.length-1 && 
+    if( force )
+        return super.next( force );
+    
+    // Don't advance past separation in field value
+    if( tokNum < tokens.length-1 && 
         tokens[tokNum+1].getPositionIncrement() >= boundSize )
     {
         return false;
     }
+    
+    // Don't advance past 'end-of-field' token
+    int offset = tokens[tokNum].endOffset();
+    if( offset < text.length() && text.charAt(offset) == SpanExactQuery.endToken )
+        return false;
+    
     return super.next( force );
   } // next()
   
@@ -83,8 +93,18 @@ class BoundedWordIter extends BasicWordIter
    */
   public final boolean prev( boolean force )
   {
-    if( !force && tokens[tokNum].getPositionIncrement() >= boundSize )
+    if( force )
+        return super.prev( force );
+    
+    // Don't back past separation in field value
+    if( tokens[tokNum].getPositionIncrement() >= boundSize )
         return false;
+    
+    // Don't back past 'start-of-field' token
+    int offset = tokens[tokNum].startOffset();
+    if( offset > 0 && text.charAt(offset-1) == SpanExactQuery.startToken )
+        return false;
+    
     return super.prev( force );
   } // prev()
   

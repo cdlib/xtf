@@ -50,12 +50,16 @@ public class BoundedMarkPos extends BasicMarkPos
           charPos = tmp;
       }
       
-      // Remove trailing whitespace.
-      while( charPos > termEnd && 
-             Character.isWhitespace(fullText.charAt(charPos-1)) )
-      {
-          charPos--;
-      }
+      // Remove trailing whitespace and end markers.
+      for( ; charPos > termEnd; charPos-- ) {
+          char c = fullText.charAt( charPos-1 );
+          if( !Character.isWhitespace(fullText.charAt(charPos-1)) &&
+              c != SpanExactQuery.endToken )
+          {
+              break;
+          }
+      } // for
+      
   } // stripMarkers()
 
 } // class BoundedMarkPos()

@@ -56,21 +56,20 @@ public class SpanExactQuery extends SpanQuery
     // normal token.
     //
     public static final String startTokenMinus = "\uE000";
-  
+
     // Special token that marks the start of a field
-    public static final String startToken = "\uEBEB";
+    public static final char startToken = '\uEBEB';
     
     // Special token that marks the end of a field
-    public static final String endToken   = "\uEE1D";
+    public static final char endToken   = '\uEE1D';
   
     // The clauses to match (not including the special start and end tokens)
     private SpanQuery[] clauses;
     
     /**
-     * Construct a filtered query.
+     * Construct an exact query on a set of clauses.
      * 
-     * @param textQuery         Text query to filter
-     * @param sectionTypeQuery  'sectionType' field query to filter with
+     * @param clauses         Clauses to match.
      */
     public SpanExactQuery( SpanQuery[] clauses )
     {

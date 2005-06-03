@@ -35,14 +35,16 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.Token;
+import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.mark.BasicWordIter;
 import org.apache.lucene.mark.FieldSpans;
 import org.apache.lucene.mark.MarkCollector;
 import org.apache.lucene.mark.MarkPos;
 import org.apache.lucene.mark.SpanDocument;
+import org.apache.lucene.mark.WordIter;
 import org.apache.lucene.search.spans.Span;
 import org.cdlib.xtf.textIndexer.XTFTextAnalyzer;
 import org.cdlib.xtf.util.CharMap;
@@ -171,9 +173,8 @@ public class SnippetMaker
                                    String fieldName, final boolean getText )
     {
       // Make a chunked iterator to use for traversing the token stream.
-      XtfChunkedWordIter wordIter = 
-           new XtfChunkedWordIter( reader, docNumMap, mainDocNum,
-                                   fieldName, analyzer );
+      WordIter wordIter = new XtfChunkedWordIter( reader, docNumMap, mainDocNum,
+                                                  fieldName, analyzer );
       
       // Make an array to hold the snippets.
       int nSnippets = fieldSpans.getSpanCount(fieldName);
@@ -271,7 +272,8 @@ public class SnippetMaker
      * 
      * @return           Marked up text value.
      */
-    public String markField( SpanDocument doc, String fieldName,
+    public String markField( SpanDocument doc, 
+                             final String fieldName,
                              final String value )
     {
       try 
@@ -279,15 +281,13 @@ public class SnippetMaker
         // Get the text, and allocate a buffer for the marked up version.
         final StringBuffer buf = new StringBuffer( value.length() * 2 );
         
-        // Now make a word iterator to use for traversing the token stream
+        // Now make a word iterator to use for traversing the token stream. While
+        // we're at it, strip start/end markers from the tokens.
+        //
         TokenStream stream = analyzer.tokenStream(fieldName, 
                                                   new StringReader(value));
-        BasicWordIter wordIter = 
-                          new BoundedWordIter( value, stream, chunkOverlap );
-        
-        //Trace.debug( "Mark field \"" + fieldName + "\": orig text \"" + 
-        //             value + "\"" );
-        //Trace.debug( "    " );
+        stream = new StartEndStripper( stream );
+        WordIter wordIter = new BoundedWordIter( value, stream, chunkOverlap );
         
         // Process all the marks as they come
         doc.markField( fieldName, wordIter, maxContext, 
@@ -302,8 +302,11 @@ public class SnippetMaker
             private void copyUpTo( MarkPos pos ) {
               if( prevPos != null ) {
                   String toAdd = prevPos.getTextTo( pos );
-                  //Trace.more( Trace.debug, "[" + toAdd + "]");
-                  buf.append( mapXMLChars(toAdd) );
+                  
+                  // Don't map XML chars here, since the text indexer did it
+                  // for us.
+                  //
+                  buf.append( toAdd );
                   if( inContext )
                       contextSize += toAdd.length();
               }
@@ -331,7 +334,6 @@ public class SnippetMaker
               copyUpTo( startPos );
               String toAdd = startPos.getTextTo(endPos) ; 
               buf.append( "<term>" );
-              //Trace.more( Trace.debug, "{" + startPos.getTextTo(endPos) + "}");
               buf.append( toAdd );
               buf.append( "</term>" );
               if( inContext )
@@ -400,5 +402,49 @@ public class SnippetMaker
             s = gtPattern.matcher(s).replaceAll("&gt;");
         return s;
     } // mapXMLChars()
+    
+    /** 
+     * Strips the special start-of-field/end-of-field markers from tokens. 
+     */
+    public class StartEndStripper extends TokenFilter 
+    {
+      public StartEndStripper( TokenStream input ) {
+        super( input );
+      }
+    
+      /** Retrieve the next token in the stream. */ 
+      public Token next() throws IOException 
+      {
+        Token t = input.next();
+        if( t == null )
+            return t;
+        
+        // If it starts or ends with the special token character, toss it and
+        // attach the position increment to the next token.
+        //
+        String term = t.termText();
+        boolean isStartToken = (term.charAt(0) == SpanExactQuery.startToken);
+        boolean isEndToken   = (term.charAt(term.length()-1) == SpanExactQuery.endToken);
+        if( isStartToken || isEndToken ) {
+            Token nextTok = input.next();
+            assert term.indexOf(nextTok.termText()) >= 0;
+            
+            int start = t.startOffset();
+            if( isStartToken )
+                start++;
+            int end = t.endOffset();
+            if( isEndToken )
+                end--;
+            
+            Token newTok = new Token( nextTok.termText(),
+                                      start, end,
+                                      nextTok.type() );
+            newTok.setPositionIncrement( t.getPositionIncrement() );
+            return newTok;
+        }
+            
+        return t;
+      } // next()
+    } // class StartEndStripper
     
 } // class SnippetMaker
