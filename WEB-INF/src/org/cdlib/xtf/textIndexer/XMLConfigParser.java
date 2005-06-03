@@ -40,12 +40,12 @@ import java.util.zip.GZIPInputStream;
 
 // import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
@@ -191,11 +191,8 @@ public class XMLConfigParser extends DefaultHandler
         //
         configInfo = cfgInfo;
         
-        // Create a SAX parser factory.
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-            
         // Instantiate a new SAX parser instance.
-        SAXParser xmlParser = spf.newSAXParser();
+        SAXParser xmlParser = IndexUtil.createSAXParser();
             
         // Call the XML parser to process the config file, using 
         // this object as the tag handler.

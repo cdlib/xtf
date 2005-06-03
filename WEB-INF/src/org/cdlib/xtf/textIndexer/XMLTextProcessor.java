@@ -1542,18 +1542,28 @@ public class XMLTextProcessor extends DefaultHandler
                 tokenize = false;
         }
         
-        // Process the current meta field, tokenizing it as needed.
+        // Allocate a place to store the contents of the meta-data field.
         metaField = new MetaField( localName, tokenize );
-
         assert metaBuf.length() == 0 : "Should have cleared meta-buf";
+        
+        // If there are non-XTF attributes on the node, record them.
+        String attrString = processMetaAttribs( atts );
+        if( attrString.length() > 0 )
+            metaBuf.append( "< " + attrString + ">" );
     }
     
     // If there are nested tags below a meta-field (and if they're not
     // meta-fields themselves), keep track of how far down they go, so we can
     // know when we hit the end of the top-level tag.
     //
-    else if( inMeta > 0 )
+    else if( inMeta > 0 ) {
         inMeta++;
+        metaBuf.append( "<" + localName );
+        String attrString = processMetaAttribs( atts );
+        if( attrString.length() > 0 )
+            metaBuf.append( " " + attrString );
+        metaBuf.append( ">" );
+    }
     
     // All other nodes need to be tracked, so increment the node number and 
     // reset the word count for the node.
@@ -1591,6 +1601,40 @@ public class XMLTextProcessor extends DefaultHandler
   } // public startElement()
 
   
+  ////////////////////////////////////////////////////////////////////////////
+
+  /** Build a string representing any non-XTF attributes in the given
+   *  attribute list. This will be a series of name="value" pairs, separated
+   *  by spaces. If there are no non-XTF attributes, empty string is returned.
+   *  <br><br>
+   */
+  private String processMetaAttribs( Attributes atts )
+  
+  {
+    StringBuffer buf = new StringBuffer();
+    
+    // Scan the list
+    for( int i = 0; i < atts.getLength(); i++ ) {
+      
+      // Skip XTF-specific attributes
+      String attrUri = atts.getURI( i );
+      if( attrUri.equals(xtfUri) )
+          continue;
+      
+      // Found one. Add it to the buffer.
+      if( buf.length() > 0 )
+          buf.append( ' ' );
+      String name = atts.getLocalName( i );
+      String value = atts.getValue( i );
+      buf.append( name + "=\"" + value + "\"" ); 
+          
+    } // for i
+    
+    // All done.
+    return buf.toString();
+    
+  } // processMetaAttribs( Attributes atts )
+      
   ////////////////////////////////////////////////////////////////////////////
 
   /** Increment the node tracking information. <br><br>
@@ -1666,6 +1710,13 @@ public class XMLTextProcessor extends DefaultHandler
     // And add the accumulated text to the "lazy tree" representation as well.
     if( lazyHandler != null ) 
         lazyHandler.endElement( uri, localName, qName );
+    
+    // If we're in a meta-data field, record the end tag (except if it's the
+    // top-level tag, which we leave out to save space on non-structured 
+    // meta-data.)
+    //
+    if( inMeta > 1 )
+        metaBuf.append( "</" + localName + ">" ); 
 
     // If this is the end of a meta-data field, record it.
     if( inMeta == 1 ) {
@@ -1674,10 +1725,24 @@ public class XMLTextProcessor extends DefaultHandler
         // If tokenized, add the special start-of-field and end-of-field tokens
         // to the meta-data value.
         //
-        if( metaField.tokenize ) {
-            metaField.value = SpanExactQuery.startToken +
-                              metaField.value +
-                              SpanExactQuery.endToken;
+        if( metaField.tokenize ) 
+        {
+            // If attributes were recorded for the top-level node, be sure to
+            // put the start marker after them.
+            //
+            if( metaField.value.length() > 0 && metaField.value.charAt(0) == '<' ) 
+            {
+                int insertPoint = metaField.value.indexOf('>') + 1;
+                metaField.value = metaField.value.substring(0, insertPoint) +
+                                  SpanExactQuery.startToken + 
+                                  metaField.value.substring(insertPoint) +
+                                  SpanExactQuery.endToken;
+            }
+            else {
+                metaField.value = SpanExactQuery.startToken +
+                                  metaField.value +
+                                  SpanExactQuery.endToken;
+            }
         }
         
         // Lucene will fail subtly if we add two fields with the same name.
@@ -1930,7 +1995,16 @@ public class XMLTextProcessor extends DefaultHandler
     // the meta-info buffer.
     //
     if( inMeta > 0 ) {
-        metaBuf.append( ch, start, length );
+        String tmp = new String( ch, start, length );
+        
+        // Map special XML characters to entities
+        if( tmp.indexOf('&') >= 0 )
+            tmp = tmp.replaceAll( "&", "&amp;" );
+        if( tmp.indexOf('<') >= 0 )
+            tmp = tmp.replaceAll( "<", "&lt;" );
+        if( tmp.indexOf('>') >= 0 )
+            tmp = tmp.replaceAll( ">", "&gt;" );
+        metaBuf.append( tmp );
         return;
     }
       

@@ -163,9 +163,6 @@ public class XTFTextAnalyzer extends Analyzer {
    *                    when filtering text. See 
    *                    {@link IndexInfo#accentMapPath} for more information.
    *                    
-   *  @param  addEndToken If set to true, a special end token will be added after
-   *                      the last token. This allows exact (whole-field) matching.
-   * 
    *  @.notes
    *    Use this method to initialize an instance of an 
    *    <code>XTFTextAnalyzer</code> and pass it to a Lucene 
@@ -228,6 +225,10 @@ public class XTFTextAnalyzer extends Analyzer {
     // acronyms, etc.)
     //
     result = new StandardFilter( result );
+    
+    // For meta-data fields, mark XML tokens specially.
+    if( !fieldName.equals("text") )
+        result = new TagFilter( result, srcText );
     
     // Filter special tokens (word bump, node markers, etc.)
     result = new XtfSpecialTokensFilter( result, srcText );

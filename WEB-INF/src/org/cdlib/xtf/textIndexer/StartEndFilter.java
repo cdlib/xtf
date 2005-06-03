@@ -79,8 +79,8 @@ public class StartEndFilter extends TokenFilter
     // without it.
     //
     String term = t.termText();
-    boolean isStartToken = term.startsWith(SpanExactQuery.startToken);
-    boolean isEndToken   = term.endsWith(SpanExactQuery.endToken);
+    boolean isStartToken = (term.charAt(0) == SpanExactQuery.startToken);
+    boolean isEndToken   = (term.charAt(term.length()-1) == SpanExactQuery.endToken);
     if( isStartToken || isEndToken ) {
         if( isStartToken )
             term = term.substring( 1 );
