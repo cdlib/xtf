@@ -1549,7 +1549,7 @@ public class XMLTextProcessor extends DefaultHandler
         // If there are non-XTF attributes on the node, record them.
         String attrString = processMetaAttribs( atts );
         if( attrString.length() > 0 )
-            metaBuf.append( "< " + attrString + ">" );
+            metaBuf.append( "<$ " + attrString + ">" );
     }
     
     // If there are nested tags below a meta-field (and if they're not
@@ -1997,7 +1997,9 @@ public class XMLTextProcessor extends DefaultHandler
     if( inMeta > 0 ) {
         String tmp = new String( ch, start, length );
         
-        // Map special XML characters to entities
+        // Map special XML characters to entities, so we can tell the difference
+        // between these and embedded XML in the meta-data.
+        //
         if( tmp.indexOf('&') >= 0 )
             tmp = tmp.replaceAll( "&", "&amp;" );
         if( tmp.indexOf('<') >= 0 )

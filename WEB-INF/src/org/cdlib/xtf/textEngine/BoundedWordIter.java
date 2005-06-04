@@ -46,7 +46,7 @@ import org.apache.lucene.mark.WordIter;
  */
 class BoundedWordIter extends BasicWordIter
 {
-  private int     boundSize;
+  int     boundSize;
 
   /**
    * Construct a bounded word iterator on the given text. The tokens from
@@ -111,7 +111,7 @@ class BoundedWordIter extends BasicWordIter
   /** Create a new place to hold position info */
   public MarkPos getPos( int startOrEnd ) 
   { 
-    MarkPos pos = new BoundedMarkPos();
+    BoundedMarkPos pos = new BoundedMarkPos( tokens );
     getPos( pos, startOrEnd );
     return pos;
   }
@@ -123,8 +123,20 @@ class BoundedWordIter extends BasicWordIter
   {
     super.getPos( pos, startOrEnd );
     
-    if( startOrEnd == WordIter.TERM_END_PLUS )
-        ((BoundedMarkPos)pos).stripMarkers( tokens[tokNum].endOffset() );
+    switch( startOrEnd ) {
+    case WordIter.FIELD_START:
+        ((BoundedMarkPos)pos).setTokNum( 0 );
+        break;
+    case WordIter.FIELD_END:
+        ((BoundedMarkPos)pos).setTokNum( tokens.length-1 );
+        break;
+    case WordIter.TERM_END_PLUS:
+        if( startOrEnd == WordIter.TERM_END_PLUS )
+            ((BoundedMarkPos)pos).stripMarkers( tokens[tokNum].endOffset() );
+        // fall through...
+    default:
+        ((BoundedMarkPos)pos).setTokNum( tokNum );
+    } // switch
   } // recordPos()
   
 } // class BoundedWordIter

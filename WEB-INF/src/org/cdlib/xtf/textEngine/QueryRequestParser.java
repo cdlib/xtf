@@ -960,12 +960,12 @@ public class QueryRequestParser
             error( "'range' element must have 'lower' and/or 'upper' child element(s)" );
         
         // If no upper specified, we're in danger of accidentally matching the
-        // secret 'END' token. So add a token that's just before it as the upper
-        // bound.
+        // XTF special tokens. So be sure to exclude the whole area that marker
+        // characters are in.
         //
         if( upper == null ) {
             char[] tmp = new char[1];
-            tmp[0] = Constants.FIELD_START_MARKER - 1;
+            tmp[0] = Constants.MARKER_BASE;
             upper = new Term( lower.field(), new String(tmp) );
         }
         

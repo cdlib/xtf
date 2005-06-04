@@ -287,7 +287,8 @@ public class SnippetMaker
         TokenStream stream = analyzer.tokenStream(fieldName, 
                                                   new StringReader(value));
         stream = new StartEndStripper( stream );
-        WordIter wordIter = new BoundedWordIter( value, stream, chunkOverlap );
+        final WordIter wordIter = 
+            new BoundedWordIter( value, stream, chunkOverlap );
         
         // Process all the marks as they come
         doc.markField( fieldName, wordIter, maxContext, 
@@ -296,12 +297,14 @@ public class SnippetMaker
           {
             private MarkPos prevPos = null;
             private boolean inContext = false;
+            private boolean inSpan    = false;
             private int     contextSize;
             private MarkPos contextStart;
             
             private void copyUpTo( MarkPos pos ) {
               if( prevPos != null ) {
-                  String toAdd = prevPos.getTextTo( pos );
+                  String toAdd = ((BoundedMarkPos)prevPos)
+                      .getTextTo( pos, inContext || inSpan );
                   
                   // Don't map XML chars here, since the text indexer did it
                   // for us.
@@ -348,11 +351,13 @@ public class SnippetMaker
               buf.append( "\" score=\"" );
               buf.append( Integer.toString((int)(span.score * 100)) );
               buf.append( "\">" );
+              inSpan = true;
             }
             
             public void endSpan(MarkPos pos) {
               copyUpTo( pos );
               buf.append( "</hit>" );
+              inSpan = false;
             }
 
             public void endContext(MarkPos pos) {
@@ -385,6 +390,14 @@ public class SnippetMaker
       catch( IOException e ) {
         throw new RuntimeException(
             "How could StringReader throw an exception?" );
+      }
+      catch( BoundedMarkPos.UnmarkableException e ) {
+        
+        // XML structure was found where we can't (yet) figure out how to
+        // insert our <snippet> or <hit> elements and still produce a valid
+        // XML document. So just return the value unmarked.
+        //
+        return value;
       }
     } // markField()
 

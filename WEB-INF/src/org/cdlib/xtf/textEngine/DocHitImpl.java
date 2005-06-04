@@ -156,12 +156,14 @@ public class DocHitImpl extends DocHit
                                 SpanDocument spanDoc, 
                                 AttribList metaData )
     {
+        // First, mark up the value.
         String markedValue = 
                     snippetMaker.markField(spanDoc, name, value);
         
-        // First, preprocess the value. This involves two operations:
+        // Now fix up the result. This involves two operations:
         // (1) Strip the special start-of-field and end-of-field tokens; and
-        // (2) Insert proper <element>...</element> tags.
+        // (2) Insert proper <element>...</element> tags if they were left out
+        //     to save index space.
         //
         StringBuffer buf = new StringBuffer( markedValue.length() * 2 );
         int prevStart = 0;
@@ -171,10 +173,10 @@ public class DocHitImpl extends DocHit
             if( c == Constants.FIELD_START_MARKER ) {
                 startFound = true;
                 if( i > 0 && markedValue.charAt(i-1) == '>' ) {
-                    int tagStart = buf.lastIndexOf( "< " );
+                    int tagStart = buf.lastIndexOf( "<$ " );
                     if( tagStart < prevStart )
                         throw new RuntimeException( "Invalid tag data" );
-                    buf.insert( tagStart+1, name );
+                    buf.replace( tagStart+1, tagStart+2, name );
                 }
                 else {
                     buf.append( "<" );

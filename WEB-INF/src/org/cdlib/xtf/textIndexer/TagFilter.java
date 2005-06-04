@@ -60,6 +60,12 @@ public class TagFilter extends TokenFilter
   /** True while we're processing inside an element definition */
   private boolean inElement = false;
   
+  /** Name of the last element we've started */
+  private String elementName = null; 
+  
+  /** True while we're in an element end tag */
+  private boolean inEndTag = false;
+  
   /** Start position of insides of element def */
   private Token elementStart = null;
   
@@ -75,6 +81,12 @@ public class TagFilter extends TokenFilter
   /** Start position of the attribute name */
   private int attrNameStart = -1;
   
+  /** Name of the current attribute */
+  private String attrName = null;
+  
+  /** Accumulated position increment for next actual token emitted */
+  private int accumPosIncr = 0;
+  
   /** Queued tokens */
   private LinkedList tokenQueue = new LinkedList();
   
@@ -83,7 +95,7 @@ public class TagFilter extends TokenFilter
    * 
    * @param input       Input stream of tokens to process
    */
-  public TagFilter( TokenStream input, String srcText ) 
+  public TagFilter( TokenStream input, String srcText )
   {
     // Initialize the super-class
     super(input);
@@ -92,7 +104,7 @@ public class TagFilter extends TokenFilter
     srcChars = srcText.toCharArray();
     
   } // constructor
-
+  
   /** Retrieve the next token in the stream. */ 
   public Token next() throws IOException 
   {
@@ -103,126 +115,184 @@ public class TagFilter extends TokenFilter
         if( !tokenQueue.isEmpty() )
             return (Token) tokenQueue.removeFirst();
         
-        // Get the next input token.
-        Token curToken  = input.next();
-        final int startPos = (curToken != null) ? curToken.startOffset() : srcChars.length;
-        final int endPos   = (curToken != null) ? curToken.endOffset()   : srcChars.length;
-        
-        // If we're not within an element, simply return tokens until we reach
-        // an element start.
-        //
-        if( !inElement )
+        // Get the next input token and process it.
+        Token curToken = input.next();
+        Token toReturn = processNext( curToken );
+        if( toReturn != null || curToken == null ) 
         {
-            // If we're at the end of the stream, get out.
-            if( curToken == null )
-                return curToken;
-            
-            // Is this start of an element? If not, return it verbatim.
-            if( srcChars[startPos] != '<' )
-                return curToken;
-            
-            // Remember that we're starting an element, and get the name of it.
-            elementStart = curToken;
-            inElement = true;
-            continue;
-        }
-        
-        // If we're starting an element, this token must be the name.
-        if( elementStart != null ) {
-          
-            // Is this the end tag? If so, include the extra ">" in it.
-            int start = elementStart.startOffset();
-            int end = endPos;
-            if( srcChars[startPos-1] == '/' ) {
-                while( end < srcChars.length && srcChars[end] != '>' )
-                    end++;
-            }
-    
-            // Okay, we found the start of the element. Make a new token.
-            Token newToken = new Token( new String(srcChars, start, end-start),
-                                        start, end,
-                                        XML_TYPE );
-            newToken.setPositionIncrement( elementStart.getPositionIncrement() );
-            elementStart = null;
-            return newToken;
-        }
-        
-        // If we're in a quoted string, see if the end of the quote has been 
-        // reached
-        //
-        if( inQuote ) {
-            int i = quoteStart + 1;
-            while( i < startPos && srcChars[i] != '\"' )
-                i++;
-            if( i < startPos )
-                inQuote = false;
+            // If tokens were queued before this one, avoid going out of order.
+            if( tokenQueue.isEmpty() )
+                return toReturn;
             else
-                quoteStart = endPos-1;
+                tokenQueue.add( toReturn );
         }
-        
-        // Does this token mark the end of the element?
-        if( srcChars[startPos] == '>' ) {
-            // Include the '/' if the element has no content.
-            int start = startPos;
-            if( srcChars[startPos-1] == '/' )
-                --start;
-            
-            Token endToken = new Token( new String(srcChars, start, endPos-start),
-                                        start, endPos,
-                                        XML_TYPE );
-            inElement = false;
-            return endToken;
-        }
-        
-        // Inside a quote, add a quote mark to differentiate the token from normal
-        // ones.
-        //
-        if( inQuote ) {
-            Token attrToken = new Token( '\"' + curToken.termText() + '\"',
-                                         startPos, endPos,
-                                         XML_TYPE );
-            return attrToken;
-        }
-        
-        // Is this the start of an attribute name? If so, mark it and look for the
-        // end of the name.
-        //
-        if( !inAttrName ) {
-            attrNameStart = startPos;
-            inAttrName = true;
-            continue;
-        }
-        
-        // If no '=' found, keep scanning for the end of the attr name.
-        if( srcChars[startPos] != '=' )
-            continue;
-          
-        // Found it. Record the attribute name.
-        String attrName = 
-            new String(srcChars, attrNameStart, startPos-attrNameStart).trim();
-        Token attrToken = new Token( attrName + "=",
-                                     attrNameStart, endPos,
-                                     XML_TYPE );
-
-        // We're done with the name now, and ready for the quoted contents.
-        inAttrName = false;
-        inQuote = true;
-        quoteStart = endPos;
-        while( quoteStart < srcChars.length && srcChars[quoteStart] != '\"' )
-            quoteStart++;
-        
-        // Special case: empty string
-        if( quoteStart+1 < srcChars.length && srcChars[quoteStart+1] == '\"' ) {
-            tokenQueue.add( new Token("\"\"",
-                                      quoteStart, quoteStart,
-                                      XML_TYPE) );
-        }
-        
-        return attrToken;
-
     } // while
     
   } // next()
+        
+  /**
+   * Does most of the work of processing a token
+   * 
+   * @param curToken    The token from the input stream
+   * @return            Token to return immediately, or null for none. If this is
+   *                    null and curToken was null, should return null
+   *                    immediately.
+   */
+  private Token processNext( Token curToken )
+  {
+    int startPos = (curToken != null) ? curToken.startOffset() : srcChars.length;
+    int endPos   = (curToken != null) ? curToken.endOffset()   : srcChars.length;
+
+    // If we're not within an element, simply return tokens until we reach
+    // an element start.
+    //
+    if( !inElement )
+    {
+        // If we're at the end of the stream, get out.
+        if( curToken == null )
+            return null;
+        
+        // Is this an entity ref?
+        if( startPos > 0 && srcChars[startPos-1] == '&' ) 
+        {
+            String tokVal;
+            if( curToken.termText().equals("amp") )
+                tokVal = "&";
+            else if( curToken.termText().equals("lt") )
+                tokVal = "<";
+            else if( curToken.termText().equals("gt") )
+                tokVal = ">";
+            else
+                throw new RuntimeException( "Unexpected entity ref" );
+            
+            return new Token( tokVal, startPos-1, endPos+1, XML_TYPE );  
+        }
+        
+        // Is this start of an element? If not, return it verbatim.
+        if( srcChars[startPos] != '<' )
+            return curToken;
+        
+        // Remember that we're starting an element, and get the name of it.
+        elementStart = curToken;
+        inElement = true;
+        return null;
+    }
+    
+    // If we're starting an element decl, this token must be the name.
+    if( elementStart != null ) 
+    {
+        // Record the element name.
+        elementName = new String( srcChars, startPos, endPos-startPos );
+
+        // Skip the opening '<' when forming the token (but include the '/'
+        // if this is ending the element.)
+        //
+        int start = elementStart.startOffset() + 1;
+        int end   = endPos;
+        
+        // Record whether this is the start or end of the tag.
+        inEndTag = srcChars[start] == '/';
+        
+        // Okay, make a new token.
+        String name = Constants.ELEMENT_MARKER + 
+                      (inEndTag ? "" : "<") + 
+                      new String(srcChars, start, end-start);
+        Token newToken = new Token( name, 
+                                    elementStart.startOffset(), end, 
+                                    XML_TYPE );
+        newToken.setPositionIncrement( elementStart.getPositionIncrement() );
+        elementStart = null;
+        return newToken;
+    }
+    
+    // If we're in a quoted string, see if the end of the quote has been 
+    // reached
+    //
+    if( inQuote ) {
+        int i = quoteStart + 1;
+        while( i < startPos && srcChars[i] != '\"' )
+            i++;
+        if( i < startPos ) {
+            String tokValue = Constants.ATTRIBUTE_MARKER +
+                              "]" + attrName;
+            tokenQueue.add( new Token(tokValue, startPos, startPos, XML_TYPE) );
+            inQuote = false;
+        }
+        else
+            quoteStart = endPos-1;
+    }
+    
+    // Does this token mark the end of the element declaration?
+    if( srcChars[startPos] == '>' ) 
+    {
+        // Go back to normal mode.
+        inElement = false;
+
+        // Mark the end of the element declaration (only if this is the start of 
+        // the tag.)
+        //
+        if( !inEndTag ) {
+            tokenQueue.add( new Token(Constants.ELEMENT_MARKER + ">" + elementName,
+                                      startPos, endPos, XML_TYPE) );
+        }
+        inEndTag = false;
+        
+        // If preceded by a '/', this is a shorthand for an element with no
+        // content. Emit an end token for it anyway.
+        //
+        if( srcChars[startPos-1] == '/' ) {
+            String name = Constants.ELEMENT_MARKER + "/" + elementName;
+            return new Token( name,startPos, endPos, XML_TYPE );
+        }
+        
+        return null;
+    } // if
+    
+    // Inside a quote, add a marker to differentiate the token from normal
+    // ones.
+    //
+    if( inQuote ) {
+        String name = Constants.ATTRIBUTE_MARKER + curToken.termText();
+        return new Token( name, startPos, endPos, XML_TYPE );
+    }
+    
+    // Is this the start of an attribute name? If so, mark it and look for the
+    // end of the name.
+    //
+    if( !inAttrName ) {
+        attrNameStart = startPos;
+        inAttrName = true;
+        return null;
+    }
+    
+    // If no '=' found, keep scanning for the end of the attr name.
+    if( srcChars[startPos] != '=' )
+        return null;
+      
+    // Found it. Record the attribute name.
+    attrName = new String(
+        srcChars, attrNameStart, startPos-attrNameStart).trim();
+    tokenQueue.add( new Token(Constants.ATTRIBUTE_MARKER + "[" + attrName,
+                              attrNameStart, endPos,
+                              XML_TYPE) );
+
+    // We're done with the name now, and ready for the quoted contents.
+    inAttrName = false;
+    inQuote = true;
+    quoteStart = endPos;
+    while( quoteStart < srcChars.length && srcChars[quoteStart] != '\"' )
+        quoteStart++;
+    
+    // Special case: empty string
+    if( quoteStart+1 < srcChars.length && srcChars[quoteStart+1] == '\"' ) {
+        return new Token( Constants.ATTRIBUTE_MARKER + "",
+                          quoteStart, quoteStart,
+                          XML_TYPE );
+    }
+
+    return null;
+    
+  } // processNext()
     
   /**
    * Basic regression test
@@ -250,9 +320,20 @@ public class TagFilter extends TokenFilter
         }
         outBuf.append(t.termText());
       }
-
-      String out = outBuf.toString();
-      //out = out.replaceAll(" ", "");
+      
+      char[] chars = outBuf.toString().toCharArray();
+      for( int i = 0; i < chars.length; i++ ) {
+          switch( chars[i] ) {
+          case Constants.ELEMENT_MARKER:
+              chars[i] = '!';
+              break;
+          case Constants.ATTRIBUTE_MARKER:
+              chars[i] = '@';
+              break;
+          }
+      }
+      
+      String out = new String( chars );
       Trace.debug(in + " --> " + out);
       return out;
     } // test()
@@ -266,37 +347,37 @@ public class TagFilter extends TokenFilter
         
         assert testFilter("x y").equals(":x:y");
         
-        assert testFilter("<element>").equals(":<element:>");
-        
-        assert testFilter("<element attr=\"a\"/>").
-                   equals(":<element:attr=:\"a\":/>");
-        
-        assert testFilter("<element attr=\"a b c\"/>").
-                   equals(":<element:attr=:\"a\":\"b\":\"c\":/>");
-        
-        assert testFilter("<element attr=\"\"/>").
-                   equals(":<element:attr=:\"\":/>");
-
-        assert testFilter("<element/>").equals(":<element:/>");
+        assert testFilter("<element>").equals(":!<element:!>element");
         
         assert testFilter("<element>x y z</element>").
-                   equals(":<element:>:x:y:z:</element:>");
+                   equals(":!<element:!>element:x:y:z:!/element");
+        
+        assert testFilter("<element attr=\"a\"/>").
+                   equals(":!<element:@[attr:@a:@]attr:!>element:!/element");
+        
+        assert testFilter("<element attr=\"a b c\"/>").
+                   equals(":!<element:@[attr:@a:@b:@c:@]attr:!>element:!/element");
+        
+        assert testFilter("<element attr=\"\"/>").
+                   equals(":!<element:@[attr:@:@]attr:!>element:!/element");
+
+        assert testFilter("<element/>").equals(":!<element:!>element:!/element");
         
         assert testFilter("<element att1=\"foo bar\" att2=\"wow\">hello there</element>").
-                   equals(":<element:att1=:\"foo\":\"bar\":att2=:\"wow\":>:hello:there:</element:>");
+                   equals(":!<element:@[att1:@foo:@bar:@]att1:@[att2:@wow:@]att2:!>element:hello:there:!/element");
         
         String bump = Constants.BUMP_MARKER +
                       "5" +
                       Constants.BUMP_MARKER;
         
         assert testFilter("x" + bump + "<element att=\"a\"/>").
-                   equals(":x::::::<element:att=:\"a\":/>");
+                   equals(":x::::::!<element:@[att:@a:@]att:!>element:!/element");
         
         assert testFilter("<el1/>" + bump + "<el2/>").
-                   equals(":<el1:/>::::::<el2:/>");
+                   equals(":!<el1:!>el1:!/el1::::::!<el2:!>el2:!/el2");
         
         assert testFilter("<$ foo=\"bar\">xyz").
-                   equals(":<$:foo=:\"bar\":>:xyz");
+                   equals(":!<$:@[foo:@bar:@]foo:!>$:xyz");
         
       } catch (IOException e) {
         assert false;

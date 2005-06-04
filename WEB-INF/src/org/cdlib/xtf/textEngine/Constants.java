@@ -36,7 +36,9 @@ package org.cdlib.xtf.textEngine;
  */
 public class Constants 
 {
-
+  /** Character guaranteed to be less than all special markers */
+  public static final char MARKER_BASE = '\uE900';
+  
   /** The character used to mark the start/end of a special bump token. */ 
   public static final char BUMP_MARKER = '\uEBBB';
   
@@ -52,10 +54,20 @@ public class Constants
    */ 
   public  static final String VIRTUAL_WORD = "qw";
   
-  // Special token that marks the start of a field
+  // Special character glued to the start of the first token in a field (marks the 
+  // start of the field.)
+  //
   public static final char FIELD_START_MARKER = '\uEBEB';
   
-  // Special token that marks the end of a field
+  // Special character glued to the end of the last token in a field (marks the
+  // end of the field.)
+  //
   public static final char FIELD_END_MARKER   = '\uEE1D';
+  
+  // Special character glued to XML element start/end tags
+  public static final char ELEMENT_MARKER     = '\uE111';
+  
+  // Special character glued to attribute name/value pairs within XML elements
+  public static final char ATTRIBUTE_MARKER   = '\uE112';
 
 } // class XtfConstants
