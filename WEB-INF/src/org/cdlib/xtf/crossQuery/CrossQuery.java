@@ -403,9 +403,7 @@ public class CrossQuery extends TextServlet
                 for( Iterator atts = docHit.metaData().iterator(); atts.hasNext(); )
                 {
                     Attrib attrib = (Attrib) atts.next();
-                    buf.append( "      <" + attrib.key + ">" );
-                    buf.append( makeHtmlString(attrib.value, true) );
-                    buf.append( "</" + attrib.key + ">\n" );
+                    buf.append( attrib.value );
                 } // for atts
                 buf.append( "    </meta>\n" );
             }
