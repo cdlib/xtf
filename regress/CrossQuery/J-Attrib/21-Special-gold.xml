@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit file="doc3.xml">
+      <meta>
+         <special>
+            <snippet rank="1" score="100">Wiley &amp; Sons
+      Equations: 3 <hit rank="1" score="100">
+                  <term>&lt;</term>
+               </hit> 4,</snippet> 
+            <snippet rank="2" score="100">and 7 <hit rank="2" score="100">
+                  <term>&gt;</term>
+               </hit> 6</snippet>
+         </special>
+      </meta>
+   </docHit>
+</crossQueryResult>

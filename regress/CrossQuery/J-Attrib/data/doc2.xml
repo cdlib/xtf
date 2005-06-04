@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <struct xtf:meta="true" attr="something">
+      Hello there<p>This is a test</p>of the emergency broadcasting system.
+    </struct>
+</document>
