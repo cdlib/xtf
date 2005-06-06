@@ -40,7 +40,7 @@ import org.cdlib.xtf.textEngine.SpanSectionTypeQuery;
  * rewrite, and the base will take care of gluing them together properly. 
  *
  * @author  Martin Haye
- * @version $Id: QueryRewriter.java,v 1.2 2005-05-25 00:50:39 mhaye Exp $
+ * @version $Id: QueryRewriter.java,v 1.3 2005-06-06 21:44:25 mhaye Exp $
  */
 public abstract class QueryRewriter {
 
@@ -257,6 +257,10 @@ public abstract class QueryRewriter {
     // If the sub-query didn't change, then neither does the main query.
     if (sub == nq.getWrapped())
       return nq;
+    
+    // No sub-query? Don't wrap it then.
+    if (sub == null)
+      return null;
 
     // Make a new dechunking query
     Query newq = new SpanDechunkingQuery(sub);
