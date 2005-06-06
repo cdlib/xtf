@@ -44,7 +44,7 @@ import org.cdlib.xtf.util.Trace;
  * process, as n-gramming across NEAR and OR queries is complex.
  *
  * @author  Martin Haye
- * @version $Id: NgramQueryRewriter.java,v 1.4 2005-05-24 21:46:02 mhaye Exp $
+ * @version $Id: NgramQueryRewriter.java,v 1.5 2005-06-06 21:43:31 mhaye Exp $
  */
 public class NgramQueryRewriter extends QueryRewriter {
   /** Set of stop-words (e.g. "the", "a", "and", etc.) to remove */
@@ -588,9 +588,9 @@ public class NgramQueryRewriter extends QueryRewriter {
    * 
    * @return        A properly constructed Term, never a stop-word.
    */
-  protected Term newTerm(String text, String field) {
+  protected Term newTerm(String field, String text) {
     assert !stopSet.contains(text) : "cannot directly query a stop-word";
-    return new Term(text, field);
+    return new Term(field, text);
   } // newTerm()
 
   /**
