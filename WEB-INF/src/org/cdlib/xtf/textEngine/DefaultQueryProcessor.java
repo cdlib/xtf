@@ -188,6 +188,14 @@ public class DefaultQueryProcessor extends QueryProcessor
             query = new NgramQueryRewriter(stopSet, chunkOverlap).
                             rewriteQuery(query);
         
+        // If there's nothing left (for instance if the query was all stop-words)
+        // then there will be no results.
+        //
+        if( query == null ) {
+            result.docHits = new DocHit[0];
+            return result;
+        }
+        
         final Query finalQuery = query;
         if( finalQuery != req.query )
             Trace.debug( "Rewritten query: " + finalQuery.toString() );
