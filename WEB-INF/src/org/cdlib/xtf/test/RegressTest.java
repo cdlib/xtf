@@ -354,9 +354,7 @@ public class RegressTest
             else
             {
                 // Now run the query to obtain hits.
-                QueryRequest req = new QueryRequestParser().parseRequest(
-                                           queryDoc, new File(dir) ); 
-                QueryResult result = processor.processRequest( req ); 
+                QueryResult result = processor.processRequest( request ); 
                 
                 // Write the hits to a file.
                 writeHits( testFile, result );
