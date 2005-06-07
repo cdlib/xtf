@@ -1,38 +1,5 @@
 package org.cdlib.xtf.textEngine;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.TreeSet;
-import java.util.Vector;
-
-import javax.xml.transform.Source;
-
-import net.sf.saxon.Configuration;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.tree.TreeBuilder;
-
-import org.apache.lucene.chunk.SpanChunkedNotQuery;
-import org.apache.lucene.chunk.SpanDechunkingQuery;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.mark.SpanDocument;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.spans.SpanNearQuery;
-import org.apache.lucene.search.spans.SpanOrQuery;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanRangeQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.SpanWildcardQuery;
-import org.cdlib.xtf.util.EasyNode;
-import org.cdlib.xtf.util.GeneralException;
-import org.cdlib.xtf.util.Path;
-import org.cdlib.xtf.util.Trace;
-import org.cdlib.xtf.util.XMLWriter;
-
 /*
  * Copyright (c) 2004, Regents of the University of California
  * All rights reserved.
@@ -61,6 +28,38 @@ import org.cdlib.xtf.util.XMLWriter;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Vector;
+
+import javax.xml.transform.Source;
+
+import net.sf.saxon.Configuration;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.tree.TreeBuilder;
+
+import org.apache.lucene.chunk.SpanChunkedNotQuery;
+import org.apache.lucene.chunk.SpanDechunkingQuery;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.mark.SpanDocument;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanOrQuery;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanRangeQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.search.spans.SpanWildcardQuery;
+import org.cdlib.xtf.util.EasyNode;
+import org.cdlib.xtf.util.GeneralException;
+import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.XMLWriter;
 
 /**
  * Processes URL parameters into a Lucene query, using a stylesheet to perform
@@ -520,100 +519,117 @@ public class QueryRequestParser
         }
         
         // All other cases fall through to here: and, or. Use our special
-        // de-duplicating span logic. First, get all the sub-queries.
+        // de-duplicating span logic. Get all the sub-queries (including nots).
+        // As we go along, group them by field, and maintain a list of the
+        // unique field names in the order the fields were encountered.
         //
-        Vector subVec = new Vector();
-        Vector notVec = new Vector();
+        HashMap      subMap  = new HashMap();
+        Vector       fields  = new Vector();
+        BooleanQuery bq      = new BooleanQuery();
+        boolean      require = !name.equals("or");
+        
         for( int i = 0; i < parent.nChildren(); i++ ) {
             EasyNode el = parent.child( i );
             if( el.name().equals("sectionType") )
-                ; // handled elsewhere
-            else if( el.name().equals("not") ) { 
-                Query q = parseQuery2(el, name, field, maxSnippets);
-                if( q != null )
-                    notVec.add( q );
-            }
-            else {
-                Query q = parseQuery(el, field, maxSnippets);
-                if( q != null )
-                    subVec.add( q );
-            }
-        }
-        
-        // If no sub-queries, return an empty query.
-        if( subVec.isEmpty() )
-            return null;
-        
-        // If only one sub-query, just return that.
-        if( subVec.size() == 1 && notVec.isEmpty() )
-            return (Query) subVec.get(0);
-        
-        // Divide up the queries by field name.
-        HashMap fieldQueries = new HashMap();
-        for( int i = 0; i < subVec.size(); i++ ) {
-            Query q = (Query) subVec.get(i);
-            field = (q instanceof SpanQuery) ? 
-                         ((SpanQuery)q).getField() : "<none>";
-            if( !fieldQueries.containsKey(field) )
-                fieldQueries.put( field, new Vector() );
-            ((Vector)fieldQueries.get(field)).add( q );
-        } // for i
-        
-        // Same with the "not" queries.
-        HashMap fieldNots = new HashMap();
-        for( int i = 0; i < notVec.size(); i++ ) {
-            Query q = (Query) notVec.get(i);
-            field = (q instanceof SpanQuery) ? 
-                         ((SpanQuery)q).getField() : "<none>";
-            if( !fieldNots.containsKey(field) )
-                fieldNots.put( field, new Vector() );
-            ((Vector)fieldNots.get(field)).add( q );
-        } // for i
-        
-        // If we have only queries for the same field, our work is simple.
-        if( fieldQueries.size() == 1 ) {
-            Vector queries = (Vector) fieldQueries.values().iterator().next();
-            Vector nots;
-            if( fieldNots.isEmpty() )
-                nots = new Vector();
-            else {
-                assert fieldNots.size() == 1 : "case not handled";
-                nots = (Vector) fieldNots.values().iterator().next();
-                assert nots.get(0) instanceof SpanQuery : "case not handled";
-                String notField = ((SpanQuery)nots.get(0)).getField();
-                String mainField = ((SpanQuery)queries.get(0)).getField();
-                assert notField.equals(mainField) : "case not handled";
-            }
-            return processSpanJoin(name, queries, nots, maxSnippets);
-        }
-        
-        // Now form a BooleanQuery containing grouped span queries where
-        // appropriate.
-        //
-        BooleanQuery bq = new BooleanQuery();
-        boolean require = !name.equals("or");
-        TreeSet keySet = new TreeSet( fieldQueries.keySet() );
-        for( Iterator i = keySet.iterator(); i.hasNext(); ) {
-            field = (String) i.next();
-            Vector queries = (Vector) fieldQueries.get( field );
-            Vector nots = (Vector) fieldNots.get( field );
-            if( nots == null )
-                nots = new Vector();
+                continue; // handled elsewhere
 
-            if( field.equals("<none>") ||
-                (queries.size() == 1 && nots.isEmpty()) )
+            Query q;
+            boolean isNot = false;
+            if( el.name().equals("not") ) {
+                q = parseQuery2(el, name, field, maxSnippets);
+                isNot = true;
+            }
+            else
+                q = parseQuery(el, field, maxSnippets);
+            
+            if( q == null )
+                continue;
+            
+            if( q instanceof SpanQuery ) {
+                String queryField = ((SpanQuery)q).getField();
+                QueryEntry ent = (QueryEntry) subMap.get( queryField );
+                if( ent == null ) {
+                    fields.add( queryField );
+                    ent = new QueryEntry( queryField );
+                    subMap.put( queryField, ent );
+                }
+                
+                if( isNot )
+                    ent.nots.add( q );
+                else
+                    ent.queries.add( q );
+            }
+            else {
+                bq.add( q, isNot ? false : require, isNot );
+            }
+        }
+
+        // If there are no generic clauses (that is, clauses that span fields),
+        // we can optimize.
+        //
+        BooleanClause[] genericClauses = bq.getClauses();
+        if( genericClauses.length == 0 ) 
+        {
+            // If no sub-queries or not queries, return an empty query.
+            if( subMap.isEmpty() )
+                return null;
+            
+            // If there's only one field, we don't need (or want) to do dechunking
+            // at this level. Simply make a span query for this field.
+            //
+            if( fields.size() == 1 ) {
+                QueryEntry ent = (QueryEntry) subMap.get( fields.get(0) );
+                if( ent.nots.isEmpty() ) {
+                    return processSpanJoin( name, ent.queries, ent.nots, 
+                                            maxSnippets );
+                }
+            }
+        }
+        
+        // Process each field in turn, grouping queries into SpanQueries if
+        // possible.
+        //
+        for( int i = 0; i < fields.size(); i++ ) {
+            QueryEntry ent = (QueryEntry) subMap.get( fields.get(i) );
+            int nQueries = ent.queries.size();
+            int nNots    = ent.nots.size();
+            
+            // If there's more than one query for this field, or if there is one
+            // query and one or more nots, group them together with a span query.
+            //
+            if( nQueries > 1 || (nQueries == 1 && nNots > 0) ) 
             {
-                for( int j = 0; j < queries.size(); j++ )
-                    bq.add( deChunk((Query)queries.get(j)), require, false );
-                for( int j = 0; j < nots.size(); j++ )
-                    bq.add( deChunk((Query)queries.get(j)), false, true );
+                SpanQuery sq = processSpanJoin( name, ent.queries, ent.nots, 
+                                                maxSnippets );
+                bq.add( deChunk(sq), require, false );
                 continue;
             }
-
-            // Span query/queries. Join them into a single span query.
-            SpanQuery sq = processSpanJoin(name, queries, nots, maxSnippets);   
-            bq.add( deChunk(sq), require, false );
+            
+            // Otherwise, simply add these as normal boolean clauses (of course
+            // applying dechunking if necessary.)
+            //
+            for( int j = 0; j < ent.queries.size(); j++ )
+                bq.add( deChunk((Query)ent.queries.get(j)), require, false );
+            for( int j = 0; j < ent.nots.size(); j++ )
+                bq.add( deChunk((Query)ent.nots.get(j)), false, true );
         } // for i
+        
+        // If we ended up with only one clause, we may have more to do...
+        BooleanClause[] clauses = bq.getClauses();
+        if( clauses.length == 1 ) 
+        {
+            // If the clause is required, just return it.
+            if( clauses[0].required )
+                return clauses[0].query;
+            
+            // If the clause is a 'not', it needs something to 'not' against.
+            // Add another clause that just returns all valid documents.
+            //
+            else if( clauses[0].prohibited ) {
+                Query allDocsQuery = new TermQuery( new Term("docInfo", "1") ); 
+                bq.add( allDocsQuery, true, false );
+            }
+        }
         
         // Simplify the BooleanQuery (if possible), for instance collapsing
         // an AND query inside another AND query.
@@ -850,8 +866,13 @@ public class QueryRequestParser
     private SpanQuery processSpanJoin( String name, Vector subVec, 
                                        Vector notVec, int maxSnippets )
     {
+        // Get a handy array of the queries.
         SpanQuery[] subQueries = 
             (SpanQuery[]) subVec.toArray( new SpanQuery[0] ); 
+        
+        // If there's only one query (with no nots) then just return it.
+        if( subQueries.length == 1 && notVec.isEmpty() )
+            return subQueries[0];
         
         // Now make the top-level query.
         SpanQuery q;
@@ -1141,6 +1162,7 @@ public class QueryRequestParser
         
         return text;
     } // getText()
+
     
     /**
      * Like parseIntAttrib(), but adds additional processing to ensure that
@@ -1360,5 +1382,17 @@ public class QueryRequestParser
         
         public boolean isSevere() { return false; }
     } // class QueryFormatError
+
+    /** Keeps track of all the queries for a given field */
+    private static class QueryEntry
+    {
+      public Vector  queries = new Vector();
+      public Vector  nots    = new Vector();
+      public String  field;
+      
+      public QueryEntry( String field ) {
+        this.field = field;
+      }
+    } // class QueryEntry
     
 }
