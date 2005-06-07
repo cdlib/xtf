@@ -796,7 +796,9 @@ public class XMLTextProcessor extends DefaultHandler
     queueText( srcInfo, deleteFirst );
 
   } // checkAndQueueText()
+
   
+  ////////////////////////////////////////////////////////////////////////////
   
   /** Queue a source text file for indexing. Old chunks with the same
    *  key will not be deleted first, so this method should only be used
@@ -820,6 +822,8 @@ public class XMLTextProcessor extends DefaultHandler
   } // queueText( SrcTextInfo )
   
   
+  ////////////////////////////////////////////////////////////////////////////
+  
   /** Queue a source text file for (re)indexing. <br><br>
    * 
    *  @param srcInfo  The source XML text file to add to the queue of 
@@ -838,6 +842,21 @@ public class XMLTextProcessor extends DefaultHandler
     fileQueue.add( new FileQueueEntry(srcInfo, deleteFirst) );
 
   } // queueText( SrcTextInfo, boolean )
+  
+  
+  ////////////////////////////////////////////////////////////////////////////
+  
+  /** Find out how many texts have been queued up using 
+   *  {@link #queueText(SrcTextInfo, boolean)} but not yet processed by
+   *  {@link #processQueuedTexts()}.
+   */  
+  public int getQueueSize()
+  
+  {
+    
+    return fileQueue.size();
+    
+  } // getQueueSize()
   
   
   ////////////////////////////////////////////////////////////////////////////
