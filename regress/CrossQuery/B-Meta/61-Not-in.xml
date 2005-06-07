@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <and>
+    <not field="title"><term>genovese</term></not>
+    <range field="date" inclusive="yes">
+      <lower>19930628</lower>
+    </range>
+  </and>
+</query>

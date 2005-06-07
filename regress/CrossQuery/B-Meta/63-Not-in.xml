@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <and>
+    <or>
+      <term field="subject">politics</term>
+      <term field="title">riparian</term>
+    </or>
+    <not>
+      <or>
+        <term field="date">19930809</term>
+        <term field="subject">classical</term>
+      </or>
+    </not>
+  </and>
+</query>
