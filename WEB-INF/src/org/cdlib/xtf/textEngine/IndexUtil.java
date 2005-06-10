@@ -365,7 +365,7 @@ public class IndexUtil
   public static Transformer createTransformer()
   {
       // If we don't have a factory yet, make one.
-      if( transformerFactory != null ) 
+      if( transformerFactory == null ) 
           transformerFactory = new net.sf.saxon.TransformerFactoryImpl();
       
       // And make the new transformer that was requested.
