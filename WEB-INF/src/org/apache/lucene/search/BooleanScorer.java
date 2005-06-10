@@ -217,6 +217,8 @@ final class BooleanScorer extends Scorer {
         table.first = bucket;
       } else {                                    // valid bucket
         bucket.score += score;                    // increment score
+        if (bucket.spans == null)
+          bucket.spans = new FieldSpans();
         bucket.spans.addSpans(spans);             // add spans
         bucket.bits |= mask;                      // add bits in mask
         bucket.coord++;                           // increment coord
