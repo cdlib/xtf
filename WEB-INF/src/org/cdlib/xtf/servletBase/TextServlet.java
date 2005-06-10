@@ -386,8 +386,11 @@ public abstract class TextServlet extends HttpServlet
         //
         Enumeration i = req.getHeaderNames();
         String url = req.getRequestURL().toString();
-        if( req.getQueryString() != null && req.getQueryString().length() > 0 )
+        if( req.getQueryString() != null && req.getQueryString().length() > 0 &&
+            url.indexOf('?') < 0 )
+        {
             url = url + "?" + req.getQueryString();
+        }
         trans.setParameter( "http.URL", url );
         while( i.hasMoreElements() ) {
             String name = (String) i.nextElement();
