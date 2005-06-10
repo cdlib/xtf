@@ -31,6 +31,7 @@ import org.apache.lucene.search.spans.SpanRangeQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
 
+import org.cdlib.xtf.textEngine.SpanExactQuery;
 import org.cdlib.xtf.textEngine.SpanSectionTypeQuery;
 
 /**
@@ -40,7 +41,7 @@ import org.cdlib.xtf.textEngine.SpanSectionTypeQuery;
  * rewrite, and the base will take care of gluing them together properly. 
  *
  * @author  Martin Haye
- * @version $Id: QueryRewriter.java,v 1.3 2005-06-06 21:44:25 mhaye Exp $
+ * @version $Id: QueryRewriter.java,v 1.4 2005-06-10 21:27:20 mhaye Exp $
  */
 public abstract class QueryRewriter {
 
@@ -72,6 +73,8 @@ public abstract class QueryRewriter {
       return rewrite((SpanTermQuery)q);
     if (q instanceof SpanRangeQuery)
       return rewrite((SpanRangeQuery)q);
+    if (q instanceof SpanExactQuery)
+      return rewrite((SpanExactQuery)q);
 
     assert false : "unsupported query type for rewriting";
     return null;
@@ -331,6 +334,47 @@ public abstract class QueryRewriter {
    */
   protected Query rewrite(SpanRangeQuery q) {
     return q;
+  }
+  
+  /** Rewrite an exact query. The base class rewrites each of the sub-clauses. */
+  protected Query rewrite(SpanExactQuery eq) {
+    // Rewrite each clause.
+    SpanQuery[] clauses = eq.getClauses();
+    Vector newClauses = new Vector();
+    boolean anyChanges = false;
+
+    for (int i = 0; i < clauses.length; i++) {
+      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
+      if (clause != clauses[i])
+        anyChanges = true;
+      
+      // If the clause ended up null, skip it.
+      if (clause == null)
+        continue;
+
+      // Retain everything else.
+      newClauses.add(clause);
+    } // for i
+
+    // If no changes, just return the original query.
+    if (!anyChanges)
+      return eq;
+
+    // If no clauses, let the caller know they can delete this query.
+    if (newClauses.isEmpty())
+      return null;
+
+    // If we have only one clause, return just that. Pass on the parent's
+    // boost to the only child.
+    //
+    if (newClauses.size() == 1)
+      return combineBoost(eq, (Query) newClauses.elementAt(0));
+
+    // Construct a new 'exact' query joining all the rewritten clauses.
+    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
+    return copyBoost(eq, new SpanExactQuery((SpanQuery[]) newClauses
+        .toArray(newArray)));
+
   }
   
   /**
