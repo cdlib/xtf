@@ -362,12 +362,12 @@ public class DefaultQueryProcessor extends QueryProcessor
         {
             // See if a 'countGroups' element was specified for this field. If so,
             // grab the startGroup and maxGroups from it. If not, default to
-            // all groups.
+            // all groups with default start.
             //
             GroupSpec spec = req.groupSpecs[i];
             boolean gotCountSubset = false;
-            int startGroup = 0;
-            int maxGroups  = 999999999;
+            int startGroup = GroupSpec.Subset.DEFAULT_START;
+            int maxGroups  = GroupSpec.Subset.ALL_GROUPS;
             if( spec.subsets != null ) {
                 for( int j = 0; j < spec.subsets.length; j++ ) {
                     GroupSpec.Subset subset = spec.subsets[j];

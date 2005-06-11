@@ -55,13 +55,23 @@ public class GroupSpec
        */
       public String value;
       
-      /** First group to count or report (zero-based.) */
-      public int startGroup;
-      
-      /** Max # of groups to count or report. If non-zero, {@link #value}
-       *  should be null.
+      /** Value for {@link #startGroup} that tells the engine to auto-select the
+       *  start group.
        */
-      public int maxGroups;
+      public static final int DEFAULT_START = -1;
+      
+      /** First group to count or report (zero-based.) Specifying
+       *  {@link #DEFAULT_START} means to auto-select the start group.
+       */
+      public int startGroup = DEFAULT_START;
+      
+      /** Value for {@link #maxGroups} that means "all groups" */
+      public static final int ALL_GROUPS = 999999999;
+      
+      /** Max # of groups to count or report. If nonzero, {@link #value} should
+       *  be null. Specifying {@link #ALL_GROUPS} means to select all groups.
+       */
+      public int maxGroups = ALL_GROUPS;
       
       /** Rank of first document to report in the selected groups 
        * (zero-based) 

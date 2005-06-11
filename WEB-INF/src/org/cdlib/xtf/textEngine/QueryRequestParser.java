@@ -333,8 +333,11 @@ public class QueryRequestParser
             {
                 String attrName = child.attrName( j );
                 String attrVal  = child.attrValue( j );
-                if( attrName.equalsIgnoreCase("startGroup") )
+                if( attrName.equalsIgnoreCase("startGroup") ) {
                     subset.startGroup = parseIntAttrib(child, attrName) - 1;
+                    if( subset.startGroup < 0 )
+                        subset.startGroup = GroupSpec.Subset.DEFAULT_START;
+                }
                 else if( attrName.equalsIgnoreCase("maxGroups") ) {
                     subset.maxGroups = parseIntAttrib(child, attrName);
                     gotMaxGroups = true;
@@ -369,7 +372,7 @@ public class QueryRequestParser
             
             // If neither was specified, default to maxGroups=all
             if( !gotValue && !gotMaxGroups )
-                subset.maxGroups = 999999999;
+                subset.maxGroups = GroupSpec.Subset.ALL_GROUPS;
             
             // If maxDocs wasn't specified on <groupHits>, default to 10.
             if( !countOnly && !gotMaxDocs )

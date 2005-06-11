@@ -169,6 +169,28 @@ public class GroupCounts
     }
     else
         assert sortBy.equals("value") : "Unsupported sortGroupsBy option";
+        
+    // If we've been asked to select the default group page, do it now.
+    if( startGroup == GroupSpec.Subset.DEFAULT_START ) 
+    {
+        // If all groups are selected, the default and only page is zero.
+        if( maxGroups >= groups.size() )
+            startGroup = 0;
+        else 
+        {
+            // Scan for the first group with doc hits. If none, default to the
+            // first page.
+            //
+            startGroup = 0;
+            for( int i = 0; i < groups.size(); i++ ) {
+                ResultGroup g = (ResultGroup) groups.get( i );
+                if( g.docHits != null && g.docHits.length > 0 ) {
+                    startGroup = (i / maxGroups) * maxGroups;
+                    break;
+                }
+            } // for i
+        } // else
+    } // if
     
     // Now extract just the requested part.
     int from = Math.min( groups.size(), startGroup );
