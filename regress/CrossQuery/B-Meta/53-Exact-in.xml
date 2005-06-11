@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query indexPath="IndexDB" termLimit="1000" workLimit="1000000" style="NullStyle.xsl" startDoc="1" maxDocs="20">
+   <and>
+      <exact field="subject">
+         <term>Classics</term>
+      </exact>
+   </and>
+</query>
