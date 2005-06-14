@@ -34,6 +34,7 @@ import java.io.IOException;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.cdlib.xtf.textEngine.Constants;
 import org.cdlib.xtf.util.WordMap;
 
 /*
@@ -45,7 +46,7 @@ import org.cdlib.xtf.util.WordMap;
  * forms.
  * 
  * @author Martin Haye
- * @version $Id: PluralFoldingFilter.java,v 1.2 2005-05-24 21:50:42 mhaye Exp $
+ * @version $Id: PluralFoldingFilter.java,v 1.3 2005-06-14 01:48:10 mhaye Exp $
  */
 public class PluralFoldingFilter extends TokenFilter 
 {
@@ -76,11 +77,32 @@ public class PluralFoldingFilter extends TokenFilter
     if( t == null )
         return t;
     
-    // Is it a plural word? If not, return it unchanged.
+    // Strip start-of-field and end-of-field markers (but remember that we did so.)
     String term   = t.termText();
+    
+    boolean isStartTerm = false;
+    boolean isEndTerm   = false;
+    
+    if( term.length() > 0 && term.charAt(0) == Constants.FIELD_START_MARKER ) {
+        isStartTerm = true;
+        term = term.substring( 1 );
+    }
+    
+    if( term.length() > 0 && term.charAt(term.length()-1) == Constants.FIELD_END_MARKER ) {
+        isEndTerm = true;
+        term = term.substring( 0, term.length()-1 );
+    }
+    
+    // Is it a plural word? If not, return it unchanged.
     String mapped = pluralMap.lookup( term );
     if( mapped == null )
         return t;
+    
+    // Add the markers back in
+    if( isStartTerm )
+        mapped = Constants.FIELD_START_MARKER + mapped;
+    if( isEndTerm )
+        mapped = mapped + Constants.FIELD_END_MARKER;
     
     // Okay, we gotta make a new token that's the same in every respect
     // except the word.
