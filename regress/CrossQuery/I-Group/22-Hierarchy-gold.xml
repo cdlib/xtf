@@ -6,6 +6,12 @@
          <docHit file="doc4.xml">
             <meta>
                <title>Why? Document 4</title>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Classical Politics</group-subject>
                <subject>Classics</subject>
                <subject>Ancient History</subject>
                <subject>Politics</subject>
@@ -21,6 +27,8 @@
          <docHit file="doc5.xml">
             <meta>
                <title>This is Document 5</title>
+               <group-subject>Environmental Studies</group-subject>
+               <group-subject>California and the West</group-subject>
                <subject>Environmental Studies</subject>
                <subject>California and the West</subject>
                <type>text</type>

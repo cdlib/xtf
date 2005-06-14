@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
-   <groupedField field="subject" totalGroups="16" startGroup="6" endGroup="10">
+   <groupedField field="group-subject" totalGroups="16" startGroup="6" endGroup="10">
       <group value="Environmental Studies" totalDocs="3" startDoc="0" endDoc="0"/>
       <group value="African History" totalDocs="2" startDoc="1" endDoc="2">
          <docHit file="doc1.xml">
             <meta>
                <title>XYZ: Document 1</title>
+               <group-subject>African Studies</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>African History</group-subject>
                <subject>African Studies</subject>
                <subject>Politics</subject>
                <subject>African History</subject>
@@ -24,6 +27,8 @@
          <docHit file="doc6.xml">
             <meta>
                <title>Don't read Document 6</title>
+               <group-subject>Environmental Studies</group-subject>
+               <group-subject>African History</group-subject>
                <subject>Environmental Studies</subject>
                <subject>African History</subject>
                <type>text</type>

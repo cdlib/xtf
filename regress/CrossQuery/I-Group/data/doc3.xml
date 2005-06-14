@@ -2,9 +2,12 @@
 
 <document xmlns:xtf="http://cdlib.org/xtf">
     <title xtf:tokenize="no" xtf:meta="yes">Hello: Document 3</title>
-    <subject xtf:tokenize="no" xtf:meta="true">Politics</subject>
-    <subject xtf:tokenize="no" xtf:meta="true">Sociology</subject>
-    <subject xtf:tokenize="no" xtf:meta="true">Urban Studies</subject>
+    <group-subject xtf:tokenize="no" xtf:meta="true">Politics</group-subject>
+    <group-subject xtf:tokenize="no" xtf:meta="true">Sociology</group-subject>
+    <group-subject xtf:tokenize="no" xtf:meta="true">Urban Studies</group-subject>
+    <subject xtf:meta="true">Politics</subject>
+    <subject xtf:meta="true">Sociology</subject>
+    <subject xtf:meta="true">Urban Studies</subject>
     <type xtf:meta="true">text</type>
     <collection xtf:meta="true">UC</collection>
     <geography xtf:meta="true">Canada:Quebec:Toronto</geography>

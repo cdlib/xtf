@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
-   <groupedField field="subject" totalGroups="16" startGroup="1" endGroup="16">
+   <groupedField field="group-subject" totalGroups="16" startGroup="1" endGroup="16">
       <group value="Politics" totalDocs="7" startDoc="0" endDoc="0"/>
       <group value="Ancient History" totalDocs="3" startDoc="0" endDoc="0"/>
       <group value="Classical History" totalDocs="3" startDoc="0" endDoc="0"/>

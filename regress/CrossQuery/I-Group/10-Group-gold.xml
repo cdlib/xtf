@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
-   <groupedField field="subject" totalGroups="16" startGroup="1" endGroup="5">
+   <groupedField field="group-subject" totalGroups="16" startGroup="1" endGroup="5">
       <group value="Politics" totalDocs="7" startDoc="1" endDoc="7">
          <docHit file="doc1.xml">
             <meta>
                <title>XYZ: Document 1</title>
+               <group-subject>African Studies</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>African History</group-subject>
                <subject>African Studies</subject>
                <subject>Politics</subject>
                <subject>African History</subject>
@@ -17,6 +20,11 @@
          <docHit file="doc2.xml">
             <meta>
                <title>ABC: Document 2</title>
+               <group-subject>Politics</group-subject>
+               <group-subject>Philosophy</group-subject>
+               <group-subject>Political Theory</group-subject>
+               <group-subject>Social and Political Thought</group-subject>
+               <group-subject>Social Theory</group-subject>
                <subject>Politics</subject>
                <subject>Philosophy</subject>
                <subject>Political Theory</subject>
@@ -31,6 +39,9 @@
          <docHit file="doc3.xml">
             <meta>
                <title>Hello: Document 3</title>
+               <group-subject>Politics</group-subject>
+               <group-subject>Sociology</group-subject>
+               <group-subject>Urban Studies</group-subject>
                <subject>Politics</subject>
                <subject>Sociology</subject>
                <subject>Urban Studies</subject>
@@ -43,6 +54,12 @@
          <docHit file="doc4.xml">
             <meta>
                <title>Why? Document 4</title>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Classical Politics</group-subject>
                <subject>Classics</subject>
                <subject>Ancient History</subject>
                <subject>Politics</subject>
@@ -58,6 +75,9 @@
          <docHit file="doc7.xml">
             <meta>
                <title>Do read Document 7</title>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
                <subject>Politics</subject>
                <subject>Classics</subject>
                <subject>Ancient History</subject>
@@ -70,6 +90,11 @@
          <docHit file="doc8.xml">
             <meta>
                <title>Document 8 is cool</title>
+               <group-subject>Politics</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Urban Studies</group-subject>
                <subject>Politics</subject>
                <subject>Politics</subject>
                <subject>Classical History</subject>
@@ -84,6 +109,12 @@
          <docHit file="doc9.xml">
             <meta>
                <title>Document 9 is absolutely cool</title>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Classical Politics</group-subject>
                <subject>Classics</subject>
                <subject>Ancient History</subject>
                <subject>Politics</subject>

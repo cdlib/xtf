@@ -5,6 +5,9 @@
          <docHit file="doc1.xml">
             <meta>
                <title>XYZ: Document 1</title>
+               <group-subject>African Studies</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>African History</group-subject>
                <subject>African Studies</subject>
                <subject>Politics</subject>
                <subject>African History</subject>
@@ -17,6 +20,8 @@
          <docHit file="doc10.xml">
             <meta>
                <title>Document 10 rocks</title>
+               <group-subject>Environmental Studies</group-subject>
+               <group-subject>California and the West</group-subject>
                <subject>Environmental Studies</subject>
                <subject>California and the West</subject>
                <type>text</type>

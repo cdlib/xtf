@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
-   <groupedField field="subject" totalGroups="16" startGroup="1" endGroup="5">
+   <groupedField field="group-subject" totalGroups="16" startGroup="1" endGroup="5">
       <group value="Politics" totalDocs="7" startDoc="2" endDoc="4">
          <docHit file="doc7.xml">
             <meta>
                <title>Do read Document 7</title>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
                <subject>Politics</subject>
                <subject>Classics</subject>
                <subject>Ancient History</subject>
@@ -17,6 +20,11 @@
          <docHit file="doc8.xml">
             <meta>
                <title>Document 8 is cool</title>
+               <group-subject>Politics</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Urban Studies</group-subject>
                <subject>Politics</subject>
                <subject>Politics</subject>
                <subject>Classical History</subject>
@@ -31,6 +39,12 @@
          <docHit file="doc9.xml">
             <meta>
                <title>Document 9 is absolutely cool</title>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Classical Politics</group-subject>
                <subject>Classics</subject>
                <subject>Ancient History</subject>
                <subject>Politics</subject>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query indexPath="IndexDB" termLimit="1000" workLimit="1000000" style="NullStyle.xsl" startDoc="1" maxDocs="20">
+  <groupField field="group-subject" sortGroupsBy="totalDocs">
+    <countGroups maxGroups="20"/>
+    <groupHits value="Politics" sortDocsBy="sort-title" startDoc="1" maxDocs="20"/>
+  </groupField>
+  <and>
+    <exact field="subject">
+      <term>classics</term>
+    </exact>
+    <term field="collection">uc</term>
+  </and>
+</query>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
-  <groupField field="subject" sortGroupsBy="value">
+  <groupField field="group-subject" sortGroupsBy="value">
     <countGroups startGroup="1" maxGroups="5"/>
   </groupField>
   <term field="collection">UC</term>

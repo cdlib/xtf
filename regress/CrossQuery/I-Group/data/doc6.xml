@@ -2,8 +2,10 @@
 
 <document xmlns:xtf="http://cdlib.org/xtf">
     <title xtf:tokenize="no" xtf:meta="yes">Don't read Document 6</title>
-    <subject xtf:tokenize="no" xtf:meta="true">Environmental Studies</subject>
-    <subject xtf:tokenize="no" xtf:meta="true">African History</subject>
+    <group-subject xtf:tokenize="no" xtf:meta="true">Environmental Studies</group-subject>
+    <group-subject xtf:tokenize="no" xtf:meta="true">African History</group-subject>
+    <subject xtf:meta="true">Environmental Studies</subject>
+    <subject xtf:meta="true">African History</subject>
     <type xtf:meta="true">text</type>
     <collection xtf:meta="true">UC</collection>
     <geography xtf:meta="true">US:Oregon:Grants Pass</geography>
