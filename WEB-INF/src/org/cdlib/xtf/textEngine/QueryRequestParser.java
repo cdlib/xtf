@@ -50,6 +50,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanNotNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanRangeQuery;
@@ -902,8 +903,8 @@ public class QueryRequestParser
         else if( !name.equals("or") ) {
             // We can't know the actual slop until the query is run against
             // an index (the slop will be equal to max proximity). So set
-            // it to a big value for now, and it will be clamped by
-            // fixupSlop() later whent he query is run.
+            // it to a big value for now, and it will be clamped later
+            // when the query is run.
             //
             q = new SpanNearQuery( subQueries, 999999999, false );
         }
@@ -913,7 +914,7 @@ public class QueryRequestParser
         q.setSpanRecording( maxSnippets );
         
         // Finish up by handling any not clauses found.
-        return processTextNots( q, notVec, maxSnippets );
+        return processSpanNots( q, notVec, maxSnippets );
         
     } // processSpanJoin()
 
@@ -1021,7 +1022,7 @@ public class QueryRequestParser
      * If any 'not' clauses are present, this builds a query that filters them
      * out of the main query.
      */
-    SpanQuery processTextNots( SpanQuery query, Vector notClauses,
+    SpanQuery processSpanNots( SpanQuery query, Vector notClauses,
                                int maxSnippets ) 
     {
         // If there aren't any 'not' clauses, we're done.
@@ -1041,10 +1042,21 @@ public class QueryRequestParser
             subQuery.setSpanRecording( maxSnippets );
         }
         
-        // Now make the final 'not' query. Note that the actual slop will have
-        // to be fixed when the query is run.
+        // Now make the final 'not' query. If on the text field,
+        // use the special chunk-aware version.
         //
-        SpanQuery nq = new SpanChunkedNotQuery( query, subQuery, 999999999 );
+        SpanQuery nq;
+        if( query.getField().equals("text") ) {
+        
+            // Note that the actual slop will have to be fixed when the 
+            // query is run.
+            //
+            nq = new SpanChunkedNotQuery( query, subQuery, 999999999 );
+        }
+        else
+            nq = new SpanNotNearQuery( query, subQuery, 999999999 );
+        
+        // Establish the span recording, and we're done.
         nq.setSpanRecording( maxSnippets );
         return nq;
     } // processTextNots();
