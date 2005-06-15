@@ -321,13 +321,19 @@ public class DefaultQueryProcessor extends QueryProcessor
             boolean valFound = false;
             for( int j = 0; j < spec.subsets.length; j++ ) {
                 GroupSpec.Subset subset = spec.subsets[j];
-                if( subset.value == null )
+                if( subset.maxDocs == 0 )
                     continue;
+                
+                if( subset.value == null ) {
+                    throw new RuntimeException( 
+                        "XTF doesn't support <groupHits> without a 'value' " +
+                        "attribute (yet anyway)" );
+                }
                 
                 if( valFound ) {
                     throw new RuntimeException( 
                         "XTF doesn't support multiple 'groupHits' " +
-                        "per group (yet)" );
+                        "per field (yet anyway)" );
                 }
                 valFound = true;
                 
@@ -372,13 +378,13 @@ public class DefaultQueryProcessor extends QueryProcessor
             if( spec.subsets != null ) {
                 for( int j = 0; j < spec.subsets.length; j++ ) {
                     GroupSpec.Subset subset = spec.subsets[j];
-                    if( subset.value != null )
+                    if( subset.maxDocs > 0 || subset.value != null )
                         continue;
                     
                     if( gotCountSubset ) {
                         throw new RuntimeException( 
                             "XTF doesn't support multiple 'countHits' " +
-                            "per group (yet)" );
+                            "per field (yet anyway)" );
                     }
                     gotCountSubset = true;
                     
