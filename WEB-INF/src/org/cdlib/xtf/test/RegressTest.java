@@ -430,9 +430,9 @@ public class RegressTest
                     "totalGroups=\"" + field.totalGroups + "\" " +
                     "startGroup=\"" + (field.endGroup > 0 ? field.startGroup+1 : 0) + "\" " +
                     "endGroup=\"" + (field.endGroup) + "\"" );
-                if( field.parentGroupValue != null )
-                    buf.append( " parentGroupValue=\"" + 
-                                field.parentGroupValue + "\"" );
+                if( field.branchGroupValue != null )
+                    buf.append( " branchGroupValue=\"" + 
+                                field.branchGroupValue + "\"" );
                 buf.append( ">" );
                 if( field.groups == null )
                     continue;

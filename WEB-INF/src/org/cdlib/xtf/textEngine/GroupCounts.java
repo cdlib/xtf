@@ -159,7 +159,7 @@ public class GroupCounts
     
     // Record the value of the parent group.
     if( parent != 0 )
-        resultField.parentGroupValue = data.name( parent );
+        resultField.branchGroupValue = data.name( parent );
     
     // Build an array of the groups at that level.
     ArrayList groups = new ArrayList();

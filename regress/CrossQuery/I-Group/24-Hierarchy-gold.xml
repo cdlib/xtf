@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
-   <groupedField field="geography-sort" totalGroups="4" startGroup="1" endGroup="4" parentGroupValue="US::California">
+   <groupedField field="geography-sort" totalGroups="4" startGroup="1" endGroup="4" branchGroupValue="US::California">
       <group value="US::California::Santa Cruz" totalDocs="3" startDoc="0" endDoc="0"/>
       <group value="US::California::Berkeley" totalDocs="2" startDoc="1" endDoc="2">
          <docHit file="doc1.xml">
