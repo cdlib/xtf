@@ -360,9 +360,9 @@ public class DefaultQueryProcessor extends QueryProcessor
         result.fields = new ResultField[groupCounts.length];
         for( int i = 0; i < groupCounts.length; i++ ) 
         {
-            // See if a 'countGroups' element was specified for this field. If so,
-            // grab the startGroup and maxGroups from it. If not, default to
-            // all groups with default start.
+            // See if a 'countGroups' element was specified for this field. If 
+            // so, grab the startGroup and maxGroups from it. If not, default 
+            // to all groups with default start.
             //
             GroupSpec spec = req.groupSpecs[i];
             boolean gotCountSubset = false;
@@ -388,7 +388,10 @@ public class DefaultQueryProcessor extends QueryProcessor
             
             // Get the groups for this field.
             result.fields[i] = groupCounts[i].getGroups( 
-                spec.sortGroupsBy, startGroup, maxGroups );
+                spec.sortGroupsBy, 
+                startGroup, maxGroups, 
+                spec.includeEmptyGroups,
+                spec.branchGroupValue );
             
             // Scan each group for DocHits, and finish all we find.
             for( int j = 0; j < result.fields[i].groups.length; j++ ) 

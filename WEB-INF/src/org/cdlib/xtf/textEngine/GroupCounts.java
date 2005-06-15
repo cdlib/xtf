@@ -116,32 +116,56 @@ public class GroupCounts
   /**
    * Retrieve all or a subset of the groups and their associated counts.
    * 
-   * @param sortBy      How to sort the groups: "count" or "value" are the
-   *                    only permissible options.
-   * @param startGroup  Ordinal rank of first group to return (zero-based)
-   * @param maxGroups   Max # of groups to return
-   * @return            Array of the groups
+   * @param sortBy              How to sort the groups: "count" or "value" are
+   *                            the only permissible options.
+   * @param startGroup          Ordinal rank of first group to return (zero-
+   *                            based)
+   * @param maxGroups           Max # of groups to return
+   * @param includeEmptyGroups  True to include empty groups, false to exclude
+   * @param branchValue         Value of branch to select. If null, we will
+   *                            select the highest level with differences. 
+   * @return                    Array of the groups
    */
-  public ResultField getGroups( String sortBy, int startGroup, int maxGroups )
+  public ResultField getGroups( String sortBy, 
+                                int startGroup, 
+                                int maxGroups, 
+                                boolean includeEmptyGroups,
+                                String branchValue )
   {
     // Create an empty result to start with
     ResultField resultField = new ResultField();
     resultField.field = data.field();
     
-    // Locate the highest level in the hierarchy with differences. If the root
-    // is the only node with a count, return an empty result set.
-    //
-    int parent = findBestParent( 0 );
+    // Select the correct branch.
+    int parent;
+    if( branchValue != null )
+    {
+        // Branch value specified. Look it up.
+        parent = data.findGroup( branchValue );
+    }
+    else
+    {
+        // Locate the highest level in the hierarchy with differences. If the root
+        // is the only node with a count, return an empty result set.
+        //
+        parent = findBestParent( 0 );
+    }
+    
+    // If no good parent, return an empty result set.
     if( parent < 0 ) {
         resultField.groups = new ResultGroup[0];
         return resultField;
     }
     
+    // Record the value of the parent group.
+    if( parent != 0 )
+        resultField.parentGroupValue = data.name( parent );
+    
     // Build an array of the groups at that level.
     ArrayList groups = new ArrayList();
     for( int kid = data.child(parent); kid >= 0; kid = data.sibling(kid) ) 
     {
-        if( counts[kid] == 0 )
+        if( counts[kid] == 0 && !includeEmptyGroups )
             continue;
         
         ResultGroup g = new ResultGroup();

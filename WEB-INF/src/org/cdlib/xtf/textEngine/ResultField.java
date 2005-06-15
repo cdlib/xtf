@@ -54,6 +54,9 @@ public class ResultField
   /** Total number of documents that had some value for this field */
   public int totalDocs;
   
+  /** For hierarchical fields, the parent (branch) of all the returned groups */
+  public String parentGroupValue;
+  
   /** The actual groups (some of which contain hits if specified in query) */
   public ResultGroup[] groups;
   

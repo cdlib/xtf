@@ -47,6 +47,14 @@ public class GroupSpec
   /** Subset specifications */
   public Subset[] subsets;
   
+  /** True to include empty groups, false to exclude them */
+  public boolean includeEmptyGroups = false;
+  
+  /** For hierarchical fields, the branch to select. If null, the highest
+   *  branch with choices will be selected.
+   */
+  public String branchGroupValue = null;
+  
   /** A target subset of the groups for a single field */
   public static class Subset
   {

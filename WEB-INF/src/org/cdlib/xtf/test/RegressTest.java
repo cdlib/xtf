@@ -429,7 +429,11 @@ public class RegressTest
                     "<groupedField field=\"" + field.field + "\" " +
                     "totalGroups=\"" + field.totalGroups + "\" " +
                     "startGroup=\"" + (field.endGroup > 0 ? field.startGroup+1 : 0) + "\" " +
-                    "endGroup=\"" + (field.endGroup) + "\">" );
+                    "endGroup=\"" + (field.endGroup) + "\"" );
+                if( field.parentGroupValue != null )
+                    buf.append( " parentGroupValue=\"" + 
+                                field.parentGroupValue + "\"" );
+                buf.append( ">" );
                 if( field.groups == null )
                     continue;
                 

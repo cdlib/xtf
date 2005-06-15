@@ -292,6 +292,24 @@ public class QueryRequestParser
                            " element)" );
                 }
             }
+            else if( el.attrName(i).equalsIgnoreCase("includeEmptyGroups") ) {
+                if( el.attrValue(i).matches("^true$|^yes$") )
+                    gs.includeEmptyGroups = true;
+                else if( el.attrValue(i).matches("^false$|^no$") )
+                    gs.includeEmptyGroups = false;
+                else {
+                    error( "Expected 'yes', 'no', 'true', or 'false' for '" +
+                           el.attrName(i) + "' attribute, but found '" +
+                           el.attrValue(i) + "' (on '" + el.name() +
+                           " element)" );
+                }
+            }
+            else if( el.attrName(i).equalsIgnoreCase("branchGroupValue") ) {
+                if( el.attrValue(i).equals("#auto") )
+                    gs.branchGroupValue = null;
+                else
+                    gs.branchGroupValue = el.attrValue( i );
+            }
             else
                 error( "Unrecognized attribute '" + el.attrName(i) +
                        "' on '" + el.name() + "' element" );
@@ -946,11 +964,11 @@ public class QueryRequestParser
         // Inclusive or exclusive?
         boolean inclusive = false;
         String yesno = parseStringAttrib( parent, "inclusive", "yes" );
-        if( yesno.equals("yes") )
+        if( yesno.equals("yes") || yesno.equals("true") )
             inclusive = true;
-        else if( !yesno.equals("no") )
+        else if( !yesno.equals("no") && !yesno.equals("false") )
             error( "'inclusive' attribute for 'range' query must have value " +
-                   "'yes' or 'no'" );
+                   "'yes', 'no', 'true', or 'false'" );
         
         // Check the children for the lower and upper bounds.
         Term lower = null;

@@ -252,7 +252,7 @@ public class GroupData
 
         // Go up one level in the hierarchy.
         childKey = parentKey;
-        int lastColon = curName.lastIndexOf( ':' );
+        int lastColon = curName.lastIndexOf( "::" );
         if( lastColon >= 0 )
             curName  = curName.substring( 0, lastColon );
         else
@@ -411,6 +411,16 @@ public class GroupData
   /** Get the sibling of the given group, or -1 if no more */
   public final int sibling( int groupId ) {
     return groupSiblings[groupId]; 
+  }
+  
+  /** Locate a group by name and return its index, or -1 if not found */
+  public final int findGroup( String name ) {
+    name = name.intern();
+    for( int i = 0; i < groups.length; i++ ) {
+        if( name == groups[i] )
+            return i;
+    }
+    return -1;
   }
   
   /** Output the groups to the info trace stream */
