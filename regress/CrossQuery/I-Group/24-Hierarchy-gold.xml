@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
+   <groupedField field="geography-sort" totalGroups="4" startGroup="1" endGroup="4">
+      <group value="US::California::Santa Cruz" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="US::California::Berkeley" totalDocs="2" startDoc="1" endDoc="2">
+         <docHit file="doc1.xml">
+            <meta>
+               <title>XYZ: Document 1</title>
+               <group-subject>African Studies</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>African History</group-subject>
+               <subject>African Studies</subject>
+               <subject>Politics</subject>
+               <subject>African History</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::California::Berkeley</geography>
+               <geography-sort>US::California::Berkeley</geography-sort>
+            </meta>
+         </docHit>
+         <docHit file="doc10.xml">
+            <meta>
+               <title>Document 10 rocks</title>
+               <group-subject>Environmental Studies</group-subject>
+               <group-subject>California and the West</group-subject>
+               <subject>Environmental Studies</subject>
+               <subject>California and the West</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::California::Berkeley</geography>
+               <geography-sort>US::California::Berkeley</geography-sort>
+            </meta>
+         </docHit>
+      </group>
+      <group value="US::California::Mendocino" totalDocs="1" startDoc="0" endDoc="0"/>
+      <group value="US::California::Oakland" totalDocs="1" startDoc="0" endDoc="0"/>
+   </groupedField>
+</crossQueryResult>

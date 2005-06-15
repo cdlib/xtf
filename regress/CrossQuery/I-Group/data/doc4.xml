@@ -16,7 +16,7 @@
     <subject xtf:meta="true">Classical Politics</subject>
     <type xtf:meta="true">text</type>
     <collection xtf:meta="true">UC</collection>
-    <geography xtf:meta="true">US:Nevada:Las Vegas</geography>
-    <geography-sort xtf:meta="true" xtf:tokenize="false">US:Nevada:Las Vegas</geography-sort>
+    <geography xtf:meta="true">US::Nevada::Las Vegas</geography>
+    <geography-sort xtf:meta="true" xtf:tokenize="false">US::Nevada::Las Vegas</geography-sort>
     Document 4 text here. Blah blah blah.
 </document>

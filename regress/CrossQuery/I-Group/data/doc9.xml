@@ -16,7 +16,7 @@
     <subject xtf:meta="true">Classical Politics</subject>
     <type xtf:meta="true">text</type>
     <collection xtf:meta="true">UC</collection>
-    <geography xtf:meta="true">US:California:Oakland</geography>
-    <geography-sort xtf:meta="true" xtf:tokenize="false">US:California:Oakland</geography-sort>
+    <geography xtf:meta="true">US::California::Oakland</geography>
+    <geography-sort xtf:meta="true" xtf:tokenize="false">US::California::Oakland</geography-sort>
     Document 9 text here. Blah blah blah.
 </document>

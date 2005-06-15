@@ -23,8 +23,8 @@
                </hit>
             </snippet>
          </collection>
-         <geography>US:California:Mendocino</geography>
-         <geography-sort>US:California:Mendocino</geography-sort>
+         <geography>US::California::Mendocino</geography>
+         <geography-sort>US::California::Mendocino</geography-sort>
       </meta>
    </docHit>
    <docHit file="doc4.xml">
@@ -56,8 +56,8 @@
                </hit>
             </snippet>
          </collection>
-         <geography>US:Nevada:Las Vegas</geography>
-         <geography-sort>US:Nevada:Las Vegas</geography-sort>
+         <geography>US::Nevada::Las Vegas</geography>
+         <geography-sort>US::Nevada::Las Vegas</geography-sort>
       </meta>
    </docHit>
    <docHit file="doc9.xml">
@@ -89,8 +89,8 @@
                </hit>
             </snippet>
          </collection>
-         <geography>US:California:Oakland</geography>
-         <geography-sort>US:California:Oakland</geography-sort>
+         <geography>US::California::Oakland</geography>
+         <geography-sort>US::California::Oakland</geography-sort>
       </meta>
    </docHit>
    <groupedField field="group-subject" totalGroups="6" startGroup="1" endGroup="6">
@@ -120,8 +120,8 @@
                      </hit>
                   </snippet>
                </collection>
-               <geography>US:California:Mendocino</geography>
-               <geography-sort>US:California:Mendocino</geography-sort>
+               <geography>US::California::Mendocino</geography>
+               <geography-sort>US::California::Mendocino</geography-sort>
             </meta>
          </docHit>
          <docHit file="doc4.xml">
@@ -153,8 +153,8 @@
                      </hit>
                   </snippet>
                </collection>
-               <geography>US:Nevada:Las Vegas</geography>
-               <geography-sort>US:Nevada:Las Vegas</geography-sort>
+               <geography>US::Nevada::Las Vegas</geography>
+               <geography-sort>US::Nevada::Las Vegas</geography-sort>
             </meta>
          </docHit>
          <docHit file="doc9.xml">
@@ -186,8 +186,8 @@
                      </hit>
                   </snippet>
                </collection>
-               <geography>US:California:Oakland</geography>
-               <geography-sort>US:California:Oakland</geography-sort>
+               <geography>US::California::Oakland</geography>
+               <geography-sort>US::California::Oakland</geography-sort>
             </meta>
          </docHit>
       </group>

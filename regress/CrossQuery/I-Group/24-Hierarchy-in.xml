@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
-  <groupField field="geography-sort">
+  <groupField field="geography-sort" branchGroupValue="US::California">
     <groupHits value="US::California::Berkeley"/>
   </groupField>
   <and>

@@ -13,8 +13,8 @@
                <subject>Ancient History</subject>
                <type>text</type>
                <collection>UC</collection>
-               <geography>US:California:Mendocino</geography>
-               <geography-sort>US:California:Mendocino</geography-sort>
+               <geography>US::California::Mendocino</geography>
+               <geography-sort>US::California::Mendocino</geography-sort>
             </meta>
          </docHit>
          <docHit file="doc8.xml">
@@ -32,8 +32,8 @@
                <subject>Urban Studies</subject>
                <type>text</type>
                <collection>UC</collection>
-               <geography>US:California:Santa Cruz</geography>
-               <geography-sort>US:California:Santa Cruz</geography-sort>
+               <geography>US::California::Santa Cruz</geography>
+               <geography-sort>US::California::Santa Cruz</geography-sort>
             </meta>
          </docHit>
          <docHit file="doc9.xml">
@@ -53,8 +53,8 @@
                <subject>Classical Politics</subject>
                <type>text</type>
                <collection>UC</collection>
-               <geography>US:California:Oakland</geography>
-               <geography-sort>US:California:Oakland</geography-sort>
+               <geography>US::California::Oakland</geography>
+               <geography-sort>US::California::Oakland</geography-sort>
             </meta>
          </docHit>
       </group>

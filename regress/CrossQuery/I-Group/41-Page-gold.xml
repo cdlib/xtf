@@ -20,8 +20,8 @@
                      </hit>
                   </snippet>
                </collection>
-               <geography>US:California:Berkeley</geography>
-               <geography-sort>US:California:Berkeley</geography-sort>
+               <geography>US::California::Berkeley</geography>
+               <geography-sort>US::California::Berkeley</geography-sort>
             </meta>
          </docHit>
          <docHit file="doc6.xml">
@@ -39,8 +39,8 @@
                      </hit>
                   </snippet>
                </collection>
-               <geography>US:Oregon:Grants Pass</geography>
-               <geography-sort>US:Oregon:Grants Pass</geography-sort>
+               <geography>US::Oregon::Grants Pass</geography>
+               <geography-sort>US::Oregon::Grants Pass</geography-sort>
             </meta>
          </docHit>
       </group>

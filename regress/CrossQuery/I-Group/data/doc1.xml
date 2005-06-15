@@ -10,7 +10,7 @@
     <subject xtf:meta="true">African History</subject>
     <type xtf:meta="true">text</type>
     <collection xtf:meta="true">UC</collection>
-    <geography xtf:meta="true">US:California:Berkeley</geography>
-    <geography-sort xtf:meta="true" xtf:tokenize="false">US:California:Berkeley</geography-sort>
+    <geography xtf:meta="true">US::California::Berkeley</geography>
+    <geography-sort xtf:meta="true" xtf:tokenize="false">US::California::Berkeley</geography-sort>
     Document 1 text here. Blah blah blah.
 </document>

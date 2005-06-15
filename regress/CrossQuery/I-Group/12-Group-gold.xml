@@ -17,8 +17,8 @@
                <subject>Social Theory</subject>
                <type>text</type>
                <collection>UC</collection>
-               <geography>US:California:Santa Cruz</geography>
-               <geography-sort>US:California:Santa Cruz</geography-sort>
+               <geography>US::California::Santa Cruz</geography>
+               <geography-sort>US::California::Santa Cruz</geography-sort>
             </meta>
          </docHit>
          <docHit file="doc3.xml">
@@ -32,8 +32,8 @@
                <subject>Urban Studies</subject>
                <type>text</type>
                <collection>UC</collection>
-               <geography>Canada:Quebec:Toronto</geography>
-               <geography-sort>Canada:Ontario:Toronto</geography-sort>
+               <geography>Canada::Quebec::Toronto</geography>
+               <geography-sort>Canada::Ontario:Toronto</geography-sort>
             </meta>
          </docHit>
          <docHit file="doc4.xml">
@@ -53,8 +53,8 @@
                <subject>Classical Politics</subject>
                <type>text</type>
                <collection>UC</collection>
-               <geography>US:Nevada:Las Vegas</geography>
-               <geography-sort>US:Nevada:Las Vegas</geography-sort>
+               <geography>US::Nevada::Las Vegas</geography>
+               <geography-sort>US::Nevada::Las Vegas</geography-sort>
             </meta>
          </docHit>
       </group>

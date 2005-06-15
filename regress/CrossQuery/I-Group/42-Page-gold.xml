@@ -19,8 +19,8 @@
                      </hit>
                   </snippet>
                </collection>
-               <geography>Canada:Quebec:Toronto</geography>
-               <geography-sort>Canada:Ontario:Toronto</geography-sort>
+               <geography>Canada::Quebec::Toronto</geography>
+               <geography-sort>Canada::Ontario:Toronto</geography-sort>
             </meta>
          </docHit>
       </group>

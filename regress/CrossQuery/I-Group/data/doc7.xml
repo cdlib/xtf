@@ -10,7 +10,7 @@
     <subject xtf:meta="true">Ancient History</subject>
     <type xtf:meta="true">text</type>
     <collection xtf:meta="true">UC</collection>
-    <geography xtf:meta="true">US:California:Mendocino</geography>
-    <geography-sort xtf:meta="true" xtf:tokenize="false">US:California:Mendocino</geography-sort>
+    <geography xtf:meta="true">US::California::Mendocino</geography>
+    <geography-sort xtf:meta="true" xtf:tokenize="false">US::California::Mendocino</geography-sort>
     Document 7 text here. Blah blah blah.
 </document>
