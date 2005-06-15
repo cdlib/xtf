@@ -17,7 +17,7 @@
       <group value="Social and Political Thought" totalDocs="1" startDoc="0" endDoc="0"/>
       <group value="Urban Studies" totalDocs="1" startDoc="0" endDoc="0"/>
    </groupedField>
-   <groupedField field="geography-sort" totalGroups="3" startGroup="1" endGroup="3">
+   <groupedField field="geography-sort" totalGroups="3" startGroup="1" endGroup="3" parentGroupValue="US">
       <group value="US::California" totalDocs="7" startDoc="0" endDoc="0"/>
       <group value="US::Nevada" totalDocs="2" startDoc="1" endDoc="2">
          <docHit file="doc5.xml">
