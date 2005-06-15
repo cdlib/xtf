@@ -25,6 +25,8 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanNotNearQuery;
+import org.apache.lucene.search.spans.SpanNotQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanRangeQuery;
@@ -41,7 +43,7 @@ import org.cdlib.xtf.textEngine.SpanSectionTypeQuery;
  * rewrite, and the base will take care of gluing them together properly. 
  *
  * @author  Martin Haye
- * @version $Id: QueryRewriter.java,v 1.4 2005-06-10 21:27:20 mhaye Exp $
+ * @version $Id: QueryRewriter.java,v 1.5 2005-06-15 22:33:52 mhaye Exp $
  */
 public abstract class QueryRewriter {
 
@@ -61,6 +63,10 @@ public abstract class QueryRewriter {
       return rewrite((SpanOrQuery) q);
     if (q instanceof SpanChunkedNotQuery)
       return rewrite((SpanChunkedNotQuery) q);
+    if (q instanceof SpanNotQuery)
+      return rewrite((SpanNotQuery) q);
+    if (q instanceof SpanNotNearQuery)
+      return rewrite((SpanNotNearQuery) q);
     if (q instanceof SpanDechunkingQuery)
       return rewrite((SpanDechunkingQuery) q);
     if (q instanceof SpanSectionTypeQuery)
@@ -241,6 +247,52 @@ public abstract class QueryRewriter {
 
     // Make a new NOT query
     Query newq = new SpanChunkedNotQuery(include, exclude, nq.getSlop());
+    copyBoost(nq, newq);
+    return newq;
+
+  } // rewrite()
+
+  /**
+   * Rewrite a span-based NOT query. The procedure in this case is simple:
+   * simply rewrite both the include and exclude clauses.
+   * 
+   * @param nq  The query to rewrite
+   * @return    Rewritten version, or 'nq' unchanged if no changed needed.
+   */
+  protected Query rewrite(SpanNotQuery nq) {
+    // Rewrite the sub-queries
+    SpanQuery include = (SpanQuery) rewriteQuery(nq.getInclude());
+    SpanQuery exclude = (SpanQuery) rewriteQuery(nq.getExclude());
+
+    // If the sub-queries didn't change, then neither does this NOT.
+    if (include == nq.getInclude() && exclude == nq.getExclude())
+      return nq;
+
+    // Make a new NOT query
+    Query newq = new SpanNotQuery(include, exclude);
+    copyBoost(nq, newq);
+    return newq;
+
+  } // rewrite()
+
+  /**
+   * Rewrite a span-based NOT query. The procedure in this case is simple:
+   * simply rewrite both the include and exclude clauses.
+   * 
+   * @param nq  The query to rewrite
+   * @return    Rewritten version, or 'nq' unchanged if no changed needed.
+   */
+  protected Query rewrite(SpanNotNearQuery nq) {
+    // Rewrite the sub-queries
+    SpanQuery include = (SpanQuery) rewriteQuery(nq.getInclude());
+    SpanQuery exclude = (SpanQuery) rewriteQuery(nq.getExclude());
+
+    // If the sub-queries didn't change, then neither does this NOT.
+    if (include == nq.getInclude() && exclude == nq.getExclude())
+      return nq;
+
+    // Make a new NOT query
+    Query newq = new SpanNotNearQuery(include, exclude, nq.getSlop());
     copyBoost(nq, newq);
     return newq;
 
