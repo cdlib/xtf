@@ -49,6 +49,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.SparseStringComparator;
 import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanRangeQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
 import org.apache.lucene.util.PriorityQueue;
@@ -424,7 +425,10 @@ public class DefaultQueryProcessor extends QueryProcessor
     private void fixupSlop( Query query, DocNumMap docNumMap, Set stopSet )
     {
         // First, fix up this query if necessary.
-        if( query instanceof SpanNearQuery ) {
+        boolean isText = (query instanceof SpanQuery) ?
+            ((SpanQuery)query).getField().equals("text") : false;
+            
+        if( query instanceof SpanNearQuery && isText ) {
             SpanNearQuery nq = (SpanNearQuery) query;
             nq.setSlop( Math.min(nq.getSlop(), docNumMap.getChunkOverlap()) );
         }
