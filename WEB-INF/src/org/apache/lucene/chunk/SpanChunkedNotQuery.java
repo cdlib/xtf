@@ -31,13 +31,13 @@ import org.apache.lucene.search.spans.Spans;
  * overlap between adjacent chunks in a chunked index. 
  * 
  * @author Martin Haye
- * @version $Id: SpanChunkedNotQuery.java,v 1.2 2005-02-15 01:42:27 mhaye Exp $
+ * @version $Id: SpanChunkedNotQuery.java,v 1.3 2005-06-15 22:30:58 mhaye Exp $
  */
 public class SpanChunkedNotQuery extends SpanQuery {
   private SpanQuery include;
   private SpanQuery exclude;
   private int       slop;
-  private int       chunkBump;
+  private int       chunkBump = 1;
 
   /** Construct a SpanNotQuery matching spans from <code>include</code> which
    * have no overlap with spans from <code>exclude</code>.*/
@@ -91,7 +91,7 @@ public class SpanChunkedNotQuery extends SpanQuery {
 
   public String toString(String field) {
     StringBuffer buffer = new StringBuffer();
-    buffer.append("spanNot(");
+    buffer.append("spanChunkedNot(");
     buffer.append(include.toString(field));
     buffer.append(", ");
     buffer.append(exclude.toString(field));
