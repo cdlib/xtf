@@ -5,7 +5,7 @@
          <title>The Opening of the Apartheid Mind: Options for the New South Africa</title>
          <creator>Heribert Adam and Kogila Moodley</creator>
          <subject>
-            <snippet rank="1" score="100">African <hit rank="1" score="100">
+            <snippet>African <hit>
                   <term>Studies</term>
                </hit>
             </snippet>
@@ -28,7 +28,7 @@
          <subject>Politics</subject>
          <subject>Sociology</subject>
          <subject>
-            <snippet rank="1" score="100">Urban <hit rank="1" score="100">
+            <snippet>Urban <hit>
                   <term>Studies</term>
                </hit>
             </snippet>
@@ -47,7 +47,7 @@
          <title>California Riparian Systems: Ecology, Conservation, and Productive Management</title>
          <creator>Richard E. Warner and Kathleen M. Hendrix, editors</creator>
          <subject>
-            <snippet rank="1" score="100">Environmental <hit rank="1" score="100">
+            <snippet>Environmental <hit>
                   <term>Studies</term>
                </hit>
             </snippet>

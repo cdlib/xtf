@@ -3,11 +3,11 @@
    <docHit file="doc3.xml">
       <meta>
          <special>
-            <snippet rank="1" score="100">Wiley &amp; Sons
-      Equations: 3 <hit rank="1" score="100">
+            <snippet>Wiley &amp; Sons
+      Equations: 3 <hit>
                   <term>&lt;</term>
                </hit> 4,</snippet> 
-            <snippet rank="2" score="100">and 7 <hit rank="2" score="100">
+            <snippet>and 7 <hit>
                   <term>&gt;</term>
                </hit> 6</snippet>
          </special>
