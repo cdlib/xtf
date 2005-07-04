@@ -26,7 +26,7 @@ import java.util.Set;
  * <p>Created: Dec 6, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: FieldSpans.java,v 1.3 2005-05-11 03:24:15 mhaye Exp $
+ * @version $Id: FieldSpans.java,v 1.4 2005-07-04 18:49:43 mhaye Exp $
  */
 public class FieldSpans
 {
@@ -67,13 +67,13 @@ public class FieldSpans
   /** Retrieve the total number of spans which matched the field */
   public int getSpanTotal(String field) {
     Entry ent = (Entry)entries.get(field);
-    return (ent == null) ? -1 : ent.total;
+    return (ent == null) ? 0 : ent.total;
   }
   
   /** Retrieve the number of spans stored for a given field */
   public int getSpanCount(String field) {
     Entry ent = (Entry)entries.get(field);
-    return (ent == null) ? -1 : ent.spans.size();
+    return (ent == null) ? 0 : ent.spans.size();
   }
   
   /** Retrieve the matching spans for a given field */
