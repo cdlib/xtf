@@ -35,6 +35,21 @@ public abstract class PriorityQueue {
     heap = new Object[heapSize];
     this.maxSize = maxSize;
   }
+  
+  /** 
+   * Ensures that there is space to insert 'n' items, expanding the queue
+   * if necessary.
+   */
+  public final void ensureCapacity(int n) {
+    if(size+n <= maxSize)
+      return;
+    int oldSize = size;
+    Object[] oldHeap = heap;
+    int newSize = Math.max(maxSize+10, maxSize*3/2);
+    initialize(newSize);
+    for(int i=0; i<oldSize; i++)
+      put(oldHeap[i]);
+  }
 
   /**
    * Adds an Object to a PriorityQueue in log(size) time.
