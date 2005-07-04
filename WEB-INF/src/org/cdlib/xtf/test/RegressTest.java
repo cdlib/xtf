@@ -38,7 +38,6 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -54,19 +53,14 @@ import org.apache.lucene.ngram.NgramQueryRewriter;
 import org.apache.lucene.ngram.NgramStopFilter;
 import org.cdlib.xtf.crossQuery.CrossQuery;
 import org.cdlib.xtf.lazyTree.SearchTree;
-import org.cdlib.xtf.textEngine.DocHit;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
-import org.cdlib.xtf.textEngine.ResultField;
-import org.cdlib.xtf.textEngine.ResultGroup;
-import org.cdlib.xtf.textEngine.Snippet;
 import org.cdlib.xtf.textIndexer.TagFilter;
 import org.cdlib.xtf.textIndexer.TextIndexer;
-import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.CircularQueue;
 import org.cdlib.xtf.util.DiskHashWriter;
 import org.cdlib.xtf.util.IntHash;
@@ -393,114 +387,25 @@ public class RegressTest
     private void writeHits( File outFile, QueryResult result )
         throws IOException
     {
-        Source hitDoc = structureHits( result );
+        // Use the normal CrossQuery method to structure the hits
+        Source hitDoc = CrossQuery.structureHits( result );
+        
+        // Get rid of scores, since they change a lot and we don't really
+        // care (unless the order changes.) There are a couple other things
+        // we don't care about, so get rid of them too.
+        //
+        String str = XMLWriter.toString(hitDoc);
+        str = str.replaceAll( " score=\"\\d+\"", "" );
+        str = str.replaceAll( " rank=\"\\d+\"", "" );
+        str = str.replaceAll( " totalHits=\"\\d+\"", "" );
+        str = str.replaceAll( " path=\"all:", " file=\"" );
+        
+        // Now we're ready to write the file.
         PrintWriter out = new PrintWriter( new OutputStreamWriter(
                                 new FileOutputStream(outFile), "UTF-8") );
-        out.println( XMLWriter.toString(hitDoc) );
+        out.println( str );
         out.close();
     } // writeHits()
-    
-    /**
-     * Makes an XML document out of the list of document hits, and returns a
-     * Source object that represents it.
-     */
-    private Source structureHits( QueryResult result )
-    {
-        StringBuffer buf = new StringBuffer( 1000 );
-        
-        buf.append( "<crossQueryResult " +
-                    "totalDocs=\"" + result.totalDocs + "\" " +
-                    "startDoc=\"" + 
-                        (result.totalDocs > 0 ? result.startDoc+1 : 0) + "\" " + 
-                        // Note above: 1-based start
-                    "endDoc=\"" + result.endDoc + "\">" );
-        
-        // Add the top-level doc hits.
-        structureDocHits( result.docHits, buf );
-        
-        // If grouping was specified, add that info too.
-        if( result.fields != null ) 
-        {
-            // Process each field in turn
-            for( int i = 0; i < result.fields.length; i++ ) 
-            {
-                ResultField field = result.fields[i];
-                buf.append( 
-                    "<groupedField field=\"" + field.field + "\" " +
-                    "totalGroups=\"" + field.totalGroups + "\" " +
-                    "startGroup=\"" + (field.endGroup > 0 ? field.startGroup+1 : 0) + "\" " +
-                    "endGroup=\"" + (field.endGroup) + "\"" );
-                if( field.branchGroupValue != null )
-                    buf.append( " branchGroupValue=\"" + 
-                                field.branchGroupValue + "\"" );
-                buf.append( ">" );
-                if( field.groups == null )
-                    continue;
-                
-                // Process each group within the field.
-                for( int j = 0; j < field.groups.length; j++ ) {
-                    ResultGroup group = field.groups[j];
-                    buf.append( 
-                        "<group value=\"" + group.value + "\" " +
-                        "totalDocs=\"" + group.totalDocs + "\" " +
-                        "startDoc=\"" + (group.endDoc > 0 ? group.startDoc+1 : 0) + "\" " +
-                        "endDoc=\"" + (group.endDoc) + "\">" );
-                    if( group.docHits != null )
-                        structureDocHits( group.docHits, buf );
-                    buf.append( "</group>" );
-                } // for j
-                buf.append( "</groupedField>" );
-            } // for i
-        } // if
-        
-        // Add the final tag.
-        buf.append( "</crossQueryResult>" );
-        
-        // Now parse that into a document that can be fed to the stylesheet.
-        String str = buf.toString();
-        return new StreamSource( new StringReader(str) );
-        
-    } // structureHits()
-
-
-    /**
-     * Does the work of turning DocHits into XML.
-     * 
-     * @param docHits Array of DocHits to structure
-     * @param buf     Buffer to add the XML to
-     */
-    private void structureDocHits( DocHit[] docHits, StringBuffer buf ) 
-    {
-        for( int i = 0; i < docHits.length; i++ ) {
-            DocHit docHit = docHits[i];
-            String key = docHit.filePath();
-            assert key.indexOf(':') >= 0 : "Invalid key - missing ':'";
-            String after = key.substring( key.indexOf(':') + 1 );
-            buf.append( "<docHit file=\"" + after + "\">" );
-            if( !docHit.metaData().isEmpty() ) {
-                buf.append( "<meta>" );
-                for( Iterator atts = docHit.metaData().iterator(); atts.hasNext(); )
-                {
-                    Attrib attrib = (Attrib) atts.next();
-                    buf.append( attrib.value );
-                } // for atts
-                buf.append( "</meta>" );
-            }
-            
-            for( int j = 0; j < docHit.nSnippets(); j++ )
-            {    
-                Snippet  snippet = docHit.snippet( j, true );
-                buf.append( "<snippet" );
-                if( snippet.sectionType != null )
-                    buf.append( " sectionType=\"" + snippet.sectionType + "\"" );
-                buf.append( ">" + 
-                    CrossQuery.makeHtmlString(snippet.text, true) + 
-                    "</snippet>" );
-            } // for chunks
-            buf.append( "</docHit>" );
-        } // for i
-        
-    } // structureDocHits()
     
     /**
      * Breaks up a string by newlines into an array of strings, one per line.
