@@ -55,9 +55,9 @@ import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
-import org.cdlib.xtf.textEngine.ResultField;
-import org.cdlib.xtf.textEngine.ResultGroup;
 import org.cdlib.xtf.textEngine.Snippet;
+import org.cdlib.xtf.textEngine.facet.ResultFacet;
+import org.cdlib.xtf.textEngine.facet.ResultGroup;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.Trace;
@@ -322,52 +322,37 @@ public class CrossQuery extends TextServlet
      * @param result    Hits resulting from the query
      * @return          XML Source containing all the hits and snippets.
      */
-    private Source structureHits( QueryResult result )
+    public static Source structureHits( QueryResult result )
     {
         StringBuffer buf = new StringBuffer( 1000 );
 
         buf.append( "<crossQueryResult" +
                     " totalDocs=\"" + result.totalDocs + "\" " +
                     " startDoc=\"" +
-                        (result.totalDocs > 0 ? result.startDoc+1 : 0) + "\" " +
+                        Math.min(result.startDoc+1, result.endDoc) + "\" " +
                         // Note above: 1-based start
                     " endDoc=\"" + result.endDoc + "\">" );
 
         // Add the top-level doc hits.
         structureDocHits( result.docHits, result.startDoc, buf );
 
-        // If grouping was specified, add that info too.
-        if( result.fields != null ) 
+        // If faceting was specified, add that info too.
+        if( result.facets != null ) 
         {
-            // Process each field in turn
-            for( int i = 0; i < result.fields.length; i++ ) 
+            // Process each facet in turn
+            for( int i = 0; i < result.facets.length; i++ ) 
             {
-                ResultField field = result.fields[i];
+                ResultFacet facet = result.facets[i];
                 buf.append( 
-                    "<groupedField field=\"" + field.field + "\" " +
-                    "totalGroups=\"" + field.totalGroups + "\" " +
-                    "startGroup=\"" + (field.endGroup > 0 ? field.startGroup+1 : 0) + "\" " +
-                    "endGroup=\"" + (field.endGroup) + "\"" );
-                if( field.branchGroupValue != null )
-                    buf.append( " branchGroupValue=\"" + 
-                                field.branchGroupValue + "\"" );
-                buf.append( ">" );
-                if( field.groups == null )
-                    continue;
+                    "<facet field=\"" + facet.field + "\" " +
+                    "totalGroups=\"" + facet.rootGroup.totalSubGroups + "\">" );
                 
-                // Process each group within the field.
-                for( int j = 0; j < field.groups.length; j++ ) {
-                    ResultGroup group = field.groups[j];
-                    buf.append( 
-                        "<group value=\"" + group.value + "\" " +
-                        "totalDocs=\"" + group.totalDocs + "\" " +
-                        "startDoc=\"" + (group.endDoc > 0 ? group.startDoc+1 : 0) + "\" " +
-                        "endDoc=\"" + (group.endDoc) + "\">" );
-                    if( group.docHits != null )
-                        structureDocHits( group.docHits, group.startDoc, buf );
-                    buf.append( "</group>" );
-                } // for j
-                buf.append( "</groupedField>" );
+                // Recursively process all the groups.
+                if( facet.rootGroup.subGroups != null ) {
+                    for( int j = 0; j < facet.rootGroup.subGroups.length; j++ )
+                        structureGroup( facet.rootGroup.subGroups[j], buf );
+                }
+                buf.append( "</facet>" );
             } // for i
         } // if
         
@@ -380,6 +365,35 @@ public class CrossQuery extends TextServlet
 
     } // structureHits()
 
+    /**
+     * Does the work of turning faceted groups into XML.
+     * 
+     * @param group   The group to work on
+     * @param buf     Buffer to add XML to
+     */
+    private static void structureGroup( ResultGroup group, StringBuffer buf )
+    {
+        // Do the info for the group itself.
+        buf.append( 
+            "<group value=\"" + group.value + "\" " +
+            "rank=\"" + (group.rank+1) + "\" " +
+            "totalDocs=\"" + group.totalDocs + "\" " +
+            "startDoc=\"" + (group.endDoc > 0 ? group.startDoc+1 : 0) + "\" " +
+            "endDoc=\"" + (group.endDoc) + "\">" );
+        
+        // If the group has any dochits, do them now.
+        if( group.docHits != null )
+            structureDocHits( group.docHits, group.startDoc, buf );
+        
+        // Do all the sub-groups.
+        if( group.subGroups != null ) {
+            for( int i = 0; i < group.subGroups.length; i++ )
+                structureGroup( group.subGroups[i], buf );
+        }
+        
+        // All done.
+        buf.append( "</group>" );
+    } // structureGroup
 
     /**
      * Does the work of turning DocHits into XML.
@@ -387,36 +401,36 @@ public class CrossQuery extends TextServlet
      * @param docHits Array of DocHits to structure
      * @param buf     Buffer to add the XML to
      */
-    private void structureDocHits( DocHit[]     docHits, 
-                                   int          startDoc, 
-                                   StringBuffer buf ) 
+    private static void structureDocHits( DocHit[]     docHits, 
+                                          int          startDoc, 
+                                          StringBuffer buf ) 
     {
         if( docHits == null )
             return;
         
         for( int i = 0; i < docHits.length; i++ ) {
             DocHit docHit = docHits[i];
-            buf.append( "  <docHit" +
+            buf.append( "<docHit" +
                         " rank=\"" + (i+startDoc+1) + "\"" +
                         " path=\"" + docHit.filePath() + "\"" +
                         " score=\"" + Math.round(docHit.score * 100) + "\"" +
                         " totalHits=\"" + docHit.totalSnippets() + "\"" +
                         ">\n" );
             if( !docHit.metaData().isEmpty() ) {
-                buf.append( "    <meta>\n" );
+                buf.append( "<meta>\n" );
                 for( Iterator atts = docHit.metaData().iterator(); atts.hasNext(); )
                 {
                     Attrib attrib = (Attrib) atts.next();
                     buf.append( attrib.value );
                 } // for atts
-                buf.append( "    </meta>\n" );
+                buf.append( "</meta>\n" );
             }
   
             for( int j = 0; j < docHit.nSnippets(); j++ )
             {
                 Snippet  snippet = docHit.snippet( j, true );
                 buf.append(
-                    "    <snippet rank=\"" + (j+1) + "\" score=\"" +
+                    "<snippet rank=\"" + (j+1) + "\" score=\"" +
                     Math.round(snippet.score * 100) + "\"" );
   
                 if( snippet.sectionType != null )
@@ -427,7 +441,7 @@ public class CrossQuery extends TextServlet
                     "</snippet>\n" );
             } // for j
   
-            buf.append( "  </docHit>\n\n" );
+            buf.append( "</docHit>\n" );
         } // for i
         
     } // structureDocHits()
