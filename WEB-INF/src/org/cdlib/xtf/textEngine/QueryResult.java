@@ -2,6 +2,8 @@ package org.cdlib.xtf.textEngine;
 
 import java.util.Set;
 
+import org.cdlib.xtf.textEngine.facet.ResultFacet;
+
 /**
  * Copyright (c) 2004, Regents of the University of California
  * All rights reserved.
@@ -69,7 +71,7 @@ public class QueryResult
     /** One hit per document */
     public DocHit[] docHits;
     
-    /** Results grouped by field value (if grouping specified in query) */
-    public ResultField[] fields;
+    /** Faceted results grouped by field value (if specified in query) */
+    public ResultFacet[] facets;
     
 } // class QueryResult

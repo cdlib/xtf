@@ -53,6 +53,11 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanRangeQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
 import org.apache.lucene.util.PriorityQueue;
+import org.cdlib.xtf.textEngine.facet.FacetSpec;
+import org.cdlib.xtf.textEngine.facet.GroupCounts;
+import org.cdlib.xtf.textEngine.facet.GroupData;
+import org.cdlib.xtf.textEngine.facet.ResultFacet;
+import org.cdlib.xtf.textEngine.facet.ResultGroup;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.WordMap;
@@ -96,6 +101,13 @@ public class DefaultQueryProcessor extends QueryProcessor
     /** Total number of documents hit (not just those that scored high) */
     private int            nDocsHit = 0;
     
+    /** Maximum document score (used to normalize scores) */
+    private float          maxDocScore = 0;
+    
+    /** Document normalization factor (calculated from {@link #maxDocScore}) */
+    private float          docScoreNorm;
+    
+    /** Comparator used for sorting strings */
     private static final SparseStringComparator sparseStringComparator = 
         new SparseStringComparator(); 
     
@@ -106,7 +118,7 @@ public class DefaultQueryProcessor extends QueryProcessor
      * @param req      The pre-parsed request to process
      * @return         Zero or more document hits
      */
-    public QueryResult processRequest( QueryRequest req )
+    public QueryResult processRequest( final QueryRequest req )
         throws IOException
     {
         // Make an vector to store the hits (we'll make it into an array
@@ -159,8 +171,10 @@ public class DefaultQueryProcessor extends QueryProcessor
         // load of them for us. If there is a sort field specification,
         // do it in field-sorted order; otherwise, sort by score.
         //
-        final PriorityQueue docHitQueue = 
-            createHitQueue( reader, req.startDoc, req.maxDocs, req.sortMetaFields );
+        final PriorityQueue docHitQueue =
+            createHitQueue( reader, 
+                            req.startDoc + req.maxDocs, 
+                            req.sortMetaFields );
         
         // Start making the result by filling in its context.
         QueryResult result = new QueryResult();
@@ -211,8 +225,14 @@ public class DefaultQueryProcessor extends QueryProcessor
         // Note that the GroupData class holds its own cache so we don't have
         // to read data for a given field more than once.
         //
-        final GroupCounts[] groupCounts = (req.groupSpecs == null) ? null :
+        final GroupCounts[] groupCounts = (req.facetSpecs == null) ? null :
                                           prepGroups( req );
+        
+        // While processing the query, we want to lazily generate DocHits,
+        // and only generate a DocHit once even if it's added to multiple
+        // groups.
+        //
+        final DocHitMakerImpl docHitMaker = new DocHitMakerImpl();  
         
         // Now for the big show... go get the hits!
         searcher.search( finalQuery, null, new SpanHitCollector() {
@@ -225,15 +245,24 @@ public class DefaultQueryProcessor extends QueryProcessor
                 // Make sure this is really a document, not a chunk.
                 if( docNumMap.getFirstChunk(doc) < 0 )
                     return;
-                
-                // Queue the hit and bump the count of documents hit.
-                docHitQueue.insert( new DocHitImpl(doc, score, fieldSpans) );
+
+                // Bump the count of documents hit, and update the max score.
                 nDocsHit++;
+                if( score > maxDocScore )
+                    maxDocScore = score;
+                
+                // Record the hit.
+                docHitMaker.reset( doc, score, fieldSpans );
+                if( req.maxDocs > 0 ) {
+                    if( req.maxDocs >= 999999999 )
+                        docHitQueue.ensureCapacity( 1 );
+                    docHitQueue.insert( docHitMaker.getDocHit() );
+                }
                 
                 // If grouping is enabled, add this document to the counts.
                 if( groupCounts != null ) {
                     for( int i = 0; i < groupCounts.length; i++ )
-                        groupCounts[i].addDoc( doc, score, fieldSpans );
+                        groupCounts[i].addDoc( docHitMaker );
                 }
             } // collect()
             
@@ -252,11 +281,10 @@ public class DefaultQueryProcessor extends QueryProcessor
         for( int i = 0; i < nFound; i++ ) {
             int index = nFound - i - 1;
             hitArray[index] = (DocHitImpl) docHitQueue.pop();
-            maxDocScore = Math.max( maxDocScore, hitArray[index].score );
         }
 
         // Calculate the document score normalization factor.
-        float docScoreNorm = 1.0f;
+        docScoreNorm = 1.0f;
         if( req.startDoc < nFound && nFound > 0 && maxDocScore > 0.0f )  
             docScoreNorm = 1.0f / maxDocScore;
 
@@ -275,9 +303,14 @@ public class DefaultQueryProcessor extends QueryProcessor
             hitVec.add( hitArray[i] );
         }
         
-        // If grouping was enabled, group the hits.
-        if( groupCounts != null )
-            finishGroups( req, result, groupCounts, snippetMaker );
+        // If grouping was enabled, group the hits and finish all of them.
+        if( groupCounts != null ) {
+            result.facets = new ResultFacet[groupCounts.length];
+            for( int i = 0; i < groupCounts.length; i++ ) {
+                result.facets[i] = groupCounts[i].getResult();
+                finishGroup( result.facets[i].rootGroup, snippetMaker );
+            } // for if
+        }
 
         // Done with that searcher
         searcher.close();
@@ -286,11 +319,6 @@ public class DefaultQueryProcessor extends QueryProcessor
         assert req.maxDocs < 0 || hitVec.size() <= req.maxDocs;
         
         // And we're done. Pack up the results into a tidy array.
-        if( hitVec.isEmpty() ) {
-            result.docHits = new DocHit[0];
-            return result;
-        }
-
         result.totalDocs = nDocsHit;
         result.startDoc  = req.startDoc;
         result.endDoc    = req.startDoc + hitVec.size();
@@ -308,41 +336,15 @@ public class DefaultQueryProcessor extends QueryProcessor
     private GroupCounts[] prepGroups( QueryRequest req )
       throws IOException
     {
-        GroupCounts[] groupCounts = new GroupCounts[req.groupSpecs.length];
+        GroupCounts[] groupCounts = new GroupCounts[req.facetSpecs.length];
         
-        for( int i = 0; i < req.groupSpecs.length; i++ ) {
-            GroupSpec spec = req.groupSpecs[i];
+        for( int i = 0; i < req.facetSpecs.length; i++ ) {
+            FacetSpec spec = req.facetSpecs[i];
             GroupData data = GroupData.getCachedData( reader, spec.field );
-            groupCounts[i] = new GroupCounts( data );
-            
-            if( spec.subsets == null )
-                continue;
-            
-            boolean valFound = false;
-            for( int j = 0; j < spec.subsets.length; j++ ) {
-                GroupSpec.Subset subset = spec.subsets[j];
-                if( subset.maxDocs == 0 )
-                    continue;
-                
-                if( subset.value == null ) {
-                    throw new RuntimeException( 
-                        "XTF doesn't support <groupHits> without a 'value' " +
-                        "attribute (yet anyway)" );
-                }
-                
-                if( valFound ) {
-                    throw new RuntimeException( 
-                        "XTF doesn't support multiple 'groupHits' " +
-                        "per field (yet anyway)" );
-                }
-                valFound = true;
-                
-                PriorityQueue queue = createHitQueue( reader,
-                    subset.startDoc, subset.maxDocs, subset.sortDocsBy );
-                groupCounts[i].recordHits( 
-                    subset.value, queue, subset.startDoc, subset.maxDocs );
-            } // for j
-        } // for i
+            HitQueueMakerImpl maker = 
+                                new HitQueueMakerImpl( reader, spec.sortDocsBy );
+            groupCounts[i] = new GroupCounts( data, spec, maker );
+        }
         
         return groupCounts;
         
@@ -364,64 +366,43 @@ public class DefaultQueryProcessor extends QueryProcessor
                                GroupCounts[] groupCounts,
                                SnippetMaker  snippetMaker )
     {
-        result.fields = new ResultField[groupCounts.length];
-        for( int i = 0; i < groupCounts.length; i++ ) 
+        result.facets = new ResultFacet[groupCounts.length];
+        for( int i = 0; i < groupCounts.length; i++ )
         {
-            // See if a 'countGroups' element was specified for this field. If 
-            // so, grab the startGroup and maxGroups from it. If not, default 
-            // to all groups with default start.
-            //
-            GroupSpec spec = req.groupSpecs[i];
-            boolean gotCountSubset = false;
-            int startGroup = GroupSpec.Subset.DEFAULT_START;
-            int maxGroups  = GroupSpec.Subset.ALL_GROUPS;
-            if( spec.subsets != null ) {
-                for( int j = 0; j < spec.subsets.length; j++ ) {
-                    GroupSpec.Subset subset = spec.subsets[j];
-                    if( subset.maxDocs > 0 || subset.value != null )
-                        continue;
-                    
-                    if( gotCountSubset ) {
-                        throw new RuntimeException( 
-                            "XTF doesn't support multiple 'countHits' " +
-                            "per field (yet anyway)" );
-                    }
-                    gotCountSubset = true;
-                    
-                    startGroup = subset.startGroup;
-                    maxGroups  = subset.maxGroups;
-                }
-            }
-            
-            // Get the groups for this field.
-            result.fields[i] = groupCounts[i].getGroups( 
-                spec.sortGroupsBy, 
-                startGroup, maxGroups, 
-                spec.includeEmptyGroups,
-                spec.branchGroupValue );
+            result.facets[i] = groupCounts[i].getResult();
             
             // Scan each group for DocHits, and finish all we find.
-            for( int j = 0; j < result.fields[i].groups.length; j++ ) 
-            {
-                ResultGroup group = result.fields[i].groups[j];
-                if( group.docHits == null )
-                    continue;
-                
-                float maxDocScore = 0.0f;
-                for( int k = 0; k < group.docHits.length; k++ ) {
-                    DocHitImpl hit = (DocHitImpl) group.docHits[k];
-                    maxDocScore = Math.max( maxDocScore, hit.score );
-                } // for k
-                float docScoreNorm = 1.0f / maxDocScore;
-                
-                for( int k = 0; k < group.docHits.length; k++ ) {
-                    DocHitImpl hit = (DocHitImpl) group.docHits[k];
-                    hit.finish( snippetMaker, docScoreNorm );
-                } // for k
-            } // for j
+            finishGroup( result.facets[i].rootGroup, snippetMaker );
         } // for if
         
-    } // processGroups()
+    } // finishGroups()
+    
+    /**
+     * Finishes DocHits within a single group (also processes all its
+     * descendant groups.)
+     * 
+     * @param group         Group to finish
+     * @param snippetMaker  Used to make snippets for any DocHits inside the
+     *                      group.
+     */
+    private void finishGroup( ResultGroup group,
+                              SnippetMaker  snippetMaker )
+    {
+      // Finish DocHits for this group
+      if( group.docHits != null ) {
+          for( int k = 0; k < group.docHits.length; k++ ) {
+              DocHitImpl hit = (DocHitImpl) group.docHits[k];
+              hit.finish( snippetMaker, docScoreNorm );
+          } // for k
+      }
+      
+      // Now finish all the descendants.
+      if( group.subGroups != null ) {
+          for( int j = 0; j < group.subGroups.length; j++ ) 
+              finishGroup( group.subGroups[j], snippetMaker );
+      }
+        
+    } // finishGroup()
     
     /**
      * After index parameters are known, this method should be called to
@@ -489,17 +470,20 @@ public class DefaultQueryProcessor extends QueryProcessor
      * @param sortFields space or comma delimited list of fields to sort by
      * @return           an appropriate hit queue
      */
-    private PriorityQueue createHitQueue( IndexReader  reader,
-                                          int          startDoc,
-                                          int          maxDocs,
-                                          String       sortFields )
+    private static PriorityQueue createHitQueue( IndexReader  reader,
+                                                 int          size,
+                                                 String       sortFields )
         throws IOException
     {
-        int nDocs = startDoc + maxDocs;
-
+        // If a large size is requested, start with a small queue and expand
+        // later, if necessary.
+        //
+        if( size >= 999999999 )
+            size = 10;
+      
         // If no sort fields, do a simple score sort.
         if( sortFields == null )
-            return new HitQueue( nDocs );
+            return new HitQueue( size );
         
         // Parse out the list of fields to sort by.
         Vector fieldNames = new Vector();
@@ -509,7 +493,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         // If there were none, do a simple score sort.
         if( fieldNames.size() == 0 )
-            return new HitQueue( nDocs );
+            return new HitQueue( size );
         
         // Okay, make a SortField out of each one, in priority order from 
         // highest to lowest. After all the fields, an implicit score sorter 
@@ -538,8 +522,54 @@ public class DefaultQueryProcessor extends QueryProcessor
         fields[fieldNames.size()] = SortField.FIELD_SCORE;
         
         // And make the final hit queue.
-        return new FieldSortedHitQueue( reader, fields, nDocs );
+        return new FieldSortedHitQueue( reader, fields, size );
 
     } // createHitQueue()
 
+    private static class DocHitMakerImpl implements GroupCounts.DocHitMaker
+    {
+      private int        doc;
+      private float      score;
+      private FieldSpans spans;
+      private DocHit     docHit;
+      
+      public final void reset( int doc, float score, FieldSpans spans ) {
+        this.doc   = doc;
+        this.score = score;
+        this.spans = spans;
+        
+        docHit = null;
+      }
+      
+      public final int getDocNum() {
+        return doc;
+      }
+      
+      public final DocHit getDocHit() {
+        if( docHit == null )
+            docHit = new DocHitImpl( doc, score, spans );
+        return docHit;
+      }
+    } // class DocHitMaker
+    
+    private static class HitQueueMakerImpl implements GroupCounts.HitQueueMaker
+    {
+      private IndexReader reader;
+      private String      sortFields;
+      
+      public HitQueueMakerImpl( IndexReader reader, String sortFields ) {
+        this.reader = reader;
+        this.sortFields = sortFields;
+      }
+      
+      public PriorityQueue makeQueue( int size ) {
+        try {
+            return DefaultQueryProcessor.createHitQueue( 
+                         reader, size, sortFields );
+        }
+        catch( IOException e ) {
+            throw new RuntimeException( e );
+        }
+      }
+    } // class HitQueueMakerImpl
 } // class QueryProcessor

@@ -1,4 +1,4 @@
-package org.cdlib.xtf.textEngine;
+package org.cdlib.xtf.textEngine.facet;
 
 /*
  * Copyright (c) 2004, Regents of the University of California
@@ -29,29 +29,50 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Records the results of a single group in field-grouped query.
- * 
- * @author Martin Haye
- */
-public class ResultGroup 
+/** Select page sets of siblings around selected groups */
+public class PageSelector extends GroupSelector
 {
-  /** Value of the group field for this group */
-  public String   value;
+  private int pageSize = 10;
   
-  /** 
-   * Total number of documents in this group (possibly many more than are 
-   * returned in this particular request.)
-   */
-  public int totalDocs;
+  public void setPageSize( int pageSize ) {
+    this.pageSize = pageSize;
+  }
   
-  /** Ordinal rank of the first document hit returned (0-based) */
-  public int startDoc;
+  public void process( int group ) 
+  {
+    int lastPageStart = -1;
+    
+    // In conservative mode, select everything.
+    if( conservative ) {
+        next.process( group );
+        return;
+    }
+    
+    // Figure out which page this group is on among its siblings.
+    int parent = counts.parent( group );
+    int n = 0;
+    for( int kid = counts.child(parent); kid >= 0; kid = counts.sibling(kid) ) {
+        if( !counts.shouldInclude(kid) )
+            continue;
+        if( (n % pageSize) == 0 )
+            lastPageStart = kid;
+        if( kid == group )
+            break;
+        ++n;
+    }
+    assert lastPageStart >= 0 : "incorrect tree data";
+    
+    // Now select everything on this page.
+    n = 0;
+    for( int kid = lastPageStart; kid >= 0; kid = counts.sibling(kid) ) {
+        next.process( kid );
+        ++n;
+        if( n == pageSize )
+            break;
+    }
+  } // process()
   
-  /** Oridinal rank of the last document hit returned, plus 1 */
-  public int endDoc;
-  
-  /** One hit per document */
-  public DocHit[] docHits;
-  
-} // class ResultGroup
+  public String toString() {
+    return "page(" + pageSize + ") -> " + next.toString();
+  }
+}

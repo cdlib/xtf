@@ -2,6 +2,7 @@ package org.cdlib.xtf.textEngine;
 
 import org.apache.lucene.mark.SpanDocument;
 import org.apache.lucene.search.Query;
+import org.cdlib.xtf.textEngine.facet.FacetSpec;
 
 /**
  * Copyright (c) 2004, Regents of the University of California
@@ -69,8 +70,8 @@ public class QueryRequest implements Cloneable
     /** Term marking mode */
     public int        termMode     = SpanDocument.MARK_SPAN_TERMS;
     
-    /** Grouping specifications (if any) */
-    public GroupSpec[] groupSpecs  = null;
+    /** Facet specifications (if any) */
+    public FacetSpec[] facetSpecs  = null;
     
     // Creates an exact copy of this query request.
     public Object clone() 

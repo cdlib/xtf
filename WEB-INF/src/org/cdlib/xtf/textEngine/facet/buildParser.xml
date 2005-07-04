@@ -1,0 +1,17 @@
+<project name="Selector Parser" default="parser" basedir=".">
+
+  <description>
+      Selector Parser
+  </description>
+
+  <!-- set global properties for this build -->
+  <property name="lib" location="lib"/>
+
+  <target name="parser" description="compile the group selector parser">
+    <javacc target="SelectorParser.jj"
+            javacchome="../../../../../../lib"/>
+  </target>
+
+</project>
+
+

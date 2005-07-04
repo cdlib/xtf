@@ -1,0 +1,284 @@
+/**
+ * Copyright (c) 2005, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice, 
+ *   this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, 
+ *   this list of conditions and the following disclaimer in the documentation 
+ *   and/or other materials provided with the distribution.
+ * - Neither the name of the University of California nor the names of its
+ *   contributors may be used to endorse or promote products derived from this 
+ *   software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+options {
+  STATIC = false;
+  UNICODE_INPUT = true;
+  //USER_CHAR_STREAM = true;
+  OPTIMIZE_TOKEN_MANAGER = true;
+}
+
+PARSER_BEGIN( SelectorParser )
+
+package org.cdlib.xtf.textEngine.facet;
+import java.util.ArrayList;
+
+public class SelectorParser
+{
+} // class SelectorParser
+
+PARSER_END( SelectorParser )
+
+SKIP: 
+{
+  "\t" | "\n" | "\r"
+}
+
+TOKEN:
+{
+    <POUND: "#">
+  | <DOUBLE_COLON: "::">
+  | <COLON: ":">
+  | <BAR: "|">
+  | <STAR: "*">
+  | <OPEN_BRACKET: "[">
+  | <CLOSE_BRACKET: "]">
+  | <OPEN_PAREN: "(">
+  | <CLOSE_PAREN: ")">
+  | <DASH: "-">
+  | <EQUAL: "=">
+  | <NUMBER: (["0"-"9"])+>
+  | <TERM: (~["#", ":", "|", "*", "(", ")", "=", "[", "]", "-", "0"-"9", "\t", "\n", "\r"])+>
+}
+  
+//////////////////////////////////////////////////////////////////////////////
+// Top-level
+//////////////////////////////////////////////////////////////////////////////
+GroupSelector parse(): 
+{ 
+  GroupSelector s;
+}
+{
+  s = union() <EOF> { return s; }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// A number of expressions, separated by "|"
+//////////////////////////////////////////////////////////////////////////////
+GroupSelector union() :
+{
+  ArrayList list = new ArrayList();
+  GroupSelector s;
+}
+{
+  s = expr() { list.add( s ); }
+  
+  ( <BAR> s = expr() { list.add( s ); }
+  )*
+  
+  { 
+    if( list.size() == 1 )
+        return (GroupSelector) list.get( 0 );
+    
+    GroupSelector[] array = (GroupSelector[]) 
+        list.toArray( new GroupSelector[list.size()] );
+    return new UnionSelector( array );
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// One or more levels, for instance "A::B::C#all"
+//////////////////////////////////////////////////////////////////////////////
+GroupSelector expr() :
+{
+  GroupSelector root = new RootSelector();
+  GroupSelector prev = root;
+  GroupSelector s; 
+  boolean gotDocs = false;
+}
+{
+  s = level(root) { prev = s; }
+  
+  ( <DOUBLE_COLON>  { s = new ChildSelector(); prev.setNext(s); prev = s; }
+    s = level(prev) { prev = s; }
+  )*
+  
+  ( <POUND> s = docs() { prev.setNext(s); prev = s; gotDocs = true; }
+  )?
+      
+  { if( !gotDocs ) {
+        s = new MarkSelector();
+        prev.setNext( s );
+        prev = s;
+    }
+    return root;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// A single level, consists of a name or * followed by optional filters
+//////////////////////////////////////////////////////////////////////////////
+GroupSelector level( GroupSelector prev ) :
+{
+  GroupSelector s;
+  GroupSelector prevPrev = null;
+}
+{
+  s = name()        { if( s != null ) {
+                          prev.setNext(s);
+                          prevPrev = prev;
+                          prev = s; 
+                      }
+                    }
+  
+  ( <OPEN_BRACKET> 
+      s = filter() 
+    <CLOSE_BRACKET> { prev.setNext(s); prevPrev = prev; prev = s; }
+  )*
+  
+  { return prev; }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// One name
+//////////////////////////////////////////////////////////////////////////////
+GroupSelector name() :
+{
+  StringBuffer buf = new StringBuffer();
+  Token t;
+}
+{
+  (   t = <TERM>    { buf.append(t.toString()); }
+    | t = <NUMBER>  { buf.append(t.toString()); }
+    | t = <DASH>    { buf.append(t.toString()); }
+    | t = <STAR>    { buf.append(t.toString()); }
+    | t = <COLON>   { buf.append(t.toString()); }
+    | t = <EQUAL>   { buf.append(t.toString()); }
+  )+
+      
+  {
+    String str = buf.toString();
+    if( str.equals("*") )
+        return null;
+    if( str.equals("**") )
+        return new DescendantSelector();
+    return new NameSelector( buf.toString() );
+  }
+} 
+
+//////////////////////////////////////////////////////////////////////////////
+// Various kinds of filters are allowed
+//////////////////////////////////////////////////////////////////////////////
+GroupSelector filter() :
+{
+  GroupSelector s;
+  Token t;
+}
+{
+    ( s = rangeFilter() { return s; } )
+  | ( t = <TERM> 
+      {
+          if( t.toString().equalsIgnoreCase("topChoices") )
+              s = new TopChoiceSelector();
+          else if( t.toString().equalsIgnoreCase("nonEmpty") )
+              s = new EmptySelector( false );
+          else if( t.toString().equalsIgnoreCase("empty") )
+              s = new EmptySelector( true );
+          else if( t.toString().equalsIgnoreCase("unselected") )
+              s = new SelectedSelector( false );
+          else if( t.toString().equalsIgnoreCase("selected") )
+              s = new SelectedSelector( true );
+          else if( t.toString().equalsIgnoreCase("siblings") )
+              s = new SiblingSelector( true );
+          else if( t.toString().equalsIgnoreCase("page") )
+              s = new PageSelector();
+          else
+              throw new ParseException( "Unknown filter '" + t.toString() + "'" );
+      }
+  
+      ( <OPEN_PAREN> 
+        t=<TERM>  { if( !t.toString().equalsIgnoreCase("size") )
+                        throw new ParseException( "Unknown parameter '" + t.toString() + "'" );
+                  }
+        <EQUAL>
+        t=<NUMBER>    
+        { 
+            if( s instanceof PageSelector ) {
+                int size = Integer.parseInt(t.toString());
+                ((PageSelector)s).setPageSize( size );
+            }
+            else
+                throw new ParseException( "Argument '" + t.toString() + "' not allowed here" );
+        }
+        <CLOSE_PAREN>
+      )?
+    ) { return s; }
+} 
+
+//////////////////////////////////////////////////////////////////////////////
+// Range filter
+//////////////////////////////////////////////////////////////////////////////
+GroupSelector rangeFilter() :
+{
+  Token t;
+  int from;
+  int to = 999999999;
+}
+{
+  t = <NUMBER>  { from = Integer.parseInt(t.toString()); }
+  
+  ( <DASH>
+    t = <NUMBER>  { to = Integer.parseInt(t.toString()); }
+  )?
+      
+  {
+    return new RangeSelector(from - 1, to - from + 1);
+  }
+} 
+
+//////////////////////////////////////////////////////////////////////////////
+// Docs specification
+//////////////////////////////////////////////////////////////////////////////
+GroupSelector docs() :
+{
+  Token t;
+  int from;
+  int to = 999999999;
+}
+{
+  ( t = <TERM>      { if( !t.toString().equals("all") ) {
+                          throw new ParseException( 
+                              "Found '" + t.toString() + 
+                              "' but expected 'all' or '<NUMBER> - <NUMBER>" );
+                      }
+                      return new DocsSelector(0, 999999999);
+                    }
+  )
+  |
+  ( t = <NUMBER>    { from = Integer.parseInt(t.toString()); }
+    
+    ( <DASH>
+      t = <NUMBER>  { to = Integer.parseInt(t.toString()); }
+    )?
+  )
+  {
+    return new DocsSelector(from - 1, to - from + 1);
+  }
+} 
+

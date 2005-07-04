@@ -1,4 +1,4 @@
-package org.cdlib.xtf.textEngine;
+package org.cdlib.xtf.textEngine.facet;
 
 /*
  * Copyright (c) 2004, Regents of the University of California
@@ -186,8 +186,15 @@ public class GroupData
         termEnum.close();
     }
 
-    // Build the final array of groups. This is really easy.
+    // Build the final array of groups. Basically we just take the last
+    // component of each path.
+    //
     groups = (String[]) groupVec.toArray( new String[groupVec.size()] );
+    for( int i = 0; i < groups.length; i++ ) {
+        int lastSep = groups[i].lastIndexOf( "::" );
+        if( lastSep >= 0 )
+            groups[i] = groups[i].substring( lastSep+2 );
+    }
     
     // Build the group parent/child/sibling tables.
     buildHierarchy( childMap );
@@ -403,6 +410,14 @@ public class GroupData
     return groupParents[groupId]; 
   }
 
+  /** Get the number of children a group has */
+  public final int nChildren( int groupId ) {
+    int nChildren = 0;
+    for( int kid = groupChildren[groupId]; kid >= 0; kid = groupSiblings[kid] )
+        nChildren++;
+    return nChildren;
+  }
+  
   /** Get the first child of the given group, or -1 if it has no children */
   public final int child( int groupId ) {
     return groupChildren[groupId]; 

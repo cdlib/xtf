@@ -94,6 +94,10 @@ public class DocHitImpl extends DocHit
     void finish( SnippetMaker snippetMaker,
                  float        docScoreNorm )
     {
+        // Don't do this twice.
+        if( this.snippetMaker != null )
+            return;
+      
         // Record the snippet maker... we'll use it later if loading is
         // necessary.
         //

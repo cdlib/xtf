@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
-   <groupedField field="group-subject" totalGroups="16" startGroup="16" endGroup="16">
+<crossQueryResult totalDocs="10" startDoc="0" endDoc="0">
+   <facet field="group-subject" totalGroups="16">
       <group value="Sociology" totalDocs="1" startDoc="1" endDoc="1">
          <docHit file="doc3.xml">
             <meta>
@@ -13,8 +13,8 @@
                <subject>Urban Studies</subject>
                <type>text</type>
                <collection>
-                  <snippet rank="1" score="100">
-                     <hit rank="1" score="100">
+                  <snippet>
+                     <hit>
                         <term>UC</term>
                      </hit>
                   </snippet>
@@ -24,5 +24,5 @@
             </meta>
          </docHit>
       </group>
-   </groupedField>
+   </facet>
 </crossQueryResult>

@@ -1,4 +1,4 @@
-package org.cdlib.xtf.textEngine;
+package org.cdlib.xtf.textEngine.facet;
 
 /*
  * Copyright (c) 2004, Regents of the University of California
@@ -29,35 +29,46 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Records field-grouped results from a single query.
- * 
- * @author Martin Haye
- */
-public class ResultField 
+import java.util.HashSet;
+
+/** Select the top level of the hierarchy that has a choice. */
+public class SiblingSelector extends GroupSelector
 {
-  /** Name of the meta-data field by which the results are grouped */
-  public String field;
+  private HashSet parents = new HashSet();
   
-  /** 
-   * Total number of groups (possibly many more than are returned in the 
-   * current request.
-   */
-  public int totalGroups;
+  public void reset( boolean conservative ) {
+    super.reset( conservative );
+    parents.clear();
+  }
   
-  /** Ordinal rank of the first group returned (zero-based) */
-  public int startGroup;
+  public void process( int group ) 
+  {
+    // In conservative mode, we have to select the entire tree
+    if( conservative ) {
+        next.process( group );
+        return;
+    }
+    
+    // Normal (non-conservative mode)... Have we seen this parent before?
+    // If so, ignore it.
+    //
+    int parent = counts.parent( group );
+    Integer parentKey = Integer.valueOf( parent );
+    if( parents.contains(parentKey) )
+        return;
+    
+    // Okay, process all the children under this parent.
+    for( int kid = counts.child(parent); kid >= 0; kid = counts.sibling(kid) ) {
+        if( !counts.shouldInclude(kid) )
+            continue;
+        next.process( kid );
+    }
+    
+    // And record that we've finished this parent now.
+    parents.add( parentKey );
+  } // process()
   
-  /** Ordinal rank of last group returned, plus one */
-  public int endGroup;
-  
-  /** Total number of documents that had some value for this field */
-  public int totalDocs;
-  
-  /** For hierarchical fields, the parent (branch) of all the returned groups */
-  public String branchGroupValue;
-  
-  /** The actual groups (some of which contain hits if specified in query) */
-  public ResultGroup[] groups;
-  
-} // class ResultField
+  public String toString() {
+    return "siblings -> " + next.toString();
+  }
+}

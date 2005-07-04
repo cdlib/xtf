@@ -8,8 +8,8 @@
          <group-subject>Ancient History</group-subject>
          <subject>Politics</subject>
          <subject>
-            <snippet rank="1" score="100">
-               <hit rank="1" score="100">
+            <snippet>
+               <hit>
                   <term>Classics</term>
                </hit>
             </snippet>
@@ -17,8 +17,8 @@
          <subject>Ancient History</subject>
          <type>text</type>
          <collection>
-            <snippet rank="1" score="100">
-               <hit rank="1" score="100">
+            <snippet>
+               <hit>
                   <term>UC</term>
                </hit>
             </snippet>
@@ -37,8 +37,8 @@
          <group-subject>Classical Religions</group-subject>
          <group-subject>Classical Politics</group-subject>
          <subject>
-            <snippet rank="1" score="100">
-               <hit rank="1" score="100">
+            <snippet>
+               <hit>
                   <term>Classics</term>
                </hit>
             </snippet>
@@ -50,8 +50,8 @@
          <subject>Classical Politics</subject>
          <type>text</type>
          <collection>
-            <snippet rank="1" score="100">
-               <hit rank="1" score="100">
+            <snippet>
+               <hit>
                   <term>UC</term>
                </hit>
             </snippet>
@@ -70,8 +70,8 @@
          <group-subject>Classical Religions</group-subject>
          <group-subject>Classical Politics</group-subject>
          <subject>
-            <snippet rank="1" score="100">
-               <hit rank="1" score="100">
+            <snippet>
+               <hit>
                   <term>Classics</term>
                </hit>
             </snippet>
@@ -83,8 +83,8 @@
          <subject>Classical Politics</subject>
          <type>text</type>
          <collection>
-            <snippet rank="1" score="100">
-               <hit rank="1" score="100">
+            <snippet>
+               <hit>
                   <term>UC</term>
                </hit>
             </snippet>
@@ -93,7 +93,7 @@
          <geography-sort>US::California::Oakland</geography-sort>
       </meta>
    </docHit>
-   <groupedField field="group-subject" totalGroups="6" startGroup="1" endGroup="6">
+   <facet field="group-subject" totalGroups="6">
       <group value="Ancient History" totalDocs="3" startDoc="0" endDoc="0"/>
       <group value="Classics" totalDocs="3" startDoc="0" endDoc="0"/>
       <group value="Politics" totalDocs="3" startDoc="1" endDoc="3">
@@ -105,8 +105,8 @@
                <group-subject>Ancient History</group-subject>
                <subject>Politics</subject>
                <subject>
-                  <snippet rank="1" score="100">
-                     <hit rank="1" score="100">
+                  <snippet>
+                     <hit>
                         <term>Classics</term>
                      </hit>
                   </snippet>
@@ -114,8 +114,8 @@
                <subject>Ancient History</subject>
                <type>text</type>
                <collection>
-                  <snippet rank="1" score="100">
-                     <hit rank="1" score="100">
+                  <snippet>
+                     <hit>
                         <term>UC</term>
                      </hit>
                   </snippet>
@@ -134,8 +134,8 @@
                <group-subject>Classical Religions</group-subject>
                <group-subject>Classical Politics</group-subject>
                <subject>
-                  <snippet rank="1" score="100">
-                     <hit rank="1" score="100">
+                  <snippet>
+                     <hit>
                         <term>Classics</term>
                      </hit>
                   </snippet>
@@ -147,8 +147,8 @@
                <subject>Classical Politics</subject>
                <type>text</type>
                <collection>
-                  <snippet rank="1" score="100">
-                     <hit rank="1" score="100">
+                  <snippet>
+                     <hit>
                         <term>UC</term>
                      </hit>
                   </snippet>
@@ -167,8 +167,8 @@
                <group-subject>Classical Religions</group-subject>
                <group-subject>Classical Politics</group-subject>
                <subject>
-                  <snippet rank="1" score="100">
-                     <hit rank="1" score="100">
+                  <snippet>
+                     <hit>
                         <term>Classics</term>
                      </hit>
                   </snippet>
@@ -180,8 +180,8 @@
                <subject>Classical Politics</subject>
                <type>text</type>
                <collection>
-                  <snippet rank="1" score="100">
-                     <hit rank="1" score="100">
+                  <snippet>
+                     <hit>
                         <term>UC</term>
                      </hit>
                   </snippet>
@@ -194,5 +194,5 @@
       <group value="Classical History" totalDocs="2" startDoc="0" endDoc="0"/>
       <group value="Classical Politics" totalDocs="2" startDoc="0" endDoc="0"/>
       <group value="Classical Religions" totalDocs="2" startDoc="0" endDoc="0"/>
-   </groupedField>
+   </facet>
 </crossQueryResult>

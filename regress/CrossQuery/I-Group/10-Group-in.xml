@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
-  <groupField field="group-subject">
-    <countGroups startGroup="1" maxGroups="5"/>
-    <groupHits value="Politics"/>
-  </groupField>
+  <facet field="group-subject" select="*[1-5]|Politics#all"/>
+  <!-- old
+    <groupField field="group-subject">
+      <countGroups startGroup="1" maxGroups="5"/>
+      <groupHits value="Politics"/>
+    </groupField>
+  -->
   <term field="collection" maxSnippets="0">UC</term>
 </query>

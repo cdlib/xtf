@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
-   <groupedField field="group-subject" totalGroups="16" startGroup="6" endGroup="10">
+<crossQueryResult totalDocs="10" startDoc="0" endDoc="0">
+   <facet field="group-subject" totalGroups="16">
       <group value="Environmental Studies" totalDocs="3" startDoc="0" endDoc="0"/>
       <group value="African History" totalDocs="2" startDoc="1" endDoc="2">
          <docHit file="doc1.xml">
@@ -14,8 +14,8 @@
                <subject>African History</subject>
                <type>text</type>
                <collection>
-                  <snippet rank="1" score="100">
-                     <hit rank="1" score="100">
+                  <snippet>
+                     <hit>
                         <term>UC</term>
                      </hit>
                   </snippet>
@@ -33,8 +33,8 @@
                <subject>African History</subject>
                <type>text</type>
                <collection>
-                  <snippet rank="1" score="100">
-                     <hit rank="1" score="100">
+                  <snippet>
+                     <hit>
                         <term>UC</term>
                      </hit>
                   </snippet>
@@ -47,5 +47,5 @@
       <group value="California and the West" totalDocs="2" startDoc="0" endDoc="0"/>
       <group value="Classical Politics" totalDocs="2" startDoc="0" endDoc="0"/>
       <group value="Urban Studies" totalDocs="2" startDoc="0" endDoc="0"/>
-   </groupedField>
+   </facet>
 </crossQueryResult>

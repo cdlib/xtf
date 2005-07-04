@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
-   <groupedField field="group-subject" totalGroups="16" startGroup="1" endGroup="16">
+<crossQueryResult totalDocs="1" startDoc="0" endDoc="0">
+   <facet field="group-subject" totalGroups="16">
       <group value="African History" totalDocs="0" startDoc="0" endDoc="0"/>
       <group value="African Studies" totalDocs="0" startDoc="0" endDoc="0"/>
       <group value="Ancient History" totalDocs="0" startDoc="0" endDoc="0"/>
@@ -17,5 +17,5 @@
       <group value="Social and Political Thought" totalDocs="0" startDoc="0" endDoc="0"/>
       <group value="Sociology" totalDocs="1" startDoc="0" endDoc="0"/>
       <group value="Urban Studies" totalDocs="1" startDoc="0" endDoc="0"/>
-   </groupedField>
+   </facet>
 </crossQueryResult>

@@ -19,7 +19,7 @@ package org.cdlib.xtf.textEngine;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.util.PriorityQueue;
 
-final class HitQueue extends PriorityQueue {
+class HitQueue extends PriorityQueue {
   HitQueue(int size) {
     initialize(size);
   }

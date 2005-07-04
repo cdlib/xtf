@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
-   <groupedField field="geography-sort" totalGroups="3" startGroup="1" endGroup="3" branchGroupValue="US">
-      <group value="US::California" totalDocs="7" startDoc="0" endDoc="0"/>
-      <group value="US::Nevada" totalDocs="2" startDoc="0" endDoc="0"/>
-      <group value="US::Oregon" totalDocs="1" startDoc="0" endDoc="0"/>
-   </groupedField>
+<crossQueryResult totalDocs="9" startDoc="0" endDoc="0">
+   <facet field="geography-sort" totalGroups="1">
+      <group value="US" totalDocs="9" startDoc="0" endDoc="0">
+         <group value="California" totalDocs="7" startDoc="0" endDoc="0"/>
+         <group value="Nevada" totalDocs="2" startDoc="0" endDoc="0"/>
+         <group value="Oregon" totalDocs="1" startDoc="0" endDoc="0"/>
+      </group>
+   </facet>
 </crossQueryResult>

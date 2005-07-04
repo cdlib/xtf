@@ -30,6 +30,7 @@ package org.cdlib.xtf.textEngine;
  */
 
 import java.io.File;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
@@ -56,6 +57,11 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanRangeQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
+import org.cdlib.xtf.textEngine.facet.FacetSpec;
+import org.cdlib.xtf.textEngine.facet.GroupSelector;
+import org.cdlib.xtf.textEngine.facet.MarkSelector;
+import org.cdlib.xtf.textEngine.facet.RootSelector;
+import org.cdlib.xtf.textEngine.facet.SelectorParser;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Path;
@@ -141,8 +147,8 @@ public class QueryRequestParser
         
         // Convert the grouping specifications to an easy-to-use array.
         if( groupSpecs.size() > 0 ) {
-            req.groupSpecs = (GroupSpec[]) 
-                groupSpecs.toArray( new GroupSpec[groupSpecs.size()] );
+            req.facetSpecs = (FacetSpec[]) 
+                groupSpecs.toArray( new FacetSpec[groupSpecs.size()] );
         }
         
         // And we're done.
@@ -241,8 +247,8 @@ public class QueryRequestParser
         int nChildQueries = 0;
         for( int i = 0; i < main.nChildren(); i++ ) {
             EasyNode el = main.child( i );
-            if( "groupField".equals(el.name()) )
-                parseGroupSpec( el );
+            if( "facet".equals(el.name()) )
+                parseFacetSpec( el );
             else {
                 req.query = 
                     deChunk( parseQuery(el, null, DEFAULT_MAX_SNIPPETS) );
@@ -271,21 +277,21 @@ public class QueryRequestParser
     
     
     /**
-     * Parses a 'groupField' element and adds a GroupSpec to the query.
+     * Parses a 'facet' element and adds a FacetSpec to the query.
      * 
-     * @param el  The 'groupField' element to parse
+     * @param el  The 'facet' element to parse
      */
-    void parseGroupSpec( EasyNode el ) 
+    void parseFacetSpec( EasyNode el ) 
     {
         // Process all the attributes.
-        GroupSpec gs = new GroupSpec();
+        FacetSpec fs = new FacetSpec();
         for( int i = 0; i < el.nAttrs(); i++ ) 
         {
             if( el.attrName(i).equalsIgnoreCase("field") )
-                gs.field = el.attrValue( i );
+                fs.field = el.attrValue( i );
             else if( el.attrName(i).equalsIgnoreCase("sortGroupsBy") ) {
                 if( el.attrValue(i).matches("^totalDocs$|^value$") )
-                    gs.sortGroupsBy = el.attrValue( i );
+                    fs.sortGroupsBy = el.attrValue( i );
                 else {
                     error( "Expected 'totalDocs' or 'value' for '" +
                            el.attrName(i) + "' attribute, but found '" +
@@ -293,11 +299,13 @@ public class QueryRequestParser
                            " element)" );
                 }
             }
+            else if( el.attrName(i).equalsIgnoreCase("sortDocsBy") )
+                fs.sortDocsBy = el.attrValue( i );
             else if( el.attrName(i).equalsIgnoreCase("includeEmptyGroups") ) {
                 if( el.attrValue(i).matches("^true$|^yes$") )
-                    gs.includeEmptyGroups = true;
+                    fs.includeEmptyGroups = true;
                 else if( el.attrValue(i).matches("^false$|^no$") )
-                    gs.includeEmptyGroups = false;
+                    fs.includeEmptyGroups = false;
                 else {
                     error( "Expected 'yes', 'no', 'true', or 'false' for '" +
                            el.attrName(i) + "' attribute, but found '" +
@@ -305,110 +313,41 @@ public class QueryRequestParser
                            " element)" );
                 }
             }
-            else if( el.attrName(i).equalsIgnoreCase("branchGroupValue") ) {
-                if( el.attrValue(i).equals("#auto") )
-                    gs.branchGroupValue = null;
-                else
-                    gs.branchGroupValue = el.attrValue( i );
-            }
-            else
-                error( "Unrecognized attribute '" + el.attrName(i) +
-                       "' on '" + el.name() + "' element" );
+            else if( el.attrName(i).equalsIgnoreCase("select") ) {
+                try {
+                    SelectorParser parser = new SelectorParser(
+                        new StringReader(el.attrValue(i)) );
+                    fs.groupSelector = parser.parse();
+                } 
+                catch (org.cdlib.xtf.textEngine.facet.ParseException e) {
+                    error( "Error parsing '" + el.attrName(i) +
+                           "' expression: " + e.getMessage() );
+                } // catch
+            } // else
         } // for i
         
         // Make sure a field name was specified.
-        if( gs.field == null || gs.field.length() == 0 )
+        if( fs.field == null || fs.field.length() == 0 )
             error( "'" + el.name() + "' element requires 'field' attribute" );
+        
+        // If no group selection, put in the default.
+        if( fs.groupSelector == null ) {
+            GroupSelector root = new RootSelector();
+            GroupSelector mark = new MarkSelector();
+            root.setNext( mark );
+            fs.groupSelector = root;
+        }
         
         // Make sure there is only one groupField element per field.
         for( int i = 0; i < groupSpecs.size(); i++ ) {
-            GroupSpec other = ((GroupSpec)groupSpecs.elementAt(i));
-            if( other.field.equalsIgnoreCase(gs.field) )
+            FacetSpec other = ((FacetSpec)groupSpecs.elementAt(i));
+            if( other.field.equalsIgnoreCase(fs.field) )
                 error( "Specifying two '" + el.name() + "' elements for the " +
                        "same field is illegal" );
         }
         
-        // Check for subsets below the <groupField> node.
-        Vector subsets = new Vector();
-        for( int i = 0; i < el.nChildren(); i++ )
-        {
-            // Get the child, and check the name.
-            EasyNode child = el.child( i );
-            boolean countOnly = false;
-            if( child.name().equalsIgnoreCase("countGroups") )
-                countOnly = true;
-            else if( child.name().equalsIgnoreCase("groupHits") )
-                countOnly = false;
-            else
-                error( "Unrecognized child element '" + child.name() +
-                       "' under '" + el.name() + "' element." );
-            
-            // Process the attributes.
-            GroupSpec.Subset subset = new GroupSpec.Subset();
-            boolean gotValue     = false;
-            boolean gotMaxGroups = false;
-            boolean gotMaxDocs   = false;
-            for( int j = 0; j < child.nAttrs(); j++ ) 
-            {
-                String attrName = child.attrName( j );
-                String attrVal  = child.attrValue( j );
-                if( attrName.equalsIgnoreCase("startGroup") ) {
-                    subset.startGroup = parseIntAttrib(child, attrName) - 1;
-                    if( subset.startGroup < 0 )
-                        subset.startGroup = GroupSpec.Subset.DEFAULT_START;
-                }
-                else if( attrName.equalsIgnoreCase("maxGroups") ) {
-                    subset.maxGroups = parseIntAttrib(child, attrName);
-                    gotMaxGroups = true;
-                }
-                else if( attrName.equalsIgnoreCase("value") ) {
-                    gotValue = true;
-                    subset.value = attrVal;
-                }
-                else if( attrName.equalsIgnoreCase("startDoc") && !countOnly) {
-                    subset.startDoc = parseIntAttrib(child, attrName) - 1;
-                    if( subset.startDoc < 0 )
-                        error( "'" + attrName + "' attribute on '" +
-                               child.name() + "' element must be >= 1" );
-                }
-                else if( attrName.equalsIgnoreCase("maxDocs") && !countOnly ) {
-                    subset.maxDocs = parseIntAttrib( child, attrName );
-                    if( subset.maxDocs < 0 )
-                        subset.maxDocs = 999999999;
-                    gotMaxDocs = true;
-                }
-                else if( attrName.equalsIgnoreCase("sortDocsBy") && !countOnly )
-                    subset.sortDocsBy = attrVal;
-                else
-                    error( "Unrecognized attribute '" + attrName + "' on '" +
-                           child.name() + "' element" );
-            } // for j
-            
-            // 'value' is mutually exclusive with 'startGroup'/'maxGroups'
-            if( gotValue && gotMaxGroups )
-                error( "It doesn't make sense to specify both 'value' and " +
-                       "'startGroup/maxGroups' on '" + child.name() + "element" );
-            
-            // If neither was specified, default to maxGroups=all
-            if( !gotValue && !gotMaxGroups )
-                subset.maxGroups = GroupSpec.Subset.ALL_GROUPS;
-            
-            // If maxDocs wasn't specified on <groupHits>, default to 10.
-            if( !countOnly && !gotMaxDocs )
-                subset.maxDocs = 10;
-            
-            // Add this subset to our list.
-            subsets.add( subset );
-        } // for i
-        
-        // If any subsets, convert to an array.
-        if( !subsets.isEmpty() ) {
-            gs.subsets = (GroupSpec.Subset[]) subsets.toArray(
-                new GroupSpec.Subset[subsets.size()] );
-        }
-        
         // Finally, add the new group spec to the query.
-        groupSpecs.add( gs );
+        groupSpecs.add( fs );
         
     } // parseGroupSpec
     

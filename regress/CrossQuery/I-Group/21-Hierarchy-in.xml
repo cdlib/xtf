@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
-  <groupField field="geography-sort"/>
+  <facet field="geography-sort" select="**[topChoices]"/>
+  <!-- old
+    <groupField field="geography-sort"/>
+  -->
   <and>
     <term field="collection">UC</term>
     <term field="geography">US</term>

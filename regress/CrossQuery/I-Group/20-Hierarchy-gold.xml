@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
-   <groupedField field="geography-sort" totalGroups="2" startGroup="1" endGroup="2">
+<crossQueryResult totalDocs="10" startDoc="0" endDoc="0">
+   <facet field="geography-sort" totalGroups="2">
       <group value="US" totalDocs="9" startDoc="0" endDoc="0"/>
       <group value="Canada" totalDocs="1" startDoc="0" endDoc="0"/>
-   </groupedField>
+   </facet>
 </crossQueryResult>
