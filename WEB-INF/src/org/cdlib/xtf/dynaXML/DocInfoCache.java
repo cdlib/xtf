@@ -46,6 +46,7 @@ import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.XMLFormatter;
 import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
@@ -156,7 +157,9 @@ class DocInfoCache extends GeneratingCache
         // Make a document containing the tokenized and untokenized versions
         // of the parameters (typically useful for queries.)
         //
-        NodeInfo paramDoc = servlet.tokenizeParams( attrList );
+        XMLFormatter paramBlock = new XMLFormatter();
+        servlet.tokenizeParams( attrList, paramBlock );
+        NodeInfo paramDoc = paramBlock.toNode();
 
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** docReqParser input ***" );
@@ -251,7 +254,7 @@ class DocInfoCache extends GeneratingCache
             throw new GeneralException( "docReqParser specified 'indexName' without 'indexConfig'" );
         if( !DynaXML.isEmpty(info.indexConfig) && DynaXML.isEmpty(info.indexName) )
             throw new GeneralException( "docReqParser specified 'indexConfig' without 'indexName'" );
-
+        
         // And we're done.
         return info;
     } // generate()

@@ -49,7 +49,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
 import net.sf.saxon.value.StringValue;
 
@@ -635,10 +634,8 @@ public abstract class TextServlet extends HttpServlet
      * Creates a document containing tokenized and untokenized versions of each
      * parameter.
      */
-    public NodeInfo tokenizeParams( AttribList atts )
+    public void tokenizeParams( AttribList atts, XMLFormatter fmt )
     {
-        XMLFormatter fmt = new XMLFormatter();
-        
         // The top-level node marks the fact that this is the parameter list.
         fmt.beginTag( "parameters" );
         
@@ -665,10 +662,7 @@ public abstract class TextServlet extends HttpServlet
         }
         
         fmt.endTag();
-        
-        // And we're done.
-        return fmt.toNode();
-    } // buildInput()
+    } // tokenizeParams()
     
     
     /**
