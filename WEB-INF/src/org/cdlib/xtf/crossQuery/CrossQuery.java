@@ -61,6 +61,7 @@ import org.cdlib.xtf.textEngine.facet.ResultGroup;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.XMLFormatter;
 import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
@@ -192,8 +193,12 @@ public class CrossQuery extends TextServlet
                           HttpServletResponse res )
         throws Exception
     {
+        // Make a <parameters> block.
+        XMLFormatter fmt = new XMLFormatter();
+        tokenizeParams( attribs, fmt );
+
         // Generate a query request document from the queryParser stylesheet.
-        Source queryReqDoc = generateQueryReq( req, attribs );
+        Source queryReqDoc = generateQueryReq( req, attribs, fmt.toNode() );
 
         // Process it to generate result document hits
         QueryProcessor proc     = createQueryProcessor();
@@ -201,8 +206,12 @@ public class CrossQuery extends TextServlet
                                          queryReqDoc,
                                          new File(getRealPath("")) );
         QueryResult    result   = proc.processRequest( queryReq ); 
+        
         // Format the hits for the output document.
-        formatHits( req, res, attribs, result, queryReq.displayStyle );
+        formatHits( "crossQueryResult",
+                    req, res, attribs, result, 
+                    queryReq.displayStyle, 
+                    fmt.toString() + XMLWriter.toString(queryReqDoc, false) );
 
     } // apply()
 
@@ -211,11 +220,13 @@ public class CrossQuery extends TextServlet
      * Creates a query request using the queryParser stylesheet and the given
      * attributes.
      *
-     * @param req        The original HTTP request
-     * @param attribs    Attributes to pass to the stylesheet.
+     * @param req          The original HTTP request
+     * @param attribs      Attributes to pass to the stylesheet.
+     * @param paramBlock   Tokenized versions of the input attributes
      */
     protected Source generateQueryReq( HttpServletRequest req,
-                                       AttribList attribs )
+                                       AttribList         attribs,
+                                       NodeInfo           paramBlock )
         throws Exception
     {
         // Locate the query formatting stylesheet.
@@ -237,12 +248,9 @@ public class CrossQuery extends TextServlet
         // Add the special computed attributes.
         stuffSpecialAttribs( req, trans );
 
-        NodeInfo    input  = tokenizeParams( attribs );
-        TreeBuilder output = new TreeBuilder();
-
         if( Trace.getOutputLevel() >= Trace.debug ) {
             Trace.debug( "*** queryParser input ***" );
-            Trace.debug( XMLWriter.toString(input) );
+            Trace.debug( XMLWriter.toString(paramBlock) );
         }
 
         // Make sure errors get directed to the right place.
@@ -250,7 +258,8 @@ public class CrossQuery extends TextServlet
             trans.setErrorListener( new XTFSaxonErrorListener() );
 
         // Now perform the transformation.
-        trans.transform( input, output );
+        TreeBuilder output = new TreeBuilder();
+        trans.transform( paramBlock, output );
 
         // And return the output tree.
         return output.getCurrentRoot();
@@ -259,17 +268,25 @@ public class CrossQuery extends TextServlet
     /**
      * Formats a list of hits using the resultFormatter stylesheet.
      *
+     * @param mainTagName   Name of the top-level tag to generate (e.g.
+     *                      "crossQueryResult", etc.)
      * @param req           The original HTTP request
      * @param res           Where to send the HTML response
      * @param attribs       Parameters to pass to the stylesheet
      * @param result        Hits resulting from the query request
      * @param displayStyle  Path of the resultFormatter stylesheet
+     * @param extraStuff    Additional XML to insert into the query
+     *                      result document. Typically includes <parameters>
+     *                      block and <query> block. If null, then a plain
+     *                      result is created without any stuff added in.
      */
-    protected void formatHits( HttpServletRequest  req,
+    protected void formatHits( String              mainTagName,
+                               HttpServletRequest  req,
                                HttpServletResponse res,
                                AttribList          attribs,
                                QueryResult         result,
-                               String              displayStyle )
+                               String              displayStyle,
+                               String              extraStuff )
         throws Exception
     {
         // Locate the display stylesheet.
@@ -305,7 +322,7 @@ public class CrossQuery extends TextServlet
         stuffSpecialAttribs( req, trans );
 
         // Make an input document for it based on the document hits.
-        Source sourceDoc = structureHits( result );
+        Source sourceDoc = structureHits( mainTagName, result, extraStuff );
 
         // Make sure errors get directed to the right place.
         if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
@@ -319,20 +336,31 @@ public class CrossQuery extends TextServlet
      * Makes an XML document out of the list of document hits, and returns a
      * Source object that represents it.
      *
-     * @param result    Hits resulting from the query
-     * @return          XML Source containing all the hits and snippets.
+     * @param mainTagName Name of the top-level tag to generate (e.g.
+     *                    "crossQueryResult", etc.)
+     * @param result      Hits resulting from the query
+     * @param extraStuff  Additional XML to insert into the query
+     *                    result document. Typically includes <parameters>
+     *                    block and <query> block.
+     * @return            XML Source containing all the hits and snippets.
      */
-    public static Source structureHits( QueryResult result )
+    public static Source structureHits( String mainTagName, 
+                                        QueryResult result, 
+                                        String extraStuff )
     {
         StringBuffer buf = new StringBuffer( 1000 );
 
-        buf.append( "<crossQueryResult" +
+        buf.append( "<" + mainTagName +
                     " totalDocs=\"" + result.totalDocs + "\" " +
                     " startDoc=\"" +
                         Math.min(result.startDoc+1, result.endDoc) + "\" " +
                         // Note above: 1-based start
                     " endDoc=\"" + result.endDoc + "\">" );
-
+        
+        // If extra XML was specified, dump it in here.
+        if( extraStuff != null )
+            buf.append( extraStuff );
+        
         // Add the top-level doc hits.
         structureDocHits( result.docHits, result.startDoc, buf );
 
@@ -357,7 +385,7 @@ public class CrossQuery extends TextServlet
         } // if
         
         // Add the final tag.
-        buf.append( "</crossQueryResult>\n" );
+        buf.append( "</" + mainTagName + ">\n" );
 
         // Now parse that into a document that can be fed to the stylesheet.
         String str = buf.toString();
