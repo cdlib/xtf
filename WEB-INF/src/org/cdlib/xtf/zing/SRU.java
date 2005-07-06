@@ -93,8 +93,12 @@ public class SRU extends CrossQuery
         // Switch the default output mode to XML.
         res.setContentType("text/xml");
       
+        // Make a <parameters> block.
+        XMLFormatter fmt = new XMLFormatter();
+        tokenizeParams( attribs, fmt );
+
         // Generate a query request document from the queryParser stylesheet.
-        NodeInfo queryReqDoc = (NodeInfo) generateQueryReq( req, attribs );
+        NodeInfo queryReqDoc = (NodeInfo) generateQueryReq( req, attribs, fmt.toNode() );
         
         // If it actually contains an SRW explain response, or an SRW
         // diagnostic, simply output that directly.
@@ -112,8 +116,13 @@ public class SRU extends CrossQuery
                                           new File(getRealPath("")) ); 
         QueryResult    result   = proc.processRequest( queryReq );
         
-        // Format the hits for the output document.
-        formatHits( req, res, attribs, result, queryReq.displayStyle );
+        // Format the hits for the output document. Include the <parameters> block
+        // and the actual query request, in case the stylesheet wants to use these
+        // things.
+        //
+        formatHits( "SRUResult",
+                    req, res, attribs, result, queryReq.displayStyle, 
+                    fmt.toString() + XMLWriter.toString(queryReqDoc, false) );
     }
     
     
