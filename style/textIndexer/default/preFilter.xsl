@@ -119,6 +119,7 @@
     <xsl:for-each select="*">
       <xsl:element name="{name()}">
         <xsl:attribute name="xtf:meta" select="'true'"/>
+        <xsl:copy-of select="@*"/>
         <xsl:value-of select="string()"/>
       </xsl:element>
     </xsl:for-each>
