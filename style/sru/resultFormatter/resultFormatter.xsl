@@ -77,7 +77,7 @@
 <!-- Root Template                                                          -->
 <!-- ====================================================================== -->
   
-  <xsl:template match="/crossQueryResult">
+  <xsl:template match="/SRUResult">
     <srw:searchRetrieveResponse>
       <srw:version>1.1</srw:version>
       <srw:numberOfRecords><xsl:value-of select="@totalDocs"/></srw:numberOfRecords>
