@@ -55,7 +55,16 @@ public class XMLWriter
      */
     public static void debug( EasyNode node )
     {
-        Trace.debug( toString(node) );
+        Trace.debug( toString(node, true) );
+    }
+
+    
+    /**
+     * Prints the node, in XML format, to Trace.debug()
+     */
+    public static void debug( EasyNode node, boolean includeXMLDecl )
+    {
+        Trace.debug( toString(node, includeXMLDecl) );
     }
 
     
@@ -64,7 +73,16 @@ public class XMLWriter
      */
     public static void debug( Source node )
     {
-        Trace.debug( toString(node) );
+        Trace.debug( toString(node, true) );
+    } // debugNode()
+    
+    
+    /**
+     * Prints the node, in XML format, to Trace.debug()
+     */
+    public static void debug( Source node, boolean includeXMLDecl )
+    {
+        Trace.debug( toString(node, includeXMLDecl) );
     } // debugNode()
     
     
@@ -76,7 +94,18 @@ public class XMLWriter
      */
     public static String toString( EasyNode node )
     {
-        return toString( node.getWrappedNode() );
+        return toString( node.getWrappedNode(), true );
+    }
+    
+    /** 
+     * Format a nice, multi-line, indented, representation of the given
+     * XML fragment.
+     * 
+     * @param node  Base node to format.
+     */
+    public static String toString( EasyNode node, boolean includeXMLDecl )
+    {
+        return toString( node.getWrappedNode(), includeXMLDecl );
     }
     
     /** 
@@ -86,6 +115,20 @@ public class XMLWriter
      * @param node  Base node to format.
      */
     public static String toString( Source node )
+    {
+        return toString( node, true );
+    }
+    
+    /** 
+     * Format a nice, multi-line, indented, representation of the given
+     * XML fragment.
+     * 
+     * @param node  Base node to format.
+     * @param includeXMLDecl true to include XML declaration, false to
+     *                       suppress it (useful for generating a fragment
+     *                       of XML to insert within a larger document.)
+     */
+    public static String toString( Source node, boolean includeXMLDecl )
     {
         try {
             StringWriter writer = new StringWriter();
@@ -102,6 +145,8 @@ public class XMLWriter
             Properties props = trans.getOutputProperties();
             props.put( "indent", "yes" );
             props.put( "method", "xml" );
+            if( !includeXMLDecl )
+                props.put( "omit-xml-declaration", "yes" );
             trans.setOutputProperties( props );
             
             // Make sure errors get directed to the right place.
