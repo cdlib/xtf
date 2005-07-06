@@ -38,6 +38,8 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -184,11 +186,17 @@ public class RegressTest
             
             // Get the list of files it contains.
             String[] files = curFile.list();
+            
+            // Sort the list.
+            ArrayList list = new ArrayList();
+            for( int i = 0; i < files.length; i++ )
+                list.add( files[i] );
+            Collections.sort( list );
 
             // And process each of them.
             LinkedList newInFiles = new LinkedList();
-            for( int i = 0; i < files.length; i++ )
-                processDir( new File(curFile, files[i]), newInFiles );
+            for( int i = 0; i < list.size(); i++ )
+                processDir( new File(curFile, (String)list.get(i)), newInFiles );
             
             // If we have some input files for tests to run, run them now.
             if( newInFiles.isEmpty() )
@@ -388,7 +396,8 @@ public class RegressTest
         throws IOException
     {
         // Use the normal CrossQuery method to structure the hits
-        Source hitDoc = CrossQuery.structureHits( result );
+        Source hitDoc = CrossQuery.structureHits( 
+                            "crossQueryResult", result, null );
         
         // Get rid of scores, since they change a lot and we don't really
         // care (unless the order changes.) There are a couple other things
