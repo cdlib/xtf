@@ -197,7 +197,7 @@ public class LazyDocument extends ParentNodeImpl
     public void setAllPermanent( boolean flag ) {
         allPermanent = flag;
         if( allPermanent )
-            nodeCache.put( new Integer(0), this );
+            nodeCache.put( Integer.valueOf(0), this );
     }
 
     /**
@@ -505,7 +505,7 @@ public class LazyDocument extends ParentNodeImpl
             node.init( alpha, beta );
     
             // All done!
-            nodeCache.put( new Integer(num), new SoftReference(node) );
+            nodeCache.put( Integer.valueOf(num), new SoftReference(node) );
             return node;
         } // try
         catch( IOException e ) {
@@ -522,7 +522,7 @@ public class LazyDocument extends ParentNodeImpl
       // Do we have a reference in the cache? If not, return. And if it's a
       // strong reference to a node, return it.
       //
-      Object ref = nodeCache.get( new Integer( num ) );
+      Object ref = nodeCache.get( Integer.valueOf( num ) );
       NodeImpl node = null;
       if( ref instanceof NodeImpl )
           node = (NodeImpl)ref;
@@ -532,7 +532,7 @@ public class LazyDocument extends ParentNodeImpl
           SoftReference weak = (SoftReference)ref;
           node = (NodeImpl)weak.get();
           if( node == null )
-              nodeCache.remove( new Integer( num ) );
+              nodeCache.remove( Integer.valueOf( num ) );
       }
 
       // All done.
@@ -744,7 +744,7 @@ public class LazyDocument extends ParentNodeImpl
             if( (node.getNameCode() & 0xfffff) != fingerprint )
                 continue;
             nodes.add( node );
-            nodeNums.add( new Integer(node.nodeNum) );
+            nodeNums.add( Integer.valueOf(node.nodeNum) );
         }
         
         // Pack up the results.

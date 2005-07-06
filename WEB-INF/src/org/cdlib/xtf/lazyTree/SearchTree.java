@@ -469,9 +469,9 @@ public class SearchTree extends LazyDocument
             node = checkCache( normNum );
             if( node != null ) {
                 if( allPermanent )
-                    nodeCache.put( new Integer(num), node );
+                    nodeCache.put( Integer.valueOf(num), node );
                 else
-                    nodeCache.put( new Integer(num), new SoftReference(node) );
+                    nodeCache.put( Integer.valueOf(num), new SoftReference(node) );
                 return node;
             }
         }
@@ -479,7 +479,7 @@ public class SearchTree extends LazyDocument
         // Okay, load the node from disk. This also puts it into the cache.
         node = super.getNode( normNum );
         if( allPermanent )
-            nodeCache.put( new Integer(normNum), node );
+            nodeCache.put( Integer.valueOf(normNum), node );
 
         assert node.parentNum  >= -1;
         assert node.nextSibNum >= -1;
@@ -501,7 +501,7 @@ public class SearchTree extends LazyDocument
 
         // All done.
         if( num >= MARKER_BASE )
-            nodeCache.put( new Integer(num), node );
+            nodeCache.put( Integer.valueOf(num), node );
         return node;
     } // getNode()
     
@@ -543,7 +543,7 @@ public class SearchTree extends LazyDocument
         
         // The element we want should now be in the cache.
         SearchElementImpl el = (SearchElementImpl)
-            nodeCache.get( new Integer(HIT_ELMT_MARKER + hitNum) );
+            nodeCache.get( Integer.valueOf(HIT_ELMT_MARKER + hitNum) );
         assert el != null : "Search element must be created with its text";
         return el;
     } // getHitElement
@@ -953,7 +953,7 @@ public class SearchTree extends LazyDocument
         node.setNodeNum( nextVirtualNum );
         
         if( !(node instanceof ProxyElement) )
-            nodeCache.put( new Integer(nextVirtualNum), node );
+            nodeCache.put( Integer.valueOf(nextVirtualNum), node );
 
         nextVirtualNum++;
     } // initNode
@@ -968,7 +968,7 @@ public class SearchTree extends LazyDocument
         // (normally the node cache only contains weak references.)
         //
         if( node != null )
-            nodeCache.put( new Integer( node.nodeNum ), node );
+            nodeCache.put( Integer.valueOf( node.nodeNum ), node );
     } // modifyNode()
 
     /**
@@ -1019,7 +1019,7 @@ public class SearchTree extends LazyDocument
         // Give it a special place in the node cache so we can find it again.
         snippetElement.setNodeNum( num );
         if( realNotProxy )
-            nodeCache.put( new Integer(num), snippetElement );
+            nodeCache.put( Integer.valueOf(num), snippetElement );
 
         // Add the score (if not suppressed), hit number, and (if present) 
         // the section type.
@@ -1320,16 +1320,16 @@ public class SearchTree extends LazyDocument
             // to the stack for processing.
             //
             if( node.prevSibNum >= 0 ) {
-                if( !nodeCache.containsKey(new Integer(node.prevSibNum)) )
+                if( !nodeCache.containsKey(Integer.valueOf(node.prevSibNum)) )
                     stack[top++] = getNode( node.prevSibNum );
-                assert nodeCache.containsKey(new Integer(node.prevSibNum));
+                assert nodeCache.containsKey(Integer.valueOf(node.prevSibNum));
             }
             
             // Ditto the parent.
             if( node.parentNum >= 0 ) {
-                if( !nodeCache.containsKey(new Integer(node.parentNum)) )
+                if( !nodeCache.containsKey(Integer.valueOf(node.parentNum)) )
                     stack[top++] = getNode( node.parentNum );
-                assert nodeCache.containsKey(new Integer(node.parentNum));
+                assert nodeCache.containsKey(Integer.valueOf(node.parentNum));
             }
         } // while
         
@@ -1338,15 +1338,15 @@ public class SearchTree extends LazyDocument
         //
         for( Iterator iter = nodeCache.values().iterator(); iter.hasNext(); ) {
             NodeImpl node = (NodeImpl) iter.next();
-            if( node.prevSibNum >= 0 && !nodeCache.containsKey(new Integer(node.prevSibNum)) )
+            if( node.prevSibNum >= 0 && !nodeCache.containsKey(Integer.valueOf(node.prevSibNum)) )
                 assert false : "Should have loaded prev sib";
-            if( node.nextSibNum >= 0 && !nodeCache.containsKey(new Integer(node.nextSibNum)) )
+            if( node.nextSibNum >= 0 && !nodeCache.containsKey(Integer.valueOf(node.nextSibNum)) )
                 node.nextSibNum = -1;
-            if( node.parentNum >= 0 && !nodeCache.containsKey(new Integer(node.parentNum)) )
+            if( node.parentNum >= 0 && !nodeCache.containsKey(Integer.valueOf(node.parentNum)) )
                 assert false : "Should have loaded parent";
             if( node instanceof ParentNodeImpl ) {
                 ParentNodeImpl pnode = (ParentNodeImpl) node;
-                if( pnode.childNum >= 0 && !nodeCache.containsKey(new Integer(pnode.childNum)) )
+                if( pnode.childNum >= 0 && !nodeCache.containsKey(Integer.valueOf(pnode.childNum)) )
                     pnode.childNum = -1;
             }
         } // for iter

@@ -51,7 +51,7 @@ public class RecordingNamePool extends NamePool
     {
         int namecode = super.allocate( prefix, uriCode, localName );
         int fingerprint = namecode & 0xfffff;
-        fingerprints.add( new Integer(fingerprint) );
+        fingerprints.add( Integer.valueOf(fingerprint) );
         return namecode;
     }
     

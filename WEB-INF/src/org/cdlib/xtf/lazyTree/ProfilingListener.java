@@ -120,9 +120,9 @@ public class ProfilingListener implements TraceListener
             countMap.put( instr, pc );
         }
         
-        if( !pc.nodes.containsKey(new Integer(nodeNum)) ) {
+        if( !pc.nodes.containsKey(Integer.valueOf(nodeNum)) ) {
             pc.count++;
-            pc.nodes.put( new Integer(nodeNum), new Boolean(true) );
+            pc.nodes.put( Integer.valueOf(nodeNum), new Boolean(true) );
         }
     } // bumpCount()
 

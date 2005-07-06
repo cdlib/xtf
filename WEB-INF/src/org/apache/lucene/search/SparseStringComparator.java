@@ -93,7 +93,7 @@ public class SparseStringComparator implements SortComparatorSource {
           termDocs.seek(termEnum);
           while (termDocs.next()) {
             int docId = termDocs.doc();
-            Integer key = new Integer(docId);
+            Integer key = Integer.valueOf(docId);
             if (docs.get(key) != null) {
               throw new RuntimeException("A document has more than one term ('"
                   + termText + "', '" + (String) docs.get(key) + "') in field "

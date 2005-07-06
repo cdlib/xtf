@@ -116,7 +116,7 @@ public class LazyKeyManager extends KeyManager {
 
     public void setKeyDefinition(int fingerprint, KeyDefinition keydef)
     throws TransformerConfigurationException {
-        Integer keykey = new Integer(fingerprint);
+        Integer keykey = Integer.valueOf(fingerprint);
         if( keyList == null )
             keyList = new HashMap();
         ArrayList v = (ArrayList)keyList.get(keykey);
@@ -152,7 +152,7 @@ public class LazyKeyManager extends KeyManager {
     public List getKeyDefinitions(int fingerprint) 
     {
         // Have we seen this one before?
-        List list = (ArrayList)keyList.get(new Integer(fingerprint));
+        List list = (ArrayList)keyList.get(Integer.valueOf(fingerprint));
         if( list != null )
             return list;
         

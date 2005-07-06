@@ -247,12 +247,12 @@ public class LazyTreeBuilder
         // Add all the namecodes from elements and attributes.
         for( int i = 0; i < tree.numberOfNodes; i++ ) {
             if( tree.nameCode[i] >= 0 )
-                names.put( new Integer(tree.nameCode[i]) );
+                names.put( Integer.valueOf(tree.nameCode[i]) );
         }
         
         for( int i = 0; i < tree.numberOfAttributes; i++ ) {  
             if( tree.attCode[i] >= 0 )
-                names.put( new Integer(tree.attCode[i]) );
+                names.put( Integer.valueOf(tree.attCode[i]) );
         }
         
         // Write out all the namecodes.
@@ -318,7 +318,7 @@ public class LazyTreeBuilder
             
             // Name code
             if( nameCode >= 0 ) {
-                int nameIdx = names.get( new Integer(nameCode) );
+                int nameIdx = names.get( Integer.valueOf(nameCode) );
                 assert nameIdx >= 0 : "A name was missed when writing name codes";
                 buf.writeInt( nameIdx );
             }
@@ -394,7 +394,7 @@ public class LazyTreeBuilder
             for( j = i; j < i+nAttrs; j++ ) {
             
                 // Name code
-                int nameIdx = names.get( new Integer(tree.attCode[j]) );
+                int nameIdx = names.get( Integer.valueOf(tree.attCode[j]) );
                 assert nameIdx >= 0 : "A name was missed when writing name codes";
                 buf.writeInt( nameIdx );
                 
@@ -430,7 +430,7 @@ public class LazyTreeBuilder
             for( j = i; j < i+nAttrs; j++ ) {
             
                 // Name code
-                int nameIdx = names.get( new Integer(tree.attCode[j]) );
+                int nameIdx = names.get( Integer.valueOf(tree.attCode[j]) );
                 assert nameIdx >= 0 : "A name was missed when writing name codes";
                 buf.writeInt( nameIdx );
                 
