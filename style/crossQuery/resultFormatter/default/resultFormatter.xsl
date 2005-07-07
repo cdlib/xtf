@@ -619,6 +619,7 @@
     </xsl:variable>
     
     <xsl:choose>
+      <xsl:when test="ancestor::query"/>
       <xsl:when test="not(ancestor::snippet)">
         <span class="term">
           <xsl:apply-templates/>
