@@ -97,7 +97,7 @@
         <include name="bin/textIndexer"/>
         <include name="bin/indexStats"/>
 
-        <include name="brand/default.xsl"/>
+        <include name="brand/default.xml"/>
 
         <include name="conf/**/*"/>
 
