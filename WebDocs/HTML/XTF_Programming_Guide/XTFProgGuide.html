@@ -894,20 +894,28 @@
       query for our man and war not &quot;Man of War&quot; example is the <i><b>query 
       clause</b></i>. It has the form: </p>
     <pre class="Sample"><b>&lt;<span class="MacroCode">ClauseType</span> field=&quot;<span class="MacroCode">FieldToSearch</span>&quot;&gt;
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
          <img src="../Common_Art/vDotDotDot.gif">
 &lt;/<span class="MacroCode">ClauseType</span>&gt;</b></pre>
-    Where valid <span class="MacroCode">ClauseType</span> values are <span class="Code">and</span>, 
+    Where valid <span class="MacroCode">ClauseType</span> values are <span class="Code">phrase</span>, 
+    <span class="Code">exact</span>, <span class="Code"></span><span class="Code">and</span>, 
     <span class="Code">or</span>, <span class="Code">not</span>, and <span class="Code">near</span>. 
     Each of these clause types do pretty much what you would expect: 
     <ul>
-      <li class="ListItem"> The <span class="Code">and</span> clause requires all 
-        its sub-terms/phrases/clauses to be present for a match to occur. </li>
-      <li class="ListItem"> The <span class="Code">or</span> clause requires any one 
-        of its sub-terms/phrases/clauses to be present for a match to occur. </li>
-      <li class="ListItem"> The <span class="Code">not</span> clause requires that 
-        none of its sub-terms/phrases/clauses are present for a match to occur. </li>
+      <li class="ListItem">The <span class="Code">exact</span> clause operates 
+        just like the<span class="Code"> phrase </span>clause, except that it 
+        matches the entire contents of a field only, whereas a<span class="Code"> 
+        phrase </span>clause can match anywhere within the field. </li>
+      <li class="ListItem"> The <span class="Code">and</span> clause requires 
+        all its sub-terms/phrases/clauses to be present for a match to occur. 
+      </li>
+      <li class="ListItem"> The <span class="Code">or</span> clause requires any 
+        one of its sub-terms/phrases/clauses to be present for a match to occur. 
+      </li>
+      <li class="ListItem"> The <span class="Code">not</span> clause requires 
+        that none of its sub-terms/phrases/clauses are present for a match to 
+        occur. </li>
       <li class="ListItem"> The <span class="Code">near</span> clause requires 
         all its sub-terms/phrases/clauses to be <b><i>near</i></b> each other 
         for a match to occur. The definition of <b><i>near</i></b> is fairly complicated, 

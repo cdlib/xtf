@@ -208,6 +208,7 @@
                     <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Error">&lt;error<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
                     <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Term">&lt;term<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
                     <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Phrase">&lt;phrase<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
+                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Exact">&lt;exact<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
                     <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_And">&lt;and<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
                     <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Or">&lt;or<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
                     <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Not">&lt;not<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
@@ -1134,8 +1135,9 @@
           </div>
           The <span class="MacroCode">QueryElement</span> specified within this 
           tag identifies the query to be performed. This can be a<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Term">term</a> </span> query tag, a<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a> </span> query tag, or an<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Term">term</a> </span> query tag, or a<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>, or<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Range">range</a> </span>tag.<br>
@@ -1245,19 +1247,20 @@
             line-feed, etc.) will produce unpredictable search results.) </div>
         </div>
         <br>
-        <!-- Term Tag --> 
+
+        <!-- Phrase Tag --> 
         <div class="Sample"> <b><u>Phrase Search Tag<a name="crossQuery_QueryParser_Output_Phrase"></a></u></b><br>
           <!--------------------------------------------------------------------> 
-          This tag specifies an exact phrase to search for. This tag has the form: 
+          This tag specifies a phrase for which to search. This tag has the form: 
           <br>
           <br>
           <div class="IndentLR"> 
             <pre class="Code">&lt;phrase <i>{</i>field       = "<span class="MacroCode">FieldName</span>"<i>}</i>
         <i>{</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
         <i>{</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;<br>
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-             <img src="../Common_Art/vDotDotDot.gif">
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+      <img src="../Common_Art/vDotDotDot.gif">
 &lt;/phrase&gt;</pre>
           </div>
           where <br>
@@ -1339,33 +1342,147 @@
               </tr>
             </table>
           </div><br>
-
           Within the phrase tag, <span class="MacroCode">Term</span> is a<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, <span class="MacroCode">Phrase</span> 
-          is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a> </span>tag, 
-          and <span class="MacroCode">Clause</span> is an<span class="Code"> <a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> <a href="#crossQuery_QueryParser_Output_Not">not</a> 
-          </span>tag. <br>
+          <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, and 
+          <span class="MacroCode">Clause</span> is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+          </span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br>
           <br>
           Note that text will only match a phrase query if all the terms in the<span class="Code"> 
           phrase </span>tag appear in the document in same order, with no other 
-          intervening words. </div>
+          intervening words. Note that it does not matter whether the phrase appears 
+          at the beginning, middle, or end of a field; it will match in any position. 
+          To match the exact contents of an entire field, use the<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span> tag 
+          below.</div>
+        <br>
+
+        <!-- Exact Tag --> 
+        <div class="Sample"> <b><u>Exact Search Tag<a name="crossQuery_QueryParser_Output_Exact"></a></u></b><br>
+          <!--------------------------------------------------------------------> 
+          This tag specifies an exact phrase to search for. This tag has the form: 
+          <br>
+          <br>
+          <div class="IndentLR"> 
+            <pre class="Code">&lt;exact <i>{</i>field       = "<span class="MacroCode">FieldName</span>"<i>}</i>
+       <i>{</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
+       <i>{</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;<br>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+      <img src="../Common_Art/vDotDotDot.gif">
+&lt;/exact&gt;</pre>
+          </div>
+          where <br>
+          <div class="IndentLR"> 
+            <table cellspacing="12" cellpadding="0">
+              <tr> 
+                <td width="16%" align="right" valign="top" class="Code" height="224"> 
+                  field="<span class="MacroCode">FieldName</span>"</td>
+                <td height="224" valign="baseline"> <span class="BaseStyle"> </span> 
+                  <p>is an optional attribute that identifies which field in the 
+                    index to search. Normally, this attribute is set to <span class="Code">text</span> 
+                    to indicate that the main text of the document should be searched. 
+                    It can also be set to the name of a meta field such as <span class="Code">author</span> 
+                    or <span class="Code">subject</span>.</p>
+                  <p>It should be mentioned that the field name specified by a 
+                    <span class="Code">&lt;exact...&gt;</span> tag<i><b> must</b></i> 
+                    match the field name set by any tags that contain it. Otherwise, 
+                    an error will be generated. If no parent tags specify a field 
+                    name, any field name can be used by the <span class="Code">&lt;exact...&gt;</span> 
+                    tag.</p>
+                  <p>Similarly, any tags within an <span class="Code">&lt;exact...&gt;</span> 
+                    tag must either specify the same field name as the phrase, 
+                    or specify no field name at all. Otherwise, an error will 
+                    be generated.</p>
+                  <p class="Note">(Note: Allowing nested copies of the <span class="Code">field</span> 
+                    attribute doesn't serve a purpose other than to make it easier 
+                    to write <b>docReqParser.xsl</b> stylesheets in a uniform 
+                    way. Effectively, the outermost <span class="Code">field</span> 
+                    value is always used.)</p>
+                </td>
+              </tr>
+              <tr> 
+                <td width="16%" align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
+                <td valign="baseline"> 
+                  <p><span class="BaseStyle">identifies the number of snippets 
+                    to pass on to the <b>Result Formatter</b> stylesheet for display. 
+                    A snippet is defined as the matching text found in a document 
+                    for a particular query, along with some additional text around 
+                    it for context. The amount of context displayed for each match 
+                    is defined by the <span class="Code">maxContext</span> attribute. 
+                    <br>
+                    <br>
+                    If not specified this attribute defaults to 3, meaning snippets 
+                    for the top three matches for a document are returned. Also, 
+                    this attribute can be set to -1, meaning all the snippets 
+                    for a document are returned. </span></p>
+                  <p>As with the <span class="Code">field</span> attribute, any 
+                    <span class="Code">maxSnippets</span> value set by the &lt;<span class="Code">exact...&gt;</span> 
+                    tag<i><b> must</b></i> match the value set by any tags that 
+                    contain it. Otherwise, an error will be generated. If no parent 
+                    tags set a <span class="Code">maxSnippets</span> value, then 
+                    any value may be specified by the <span class="Code">&lt;exact...&gt;</span> 
+                    tag.</p>
+                  <p>Similarly, any tags within a <span class="Code">&lt;exact...&gt;</span> 
+                    tag must either specify the same field name as the phrase, 
+                    or specify no field name at all. Otherwise, an error will 
+                    be generated.</p>
+                  <p class="Note">(Note: Allowing nested copies of the <span class="Code">maxSnippets</span> 
+                    attribute doesn't serve a purpose other than to make it easier 
+                    to write <b>docReqParser.xsl</b> stylesheets in a uniform 
+                    way. Effectively, the outermost <span class="Code">maxSnippets</span> 
+                    value is always used.)</p>
+                </td>
+              </tr>
+              <tr> 
+                <td width="16%" align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
+                <td valign="baseline"> 
+                  <p>is an optional attribute that specifies a relevance boost 
+                    multiplier for this phrase in the query. Boost values higher 
+                    than 1.0 increase the relevance of a phrase, while boost values 
+                    between 0.0 and 1.0 decrease the relevance of a phrase. Boost 
+                    values less than zero will generate an error.</p>
+                  <p>Note that boost values multiply. That is, if tags within 
+                    an <span class="Code">&lt;exact...&gt;</span> tag have boost 
+                    attributes, their individual boost values will be multiplied 
+                    by the boost set for the containing <span class="Code">&lt;exact...&gt;</span> 
+                    tag.</p>
+                </td>
+              </tr>
+            </table>
+          </div><br>
+          Within the exact tag, <span class="MacroCode">Term</span> is a<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, and 
+          <span class="MacroCode">Clause</span> is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br>
+          <br>
+          Note that text will only match a exact query if all the terms in the<span class="Code"> 
+          exact </span>tag appear in the document in same order, with no other 
+          intervening words. In addition, the match must begin at the start of 
+          the field and end at the end of the field (in other words, it must match 
+          the entire field.)</div>
         <br>
         <!-- Phrase Tag --> 
         <div class="Sample"> <b><u>AND Search Tag<a name="crossQuery_QueryParser_Output_And"></a></u></b><br>
-          <!--------------------------------------------------------------> This tag 
-          defines a search where all of sub-terms or clauses must exist in a document 
-          for a match to be made. This tag has the form: <br>
+          <!--------------------------------------------------------------> This 
+          tag defines a search where all ofthe sub-terms or clauses must exist 
+          in a document for a match to be made. This tag has the form: <br>
           <br>
           <div class="IndentLR"> 
             <pre class="Code">&lt;and <i>{</i>field       = "<span class="MacroCode">FieldName</span>"<i>}</i>
      <i>{</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
      <i>{</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
 
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-             <img src="../Common_Art/vDotDotDot.gif">
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+      <img src="../Common_Art/vDotDotDot.gif">
 &lt;/and&gt;</pre>
           </div>
           where <br>
@@ -1439,14 +1556,16 @@
               </tr>
             </table>
           </div><br>
-
           Within the<span class="Code"> and </span>tag, <span class="MacroCode">Term</span> 
-          is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, 
-          <span class="MacroCode">Phrase</span> is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a> 
-          </span>tag, and <span class="MacroCode">Clause</span> is an<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, 
-          or<span class="Code"> <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. </div>
+          is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> 
+          </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. </div>
         <br>
         <!-- AND Tag --> 
         <div class="Sample"> <b><u>OR Search Tag<a name="crossQuery_QueryParser_Output_Or"></a></u></b><br>
@@ -1459,9 +1578,9 @@
     <i>{</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
  <i>   {</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
 
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-             <img src="../Common_Art/vDotDotDot.gif">
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+      <img src="../Common_Art/vDotDotDot.gif">
 &lt;/or&gt;</pre>
           </div>
           where <br>
@@ -1539,13 +1658,15 @@
               </div>
               <br>
           Within the<span class="Code"> or </span>tag, <span class="MacroCode">Term</span> 
-          is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, 
-          <span class="MacroCode">Phrase</span> is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a> 
-          </span>tag, and <span class="MacroCode">Clause</span> is an<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, 
-          or<span class="Code"> <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. 
-        </div>
+          is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> 
+          </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. </div>
         <br>
         <!-- OR Tag --> 
         <div class="Sample"> <b><u>Not Search Tag<a name="crossQuery_QueryParser_Output_Not"></a></u></b><br>
@@ -1558,9 +1679,9 @@
      <i>{</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
  <i>    {</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
 
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-             <img src="../Common_Art/vDotDotDot.gif">
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+      <img src="../Common_Art/vDotDotDot.gif">
 &lt;/not&gt;</pre>
           </div>
           where <br>
@@ -1639,28 +1760,32 @@
               
           <p><br>
             Within the<span class="Code"> not </span>tag, <span class="MacroCode">Term</span> 
-            is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, 
-            <span class="MacroCode">Phrase</span> is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a> 
-            </span>tag, and <span class="MacroCode">Clause</span> is an<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+            is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> 
+            </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag.</p>
-          <p>It is also important to note that when applied to the text field, 
-            the <span class="Code">&lt;not...&gt;</span> clause in reality operates 
-            as a <b>&quot;not near.&quot;</b> That is, the items to not be found 
-            are localized to other terms in the search query. Why? Consider a 
-            query for <b>&quot;bat&quot; not &quot;cave&quot;</b>. Imagine a document 
-            where <b>&quot;bat man&quot; </b>appears in Chapter 1. Would you really 
-            want to ignore that match if the word &quot;cave&quot; appears in 
-            a wholly unrelated passage somewhere in Chapter 12? Probably not. 
-            Consequently, search elements specified within a <span class="Code">&lt;not...&gt;</span> 
+          <p>It is also important to note that when applied to the &quot;text&quot; 
+            field, the <span class="Code">&lt;not...&gt;</span> clause in reality 
+            operates as a <b>&quot;not near.&quot;</b> That is, the items to not 
+            be found are localized to other terms in the search query. Why? Consider 
+            a query for <b>&quot;bat&quot; not &quot;cave&quot;</b>. Imagine a 
+            document where <b>&quot;bat man&quot; </b>appears in Chapter 1. Would 
+            you really want to ignore that match if the word &quot;cave&quot; 
+            appears in a wholly unrelated passage somewhere in Chapter 12? Probably 
+            not. Consequently, search elements specified within a <span class="Code">&lt;not...&gt;</span> 
             clause are considered relevant if they are within the same chunk as 
             other elements in the query. For more about document chunks sizing, 
             see <b><a href="../XTF_Deployment_Guide/XTFDeployGuide.html#textIndexer_Config_File">textIndexer 
             Configuration File</a></b> section in the <b><a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF 
-            Deployment Guide</a></b>.</p>
+            Deployment Guide</a></b>. </p>
+          <p>By contrast, when applied to meta-data fields, the <span class="Code">&lt;not...&gt;</span> 
+            clause operates as a &quot;<b>not anywhere</b>&quot;, and ignores 
+            chunk sizing. </p>
         </div><br>
         <!-- Not Tag --> 
         <div class="Sample"> <b><u>Near Search Tag<a name="crossQuery_QueryParser_Output_Near"></a></u></b><br>
@@ -1675,9 +1800,9 @@
      <i> {</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
  <i>     {</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
 
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-    <span class="MacroCode">Term</span> | <span class="MacroCode">Phrase</span> | <span class="MacroCode">Clause</span>
-             <img src="../Common_Art/vDotDotDot.gif">
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+      <img src="../Common_Art/vDotDotDot.gif">
 &lt;/near&gt;</pre>
           </div>
           where 
@@ -1786,17 +1911,20 @@
           </div>
           Within the <span class="Code">near</span> tag, <span class="MacroCode">Term</span> 
           is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> 
-          </span>tag, <span class="MacroCode">Phrase</span> is a<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a> </span>tag, 
-          and <span class="MacroCode">Clause</span> is an<span class="Code"> <a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+          </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br>
           <br>
-          It should also be noted that if the value specified for the<span class="Code"> 
-          slop </span>attribute exceeds the maximum proximity for the index being 
-          used, the maximum proximity value will be used instead. </div>
+          It should also be noted that, when applied to the &quot;text&quot; field, 
+          if the value specified for the<span class="Code"> slop </span>attribute 
+          exceeds the maximum proximity for the index being used, the maximum 
+          proximity value will be used instead. There is no limit on the<span class="Code"> 
+          slop </span>attribute when applied to meta-data fields.</div>
         <br>
         <!-- Near Tag --> 
         <div class="Sample"> <b><u>Range Search Tag<a name="crossQuery_QueryParser_Output_Range"></a></u></b><br>
