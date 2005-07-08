@@ -2525,8 +2525,8 @@ public class XMLTextProcessor extends DefaultHandler
    *    The actual marker used for virtual words is not really <b><i>vw</i></b>,
    *    since that combination of letters is likely to occur in regular text
    *    that discusses Volkswagens. The marker used is defined by the 
-   *    {@link XtfSpecialTokensFilter#virtualWord virtualWord}
-   *    member of the {@link XtfSpecialTokensFilter} class, and has been chosen
+   *    {@link Constants#VIRTUAL_WORD VIRTUAL_WORD}
+   *    member of the {@link Constants} class, and has been chosen
    *    to be unlikely to appear in any actual western text. <br><br>
    * 
    *    The added feature of using virtual words is that counting them like real
@@ -2957,8 +2957,8 @@ public class XMLTextProcessor extends DefaultHandler
    *    <br><br>
    * 
    *    The actual virtual word count marker character is defined by the 
-   *    {@link XtfSpecialTokensFilter#bumpMarker bumpMarker} member of the
-   *    {@link XtfSpecialTokensFilter} class. <br><br>  
+   *    {@link Constants#BUMP_MARKER BUMP_MARKER} member of the
+   *    {@link Constants} class. <br><br>  
    * 
    */
   private void compactVirtualWords() throws IOException

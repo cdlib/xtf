@@ -465,8 +465,7 @@ public class DefaultQueryProcessor extends QueryProcessor
      * hit queue, depending on whether the query is to be sorted.
      *
      * @param reader     will be used to read the field contents
-     * @param startDoc   first document to return (zero for first)
-     * @param maxDocs    max # of documents to return
+     * @param size       size of the queue (typically startDoc + maxDocs)
      * @param sortFields space or comma delimited list of fields to sort by
      * @return           an appropriate hit queue
      */

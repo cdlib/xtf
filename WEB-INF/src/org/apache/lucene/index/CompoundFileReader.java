@@ -30,7 +30,7 @@ import java.io.IOException;
  * Directory methods that would normally modify data throw an exception.
  *
  * @author Dmitry Serebrennikov
- * @version $Id: CompoundFileReader.java,v 1.1 2005-02-08 23:19:12 mhaye Exp $
+ * @version $Id: CompoundFileReader.java,v 1.2 2005-07-08 00:41:14 mhaye Exp $
  */
 class CompoundFileReader extends Directory {
 
@@ -207,7 +207,7 @@ class CompoundFileReader extends Directory {
          *  position in the input.
          * @param b the array to read bytes into
          * @param offset the offset in the array to start storing bytes
-         * @param length the number of bytes to read
+         * @param len the number of bytes to read
          */
         protected void readInternal(byte[] b, int offset, int len)
         throws IOException
