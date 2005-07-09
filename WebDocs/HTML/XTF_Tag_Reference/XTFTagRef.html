@@ -2,7 +2,7 @@
 
   
 <head>
-<title>XTF Programming Guide</title>
+<title>XTF Stylesheet Tag Reference</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <style type="text/css">
       <!--
@@ -1135,12 +1135,14 @@
           </div>
           The <span class="MacroCode">QueryElement</span> specified within this 
           tag identifies the query to be performed. This can be a<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Term">term</a> </span> query tag, or a<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Term">term</a> </span> query 
+          tag, or a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>, or<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Range">range</a> </span>tag.<br>
+          <a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag.<br>
           <br>
           Note that the <b>Query Parser</b> stylesheet can issue a single top-level<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Error">error</a> </span>tag 
@@ -1453,21 +1455,33 @@
                 </td>
               </tr>
             </table>
-          </div><br>
-          Within the exact tag, <span class="MacroCode">Term</span> is a<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, and 
-          <span class="MacroCode">Clause</span> is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br>
-          <br>
-          Note that text will only match a exact query if all the terms in the<span class="Code"> 
-          exact </span>tag appear in the document in same order, with no other 
-          intervening words. In addition, the match must begin at the start of 
-          the field and end at the end of the field (in other words, it must match 
-          the entire field.)</div>
+          </div>
+          <p><br>
+            Within the exact tag, <span class="MacroCode">Term</span> is a<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, 
+            and <span class="MacroCode">Clause</span> is a<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br>
+            <br>
+            Note that text will only match a exact query if all the terms in the<span class="Code"> 
+            exact </span>tag appear in the document in same order, with no other 
+            intervening words. In addition, the match must begin at the start 
+            of the field and end at the end of the field (in other words, it must 
+            match the entire field.)</p>
+          <p>For example, an exact search for &quot;man on the moon&quot; would 
+            not match field contents&quot;put a man on the moon&quot;, nor would 
+            it match &quot;man on the moon base&quot;. Only a field whose contents 
+            are exactly the string &quot;man on the moon&quot; (and nothing else) 
+            will match. </p>
+          <p>Note that &quot;exact&quot;-ness refers only to the lack of other 
+            terms before and after the match; the normal rules for upper/lower 
+            case insensitivity, and accent/plural mapping still apply. So &quot;man 
+            on the moon&quot; will still match &quot;Men on the MOON&quot;.</p>
+        </div>
         <br>
         <!-- Phrase Tag --> 
         <div class="Sample"> <b><u>AND Search Tag<a name="crossQuery_QueryParser_Output_And"></a></u></b><br>
@@ -1670,9 +1684,9 @@
         <br>
         <!-- OR Tag --> 
         <div class="Sample"> <b><u>Not Search Tag<a name="crossQuery_QueryParser_Output_Not"></a></u></b><br>
-          <!--------------------------------------------------------------> This tag 
-          defines a search where none of sub-terms or clauses must exist in a document 
-          for a match to be made. This tag has the form: <br>
+          <!--------------------------------------------------------------> This 
+          tag defines a search where none of the sub-terms or clauses must exist 
+          in a document for a match to be made. This tag has the form: <br>
           <br>
           <div class="IndentLR"> 
             <pre class="Code">&lt;not <i>{</i>field       = "<span class="MacroCode">FieldName</span>"<i>}</i>
@@ -1767,17 +1781,25 @@
             <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag.</p>
-          <p>It is also important to note that when applied to the &quot;text&quot; 
-            field, the <span class="Code">&lt;not...&gt;</span> clause in reality 
-            operates as a <b>&quot;not near.&quot;</b> That is, the items to not 
-            be found are localized to other terms in the search query. Why? Consider 
-            a query for <b>&quot;bat&quot; not &quot;cave&quot;</b>. Imagine a 
-            document where <b>&quot;bat man&quot; </b>appears in Chapter 1. Would 
-            you really want to ignore that match if the word &quot;cave&quot; 
-            appears in a wholly unrelated passage somewhere in Chapter 12? Probably 
-            not. Consequently, search elements specified within a <span class="Code">&lt;not...&gt;</span> 
+            </span>or<span class="Code"> <a href="#crossQuery_QueryParser_Output_Range">range</a> 
+            </span>tag.</p>
+          <p>The<span class="Code"> not </span>tag is usually used to restrict 
+            the results of a larger query (such as an <b>and</b>, <b>or</b>, or 
+            <b>near</b> query.) To use it this way, embed the<span class="Code"> 
+            not </span>tag within another query tag. However,<span class="Code"> 
+            not </span> can also be used alone at the top level (just inside the 
+            <span class="Code">&lt;query...&gt;</span> element), and the effect 
+            is to gather <i>all </i>documents that don't match the <span class="Code">&lt;not...&gt;</span> 
+            specification.</p>
+          <p>It is important to note that when applied to the &quot;text&quot; 
+            field, the<span class="Code"> not </span>tag in reality operates as 
+            a <b>&quot;not near.&quot;</b> That is, the items to not be found 
+            are localized to other terms in the search query. Why? Consider a 
+            query for <b>&quot;bat&quot; not &quot;cave&quot;</b>. Imagine a document 
+            where <b>&quot;bat man&quot; </b>appears in Chapter 1. Would you really 
+            want to ignore that match if the word &quot;cave&quot; appears in 
+            a wholly unrelated passage somewhere in Chapter 12? Probably not. 
+            Consequently, search elements specified within a <span class="Code">&lt;not...&gt;</span> 
             clause are considered relevant if they are within the same chunk as 
             other elements in the query. For more about document chunks sizing, 
             see <b><a href="../XTF_Deployment_Guide/XTFDeployGuide.html#textIndexer_Config_File">textIndexer 
@@ -1789,10 +1811,10 @@
         </div><br>
         <!-- Not Tag --> 
         <div class="Sample"> <b><u>Near Search Tag<a name="crossQuery_QueryParser_Output_Near"></a></u></b><br>
-          <!----------------------------------------------------------------> This 
-          tag defines a search where all of sub-terms or clauses must be in a document, 
-          <b>and</b> within a specified distance of each other for a match to be made. 
-          This tag has the form: <br>
+          <!----------------------------------------------------------------> 
+          This tag defines a search where all of the sub-terms or clauses must 
+          be in a document, <b>and</b> within a specified distance of each other 
+          for a match to be made. This tag has the form: <br>
           <br>
           <div class="IndentLR"> 
             <pre class="Code">&lt;near slop         = "<span class="MacroCode">MaxMatchDistance</span>"
