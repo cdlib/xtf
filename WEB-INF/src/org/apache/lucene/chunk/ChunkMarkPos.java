@@ -25,7 +25,7 @@ import org.apache.lucene.mark.MarkPos;
  * <p>Created: Jan 3, 2005</p>
  *
  * @author  Martin Haye
- * @version $Id: ChunkMarkPos.java,v 1.1 2005-02-08 23:19:08 mhaye Exp $
+ * @version $Id: ChunkMarkPos.java,v 1.2 2005-07-10 06:02:18 mhaye Exp $
  */
 public class ChunkMarkPos extends MarkPos 
 {
@@ -80,6 +80,10 @@ public class ChunkMarkPos extends MarkPos
     if (chunk.chunkNum > cm.chunk.chunkNum) {
       assert false;
       throw new RuntimeException("Cannot getTextTo() backward position");
+    }
+    
+    if (cm.chunk.chunkNum - chunk.chunkNum > 2 ) {
+      assert false : "getText spanning many chunks is probably a logic error";
     }
 
     StringBuffer buf = new StringBuffer();
