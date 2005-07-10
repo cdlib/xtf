@@ -220,7 +220,10 @@ public class SnippetMaker
             
             public void beginSpan(MarkPos pos, Span span) {
               if( getText ) {
-                  copyUpTo( pos );
+                  if( maxContext > 0 )
+                      copyUpTo( pos );
+                  else
+                      prevPos = pos;
                   buf.append( "<hit>" );
               }
               curSnippet = snippets[span.rank] = new Snippet();
