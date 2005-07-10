@@ -907,16 +907,16 @@
           servlet's search engine. It has the form:<br>
           <br>
           <div class="IndentLR"> 
-            <pre class="Code">&lt;query indexPath        = &quot;<b><span class="MacroCode">IndexDBLocation</span></b>&quot;
-       style            = "<span class="MacroCode">ResultFormatterLocation</span>"<br>       <i>{</i>sortMetaFields  = "<span class="MacroCode">ListOfMetaFields</span>"<i>}</i>
-       <i>{</i>startDoc        = "<span class="MacroCode">FirstDocToReturn</span>"<i>}</i>
-       <i>{</i>maxDocs         = "<span class="MacroCode">MaxDocsToReturn</span>"<i>}</i>
-       <i>{</i>termLimit       = "<span class="MacroCode">MaxTermsToAllow</span>"<i>}</i>
-       {workLimit       = "<span class="MacroCode">MaxWorkToAllow</span>"<i>}</i>
-       <i>{</i>maxContext      = "<span class="MacroCode">MaxContextChars</span>"<i>}</i>
-       <i>{</i>maxSnippets     = "<span class="MacroCode">SnippetsToOutput</span>"<i>}
-       {</i>termMode        = &quot;<span class="MacroCode">TermMarkMode</span>&quot;<i>}</i><i>
-       {</i>field           = &quot;<span class="MacroCode">FieldToSearch</span>&quot;<i>}</i><i></i>&gt;
+            <pre class="Code">&lt;query indexPath    = &quot;<b><span class="MacroCode">IndexDBLocation</span></b>&quot;
+       style        = "<span class="MacroCode">ResultFormatterLocation</span>"<br>       <i>{</i>sortDocsBy  = "<span class="MacroCode">ListOfMetaFields</span>"<i>}</i>
+       <i>{</i>startDoc    = "<span class="MacroCode">FirstDocToReturn</span>"<i>}</i>
+       <i>{</i>maxDocs     = "<span class="MacroCode">MaxDocsToReturn</span>"<i>}</i>
+       <i>{</i>termLimit   = "<span class="MacroCode">MaxTermsToAllow</span>"<i>}</i>
+       {workLimit   = "<span class="MacroCode">MaxWorkToAllow</span>"<i>}</i>
+       <i>{</i>maxContext  = "<span class="MacroCode">MaxContextChars</span>"<i>}</i>
+       <i>{</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}
+       {</i>termMode    = &quot;<span class="MacroCode">TermMarkMode</span>&quot;<i>}</i><i>
+       {</i>field       = &quot;<span class="MacroCode">FieldToSearch</span>&quot;<i>}</i><i></i>&gt;
 
     <span class="MacroCode">QueryElement</span>
 
@@ -945,7 +945,7 @@
                   </span> </td>
               </tr>
               <tr> 
-                <td align="right" valign="top" class="Code"> sortMetaFields="<span class="MacroCode">ListOfMetaFields</span>" 
+                <td align="right" valign="top" class="Code"> sortDocsBy="<span class="MacroCode">ListOfMetaFields</span>" 
                 </td>
                 <td valign="baseline"> 
                   <p><span class="BaseStyle"> is an optional attribute specifying 
@@ -960,9 +960,15 @@
                     in ascending or descending order. If no plus or minus sign 
                     is specified for a meta-field, then the results are sorted 
                     in ascending order by default.</span></p>
+                  <p>If this attribute not specified, documents are by default 
+                    sorted in order of decreasing score (so the most &quot;relevant&quot; 
+                    documents are first.)</p>
                   <p class="Note">(Note: Meta tags to be used for sorting queries 
                     should also have an xtf:tokenize=&quot;no&quot; attribute 
                     set, or sorting will produce unpredictable results.) </p>
+                  <p class="Note">(Compatibility note: This attribute was previously 
+                    called &quot;sortMetaFields&quot;, and this old name is still 
+                    accepted to retain backward compatibility.) </p>
                 </td>
               </tr>
               <tr> 
@@ -1385,10 +1391,9 @@
                   field="<span class="MacroCode">FieldName</span>"</td>
                 <td height="224" valign="baseline"> <span class="BaseStyle"> </span> 
                   <p>is an optional attribute that identifies which field in the 
-                    index to search. Normally, this attribute is set to <span class="Code">text</span> 
-                    to indicate that the main text of the document should be searched. 
-                    It can also be set to the name of a meta field such as <span class="Code">author</span> 
-                    or <span class="Code">subject</span>.</p>
+                    index to search. Normally, this attribute is set to the name 
+                    of a meta field such as <span class="Code">author</span> or 
+                    <span class="Code">subject</span>. It may not be set to <span class="Code">text</span>.</p>
                   <p>It should be mentioned that the field name specified by a 
                     <span class="Code">&lt;exact...&gt;</span> tag<i><b> must</b></i> 
                     match the field name set by any tags that contain it. Otherwise, 
