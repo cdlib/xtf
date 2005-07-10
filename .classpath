@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="WEB-INF/src"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/servlet.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/winstone.jar"/>
+	<classpathentry sourcepath="WEB-INF/lib/source/winstone" kind="lib" path="WEB-INF/lib/winstone.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/PDFBox-0.6.7a/" kind="lib" path="WEB-INF/lib/PDFBox-0.6.7a.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/log4j-1.2.9.jar"/>
