@@ -1,0 +1,534 @@
+<html>
+
+  
+<head>
+<title>XTF Experimental Features</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+      <!--
+        .DocTitle     { margin-left:  0.00in;
+                        font-family:  Arial, Helvetica, sans-serif;
+                        font-size:    180%;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        font-variant: small-caps; }
+
+        .BaseStyle    { margin-left:  0.00in;
+                        font-family:  "Times New Roman", Times, serif;
+                        font-size:    100%;
+                        font-style:   normal;
+                        font-weight:  normal;
+                        font-variant: normal; }
+
+        .IndentL      { margin-left: 0.25in; margin-right: 0.00in }
+        .IndentLR     { margin-left: 0.25in; margin-right: 0.25in }
+
+        .Heading1     { font-size:    140%;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        font-variant: small-caps;
+                        width:        100%;
+                        line-height:  normal;
+                        color:        #b6953b;
+                        border-color: #b6953b;
+                        border-style: solid;
+                        border-left-width: 0px; border-right-width:  0px;
+                        border-top-width:  0px; border-bottom-width: 3px;
+                        margin-top: 28pt; margin-bottom: 4pt }
+
+        .Heading2     { font-size:    120%;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        width:        100%;
+                        line-height:  normal;
+                        color:        #576490;
+                        border-color: #576490;
+                        border-style: solid;
+                        border-left-width: 0px; border-right-width:  0px;
+                        border-top-width:  0px; border-bottom-width: 2px;
+                        margin-top: 24pt; margin-bottom: 4pt }
+
+        .Heading3     { font-size:    100%;
+                        font-style:   normal;
+                        font-weight:  bold;
+                        line-height:  normal;
+                        color:        #000000;
+                        border-color: #000000;
+                        border-style: solid;
+                        border-left-width: 0px; border-right-width:  0px;
+                        border-top-width:  0px; border-bottom-width: 1px;
+                        margin-top: 20pt; margin-bottom: 4pt }
+
+
+        .Code         { font-family: "Courier New", Courier, mono;
+                        font-size:   100%;
+                        font-style:  normal;
+                        font-weight: bold;
+                        color:       #112233 }
+
+        .MacroCode    { font-family: "Times New Roman", Times, serif;
+                        font-style:  italic;
+                        font-weight: bold;
+                        color:       #576490 }
+
+        .MacroCodeB   { font-family: "Times New Roman", Times, serif;
+                        font-style:  italic;
+                        font-weight: bold;
+                        color:       #990099 }
+
+        .Sample       { margin-left: 0.15in; margin-right: 0.1in;
+                        background-color: #E0E0E0;
+                        padding-top:  8px; padding-bottom: 8px;
+                        padding-left: 8px; padding-right:  8px;
+                        border-style: none }
+
+        .Note         { color:      #990000;
+                        font-style: italic;
+                        margin-left: 0.15in; margin-right: 0.15in }
+
+        .Red           { color: #990000; font-style: italic; }
+
+        .GreyList     { background-color: #E0E0E0;
+                        margin-left: 0.15in; margin-right: 0.15in;
+                        margin-top:   5px;  margin-bottom:  0px;
+                        padding-left: 8px;  padding-right:  8px;
+                        padding-top:  8px;  padding-bottom: 8px }
+
+        .ParamList    { margin-top: 5px;  margin-bottom: 0px; }
+
+        .OrderedList   { margin-left:         0.35in;
+                         list-style-position: outside;
+                         list-style-image:    none;
+                         list-style-type:     decimal }
+
+        .UnorderedList { margin-left:         0.35in;
+                         list-style-position: outside;
+                         list-style-type:     disc }
+
+        .NoBullets  { margin-left:     0.25in;
+                      list-style-type: none }
+
+        .ListItem  { margin-top: 6px; }
+      -->
+    </style>
+</head>
+
+  <body bgcolor="#FFFFFF" text="#101010" >
+<div class="BaseStyle"> 
+  <p class="DocTitle" align="center">Extensible Text Framework Experimental Features</p>
+  <p class="Heading1">Table of Contents</p>
+  <!---------------------------------------------------------------------------------------------------------------> 
+  <ul class="NoBullets">
+    <li> <b><a href="#Introduction">Introduction</a></b> </li>
+    <br>
+    <br>
+    <li> <a href="#SRU_Servlet"><b>SRU Servlet</b></a><br>
+      <br>
+    </li>
+    <li></li>
+    <b><a href="#Faceted_Browsing">Faceted Browsing</a></b><br>
+  </ul>
+  <p class="Heading1">Introduction<a name="Introduction"></a></p>
+  <!---------------------------------------------------------------------------------------------------------------> 
+  <p>XTF is in constant development, and from time to time experimental features 
+    are added. These features are under evaluation, to see if they're designed 
+    well and serve their purpose in the most effective manner possible. Rough 
+    documentation is provided here for those curious to play with new and possibly 
+    very raw code.</p>
+  <p>These features are subject to change, or even to complete removal from XTF. 
+    Still, they provide a glimpse into the future of XTF.<br>
+  </p>
+  <p class="Heading1">SRU Servlet<a name="SRU_Servlet"></a></p>
+  <!---------------------------------------------------------------------------------------------------------------> 
+  <p>XTF currently contains an experimental servlet that provides exposes a Zing 
+    SRW/SRU interface to an XTF repository. Here's a description taken from the 
+    Zing web page (<a href="http://www.loc.gov/z3950/agency/zing/srw/">http://www.loc.gov/z3950/agency/zing/srw/</a>):</p>
+  <div class="Sample"> 
+    <p><b>Executive Summary: </b>SRW/U is a low-barrier solution to information 
+      retrieval. The SRW/U protocol uses easily available technologies -- XML, 
+      SOAP, HTTP, URI -- to perform tasks traditionally done using proprietary 
+      solutions; it can be carried either via SOAP (SRW) or as a URL (SRU). </p>
+    <p>SRW/U allows users to search remote databases. A user sends a searchRetrieve 
+      request which includes a query, and the server responds with a searchRetrieve 
+      response indicating the number of records that matched the query, possibly 
+      along with some of those records formatted according to an XML schema that 
+      the user requested. </p>
+    <p>The query is represented in CQL, the "Common Query Language", designed 
+      for human readable, human writeable, intuitive queries. It supports very 
+      simple queries -- for example an unqualified single term (e.g. "cat") -- 
+      but maintains the expressiveness of more complex languages, to represent 
+      arbitrarily complex queries. </p>
+  </div>
+  <p>The idea here is to make an XTF document repository searchable using the 
+    SRU protocol (SRU was simpler to implement than SRW.) This will hopefully 
+    allow XTF to play well in a larger world of aggregated repositories and meta-searchers.</p>
+  <p>As with everything else in XTF, SRU support is provided through cooperation 
+    between a Java servlet and several XSLT stylesheets. The SRU servlet operation 
+    is almost identical to <b><i>crossQuery</i></b>; refer to the diagram below.<br>
+  </p>
+  <p align="center"> <img src="../Common_Art/crossQuery.gif"><br>
+    Figure 1: Internal organization of the <b><i>crossQuery</i></b> Servlet </p>
+  <p>Here are the important ways that SRU servlet operation differs from crossQuery:</p>
+</div>
+<ol>
+  <li>The incoming query URL should obey SRU specifications, and in particular 
+    must specify a query in CQL syntax. Typically the URL will also specify an 
+    SRU version and an operation to perform (the default operation is &quot;searchRetrieve&quot;.) 
+    Here's a sample URL that talks to the SRU servlet:<br>
+    <br>
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/SRU?operation=searchRetrieve&query=dc.title=apartheid</span> 
+    </div>
+    <br>
+    (Of course, you should adjust the port number and server name according to 
+    your own installed servlet container.)<br>
+    <br>
+  </li>
+  <li>The SRU servlet uses a different set of stylesheets. It has its own <b>Query 
+    Parser</b> and <b>Result Formatter</b> stylesheets, located in the <span class="Code">style/SRU</span> 
+    subdirectory of the XTF installation. Also, the servlet has its own configuration 
+    file, found here: <span class="Code">conf/sru.conf</span><br>
+    <br>
+  </li>
+  <li>The input to the SRU <b>Query Parser</b> stylesheet is slightly different. 
+    The parameters are all tokenized as normal, but additional parsing is performed 
+    on the <span class="Code">query</span> parameter: it is parsed as a CQL query. 
+    This results in an XCQL query (that is, XML formatted CQL), and this is added 
+    to the <span class="Code">&lt;parameter&gt;</span> block for the <span class="Code">query</span> 
+    parameter. The query parser does the work of transforming XCQL to a valid 
+    XTF query.<br>
+    <br>
+  </li>
+  <li>The output of the SRU <b>Result Formatter</b> stylesheet isn't an HTML web 
+    page, but rather an XML search result, obeying the SRW specification for results.</li>
+</ol>
+<p>Here's some sample output from the SRU servlet:</p>
+<div class="Sample">
+  <pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;srw:searchRetrieveResponse xmlns:srw_dc=&quot;info:srw/schema/1/dc-schema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:srw=&quot;http://www.loc.gov/zing/srw/&quot;&gt;
+   &lt;srw:version&gt;1.1&lt;/srw:version&gt;
+   &lt;srw:numberOfRecords&gt;1&lt;/srw:numberOfRecords&gt;
+   &lt;srw:records&gt;
+      &lt;srw:record&gt;
+         &lt;srw:recordPacking&gt;XML&lt;/srw:recordPacking&gt;
+         &lt;srw:recordSchema&gt;info:srw/schema/1/dc-v1.1&lt;/srw:recordSchema&gt;
+         &lt;srw:recordData&gt;
+            &lt;srw_dc:dc xsi:schemaLocation=&quot;info:srw/schema/1/dc-schema http://www.loc.gov/z3950/agency/zing/srw/dc-schema.xsd&quot;&gt;
+               &lt;dc:title&gt;The Opening of the Apartheid Mind: Options for the New South Africa&lt;/dc:title&gt;
+               &lt;dc:creator&gt;Heribert Adam and Kogila Moodley&lt;/dc:creator&gt;
+               &lt;dc:subject&gt;African Studies&lt;/dc:subject&gt;
+               &lt;dc:subject&gt;Politics&lt;/dc:subject&gt;
+               &lt;dc:subject&gt;African History&lt;/dc:subject&gt;
+               &lt;dc:description&gt;Refusing to be governed by what is fashionable or inoffensive, Heribert Adam and Kogila Moodley frankly address the passions and rationalities that drive politics in post-apartheid South Africa...&lt;/dc:description&gt;
+               &lt;dc:date&gt;6/28/1993&lt;/dc:date&gt;
+               &lt;dc:type&gt;text&lt;/dc:type&gt;
+               &lt;dc:identifier&gt;http://ark.cdlib.org/ark:/13030/ft958009mm&lt;/dc:identifier&gt;
+               &lt;dc:relation&gt;http://www.ucpress.edu/&lt;/dc:relation&gt;
+               &lt;dc:relation&gt;http://escholarship.cdlib.org/&lt;/dc:relation&gt;
+               &lt;dc:rights&gt;Public&lt;/dc:rights&gt;
+            &lt;/srw_dc:dc&gt;
+         &lt;/srw:recordData&gt;
+      &lt;/srw:record&gt;
+   &lt;/srw:records&gt;
+   &lt;srw:echoedSearchRetrieveRequest&gt;
+      &lt;srw:version&gt;1.1&lt;/srw:version&gt;
+      &lt;srw:query&gt;dc.title=apartheid&lt;/srw:query&gt;
+      &lt;srw:startRecord&gt;1&lt;/srw:startRecord&gt;
+      &lt;srw:maximumRecords&gt;20&lt;/srw:maximumRecords&gt;
+      &lt;srw:recordPacking&gt;xml&lt;/srw:recordPacking&gt;
+      &lt;srw:recordSchema&gt;dc&lt;/srw:recordSchema&gt;
+   &lt;/srw:echoedSearchRetrieveRequest&gt;
+&lt;/srw:searchRetrieveResponse&gt;
+</pre>
+</div>
+<p>The servlet query parser knows how to respond to the<span class="Code"> explain 
+  </span> and<span class="Code"> searchRetrieve </span><i>operation</i>s. It supports 
+  only <i>version</i> 1.1 of the SRU protocol, and requires <i>recordPacking</i> 
+  to be<span class="Code"> xml </span>and <i>recordSchema</i> to be<span class="Code"> 
+  dc</span> (these are the defaults, so they are optional in the URL.) Other values 
+  will produce an appropriate SRU error result.</p>
+<p>For further information, you may peruse the stylesheets and the <a href="%3Ca%20href=%22http://www.loc.gov/z3950/agency/zing/srw/%22%3Ehttp://www.loc.gov/z3950/agency/zing/srw/%3C/a%3E">SRW/SRU 
+  web page</a>. Comments and improvements are welcome.</p>
+<p class="Heading1">Faceted Browsing<a name="Faceted_Browsing"></a></p>
+<!---------------------------------------------------------------------------------------------------------------> 
+<p><b><i>CrossQuery</i></b> provides a good general-purpose solution for searching 
+  a large collection of documents. However, until now it has not provided a convenient 
+  or useful way to <i>browse</i> such a collection. In other words, a user who 
+  isn't quite sure what subject they're looking for, or who wants to get an idea 
+  of what is offered by the collection, would have a difficult time using just 
+  queries.</p>
+<p>There are many possible ways to build a browsing system. CDL has chosen to 
+  explore <i>faceted browsing</i>, a promising method of intuitively exploring 
+  a collection that has rich meta-data. If one thinks of the collection as a bag 
+  of jewels, each meta-data field is a &quot;facet&quot;, and items will have 
+  various values for that facet. The user can choose to explore one or many facets 
+  simultaneously.</p>
+<p>A good example of a faceted browse system was developed by Prof. Marti Hearst 
+  at UC Berkeley. The system is called Flamenco, and the <a href="http://bailando.sims.berkeley.edu/flamenco.html">web 
+  site</a> is quite informative and includes a good demonstration. For more information 
+  the reader is encouraged to play with and read about Flamenco.</p>
+<p>XTF's experimental browse feature has been added to the <b><i>crossQuery</i></b> 
+  servlet. One might ask whether it should have been a separate servlet altogether, 
+  but there is a good reason to have search and browse in the same servlet: it 
+  can be quite useful to combine the two activities. For instance, a user might 
+  enter a search for &quot;africa&quot;, and then use the browse system to get 
+  an idea of the collection's coverage, in terms of dates (the interface might 
+  include decades and a count of documents for each one), subjects, authors, etc.</p>
+<div class="IndentL"> 
+
+  <p class="Heading2">Meta-data Requirements<a name="Faceted_MetaReq"></a></p>
+  <!-------------------------------------------------------------------------------------------------------------> 
+  <p>The faceted browse system relies on properly marked meta-data in the documents. 
+    Essentially, it relies on meta-data fields that are not tokenized during the 
+    indexing process. If you are creating meta-data fields for sorting, you already 
+    know how to do this.</p>
+  <p>There are two ways to create a non-tokenized field. Both involve using the 
+    prefilter stylesheet used by the <i> <b>textIndexer</b></i> to add an additional 
+    attribute to an element (the element should already be marked with <span class="Code">xtf:meta=&quot;yes&quot;</span>.)</p>
+  <ol>
+    <li> Add <span class="Code">xtf:tokenize=&quot;no&quot;</span> to the meta-data 
+      element. This will keep the indexer from tokenizing the field (and therefore, 
+      the user cannot perform queries on it.) But the contents will still be available 
+      to the result formatter for display. <br>
+      <br>
+      <i>... or ...</i><br>
+      <br>
+    </li>
+    <li>Add <span class="Code">xtf:indexOnly=&quot;yes&quot;</span> to the meta-data 
+      element. Again the indexer won't tokenize the field, but it also won't store 
+      the contents of the field. This is more efficient if you don't need to display 
+      the contents in the result formatter.</li>
+  </ol>
+  <p>What if you want to be able to search within a field <i>and</i> also use 
+    it for browsing? Simply program your prefilter to make two copies of the meta-data 
+    field, one tokenized and one untokenized. Of course you should give them distinct 
+    names so you can tell them apart later. For example, one might create a &quot;subject&quot; 
+    field (tokenized) and a &quot;group-subject&quot; field (untokenized) both 
+    of which contain the same data. In this case, it's wise to make the non-tokenized 
+    one <span class="Code">indexOnly</span>, to avoid storing the same data twice.</p>
+  <p>See the <a href="../XTF_Programming_Guide/XTFProgGuide.html#textIndexer_PreFilter_Prog">prefilter 
+    programming</a> section in the <b>XTF Programmer's Guide</b> for more information. 
+  </p>
+  <p class="Heading2">Adding Facets to a Query Request<a name="Faceted_Query"></a></p>
+  <!-------------------------------------------------------------------------------------------------------------> 
+  <p>The first step to implementing a browse system is to add facets to the <b>Query 
+    Parser </b>stylesheet. You can add one or more<span class="Code"> &lt;facet&gt; 
+    </span>elements as top-level children of the<span class="Code"> &lt;query...&gt; 
+    </span>element. Here's a fulller description:</p>
+  <div class="GreyList">
+    <div class="IndentLR"><b><u>Facet Tag<a name="crossQuery_QueryParser_Output_Term"></a></u></b><br>
+      <!----------------------------------------------------------------> This 
+      tag specifies a facet for which to count hits and form groups, and optionally 
+      to gather document hits. This tag has the form: <br>
+      <br>
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;facet field               = "<span class="MacroCode">FieldName</span>"
+       <i>{</i>select             = "<span class="MacroCode">GroupsToSelect</span>"<i>}</i>
+       <i>{</i>sortGroupsBy       = "<span class="MacroCode">TotalDocsOrValue</span>"<i>}</i>
+       <i>{</i>sortDocsBy         = "<span class="MacroCode">ListOfMetaFields</span>"<i>} 
+</i>       <i>{</i>includeEmptyGroups = "<span class="MacroCode">YesOrNo</span>"<i>} /&gt;</i></pre>
+      </div>
+      where <br>
+      <div class="IndentLR"> 
+        <table cellspacing="12" cellpadding="0">
+          <tr> 
+            <td align="right" valign="top" class="Code"> field="<span class="MacroCode">FieldName</span>"</td>
+            <td valign="baseline"> <span class="BaseStyle"> </span> 
+              <p>is a required attribute that identifies which meta-data field 
+                in the index for which to count and build groups.</p>
+              <p>(Note: Meta tags to be used for faceted queries should also have 
+                an xtf:tokenize=&quot;no&quot; attribute set, or sorting will 
+                produce unpredictable results.)</p>
+            </td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code">select="<span class="MacroCode">GroupsToSelect</span>"</td>
+            <td valign="baseline"> 
+              <p>is an optional attribute specifying a subset of groups to select 
+                and return in the query result. For maximum flexibility, this 
+                specification is made using a special language that resembles 
+                XPath to some extent. It allows selecting groups by name or position 
+                in the list, and supports various operations on hierarchical meta-data. 
+              </p>
+              <p>Some examples:</p>
+              <pre>   <b>*[1-5]
+   Politics#all
+   **[topChoices]
+   US::Berkeley#all|US::*
+   History#all|**[selected][page(size=5)] </b></pre>
+              <p>For more information, refer to <a href="#Facet_Group_Selection">Group 
+                Selection</a> below. </p>
+              <p>If this attribute is not specified, it defaults to: <span class="Code">*</span></p>
+            </td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code">sortGroupsBy="<span class="MacroCode">TotalDocsOrValue</span>"</td>
+            <td valign="baseline">
+              <p>is an optional attribute telling XTF the order in which to sort 
+                groups. If set to &quot;totalDocs&quot;, groups will be sorted 
+                in decreasing order of the total number of documents per group. 
+                If set to &quot;value&quot;, groups will be sorted in increasing 
+                order by the value (i.e. name) of the facet group.</p>
+              <p>If this attribute is not specified, it defaults to &quot;totalDocs.&quot;</p>
+            </td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code"> sortDocsBy="<span class="MacroCode">ListOfMetaFields</span>" 
+            </td>
+            <td valign="baseline"> 
+              <p><span class="BaseStyle"> is an optional attribute specifying 
+                a list of meta fields by which to sort the results. The list should 
+                consist of a quoted string containing one or more meta-field names, 
+                separated by commas. If multiple meta-fields are specified, the 
+                results are sorted first by the left-most meta-field, then sub-sorted 
+                by subsequent fields to produce the final output. Optionally, 
+                each meta-field name can be preceeded by a plus sign (<b class="Code">+</b>) 
+                or a minus sign (<b class="Code">-</b>) to indicate whether the 
+                results for that field should be sorted in ascending or descending 
+                order. If no plus or minus sign is specified for a meta-field, 
+                then the results are sorted in ascending order by default.</span></p>
+              <p>If this attribute is not specified, documents are by default 
+                sorted in order of decreasing score (so the most &quot;relevant&quot; 
+                documents are first.)</p>
+              <p class="Note">(Note: Meta tags to be used for sorting should also 
+                have an xtf:tokenize=&quot;no&quot; attribute set, or sorting 
+                will produce unpredictable results.)</p>
+            </td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code"><i></i>includeEmptyGroups="<span class="MacroCode">YesOrNo</span>"<i></i></td>
+            <td valign="baseline"> 
+              <p>is an optional attribute that specifies whether to include empty 
+                groups in the results. If set to &quot;yes&quot;, empty groups 
+                will be included. If set to &quot;no&quot; they will be excluded.</p>
+              <p>If this attribute is not specified, it defaults to &quot;no.&quot;</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <p><br>
+        The <span class="Code">&lt;facet&gt;</span> tag enables counting and grouping 
+        for a single meta-data field. First, XTF scans the index and forms a table 
+        of all the possible values of that field. Then the query is performed 
+        as normal, as each document hit is encountered, XTF looks up that document's 
+        value in the table and increments the count for it. If enabled in the 
+        selection specification, a list of the document hits for each value is 
+        also accumulated.</p>
+      <p>After the counting is completed, XTF sorts them, removes empty groups 
+        if enabled, and then applies the group selection specification (from the<span class="Code"> 
+        select </span>attribute) to decide which groups to send to the <b>Result 
+        Formatter</b> stylesheet. For more information on the selection process, 
+        see <a href="#Facet_Group_Selection">Group Selection</a>, below.</p>
+      <p>Note that only one facet query is allowed per meta-data field. Trying 
+        to specify more than one will result in an error message.</p>
+      <p></p>
+          </div>
+  </div>
+  <br>
+  So, modify your query parser to add a<span class="Code"> &lt;facet&gt; </span>tag 
+  for each meta-data field you want to browse by in the user interface.
+  <p class="Heading2">Group Selection<a name="Facet_Group_Selection"></a></p>
+  <!-------------------------------------------------------------------------------------------------------------> 
+  <p>A faceted query may result in a very large number of groups. For instance, 
+    a very large collection of documents could have thousands of different Subject 
+    headings; if one were browsing by subject it would be silly to look at a page 
+    containing a thousand subjects. So some intelligence is needed in picking 
+    which subjects to show. In addition, some applications will want to display 
+    document hits below the first group, or the first four groups, etc. </p>
+  <p>XTF provides a fairly sophisticated mechanism for choosing which groups to 
+    return, and to control the groups that will have documents hits gathered for 
+    them. The group selection mechanism is somewhat loosely modeled on XPath. 
+    Since this language is under considerable development, this section simply 
+    teaches by example rather than providing a formal specification.</p>
+  <div class="Sample"><p class="Code">select=&quot;*&quot;</p></div>
+  <p>This is the simplest possible selection expression; it simply selects all 
+    groups and returns them. (Well, it selects all top-level groups in the case 
+    of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical Facets</a> 
+    later on.) This is the default behavior if the<span class="Code"> select </span>attribute 
+    is not specified for a facet. </p>
+  <p>Essentially, &quot;<span class="Code">*</span>&quot; is a wildcard that matches 
+    any group, regardless of its name.</p>
+  <div class="Sample">
+    <p class="Code">select=&quot;*[1-5]&quot;</p>
+  </div>
+  <p>This selects the first five groups. It can be interpreted this way: &quot;Start 
+    with all groups, regardless of name. From that set, select items 1 through 
+    5.&quot;</p>
+  <p>It is important to note that the order of the groups is very important to 
+    this selection. After all the counting is performed, XTF sorts all the groups, 
+    either by total number of documents (the default), or by group value/name. 
+    So this selection is the first five groups, after all groups are sorted.</p>
+  <p>This sort of selection is generally used for dividing the groups up into 
+    pages of a fixed size (five groups per page in this case.) To get the second 
+    page, one could select &quot;<span class="Code">*[6-10]</span>&quot;, etc.</p>
+  <div class="Sample"> 
+    <p class="Code">select=&quot;Politics&quot;</p>
+  </div>
+  <p>This selection chooses a group by name, &quot;Politics&quot; in this case. 
+    This could be useful if you wanted the count for only one group.</p>
+  <p>Note that name selection is not case-sensitive (i.e. differences between 
+    upper and lower case are ignored.)</p>
+  <div class="Sample"> 
+    <p class="Code">select=&quot;Politics#1-4&quot;</p>
+  </div>
+  <p>Here we've introduced something new. This still selects a single group, but 
+    also tells XTF to gather document hits for the &quot;Politics&quot; group, 
+    and return the first four document hits.</p>
+  <div class="Sample"> 
+    <p class="Code">select=&quot;*[1-5]|Politics#1-4&quot;</p>
+  </div>
+  <p>This may look complicated, but you've seen everything here before except 
+    the &quot;<span class="Code">|</span>&quot; separator. All this does is perform 
+    a logical &quot;union&quot; of two selections. In this case, it selects the 
+    first 5 groups (<span class="Code">*[1-5]</span>), and also the Politics group, 
+    and gathers four document hits for Politics (<span class="Code">Politics#1-4</span>)</p>
+  <p>Why would you want to do this? Say for instance you wanted to display the 
+    first page of groups, and you knew Politics was on that page, and you wanted 
+    document hits for Politics shown. This selection would accomplish exactly 
+    that. </p>
+  <p>But what if you wanted to display document hits for the first group on the 
+    page, regardless of which page...</p>
+  <div class="Sample"> 
+    <p class="Code">select=&quot;*[1-5]|*[1]#1-4&quot;</p>
+  </div>
+  <p>This selects the first five groups (<span class="Code">*[1-5]</span>). Also, 
+    it selects the first group (<span class="Code">*[1]</span>) and gathers four 
+    document hits for it.</p>
+  <div class="Sample"> 
+    <p class="Code">select=&quot;*&quot;</p>
+  </div>
+  <p>This is the simplest possible selection expression; it simply selects all 
+    groups and returns them. (Well, it selects all top-level groups in the case 
+    of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical Facets</a> 
+    later on.) This is the default behavior if the<span class="Code"> select </span>attribute 
+    is not specified for a facet. </p>
+  <div class="Sample"> 
+    <p class="Code">select=&quot;*&quot;</p>
+  </div>
+  <p>This is the simplest possible selection expression; it simply selects all 
+    groups and returns them. (Well, it selects all top-level groups in the case 
+    of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical Facets</a> 
+    later on.) This is the default behavior if the<span class="Code"> select </span>attribute 
+    is not specified for a facet. </p>
+  <div class="Sample"> 
+    <p class="Code">select=&quot;*&quot;</p>
+  </div>
+  <p>This is the simplest possible selection expression; it simply selects all 
+    groups and returns them. (Well, it selects all top-level groups in the case 
+    of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical Facets</a> 
+    later on.) This is the default behavior if the<span class="Code"> select </span>attribute 
+    is not specified for a facet. </p>
+  <div class="Sample"> 
+    <p class="Code">select=&quot;*&quot;</p>
+  </div>
+  <p>This is the simplest possible selection expression; it simply selects all 
+    groups and returns them. (Well, it selects all top-level groups in the case 
+    of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical Facets</a> 
+    later on.) This is the default behavior if the<span class="Code"> select </span>attribute 
+    is not specified for a facet. </p>
+  <p>&nbsp;</p>
+  </div>
+
+</body>
+
+</html>
