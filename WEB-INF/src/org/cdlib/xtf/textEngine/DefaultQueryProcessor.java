@@ -277,7 +277,6 @@ public class DefaultQueryProcessor extends QueryProcessor
         //
         int nFound = docHitQueue.size();
         DocHitImpl[] hitArray = new DocHitImpl[nFound];
-        float maxDocScore = 0.0f;
         for( int i = 0; i < nFound; i++ ) {
             int index = nFound - i - 1;
             hitArray[index] = (DocHitImpl) docHitQueue.pop();
@@ -285,7 +284,7 @@ public class DefaultQueryProcessor extends QueryProcessor
 
         // Calculate the document score normalization factor.
         docScoreNorm = 1.0f;
-        if( req.startDoc < nFound && nFound > 0 && maxDocScore > 0.0f )  
+        if( maxDocScore > 0.0f )  
             docScoreNorm = 1.0f / maxDocScore;
 
         // Finish off the hits (read in the fields, normalize, make snippets).
