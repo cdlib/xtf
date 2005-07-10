@@ -117,6 +117,10 @@ public class CrossQuery extends TextServlet
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws IOException
     {
+        long reqStartTime = 0;
+        if( config == null || config.reportLatency )
+            reqStartTime = System.currentTimeMillis();
+        
         try {
 
             // Get the parameters out of the request structure.
@@ -127,7 +131,7 @@ public class CrossQuery extends TextServlet
             //
             // If not initialized yet, do it now.
             firstTimeInit( "yes".equals(clearCaches) );
-
+            
             // Set the default output content type
             res.setContentType("text/html");
 
@@ -164,6 +168,13 @@ public class CrossQuery extends TextServlet
         catch( Exception e ) {
             genErrorPage( req, res, e );
             return;
+        }
+        finally {
+            if( config.reportLatency ) {
+                long latency = System.currentTimeMillis() - reqStartTime;
+                Trace.info( "Latency: " + latency + " msec for request: " +
+                    req.getRequestURL().toString() + "?" + req.getQueryString());
+            }
         }
     } // doGet()
 

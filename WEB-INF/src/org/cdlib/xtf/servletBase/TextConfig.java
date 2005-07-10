@@ -66,6 +66,11 @@ public abstract class TextConfig
      */
     public boolean dependencyCheckingEnabled = true;
 
+    /**
+     * Turns on latency reporting for the servlet.
+     */
+    public boolean reportLatency = false;
+
     /** All the configuration attributes in the form of name/value pairs */
     public AttribList attribs = new AttribList();
     
@@ -201,6 +206,15 @@ public abstract class TextConfig
                 dependencyCheckingEnabled = !(strVal.equals("no")) &&
                                             !(strVal.equals("false")) &&
                                             !(strVal.equals("0"));
+            else
+                bad = true;
+        }
+            
+        else if( tagName.equals("reportLatency") ) {
+            if( attrName.equals("enable") )
+                reportLatency = !(strVal.equals("no")) &&
+                                !(strVal.equals("false")) &&
+                                !(strVal.equals("0"));
             else
                 bad = true;
         }
