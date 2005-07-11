@@ -301,12 +301,12 @@ public class GroupCounts
     for( int kid = child(parent); kid >= 0; kid = sibling(kid) ) {
         if( !shouldInclude(kid) )
             continue;
-        ++rank;
         if( selection[kid] != 0 ) {
             result.subGroups[n] = buildResultGroup( kid );
             result.subGroups[n].rank = rank;
             n++;
         }
+        ++rank;
     }
     assert n == nSelected : "miscount";
     
