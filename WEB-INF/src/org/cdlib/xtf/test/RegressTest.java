@@ -82,7 +82,7 @@ import org.cdlib.xtf.util.XMLWriter;
  * <ul>
  *      <li>IndexConfig.xml - tells what to index and how</li>
  *      <li>xxx-in.xml - An input query (same format as output by queryGen.xsl)</li>
- *      <li>xxx-gold.xml - The expected output hits from the query</li>
+ *      <li>gold/xxx.xml - The expected output hits from the query</li>
  * 
  * Note that the index for a given directory will be built before all query 
  * tests in that directory are run.
@@ -287,8 +287,11 @@ public class RegressTest
         String inFilePath = inFile.toString();
         Trace.info( "Running test " + chopPath(inFilePath) + "..." );
         
-        String testFilePath = inFilePath.replaceAll( "-in", "-test" );
+        String testFilePath = formPath( inFilePath, "actual" );
         File testFile = new File(testFilePath);
+        
+        // Make sure the test directory exists. If not, create it.
+        Path.createPath( testFile.getParent() );
         
         // Okay, read the input file. It contains a query.
         NodeInfo queryDoc = null;
@@ -363,14 +366,14 @@ public class RegressTest
             }
         }
         catch( Exception e ) {
-            Trace.error( "Unexpected exception processing " +
-                         chopPath(inFilePath) + ":\n" + e );
-            failedTests.add( chopPath(inFilePath) );
-            return;
+            PrintWriter out = new PrintWriter( new OutputStreamWriter(
+                                    new FileOutputStream(testFile), "UTF-8") );
+            out.println( "Exception encountered:\n" + e );
+            out.close();
         }
 
         // See if there's a gold file, and if so, compare it.
-        String goldFilePath = inFilePath.replaceAll( "-in", "-gold" );
+        String goldFilePath = formPath( inFilePath, "gold" );
         File goldFile = new File(goldFilePath);
         if( !goldFile.exists() ) {
             Trace.info( "Missing gold file. Test result was:\n" +
@@ -390,6 +393,20 @@ public class RegressTest
             ++nSucceeded;
         }
     } // runTests()
+    
+
+    private String formPath( String path, String sub )
+    {
+        String tmp = path.replaceAll( "-in", "" );
+        int slashPos = tmp.lastIndexOf( '/' );
+        if( slashPos < 0 )
+            slashPos = tmp.lastIndexOf( '\\' );
+        assert slashPos >= 0 : "invalid path";
+        tmp = tmp.substring( 0, slashPos+1 )
+            + sub
+            + tmp.substring( slashPos );
+        return tmp;
+    }
     
     
     private void writeHits( File outFile, QueryResult result )
