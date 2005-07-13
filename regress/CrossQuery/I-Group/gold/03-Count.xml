@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="10" startDoc="0" endDoc="0">
-   <facet field="group-subject" totalGroups="16">
-      <group value="Environmental Studies" totalDocs="3" startDoc="0" endDoc="0"/>
-      <group value="African History" totalDocs="2" startDoc="0" endDoc="0"/>
-      <group value="California and the West" totalDocs="2" startDoc="0" endDoc="0"/>
-      <group value="Classical Politics" totalDocs="2" startDoc="0" endDoc="0"/>
-      <group value="Urban Studies" totalDocs="2" startDoc="0" endDoc="0"/>
+   <facet field="group-subject" totalGroups="16" totalDocs="10">
+      <group value="Environmental Studies" rank="6" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="African History" rank="7" totalSubGroups="0" totalDocs="2" startDoc="0" endDoc="0"/>
+      <group value="California and the West" rank="8" totalSubGroups="0" totalDocs="2" startDoc="0" endDoc="0"/>
+      <group value="Classical Politics" rank="9" totalSubGroups="0" totalDocs="2" startDoc="0" endDoc="0"/>
+      <group value="Urban Studies" rank="10" totalSubGroups="0" totalDocs="2" startDoc="0" endDoc="0"/>
    </facet>
 </crossQueryResult>

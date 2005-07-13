@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="0" endDoc="0">
-   <facet field="group-subject" totalGroups="16">
-      <group value="African History" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="African Studies" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Ancient History" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="California and the West" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Classical History" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Classical Politics" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Classical Religions" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Classics" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Environmental Studies" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Philosophy" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Political Theory" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Politics" totalDocs="1" startDoc="0" endDoc="0"/>
-      <group value="Social Theory" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Social and Political Thought" totalDocs="0" startDoc="0" endDoc="0"/>
-      <group value="Sociology" totalDocs="1" startDoc="0" endDoc="0"/>
-      <group value="Urban Studies" totalDocs="1" startDoc="0" endDoc="0"/>
+   <facet field="group-subject" totalGroups="16" totalDocs="1">
+      <group value="African History" rank="1" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="African Studies" rank="2" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Ancient History" rank="3" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="California and the West" rank="4" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Classical History" rank="5" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Classical Politics" rank="6" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Classical Religions" rank="7" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Classics" rank="8" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Environmental Studies" rank="9" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Philosophy" rank="10" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Political Theory" rank="11" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Politics" rank="12" totalSubGroups="0" totalDocs="1" startDoc="0" endDoc="0"/>
+      <group value="Social Theory" rank="13" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Social and Political Thought" rank="14" totalSubGroups="0" totalDocs="0" startDoc="0" endDoc="0"/>
+      <group value="Sociology" rank="15" totalSubGroups="0" totalDocs="1" startDoc="0" endDoc="0"/>
+      <group value="Urban Studies" rank="16" totalSubGroups="0" totalDocs="1" startDoc="0" endDoc="0"/>
    </facet>
 </crossQueryResult>

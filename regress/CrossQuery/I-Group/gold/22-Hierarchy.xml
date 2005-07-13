@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="9" startDoc="0" endDoc="0">
-   <facet field="geography-sort" totalGroups="1">
-      <group value="US" totalDocs="9" startDoc="0" endDoc="0">
-         <group value="California" totalDocs="7" startDoc="0" endDoc="0"/>
-         <group value="Nevada" totalDocs="2" startDoc="1" endDoc="2">
-            <docHit file="doc5.xml">
+   <facet field="geography-sort" totalGroups="1" totalDocs="9">
+      <group value="US" rank="1" totalSubGroups="3" totalDocs="9" startDoc="0" endDoc="0">
+         <group value="California" rank="1" totalSubGroups="4" totalDocs="7" startDoc="0" endDoc="0"/>
+         <group value="Nevada" rank="2" totalSubGroups="2" totalDocs="2" startDoc="1" endDoc="2">
+            <docHit rank="1" file="doc5.xml" totalHits="0">
                <meta>
                   <title>This is Document 5</title>
                   <group-subject>Environmental Studies</group-subject>
@@ -19,7 +19,7 @@
                   <geography-sort>US::California::Santa Cruz</geography-sort>
                </meta>
             </docHit>
-            <docHit file="doc4.xml">
+            <docHit rank="2" file="doc4.xml" totalHits="0">
                <meta>
                   <title>Why? Document 4</title>
                   <group-subject>Classics</group-subject>
@@ -41,7 +41,7 @@
                </meta>
             </docHit>
          </group>
-         <group value="Oregon" totalDocs="1" startDoc="0" endDoc="0"/>
+         <group value="Oregon" rank="3" totalSubGroups="1" totalDocs="1" startDoc="0" endDoc="0"/>
       </group>
    </facet>
 </crossQueryResult>

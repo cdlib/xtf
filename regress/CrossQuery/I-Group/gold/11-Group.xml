@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="10" startDoc="0" endDoc="0">
-   <facet field="group-subject" totalGroups="16">
-      <group value="Politics" totalDocs="7" startDoc="1" endDoc="7">
-         <docHit file="doc2.xml">
+   <facet field="group-subject" totalGroups="16" totalDocs="10">
+      <group value="Politics" rank="1" totalSubGroups="0" totalDocs="7" startDoc="1" endDoc="7">
+         <docHit rank="1" file="doc2.xml" totalHits="0">
             <meta>
                <title>ABC: Document 2</title>
                <group-subject>Politics</group-subject>
@@ -21,7 +21,7 @@
                <geography-sort>US::California::Santa Cruz</geography-sort>
             </meta>
          </docHit>
-         <docHit file="doc7.xml">
+         <docHit rank="2" file="doc7.xml" totalHits="0">
             <meta>
                <title>Do read Document 7</title>
                <group-subject>Politics</group-subject>
@@ -36,7 +36,7 @@
                <geography-sort>US::California::Mendocino</geography-sort>
             </meta>
          </docHit>
-         <docHit file="doc8.xml">
+         <docHit rank="3" file="doc8.xml" totalHits="0">
             <meta>
                <title>Document 8 is cool</title>
                <group-subject>Politics</group-subject>
@@ -55,7 +55,7 @@
                <geography-sort>US::California::Santa Cruz</geography-sort>
             </meta>
          </docHit>
-         <docHit file="doc9.xml">
+         <docHit rank="4" file="doc9.xml" totalHits="0">
             <meta>
                <title>Document 9 is absolutely cool</title>
                <group-subject>Classics</group-subject>
@@ -76,7 +76,7 @@
                <geography-sort>US::California::Oakland</geography-sort>
             </meta>
          </docHit>
-         <docHit file="doc3.xml">
+         <docHit rank="5" file="doc3.xml" totalHits="0">
             <meta>
                <title>Hello: Document 3</title>
                <group-subject>Politics</group-subject>
@@ -91,7 +91,7 @@
                <geography-sort>Canada::Ontario:Toronto</geography-sort>
             </meta>
          </docHit>
-         <docHit file="doc4.xml">
+         <docHit rank="6" file="doc4.xml" totalHits="0">
             <meta>
                <title>Why? Document 4</title>
                <group-subject>Classics</group-subject>
@@ -112,7 +112,7 @@
                <geography-sort>US::Nevada::Las Vegas</geography-sort>
             </meta>
          </docHit>
-         <docHit file="doc1.xml">
+         <docHit rank="7" file="doc1.xml" totalHits="0">
             <meta>
                <title>XYZ: Document 1</title>
                <group-subject>African Studies</group-subject>
@@ -128,9 +128,9 @@
             </meta>
          </docHit>
       </group>
-      <group value="Ancient History" totalDocs="3" startDoc="0" endDoc="0"/>
-      <group value="Classical History" totalDocs="3" startDoc="0" endDoc="0"/>
-      <group value="Classical Religions" totalDocs="3" startDoc="0" endDoc="0"/>
-      <group value="Classics" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Ancient History" rank="2" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Classical History" rank="3" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Classical Religions" rank="4" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Classics" rank="5" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
    </facet>
 </crossQueryResult>

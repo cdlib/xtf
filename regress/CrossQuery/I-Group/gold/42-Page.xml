@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="10" startDoc="0" endDoc="0">
-   <facet field="group-subject" totalGroups="16">
-      <group value="Sociology" totalDocs="1" startDoc="1" endDoc="1">
-         <docHit file="doc3.xml">
+   <facet field="group-subject" totalGroups="16" totalDocs="10">
+      <group value="Sociology" rank="16" totalSubGroups="0" totalDocs="1" startDoc="1" endDoc="1">
+         <docHit rank="1" file="doc3.xml" totalHits="0">
             <meta>
                <title>Hello: Document 3</title>
                <group-subject>Politics</group-subject>
@@ -13,7 +13,7 @@
                <subject>Urban Studies</subject>
                <type>text</type>
                <collection>
-                  <snippet>
+                  <snippet rank="1">
                      <hit>
                         <term>UC</term>
                      </hit>

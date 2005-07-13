@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="3" startDoc="1" endDoc="3">
-   <docHit file="doc7.xml">
+   <docHit rank="1" file="doc7.xml" totalHits="0">
       <meta>
          <title>Do read Document 7</title>
          <group-subject>Politics</group-subject>
@@ -8,7 +8,7 @@
          <group-subject>Ancient History</group-subject>
          <subject>Politics</subject>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>Classics</term>
                </hit>
@@ -17,7 +17,7 @@
          <subject>Ancient History</subject>
          <type>text</type>
          <collection>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>UC</term>
                </hit>
@@ -27,7 +27,7 @@
          <geography-sort>US::California::Mendocino</geography-sort>
       </meta>
    </docHit>
-   <docHit file="doc4.xml">
+   <docHit rank="2" file="doc4.xml" totalHits="0">
       <meta>
          <title>Why? Document 4</title>
          <group-subject>Classics</group-subject>
@@ -37,7 +37,7 @@
          <group-subject>Classical Religions</group-subject>
          <group-subject>Classical Politics</group-subject>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>Classics</term>
                </hit>
@@ -50,7 +50,7 @@
          <subject>Classical Politics</subject>
          <type>text</type>
          <collection>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>UC</term>
                </hit>
@@ -60,7 +60,7 @@
          <geography-sort>US::Nevada::Las Vegas</geography-sort>
       </meta>
    </docHit>
-   <docHit file="doc9.xml">
+   <docHit rank="3" file="doc9.xml" totalHits="0">
       <meta>
          <title>Document 9 is absolutely cool</title>
          <group-subject>Classics</group-subject>
@@ -70,7 +70,7 @@
          <group-subject>Classical Religions</group-subject>
          <group-subject>Classical Politics</group-subject>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>Classics</term>
                </hit>
@@ -83,7 +83,7 @@
          <subject>Classical Politics</subject>
          <type>text</type>
          <collection>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>UC</term>
                </hit>
@@ -93,11 +93,11 @@
          <geography-sort>US::California::Oakland</geography-sort>
       </meta>
    </docHit>
-   <facet field="group-subject" totalGroups="6">
-      <group value="Ancient History" totalDocs="3" startDoc="0" endDoc="0"/>
-      <group value="Classics" totalDocs="3" startDoc="0" endDoc="0"/>
-      <group value="Politics" totalDocs="3" startDoc="1" endDoc="3">
-         <docHit file="doc7.xml">
+   <facet field="group-subject" totalGroups="6" totalDocs="3">
+      <group value="Ancient History" rank="1" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Classics" rank="2" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Politics" rank="3" totalSubGroups="0" totalDocs="3" startDoc="1" endDoc="3">
+         <docHit rank="1" file="doc7.xml" totalHits="0">
             <meta>
                <title>Do read Document 7</title>
                <group-subject>Politics</group-subject>
@@ -105,7 +105,7 @@
                <group-subject>Ancient History</group-subject>
                <subject>Politics</subject>
                <subject>
-                  <snippet>
+                  <snippet rank="1">
                      <hit>
                         <term>Classics</term>
                      </hit>
@@ -114,7 +114,7 @@
                <subject>Ancient History</subject>
                <type>text</type>
                <collection>
-                  <snippet>
+                  <snippet rank="1">
                      <hit>
                         <term>UC</term>
                      </hit>
@@ -124,7 +124,7 @@
                <geography-sort>US::California::Mendocino</geography-sort>
             </meta>
          </docHit>
-         <docHit file="doc4.xml">
+         <docHit rank="2" file="doc4.xml" totalHits="0">
             <meta>
                <title>Why? Document 4</title>
                <group-subject>Classics</group-subject>
@@ -134,7 +134,7 @@
                <group-subject>Classical Religions</group-subject>
                <group-subject>Classical Politics</group-subject>
                <subject>
-                  <snippet>
+                  <snippet rank="1">
                      <hit>
                         <term>Classics</term>
                      </hit>
@@ -147,7 +147,7 @@
                <subject>Classical Politics</subject>
                <type>text</type>
                <collection>
-                  <snippet>
+                  <snippet rank="1">
                      <hit>
                         <term>UC</term>
                      </hit>
@@ -157,7 +157,7 @@
                <geography-sort>US::Nevada::Las Vegas</geography-sort>
             </meta>
          </docHit>
-         <docHit file="doc9.xml">
+         <docHit rank="3" file="doc9.xml" totalHits="0">
             <meta>
                <title>Document 9 is absolutely cool</title>
                <group-subject>Classics</group-subject>
@@ -167,7 +167,7 @@
                <group-subject>Classical Religions</group-subject>
                <group-subject>Classical Politics</group-subject>
                <subject>
-                  <snippet>
+                  <snippet rank="1">
                      <hit>
                         <term>Classics</term>
                      </hit>
@@ -180,7 +180,7 @@
                <subject>Classical Politics</subject>
                <type>text</type>
                <collection>
-                  <snippet>
+                  <snippet rank="1">
                      <hit>
                         <term>UC</term>
                      </hit>
@@ -191,8 +191,8 @@
             </meta>
          </docHit>
       </group>
-      <group value="Classical History" totalDocs="2" startDoc="0" endDoc="0"/>
-      <group value="Classical Politics" totalDocs="2" startDoc="0" endDoc="0"/>
-      <group value="Classical Religions" totalDocs="2" startDoc="0" endDoc="0"/>
+      <group value="Classical History" rank="4" totalSubGroups="0" totalDocs="2" startDoc="0" endDoc="0"/>
+      <group value="Classical Politics" rank="5" totalSubGroups="0" totalDocs="2" startDoc="0" endDoc="0"/>
+      <group value="Classical Religions" rank="6" totalSubGroups="0" totalDocs="2" startDoc="0" endDoc="0"/>
    </facet>
 </crossQueryResult>
