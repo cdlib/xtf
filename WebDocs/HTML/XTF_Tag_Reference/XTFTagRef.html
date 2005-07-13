@@ -500,6 +500,7 @@
             </table>
           </div>
         </div>
+        <br>
         <div class="GreyList"><b><u>File Tag</u></b><a name="textIndexer_DocSel_Input_File"></a><br>
           This tag is the input to the <b>Document Selector</b> stylesheet for each 
           file found in the containing<span class="Code"> &lt;directory...&gt; </span>tag. 
@@ -555,8 +556,8 @@
             </table>
           </div>
         </div>
-
-        <div class="GreyList"><b><u>File To IndexTag</u></b><a name="textIndexer_DocSel_Output_File"></a><br>
+        <br>
+        <div class="GreyList"><b><u>File To Index Tag</u></b><a name="textIndexer_DocSel_Output_File"></a><br>
           One copy of this tag should be output by <b>Document Selector</b> stylesheet 
           for each file that must be indexed. It should appear within an <a href="#textIndexer_DocSel_Output_IndexFiles">Index 
           List Tag</a> container. It has the form:<br>
@@ -657,6 +658,7 @@
             an index state is defined.) </div>
         </div>
       </div>
+      <br>
       <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:meta" 
         select="<span class="MacroCode">'TrueOrFalse'</span>"/&gt;<a name="textIndexer_PreFilt_Meta"></a> 
         </span> <br>
@@ -670,6 +672,7 @@
           data) or the string <span class="Code"> 'false' </span> (text in tag <b>is 
           not</b> meta data.) </div>
       </div>
+      <br>
       <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:tokenize" 
         select="<span class="MacroCode">'YesOrNo'</span>"/&gt;<a name="textIndexer_PreFilt_Tokenize"></a> 
         </span> <br>
@@ -680,6 +683,7 @@
           sorting query results instead, set this atttibute to <span class="Code"> 
           'no'</span> .</div>
       </div>
+      <br>
       <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:proximitybreak" 
         select="'<span class="MacroCode">TrueOrFalse</span>'"/&gt;<a name="textIndexer_PreFilt_ProxBreak"></a> 
         </span><br>
@@ -699,6 +703,7 @@
           use the<span class="Code"> <a href="#textIndexer_PreFilt_SectBump">sectionBump</a> 
           </span>attribute instead. </div>
       </div>
+      <br>
       <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:sentenceBump" 
         select="<span class="MacroCode">BumpInWords</span>"/&gt;<a name="textIndexer_PreFilt_SentBump"></a> 
         </span> <br>
@@ -715,6 +720,7 @@
             a sentence bump value is defined.) </div>
         </div>
       </div>
+      <br>
       <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:sectionType" 
         select="'<span class="MacroCode">TypeName</span>'"/&gt;<a name="textIndexer_PreFilt_SectType"></a> </span> <br>
         <br>
@@ -728,6 +734,7 @@
             section name is defined.) </div>
         </div>
       </div>
+      <br>
       <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:sectionBump" 
         select="<span class="MacroCode">BumpInWords</span>"/&gt;<a name="textIndexer_PreFilt_SectBump"></a> 
         </span> <br>
@@ -2091,13 +2098,15 @@
             <tr> 
               <td align="right" valign="top" class="Code"> <span class="MacroCode">YesOrNo</span> 
               </td>
-              <td> <span class="BaseStyle"> specifies whether or not 
-                raw XML search results are sent to your browser. If set to <b class="Code">yes</b> 
+              <td> <span class="BaseStyle"> specifies whether or not raw XML search 
+                results are sent to your browser. If set to <b class="Code">yes</b> 
                 , the <b>Search Result Formatter</b> stylesheet is disabled for 
                 the query, and raw XML search results are sent to your browser. 
                 If set to<span class="Code"><b> no</b></span> , the XML search 
                 results are sent to the<b> Search Result Formatter </b>stylesheet 
-                for processing, and its output in turn is sent to the browser.</span></td>
+                for processing, and its output in turn is sent to the browser. 
+                If this URL parameter is not specified, it defaults to<span class="Code"> 
+                no</span>.</span></td>
             </tr>
           </table>
           <br>
@@ -2111,7 +2120,9 @@
         <br>
         <div class="IndentLR"> 
           <pre class="Code">&lt;crossQueryResult totalDocs="<span class="MacroCode">NumberOfDocs</span>" startDoc="<span class="MacroCode">FirstDocNumber</span>" endDoc="<span class="MacroCode">LastDocNumber</span>"&gt;
-    <img src="../Common_Art/vDotDotDot.gif">
+    <span class="MacroCode">DocumentHit</span>
+    <span class="MacroCode">DocumentHit</span>
+        <img src="../Common_Art/vDotDotDot.gif">
 &lt;/crossQueryResult&gt;</pre>
         </div>
         where <br>
@@ -2127,8 +2138,8 @@
               <td width="218" align="right" valign="top" class="Code"> startDoc="<span class="MacroCode">FirstDocNumber</span>" 
               </td>
               <td width="1132"> <span class="BaseStyle"> is the sequential document 
-                number for the highest ranking document in the current Query. 
-                Note that this may not be the overall highest ranking document 
+                number for the highest ranking document returned by the current 
+                Query. Note that this may not be the overall highest ranking document 
                 if a paged query was specified. See the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">query</a> 
                 </span>tag for more details about performing paged queries. </span> 
               </td>
@@ -2137,8 +2148,8 @@
               <td width="218" align="right" valign="top" class="Code"> endDoc="<span class="MacroCode">LastDocNumber</span>" 
               </td>
               <td width="1132"> <span class="BaseStyle"> is the sequential document 
-                number for the lowest ranking document match in the current query. 
-                Note that this may not be the overall lowest ranking document 
+                number for the lowest ranking document match returned by the current 
+                query. Note that this may not be the overall lowest ranking document 
                 if a paged query was specified. See the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">query</a> 
                 </span>tag for more details about performing paged queries. </span> 
               </td>
@@ -2155,7 +2166,12 @@
         <br> 
         <div class="IndentLR"> 
           <pre class="Code">&lt;docHit rank="<span class="MacroCode">DocRelevanceRank</span>" path="<span class="MacroCode">DocumentLocation</span>" score="<span class="MacroCode">DocRelevanceScore</span>"&gt;
-    <img src="../Common_Art/vDotDotDot.gif">
+    <span class="MacroCode">DocumentMetaData</span>
+
+    <span class="MacroCode">Snippet</span>
+    <span class="MacroCode">Snippet</span>
+      <img src="../Common_Art/vDotDotDot.gif">
+    
 &lt;/docHit&gt;</pre>
         </div>
         where <br>
@@ -2208,10 +2224,12 @@
 &lt;/meta&gt;</pre>
         </div>
         The actual tags within the meta-data block will depend on the implementation 
-        of the <b><a href="../XTF_Programming_Guide/XTFProgGuide.html#textIndexer_PreFilter_Prog">Pre-Filter</a></b> used 
-        by the <b><i>textIndexer</i></b>. However, any matches found in the meta-data 
-        will be marked with<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> 
-        </span>tags. <br>
+        of the <b><a href="../XTF_Programming_Guide/XTFProgGuide.html#textIndexer_PreFilter_Prog">Pre-Filter</a></b> 
+        used by the <b><i>textIndexer</i></b>. However, any matches found in the 
+        meta-data will be marked with<span class="Code"> <a href="#crossQuery_ResultFormatter_Snippet">snippet</a> 
+        </span>tag or <span class="Code"> <a href="#crossQuery_ResultFormatter_Hit">hit</a> 
+        </span>tags, depending on what the query specified (snippets by default.). 
+        <br>
         <br>
         The document meta-data tag is always included in the query results, regardless 
         of whether there are any matches in it or not. This guarantees that the result 
