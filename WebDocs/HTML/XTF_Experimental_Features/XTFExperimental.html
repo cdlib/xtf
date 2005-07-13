@@ -127,6 +127,14 @@
     </li>
     <li></li>
     <b><a href="#Faceted_Browsing">Faceted Browsing</a></b><br>
+    <br>
+    <ul class="NoBullets">
+      <li class="ListItem"> <a href="#Faceted_MetaReq">Meta-data Requirements</a></li>
+      <li><a href="#Faceted_Query">Query Parser Tags for Facets</a></li>
+      <li><a href="#Facet_Result_Formatter">Result Formatter Tags for Facets</a></li>
+      <li><a href="#Facet_Group_Selection">Group Selection</a></li>
+      <li><a href="#Facet_Hierarchical">Hierarchical Facets</a></li>
+    </ul>
   </ul>
   <p class="Heading1">Introduction<a name="Introduction"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
@@ -137,27 +145,28 @@
     very raw code.</p>
   <p>These features are subject to change, or even to complete removal from XTF. 
     Still, they provide a glimpse into the future of XTF.<br>
+    <br>
   </p>
   <p class="Heading1">SRU Servlet<a name="SRU_Servlet"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
   <p>XTF currently contains an experimental servlet that provides exposes a Zing 
     SRW/SRU interface to an XTF repository. Here's a description taken from the 
     Zing web page (<a href="http://www.loc.gov/z3950/agency/zing/srw/">http://www.loc.gov/z3950/agency/zing/srw/</a>):</p>
-  <div class="Sample"> 
-    <p><b>Executive Summary: </b>SRW/U is a low-barrier solution to information 
+  <div class="Sample">
+    <b>Executive Summary: </b>SRW/U is a low-barrier solution to information 
       retrieval. The SRW/U protocol uses easily available technologies -- XML, 
       SOAP, HTTP, URI -- to perform tasks traditionally done using proprietary 
-      solutions; it can be carried either via SOAP (SRW) or as a URL (SRU). </p>
-    <p>SRW/U allows users to search remote databases. A user sends a searchRetrieve 
+      solutions; it can be carried either via SOAP (SRW) or as a URL (SRU).<br><br>
+    SRW/U allows users to search remote databases. A user sends a searchRetrieve 
       request which includes a query, and the server responds with a searchRetrieve 
       response indicating the number of records that matched the query, possibly 
       along with some of those records formatted according to an XML schema that 
-      the user requested. </p>
-    <p>The query is represented in CQL, the "Common Query Language", designed 
+      the user requested.<br><br>
+    The query is represented in CQL, the "Common Query Language", designed 
       for human readable, human writeable, intuitive queries. It supports very 
       simple queries -- for example an unqualified single term (e.g. "cat") -- 
       but maintains the expressiveness of more complex languages, to represent 
-      arbitrarily complex queries. </p>
+      arbitrarily complex queries.
   </div>
   <p>The idea here is to make an XTF document repository searchable using the 
     SRU protocol (SRU was simpler to implement than SRW.) This will hopefully 
@@ -202,8 +211,7 @@
     page, but rather an XML search result, obeying the SRW specification for results.</li>
 </ol>
 <p>Here's some sample output from the SRU servlet:</p>
-<div class="Sample">
-  <pre>
+  <pre class="Sample">
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;srw:searchRetrieveResponse xmlns:srw_dc=&quot;info:srw/schema/1/dc-schema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:srw=&quot;http://www.loc.gov/zing/srw/&quot;&gt;
    &lt;srw:version&gt;1.1&lt;/srw:version&gt;
@@ -240,7 +248,6 @@
    &lt;/srw:echoedSearchRetrieveRequest&gt;
 &lt;/srw:searchRetrieveResponse&gt;
 </pre>
-</div>
 <p>The servlet query parser knows how to respond to the<span class="Code"> explain 
   </span> and<span class="Code"> searchRetrieve </span><i>operation</i>s. It supports 
   only <i>version</i> 1.1 of the SRU protocol, and requires <i>recordPacking</i> 
@@ -248,7 +255,9 @@
   dc</span> (these are the defaults, so they are optional in the URL.) Other values 
   will produce an appropriate SRU error result.</p>
 <p>For further information, you may peruse the stylesheets and the <a href="%3Ca%20href=%22http://www.loc.gov/z3950/agency/zing/srw/%22%3Ehttp://www.loc.gov/z3950/agency/zing/srw/%3C/a%3E">SRW/SRU 
-  web page</a>. Comments and improvements are welcome.</p>
+  web page</a>. Comments and improvements are welcome.<br>
+  <br>
+</p>
 <p class="Heading1">Faceted Browsing<a name="Faceted_Browsing"></a></p>
 <!---------------------------------------------------------------------------------------------------------------> 
 <p><b><i>CrossQuery</i></b> provides a good general-purpose solution for searching 
@@ -275,7 +284,6 @@
   an idea of the collection's coverage, in terms of dates (the interface might 
   include decades and a count of documents for each one), subjects, authors, etc.</p>
 <div class="IndentL"> 
-
   <p class="Heading2">Meta-data Requirements<a name="Faceted_MetaReq"></a></p>
   <!-------------------------------------------------------------------------------------------------------------> 
   <p>The faceted browse system relies on properly marked meta-data in the documents. 
@@ -308,15 +316,17 @@
     one <span class="Code">indexOnly</span>, to avoid storing the same data twice.</p>
   <p>See the <a href="../XTF_Programming_Guide/XTFProgGuide.html#textIndexer_PreFilter_Prog">prefilter 
     programming</a> section in the <b>XTF Programmer's Guide</b> for more information. 
+    <br>
+    <br>
   </p>
-  <p class="Heading2">Adding Facets to a Query Request<a name="Faceted_Query"></a></p>
+  <p class="Heading2">Query Parser Tags for Facets<a name="Faceted_Query"></a></p>
   <!-------------------------------------------------------------------------------------------------------------> 
   <p>The first step to implementing a browse system is to add facets to the <b>Query 
     Parser </b>stylesheet. You can add one or more<span class="Code"> &lt;facet&gt; 
-    </span>elements as top-level children of the<span class="Code"> &lt;query...&gt; 
-    </span>element. Here's a fulller description:</p>
-  <div class="GreyList">
-    <div class="IndentLR"><b><u>Facet Tag<a name="crossQuery_QueryParser_Output_Term"></a></u></b><br>
+    </span>elements as top-level children of the<span class="Code"> &lt;query<span class="BaseStyle">...</span>&gt; 
+    </span>element. Here's a fuller description:</p>
+  <div class="GreyList"> 
+    <div class="IndentLR"><b><u>Facet Query Tag<a name="crossQuery_QueryParser_Output_Term"></a></u></b><br>
       <!----------------------------------------------------------------> This 
       tag specifies a facet for which to count hits and form groups, and optionally 
       to gather document hits. This tag has the form: <br>
@@ -363,7 +373,7 @@
           </tr>
           <tr> 
             <td align="right" valign="top" class="Code">sortGroupsBy="<span class="MacroCode">TotalDocsOrValue</span>"</td>
-            <td valign="baseline">
+            <td valign="baseline"> 
               <p>is an optional attribute telling XTF the order in which to sort 
                 groups. If set to &quot;totalDocs&quot;, groups will be sorted 
                 in decreasing order of the total number of documents per group. 
@@ -380,9 +390,9 @@
                 a list of meta fields by which to sort the results. The list should 
                 consist of a quoted string containing one or more meta-field names, 
                 separated by commas. If multiple meta-fields are specified, the 
-                results are sorted first by the left-most meta-field, then sub-sorted 
+                results are sorted first by the leftmost meta-field, then sub-sorted 
                 by subsequent fields to produce the final output. Optionally, 
-                each meta-field name can be preceeded by a plus sign (<b class="Code">+</b>) 
+                each meta-field name can be preceded by a plus sign (<b class="Code">+</b>) 
                 or a minus sign (<b class="Code">-</b>) to indicate whether the 
                 results for that field should be sorted in ascending or descending 
                 order. If no plus or minus sign is specified for a meta-field, 
@@ -422,11 +432,194 @@
       <p>Note that only one facet query is allowed per meta-data field. Trying 
         to specify more than one will result in an error message.</p>
       <p></p>
-          </div>
+    </div>
+  </div>
+  <p><br>
+    So, modify your query parser to add a<span class="Code"> &lt;facet&gt; </span>tag 
+    for each meta-data field you want to browse by in the user interface. </p>
+  <p>Here are a couple other things to note when constructing your query parser:</p>
+  <ol>
+    <li> The document hits accumulated for selected groups in a facet tag are 
+      independent of those for the main query. If you want both, fine. If you 
+      <i>only</i> want facet counts, or want document hits <i>only </i>accumulated 
+      within the facet, then specify<span class="Code"> maxDocs=&quot;0&quot; 
+      </span>on your main<span class="Code"> &lt;query<span class="BaseStyle">...</span>&gt; 
+      </span>element. <br>
+      <br>
+    </li>
+    <li>For purposes of facets, XTF counts only those documents matched by the 
+      main query. This, you can use a query to form arbitrary slices of a repository, 
+      and the facet system will report information about each slice.<br>
+      <br>
+    </li>
+    <li>In the case where you want to count <i>all</i> the documents in the repository, 
+      you need to make a query that <i>matches</i> all documents. A simple way 
+      to do this is to specify a<span class="Code"> &lt;not&gt; </span>query on 
+      a term that doesn't exist, like this:<br>
+      <pre class="Code">&lt;query<span class="MacroCode"> ...</span>>
+  &lt;facet field="field1" <span class="MacroCode">...</span>/>
+  &lt;facet field="field2" <span class="MacroCode">...</span>/>
+           <img src="../Common_Art/vDotDotDot.gif" width="8" height="26">
+  &lt;not field="field1">
+    &lt;term>veryUnlikelyTerm&lt;/term>
+  &lt;/not>
+&lt;/query></pre>
+    </li>
+  </ol>
+  Now that we've covered how to construct a<span class="Code"> &lt;facet<span class="BaseStyle">...</span>&gt; 
+  </span>element, it's time to look at the results... <br>
+  <br>
+  <p class="Heading2">Result Formatter Tags for Facets<a name="Facet_Result_Formatter"></a></p>
+  <!-------------------------------------------------------------------------------------------------------------> 
+  <p>In the case of a faceted query, the normal query results passed to the <b>Result 
+    Formatter</b> stylesheet are supplemented with one or more Facet Result Tags, 
+    one per facet in the input query. These appear at the top level of the input 
+    to the <b>Result Formatter</b>, that is, as children of the<span class="Code"> 
+    &lt;crossQueryResult&gt; </span>element.<br>
+  </p>
+  <div class="IndentL">
+<div class="GreyList"><b><u>Facet Result Tag</u></b><a name="Facet_Result_Tag"></a><br>
+      This tag identifies and contains the results for counting/grouping on one 
+      facet (or meta-data field). One copy of this tag will be sent into the <b>Result 
+      Formatter</b> for each <a href="#Faceted_Query">Facet Query Tag</a><b> </b>specified 
+      in the query. It should appear within a <a href="../XTF_Tag_Reference/XTFTagRef.html#crossQuery_ResultFormatter_CrossQRes">Query 
+      Result Tag</a> container. It has the form:<br>
+      <br>
+      <div class="IndentLR"> 
+        <pre class="code">&lt;facet field       = "<span class="MacroCode">FieldName</span>" 
+       totalGroups = &quot;<span class="MacroCode">NumberOfGroups</span>&quot; 
+       totalDocs   = &quot;<span class="MacroCode">NumberOfDocs</span>&quot;&gt;
+
+    <span class="MacroCode">GroupResult</span>
+    <span class="MacroCode">GroupResult</span>
+        <img src="../Common_Art/vDotDotDot.gif" width="8" height="26">
+
+&lt;/facet&gt;</pre>
+        where<br>
+        <br>
+        <table cellpadding="0" cellspacing="12">
+          <tr> 
+            <td align="right" valign="top" class="Code"> field="<span class="MacroCode">FieldName</span>"</td>
+            <td valign="baseline"> <span class="BaseStyle"> </span> 
+              <p>is the name of the meta-data field for which faceted data is 
+                being reported.</p>
+            </td>
+          </tr>
+          <tr> 
+            <td width="218" align="right" valign="top" class="Code"> totalGroups="<span class="MacroCode">NumberOfGroups</span>" 
+            </td>
+            <td width="1132"> <span class="BaseStyle"> is the number of groups 
+              groups this facet contains (which may be more than are selected 
+              and returned as </span><span class="MacroCode">GroupResults</span>.) 
+              In the case of a hierarchical facet, this is actually a count of 
+              the top-level groups only.</td>
+          </tr>
+          <tr> 
+            <td width="218" align="right" valign="top" class="Code"> totalDocs="<span class="MacroCode">NumberOfDocs</span>" 
+            </td>
+            <td width="1132"> <span class="BaseStyle"> is the number of documents 
+              that had matches for the specified query <i>and</i> had a value 
+              for this facet.</span> </td>
+          </tr>
+        </table>
+        <p> If any groups matched the group selection in the Facet Query Tag, 
+          then one or more <a href="#Facet_Group_Result_Tag">Group Result Tags</a> 
+          will appear as children of the Facet Result Tag. </p>
+        </div>
+    </div>
   </div>
   <br>
-  So, modify your query parser to add a<span class="Code"> &lt;facet&gt; </span>tag 
-  for each meta-data field you want to browse by in the user interface.
+  <div class="IndentL"> 
+    <div class="GreyList"><b><u>Group Result Tag</u></b><a name="Facet_Group_Result_Tag"></a><br>
+      This tag identifies and contains the results for the count (and possibly 
+      document hits) for a single group within a facet. One copy of this tag will 
+      be sent into the <b>Result Formatter</b> for group selected by the <a href="#Faceted_Query">Facet 
+      Query Tag</a><b> </b>specified in the query. The Group Result Tag<b> </b>should 
+      appear within a <a href="#Facet_Result_Tag">Facet Result Tag</a> container, 
+      or in the case of a hierarchical facet, may appear inside another Group 
+      Result Tag. It has the form:<br>
+      <br>
+      <div class="IndentLR"> 
+        <pre class="code">&lt;group value          = "<span class="MacroCode">GroupValue</span>"
+       rank           = "<span class="MacroCode">GroupSortedRank</span>"
+       totalSubGroups = &quot;<span class="MacroCode">NumOfSubGroups</span>&quot;
+       totalDocs      = &quot;<span class="MacroCode">NumberOfDocs</span>&quot;
+       startDoc       = &quot;<span class="MacroCode">FirstDocNumber</span>&quot;
+       endDoc         = &quot;<span class="MacroCode">EndDocNumber</span>&quot;&gt;
+
+    <span class="MacroCode">GroupResult</span>   <span class="MacroCode">(if facet is hierarchical)</span>
+    <span class="MacroCode">GroupResult
+</span>        <img src="../Common_Art/vDotDotDot.gif" width="8" height="26">
+
+    <span class="MacroCode">DocumentHit</span>  <span class="MacroCode">(if document hits were requested)</span>
+   <span class="MacroCode">  DocumentHit
+</span>        <img src="../Common_Art/vDotDotDot.gif" width="8" height="26">
+
+&lt;/group&gt;</pre>
+        where<br>
+        <br>
+        <table cellpadding="0" cellspacing="12">
+          <tr> 
+            <td align="right" valign="top" class="Code"> value=&quot;<span class="MacroCode">GroupValue</span>"</td>
+            <td valign="baseline"> <span class="BaseStyle"> </span> 
+              <p>is the specific facet value of the group being reported. One 
+                might also think of this as the &quot;name&quot; of the group.</p>
+            </td>
+          </tr>
+          <tr> 
+            <td width="16%" align="right" valign="top" class="Code"> rank="<span class="MacroCode">GroupSortedRank</span>" 
+            </td>
+            <td> <span class="BaseStyle"> is the ordinal ranking of this group 
+              within the set of groups at this level, with 1 being the first in 
+              sort order. Note that this is an absolute ranking for the group 
+              with respect to the entire set, and not a page relative ranking. 
+              For more information about paging groups, see <a href="#Facet_Group_Selection">Group 
+              Selection</a>, below. </span> </td>
+          </tr>
+          <tr> 
+            <td width="218" align="right" valign="top" class="Code"> totalSubGroups="<span class="MacroCode">NumOfSubGroups</span>" 
+            </td>
+            <td width="1132"> <span class="BaseStyle"> is, for a hierarchical 
+              facet, the number of </span>sub-groups this group contains, which 
+              may be more than were actually selected and returned. For a non-hierarchical 
+              facet, this will always be zero.</td>
+          </tr>
+          <tr> 
+            <td width="218" align="right" valign="top" class="Code"> totalDocs="<span class="MacroCode">NumberOfDocs</span>" 
+            </td>
+            <td width="1132"> <span class="BaseStyle"> is the number of documents 
+              that had matches for the specified main query <b><i>and</i></b> 
+              had <span class="MacroCode">GroupValue</span> </span>in the facet 
+              field.</td>
+          </tr>
+          <tr> 
+            <td width="218" align="right" valign="top" class="Code"> startDoc="<span class="MacroCode">FirstDocNumber</span>" 
+            </td>
+            <td width="1132"> <span class="BaseStyle"> is the sequential document 
+              number for the highest ranking document match reported for the current 
+              group. Note that this may not be the overall highest ranking document 
+              if a paged query was specified. See <a href="#Facet_Group_Selection">Group 
+              Selection</a>, below, for more details about paging documents. </span> 
+            </td>
+          </tr>
+          <tr> 
+            <td width="218" align="right" valign="top" class="Code"> endDoc="<span class="MacroCode">LastDocNumber</span>" 
+            </td>
+            <td width="1132"> <span class="BaseStyle"> is the sequential document 
+              number for the lowest ranking document match reported for the current 
+              group. Note that this may not be the overall lowest ranking document 
+              if a paged query was specified. See <a href="#Facet_Group_Selection">Group 
+              Selection</a>, below, for more details about paging documents.</span> 
+            </td>
+          </tr>
+        </table>
+        <p> If any groups matched the group selection in the Facet Query Tag, 
+          then one or more Group Result Tags will appear as children of the Facet 
+          Result Tag. If any document hits were selected, then one or more <a href="../XTF_Tag_Reference/XTFTagRef.html#crossQuery_ResultFormatter_DocHit">Document 
+          Hit Tags</a> will also be included.</p>
+      </div>
+    </div>
+  </div><br>
   <p class="Heading2">Group Selection<a name="Facet_Group_Selection"></a></p>
   <!-------------------------------------------------------------------------------------------------------------> 
   <p>A faceted query may result in a very large number of groups. For instance, 
@@ -438,96 +631,231 @@
   <p>XTF provides a fairly sophisticated mechanism for choosing which groups to 
     return, and to control the groups that will have documents hits gathered for 
     them. The group selection mechanism is somewhat loosely modeled on XPath. 
-    Since this language is under considerable development, this section simply 
-    teaches by example rather than providing a formal specification.</p>
-  <div class="Sample"><p class="Code">select=&quot;*&quot;</p></div>
-  <p>This is the simplest possible selection expression; it simply selects all 
-    groups and returns them. (Well, it selects all top-level groups in the case 
-    of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical Facets</a> 
-    later on.) This is the default behavior if the<span class="Code"> select </span>attribute 
-    is not specified for a facet. </p>
-  <p>Essentially, &quot;<span class="Code">*</span>&quot; is a wildcard that matches 
-    any group, regardless of its name.</p>
-  <div class="Sample">
-    <p class="Code">select=&quot;*[1-5]&quot;</p>
+    Since XTF's group selection language is under considerable development, this 
+    section simply teaches by example rather than providing a formal specification.</p>
+  <p>We will refer to the following 10 groups in the discussion to follow:</p>
+  <div class="IndentL"> 
+    <table width="90%" border="0">
+      <tr> 
+        <td width="86%" class="Code">African Studies</td>
+      </tr>
+      <tr> 
+        <td width="86%" class="Code">Ancient History</td>
+      </tr>
+      <tr> 
+        <td width="86%" class="Code">California and the West</td>
+      </tr>
+      <tr> 
+        <td width="86%" class="Code">Classical Religions</td>
+      </tr>
+      <tr> 
+        <td width="86%" class="Code">Classics</td>
+      </tr>
+      <tr> 
+        <td width="86%" class="Code">Environmental Studies</td>
+      </tr>
+      <tr> 
+        <td width="86%" class="Code">Philosophy</td>
+      </tr>
+      <tr> 
+        <td width="86%" class="Code">Politics</td>
+      </tr>
+      <tr> 
+        <td width="86%" class="Code">Social Theory</td>
+      </tr>
+      <tr> 
+        <td width="86%" class="Code">Sociology</td>
+      </tr>
+    </table>
   </div>
-  <p>This selects the first five groups. It can be interpreted this way: &quot;Start 
-    with all groups, regardless of name. From that set, select items 1 through 
-    5.&quot;</p>
+  <br>
+  <p>Let's start with the simplest possible selection expression:</p>
+  <div class="Sample"><span class="Code">select=&quot;*&quot;</span></div>
+  <p>Essentially, &quot;<span class="Code">*</span>&quot; is a wildcard that matches 
+    any group, regardless of its name. This is the simplest possible selection 
+    expression; it simply selects all groups --<span class="Code"> African Studies 
+    </span>through<span class="Code"> Sociology </span>-- and returns them. (Well, 
+    it selects all top-level groups in the case of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical 
+    Facets</a> later on.) This is the default behavior if the<span class="Code"> 
+    select </span>attribute is not specified for a facet. </p>
+  <p>It's important to note that by default XTF skips over groups that have no 
+    hits. If you really want all the groups including empty ones, specify the<span class="Code"> 
+    includeEmptyGroups </span>attribute in the<span class="Code"> &lt;facet<span class="BaseStyle">...</span>&gt; 
+    </span>query tag.</p>
+  <div class="Sample"><span class="Code">select=&quot;*[1-5]&quot;</span></div>
+  <p>This selects the first five groups,<span class="Code"> African Studies </span>through<span class="Code"> 
+    Classics</span>. It can be interpreted this way: &quot;Start with all groups, 
+    regardless of name. From that set, select items 1 through 5.&quot;</p>
   <p>It is important to note that the order of the groups is very important to 
     this selection. After all the counting is performed, XTF sorts all the groups, 
     either by total number of documents (the default), or by group value/name. 
     So this selection is the first five groups, after all groups are sorted.</p>
   <p>This sort of selection is generally used for dividing the groups up into 
     pages of a fixed size (five groups per page in this case.) To get the second 
-    page, one could select &quot;<span class="Code">*[6-10]</span>&quot;, etc.</p>
-  <div class="Sample"> 
-    <p class="Code">select=&quot;Politics&quot;</p>
-  </div>
-  <p>This selection chooses a group by name, &quot;Politics&quot; in this case. 
-    This could be useful if you wanted the count for only one group.</p>
+    page (<span class="Code">Environmental Studies </span>through<span class="Code"> 
+    Sociology</span>), one could select &quot;<span class="Code">*[6-10]</span>&quot;, 
+    etc.</p>
+  <div class="Sample"><span class="Code">select=&quot;Ancient History&quot;</span></div>
+  <p>This selection chooses a group by name,<span class="Code"> Ancient History 
+    </span>in this case. This could be useful if you wanted the count for only 
+    one group.</p>
   <p>Note that name selection is not case-sensitive (i.e. differences between 
     upper and lower case are ignored.)</p>
-  <div class="Sample"> 
-    <p class="Code">select=&quot;Politics#1-4&quot;</p>
-  </div>
+  <div class="Sample"><span class="Code">Select=&quot;Ancient History#1-4&quot;</span></div>
   <p>Here we've introduced something new. This still selects a single group, but 
-    also tells XTF to gather document hits for the &quot;Politics&quot; group, 
-    and return the first four document hits.</p>
-  <div class="Sample"> 
-    <p class="Code">select=&quot;*[1-5]|Politics#1-4&quot;</p>
-  </div>
+    also tells XTF to gather document hits for the<span class="Code"> Ancient 
+    History </span>group, and return the first four document hits.</p>
+  <div class="Sample"><span class="Code">Select=&quot;Ancient History#all&quot;</span></div>
+  <p>Just like above, but selects <i>all</i> documents hits (instead of just four.)</p>
+  <div class="Sample"><span class="Code">Select=&quot;*[1-5]|Ancient History#1-4&quot;</span></div>
   <p>This may look complicated, but you've seen everything here before except 
     the &quot;<span class="Code">|</span>&quot; separator. All this does is perform 
-    a logical &quot;union&quot; of two selections. In this case, it selects the 
-    first 5 groups (<span class="Code">*[1-5]</span>), and also the Politics group, 
-    and gathers four document hits for Politics (<span class="Code">Politics#1-4</span>)</p>
+    a logical union of two selections. In this case, it selects the first 5 groups 
+    (<span class="Code">*[1-5]</span>). Then it also selects the<span class="Code"> 
+    Ancient History </span>group, and gathers the first four document hits for 
+    it (<span class="Code">Ancient History#1-4</span>)</p>
   <p>Why would you want to do this? Say for instance you wanted to display the 
-    first page of groups, and you knew Politics was on that page, and you wanted 
-    document hits for Politics shown. This selection would accomplish exactly 
-    that. </p>
+    first page of groups, and you knew<span class="Code"> Ancient History </span>was 
+    on that page, and you wanted document hits for that group shown. This selection 
+    would accomplish exactly that. </p>
   <p>But what if you wanted to display document hits for the first group on the 
-    page, regardless of which page...</p>
-  <div class="Sample"> 
-    <p class="Code">select=&quot;*[1-5]|*[1]#1-4&quot;</p>
-  </div>
-  <p>This selects the first five groups (<span class="Code">*[1-5]</span>). Also, 
-    it selects the first group (<span class="Code">*[1]</span>) and gathers four 
-    document hits for it.</p>
-  <div class="Sample"> 
-    <p class="Code">select=&quot;*&quot;</p>
-  </div>
-  <p>This is the simplest possible selection expression; it simply selects all 
-    groups and returns them. (Well, it selects all top-level groups in the case 
-    of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical Facets</a> 
-    later on.) This is the default behavior if the<span class="Code"> select </span>attribute 
-    is not specified for a facet. </p>
-  <div class="Sample"> 
-    <p class="Code">select=&quot;*&quot;</p>
-  </div>
-  <p>This is the simplest possible selection expression; it simply selects all 
-    groups and returns them. (Well, it selects all top-level groups in the case 
-    of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical Facets</a> 
-    later on.) This is the default behavior if the<span class="Code"> select </span>attribute 
-    is not specified for a facet. </p>
-  <div class="Sample"> 
-    <p class="Code">select=&quot;*&quot;</p>
-  </div>
-  <p>This is the simplest possible selection expression; it simply selects all 
-    groups and returns them. (Well, it selects all top-level groups in the case 
-    of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical Facets</a> 
-    later on.) This is the default behavior if the<span class="Code"> select </span>attribute 
-    is not specified for a facet. </p>
-  <div class="Sample"> 
-    <p class="Code">select=&quot;*&quot;</p>
-  </div>
-  <p>This is the simplest possible selection expression; it simply selects all 
-    groups and returns them. (Well, it selects all top-level groups in the case 
-    of a hierarchical field; see <a href="#Facet_Hierarchical">Hierarchical Facets</a> 
-    later on.) This is the default behavior if the<span class="Code"> select </span>attribute 
-    is not specified for a facet. </p>
-  <p>&nbsp;</p>
-  </div>
+    page, and you didn't already know what that group was?</p>
+  <div class="Sample"><span class="Code">select=&quot;*[1-5]|*[1]#1-4&quot;</span></div>
+  <p>This selects the first five groups (<span class="Code">*[1-5]</span>) --<span class="Code"> 
+    African Studies </span>through<span class="Code"> Classics</span>. Also, it 
+    selects the first group (<span class="Code">*[1]</span>), which is<span class="Code"> 
+    African Studies </span>in this case, and gathers four document hits for it.</p>
+  <p>What if you want to select a certain group by name, and also select the other 
+    groups in the same page, but you don't know in advance which page the group 
+    is on? Well...</p>
+  <div class="Sample"><span class="Code">select=&quot;Politics[page(size=5)]&quot;</span></div>
+  <p>This expression selects the<span class="Code"> Politics </span>group, and 
+    then expands to select all the other groups on the same page as<span class="Code"> 
+    Politics</span>, performing calculations assuming each page is five groups.</p>
+  <p>In the case of our sample data above, the first page of five groups is<span class="Code"> 
+    African Studies </span>through<span class="Code"> Classics</span>. But the 
+    first page doesn't contain<span class="Code"> Politics</span>, so we skip 
+    it and select the groups on the second page instead --<span class="Code"> 
+    Environmental Studies </span>through<span class="Code"> Sociology </span>-- 
+    which does include<span class="Code"> Politics</span>.<br>
+    <br>
+  </p>
+  <p class="Heading2">Hierarchical Facets<a name="Facet_Hierarchical"></a></p>
+  <!-------------------------------------------------------------------------------------------------------------> 
+  <p>Above we covered one way to deal with a large number of groups, by paging 
+    them. Another way is to apply structure to the groups, forming a hierarchy 
+    of parent/child relationships. One obvious application is for geographical 
+    information, which breaks down naturally into large groupings by nation, followed 
+    by states/provinces within each nation, counties or districts within the states, 
+    and thence to cities.</p>
+  <p>Telling XTF about hierarchical data is simple: place the data items in a 
+    meta-data field, listing the groupings from most general to most specific 
+    and separating them by double-colons, like this: &quot;<span class="Code">US::California</span>&quot;. 
+    In this section we'll refer to the following sample data.</p>
+  <table width="90%" border="0" class="IndentL">
+    <tr bgcolor="#E0E0E0"> 
+      <td width="86%" class="Code"><i>Canada</i></td>
+    </tr>
+    <tr  bgcolor="#E0E0E0"> 
+      <td width="86%" class="Code"><i>Canada::Ontario</i></td>
+    </tr>
+    <tr> 
+      <td width="86%" class="Code">Canada::Ontario::Toronto</td>
+    </tr>
+    <tr bgcolor="#E0E0E0"> 
+      <td width="86%" class="Code"><i>US</i></td>
+    </tr>
+    <tr bgcolor="#E0E0E0"> 
+      <td width="86%" class="Code"><i>US::California</i></td>
+    </tr>
+    <tr> 
+      <td width="86%" class="Code">US::California::Berkeley</td>
+    </tr>
+    <tr> 
+      <td width="86%" class="Code">US::California::San Francisco</td>
+    </tr>
+    <tr> 
+      <td width="86%" class="Code">US::California::Yreka</td>
+    </tr>
+    <tr bgcolor="#E0E0E0"> 
+      <td width="86%" class="Code"><i>US::Nevada</i></td>
+    </tr>
+    <tr> 
+      <td width="86%" class="Code">US::Nevada::Las Vegas</td>
+    </tr>
+    <tr> 
+      <td width="86%" class="Code">US::Nevada::Reno</td>
+    </tr>
+  </table>
+  <p>As you can see, the sample hierarchy has three levels (Nation, State/Province, 
+    and City), but XTF imposes no particular limits on the depth of the hierarchy.</p>
+  <p>The groups above shown with a gray background are implied by the other groups 
+    but need not be present in the document repository. For example, if XTF encounters 
+    the group<span class="Code"> US::Nevada::Las Vegas</span>, it automatically 
+    creates the groups<span class="Code"> US::Nevada </span>and<span class="Code"> 
+    US</span>, even if they those values are not specifically present in any document's 
+    meta-data.</p>
+  <p>Now let's consider how the group selection mechanism works in the presence 
+    of hierarchical groups.</p>
+  <div class="Sample"><span class="Code">Select=&quot;*&quot;</span></div>
+  <p>One might think this selects all the groups, but instead it only selects 
+    the <i>top-level</i> groups. In this case, it will select<span class="Code"> 
+    US </span>and<span class="Code"> Canada</span>. You might ask what happens 
+    if you request document hits:</p>
+  <div class="Sample"><span class="Code">select=&quot;*#all&quot;</span></div>
+  <p>This expression selects all top-level groups, and gathers all the document 
+    hits for each group. Note that XTF will automatically count and gather document 
+    hits for all the children and grandchildren of<span class="Code"> US </span>and<span class="Code"> 
+    Canada</span>. That is, the<span class="Code"> US </span>group will contain 
+    document hits for<span class="Code"> US::California::Berkeley</span>,<span class="Code"> 
+    US::California::San Francisco</span>,<span class="Code"> US::Nevada::Reno</span>, 
+    etc.</p>
+  <div class="Sample"><span class="Code">select=&quot;US::*&quot;</span></div>
+  <p>Selects all groups that are children of<span class="Code"> US </span>which 
+    are<span class="Code"> California </span>and<span class="Code"> Nevada</span>. 
+    Because no &quot;<span class="Code">#</span>&quot; is present, this expression 
+    only counts documents but doesn't collect them.</p>
+  <p>Note that when XTF reports the groups in <a href="#Facet_Group_Result_Tag">Group 
+    Result Tags</a>, the tags will be nested in a hierarchy which includes all 
+    the necessary parents and grandparents even if they weren't specifically selected:</p>
+  <pre class="Sample"><b>  &lt;facet totalGroups=&quot;1&quot;<span class="BaseStyle"> ...</span>&gt;
+    &lt;group value=&quot;US&quot; totalSubGroups=&quot;2&quot;<span class="BaseStyle"> ...</span>&gt;
+      &lt;group value=&quot;California&quot; totalSubGroups=&quot;0&quot;<span class="BaseStyle"> ...</span>/&gt;
+      &lt;group value=&quot;Nevada&quot; totalSubGroups=&quot;0&quot;<span class="BaseStyle"> ...</span>/&gt;
+    &lt;/group&gt;
+  &lt;/facet&gt;</b></pre>
+  <p>Also note that the group values do not have the colons &quot;<span class="Code">::</span>&quot; 
+    embedded in them. These are only present in the document meta-data.</p>
+  <p>But what if you wanted to select absolutely all of the groups, not just the 
+    top-level ones? One could use a really clunky expression like &quot;<span class="Code">*|*::*|*::*::*</span>&quot;, 
+    but here's an easier way:</p>
+  <div class="Sample"><span class="Code">select=&quot;**&quot;</span></div>
+  <p>This special syntax simply selects all the groups regardless of their level 
+    in the hierarchy. This can be useful for small hierarchies, or to bypass XTF's 
+    group selection mechanism and do group selection entirely in the <b>Result 
+    Formatter</b> stylesheet. Note however that it can be slow when processing 
+    large hierarchies.</p>
+  <div class="Sample"></div>
+  <p>What if you don't know which level of the hierarchy to select?</p>
+  <div class="Sample"><span class="Code">select=&quot;**[topChoices]&quot;</span></div>
+  <p>This instructs XTF to make a good guess as to which level of the hierarchy 
+    to return, based on the documents selected by the main query. Essentially, 
+    it looks for the topmost level in the hierarchy that has more than one choice.</p>
+  <p>For instance, if the query produced two documents, one coded with<span class="Code"> 
+    US::California::Berkeley </span>in its meta-data, and the other encoded with<span class="Code"> 
+    US::Nevada::Reno</span>, then<span class="Code"> **[topChoices] </span>would 
+    select<span class="Code"> California </span>and<span class="Code"> Nevada</span>. 
+    Starting from the top, there's only one choice:<span class="Code"> US</span>. 
+    After that, there are two choices, so XTF stops there.</p>
+  <p>If instead the two documents were coded for<span class="Code"> US::California::Berkeley 
+    </span>and<span class="Code"> US::California::Yreka</span>, then XTF would 
+    select<span class="Code"> Berkeley </span>and<span class="Code"> Yreka</span>. 
+    Again starting from the top, there's one choice:<span class="Code"> US</span>. 
+    Below that, there's again one choice:<span class="Code"> California</span>. 
+    Below that are two choices, so it stops there.</p>
+  <p>If all the documents were for<span class="Code"> US::California::Berkeley</span>, 
+    XTF would simply select that single group.</p>
+</div>
 
 </body>
 
