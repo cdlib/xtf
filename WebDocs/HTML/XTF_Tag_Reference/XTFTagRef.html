@@ -810,8 +810,8 @@
           <br>
           <div class="IndentLR"> 
             <pre class="code">&lt;parameters&gt;
-    <span class="MacroCode">ParameterBlock</span>
-    <span class="MacroCode">ParameterBlock</span>
+    <span class="MacroCode"><a href="#crossQuery_QueryParser_Input_Param">ParameterBlock</a></span>
+    <span class="MacroCode"><a href="#crossQuery_QueryParser_Input_Param">ParameterBlock</a></span>
          <img src="../Common_Art/vDotDotDot.gif">
 &lt;/parameters&gt;</pre>
           </div>
@@ -824,9 +824,9 @@
           <div class="IndentLR"> 
             <pre class="code">
 &lt;param name="<span class="MacroCode">ParamName</span>" value="<span class="MacroCode">ParamValue</span>"&gt;
-    <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
-    <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
-          <img src="../Common_Art/vDotDotDot.gif">
+    <span class="MacroCode"><a href="#crossQuery_QueryParser_Input_Token">Token</a></span> | <span class="MacroCode"><a href="#crossQuery_QueryParser_Input_Phrase">Phrase</a></span>
+    <span class="MacroCode"><a href="#crossQuery_QueryParser_Input_Token">Token</a></span> | <span class="MacroCode"><a href="#crossQuery_QueryParser_Input_Phrase">Phrase</a></span>
+         <img src="../Common_Art/vDotDotDot.gif">
 &lt;/param&gt;</pre>
           </div>
           where <br>
@@ -890,8 +890,8 @@
           <br>
           <div class="IndentLR"> 
             <pre class="Code">&lt;phrase value="<span class="MacroCode">StringOfWords</span>"&gt;
-    <span class="MacroCode">Token</span>
-    <span class="MacroCode">Token</span>
+    <span class="MacroCode"><a href="#crossQuery_QueryParser_Input_Token">Token</a></span>
+    <span class="MacroCode"><a href="#crossQuery_QueryParser_Input_Token">Token</a></span>
       <img src="../Common_Art/vDotDotDot.gif">
 &lt;/phrase&gt;
 </pre>
@@ -909,8 +909,8 @@
                 <td width="16%" align="right" valign="top" class="Code"> <span class="MacroCode">Token, 
                   Token</span>... </td>
                 <td> <span class="BaseStyle"> is the original phrase broken down 
-                  into one or more token tags (one for each word or symbol in 
-                  the phrase.) </span> </td>
+                  into one or more <a href="#crossQuery_QueryParser_Input_Token">token</a> 
+                  tags (one for each word or symbol in the phrase.) </span> </td>
               </tr>
             </table>
           </div>
@@ -2101,8 +2101,11 @@
         parameter can be helpful when debugging a <b>Search Result Formatter</b> 
         stylesheet. This parameter is added to a query URL, and has the form:<br>
         <br>
-        <div class="IndentLR"> <span class="Code"> <font color="#999999">http://<font face="Times New Roman, Times, serif"><i>yourserver</i></font>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?text=<font face="Times New Roman, Times, serif"><i>TextToFind</i></font>&</font><b>raw=</b><span class="MacroCode">YesOrNo</span></span> 
-        </div>
+        <div class="IndentLR"> 
+          <p><span class="Code"> <font color="#999999">http://<font face="Times New Roman, Times, serif"><i>yourserver</i></font>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?<br>
+            </font></span><span class="Code"><font color="#999999">text=<font face="Times New Roman, Times, serif"><i>TextToFind</i></font>&<b>raw=</b></font><span class="MacroCode">YesOrNo</span></span> 
+          </p>
+          </div>
         <p>where <br>
         </p>
         <div class="IndentLR"> 
@@ -2131,9 +2134,14 @@
         servlet. It has the form:<br> 
         <br>
         <div class="IndentLR"> 
-          <pre class="Code">&lt;crossQueryResult totalDocs="<span class="MacroCode">NumberOfDocs</span>" startDoc="<span class="MacroCode">FirstDocNumber</span>" endDoc="<span class="MacroCode">LastDocNumber</span>"&gt;
-    <span class="MacroCode">DocumentHit</span>
-    <span class="MacroCode">DocumentHit</span>
+          <pre class="Code">&lt;crossQueryResult totalDocs = "<span class="MacroCode">NumberOfDocs</span>" 
+                  startDoc  = "<span class="MacroCode">FirstDocNumber</span>" 
+                  endDoc    = "<span class="MacroCode">LastDocNumber</span>"&gt;
+    <span class="MacroCode"><a href="#crossQuery_QueryParser_Input_Parameters">Parameters</a>
+</span>    <span class="MacroCode"><a href="#crossQuery_QueryParser_Output_Query">Query</a></span><span class="MacroCode">
+</span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_DocHit">DocumentHit</a></span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_DocHit">DocumentHit</a></span>
         <img src="../Common_Art/vDotDotDot.gif">
 &lt;/crossQueryResult&gt;</pre>
         </div>
@@ -2168,6 +2176,11 @@
             </tr>
           </table>
           <br>
+          Note that the Query Result tag includes the same<span class="Code"> 
+          &lt;parameters&gt; </span>block that was sent to the Query Parser stylesheet, 
+          and also includes the<span class="Code"> &lt;query&gt; </span>block 
+          output by that stylesheet. These may be useful to the <b>Search Result 
+          Formatter</b> stylesheet in formulating its output.<br>
         </div>
       </div>
       <br>
@@ -2177,11 +2190,14 @@
         This tag has the form:<br>
         <br> 
         <div class="IndentLR"> 
-          <pre class="Code">&lt;docHit rank="<span class="MacroCode">DocRelevanceRank</span>" path="<span class="MacroCode">DocumentLocation</span>" score="<span class="MacroCode">DocRelevanceScore</span>"&gt;
-    <span class="MacroCode">DocumentMetaData</span>
+          <pre class="Code">&lt;docHit rank  = "<span class="MacroCode">DocRelevanceRank</span>" 
+        path  = "<span class="MacroCode">DocumentLocation</span>" 
+        score = "<span class="MacroCode">DocRelevanceScore</span>"&gt;
 
-    <span class="MacroCode">Snippet</span>
-    <span class="MacroCode">Snippet</span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Meta">DocumentMetaData</a></span>
+
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Snippet">Snippet</a></span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Snippet">Snippet</a></span>
       <img src="../Common_Art/vDotDotDot.gif">
     
 &lt;/docHit&gt;</pre>
@@ -2483,8 +2499,8 @@
           Request Parser</b> stylesheet for translation. It has the form: <br>
           <br>
           <pre class="code">&lt;parameters&gt;
-    <span class="MacroCode">ParameterBlock</span>
-    <span class="MacroCode">ParameterBlock</span>
+    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Param">ParameterBlock</a></span>
+    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Param">ParameterBlock</a></span>
          <img src="../Common_Art/vDotDotDot.gif">
 &lt;/parameters&gt;</pre>
         </div>
@@ -2496,8 +2512,8 @@
           <div class="IndentLR"> 
             <pre class="code">
 &lt;param name="<span class="MacroCode">ParamName</span>" value="<span class="MacroCode">ParamValue</span>"&gt;
-    <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
-    <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
+    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Token">Token</a></span> | <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Phrase">Phrase</a></span>
+    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Token">Token</a></span> | <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Phrase">Phrase</a></span>
           <img src="../Common_Art/vDotDotDot.gif">
 &lt;/param&gt;</pre>
           </div>
@@ -2571,8 +2587,8 @@
           <br>
           <div class="IndentLR"> 
             <pre class="Code">&lt;phrase value="<span class="MacroCode">StringOfWords</span>"&gt;
-    <span class="MacroCode">Token</span>
-    <span class="MacroCode">Token</span>
+    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Token">Token</a></span>
+    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Token">Token</a></span>
       <img src="../Common_Art/vDotDotDot.gif">
 &lt;/phrase&gt;
 </pre>
@@ -2591,9 +2607,9 @@
                 <td width="16%" align="right" valign="top" class="Code"> <span class="MacroCode">Token, 
                   Token</span>... </td>
                 <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the original phrase broken down into 
-                  one or more token tags (one for each word or symbol in the phrase.) 
-                  </span> </td>
+                <td> <span class="BaseStyle"> is the original phrase broken down 
+                  into one or more <a href="#dynaXML_ReqParser_Input_Token">token</a> 
+                  tags (one for each word or symbol in the phrase.) </span> </td>
               </tr>
             </table>
           </div>
@@ -3030,8 +3046,8 @@
         results for the document. It has the form: 
         <div class="IndentLR"> 
           <pre class="Code">&lt;xtf:snippets&gt;
-  <span class="MacroCode">Snippet</span>
-  <span class="MacroCode">Snippet</span>
+  <span class="MacroCode"><a href="#dynaXML_DocFormatter_Snippet">Snippet</a></span>
+  <span class="MacroCode"><a href="#dynaXML_DocFormatter_Snippet">Snippet</a></span>
     <img src="../Common_Art/vDotDotDot.gif">
 &lt;/snippets&gt;</pre>
         </div>
