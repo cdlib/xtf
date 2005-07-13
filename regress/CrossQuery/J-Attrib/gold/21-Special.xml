@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc3.xml">
+   <docHit rank="1" file="doc3.xml" totalHits="0">
       <meta>
          <special>
-            <snippet>Wiley &amp; Sons
+            <snippet rank="1">Wiley &amp; Sons
       Equations: 3 <hit>
                   <term>&lt;</term>
                </hit> 4,</snippet> 
-            <snippet>and 7 <hit>
+            <snippet rank="2">and 7 <hit>
                   <term>&gt;</term>
                </hit> 6</snippet>
          </special>

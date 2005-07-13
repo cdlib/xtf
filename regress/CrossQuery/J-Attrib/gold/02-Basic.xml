@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc1.xml">
+   <docHit rank="1" file="doc1.xml" totalHits="0">
       <meta>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>African</term>
                </hit> Studies</snippet>
          </subject>
          <subject q="series">Politics &lt; Science</subject>
          <subject>
-            <snippet>
+            <snippet rank="2">
                <hit>
                   <term>African</term>
                </hit> History</snippet>

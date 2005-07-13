@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc2.xml">
+   <docHit rank="1" file="doc2.xml" totalHits="0">
       <meta>
          <struct attr="something">
-                  <hit>
+                  <hit rank="1">
                <term>Hello</term> 
                <term>there</term>
             </hit>

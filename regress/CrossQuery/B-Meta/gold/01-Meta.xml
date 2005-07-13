@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc1.xml">
+   <docHit rank="1" file="doc1.xml" totalHits="0">
       <meta>
          <title>
-            <snippet>The Opening of the <hit>
+            <snippet rank="1">The Opening of the <hit>
                   <term>Apartheid</term>
                </hit> Mind: Options for the New South Africa</snippet>
          </title>

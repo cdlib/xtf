@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc4.xml">
+   <docHit rank="1" file="doc4.xml" totalHits="0">
       <meta>
          <title>Asylia: Territorial Inviolability in the Hellenistic World</title>
          <creator>Kent J. Rigsby</creator>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>Classics</term>
                </hit>

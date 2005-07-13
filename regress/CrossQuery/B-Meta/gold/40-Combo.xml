@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc3.xml">
+   <docHit rank="1" file="doc3.xml" totalHits="1">
       <meta>
          <title>Thirty-Eight Witnesses: The Kitty Genovese Case</title>
          <creator>A.M. Rosenthal</creator>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>Politics</term>
                </hit>
@@ -21,7 +21,7 @@
          <relation>http://escholarship.cdlib.org/</relation>
          <rights>Public</rights>
       </meta>
-      <snippet>INTRODUCTION TO <hit>
+      <snippet rank="1">INTRODUCTION TO <hit>
             <term>PAPERBACK</term>
          </hit> EDITION Soon after I returned from years of reporting</snippet>
    </docHit>

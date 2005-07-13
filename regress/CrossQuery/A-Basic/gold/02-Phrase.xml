@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc1.xml">
+   <docHit rank="1" file="doc1.xml" totalHits="1">
       <meta>
          <testMeta>"Some test data"</testMeta>
       </meta>
-      <snippet>broadcasting system. Anything you say <hit>
+      <snippet rank="1">broadcasting system. Anything you say <hit>
             <term>can</term> 
             <term>and</term> 
             <term>will</term>

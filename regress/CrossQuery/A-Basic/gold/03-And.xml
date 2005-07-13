@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc1.xml">
+   <docHit rank="1" file="doc1.xml" totalHits="3">
       <meta>
          <testMeta>"Some test data"</testMeta>
       </meta>
-      <snippet>loss is a terrible thing to mind. <hit>
+      <snippet rank="1">loss is a terrible thing to mind. <hit>
             <term>This</term> is <term>the</term>
          </hit> end. You just gotta love it! Cats</snippet>
-      <snippet>
+      <snippet rank="2">
          <hit>
             <term>This</term> is a test of <term>the</term>
          </hit> emergency broadcasting system. Anything you say can and</snippet>
-      <snippet>go and what to do. <hit>
+      <snippet rank="3">go and what to do. <hit>
             <term>The</term> animal world is full of examples. <term>This</term>
          </hit> particular one is</snippet>
    </docHit>

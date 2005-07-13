@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc1.xml">
+   <docHit rank="1" file="doc1.xml" totalHits="2">
       <meta>
          <testMeta>x</testMeta>
       </meta>
-      <snippet>The <hit>
+      <snippet rank="1">The <hit>
             <term>book</term>
          </hit>. Men of war. Man on the moon. A cat in a hat.</snippet>
-      <snippet>X X X X X X X X X X X X X X X X X X X <hit>
+      <snippet rank="2">X X X X X X X X X X X X X X X X X X X <hit>
             <term>Book</term>
          </hit> of the year. Weird men. Moon man too.</snippet>
    </docHit>

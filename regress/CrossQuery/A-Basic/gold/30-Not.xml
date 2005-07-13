@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc1.xml">
+   <docHit rank="1" file="doc1.xml" totalHits="6">
       <meta>
          <testMeta>"Some test data"</testMeta>
       </meta>
-      <snippet>terrible thing to mind. This is the end. <hit>
+      <snippet rank="1">terrible thing to mind. This is the end. <hit>
             <term>You</term>
          </hit> just gotta love it! Cats don't care</snippet>
-      <snippet>full of examples. This particular one is missing from this document, but if <hit>
+      <snippet rank="2">full of examples. This particular one is missing from this document, but if <hit>
             <term>you</term>
          </hit>
       </snippet>
-      <snippet>like <hit>
+      <snippet rank="3">like <hit>
             <term>you</term>
          </hit> can use your imagination. Never lose your imagination. A loss</snippet>
-      <snippet>This is a test of the emergency broadcasting system. Anything <hit>
+      <snippet rank="4">This is a test of the emergency broadcasting system. Anything <hit>
             <term>you</term>
          </hit> say can and</snippet>
-      <snippet>will be used against <hit>
+      <snippet rank="5">will be used against <hit>
             <term>you</term>
          </hit> in a court of law.</snippet>
-      <snippet>If this had been a real emergency <hit>
+      <snippet rank="6">If this had been a real emergency <hit>
             <term>you</term>
          </hit> would have been told where to go and what</snippet>
    </docHit>

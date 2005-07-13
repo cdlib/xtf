@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc1.xml">
+   <docHit rank="1" file="doc1.xml" totalHits="11">
       <meta>
          <testMeta>"Some test data"</testMeta>
       </meta>
-      <snippet>
+      <snippet rank="1">
          <term>the</term> end. You just gotta <hit>
             <term>love</term>
          </hit> it! Cats don't care about man's inhumanity to man.</snippet>
-      <snippet>but if you like you can use your imagination. Never <hit>
+      <snippet rank="2">but if you like you can use your imagination. Never <hit>
             <term>lose</term>
          </hit> your imagination.</snippet>
-      <snippet>A loss is a terrible <hit>
+      <snippet rank="3">A loss is a terrible <hit>
             <term>thing</term>
          </hit> to mind. <term>This</term> is</snippet>
    </docHit>

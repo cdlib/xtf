@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="5" startDoc="1" endDoc="5">
-   <docHit file="doc3.xml">
+   <docHit rank="1" file="doc3.xml" totalHits="0">
       <meta>
          <title>Thirty-Eight Witnesses: The Kitty Genovese Case</title>
          <creator>A.M. Rosenthal</creator>
@@ -8,55 +8,55 @@
          <subject>Sociology</subject>
          <subject>Urban Studies</subject>
          <description>
-            <snippet>In a decade scarred by some of <hit>
+            <snippet rank="1">In a decade scarred by some of <hit>
                   <term>the</term>
                </hit> worst tragedies in this country's history,</snippet> 
-            <snippet>March 13, 1964, stands apart from <hit>
+            <snippet rank="2">March 13, 1964, stands apart from <hit>
                   <term>the</term>
                </hit> other atrocities,</snippet> 
-            <snippet>not because of <hit>
+            <snippet rank="3">not because of <hit>
                   <term>the</term>
                </hit> identity</snippet> 
-            <snippet>of <hit>
+            <snippet rank="4">of <hit>
                   <term>the</term>
                </hit> victim - whose name was not Kennedy,</snippet> 
-            <snippet>King, or Malcolm - but because of <hit>
+            <snippet rank="5">King, or Malcolm - but because of <hit>
                   <term>the</term>
-               </hit> circumstances. Kitty Genovese was a 28-</snippet>year-old middle-class woman from Kew Gardens, <snippet>Queens, whose murder was distinguished by <hit>
+               </hit> circumstances. Kitty Genovese was a 28-</snippet>year-old middle-class woman from Kew Gardens, <snippet rank="6">Queens, whose murder was distinguished by <hit>
                   <term>the</term>
                </hit> presence of thirty-eight witnesses</snippet> 
-            <snippet>who did nothing to stop <hit>
+            <snippet rank="7">who did nothing to stop <hit>
                   <term>the</term>
                </hit> series of attacks that would</snippet> 
-            <snippet>claim her life.Thirty years later <hit>
+            <snippet rank="8">claim her life.Thirty years later <hit>
                   <term>the</term>
-               </hit> Kitty Genovese murder still presses us to</snippet> ask a litany of questions: Why did these people <snippet>fail to act? What does it say about <hit>
+               </hit> Kitty Genovese murder still presses us to</snippet> ask a litany of questions: Why did these people <snippet rank="9">fail to act? What does it say about <hit>
                   <term>the</term>
-               </hit> conditions of contemporary urban life?</snippet> Would it happen today? First published over thirty years ago, Thirty-Eight Witnesses remains <snippet>a social document that warrants close and repeated examination. <hit>
+               </hit> conditions of contemporary urban life?</snippet> Would it happen today? First published over thirty years ago, Thirty-Eight Witnesses remains <snippet rank="10">a social document that warrants close and repeated examination. <hit>
                   <term>The</term>
                </hit> account</snippet> 
-            <snippet>of <hit>
+            <snippet rank="11">of <hit>
                   <term>the</term>
                </hit> story, as related</snippet> 
-            <snippet>by one of <hit>
+            <snippet rank="12">by one of <hit>
                   <term>the</term>
                </hit> best-known and most</snippet> 
-            <snippet>controversial newspaper professionals in <hit>
+            <snippet rank="13">controversial newspaper professionals in <hit>
                   <term>the</term>
                </hit> country,</snippet> 
-            <snippet>has <hit>
+            <snippet rank="14">has <hit>
                   <term>the</term>
                </hit> added dimension of being part memoir, part investigative journalism,</snippet> 
-            <snippet>and part public service. In an updated preface that incorporates <hit>
+            <snippet rank="15">and part public service. In an updated preface that incorporates <hit>
                   <term>the</term>
                </hit> most recent</snippet> 
-            <snippet>developments in <hit>
+            <snippet rank="16">developments in <hit>
                   <term>the</term>
                </hit> case, A.M.</snippet> 
-            <snippet>Rosenthal examines why <hit>
+            <snippet rank="17">Rosenthal examines why <hit>
                   <term>the</term>
                </hit> murder of Kitty</snippet> 
-            <snippet>Genovese still has <hit>
+            <snippet rank="18">Genovese still has <hit>
                   <term>the</term>
                </hit> power to shock in a world jaded by news of urban</snippet> violence.</description>
          <date>19990331</date>
@@ -68,39 +68,39 @@
          <special>A</special>
       </meta>
    </docHit>
-   <docHit file="doc1.xml">
+   <docHit rank="2" file="doc1.xml" totalHits="0">
       <meta>
          <title>The Opening of the Apartheid Mind: Options for the New South Africa</title>
          <creator>Heribert Adam and Kogila Moodley</creator>
          <subject>African Studies</subject>
          <subject>Politics</subject>
          <subject>African History</subject>
-         <description>Refusing to be governed by what is fashionable or inoffensive, Heribert Adam <snippet>and Kogila Moodley frankly address <hit>
+         <description>Refusing to be governed by what is fashionable or inoffensive, Heribert Adam <snippet rank="1">and Kogila Moodley frankly address <hit>
                   <term>the</term>
-               </hit> passions and rationalities that drive</snippet> politics in post-<snippet>apartheid South Africa. They argue that <hit>
+               </hit> passions and rationalities that drive</snippet> politics in post-<snippet rank="2">apartheid South Africa. They argue that <hit>
                   <term>the</term>
-               </hit> country's quest for democracy is</snippet> widely misunderstood and that public opinion abroad relies on stereotypes of violent tribalism and false <snippet>colonial analogies.Adam and Moodley criticize <hit>
+               </hit> country's quest for democracy is</snippet> widely misunderstood and that public opinion abroad relies on stereotypes of violent tribalism and false <snippet rank="3">colonial analogies.Adam and Moodley criticize <hit>
                   <term>the</term>
                </hit> personality cult surrounding</snippet> 
-            <snippet>Nelson Mandela and <hit>
+            <snippet rank="4">Nelson Mandela and <hit>
                   <term>the</term>
                </hit> accolades accorded F. W.</snippet> 
-            <snippet>de Klerk. They reject <hit>
+            <snippet rank="5">de Klerk. They reject <hit>
                   <term>the</term>
-               </hit> black-versus-white conflict and substitute</snippet> sober <snippet>analysis and strategic pragmatism for <hit>
+               </hit> black-versus-white conflict and substitute</snippet> sober <snippet rank="6">analysis and strategic pragmatism for <hit>
                   <term>the</term>
-               </hit> moral outrage that typifies so much</snippet> writing <snippet>about South Africa. Believing that <hit>
+               </hit> moral outrage that typifies so much</snippet> writing <snippet rank="7">about South Africa. Believing that <hit>
                   <term>the</term>
-               </hit> best expression of solidarity emanates</snippet> from sympathetic but candid criticism, <snippet>they pose challenging questions for <hit>
+               </hit> best expression of solidarity emanates</snippet> from sympathetic but candid criticism, <snippet rank="8">they pose challenging questions for <hit>
                   <term>the</term>
-               </hit> African National Congress and Nelson</snippet> Mandela. They give <snippet>in-depth coverage to political violence, <hit>
+               </hit> African National Congress and Nelson</snippet> Mandela. They give <snippet rank="9">in-depth coverage to political violence, <hit>
                   <term>the</term>
-               </hit> ANC-South African Communist Party</snippet> alliance, Inkatha, and other controversial topics as well.The authors do not propose a solution that will guarantee a genuinely democratic South Africa. What <snippet>they offer is an understanding of <hit>
+               </hit> ANC-South African Communist Party</snippet> alliance, Inkatha, and other controversial topics as well.The authors do not propose a solution that will guarantee a genuinely democratic South Africa. What <snippet rank="10">they offer is an understanding of <hit>
                   <term>the</term>
-               </hit> country's social conditions and political</snippet> constraints, and they sketch options for <snippet>both a new South Africa and a new post-Cold War foreign policy for <hit>
+               </hit> country's social conditions and political</snippet> constraints, and they sketch options for <snippet rank="11">both a new South Africa and a new post-Cold War foreign policy for <hit>
                   <term>the</term>
                </hit> whole of</snippet> 
-            <snippet>southern Africa. <hit>
+            <snippet rank="12">southern Africa. <hit>
                   <term>The</term>
                </hit> importance of this book is as immediate as today's</snippet> headlines.</description>
          <date>19930628</date>
@@ -112,20 +112,20 @@
          <special>B</special>
       </meta>
    </docHit>
-   <docHit file="doc5.xml">
+   <docHit rank="3" file="doc5.xml" totalHits="0">
       <meta>
          <title>California Riparian Systems: Ecology, Conservation, and Productive Management</title>
          <creator>Richard E. Warner and Kathleen M. Hendrix, editors</creator>
          <subject>Environmental Studies</subject>
          <subject>California and the West</subject>
          <description>
-            <snippet>This volume presents 135 of <hit>
+            <snippet rank="1">This volume presents 135 of <hit>
                   <term>the</term>
                </hit> papers</snippet> 
-            <snippet>presented at <hit>
+            <snippet rank="2">presented at <hit>
                   <term>the</term>
                </hit> 1981 California</snippet> 
-            <snippet>Riparian Systems Conference. <hit>
+            <snippet rank="3">Riparian Systems Conference. <hit>
                   <term>The</term>
                </hit> papers address all aspects of riparian systems:</snippet> habitat, wildlife, land management, land use policy planning, conservation and water resource management.</description>
          <date>19841203</date>
@@ -136,7 +136,7 @@
          <rights>Public</rights>
       </meta>
    </docHit>
-   <docHit file="doc4.xml">
+   <docHit rank="4" file="doc4.xml" totalHits="0">
       <meta>
          <title>Asylia: Territorial Inviolability in the Hellenistic World</title>
          <creator>Kent J. Rigsby</creator>
@@ -147,27 +147,27 @@
          <subject>Classical Religions</subject>
          <subject>Classical Politics</subject>
          <description>
-            <snippet>In <hit>
+            <snippet rank="1">In <hit>
                   <term>the</term>
-               </hit> Hellenistic period certain Greek temples and cities came</snippet> to be declared "<snippet>sacred and inviolable." Asylia was <hit>
+               </hit> Hellenistic period certain Greek temples and cities came</snippet> to be declared "<snippet rank="2">sacred and inviolable." Asylia was <hit>
                   <term>the</term>
-               </hit> practice of declaring religious places</snippet> precincts of asylum, meaning they were immune <snippet>to violence and civil authority. <hit>
+               </hit> practice of declaring religious places</snippet> precincts of asylum, meaning they were immune <snippet rank="3">to violence and civil authority. <hit>
                   <term>The</term>
                </hit> evidence for this phenomenon - mainly</snippet> 
-            <snippet>inscriptions and coins - is scattered in <hit>
+            <snippet rank="4">inscriptions and coins - is scattered in <hit>
                   <term>the</term>
                </hit> published</snippet> 
-            <snippet>record. <hit>
+            <snippet rank="5">record. <hit>
                   <term>The</term>
-               </hit> material has never been collected and presented in one publication</snippet> until now.Kent J. Rigsby lays out these documents and discusses their historical implications in a substantial introduction. He argues <snippet>that while a hopeful intention of military neutrality lay behind <hit>
+               </hit> material has never been collected and presented in one publication</snippet> until now.Kent J. Rigsby lays out these documents and discusses their historical implications in a substantial introduction. He argues <snippet rank="6">that while a hopeful intention of military neutrality lay behind <hit>
                   <term>the</term>
                </hit> institution</snippet> 
-            <snippet>of asylum, <hit>
+            <snippet rank="7">of asylum, <hit>
                   <term>the</term>
-               </hit> declarations did not in fact change military behavior. Instead, "</snippet>declared inviolability" <snippet>became a civic and religious honor for which cities across <hit>
+               </hit> declarations did not in fact change military behavior. Instead, "</snippet>declared inviolability" <snippet rank="8">became a civic and religious honor for which cities across <hit>
                   <term>the</term>
                </hit> Greek world</snippet> 
-            <snippet>competed during <hit>
+            <snippet rank="9">competed during <hit>
                   <term>the</term>
                </hit> third to first centuries B.C.</snippet>
          </description>
@@ -180,7 +180,7 @@
          <special>C</special>
       </meta>
    </docHit>
-   <docHit file="doc2.xml">
+   <docHit rank="5" file="doc2.xml" totalHits="0">
       <meta>
          <title>The Problems of a Political Animal: Community, Justice, and Conflict in Aristotelian Political Thought</title>
          <creator>Bernard R. Yack</creator>
@@ -189,11 +189,11 @@
          <subject>Political Theory</subject>
          <subject>Social and Political Thought</subject>
          <subject>Social Theory</subject>
-         <description>A bold new interpretation of Aristotelian thought is central to Bernard Yack's provocative new book. He shows that for Aristotle, community is a conflict-ridden fact of everyday life, as well as an ideal of social harmony and <snippet>integration. From political justice and <hit>
+         <description>A bold new interpretation of Aristotelian thought is central to Bernard Yack's provocative new book. He shows that for Aristotle, community is a conflict-ridden fact of everyday life, as well as an ideal of social harmony and <snippet rank="1">integration. From political justice and <hit>
                   <term>the</term>
-               </hit> rule of law to class struggle and</snippet> moral conflict, Yack maintains <snippet>that Aristotle intended to explain <hit>
+               </hit> rule of law to class struggle and</snippet> moral conflict, Yack maintains <snippet rank="2">that Aristotle intended to explain <hit>
                   <term>the</term>
-               </hit> conditions of everyday political life,</snippet> not just, <snippet>as most commentators assume, to represent <hit>
+               </hit> conditions of everyday political life,</snippet> not just, <snippet rank="3">as most commentators assume, to represent <hit>
                   <term>the</term>
                </hit> hypothetical achievements of an</snippet> idealistic "best regime."By showing how Aristotelian ideas can provide new insight into our own political life, Yack makes a valuable contribution to contemporary discourse and debate. His work will excite interest among a wide range of social, moral, and political theorists.</description>
          <date>19930809</date>

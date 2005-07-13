@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit file="doc2.xml">
+   <docHit rank="1" file="doc2.xml" totalHits="0">
       <meta>
-         <title>The Problems of a Political <snippet>Animal: Community, Justice, <hit>
+         <title>The Problems of a Political <snippet rank="1">Animal: Community, Justice, <hit>
                   <term>and</term> Conflict in Aristotelian <term>Political</term>
                </hit> Thought</snippet>
          </title>
@@ -10,13 +10,13 @@
          <subject>Politics</subject>
          <subject>Philosophy</subject>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>Political</term>
                </hit> Theory</snippet>
          </subject>
          <subject>
-            <snippet>Social and <hit>
+            <snippet rank="2">Social and <hit>
                   <term>Political</term>
                </hit> Thought</snippet>
          </subject>

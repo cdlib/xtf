@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="2" startDoc="1" endDoc="2">
-   <docHit file="doc5.xml">
+   <docHit rank="1" file="doc5.xml" totalHits="1">
       <meta>
          <title>California Riparian Systems: Ecology, Conservation, and Productive Management</title>
          <creator>Richard E. Warner and Kathleen M. Hendrix, editors</creator>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>Environmental</term>
                </hit> Studies</snippet>
@@ -19,20 +19,20 @@
          <relation>http://escholarship.cdlib.org/</relation>
          <rights>Public</rights>
       </meta>
-      <snippet>no pristine riparian systems <hit>
+      <snippet rank="1">no pristine riparian systems <hit>
             <term>left</term> 
             <term>in</term> 
             <term>the</term> 
             <term>state</term>
          </hit>. (Photograph © 1983 by R.E.</snippet>
    </docHit>
-   <docHit file="doc1.xml">
+   <docHit rank="2" file="doc1.xml" totalHits="1">
       <meta>
          <title>The Opening of the Apartheid Mind: Options for the New South Africa</title>
          <creator>Heribert Adam and Kogila Moodley</creator>
          <subject>African Studies</subject>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>Politics</term>
                </hit>
@@ -47,7 +47,7 @@
          <relation>http://escholarship.cdlib.org/</relation>
          <rights>Public</rights>
       </meta>
-      <snippet>Perspective <term>The</term> 
+      <snippet rank="1">Perspective <term>The</term> 
          <hit>
             <term>Global</term> 
             <term>Relevance</term> 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="3" startDoc="1" endDoc="3">
-   <docHit file="doc5.xml">
+   <docHit rank="1" file="doc5.xml" totalHits="0">
       <meta>
          <title>
-            <snippet>California <hit>
+            <snippet rank="1">California <hit>
                   <term>Riparian</term>
                </hit> Systems: Ecology, Conservation, and Productive Management</snippet>
          </title>
@@ -19,13 +19,13 @@
          <rights>Public</rights>
       </meta>
    </docHit>
-   <docHit file="doc1.xml">
+   <docHit rank="2" file="doc1.xml" totalHits="0">
       <meta>
          <title>The Opening of the Apartheid Mind: Options for the New South Africa</title>
          <creator>Heribert Adam and Kogila Moodley</creator>
          <subject>African Studies</subject>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>Politics</term>
                </hit>
@@ -41,12 +41,12 @@
          <rights>Public</rights>
       </meta>
    </docHit>
-   <docHit file="doc3.xml">
+   <docHit rank="3" file="doc3.xml" totalHits="0">
       <meta>
          <title>Thirty-Eight Witnesses: The Kitty Genovese Case</title>
          <creator>A.M. Rosenthal</creator>
          <subject>
-            <snippet>
+            <snippet rank="1">
                <hit>
                   <term>Politics</term>
                </hit>
