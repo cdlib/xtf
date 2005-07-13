@@ -663,14 +663,26 @@
         select="<span class="MacroCode">'TrueOrFalse'</span>"/&gt;<a name="textIndexer_PreFilt_Meta"></a> 
         </span> <br>
         <br>
-        <div class="IndentLR"> This attribute is used to mark the contents of a tag 
-          as being part of the meta-data for a document rather than main-body text 
-          for the document. <br>
-          <br>
-          The<span class="Code"> select </span>value for this tag should be set to 
-          either the string<span class="Code"> 'true' </span>(text in tag is meta 
-          data) or the string <span class="Code"> 'false' </span> (text in tag <b>is 
-          not</b> meta data.) </div>
+        <div class="IndentLR"> 
+          <p>This attribute is used to mark the contents of a tag as being part 
+            of the meta-data for a document rather than main-body text for the 
+            document. <br>
+            <br>
+            The<span class="Code"> select </span>value for this tag should be 
+            set to either the string<span class="Code"> 'true' </span>(text in 
+            tag is meta data) or the string <span class="Code"> 'false' </span> 
+            (text in tag <b>is not</b> meta data.) </p>
+          <p>The entire tag and its contents will be treated as meta-data and 
+            will be added to the index using the element name as the name of the 
+            meta-data field. That is, the tag will be indexed separately from 
+            the full text of the document.</p>
+          <p>Other attributes of the tag, and any embedded element tags, will 
+            be stored in the index and will be passed verbatim to the <b>Result 
+            Formatter</b> stylesheet to be used for output purposes. Of course 
+            the text of the element and any sub-elements will be searchable, but 
+            the actual attributes and element tags themselves cannot be searched 
+            for.</p>
+        </div>
       </div>
       <br>
       <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:tokenize" 
