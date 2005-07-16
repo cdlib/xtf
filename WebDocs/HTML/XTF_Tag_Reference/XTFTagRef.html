@@ -214,6 +214,7 @@
                     <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Not">&lt;not<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
                     <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Near">&lt;near<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
                     <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Range">&lt;range<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
+                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_SectionType">&lt;sectionType<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
                   </ul>
                 </li>
               </ul>
@@ -736,10 +737,12 @@
       <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:sectionType" 
         select="'<span class="MacroCode">TypeName</span>'"/&gt;<a name="textIndexer_PreFilt_SectType"></a> </span> <br>
         <br>
-        <div class="IndentLR"> This attribute assigns a section type name to a tag, 
-          with the <span class="MacroCode">TypeName</span> parameter identifying the 
-          section name to use. Assigning a section name to a tag allows grouped searches 
-          to be performed on tags that have the same section names. <br>
+        <div class="IndentLR"> This attribute assigns a section type name to a 
+          tag, with the <span class="MacroCode">TypeName</span> parameter identifying 
+          the section name to use. Assigning a section name to a tag allows grouped 
+          searches to be performed on tags that have the same section names, by 
+          inserting a <a href="#crossQuery_QueryParser_Output_SectionType">Section 
+          Type Tag</a> into a query.<br>
           <br>
           <div class="Note"> (Note: If not explicitly set, nested sub-tags for a document 
             inherit the section type name from the closest parent tag for which a 
@@ -917,9 +920,10 @@
         </div>
         <br>
         <p class="Heading3">Output Tags<a name="crossQuery_QueryParser_Output_Tags"></a></p>
-        These tags are used by the <b>Query Parser</b> stylesheet to form the 
-        XML query passed to the <b><i>crossQuery</i></b> search engine<b> </b>for 
-        processing.<br><br>
+        <p>These tags are used by the <b>Query Parser</b> stylesheet to form the 
+          XML query passed to the <b><i>crossQuery</i></b> search engine<b> </b>for 
+          processing. The top-level tag is the Query Tag below.<br>
+        </p>
         <div class="Sample"> <b><u>Query Tag</u></b><a name="crossQuery_QueryParser_Output_Query"></a><br>
           <!----------------------------------------------------------> This tag 
           is outer-most tag in an XML query sent to the <b><i>crossQuery</i></b> 
@@ -1203,6 +1207,8 @@
       <i>{</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
       <i>{</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;<br>
   <span class="MacroCode">WordToFind</span><br>
+  <i>{</i><span class="MacroCode">OptionalSectionTypeQuery</span><i>}</i>
+
 &lt;/term&gt;</pre>
           </div>
           where <br>
@@ -1272,6 +1278,10 @@
           <div class="Note"> (Note: Any non-leading or trailing whitespace characters 
             in <span class="MacroCode"> WordToFind </span>(i.e, space, tab, carriage-return, 
             line-feed, etc.) will produce unpredictable search results.) </div>
+          <p>If the field is "text", a <a href="#crossQuery_QueryParser_Output_SectionType">Section Type</a> 
+            sub-query may optionally appear, restricting this term query to particular 
+            sections of a document based on section types added by the <b>Pre-Filter</b> 
+            stylesheet at index time.</p>
         </div>
         <br>
 
@@ -1288,6 +1298,9 @@
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
       <img src="../Common_Art/vDotDotDot.gif">
+
+    <i>{</i><span class="MacroCode">OptionalSectionTypeQuery</span><i>}</i>
+
 &lt;/phrase&gt;</pre>
           </div>
           where <br>
@@ -1368,23 +1381,31 @@
                 </td>
               </tr>
             </table>
-          </div><br>
-          Within the phrase tag, <span class="MacroCode">Term</span> is a<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, and 
-          <span class="MacroCode">Clause</span> is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
-          </span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br>
-          <br>
-          Note that text will only match a phrase query if all the terms in the<span class="Code"> 
-          phrase </span>tag appear in the document in same order, with no other 
-          intervening words. Note that it does not matter whether the phrase appears 
-          at the beginning, middle, or end of a field; it will match in any position. 
-          To match the exact contents of an entire field, use the<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span> tag 
-          below.</div>
+          </div>
+          <p><br>
+            Within the phrase tag, <span class="MacroCode">Term</span> is a<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, 
+            and <span class="MacroCode">Clause</span> is a<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+            </span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br>
+            <br>
+            Note that text will only match a phrase query if all the terms in 
+            the<span class="Code"> phrase </span>tag appear in the document in 
+            same order, with no other intervening words. Note that it does not 
+            matter whether the phrase appears at the beginning, middle, or end 
+            of a field; it will match in any position. To match the exact contents 
+            of an entire field, use the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span> 
+            tag below.</p>
+            
+          <p>If the field is "text", a <a href="#crossQuery_QueryParser_Output_SectionType">Section Type</a> 
+            sub-query may optionally appear, restricting this phrase query to 
+            particular sections of a document based on section types added by 
+            the <b>Pre-Filter</b> stylesheet at index time.</p>
+        </div>
         <br>
 
         <!-- Exact Tag --> 
@@ -1400,6 +1421,9 @@
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
       <img src="../Common_Art/vDotDotDot.gif">
+
+    <i>{</i><span class="MacroCode">OptionalSectionTypeQuery</span><i>}</i>
+
 &lt;/exact&gt;</pre>
           </div>
           where <br>
@@ -1505,6 +1529,10 @@
             terms before and after the match; the normal rules for upper/lower 
             case insensitivity, and accent/plural mapping still apply. So &quot;man 
             on the moon&quot; will still match &quot;Men on the MOON&quot;.</p>
+          <p>If the field is "text", a <a href="#crossQuery_QueryParser_Output_SectionType">Section Type</a> 
+            sub-query may optionally appear, restricting this query to particular 
+            sections of a document based on section types added by the <b>Pre-Filter 
+            </b>stylesheet at index time.</p>
         </div>
         <br>
         <!-- Phrase Tag --> 
@@ -1521,6 +1549,9 @@
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
       <img src="../Common_Art/vDotDotDot.gif">
+
+    <i>{</i><span class="MacroCode">OptionalSectionTypeQuery</span><i>}</i>
+
 &lt;/and&gt;</pre>
           </div>
           where <br>
@@ -1603,7 +1634,11 @@
           <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. </div>
+          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. If 
+          the field is "text", a <a href="#crossQuery_QueryParser_Output_SectionType">Section Type</a> sub-query 
+          may optionally appear, restricting this query to particular sections 
+          of a document based on section types added by the <b>Pre-Filter</b> 
+          stylesheet at index time.</div>
         <br>
         <!-- AND Tag --> 
         <div class="Sample"> <b><u>OR Search Tag<a name="crossQuery_QueryParser_Output_Or"></a></u></b><br>
@@ -1611,7 +1646,7 @@
           tag defines a search where any one of the sub-terms or clauses must 
           exist in a document for a match to be made. This tag has the form: <br>
           <br>
-          <div class="IndentLR">
+          <div class="IndentLR"> 
             <pre class="Code">&lt;or <i>{</i>field       = "<span class="MacroCode">FieldName</span>"<i>}</i>
     <i>{</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
  <i>   {</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
@@ -1619,6 +1654,9 @@
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
       <img src="../Common_Art/vDotDotDot.gif">
+
+    <i>{</i><span class="MacroCode">OptionalSectionTypeQuery</span><i>}</i>
+
 &lt;/or&gt;</pre>
           </div>
           where <br>
@@ -1704,7 +1742,11 @@
           <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. </div>
+          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. If 
+          the field is "text", a <a href="#crossQuery_QueryParser_Output_SectionType">Section Type</a> sub-query 
+          may optionally appear, restricting this phrase query to particular sections 
+          of a document based on section types added by the <b>Pre-Filter</b> 
+          stylesheet at index time.</div>
         <br>
         <!-- OR Tag --> 
         <div class="Sample"> <b><u>Not Search Tag<a name="crossQuery_QueryParser_Output_Not"></a></u></b><br>
@@ -1849,6 +1891,9 @@
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
       <img src="../Common_Art/vDotDotDot.gif">
+
+    <i>{</i><span class="MacroCode">OptionalSectionTypeQuery</span><i>}</i>
+
 &lt;/near&gt;</pre>
           </div>
           where 
@@ -1955,22 +2000,27 @@
             </table>
             <br>
           </div>
-          Within the <span class="Code">near</span> tag, <span class="MacroCode">Term</span> 
-          is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> 
-          </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br>
-          <br>
-          It should also be noted that, when applied to the &quot;text&quot; field, 
-          if the value specified for the<span class="Code"> slop </span>attribute 
-          exceeds the maximum proximity for the index being used, the maximum 
-          proximity value will be used instead. There is no limit on the<span class="Code"> 
-          slop </span>attribute when applied to meta-data fields.</div>
+          <p>Within the <span class="Code">near</span> tag, <span class="MacroCode">Term</span> 
+            is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> 
+            </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br>
+            <br>
+            It should also be noted that, when applied to the &quot;text&quot; 
+            field, if the value specified for the<span class="Code"> slop </span>attribute 
+            exceeds the maximum proximity for the index being used, the maximum 
+            proximity value will be used instead. There is no limit on the<span class="Code"> 
+            slop </span>attribute when applied to meta-data fields.</p>
+          <p>If the field is "text", a <a href="#crossQuery_QueryParser_Output_SectionType">Section Type</a> 
+            sub-query may optionally appear, restricting this query to particular 
+            sections of a document based on section types added by the <b>Pre-Filter</b> 
+            stylesheet at index time.</p>
+        </div>
         <br>
         <!-- Near Tag --> 
         <div class="Sample"> <b><u>Range Search Tag<a name="crossQuery_QueryParser_Output_Range"></a></u></b><br>
@@ -1985,6 +2035,8 @@
 
     &lt;upper&gt;<span class="MacroCode">FirstTermToFind</span>&lt;/upper&gt;
     &lt;lower&gt;<span class="MacroCode">LastTermToFind</span>&lt;/lower&gt;
+
+    <i>{</i><span class="MacroCode">OptionalSectionTypeQuery</span><i>}</i>
 
 &lt;/range&gt;</pre>
           </div>
@@ -2073,18 +2125,58 @@
             </table>
             <br>
           </div>
-          This tag returns a match for any word that lexicographically falls in the 
-          range specified by the<span class="Code"> upper </span>and<span class="Code"> 
-          lower </span>tags. This tag is primarily used to search for a range of revision 
-          numbers, dates, or years. <br>
+          This tag returns a match for any word that lexicographically falls in 
+          the range specified by the<span class="Code"> upper </span>and<span class="Code"> 
+          lower </span>tags. This tag is primarily used to search for a range 
+          of revision numbers, dates, or years. <br>
+          <p>If the field is "text", a <a href="#crossQuery_QueryParser_Output_SectionType">Section Type</a> 
+            sub-query may optionally appear, restricting this query to particular 
+            sections of a document based on section types added by the <b>Pre-Filter</b> 
+            stylesheet at index time.</p>
+        </div><br>
+        <!-- SectionType Tag --> 
+        <div class="Sample"> <b><u>Section Type Tag<a name="crossQuery_QueryParser_Output_SectionType"></a></u></b><br>
+          <!------------------------------------------------------------------> 
+          This tag modifies other queries, causing them to apply to only certain 
+          portions of the full text of a document. It has the form: <br>
           <br>
-          <div class="Note"> Note: This tag can only be used in meta-data searches, 
-            and not full-text searches. Attempting to use the<span class="Code"> range 
-            </span>tag on a full-text search will generate an error. </div>
-        </div>
-        <br>
-        <!-- Range Tag --> </div>
-      <!-- Input/Output Tags indent --> </div>
+          <div class="IndentLR"> 
+            <pre class="Code">&lt;sectionType&gt;
+
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+
+&lt;/sectionType&gt;
+</pre>
+          </div>
+            
+          <p>This tag may only be used within another query, and has the effect 
+            of limiting that query to search only those parts of the full document 
+            text whose sectionType attributes match the specified term or clause. 
+            The<span class="Code"> sectionType </span>tag is only allowed within 
+            queries on the &quot;text&quot; field. XTF evaluates the specified 
+            term or clause against the section type attributes recorded at index 
+            time by the <b> Pre-Filter </b>stylesheet using the <a href="#textIndexer_PreFilt_SectType">xtf:sectionType</a> 
+            attribute.</p>
+          <p>For example, if one wanted the option to only search the chapter 
+            headings of all books in a repository, then the prefilter would be 
+            modified to mark all the headings with<span class="Code"> xtf:sectionType=&quot;heading&quot;</span>, 
+            and then a<span class="Code"> sectionType </span>tag would be added 
+            within the main text query, containing<span class="Code"> term </span>tag 
+            on the word &quot;heading&quot;.<br>
+          </p>
+          <p>Within the<span class="Code"> sectionType </span>tag, <span class="MacroCode">Term</span> 
+            is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> 
+            </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag.</p>
+          </div>
+        <!-- Range Tag --></div>
+      <!-- Input/Output Tags indent --> <p>&nbsp;</p></div>
     <!-- queryParser Tags indent --> 
     <div class="IndentL"> 
       <p class="Heading3">Search Result Formatter Tags<a name="crossQuery_ResultFormatter_Tags"></a></p>
