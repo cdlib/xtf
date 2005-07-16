@@ -422,8 +422,6 @@ public class RegressTest
         //
         String str = XMLWriter.toString(hitDoc);
         str = str.replaceAll( " score=\"\\d+\"", "" );
-        str = str.replaceAll( " rank=\"\\d+\"", "" );
-        str = str.replaceAll( " totalHits=\"\\d+\"", "" );
         str = str.replaceAll( " path=\"all:", " file=\"" );
         
         // Now we're ready to write the file.
