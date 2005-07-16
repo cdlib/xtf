@@ -729,7 +729,7 @@
     after the <b>?</b> symbol) defines the search to be performed. Also notice that 
     search to be performed is represented by two parameters: <br>
     <br>
-    <table width="606" cellpadding="0" cellspacing="12">
+    <table width="90%" cellpadding="0" cellspacing="12">
       <tr> 
         <td width="213" align="right" valign="baseline" class="Code">text=man+war</td>
         <td width="246" valign="baseline"><span class="BaseStyle">The list of 
@@ -861,13 +861,13 @@
 
     <span class="MacroCode">WordToFind</span>
 
-&lt;/text&gt;</b></pre>
+&lt;/term&gt;</b></pre>
     <p>This tag indicates that we wish to find a single word in the field identified 
       by <span class="Code">field=</span>&quot;<span class="MacroCode">FieldToSearch</span>&quot; 
       . If we wish to search the main text of a document, <span class="MacroCode">FieldToSearch</span> 
       should be set to <span class="Code"><span class="Code">text</span></span>. 
       If we wish to search meta data for a document, we would use a meta-data 
-      field name instead, like <span class="Code">author</span> or <span class="Code">subject</span>. 
+      field name instead, like <span class="Code">creator</span> or <span class="Code">subject</span>. 
       Once the search field been identified, the single word we actually wish 
       to find should substituted for <span class="MacroCode">WordToFind</span>.<br>
       <br>
@@ -899,15 +899,11 @@
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
          <img src="../Common_Art/vDotDotDot.gif">
 &lt;/<span class="MacroCode">ClauseType</span>&gt;</b></pre>
-    Where valid <span class="MacroCode">ClauseType</span> values are <span class="Code">phrase</span>, 
-    <span class="Code">exact</span>, <span class="Code"></span><span class="Code">and</span>, 
-    <span class="Code">or</span>, <span class="Code">not</span>, and <span class="Code">near</span>. 
-    Each of these clause types do pretty much what you would expect: 
+    Where valid <span class="MacroCode">ClauseType</span> values are <span class="Code">and</span>, 
+    <span class="Code">or</span>, <span class="Code">not</span>, <span class="Code">near</span>, 
+    <span class="Code">phrase</span>, and <span class="Code">exact</span>. Each 
+    of these clause types do pretty much what you would expect: 
     <ul>
-      <li class="ListItem">The <span class="Code">exact</span> clause operates 
-        just like the<span class="Code"> phrase </span>clause, except that it 
-        matches the entire contents of a field only, whereas a<span class="Code"> 
-        phrase </span>clause can match anywhere within the field. </li>
       <li class="ListItem"> The <span class="Code">and</span> clause requires 
         all its sub-terms/phrases/clauses to be present for a match to occur. 
       </li>
@@ -923,6 +919,10 @@
         and will not be discussed here. See the <a href="../XTF_Tag_Reference/XTFTagRef.html#crossQuery_QueryParser_Tags">Query 
         Parser tag reference</a> for an in-depth description of the <span class="code">near</span> 
         clause. </li>
+      <li class="ListItem">The <span class="Code">exact</span> clause operates 
+        just like the<span class="Code"> phrase </span>clause, except that it 
+        matches the entire contents of a field only, whereas a<span class="Code"> 
+        phrase </span>clause can match anywhere within the field. </li>
     </ul>
     Now, for the sample query we discussed above: <br>
     <br>
@@ -944,23 +944,23 @@
     &lt;/and&gt;
 &lt;/query&gt;</b></pre>
     At this point, the trick is to write a <span class="Code">queryParser.xsl</span> 
-    stylesheet that converts the given input XML fragment into the output XML query 
-    shown above. Unfortunately, writing XSLT is way beyond the scope of this document 
-    and will not be discussed here. The good news however is that the sample <span class="Code">queryParser.xsl</span> 
-    included with the XTF installation performs the necessary query conversion illustrated 
-    in this example, and is a good starting point for creating your own custom Query 
-    Parser. <br>
+    stylesheet that converts the given input XML fragment into the output XML 
+    query shown above. Unfortunately, writing XSLT is well beyond the scope of 
+    this document and will not be discussed here. The good news however is that 
+    the sample <span class="Code">queryParser.xsl</span> included with the XTF 
+    installation performs the necessary query conversion illustrated in this example, 
+    and is a good starting point for creating your own custom Query Parser. <br>
     <br>
     It should also be noted that the various query tags illustrated here have 
     been shown in their simplest form for the sake of clarity. For example the 
     <span class="MacroCode">Query</span> tag has additional attributes that allow 
     query matches to be returned a few at a time. This allows the Result Formatter 
-    to display search results in multiple pages rather than as a single long page. 
-    Similarly, <span class="MacroCode">Phrase</span> tags are in fact recursive, 
-    and can contain sub-phrases or clauses, and not just <span class="MacroCode">Term</span> 
-    tags. For a complete description of query tags and the attributes they support, 
-    please refer to the <a href="../XTF_Tag_Reference/XTFTagRef.html#crossQuery_QueryParser_Tags">Query Parser Tag 
-    Reference</a>. 
+    to display a short page of search results rather than a single page containing 
+    every result in the repository. Another thing to note is that <span class="MacroCode">Phrase</span> 
+    tags are in fact recursive, and can contain sub-phrases or clauses (not just 
+    <span class="MacroCode">Term</span> tags.) For a complete description of query 
+    tags and the attributes they support, please refer to the <a href="../XTF_Tag_Reference/XTFTagRef.html#crossQuery_QueryParser_Tags">Query 
+    Parser Tag Reference</a>. 
     <p class="Heading2">Result Formatter Programming<a name="crossQuery_ResultFormatter_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     What the filter does<br>
