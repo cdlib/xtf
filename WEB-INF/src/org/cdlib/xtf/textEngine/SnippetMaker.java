@@ -349,11 +349,15 @@ public class SnippetMaker
             
             public void beginSpan(MarkPos pos, Span span) {
               copyUpTo( pos );
-              buf.append( "<hit rank=\"" );
-              buf.append( Integer.toString(span.rank+1) );
-              buf.append( "\" score=\"" );
-              buf.append( Integer.toString((int)(span.score * 100)) );
-              buf.append( "\">" );
+              buf.append( "<hit" );
+              if( !inContext ) {
+                  buf.append( " rank=\"" );
+                  buf.append( Integer.toString(span.rank+1) );
+                  buf.append( "\" score=\"" );
+                  buf.append( Integer.toString((int)(span.score * 100)) );
+                  buf.append( "\"" );
+              }
+              buf.append( ">" );
               inSpan = true;
             }
             
