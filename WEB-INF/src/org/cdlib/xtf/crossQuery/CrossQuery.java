@@ -384,7 +384,8 @@ public class CrossQuery extends TextServlet
                 ResultFacet facet = result.facets[i];
                 buf.append( 
                     "<facet field=\"" + facet.field + "\" " +
-                    "totalGroups=\"" + facet.rootGroup.totalSubGroups + "\">" );
+                    "totalGroups=\"" + facet.rootGroup.totalSubGroups + "\" " +
+                    "totalDocs=\"" + facet.rootGroup.totalDocs + "\">" );
                 
                 // Recursively process all the groups.
                 if( facet.rootGroup.subGroups != null ) {
@@ -416,6 +417,7 @@ public class CrossQuery extends TextServlet
         buf.append( 
             "<group value=\"" + group.value + "\" " +
             "rank=\"" + (group.rank+1) + "\" " +
+            "totalSubGroups=\"" + group.totalSubGroups + "\" " +
             "totalDocs=\"" + group.totalDocs + "\" " +
             "startDoc=\"" + (group.endDoc > 0 ? group.startDoc+1 : 0) + "\" " +
             "endDoc=\"" + (group.endDoc) + "\">" );
