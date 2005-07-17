@@ -61,7 +61,7 @@
 
 
         .Code         { font-family: "Courier New", Courier, mono;
-                        font-size:   100%;
+                        font-size:   90%;
                         font-style:  normal;
                         font-weight: bold;
                         color:       #112233 }
@@ -109,6 +109,7 @@
                       list-style-type: none }
 
         .ListItem  { margin-top: 6px; }
+.RedBold { color: #990000; font-style: normal; ; font-weight: bold}
       -->
     </style>
 </head>
@@ -148,10 +149,11 @@
   </ul>
   <p class="Heading1">Introduction<a name="Introduction"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
-  This guide describes how to customize the operation of the E<b>X</b>tensible <b>T</b>ext 
-  <b>F</b>ramework (<b><i>XTF</i></b>) This document assumes that you have completed 
-  the basic installation and configuration described in the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF 
-  Deployment Guide</a>, and that their correct operation has been verified. <br>
+  This guide describes how to customize the operation of the E<b>X</b>tensible 
+  <b>T</b>ext <b>F</b>ramework (<b><i>XTF</i></b>) This document assumes that 
+  you have completed the basic installation and configuration described in the 
+  <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF Deployment Guide</a>, 
+  and that their correct operation has been verified. <br>
   <br>
   The XTF system consists of Java Servlets and tools that permit users to perform 
   Web-based searching and retrieval of electronic documents. Its basic organization 
@@ -160,54 +162,54 @@
     Figure 1: Extensible Text Framework (XTF) Overview </p>
   In this diagram, the basic flow of information is left to right. Document retrieval 
   begins with a Web-based user search query. The <i><b>crossQuery</b></i> servlet 
-  checks the query against an index of available documents, and produces a list of 
-  matching documents for display in a web browser. Selecting a document from the search 
-  results page invokes the <i><b>dynaXML</b></i> servlet, which retrieves and formats 
-  the actual document for display in a web browser. The <b><i>textIndexer</i></b> 
-  tool shown at the bottom is used to update the document search index whenever documents 
-  in the library are added, removed, or updated. <br>
+  checks the query against an index of available documents, and produces a list 
+  of matching documents for display in a web browser. Selecting a document from 
+  the search results page invokes the <i><b>dynaXML</b></i> servlet, which retrieves 
+  and formats the actual document for display in a web browser. The <b><i>textIndexer</i></b> 
+  tool shown at the bottom is used to update the document search index whenever 
+  documents in the library are added, removed, or updated. <br>
   <br>
-  The remainder of this document will examine how to customize the XTF tools and servlets 
-  by reprogramming the XSLT templates that define their behavior. 
+  The remainder of this document will examine how to customize the XTF tools and 
+  servlets by reprogramming the XSLT templates that define their behavior. 
   <p class="Heading1">textIndexer Programming<a name="textIndexer_Prog"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
   As mentioned above in the introduction, the purpose of the <b><i>textIndexer</i></b> 
   tool is to create or update a document search index whenever documents are updated, 
-  added to, or removed from the document library. If we would isolate and zoom in 
-  on the <b><i>textIndexer</i></b> portion of the <a href="#SummaryDiagram">XTF Overview 
-  Diagram</a> shown above, we'd see something like this: <br>
+  added to, or removed from the document library. If we would isolate and zoom 
+  in on the <b><i>textIndexer</i></b> portion of the <a href="#SummaryDiagram">XTF 
+  Overview Diagram</a> shown above, we'd see something like this: <br>
   <p align="center"> <img src="../Common_Art/textIndexer.gif"><br>
     Figure 2: Internal organization of the <b><i>textIndexer</i></b> Tool </p>
   What the diagram shows, is that the <b><i>textIndexer</i></b> uses its <b>Document 
-  Selector</b> stylesheet to select which files in the document library need to be 
-  indexed. For non-XML document files, the text to index is extracted and converted 
+  Selector</b> stylesheet to select which files in the document library need to 
+  be indexed. For non-XML document files, the text to index is extracted and converted 
   to XML. This base XML is then processed by the <b>Document Pre-Filter</b> stylesheet 
   to add additional meta-data and/or sectioning information to the text. The resulting 
   filtered XML is then passed on to the actual <b><i>Text Indexer Engine</i></b>, 
-  which breaks the text up into smaller overlapping chunks and then adds them to a 
-  Lucene based word index. The index can then be used by the <b><i>crossQuery</i></b> 
+  which breaks the text up into smaller overlapping chunks and then adds them 
+  to a Lucene based word index. The index can then be used by the <b><i>crossQuery</i></b> 
   servlet to quicky locate files in the document library containing any text requested 
-  by the user. Optionally, the <b><i>dynaXML</i></b> servlet can also use the index 
-  to highlight in context any matches in the original XML documents when they are 
-  viewed. <br>
+  by the user. Optionally, the <b><i>dynaXML</i></b> servlet can also use the 
+  index to highlight in context any matches in the original XML documents when 
+  they are viewed. <br>
   <br>
   The <span class="Code">textIndexer.conf</span> file, the <b>Document Selector</b> 
   stylesheet, and the <b>Pre-filter</b> stylesheet together define how the <b><i>textIndexer</i></b> 
   performs the document indexing process. A complete discussion of the <span class="Code">textIndexer.conf</span> 
-  file appears in the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF Deployment 
-  Guide</a>, and so will not be discussed in any great depth here. The inner workings 
-  of the <b>Document Selector</b> and <b>Pre-Filter</b> stylesheets however, are the 
-  subject of the following sub-sections. 
+  file appears in the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF 
+  Deployment Guide</a>, and so will not be discussed in any great depth here. 
+  The inner workings of the <b>Document Selector</b> and <b>Pre-Filter</b> stylesheets 
+  however, are the subject of the following sub-sections. 
   <div class="IndentL"> 
     <p class="Heading2">Document Selector Programming<a name="textIndexer_DocSelector_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     The primary purpose of the <b><i>textIndexer</i></b> <b>Document Selector</b> 
-    is to select which files in the document library are to be indexed. Since the 
-    <b>Document Selector</b> is an XSLT stylesheet, its input is in fact an XML fragment 
-    that identifies a single directory in the document library and the files that 
-    it contains. The <b>Document Selector</b> stylesheet is invoked one time for each 
-    sub-directory encountered in the document library, and the input it receives looks 
-    as follows: 
+    is to select which files in the document library are to be indexed. Since 
+    the <b>Document Selector</b> is an XSLT stylesheet, its input is in fact an 
+    XML fragment that identifies a single directory in the document library and 
+    the files that it contains. The <b>Document Selector</b> stylesheet is invoked 
+    one time for each sub-directory encountered in the document library, and the 
+    input it receives looks as follows: 
     <pre class="Sample"><b>&lt;directory dirPath="<span class="MacroCode">DirectoryPath</span>"&gt;
 
     &lt;file fileName="<span class="MacroCode">FileName1</span>"/&gt;
@@ -220,13 +222,13 @@
       directory in the document library, and the <b><span class="MacroCode">DirectoryPath</span></b> 
       attribute specifies its absolute file system path. Within the <span class="Code"> 
       &lt;directory...&gt; </span> tag, each of the <span class="Code">&lt;file.../&gt; 
-      </span>entries identifies one of files found in the directory. Note that <b><span class="MacroCode">FileName1</span></b> 
-      through <b><span class="MacroCode">FileNameN</span></b> <i><b><u>do not</u></b></i> 
-      contain any path information, since the absolute path that applies to all the 
-      file tags is already identified by <b><span class="MacroCode">DirectoryPath</span></b>.</p>
+      </span>entries identifies one of files found in the directory. Note that 
+      <b><span class="MacroCode">FileName1</span></b> through <b><span class="MacroCode">FileNameN</span></b> 
+      <i><b><u>do not</u></b></i> contain any path information, since the absolute 
+      path that applies to all the file tags is already identified by <b><span class="MacroCode">DirectoryPath</span></b>.</p>
     <p>It is the responsibility of the <b>Document Selecto</b>r XSLT code to output 
-      an XML fragment that identifies which of the files in the directory should be 
-      indexed. This output XML fragment should take the following form:</p>
+      an XML fragment that identifies which of the files in the directory should 
+      be indexed. This output XML fragment should take the following form:</p>
     <pre class="Sample"><b>&lt;indexFiles&gt;
 
     &lt;indexFile fileName      = "<span class="MacroCode">FileName</span>"
@@ -241,23 +243,24 @@
       for each document file that needs to be indexed. Within each of the<span class="Code"> 
       &lt;indexFile.../&gt; </span>tags, the following attributes are defined:</p>
     <div class="IndentLR"> <span class="Code">fileName</span><br>
-      This attribute identifies the name of a file to be indexed, and should be one 
-      of the file names received in the input XML fragment. <br>
+      This attribute identifies the name of a file to be indexed, and should be 
+      one of the file names received in the input XML fragment. <br>
       <br>
       <span class="Code">format</span><br>
-      This is an optional attribute that defines the format of the file to be indexed. 
-      At this time, XML, PDF, HTML, and Plain Text indexing is supported by the <i><b>textIndexer</b></i> 
-      tool, and this attribute should be set to the strings<span class="Code"> XML</span>,<span class="Code"> 
-      PDF</span>, <span class="Code"> HTML</span>, or<span class="Code"> Text </span>respectively, 
+      This is an optional attribute that defines the format of the file to be 
+      indexed. At this time, XML, PDF, HTML, and Plain Text indexing is supported 
+      by the <i><b>textIndexer</b></i> tool, and this attribute should be set 
+      to the strings<span class="Code"> XML</span>,<span class="Code"> PDF</span>, 
+      <span class="Code"> HTML</span>, or<span class="Code"> Text </span>respectively, 
       depending on the native format of the file. If this attribute is not specified, 
-      the <i><b>textIndexer</b></i> will try to infer the file type based on the extension 
-      for the file. <br>
+      the <i><b>textIndexer</b></i> will try to infer the file type based on the 
+      extension for the file. <br>
       <br>
       <span class="Code">preFilter</span><br>
       This is an optional attribute that defines the <b>Pre-Filter </b>stylesheet 
-      that the <i><b>textIndexer</b></i> should use on this document file. If not 
-      specified, the text for this file will not be filtered before indexing. See 
-      the <i><b>textIndexer</b></i> <a href="#textIndexer_PreFilter_Prog">Pre-Filter 
+      that the <i><b>textIndexer</b></i> should use on this document file. If 
+      not specified, the text for this file will not be filtered before indexing. 
+      See the <i><b>textIndexer</b></i> <a href="#textIndexer_PreFilter_Prog">Pre-Filter 
       Programming</a> section for more details about document pre-filtering.<br>
       <br>
       <span class="Code">displayStyle</span><br>
@@ -269,8 +272,8 @@
       of <a href="../XTF_Under_Hood/XTFUnderHood.html#LazyFiles">Lazy Document 
       Handling</a> in the <a href="../XTF_Under_Hood/XTFUnderHood.html">XTF Under 
       the Hood</a> guide.</div>
-    <p>Using these XML input and output specifications shown, a simple document selector 
-      might look something like this:</p>
+    <p>Using these XML input and output specifications shown, a simple document 
+      selector might look something like this:</p>
     <pre class="Sample">&lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"&gt;
 
   &lt;xsl:template match="directory"&gt;
@@ -292,15 +295,15 @@
       </span>tag looks for the<span class="Code"> &lt;directory...&gt; </span>block 
       in the input XML, and writes out a corresponding<span class="Code"> &lt;indexFiles&gt; 
       </span>block to the output XML. Also the<span class="Code"> &lt;xsl:template&nbsp;match="file"&gt; 
-      </span>template is applied to any tags found within the<span class="Code"> &lt;directory...&gt; 
-      </span>block.</p>
+      </span>template is applied to any tags found within the<span class="Code"> 
+      &lt;directory...&gt; </span>block.</p>
     <p>The<span class="Code"> &lt;xsl:template&nbsp;match="file"&gt; </span>block 
       is the code that is actually responsible for selecting the files to be indexed. 
-      In this example, only files that end in<span class="Code"> .pdf </span>are passed 
-      on for indexing, and are assigned the format<span class="Code"> PDF</span>. 
-      No <b>Pre-Filter</b> or <b>Document Formatter</b> stylesheets are defined, and 
-      so the <i><b>textIndexer</b></i> will not pre-filter or pre-cache display information 
-      for<span class="Code"> PDF </span>files.</p>
+      In this example, only files that end in<span class="Code"> .pdf </span>are 
+      passed on for indexing, and are assigned the format<span class="Code"> PDF</span>. 
+      No <b>Pre-Filter</b> or <b>Document Formatter</b> stylesheets are defined, 
+      and so the <i><b>textIndexer</b></i> will not pre-filter or pre-cache display 
+      information for<span class="Code"> PDF </span>files.</p>
     <p>Selecting other file types for indexing is as simple as adding more<span class="Code"> 
       &lt;xsl:if...&gt; </span>clauses to the<span class="Code"> &lt;xsl:template 
       match=&quot;file&quot;&gt; </span>block, like this:</p>
@@ -317,69 +320,69 @@
   &lt;/xsl:template&gt;
 
 &lt;/xsl:stylesheet&gt;</pre>
-    <p>This<span class="Code"> second &lt;xsl:if...&gt; </span>block passes XML on 
-      files for indexing. Note that the<span class="Code"> &lt;indexFile...&gt; </span>tag 
-      doesn't specify the file format, and so the <i><b>textIndexer</b></i> is left 
-      to infer that the file type is XML from the file extension. Lastly, the<span class="Code"> 
-      &lt;indexFile...&gt; </span>tag also defines a <b>Pre-Filter</b> and a <b>Document 
-      Formatter</b> stylesheet for XML files.</p>
+    <p>This<span class="Code"> second &lt;xsl:if...&gt; </span>block passes XML 
+      on files for indexing. Note that the<span class="Code"> &lt;indexFile...&gt; 
+      </span>tag doesn't specify the file format, and so the <i><b>textIndexer</b></i> 
+      is left to infer that the file type is XML from the file extension. Lastly, 
+      the<span class="Code"> &lt;indexFile...&gt; </span>tag also defines a <b>Pre-Filter</b> 
+      and a <b>Document Formatter</b> stylesheet for XML files.</p>
     <p>While this simple<b> Document Selector </b>example works, its file selection 
-      rules are limited only to checking for certain file extensions. Clearly, all 
-      the power of XSLT could be used to construct more complicated selection criteria 
-      for files, including ignoring various directories, pulling in meta-data from 
-      files or URLs, and so on. For a more complete example of a <b>Document Selector</b> 
-      stylesheet, see the default <span class="Code"> style/textIndexer/docSelector.xsl</span> 
+      rules are limited only to checking for certain file extensions. Clearly, 
+      all the power of XSLT could be used to construct more complicated selection 
+      criteria for files, including ignoring various directories, pulling in meta-data 
+      from files or URLs, and so on. For a more complete example of a <b>Document 
+      Selector</b> stylesheet, see the default <span class="Code"> style/textIndexer/docSelector.xsl</span> 
       stylesheet.</p>
   </div>
   <div class="IndentL"> 
     <p class="Heading2">Pre-Filter Programming<a name="textIndexer_PreFilter_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    The primary purpose of <b><i>textIndexer</i></b> <b>Pre-Filters</b> is to modify 
-    the XML representation of a document prior to indexing it. The pre-filter used 
-    for any particular document is defined by the <b>Document Selector</b>. The main 
-    aspects of programming a pre-filter are described in the following six sub-sections. 
-    <br>
+    The primary purpose of <b><i>textIndexer</i></b> <b>Pre-Filters</b> is to 
+    modify the XML representation of a document prior to indexing it. The pre-filter 
+    used for any particular document is defined by the <b>Document Selector</b>. 
+    The main aspects of programming a pre-filter are described in the following 
+    six sub-sections. <br>
     <div class="IndentLR"> 
       <p class="Heading3">Defining the XTF Namespace</p>
       <br>
       <!-----------------------------------------------------------------------------------------------------------> 
       For the <b><i>textIndexer</i></b> pre-filter to work properly, an<span class="Code"> 
-      xtf: </span>namespace must be declared at the top of the pre-filter. To do this, 
-      simply add the following attribute to the<span class="Code"> &lt;xsl:stylesheet<span class="BasicStyle">...</span>&gt; 
+      xtf: </span>namespace must be declared at the top of the pre-filter. To 
+      do this, simply add the following attribute to the<span class="Code"> &lt;xsl:stylesheet<span class="BasicStyle">...</span>&gt; 
       </span>tag at the top of the pre-filter: <br>
       <br>
       <div class="Sample"> <span class="Code">xmlns:xtf="http://cdlib.org/xtf"</span> 
       </div>
       <br>
-      Defining an<span class="Code"> xtf: </span>namespace in this way and then prefixing 
-      <b><i>textIndexer</i></b> specific attributes with it allows the <b><i>textIndexer</i></b> 
-      to distinguish its own attributes from other ones in the filtered document. 
-    </div>
+      Defining an<span class="Code"> xtf: </span>namespace in this way and then 
+      prefixing <b><i>textIndexer</i></b> specific attributes with it allows the 
+      <b><i>textIndexer</i></b> to distinguish its own attributes from other ones 
+      in the filtered document. </div>
     <div class="IndentLR"> 
       <p class="Heading3">Preventing Text from being Indexed</p>
       <br>
       <!-----------------------------------------------------------------------------------------------------------> 
       There will be times when the text within certain tags in the XML representation 
-      for a document should not be indexed (e.g.: versioning information about the 
-      original XML file format.) The XSLT pre-filter can be prevent such tags and 
-      their associated text from being indexed. There are two possible ways to do 
-      this: 
+      for a document should not be indexed (e.g.: versioning information about 
+      the original XML file format.) The XSLT pre-filter can be prevent such tags 
+      and their associated text from being indexed. There are two possible ways 
+      to do this: 
       <ol>
-        <li class="ListItem"> Standard XSLT programming can be used to eliminate the 
-          tag and its text entirely.<br>
+        <li class="ListItem"> Standard XSLT programming can be used to eliminate 
+          the tag and its text entirely.<br>
         </li>
         <br>
         <li class="ListItem"> A special <span class="Code">noindex</span> attribute 
           can be added to the tag to tell the <b><i>textIndexer</i></b> to ignore 
           its contents when indexing. </li>
       </ol>
-      Eliminating certain tags through the use of standard XSLT techiques has the 
-      advantage that it saves space. The tag's text is not added to the search index, 
-      nor is it stored by the fast retrieval database for later display by the <b><i>dynaXML</i></b> 
-      servlet. By contrast, the <span class="Code">noindex</span> attribute simply 
-      prevents the tag's text from being indexed. The text is still stored in the 
-      fast retrieval database so that the <b><i>dynaXML</i></b> servlet can display 
-      the text if necessary. <br>
+      Eliminating certain tags through the use of standard XSLT techiques has 
+      the advantage that it saves space. The tag's text is not added to the search 
+      index, nor is it stored by the fast retrieval database for later display 
+      by the <b><i>dynaXML</i></b> servlet. By contrast, the <span class="Code">noindex</span> 
+      attribute simply prevents the tag's text from being indexed. The text is 
+      still stored in the fast retrieval database so that the <b><i>dynaXML</i></b> 
+      servlet can display the text if necessary. <br>
       <br>
       A snippet of code showing the use of the <span class="Code"> noindex </span> 
       attribute can be found in the sample <span class="Code"> preFilter.xml </span> 
@@ -394,46 +397,47 @@
     &lt;/xsl:copy&gt;
 
 &lt;/xsl:template&gt;</b></pre>
-      Notice that the <span class="Code"> noindex </span> attribute when used in the 
-      pre-filter is prefixed with <span class="Code"> xtf: </span>. This is the namespace 
-      used in XTF tags and attributes to prevent collisions with similarly named tags 
-      and attributes defined by other programs.<br>
+      Notice that the <span class="Code"> noindex </span> attribute when used 
+      in the pre-filter is prefixed with <span class="Code"> xtf: </span>. This 
+      is the namespace used in XTF tags and attributes to prevent collisions with 
+      similarly named tags and attributes defined by other programs.<br>
       <br>
-      Finally, it should be mentioned that the <span class="Code">noindex</span> attribute 
-      has two forms: <br>
+      Finally, it should be mentioned that the <span class="Code">noindex</span> 
+      attribute has two forms: <br>
       <br>
-      <div class="IndentLR">
+      <div class="IndentLR"> 
         <pre class="Code">noindex = true/yes, false/no</pre>
       </div>
       and <br>
       <br>
-      <div class="IndentLR">
+      <div class="IndentLR"> 
         <pre class="Code">index   = false/no, true/yes</pre>
       </div>
-      Both forms enable or disable indexing, but their logic is inverted so that the 
-      XSLT programmer can choose the wording that makes the most sense in any given 
-      situation. 
+      Both forms enable or disable indexing, but their logic is inverted so that 
+      the XSLT programmer can choose the wording that makes the most sense in 
+      any given situation. 
       <p class="Heading3">Controlling Proximity</p>
       <!-----------------------------------------------------------------------------------------------------------> 
       If an XTF user specifies a list of words to search for, the <b><i>crossQuery</i></b> 
-      servlet will rank any matching words that are closer together as better matches 
-      than ones that are far apart. This is what is known as <b><i>proximity searching</i></b>. 
-      <br>
+      servlet will rank any matching words that are closer together as better 
+      matches than ones that are far apart. This is what is known as <b><i>proximity 
+      searching</i></b>. <br>
       <br>
       There are times however when simple proximity matches will produce undesired 
-      results. For example, consider the case where a query matches some words in 
-      two different places in a document. For the first match, the words are very 
-      close together but in two different chapters' tags. For the second match, the 
-      words are all in the same chapter, but slightly further apart. In this case, 
-      the proximity search mechanism will incorrectly give a higher score to match 
-      with the words that are closer together but split across two chapters. <br>
+      results. For example, consider the case where a query matches some words 
+      in two different places in a document. For the first match, the words are 
+      very close together but in two different chapters' tags. For the second 
+      match, the words are all in the same chapter, but slightly further apart. 
+      In this case, the proximity search mechanism will incorrectly give a higher 
+      score to match with the words that are closer together but split across 
+      two chapters. <br>
       <br>
       To correct for these kinds of situations, the pre-filter can insert a <b><i>proximity 
-      break attribute</i></b> into a tag. Doing so effectively puts an infinite distance 
-      between the tag with the break and the text before it, thus entirely preventing 
-      proximity matches from being found that span the two tags. For example, to solve 
-      the "proximity across chapters" problem described above, a pre-filter might 
-      include some code like this: <br>
+      break attribute</i></b> into a tag. Doing so effectively puts an infinite 
+      distance between the tag with the break and the text before it, thus entirely 
+      preventing proximity matches from being found that span the two tags. For 
+      example, to solve the "proximity across chapters" problem described above, 
+      a pre-filter might include some code like this: <br>
       <br>
       <pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="chapter"</font>&gt;
 
@@ -445,18 +449,18 @@
 
 &lt;/xsl:template&gt;</b></pre>
       In this example, the important code is on first and fourth lines. The first 
-      line tells the pre-filter to look for "chapter" tags. And when it finds one, 
-      the fourth line adds a proximity break attribute. Adding this code to the pre-filter 
-      would ensure that proximity matches are never found that span two "chapter" 
-      tags. <br>
+      line tells the pre-filter to look for "chapter" tags. And when it finds 
+      one, the fourth line adds a proximity break attribute. Adding this code 
+      to the pre-filter would ensure that proximity matches are never found that 
+      span two "chapter" tags. <br>
       <br>
       Sometimes it may still be desirable to find proximity matches across sections, 
-      but deemphasize them compared to matches found entirely within a section. In 
-      this case, the<span class="Code"> sectionBump </span>attribute can be used in 
-      place of a proximity break. Unlike the<span class="Code"> proximityBreak </span>tag, 
-      the<span class="Code"> sectionBump </span> tag can be told how much distance 
-      (as a number of words) to introduce between two adjacent sections. For example, 
-      this code: <br>
+      but deemphasize them compared to matches found entirely within a section. 
+      In this case, the<span class="Code"> sectionBump </span>attribute can be 
+      used in place of a proximity break. Unlike the<span class="Code"> proximityBreak 
+      </span>tag, the<span class="Code"> sectionBump </span> tag can be told how 
+      much distance (as a number of words) to introduce between two adjacent sections. 
+      For example, this code: <br>
       <br>
       <pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="chapter"</font>&gt;
 
@@ -467,15 +471,15 @@
     &lt;/xsl:copy&gt;
 
 &lt;/xsl:template&gt;</b></pre>
-      would separate adjacent chapters from eachother by ten words. Proximity matches 
-      across chapters would still be found, but they would be considered 10 words 
-      further apart (and therefore less relevant) than similar matches found entirely 
-      within a single section. <br>
+      would separate adjacent chapters from eachother by ten words. Proximity 
+      matches across chapters would still be found, but they would be considered 
+      10 words further apart (and therefore less relevant) than similar matches 
+      found entirely within a single section. <br>
       <br>
       Just as it may be desirable to deemphasize proximity matches across adjacent 
-      sections, it may also be desireable to control proximity matches across sentence 
-      boundaries. To accomplish this, the sentenceBump attribute can be added to a 
-      tag like this: <br>
+      sections, it may also be desireable to control proximity matches across 
+      sentence boundaries. To accomplish this, the sentenceBump attribute can 
+      be added to a tag like this: <br>
       <br>
       <pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="DocText"</font>&gt;
 
@@ -486,17 +490,18 @@
     &lt;/xsl:copy&gt;
 
 &lt;/xsl:template&gt;</b></pre>
-      In this example, a hypothetical tag under which all other document tags and 
-      text exist has its sentenceBump value set to 5 words. This effectively separates 
-      the end of one sentence from the beginning of the next by five words. Doing 
-      so makes proximity matches across sentences less relevant than a similar proximity 
-      match entirely within a single sentence. 
+      In this example, a hypothetical tag under which all other document tags 
+      and text exist has its sentenceBump value set to 5 words. This effectively 
+      separates the end of one sentence from the beginning of the next by five 
+      words. Doing so makes proximity matches across sentences less relevant than 
+      a similar proximity match entirely within a single sentence. 
       <p class="Heading3">Sectioning Documents</p>
       <!-----------------------------------------------------------------------------------------------------------> 
       Another attribute that can be added to document tags is the<span class="Code"> 
-      sectionType </span>attribute. This attribute allows you to assign names to tags 
-      witin a document. Doing so would allow permit advanced user queries that only 
-      search for text in specific section types. Consider the following example: <br>
+      sectionType </span>attribute. This attribute allows you to assign names 
+      to tags witin a document. Doing so would allow permit advanced user queries 
+      that only search for text in specific section types. Consider the following 
+      example: <br>
       <br>
       <pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="ChapterTitle"</font>&gt;
 
@@ -507,26 +512,26 @@
     &lt;/xsl:copy&gt;
 
 &lt;/xsl:template&gt;</b></pre>
-      This XSLT code simply labels the text indexed for a chapter title with a "ChapterTitle" 
-      section type. With the text labeled in this manner, the query page presented 
-      to the user could provide an advanced search option to look for text only in 
-      chapter titles. We'll talk more about how to actually do this in the section 
-      below on <a href="#crossQuery_QueryParser_Prog">programming the <b><i>crossQuery</i></b> 
-      servlet's Query Parser Stylesheet</a>. <br>
+      This XSLT code simply labels the text indexed for a chapter title with a 
+      "ChapterTitle" section type. With the text labeled in this manner, the query 
+      page presented to the user could provide an advanced search option to look 
+      for text only in chapter titles. We'll talk more about how to actually do 
+      this in the section below on <a href="#crossQuery_QueryParser_Prog">programming 
+      the <b><i>crossQuery</i></b> servlet's Query Parser Stylesheet</a>. <br>
       <br>
       One other thing to mention about <span class="Code">sectionType</span> attributes 
       is that they may be used in nested tags. The <b><i>textIndexer</i></b> maintains 
-      an internal stack of nested section types, and correctly restores previous section 
-      types when a given section/tag ends. 
+      an internal stack of nested section types, and correctly restores previous 
+      section types when a given section/tag ends. 
       <p class="Heading3">Relevance Boost</p>
       <!-----------------------------------------------------------------------------------------------------------> 
-      There may be times when it is useful to boost or deemphasize the relevance of 
-      text in a particular part of a document. Consider the case where you had a document 
-      that was a book of quotations. In such a document, it might make sense to boost 
-      the relevance of the text in the actual quotations as compared to any text that 
-      discussions the quotations. To facilitate this, the <b><i>textIndexer</i></b> 
-      pre-filter provides a <b><i>wordboost</i></b> attribute. The following example 
-      illustrates its use: <br>
+      There may be times when it is useful to boost or deemphasize the relevance 
+      of text in a particular part of a document. Consider the case where you 
+      had a document that was a book of quotations. In such a document, it might 
+      make sense to boost the relevance of the text in the actual quotations as 
+      compared to any text that discussions the quotations. To facilitate this, 
+      the <b><i>textIndexer</i></b> pre-filter provides a <b><i>wordboost</i></b> 
+      attribute. The following example illustrates its use: <br>
       <br>
       <pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="Quotation"</font>&gt;
 
@@ -538,17 +543,18 @@
 
 &lt;/xsl:template&gt;</b></pre>
       This XSLT code simply boosts text found in <span class="Code">Quotation</span> 
-      tags to be 1.5 times more relevant than non-boosted text in the document. Conversely, 
-      to deemphasize text simply use a value between zero and one (e.g., a boost of 
-      0.5 would make text half as relevant when searching.) <br>
+      tags to be 1.5 times more relevant than non-boosted text in the document. 
+      Conversely, to deemphasize text simply use a value between zero and one 
+      (e.g., a boost of 0.5 would make text half as relevant when searching.) 
+      <br>
       <br>
       As with <span class="Code">section</span> attributes, the wordboost attribute 
       may be used in nested tags. The <b><i>textIndexer</i></b> maintains an internal 
-      stack of nested boost values, and correctly restores previous values when a 
-      given section/tag ends. Note however that boost values in nested tags <b><i>do 
-      not</i></b> accumulate. That is, a tag with a boost value of 1.5 will boost 
-      the relevance of its words by 1.5, regardless of the boost values applied to 
-      any tags that contain it. 
+      stack of nested boost values, and correctly restores previous values when 
+      a given section/tag ends. Note however that boost values in nested tags 
+      <b><i>do not</i></b> accumulate. That is, a tag with a boost value of 1.5 
+      will boost the relevance of its words by 1.5, regardless of the boost values 
+      applied to any tags that contain it. 
       <p class="Heading3">Adding or Marking Meta-Data</p>
       <!-----------------------------------------------------------------------------------------------------------> 
       There are times when it is useful to record Meta-Data for a document. Meta-Data 
@@ -606,7 +612,6 @@
         you'll need to add code to your prefilter to produce two copies of that 
         meta-data: one copy for searching that is tokenized, and one copy for 
         sorting that is not tokenized.</p>
-      
       <p class="Heading3">Pre-Filters and Lazy-Tree Building</p>
       <!-----------------------------------------------------------------------------------------------------------> 
       <p>The XTF system makes use of <i><b>Lazy Tree</b></i> files to help speed 
@@ -627,18 +632,17 @@
         servlet will not match the highlighting information in the lazy tree files 
         generated by the dynaXML servlet, and chaos will ensue. </p>
     </div>
- 
     <p class="Heading2">Summary<a name="textIndexer_PreFilter_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     <p>In closing, a few additional facts should be mentioned about the attributes 
       supported by the XTF system:</p>
     <ol>
       <li class="ListItem"> All the examples above show the <b><i>textIndexer</i></b> 
-        pre-filter adding attributes to the XML representation for a document. However, 
-        for native XML documents, the attributes could have simply been embedded in 
-        the original source document tags. The disadvantage of doing so, however, 
-        is that the attributes in every XML document would need to be updated whenever 
-        indexing changes are made to the XTF system.<br>
+        pre-filter adding attributes to the XML representation for a document. 
+        However, for native XML documents, the attributes could have simply been 
+        embedded in the original source document tags. The disadvantage of doing 
+        so, however, is that the attributes in every XML document would need to 
+        be updated whenever indexing changes are made to the XTF system.<br>
         <br>
       </li>
       <li class="ListItem"> A single tag can be assigned more than one attribute. 
@@ -660,54 +664,55 @@
   <p class="Heading1">crossQuery Programming<a name="crossQuery_Prog"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
   The <b><i>crossQuery</i></b> servlet previously shown in the XTF overview allows 
-  users to search the document library for particular words or phrases. If we look 
-  more closely at the <b><i>crossQuery</i></b> portion of the <a href="#SummaryDiagram">XTF 
+  users to search the document library for particular words or phrases. If we 
+  look more closely at the <b><i>crossQuery</i></b> portion of the <a href="#SummaryDiagram">XTF 
   Overview Diagram</a>, we'll see something like this: <br>
   <p align="center"> <img src="../Common_Art/crossQuery.gif"><br>
     Figure 3: Internal organization of the <b><i>crossQuery</i></b> Servlet </p>
-  Once again, the basic flow of information in this diagram is left to right. A document 
-  search begins with a the user specifying some text to search for on a web page. 
-  The query is assembled into a URL of the form: <br>
+  Once again, the basic flow of information in this diagram is left to right. 
+  A document search begins with a the user specifying some text to search for 
+  on a web page. The query is assembled into a URL of the form: <br>
   <br>
   <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?text=<span class="MacroCode">TextToFind</span> 
     </span> </div>
   <br>
-  This query URL is then passed on to the <i><b>crossQuery</b></i> servlet for processing. 
-  The first thing the servlet does is translate the query URL into an XML query that 
-  the <b><i>crossQuery</i></b> search engine can actually understand. This translation 
-  is accomplished by the XSLT based <b>Query Parser</b> (<span class="Code">queryParser.xsl</span>.) 
+  This query URL is then passed on to the <i><b>crossQuery</b></i> servlet for 
+  processing. The first thing the servlet does is translate the query URL into 
+  an XML query that the <b><i>crossQuery</i></b> search engine can actually understand. 
+  This translation is accomplished by the XSLT based <b>Query Parser</b> (<span class="Code">queryParser.xsl</span>.) 
   <br>
   <br>
-  The <b><i>crossQuery</i></b> search engine then uses the XML query to look for occurences 
-  of the specified text in the document index. Any matches that are found in the index 
-  are assembled into a list of XML tags, and passed on to <b>Result Formatter</b> 
-  stylesheet (<span class="Code">resultFormatter.xsl</span>.) The <b>Result Formatter</b> 
-  stylesheet then converts the list of matches into HTML for review by the user. <br>
+  The <b><i>crossQuery</i></b> search engine then uses the XML query to look for 
+  occurences of the specified text in the document index. Any matches that are 
+  found in the index are assembled into a list of XML tags, and passed on to <b>Result 
+  Formatter</b> stylesheet (<span class="Code">resultFormatter.xsl</span>.) The 
+  <b>Result Formatter</b> stylesheet then converts the list of matches into HTML 
+  for review by the user. <br>
   <br>
   The remaining two subsections describe in detail how to write <b>Query Parser</b> 
   and <b>Result Formatter</b> XSLT code to carry out the necessary translations. 
   <div class="IndentL"> 
     <p class="Heading2">Query Parser Programming<a name="crossQuery_QueryParser_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    As previously noted, the <b>Query Parser</b> is responsible for translating a 
-    URL based query into an XML query that the search engine can actually understand. 
+    As previously noted, the <b>Query Parser</b> is responsible for translating 
+    a URL based query into an XML query that the search engine can actually understand. 
     Consider the following pseudo-query: <br>
     <br>
-    <div class="IndentLR"> <span class="Code">Find all occurences of "man" and "war" 
-      but not "Man of War".</span> </div>
+    <div class="IndentLR"> <span class="Code">Find all occurences of "man" and 
+      "war" but not "Man of War".</span> </div>
     <br>
     What we're trying to find here is any document containing both "man" and "war", 
-    but not "Man of War", which is a kind of jellyfish. In theory, the web page into 
-    which the user types the search query could take a simplified English-like representation 
-    of the query with the form: <br>
+    but not "Man of War", which is a kind of jellyfish. In theory, the web page 
+    into which the user types the search query could take a simplified English-like 
+    representation of the query with the form: <br>
     <br>
     <div class="IndentLR"> <span class="Code">find man and war but not "Man of 
       War"</span> </div>
     <br>
-    but writing an XSLT parser to process it would be a complicated endeavor. To simplify 
-    things, we'll assume that the web page has a field that accepts all the words 
-    or phrases to find, and another field that accepts all the words or phrases to 
-    exclude. For our specific example, the user would type <br>
+    but writing an XSLT parser to process it would be a complicated endeavor. 
+    To simplify things, we'll assume that the web page has a field that accepts 
+    all the words or phrases to find, and another field that accepts all the words 
+    or phrases to exclude. For our specific example, the user would type <br>
     <br>
     <div class="IndentLR"> <span class="Code"> man war </span> </div>
     <br>
@@ -717,8 +722,8 @@
     <br>
     into the <b>text to exclude</b> field. Note that each word or phrase is separated 
     from the others by a space, and that an exact phrase (like <span class="Code">Man 
-    of War</span>) is enclosed in double-quotes to differentiate it from a list of 
-    individual words. The resulting query URL that would be passed to the <b><i>crossQuery</i></b> 
+    of War</span>) is enclosed in double-quotes to differentiate it from a list 
+    of individual words. The resulting query URL that would be passed to the <b><i>crossQuery</i></b> 
     servlet would then look something like this: <br>
     <br>
     <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?text=man+war&text-exclude=%22Man+of+War%22 
@@ -726,8 +731,8 @@
     <br>
     Notice that the first part of the URL (everything before the <b>?</b> symbol) 
     invokes the <b><i>crossQuery</i></b> servlet, and second part of the URL (everything 
-    after the <b>?</b> symbol) defines the search to be performed. Also notice that 
-    search to be performed is represented by two parameters: <br>
+    after the <b>?</b> symbol) defines the search to be performed. Also notice 
+    that search to be performed is represented by two parameters: <br>
     <br>
     <table width="90%" cellpadding="0" cellspacing="12">
       <tr> 
@@ -742,17 +747,17 @@
       </tr>
     </table>
     <br>
-    These two parameters carry the "find" and "exclude" semantics represented by the 
-    two fields of our imagined query Web-Page. As is typical for URLs, the spaces 
-    in each parameter have been replaced with plus signs (<span class="Code">+</span>), 
+    These two parameters carry the "find" and "exclude" semantics represented 
+    by the two fields of our imagined query Web-Page. As is typical for URLs, 
+    the spaces in each parameter have been replaced with plus signs (<span class="Code">+</span>), 
     and the double-quote characters have been replaced with their ANSI equivalent 
     hexadecimal values. <br>
     <br>
-    Since the <b>Query Parser</b> is written in XSLT, it actually expects an XML document 
-    as its input, and not a URL like the one presented above. Consquently, the <b><i>crossQuery</i></b> 
-    servlet preprocesses the query URL and turns it into an XML input fragment for 
-    the <b>Query Parser</b> to translate. In general, the input XML passed to the 
-    <b>Query Parser</b> looks like this: 
+    Since the <b>Query Parser</b> is written in XSLT, it actually expects an XML 
+    document as its input, and not a URL like the one presented above. Consquently, 
+    the <b><i>crossQuery</i></b> servlet preprocesses the query URL and turns 
+    it into an XML input fragment for the <b>Query Parser</b> to translate. In 
+    general, the input XML passed to the <b>Query Parser</b> looks like this: 
     <pre class="Sample"><b>&lt;parameters&gt;
 
   &lt;param name="<span class="MacroCode">ParamName</span>" value="<span class="MacroCode">ParamValue</span>"&gt;
@@ -762,8 +767,8 @@
   &lt;/param&gt;
       <img src="../Common_Art/vDotDotDot.gif">
 &lt;/parameters&gt;</b></pre>
-    where <span class="MacroCode">Token</span> specifies a single word, and has the 
-    form: <br>
+    where <span class="MacroCode">Token</span> specifies a single word, and has 
+    the form: <br>
     <br>
     <div class="Sample"> <span class="Code"> &lt;token value="<span class="MacroCode">Word</span>" 
       isWord = "<span class="MacroCode">YesOrNo</span>"/&gt; </span> <br>
@@ -834,10 +839,10 @@
   &lt;/param&gt;
 
 &lt;/parameters&gt;</b></pre>
-    As mentioned before, it is the job of the the <b>Query Parser</b> XSLT code to 
-    translate the above input into an XML query that the <b><i>crossQuery</i></b> 
-    search engine understands. The general format of an XML query passed to the search 
-    engine has the form: <br>
+    As mentioned before, it is the job of the the <b>Query Parser</b> XSLT code 
+    to translate the above input into an XML query that the <b><i>crossQuery</i></b> 
+    search engine understands. The general format of an XML query passed to the 
+    search engine has the form: <br>
     <br>
     <pre class="Sample"><b>&lt;query indexPath="<span class="MacroCode">LocationOfIndexDBToUse</span>" style="<span class="MacroCode">ResultFormatterLocation</span>"&gt;
 
@@ -963,9 +968,169 @@
     Parser Tag Reference</a>. 
     <p class="Heading2">Result Formatter Programming<a name="crossQuery_ResultFormatter_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    What the filter does<br>
-    Input<br>
-    Output<br>
+    <p>The last stage in the <i><b>crossQuery</b></i> data flow is formatting 
+      the results. Recall that the URL parameters were parsed into an XTF-compatible 
+      query by the <b>Query Parser</b> stylesheet. Then the <b>Text Engine</b> 
+      runs that query against indexed data, resulting in a list of matching documents. 
+      The final task is to put a pretty face on things, and that's where the <b>Result 
+      Formatter</b> stylesheet enters in. It transforms the XML list of documents 
+      into an easy-to-use HTML result page.</p>
+    <p>How does XTF know which stylesheet to use? Simple: the <b>Query Parser</b> 
+      tells it. The<span class="Code"> &lt;query...&gt; </span>tag it outputs 
+      specifies a<span class="Code"> style </span>attribute, which points at the 
+      <b>Result Formatter</b> stylesheet that you want XTF to run. Thus, it is 
+      quite possible -- and often useful -- to have multiple result formatters 
+      for different purposes or display modes, and program the <b>Query Parser</b> 
+      to decide which formatter to run based on a URL parameter. But we'll assume 
+      for now that you only have one formatter.</p>
+    <p>To accomplish its work, the <b>Result Formatter</b> receives three pieces 
+      of data:</p>
+    <ol>
+      <li> 
+        First, it receives the same<span class="Code"> 
+            &lt;parameters...&gt; </span>block that was passed to the <b>Query 
+            Parser</b>. This contains parsed versions of all the URL parameters, 
+            in case the <b>Result Formatter</b> wants to act on these as well.
+      </li>
+      <li>Next, it also receives a copy of the full<span class="Code"> &lt;query&gt; 
+        </span>element that was produced by the <b>Query Parser</b>.</li>
+      <li>Finally and most importantly comes a list of documents that matched 
+        the query. Each<span class="Code"> &lt;docHit...&gt; </span>element will 
+        contain meta-data in addition to snippets of matching text from the main 
+        body of each document.</li>
+    </ol>
+    <p>It's easy to view the XML that <b><i>crossQuery</i></b> sends to the <b>Result 
+      Formatter</b>. Simply append<span class="Code"> &amp;raw=1 </span>to the 
+      URL, and the servlet will bypass the formatter completely and display the 
+      raw XML directly in your browser. A great way to plan your stylesheet is 
+      to run some sample queries and look at the raw XML, then try to envision 
+      how you want it to look in HTML.</p>
+    <p>Here's a real-life sample of <b>Result Formatter</b> input, coming from 
+      a query for the words &quot;man&quot; and &quot;war&quot;. Much of the repetetive 
+      information has been snipped out so you can get a quick idea of the structure 
+      without getting bogged down in details.</p>
+    <pre class="Sample">&lt;<b>crossQueryResult</b> totalDocs="8" startDoc="1" endDoc="8">
+
+  &lt;<b>parameters</b>>
+    &lt;param name="text" value="man war">
+       &lt;token value="man" isWord="yes"/>
+       &lt;token value="war" isWord="yes"/>
+    &lt;/param>
+    <span class="MacroCode">...additional URL parameters here...</span>
+  &lt;/<b>parameters</b>>
+
+  &lt;<b>query</b> indexPath="index" termLimit="1000" workLimit="1000000"
+         style="style/crossQuery/resultFormatter/default/resultFormatter.xsl"
+         startDoc="1" maxDocs="10">
+     &lt;and field="text" maxSnippets="3" maxContext="100">
+       &lt;term>man&lt;/term>
+       &lt;term>war&lt;/term>
+     &lt;/and>
+  &lt;/<b>query</b>>
+  
+  &lt;<b>docHit</b> rank="1" path="default:r1/ft2s2004r1/ft2s2004r1.xml" score="100" totalHits="3">
+    &lt;meta>
+       &lt;title>Asylia: Territorial Inviolability in the Hellenistic World&lt;/title>
+       &lt;creator>Kent J. Rigsby&lt;/creator>
+       <span class="MacroCode">...more meta-data here...</span>
+    &lt;/meta>
+    &lt;snippet rank="1" score="100">inspoliatus : [Sall. ] Resp . 1.2.7, in the civil &lt;hit>
+          &lt;term>war&lt;/term> 
+          &lt;term>men&lt;/term>
+       &lt;/hit> fled to Pompey "as debtors use a sacred&lt;/snippet>
+    &lt;snippet rank="2" score="53">he explains, will win the favor of gods and &lt;hit>
+          &lt;term>men&lt;/term>, and just &lt;term>wars&lt;/term>
+       &lt;/hit> are defensive. The locus classicus is&lt;/snippet>
+    &lt;snippet rank="3" score="53">the Roman peace, which ended the state of &lt;hit>
+          &lt;term>war&lt;/term> among &lt;term>men&lt;/term>
+       &lt;/hit>). More generally, legend told of various&lt;/snippet>
+  &lt;/<b>docHit</b>>
+
+  &lt;<b>docHit</b> rank="2" path="default:7d/ft7w10087d/ft7w10087d.xml" score="76" totalHits="6">
+    &lt;meta>  <span class="MacroCode">...meta-data here...</span> &lt;/meta>
+    &lt;snippet rank="1" score="100">the mother of shields." Kunu refers to the &lt;hit>
+          &lt;term>war&lt;/term> shields &lt;term>men&lt;/term>
+       &lt;/hit> used to fashion from lighter bark, some&lt;/snippet>
+    <span class="MacroCode">...more snippets here...</span>
+  &lt;/<b>docHit</b>>
+
+  &lt;<b>docHit</b> rank="3" path="default:pf/ft7r29p1pf/ft7r29p1pf.xml" score="76" totalHits="2">
+    <span class="MacroCode">...meta-data and snippets here...</span>
+  &lt;/<b>docHit</b>>
+
+  <span class="MacroCode">...additional document hits here...</span>
+&lt;/<b>crossQueryResult</b>></pre>
+    <p>Essentially, each matching document will have a corresponding<span class="Code"> 
+      &lt;docHit&gt; </span>tag, and these will be sorted in some order, generally 
+      by descending score (relevance). Each document hit contains corresponding 
+      meta-data within a<span class="Code"> &lt;meta&gt; </span>sub-tag. Hits 
+      on the full text of the document will have<span class="Code"> &lt;snippet&gt; 
+      </span>tags, each with its own<span class="Code"> &lt;hit&gt; </span>tag 
+      inside it.</p>
+    <p>A little more formally, the result formatter receives a<span class="Code"> 
+      &lt;crossQueryResult&gt; </span>tag that looks like this: </p>
+    <pre class="Sample"><b>&lt;crossQueryResult totalDocs = "<span class="MacroCode">NumberOfDocs</span>" 
+                  startDoc  = "<span class="MacroCode">FirstDocNumber</span>" 
+                  endDoc    = "<span class="MacroCode">LastDocNumber</span>"&gt;
+    <span class="MacroCode">Parameters
+</span>    <span class="MacroCode">Query
+</span>
+    <span class="MacroCode">DocumentHit</span>
+    <span class="MacroCode">DocumentHit</span>
+        <img src="../Common_Art/vDotDotDot.gif">
+&lt;/crossQueryResult&gt;</b></pre>
+    <p>Note that, depending on the query and the size of the document repository, 
+      there might be thousands of matching documents, and this thousands of<span class="Code"> 
+      &lt;docHit&gt; </span>tags. Suppose you only wanted to display the first 
+      page of hits, say ten of them? It would be simple to make a <b>Result Formatter</b> 
+      that simply picked the first 10 and ignored the rest, but that would be 
+      very inefficient because the XSLT processor will still have to parse and 
+      process <i>all</i> of the document hits. A much more efficient way to handle 
+      paging is to modify the <b>Query Parser</b> to specify<span class="Code"> 
+      maxDocs=&quot;10&quot; </span>in the<span class="Code"> &lt;query&gt; </span>element; 
+      then only the first ten document hits will be passed to the <b>Result Formatter</b> 
+      and the user interface will be much more responsive.</p>
+    <p>Each Document Hit looks like this: </p>
+    <pre class="Sample"><b>&lt;docHit rank="<span class="MacroCode">DocRelevanceRank</span>" path="<span class="MacroCode">DocumentLocation</span>" score="<span class="MacroCode">DocRelevanceScore</span>"&gt;
+  &lt;meta&gt;
+    <span class="MacroCode">Meta-data defined by index Pre-Filter stylesheet</span>
+  &lt;/meta&gt;
+
+  <span class="MacroCode">Snippet</span>
+  <span class="MacroCode">Snippet</span>
+    <img src="../Common_Art/vDotDotDot.gif">
+&lt;/docHit&gt;</b></pre>
+    <p>The meta-data is copied directly from the tags in the input document marked 
+      by the index Pre-Filter stylesheet using the<span class="Code"> xtf:meta=&quot;yes&quot; 
+      </span>attribute. If the query targets meta-data fields, these may have<span class="Code"> 
+      &lt;snippet&gt; </span>and/or<span class="Code"> &lt;hit&gt; </span>tags 
+      embedded within them, marking the exact location of the matching terms. 
+    </p>
+    <p>If the query targets the &quot;text&quot; field -- that is, the full document 
+      text -- then the<span class="Code"> &lt;docHit&gt; </span>tag will have 
+      one or more<span class="Code"> &lt;snippet&gt; </span>tags containing the 
+      matching text and some surrounding context:</p>
+    <pre class="Sample"><b>&lt;snippet rank="<span class="MacroCode">MatchRelevanceRank</span>" score="<span class="MacroCode">MatchRelevanceScore</span>"&gt;
+
+    <span class="MacroCode">Hit Text (and context text, if any)</span>
+
+&lt;/snippet&gt;</b></pre>
+    <p>Within each snippet will appear a<span class="Code"> &lt;hit&gt; </span>tag 
+      with one or more<span class="Code"> &lt;term&gt; </span>tags marking the 
+      exact matching terms.</p>
+    <p>The bulk of the Result Formatter's work will be in transforming all these<span class="Code"> 
+      &lt;docHit&gt;</span>,<span class="Code"> &lt;meta&gt;</span>,<span class="Code"> 
+      &lt;snippet&gt;</span>, <span class="Code"> &lt;hit&gt;</span>, and<span class="Code"> 
+      &lt;term&gt; </span>XML tags into meaningful HTML output. Writing XSLT is 
+      beyond the scope of this document, but a good way to learn is to begin modifying 
+      the sample <b>Result Formatter</b> stylesheet. The stylesheet is included 
+      with the XTF distribution in the<span class="Code"> style/crossQuery/resultFormatter 
+      </span>directory. </p>
+    <p>It should also be noted that the various input tags have bells and whistles 
+      not mentioned in this short tutorial. For a full specification, please refer 
+      to the <a href="../XTF_Tag_Reference/XTFTagRef.html#crossQuery_ResultFormatter_Tags">Result 
+      Formatter Tag Reference</a>.<br>
+    </p>
     <p class="Heading2">Error Generator Programming<a name="crossQuery_ErrorGen_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     What the filter does<br>
@@ -987,38 +1152,40 @@
     Output<br>
     <p class="Heading2">Document Formatter Programming<a name="dynaXML_DocFormatter_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    The <b>Document Formatter</b> stylesheet receives as its input the requested XML 
-    document. For its output it shold produce an HTML based document web-page that 
-    can be viewed in the user's browser. <br>
+    The <b>Document Formatter</b> stylesheet receives as its input the requested 
+    XML document. For its output it shold produce an HTML based document web-page 
+    that can be viewed in the user's browser. <br>
     <br>
     The XML document passed by the dynaXML servlet to the Document Formatter Stylesheet 
-    consists of the original XML source document with the following additions: <br>
+    consists of the original XML source document with the following additions: 
+    <br>
     <ul>
       <li class="ListItem"> Any added <a href="../XTF_Tag_Reference/XTFTagRef.html#textIndexer_Tag_Ref">attributes</a> 
-        introduced by the <b><i>textIndexer</i></b> <b>Pre-Filter</b> when the document 
-        was indexed. </li>
+        introduced by the <b><i>textIndexer</i></b> <b>Pre-Filter</b> when the 
+        document was indexed. </li>
       <li class="ListItem"> If a query accompanied the document request, a<span class="Code"> 
-        snippets </span>tag will appear at the top of the document, summarizing of 
-        all the hits found within the document. </li>
-      <li class="ListItem"> If a query accompanied the document request, then zero 
-        or more<span class="Code"> hit </span>and<span class="Code"> term </span>tags 
-        will appear around matching text in the main body of the document for the 
-        given query. </li>
+        snippets </span>tag will appear at the top of the document, summarizing 
+        of all the hits found within the document. </li>
+      <li class="ListItem"> If a query accompanied the document request, then 
+        zero or more<span class="Code"> hit </span>and<span class="Code"> term 
+        </span>tags will appear around matching text in the main body of the document 
+        for the given query. </li>
     </ul>
-    The additional tags and attributes added by the <b><i>textIndexer</i></b> and 
-    the <b><i>dynaXML</i></b> servlet are prefixed with an<span class="Code"> xtf: 
-    </span>namespace to clearly differentiate them from other tags in the XML document. 
+    The additional tags and attributes added by the <b><i>textIndexer</i></b> 
+    and the <b><i>dynaXML</i></b> servlet are prefixed with an<span class="Code"> 
+    xtf: </span>namespace to clearly differentiate them from other tags in the 
+    XML document. <br>
     <br>
-    <br>
-    The<span class="Code"> snippets </span> summary tag will have the following form: 
+    The<span class="Code"> snippets </span> summary tag will have the following 
+    form: 
     <pre class="Sample"><span class="Code">&lt;snippets&gt;
   <span class="MacroCode">Snippet</span>
   <span class="MacroCode">Snippet</span>
     <img src="../Common_Art/vDotDotDot.gif">
 &lt;/snippets&gt;</span></pre>
     where each <span class="MacroCode">Snippet</span> is a <b><i>dynaXML</i></b><span class="Code"> 
-    <a href="../XTF_Tag_Reference/XTFTagRef.html#dynaXML_DocFormatter_Snippet">snippet</a> </span>tag that summarizes one query 
-    match in the requested document. 
+    <a href="../XTF_Tag_Reference/XTFTagRef.html#dynaXML_DocFormatter_Snippet">snippet</a> 
+    </span>tag that summarizes one query match in the requested document. 
     <p class="Heading2">Error Generator Programming<a name="dynaXML_ErrorGen_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     What the filter does<br>
