@@ -1190,51 +1190,310 @@
  </div>
   <p class="Heading1">dynaXML Programming<a name="dynaXML_Prog"></a></p>
   <!-------------------------------------------------------------------------------------------------------------> 
-  This section provides... <br>
+  <p>The <b><i>dynaXML</i></b> servlet is in charge of displaying a single XML 
+    document, often in small chunks or pages, one page at a time. It forms part 
+    of a complete search and display system: the user can search a collection 
+    of documents using <b><i>crossQuery</i></b>, and when they find a document 
+    of interest, they can explore the contents of that document using <b><i>dynaXML</i></b>. 
+    If we look more closely at the dynaXML portion of the <a href="#SummaryDiagram">XTF 
+    Overview Diagram</a>, we see something like this: <br>
+  </p>
   <p align="center"> <img src="../Common_Art/dynaXML.gif"><br>
-    Figure 3: Internal organization of the <b><i>crossQuery</i></b> Servlet </p>
+    Figure 4: Internal organization of the <b><i>dynaXML </i></b> Servlet </p>
+  <p>Data flow in this diagram is from left to right. First, the user specifies 
+    a document to view by sending a URL that looks like this (in its simplest 
+    form):<br>
+  </p>
+  <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML?docId=<span class="MacroCode">DocumentToView</span> 
+    </span> </div>
+  <p>The <i><b>dynaXML </b></i>servlet breaks up the URL parameters and formats 
+    them in XML. This is passed to the <b>Document Request Parser</b> stylesheet, 
+    which figures out where to find the specified document and decides which stylesheet 
+    will be used for formatting the result page. Also, if a search query is included 
+    in the URL, the parser transforms the query into structured XML that the <b>Text 
+    Engine </b>can understand.</p>
+  <p>The parser also specifies authentication to perform, allowing the system 
+    to secure access to sensitive or protected documents. The user authentication 
+    engine checks the user's credentials using the specified authentication method. 
+  </p>
+  <p>Next, the servlet fetches the source XML document. If a search query was 
+    specified, it uses the <b>Text Engine</b> to search for occurrences of the 
+    specified text, and then inserts hit tags and snippets in their proper context 
+    within the original document. </p>
+  <p>Finally, the (possibly marked up) document is passed to the <b>Document Formatter</b> 
+    stylesheet, which creates the final HTML page to display in the user's browser.</p>
+  <p>The following sections cover the basics of programming stylesheets to drive 
+    <i><b>dynaXML</b></i>.</p>
   <div class="IndentL"> 
     <p class="Heading2">Document Request Parser Programming<a name="dynaXML_DocReqParser_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    What the filter does<br>
-    Input<br>
-    Output<br>
+    <p>As discussed above, the <b>Document Request Parser</b> is responsible for 
+      interpreting a URL based query. XTF allows great flexibility in terms of 
+      how URLs are constructed and interpreted, and this stylesheet is the key 
+      to that flexibility.</p>
+    <p>The main tasks of the Document Request Parser are:</p>
+    <ol>
+      <li>Use the URL parameters to determine which document to display, and figure 
+        out exactly where to find it. Typically it will come up with a full path 
+        to an XML file in the filesystem, but it can also come from an external 
+        HTTP source.<br>
+        <br>
+      </li>
+      <li>Decide which <b>Document Formatter</b> stylesheet to use. Many systems 
+        will have only one Document Formatter, but one can set up a more complex 
+        system where different formatters are used for different types of documents, 
+        or are switched by a URL parameter.<br>
+        <br>
+      </li>
+      <li>Specify what authentication is required to view the document, if any. 
+        This can be IP-based filtering, looking up a username/password in an LDAP 
+        database, or using an external login web page.<br>
+        <br>
+      </li>
+      <li>If a text query is specified, the <b>Document Request Parser </b>is 
+        responsible for structuring that query in the same fashion as crossQuery's 
+        <b>Query Request Parser</b>. In fact, it often makes sense for one parser 
+        to call the other, or for them to share a common stylesheet that handles 
+        parsing duties. </li>
+    </ol>
+    <p>Suppose a user, through <i><b>crossQuery</b></i>, searches for the word 
+      &quot;apartheid&quot;. The top document hit will be the book <u>The Opening 
+      of the Apartheid Mind</u> (assuming you've indexed the sample data available 
+      with the XTF distribution.) If the user clicks on that title, <i> <b>dynaXML</b></i> 
+      is then invoked with a URL like this: </p>
+      
+    <pre class="Sample"> http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML?
+ docId=ft958009mm&amp;query=apartheid</pre>
+      </div>
+    Notice that the first part of the URL (everything before the <b>?</b> symbol) 
+    invokes the <b><i>dynaXML</i></b> servlet, and second part of the URL (everything 
+    after the <b>?</b> symbol) defines which document to display and a text query 
+    to run on it. <br>
+    <br>
+    <table width="90%" cellpadding="0" cellspacing="12">
+      <tr> 
+        <td width="213" align="right" valign="baseline" class="Code">docId=ft958009mm</td>
+        <td width="246" valign="baseline"><span class="BaseStyle">The identifier 
+          of the document to view.</span></td>
+      </tr>
+      <tr> 
+        <td width="213" align="right" valign="baseline" class="Code">query=apartheid</td>
+        <td width="246" valign="baseline"><span class="BaseStyle">The word to 
+          search for in the document.</span></td>
+      </tr>
+    </table>
+    <p> The <i><b>dynaXML</b></i> servlet transforms the URL parameters into an 
+      XML document, suitable for processing by the <b>Document Request Parser</b> 
+      (which is of course written in XSLT.) The parser included with the XTF distribution 
+      is called<span class="Code"> docReqParser.xsl</span>, and we'll discuss 
+      what it does below.</p>
+    <p>The input document will always have the form: </p>
+    <pre class="Sample"><b>&lt;parameters&gt;
+
+  &lt;param name="<span class="MacroCode">ParamName</span>" value="<span class="MacroCode">ParamValue</span>"&gt;
+      <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
+      <span class="MacroCode">Token</span> | <span class="MacroCode">Phrase</span>
+           <img src="../Common_Art/vDotDotDot.gif" width="8" height="26">
+  &lt;/param&gt;
+      <img src="../Common_Art/vDotDotDot.gif">
+&lt;/parameters&gt;</b></pre>
+    where <span class="MacroCode">Token</span> specifies a single word, and has 
+    the form: <br>
+    <br>
+    <div class="Sample"> <span class="Code"> &lt;token value="<span class="MacroCode">Word</span>" 
+      isWord = "<span class="MacroCode">YesOrNo</span>"/&gt; </span> <br>
+      <br>
+      where <br>
+      <br>
+      <table cellpadding="0" cellspacing="12">
+        <tr> 
+          <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">Word</span>" 
+          </td>
+          <td><span class="BaseStyle">is the actual word or symbol extracted from 
+            the URL.</span></td>
+        </tr>
+        <tr> 
+          <td width="16%" align="right" valign="top" class="Code"> isWord="<span class="MacroCode">YesOrNo</span>" 
+          </td>
+          <td><span class="BaseStyle">identifies whether the token is a word or 
+            punctuation symbol.</span></td>
+        </tr>
+      </table>
+    </div>
+    <br>
+    and <span class="MacroCode">Phrase</span> specifies an entire phrase extracted 
+    as a single string, with the form: <br>
+    <br>
+    <div class="Sample"> 
+      <pre class="Code">&lt;phrase value="<span class="MacroCode">StringOfWords</span>"&gt;
+    <span class="MacroCode">Token</span>
+      <img src="../Common_Art/vDotDotDot.gif">
+    <span class="MacroCode">Token</span>
+&lt;/phrase&gt;
+</pre>
+      where <br>
+      <br>
+      <table cellpadding="0" cellspacing="12">
+        <tr> 
+          <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">StringOfWords</span>" 
+          </td>
+          <td><span class="BaseStyle">is the entire phrase extracted from the 
+            URL as a single string.</span></td>
+        </tr>
+        <tr> 
+          <td width="16%" align="right" valign="top" class="Code"> <span class="MacroCode">Token</span>...<span class="MacroCode">Token</span> 
+          </td>
+          <td> <span class="BaseStyle"> is the original phrase broken down into 
+            individual token tags for each word or symbol in the phrase. </span> 
+          </td>
+        </tr>
+      </table>
+    </div>
+    <p><br>
+      For the sample URL above, the XML passed to the <b>Document Request Parser</b> 
+      looks like this: <br>
+    </p>
+    <pre class="Sample"><b>&lt;parameters&gt;
+
+  &lt;param name="docId" value="ft958009mm"&gt;
+     &lt;token value="ft958009mm" isWord="yes"/&gt;
+  &lt;/param&gt;
+
+  &lt;param name="query" value="apartheid"&gt;
+     &lt;token value="apartheid" isWord="yes"/&gt;
+  &lt;/param&gt;
+
+&lt;/parameters&gt;</b></pre>
+    <p>Our example doesn't have a phrase in it or a multi-word parameter, but 
+      if you're curious how those would look, see the example in the section on 
+      <a href="#crossQuery_QueryParser_Prog">Query Parser Programming</a> above.</p>
+    <p>The sample<span class="Code"> docReqParser.xsl </span>creates the following 
+      output based on the input<span class="Code"> &lt;parameters&gt; </span>block.</p>
+    <pre class="Sample"><b>&lt;style path="style/dynaXML/docFormatter/default/docFormatter.xsl"/>
+&lt;source path="data/mm/ft958009mm/ft958009mm.xml"/>
+&lt;index configPath="conf/textIndexer.conf" name="default"/>
+&lt;query indexPath="index" termLimit="1000" workLimit="500000">
+   &lt;and field="text" maxSnippets="-1" maxContext="80">
+      &lt;term>apartheid&lt;/term>
+   &lt;/and>
+&lt;/query>
+&lt;auth access="allow" type="all"/></b></pre>
+    <p>Let's analyze this in small pieces.</p>
+    <pre class="Sample"><b>&lt;style path="style/dynaXML/docFormatter/default/docFormatter.xsl"/></b></pre>
+    <p>The<span class="Code"> &lt;style&gt; </span>tag directs dynaXML to the 
+      <b>Document Formatter</b> stylesheet to use for this request. The path is 
+      relative to the XTF base directory.</p>
+    <pre class="Sample"><b>&lt;source path="data/mm/ft958009mm/ft958009mm.xml"/></b></pre>
+    <p>Next, the<span class="Code"> &lt;source&gt; </span>tag identifies the location 
+      of the source document that should be displayed. Again the path is relative 
+      to the XTF base directory. The sample data is laid out in subdirectories 
+      based on deconstructing the document ID, but one could write a parser that 
+      used some other strategy for locating documents.</p>
+    <pre class="Sample"><b>&lt;index configPath="conf/textIndexer.conf" name="default"/></b></pre>
+    <p>For speed, dynaXML includes a facility called &quot;Lazy Trees&quot; which 
+      creates a binary representation of the input document on disk. The binary 
+      version is much faster to process, especially if the input document is large 
+      but the parts of it needed by the <b>Document Formatter</b> are small. In 
+      any case, <i><b>dynaXML</b></i> needs to know where to find the Lazy Trees 
+      created by the <b><i>textIndexer</i></b>, or where to create them if not 
+      found. The<span class="Code"> &lt;index&gt; </span>tag tells it where to 
+      find the index configuration file, and the name of the index subset. If 
+      you're interested in learning more about Lazy Trees, see <a href="../XTF_Under_Hood/XTFUnderHood.html#LazyFiles">XTF 
+      Under the Hood</a>.</p>
+    <pre class="Sample"><b>&lt;query indexPath="index" termLimit="1000" workLimit="500000">
+   &lt;and field="text" maxSnippets="-1" maxContext="80">
+      &lt;term>apartheid&lt;/term>
+   &lt;/and>
+&lt;/query></b></pre>
+    <p>Next comes a query to run against the full text of the document. Of course 
+      the query is optional, but if included, its format is exactly the same as 
+      the output of <i><b>crossQuery</b></i>'s <b>Query Parser</b>. In fact, the 
+      default<span class="Code"> docReqParser.xsl </span>simply uses<span class="Code"> 
+      &lt;xsl:import&gt; </span>to incorporate <span class="Code">queryParser.xsl</span>, 
+      and uses its templates to do the work of parsing and formatting the text 
+      query.</p>
+    <p>One curious thing to see here is <span class="Code">maxSnippets=&quot;-1&quot;</span>. 
+      In this case,<span class="Code"> -1 </span>is a special value, telling the 
+      <b>Text Engine</b> to gather <i>all</i> of the snippets/hits for the given 
+      document. If you only wanted the ten best scoring hits, you could specify 
+      <span class="Code">maxSnippets=&quot;10&quot; </span>instead.</p>
+    <pre class="Sample"><b>&lt;auth access="allow" type="all"/></b></pre>
+    <p>The final tag produced by the <b>Document Request Parser</b> is the<span class="Code"> 
+      &lt;auth&gt; </span>tag, which specifies authentication to perform. The 
+      simplest tag is shown above, and simply allows access to all users. Other 
+      authentication mechanisms are available; for more information please consult 
+      the section on <a href="../XTF_Deployment_Guide/XTFDeployGuide.html#UserAuthentication">User 
+      Authentication</a> in the XTF Deployment Guide. Multiple<span class="Code"> 
+      &lt;auth&gt; </span>tags will be processed in order until one succeeds or 
+      fails.</p>
+    <p>Customizing the <b>Document Request Parser</b> is beyond the scope of this 
+      document, but a good place to start is by incrementally modifying the sample<span class="Code"> 
+      docReqParser.xsl </span>included with the XTF distribution.<br>
+    </p>
     <p class="Heading2">Document Formatter Programming<a name="dynaXML_DocFormatter_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     The <b>Document Formatter</b> stylesheet receives as its input the requested 
-    XML document. For its output it shold produce an HTML based document web-page 
+    XML document. For its output it should produce an HTML based document web-page 
     that can be viewed in the user's browser. <br>
     <br>
-    The XML document passed by the dynaXML servlet to the Document Formatter Stylesheet 
-    consists of the original XML source document with the following additions: 
-    <br>
+    The XML document passed by the <i><b>dynaXML</b></i> servlet to the Document 
+    Formatter stylesheet consists of the original XML source document with the 
+    following additions: <br>
     <ul>
       <li class="ListItem"> Any added <a href="../XTF_Tag_Reference/XTFTagRef.html#textIndexer_Tag_Ref">attributes</a> 
         introduced by the <b><i>textIndexer</i></b> <b>Pre-Filter</b> when the 
-        document was indexed. </li>
+        document was indexed. <br>
+        <br>
+      </li>
       <li class="ListItem"> If a query accompanied the document request, a<span class="Code"> 
         snippets </span>tag will appear at the top of the document, summarizing 
-        of all the hits found within the document. </li>
+        of all the hits found within the document, including a configurable amount 
+        of surrounding text.<br>
+        <br>
+      </li>
       <li class="ListItem"> If a query accompanied the document request, then 
-        zero or more<span class="Code"> hit </span>and<span class="Code"> term 
+        zero or more<span class="Code"> <a href="../XTF_Tag_Reference/XTFTagRef.html#dynaXML_DocFormatter_Hit">hit</a> 
+        </span>and<span class="Code"> <a href="../XTF_Tag_Reference/XTFTagRef.html#dynaXML_DocFormatter_Term">term</a> 
         </span>tags will appear around matching text in the main body of the document 
-        for the given query. </li>
+        for the given query. If a hit spans the boundary between one XML element 
+        and the next, the<span class="Code"> hit </span>tag will end and a<span class="Code"> 
+        <a href="../XTF_Tag_Reference/XTFTagRef.html#dynaXML_DocFormatter_More">more</a> 
+        </span>tag will resume inside the next element.</li>
     </ul>
-    The additional tags and attributes added by the <b><i>textIndexer</i></b> 
-    and the <b><i>dynaXML</i></b> servlet are prefixed with an<span class="Code"> 
-    xtf: </span>namespace to clearly differentiate them from other tags in the 
-    XML document. <br>
-    <br>
-    The<span class="Code"> snippets </span> summary tag will have the following 
-    form: 
-    <pre class="Sample"><span class="Code">&lt;snippets&gt;
+    <p> The<span class="Code"> snippets </span> summary tag will have the following 
+      form: </p>
+    <pre class="Sample"><span class="Code">&lt;xtf:snippets&gt;
   <span class="MacroCode">Snippet</span>
   <span class="MacroCode">Snippet</span>
     <img src="../Common_Art/vDotDotDot.gif">
-&lt;/snippets&gt;</span></pre>
-    where each <span class="MacroCode">Snippet</span> is a <b><i>dynaXML</i></b><span class="Code"> 
-    <a href="../XTF_Tag_Reference/XTFTagRef.html#dynaXML_DocFormatter_Snippet">snippet</a> 
-    </span>tag that summarizes one query match in the requested document. 
+&lt;/xtf:snippets&gt;</span></pre>
+    <p>where each <span class="MacroCode">Snippet</span> is a <b><i>dynaXML</i></b><span class="Code"> 
+      <a href="../XTF_Tag_Reference/XTFTagRef.html#dynaXML_DocFormatter_Snippet">snippet</a> 
+      </span>tag that summarizes one query match in the requested document. </p>
+    <p>The additional tags and attributes added by the <b><i>textIndexer</i></b> 
+      and the <b><i>dynaXML</i></b> servlet are prefixed with an<span class="Code"> 
+      xtf: </span>namespace to clearly differentiate them from other tags in the 
+      XML document.</p>
+    <p>It should be noted that, unlike the <b>Result Formatter</b> in <i><b>crossQuery</b></i>, 
+      the <b>Document Formatter</b> does not receive the<span class="Code"> &lt;parameters&gt; 
+      </span>block from the URL request. But if it needs access to the URL parameters, 
+      they are always available through global<span class="Code"> &lt;xsl:param&gt; 
+      </span>declarations.</p>
+    <p>Sometimes it is helpful to view the raw XML that <i><b>dynaXML</b></i> 
+      passes to the <b>Document Formatter</b>. To do this, add <span class="Code"> 
+      &amp;raw=1 </span>to the URL, and the servlet will bypass the formatter 
+      completely and display the raw XML directly in your browser. Beware however 
+      that large documents may take quite some time to process and transmit.</p>
+    <p></p>
+    <p>Writing the <b>Document Formatter</b> can be quite challenging, as many 
+      options are possible and the output is very dependent on the structure of 
+      the input XML document. In addition, if your collection includes several 
+      types of documents, you may need several formatters. Writing XSLT is beyond 
+      the scope of this tutorial, but you may get some ideas by examining the 
+      sample<span class="Code"> docFormatter.xsl </span>included with the XTF 
+      distribution.</p>
+    <p>As with everything in XTF, it is advisable (and fun) to start with something 
+      simple and then progressively refine the stylesheets over time.</p>
     <p class="Heading2">Error Generator Programming for dynaXML<a name="dynaXML_ErrorGen_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     <p>Sometimes unexpected problems occur, and when they do the <i><b>dynaXML 
