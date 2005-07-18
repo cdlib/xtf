@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="10" startDoc="0" endDoc="0">
+   <facet field="geography-sort" totalGroups="2" totalDocs="10">
+      <group value="Canada" rank="1" totalSubGroups="1" totalDocs="1" startDoc="0" endDoc="0"/>
+      <group value="US" rank="2" totalSubGroups="3" totalDocs="9" startDoc="0" endDoc="0">
+         <group value="California" rank="1" totalSubGroups="4" totalDocs="7" startDoc="0" endDoc="0">
+            <group value="Berkeley" rank="1" totalSubGroups="0" totalDocs="2" startDoc="1" endDoc="2">
+               <docHit rank="1" file="doc1.xml" totalHits="0">
+                  <meta>
+                     <title>XYZ: Document 1</title>
+                     <group-subject>African Studies</group-subject>
+                     <group-subject>Politics</group-subject>
+                     <group-subject>African History</group-subject>
+                     <subject>African Studies</subject>
+                     <subject>Politics</subject>
+                     <subject>African History</subject>
+                     <type>text</type>
+                     <collection>UC</collection>
+                     <geography>US::California::Berkeley</geography>
+                     <geography-sort>US::California::Berkeley</geography-sort>
+                  </meta>
+               </docHit>
+               <docHit rank="2" file="doc10.xml" totalHits="0">
+                  <meta>
+                     <title>Document 10 rocks</title>
+                     <group-subject>Environmental Studies</group-subject>
+                     <group-subject>California and the West</group-subject>
+                     <subject>Environmental Studies</subject>
+                     <subject>California and the West</subject>
+                     <type>text</type>
+                     <collection>UC</collection>
+                     <geography>US::California::Berkeley</geography>
+                     <geography-sort>US::California::Berkeley</geography-sort>
+                  </meta>
+               </docHit>
+            </group>
+            <group value="Mendocino" rank="2" totalSubGroups="0" totalDocs="1" startDoc="0" endDoc="0"/>
+            <group value="Oakland" rank="3" totalSubGroups="0" totalDocs="1" startDoc="0" endDoc="0"/>
+            <group value="Santa Cruz" rank="4" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
+         </group>
+         <group value="Nevada" rank="2" totalSubGroups="2" totalDocs="2" startDoc="0" endDoc="0"/>
+         <group value="Oregon" rank="3" totalSubGroups="1" totalDocs="1" startDoc="0" endDoc="0"/>
+      </group>
+   </facet>
+</crossQueryResult>
