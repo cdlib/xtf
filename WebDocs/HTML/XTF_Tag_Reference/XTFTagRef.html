@@ -1071,9 +1071,10 @@
                     <br>
                     <br>
                     If not specified this attribute defaults to 3, meaning snippets 
-                    for the top three matches for a document are returned. Also, 
-                    this attribute can be set to -1, meaning all the snippets 
-                    for a document are returned.</span></p>
+                    for the top three matches for a document are returned. </span></p>
+                  <p><span class="BaseStyle">Note that -1 is a special value. 
+                    If<span class="Code"> maxSnippets </span>is set to -1, it 
+                    requests that <i>all </i>snippets for a document be returned.</span></p>
                   <p>If the <span class="Code">maxSnippets</span> attribute is 
                     set by the <span class="Code">&lt;query...&gt;</span> tag, 
                     any occurences of the <span class="Code">maxSnippets</span> 
@@ -2473,7 +2474,7 @@
               </td>
               <td> <span class="BaseStyle"> A string containing the name of the 
                 exception that occurred. This will be the name of one of the error/exception 
-                tags listed below (e.g., <span class="Code"> "UnsupportedQuery"</span>,<span class="Code"> 
+                tags listed below (e.g., <span class="Code"> "ExcessiveWork"</span>,<span class="Code"> 
                 "TermLimit"</span>,<span class="Code"> </span>etc.) </span> </td>
             </tr>
             <tr> 
