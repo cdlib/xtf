@@ -31,9 +31,7 @@ package org.cdlib.xtf.crossQuery;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,23 +40,17 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
 
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
-import org.cdlib.xtf.textEngine.DocHit;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
-import org.cdlib.xtf.textEngine.Snippet;
-import org.cdlib.xtf.textEngine.facet.ResultFacet;
-import org.cdlib.xtf.textEngine.facet.ResultGroup;
-import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLFormatter;
@@ -333,7 +325,7 @@ public class CrossQuery extends TextServlet
         stuffSpecialAttribs( req, trans );
 
         // Make an input document for it based on the document hits.
-        Source sourceDoc = hitsToSource( mainTagName, result, extraStuff );
+        Source sourceDoc = result.hitsToSource( mainTagName, extraStuff );
 
         // Make sure errors get directed to the right place.
         if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
@@ -342,169 +334,5 @@ public class CrossQuery extends TextServlet
         // Do it!
         trans.transform( sourceDoc, new StreamResult(res.getOutputStream()) );
     } // formatHits()
-
-    /**
-     * Makes an XML document out of the list of document hits, and returns a
-     * Source object that represents it.
-     *
-     * @param mainTagName Name of the top-level tag to generate (e.g.
-     *                    "crossQueryResult", etc.)
-     * @param result      Hits resulting from the query
-     * @param extraStuff  Additional XML to insert into the query
-     *                    result document. Typically includes <parameters>
-     *                    block and <query> block.
-     * @return            XML Source containing all the hits and snippets.
-     */
-    public static Source hitsToSource( String mainTagName, 
-                                       QueryResult result, 
-                                       String extraStuff )
-    {
-        String str = hitsToString( mainTagName, result, extraStuff );
-        return new StreamSource( new StringReader(str) );
-
-    } // hitsToSource()
-
-    /**
-     * Makes an XML document out of the list of document hits, and returns a
-     * String object that represents it.
-     *
-     * @param mainTagName Name of the top-level tag to generate (e.g.
-     *                    "crossQueryResult", etc.)
-     * @param result      Hits resulting from the query
-     * @param extraStuff  Additional XML to insert into the query
-     *                    result document. Typically includes <parameters>
-     *                    block and <query> block.
-     * @return            XML string containing all the hits and snippets.
-     */
-    public static String hitsToString( String mainTagName, 
-                                       QueryResult result, 
-                                       String extraStuff )
-    {
-        StringBuffer buf = new StringBuffer( 1000 );
-
-        buf.append( "<" + mainTagName +
-                    " totalDocs=\"" + result.totalDocs + "\" " +
-                    " startDoc=\"" +
-                        Math.min(result.startDoc+1, result.endDoc) + "\" " +
-                        // Note above: 1-based start
-                    " endDoc=\"" + result.endDoc + "\">" );
-        
-        // If extra XML was specified, dump it in here.
-        if( extraStuff != null )
-            buf.append( extraStuff );
-        
-        // Add the top-level doc hits.
-        structureDocHits( result.docHits, result.startDoc, buf );
-
-        // If faceting was specified, add that info too.
-        if( result.facets != null ) 
-        {
-            // Process each facet in turn
-            for( int i = 0; i < result.facets.length; i++ ) 
-            {
-                ResultFacet facet = result.facets[i];
-                buf.append( 
-                    "<facet field=\"" + facet.field + "\" " +
-                    "totalGroups=\"" + facet.rootGroup.totalSubGroups + "\" " +
-                    "totalDocs=\"" + facet.rootGroup.totalDocs + "\">" );
-                
-                // Recursively process all the groups.
-                if( facet.rootGroup.subGroups != null ) {
-                    for( int j = 0; j < facet.rootGroup.subGroups.length; j++ )
-                        structureGroup( facet.rootGroup.subGroups[j], buf );
-                }
-                buf.append( "</facet>" );
-            } // for i
-        } // if
-        
-        // Add the final tag.
-        buf.append( "</" + mainTagName + ">\n" );
-
-        // Now make the final string.
-        return buf.toString();
-
-    } // hitsToString()
-
-    /**
-     * Does the work of turning faceted groups into XML.
-     * 
-     * @param group   The group to work on
-     * @param buf     Buffer to add XML to
-     */
-    private static void structureGroup( ResultGroup group, StringBuffer buf )
-    {
-        // Do the info for the group itself.
-        buf.append( 
-            "<group value=\"" + group.value + "\" " +
-            "rank=\"" + (group.rank+1) + "\" " +
-            "totalSubGroups=\"" + group.totalSubGroups + "\" " +
-            "totalDocs=\"" + group.totalDocs + "\" " +
-            "startDoc=\"" + (group.endDoc > 0 ? group.startDoc+1 : 0) + "\" " +
-            "endDoc=\"" + (group.endDoc) + "\">" );
-        
-        // If the group has any dochits, do them now.
-        if( group.docHits != null )
-            structureDocHits( group.docHits, group.startDoc, buf );
-        
-        // Do all the sub-groups.
-        if( group.subGroups != null ) {
-            for( int i = 0; i < group.subGroups.length; i++ )
-                structureGroup( group.subGroups[i], buf );
-        }
-        
-        // All done.
-        buf.append( "</group>" );
-    } // structureGroup
-
-    /**
-     * Does the work of turning DocHits into XML.
-     * 
-     * @param docHits Array of DocHits to structure
-     * @param buf     Buffer to add the XML to
-     */
-    private static void structureDocHits( DocHit[]     docHits, 
-                                          int          startDoc, 
-                                          StringBuffer buf ) 
-    {
-        if( docHits == null )
-            return;
-        
-        for( int i = 0; i < docHits.length; i++ ) {
-            DocHit docHit = docHits[i];
-            buf.append( "<docHit" +
-                        " rank=\"" + (i+startDoc+1) + "\"" +
-                        " path=\"" + docHit.filePath() + "\"" +
-                        " score=\"" + Math.round(docHit.score * 100) + "\"" +
-                        " totalHits=\"" + docHit.totalSnippets() + "\"" +
-                        ">\n" );
-            if( !docHit.metaData().isEmpty() ) {
-                buf.append( "<meta>\n" );
-                for( Iterator atts = docHit.metaData().iterator(); atts.hasNext(); )
-                {
-                    Attrib attrib = (Attrib) atts.next();
-                    buf.append( attrib.value );
-                } // for atts
-                buf.append( "</meta>\n" );
-            }
-  
-            for( int j = 0; j < docHit.nSnippets(); j++ )
-            {
-                Snippet  snippet = docHit.snippet( j, true );
-                buf.append(
-                    "<snippet rank=\"" + (j+1) + "\" score=\"" +
-                    Math.round(snippet.score * 100) + "\"" );
-  
-                if( snippet.sectionType != null )
-                    buf.append( " sectionType=\"" + snippet.sectionType + "\"" );
-  
-                buf.append( ">" +
-                    makeHtmlString(snippet.text, true) +
-                    "</snippet>\n" );
-            } // for j
-  
-            buf.append( "</docHit>\n" );
-        } // for i
-        
-    } // structureDocHits()
 
 } // class CrossQuery

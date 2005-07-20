@@ -53,7 +53,6 @@ import net.sf.saxon.tree.TreeBuilder;
 
 import org.apache.lucene.ngram.NgramQueryRewriter;
 import org.apache.lucene.ngram.NgramStopFilter;
-import org.cdlib.xtf.crossQuery.CrossQuery;
 import org.cdlib.xtf.lazyTree.SearchTree;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
@@ -413,8 +412,7 @@ public class RegressTest
         throws IOException
     {
         // Use the normal CrossQuery method to structure the hits
-        Source hitDoc = CrossQuery.hitsToSource( 
-                            "crossQueryResult", result, null );
+        Source hitDoc = result.hitsToSource( "crossQueryResult", null );
         
         // Get rid of scores, since they change a lot and we don't really
         // care (unless the order changes.) There are a couple other things
