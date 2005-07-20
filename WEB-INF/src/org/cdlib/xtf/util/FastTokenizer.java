@@ -278,7 +278,9 @@ public class FastTokenizer extends Tokenizer
         
         // Special case: the word "x"
         if( source[start] == 'x' || source[start] == 'X' ) {
-            if( charType[source[start+1]] != 'a' ) {
+            if( (start+1 >= source.length) || 
+                (charType[source[start+1]] != 'a') ) 
+            {
                 pos = start+1;
                 return new Token( "x", start, start+1, "word" );
             }
@@ -290,18 +292,31 @@ public class FastTokenizer extends Tokenizer
         Token t1 = stdTokenizer.next();
         while( !t1.termText().equals(fakeWord) )
             t1 = stdTokenizer.next();
-
+        
         dribbleReader.setChars( source, start, pos );
         
         Token t2 = stdTokenizer.next();
         assert !t2.termText().equals( fakeWord );
-        assert t2.startOffset() - t1.startOffset() == 2;
-        assert t2.termText().charAt(0) == source[start];
-
-        int tokLen = t2.endOffset() - t2.startOffset();
-        pos = start + tokLen;
-        return new Token( t2.termText(), start, pos, t2.type() );
-        
+        if( t2.startOffset() - t1.startOffset() == 2 ) {
+            assert t2.startOffset() - t1.startOffset() == 2;
+            assert t2.termText().charAt(0) == source[start];
+    
+            int tokLen = t2.endOffset() - t2.startOffset();
+            pos = start + tokLen;
+            return new Token( t2.termText(), start, pos, t2.type() );
+        }
+        else 
+        {
+            // Special case: token begins after the point we normally
+            // expect. Happens with: <START-OF-FIELD> '.' '2' x x x...
+            //
+            assert t2.startOffset() - t1.startOffset() >= 2;
+            
+            int tokStart = start + t2.startOffset() - t1.startOffset() - 2;
+            int tokLen = t2.endOffset() - t2.startOffset();
+            pos = tokStart + tokLen;
+            return new Token( t2.termText(), tokStart, pos, t2.type() );
+        }
     } // next()
     
     /**
