@@ -413,7 +413,7 @@ public class RegressTest
         throws IOException
     {
         // Use the normal CrossQuery method to structure the hits
-        Source hitDoc = CrossQuery.structureHits( 
+        Source hitDoc = CrossQuery.hitsToSource( 
                             "crossQueryResult", result, null );
         
         // Get rid of scores, since they change a lot and we don't really

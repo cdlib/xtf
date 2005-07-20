@@ -333,7 +333,7 @@ public class CrossQuery extends TextServlet
         stuffSpecialAttribs( req, trans );
 
         // Make an input document for it based on the document hits.
-        Source sourceDoc = structureHits( mainTagName, result, extraStuff );
+        Source sourceDoc = hitsToSource( mainTagName, result, extraStuff );
 
         // Make sure errors get directed to the right place.
         if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
@@ -355,9 +355,30 @@ public class CrossQuery extends TextServlet
      *                    block and <query> block.
      * @return            XML Source containing all the hits and snippets.
      */
-    public static Source structureHits( String mainTagName, 
-                                        QueryResult result, 
-                                        String extraStuff )
+    public static Source hitsToSource( String mainTagName, 
+                                       QueryResult result, 
+                                       String extraStuff )
+    {
+        String str = hitsToString( mainTagName, result, extraStuff );
+        return new StreamSource( new StringReader(str) );
+
+    } // hitsToSource()
+
+    /**
+     * Makes an XML document out of the list of document hits, and returns a
+     * String object that represents it.
+     *
+     * @param mainTagName Name of the top-level tag to generate (e.g.
+     *                    "crossQueryResult", etc.)
+     * @param result      Hits resulting from the query
+     * @param extraStuff  Additional XML to insert into the query
+     *                    result document. Typically includes <parameters>
+     *                    block and <query> block.
+     * @return            XML string containing all the hits and snippets.
+     */
+    public static String hitsToString( String mainTagName, 
+                                       QueryResult result, 
+                                       String extraStuff )
     {
         StringBuffer buf = new StringBuffer( 1000 );
 
@@ -399,11 +420,10 @@ public class CrossQuery extends TextServlet
         // Add the final tag.
         buf.append( "</" + mainTagName + ">\n" );
 
-        // Now parse that into a document that can be fed to the stylesheet.
-        String str = buf.toString();
-        return new StreamSource( new StringReader(str) );
+        // Now make the final string.
+        return buf.toString();
 
-    } // structureHits()
+    } // hitsToString()
 
     /**
      * Does the work of turning faceted groups into XML.
