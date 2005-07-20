@@ -38,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
@@ -56,6 +57,7 @@ import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.limit.ExcessiveWorkException;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
+import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textIndexer.XTFTextAnalyzer;
 import org.cdlib.xtf.util.Attrib;
@@ -882,6 +884,21 @@ public abstract class TextServlet extends HttpServlet
             Transformer trans = pss.newTransformer();
             stuffAttribs( trans, req );
             stuffAttribs( trans, config.attribs );
+
+            // If we are in raw mode, use a null transform instead of the
+            // stylesheet.
+            //
+            String raw = req.getParameter("raw");
+            if( "yes".equals(raw) || "true".equals(raw) || "1".equals(raw) )
+            {
+                res.setContentType("text/xml");
+    
+                trans = IndexUtil.createTransformer();
+                Properties props = trans.getOutputProperties();
+                props.put( "indent", "yes" );
+                props.put( "method", "xml" );
+                trans.setOutputProperties( props );
+            }
 
             // Figure out just the last part of the exception class name.
             String className = exc.getClass().getName().
