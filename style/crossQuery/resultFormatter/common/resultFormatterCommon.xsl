@@ -231,10 +231,11 @@
   <xsl:param name="http.URL"/>
   <!-- extract query string and clean it up -->
   <xsl:param name="queryString">
-    <xsl:value-of select="replace(replace(replace(replace($http.URL, '.+\?', ''), 
+    <xsl:value-of select="replace(replace(replace(replace(replace($http.URL, '.+\?', ''), 
       '[0-9A-Za-z\-]+=&amp;', '&amp;'), 
       '&amp;[0-9A-Za-z\-]+=$', '&amp;'), 
-      '&amp;+', '&amp;')"/>
+      '&amp;+', '&amp;'),
+      '&amp;startDoc=[0-9]+', '')"/>
   </xsl:param>
   
   <!-- Hidden Query String -->
