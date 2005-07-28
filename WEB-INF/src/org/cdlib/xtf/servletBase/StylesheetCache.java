@@ -126,13 +126,12 @@ public class StylesheetCache extends GeneratingCache
             dependencyReceiver = this;
         
         try {
-            File file = new File( (String)key );
+            String path = (String) key;
+            File file = new File( path );
             if( dependencyChecking )
                 addDependency( new FileDependency(file) );
-            if( !file.canRead() ) {
-                throw new GeneralException( 
-                    "Cannot read stylesheet: " + (String)key );
-            }
+            if( !path.startsWith("http:") && !file.canRead() )
+                throw new GeneralException( "Cannot read stylesheet: " + path );
     
             TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
             if( !(factory.getErrorListener() instanceof XTFSaxonErrorListener) )
@@ -152,12 +151,16 @@ public class StylesheetCache extends GeneratingCache
                 factory.setURIResolver( 
                     new DepResolver(this, factory.getURIResolver()) );
             }
+            
+            String url;
+            if( path.startsWith("http:") )
+                url = path;
+            else
+                url = file.toURL().toString();
             Templates x = factory.newTemplates( new SAXSource(
-                    new InputSource(file.toURL().toString())) );
-            if( x == null ) {
-                throw new TransformerException( 
-                    "Error reading stylesheet " + (String)key );
-            }
+                    new InputSource(url)) );
+            if( x == null )
+                throw new TransformerException( "Cannot read stylesheet: " + path );
             
             return x;
         }
