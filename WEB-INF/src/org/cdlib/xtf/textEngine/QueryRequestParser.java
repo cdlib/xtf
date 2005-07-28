@@ -215,6 +215,9 @@ public class QueryRequestParser
         for( int i = 0; i < output.nChildren(); i++ ) {
             EasyNode main = output.child( i );
             String   name = main.name();
+
+            if( !main.isElement() )
+                continue;
             
             if( !name.equals("query") && !name.equals("error") )
                 error( "Expected 'query' or 'error' element at " +
@@ -247,6 +250,8 @@ public class QueryRequestParser
         int nChildQueries = 0;
         for( int i = 0; i < main.nChildren(); i++ ) {
             EasyNode el = main.child( i );
+            if( !el.isElement() )
+                continue;
             if( "facet".equals(el.name()) )
                 parseFacetSpec( el );
             else {
@@ -491,6 +496,8 @@ public class QueryRequestParser
         
         for( int i = 0; i < parent.nChildren(); i++ ) {
             EasyNode el = parent.child( i );
+            if( !el.isElement() )
+                continue;
             if( el.name().equals("sectionType") )
                 continue; // handled elsewhere
 
@@ -915,6 +922,8 @@ public class QueryRequestParser
         Term upper = null;
         for( int i = 0; i < parent.nChildren(); i++ ) {
             EasyNode child = parent.child( i );
+            if( !child.isElement() )
+                continue;
             String name = child.name();
             if( name.equals("lower") ) {
                 if( lower != null )
@@ -1015,6 +1024,8 @@ public class QueryRequestParser
         Vector notVec = new Vector();
         for( int i = 0; i < parent.nChildren(); i++ ) {
             EasyNode el = parent.child( i );
+            if( !el.isElement() )
+                continue;
             if( el.name().equals("not") ) {
                 if( slop <= 0 )
                     error( "'not' clauses aren't supported in phrase/exact queries" );
