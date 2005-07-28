@@ -1196,7 +1196,12 @@ public class QueryRequestParser
                                  String attribName )
     {
         String newVal = parseStringAttrib( el, attribName );
-        String path = Path.resolveRelOrAbs( baseDir, newVal );
+        String path;
+        if( newVal.startsWith("http:") )
+            path = newVal;
+        else
+            path = Path.resolveRelOrAbs( baseDir, newVal );
+        
         if( specifiedGlobalAttrs.contains(attribName) && 
             !oldVal.equals(path) )
         {
@@ -1205,8 +1210,9 @@ public class QueryRequestParser
         }
         specifiedGlobalAttrs.add( attribName );
 
-        if( !(new File(path).canRead()) &&
-            !newVal.equals("NullStyle.xsl") ) 
+        if( !path.startsWith("http:") &&
+            !newVal.equals("NullStyle.xsl") && 
+            !(new File(path).canRead()) )
         {
             error( "File \"" + newVal + "\" specified in '" + 
                    el.name() + "' element " + "does not exist" );
