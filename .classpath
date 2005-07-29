@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="WEB-INF/src"/>
+	<classpathentry excluding="**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/src"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/servlet.jar"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/winstone" kind="lib" path="WEB-INF/lib/winstone.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
