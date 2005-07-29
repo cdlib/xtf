@@ -29,6 +29,7 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
@@ -232,7 +233,13 @@ public class DefaultQueryProcessor extends QueryProcessor
         // and only generate a DocHit once even if it's added to multiple
         // groups.
         //
-        final DocHitMakerImpl docHitMaker = new DocHitMakerImpl();  
+        final DocHitMakerImpl docHitMaker = new DocHitMakerImpl();
+        
+        // If we're to apply a set of additional boost sets to the documents,
+        // get the set now.
+        //
+        final BoostSet boostSet = (req.boostSetPath == null) ? null :
+            BoostSet.getCachedSet(reader, new File(req.boostSetPath) );
         
         // Now for the big show... go get the hits!
         searcher.search( finalQuery, null, new SpanHitCollector() {
@@ -245,6 +252,10 @@ public class DefaultQueryProcessor extends QueryProcessor
                 // Make sure this is really a document, not a chunk.
                 if( docNumMap.getFirstChunk(doc) < 0 )
                     return;
+                
+                // If we're boosting, apply that factor.
+                if( boostSet != null )
+                    score *= boostSet.getBoost( doc );
 
                 // Bump the count of documents hit, and update the max score.
                 nDocsHit++;
@@ -414,9 +425,10 @@ public class DefaultQueryProcessor extends QueryProcessor
         boolean isText = (query instanceof SpanQuery) ?
             ((SpanQuery)query).getField().equals("text") : false;
             
-        if( query instanceof SpanNearQuery && isText ) {
+        if( query instanceof SpanNearQuery ) {
             SpanNearQuery nq = (SpanNearQuery) query;
-            nq.setSlop( Math.min(nq.getSlop(), docNumMap.getChunkOverlap()) );
+            int maxSlop = isText ? docNumMap.getChunkOverlap() : 1000000;
+            nq.setSlop( Math.min(nq.getSlop(), maxSlop) );
         }
         else if( query instanceof SpanChunkedNotQuery ) {
             SpanChunkedNotQuery nq = (SpanChunkedNotQuery) query;
