@@ -73,6 +73,12 @@ public class QueryRequest implements Cloneable
     /** Facet specifications (if any) */
     public FacetSpec[] facetSpecs  = null;
     
+    /** 
+     * Experimental, and probably temporary:
+     * Path of file containing document keys -> boost factors. 
+     */
+    public String     boostSetPath;
+    
     // Creates an exact copy of this query request.
     public Object clone() 
     {
