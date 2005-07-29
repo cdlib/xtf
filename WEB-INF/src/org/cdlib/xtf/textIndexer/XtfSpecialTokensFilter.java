@@ -177,7 +177,13 @@ public class XtfSpecialTokensFilter extends TokenFilter
         // bump value for the position increment of the next non-special
         // token.
         //
-        bumpValue += Integer.valueOf(theToken.termText()).intValue();
+        // 'x' is a special value meaning a large number (1000000).
+        //
+        String text = theToken.termText();
+        if( text.equals("x") )
+            bumpValue += 1000000;
+        else
+            bumpValue += Integer.parseInt( text );
     
     } // for(;;)
     

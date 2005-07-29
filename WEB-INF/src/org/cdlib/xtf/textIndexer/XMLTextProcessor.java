@@ -1769,6 +1769,8 @@ public class XMLTextProcessor extends DefaultHandler
         // positions, causing a phrase search to easily span them. To counter
         // this, we stick them all together in one field, but add word bump
         // separators to keep hits from occurring across one and the next.
+        // We use the special word bump 'x' to mean a million, which should be
+        // quite sufficient to keep matches from spanning these boundaries.
         //
         // Of course, we only need to do this work for tokenized fields (as
         // we must assume that untokenized fields will be used for sorting and
@@ -1781,7 +1783,7 @@ public class XMLTextProcessor extends DefaultHandler
                 StringBuffer buf = new StringBuffer();
                 buf.append( mf.value );
                 buf.append( Constants.BUMP_MARKER );
-                buf.append( Integer.toString(indexInfo.getChunkOvlp()) );
+                buf.append( 'x' );
                 buf.append( Constants.BUMP_MARKER );
                 buf.append( ' ' );
                 buf.append( metaField.value );
