@@ -9,5 +9,6 @@
 	<classpathentry sourcepath="WEB-INF/lib/source/jtidy-04aug2000r7-dev" kind="lib" path="WEB-INF/lib/Tidy.jar"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/saxonb-8.3" kind="lib" path="WEB-INF/lib/saxonb-8.3.jar"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/cql-java-0.7" kind="lib" path="WEB-INF/lib/cql-java.jar"/>
+	<classpathentry sourcepath="WEB-INF/lib/source/marc4j" kind="lib" path="WEB-INF/lib/marc4j.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
