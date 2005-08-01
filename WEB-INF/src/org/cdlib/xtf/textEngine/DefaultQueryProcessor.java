@@ -427,7 +427,13 @@ public class DefaultQueryProcessor extends QueryProcessor
             
         if( query instanceof SpanNearQuery ) {
             SpanNearQuery nq = (SpanNearQuery) query;
-            int maxSlop = isText ? docNumMap.getChunkOverlap() : 1000000;
+            
+            // For text queries, set the max to the chunk overlap size. For
+            // meta-data fields, set it to the bump between multiple values
+            // for the same field, *minus one* to prevent matches across the
+            // boundary.
+            //
+            int maxSlop = isText ? docNumMap.getChunkOverlap() : (1000000-1);
             nq.setSlop( Math.min(nq.getSlop(), maxSlop) );
         }
         else if( query instanceof SpanChunkedNotQuery ) {
