@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.cdlib.xtf.crossQuery.CrossQuery;
+import org.cdlib.xtf.textEngine.QueryResult;
+import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.Trace;
 
 /**
@@ -45,20 +47,28 @@ import org.cdlib.xtf.util.Trace;
  */
 public class TestableCrossQuery extends CrossQuery
 {
-  /**
-  * Generate an error page based on the given exception. Utilizes the system
-  * error stylesheet to produce a nicely formatted HTML page.
-  *
-  * @param req  The HTTP request we're responding to
-  * @param res  The HTTP result to write to
-  * @param exc  The exception producing the error. If it's a
-  *             DynaXMLException, the attributes will be passed to
-  *             the error stylesheet.
-  */
+  public int nHits;
+  
+  // inherit Javadoc
+  protected void formatHits( String              mainTagName,
+                             HttpServletRequest  req,
+                             HttpServletResponse res,
+                             AttribList          attribs,
+                             QueryResult         result,
+                             String              displayStyle,
+                             String              extraStuff )
+      throws Exception
+  {
+    nHits = result.totalDocs;
+    super.formatHits( mainTagName, req, res, attribs, result, displayStyle, extraStuff );
+  }
+    
+  // inherit Javadoc
   protected void genErrorPage( HttpServletRequest  req, 
                                HttpServletResponse res, 
                                Exception           exc )
   {
+    nHits = -1;
     Trace.error( "Exception occurred in crossQuery: " + exc );
     throw new RuntimeException( exc );
   } // genErrorPage()
