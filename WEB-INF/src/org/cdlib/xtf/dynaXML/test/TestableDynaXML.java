@@ -142,7 +142,7 @@ public class TestableDynaXML extends DynaXML
     Source src = new DOMSource( doc );
     config.setErrorListener( new XTFSaxonErrorListener() );
     prevAnnotatedTree = (DocumentInfo)
-        TreeBuilder.build( src, AllElementStripper.getInstance(), config );
+        TreeBuilder.build( src, new AllElementStripper(), config );
     prevAnnotatedPath = sourcePath;
     return prevAnnotatedTree;
     

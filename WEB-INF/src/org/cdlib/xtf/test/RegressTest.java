@@ -296,7 +296,7 @@ public class RegressTest
         NodeInfo queryDoc = null;
         try {
             Source src = new StreamSource( inFile.toString() );
-            queryDoc = TreeBuilder.build( src, AllElementStripper.getInstance(), config );
+            queryDoc = TreeBuilder.build( src, new AllElementStripper(), config );
         }
         catch( Exception e ) {
             Trace.error( "Unexpected exception while reading " + 

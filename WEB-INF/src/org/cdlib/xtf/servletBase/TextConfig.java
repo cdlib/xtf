@@ -92,8 +92,7 @@ public abstract class TextConfig
             StreamSource src = new StreamSource( new File(path) );
             NodeInfo doc = null;
             try {
-                doc = TinyBuilder.build( src, 
-                              AllElementStripper.getInstance(), config );
+                doc = TinyBuilder.build( src, new AllElementStripper(), config );
             }
             catch( XPathException e ) {
                 throw new RuntimeException( e );

@@ -764,13 +764,11 @@ public class XMLFormatter {
   public NodeInfo toNode()
 
   {
-    if( config == null )
-        config = new Configuration();
-    
     String strVersion = buf.toString();
     StreamSource src = new StreamSource( new StringReader(strVersion) );
     try {
-        return TinyBuilder.build( src, AllElementStripper.getInstance(), config );
+        return TinyBuilder.build( 
+            src, new AllElementStripper(), new Configuration() );
     }
     catch( XPathException e ) {
         throw new RuntimeException( e );
@@ -818,7 +816,4 @@ public class XMLFormatter {
 
   /** Amount to indent when {@link #tab()} is called. */
   private int tabSize = defaultTabSize;
-  
-  /** Saxon configuration (used by {@link #toNode()} only) */
-  private Configuration config = null;
 }
