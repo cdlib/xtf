@@ -1009,7 +1009,7 @@
       a query for the words &quot;man&quot; and &quot;war&quot;. Much of the repetetive 
       information has been snipped out so you can get a quick idea of the structure 
       without getting bogged down in details.</p>
-    <pre class="Sample">&lt;<b>crossQueryResult</b> totalDocs="8" startDoc="1" endDoc="8">
+    <pre class="Sample">&lt;<b>crossQueryResult</b> queryTime=&quot;0.32&quot; totalDocs="8" startDoc="1" endDoc="8">
 
   &lt;<b>parameters</b>>
     &lt;param name="text" value="man war">
@@ -1069,7 +1069,8 @@
       inside it.</p>
     <p>A little more formally, the result formatter receives a<span class="Code"> 
       &lt;crossQueryResult&gt; </span>tag that looks like this: </p>
-    <pre class="Sample"><b>&lt;crossQueryResult totalDocs = "<span class="MacroCode">NumberOfDocs</span>" 
+    <pre class="Sample"><b>&lt;crossQueryResult queryTime = "<span class="MacroCode">TimeInSeconds</span>" 
+                  totalDocs = "<span class="MacroCode">NumberOfDocs</span>" 
                   startDoc  = "<span class="MacroCode">FirstDocNumber</span>" 
                   endDoc    = "<span class="MacroCode">LastDocNumber</span>"&gt;
     <span class="MacroCode">Parameters
@@ -1551,7 +1552,7 @@
     </div>
   <br>
   <!-- dynaXML --> <!---------------------------------------------------------------------------------------------------------------><br>
-</div>
+
 </body>
 
 </html>

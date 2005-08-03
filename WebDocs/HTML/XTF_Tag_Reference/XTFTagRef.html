@@ -2227,7 +2227,8 @@
         servlet. It has the form:<br> 
         <br>
         <div class="IndentLR"> 
-          <pre class="Code">&lt;crossQueryResult totalDocs = "<span class="MacroCode">NumberOfDocs</span>" 
+          <pre class="Code">&lt;crossQueryResult queryTime = &quot;<span class="MacroCode">TimeInSeconds</span>&quot;
+                  totalDocs = "<span class="MacroCode">NumberOfDocs</span>" 
                   startDoc  = "<span class="MacroCode">FirstDocNumber</span>" 
                   endDoc    = "<span class="MacroCode">LastDocNumber</span>"&gt;
     <span class="MacroCode"><a href="#crossQuery_QueryParser_Input_Parameters">Parameters</a>
@@ -2241,6 +2242,12 @@
         where <br>
         <div class="IndentLR"> 
           <table cellspacing="12">
+            <tr> 
+              <td width="218" align="right" valign="top" class="Code">queryTime=&quot;<span class="MacroCode">TimeInSeconds</span>&quot; 
+              </td>
+              <td width="1132">is the amount of time, in seconds, that the servlet 
+                spent parsing the query, processing it, and gathering the results.</td>
+            </tr>
             <tr> 
               <td width="218" align="right" valign="top" class="Code"> totalDocs="<span class="MacroCode">NumberOfDocs</span>" 
               </td>

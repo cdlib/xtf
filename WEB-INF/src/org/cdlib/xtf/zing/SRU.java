@@ -90,6 +90,9 @@ public class SRU extends CrossQuery
                           HttpServletResponse res )
         throws Exception
     {
+        // Record the start time.
+        long startTime = System.currentTimeMillis();
+      
         // Switch the default output mode to XML.
         res.setContentType("text/xml");
       
@@ -122,7 +125,8 @@ public class SRU extends CrossQuery
         //
         formatHits( "SRUResult",
                     req, res, attribs, result, queryReq.displayStyle, 
-                    fmt.toString() + XMLWriter.toString(queryReqDoc, false) );
+                    fmt.toString() + XMLWriter.toString(queryReqDoc, false),
+                    startTime );
     }
     
     

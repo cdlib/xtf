@@ -31,6 +31,8 @@ package org.cdlib.xtf.crossQuery;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.text.DecimalFormat;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -40,6 +42,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
@@ -66,6 +69,9 @@ public class CrossQuery extends TextServlet
 {
     /** Holds global servlet configuration info */
     protected static CrossQueryConfig config;
+    
+    /** Used to format decimal numbers */
+    protected static DecimalFormat decimalFormat = new DecimalFormat();
 
     /**
      * Called by the superclass to find out the name of our specific config
@@ -196,6 +202,9 @@ public class CrossQuery extends TextServlet
                           HttpServletResponse res )
         throws Exception
     {
+        // Record the start time.
+        long startTime = System.currentTimeMillis();
+        
         // Make a <parameters> block.
         XMLFormatter fmt = new XMLFormatter();
         tokenizeParams( attribs, fmt );
@@ -214,7 +223,8 @@ public class CrossQuery extends TextServlet
         formatHits( "crossQueryResult",
                     req, res, attribs, result, 
                     queryReq.displayStyle, 
-                    fmt.toString() + XMLWriter.toString(queryReqDoc, false) );
+                    fmt.toString() + XMLWriter.toString(queryReqDoc, false),
+                    startTime );
 
     } // apply()
 
@@ -289,7 +299,8 @@ public class CrossQuery extends TextServlet
                                AttribList          attribs,
                                QueryResult         result,
                                String              displayStyle,
-                               String              extraStuff )
+                               String              extraStuff,
+                               long                startTime )
         throws Exception
     {
         // Locate the display stylesheet.
@@ -324,8 +335,18 @@ public class CrossQuery extends TextServlet
         // Add the special computed parameters.
         stuffSpecialAttribs( req, trans );
 
-        // Make an input document for it based on the document hits.
-        Source sourceDoc = result.hitsToSource( mainTagName, extraStuff );
+        // Make an input document for it based on the document hits. Insert
+        // an attribute documenting how long the query took, including
+        // formatting the hits.
+        //
+        String hitsString = result.hitsToString( mainTagName, extraStuff );
+        String prefix = "<crossQueryResult ";
+        assert hitsString.startsWith( prefix );
+        long queryTime = System.currentTimeMillis() - startTime;
+        String formattedTime = decimalFormat.format( queryTime / 1000.0 );
+        hitsString = prefix + "queryTime=\"" + formattedTime + "\" " +
+            hitsString.substring(prefix.length());
+        Source sourceDoc = new StreamSource( new StringReader(hitsString) );
 
         // Make sure errors get directed to the right place.
         if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )

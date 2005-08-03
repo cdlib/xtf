@@ -56,11 +56,13 @@ public class TestableCrossQuery extends CrossQuery
                              AttribList          attribs,
                              QueryResult         result,
                              String              displayStyle,
-                             String              extraStuff )
+                             String              extraStuff,
+                             long                startTime )
       throws Exception
   {
     nHits = result.totalDocs;
-    super.formatHits( mainTagName, req, res, attribs, result, displayStyle, extraStuff );
+    super.formatHits( mainTagName, req, res, attribs, result, 
+                      displayStyle, extraStuff, startTime );
   }
     
   // inherit Javadoc
