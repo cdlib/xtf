@@ -73,7 +73,7 @@ public class CharMap
     /** Map the characters in a word and return the mapped resulting word,
      *  or null if no mappings found.
      */
-    public String mapWord( String word )
+    public synchronized String mapWord( String word )
     {
         // Have we already looked up this word? If so, save time.
         String val = null;

@@ -75,7 +75,7 @@ public class WordMap
     }
     
     /** Look up a word, and return the corresponding value, or null if none. */
-    public String lookup( String word )
+    public synchronized String lookup( String word )
     {
         // Have we already looked up this word? If so, save time.
         String val = null;
