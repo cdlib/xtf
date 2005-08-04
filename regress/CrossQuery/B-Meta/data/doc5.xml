@@ -9,8 +9,9 @@
    <date xtf:meta="yes">19841203</date>
    <type xtf:meta="true">text</type>
    <identifier xtf:meta="yes">http://ark.cdlib.org/ark:/13030/ft1c6003wp</identifier>
-   <relation xtf:meta="true">http://www.ucpress.edu/</relation>
-   <relation xtf:meta="yes">http://escholarship.cdlib.org/</relation>
+   <relation xtf:meta="true" xtf:tokenize="no">http://www.ucpress.edu/</relation>
+   <!-- Word boost below shouldn't take effect, because only the first one counts. -->
+   <relation xtf:meta="yes" xtf:tokenize="false" xtf:wordBoost="10.0">http://escholarship.cdlib.org/</relation>
    <rights xtf:meta="true">Public</rights>
    <text>
       <front>

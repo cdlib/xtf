@@ -13,8 +13,9 @@
     <date xtf:meta="true">19970328</date>
     <type xtf:meta="true">text</type>
     <identifier xtf:meta="true">http://ark.cdlib.org/ark:/13030/ft2s2004r1</identifier>
-    <relation xtf:meta="true">http://www.ucpress.edu/</relation>
-    <relation xtf:meta="true">http://escholarship.cdlib.org/</relation>
+    <!-- Word boost below should take effect since first, even though not present on second. -->
+    <relation xtf:tokenize="false" xtf:meta="true" xtf:wordBoost="3.0">http://www.ucpress.edu/</relation>
+    <relation xtf:tokenize="no" xtf:meta="true">http://escholarship.cdlib.org/</relation>
     <rights xtf:meta="true">UCOnly</rights>
     <div1 type="chapter" rend="Heading-Heading2B" id="d0e727">
         <head>Introduction</head>

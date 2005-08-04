@@ -10,8 +10,8 @@
     <date xtf:meta="true">19930628</date>
     <type xtf:meta="true">text</type>
     <identifier xtf:meta="true">http://ark.cdlib.org/ark:/13030/ft958009mm</identifier>
-    <relation xtf:meta="true">http://www.ucpress.edu/</relation>
-    <relation xtf:meta="true">http://escholarship.cdlib.org/</relation>
+    <relation xtf:meta="true" xtf:tokenize="no">http://www.ucpress.edu/</relation>
+    <relation xtf:meta="true" xtf:tokenize="false">http://escholarship.cdlib.org/</relation>
     <rights xtf:meta="true">Public</rights>
     <div1 id="ch1" type="chapter" n="1" org="uniform" part="N" sample="complete">
         <head type="main">Colonialism, Communalism, and Democracy</head>
