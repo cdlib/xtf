@@ -1561,8 +1561,20 @@ public class XMLTextProcessor extends DefaultHandler
                 tokenize = false;
         }
         
+        // See if there is a "wordBoost" attribute for this node. If not, 
+        // default to 1.0f.
+        //
+        float boost = 1.0f;
+        int boostIdx = atts.getIndex( xtfUri, "wordBoost" );
+        if( boostIdx < 0 )
+            boostIdx = atts.getIndex( xtfUri, "wordboost" );
+        if( boostIdx >= 0 ) {
+            String boostStr = atts.getValue( boostIdx );
+            boost = Float.parseFloat( boostStr );
+        }
+        
         // Allocate a place to store the contents of the meta-data field.
-        metaField = new MetaField( localName, tokenize );
+        metaField = new MetaField( localName, tokenize, boost );
         assert metaBuf.length() == 0 : "Should have cleared meta-buf";
         
         // If there are non-XTF attributes on the node, record them.
@@ -1777,9 +1789,13 @@ public class XMLTextProcessor extends DefaultHandler
         // grouping only, and glomming things together would mess that up.)
         //
         boolean add = true;
+        int nFound = 0;
         for( Iterator i = metaInfo.iterator(); i.hasNext(); ) {
             MetaField mf = (MetaField) i.next();
-            if( mf.name.equals(metaField.name) && mf.tokenize ) {
+            boolean found = mf.name.equals(metaField.name) ;
+            if( found )
+                ++nFound;
+            if( found && mf.tokenize ) {
                 StringBuffer buf = new StringBuffer();
                 buf.append( mf.value );
                 buf.append( Constants.BUMP_MARKER );
@@ -1792,8 +1808,19 @@ public class XMLTextProcessor extends DefaultHandler
             }
         }
 
-        if( add )
-        metaInfo.add( metaField );
+        if( add ) 
+        {
+            // Only pay attention to the boost of the first value for a given
+            // field, since Lucene multiplies them all together. If we didn't 
+            // do this, four values with a boost of 2 would result in a total 
+            // boost of 16, which isn't what we want.
+            //
+            if( nFound > 0 )
+                metaField.wordBoost = 1.0f;
+            
+            // Record the new field.
+            metaInfo.add( metaField );
+        }
         
         metaField = null;
         metaBuf.setLength( 0 );
@@ -3236,19 +3263,19 @@ public class XMLTextProcessor extends DefaultHandler
         // If the current attribute is the section bump, get it.    
         else if( attName.equalsIgnoreCase("sectionBump") ) {
             valueStr    = atts.getValue(i);
-            sectionBump = Integer.valueOf(valueStr).intValue();
+            sectionBump = Integer.parseInt( valueStr );
         }
         
         // If the current attribute is the word boost, get it. 
         else if( attName.equalsIgnoreCase("wordBoost") ) {
             valueStr  = atts.getValue(i);
-            wordBoost = Float.valueOf(valueStr).intValue();
+            wordBoost = Float.parseFloat( valueStr );
         }
         
         // If the current attribute is the sentence bump, get it.
         else if( attName.equalsIgnoreCase("sentenceBump") ) {
             valueStr = atts.getValue(i);
-            sentenceBump = Integer.valueOf(valueStr).intValue();
+            sentenceBump = Integer.parseInt( valueStr );
         }
         
         // If the current attribute is the no-index flag...
@@ -3324,7 +3351,7 @@ public class XMLTextProcessor extends DefaultHandler
         
             // Get the word boost value.
             valueStr = atts.getValue(i);
-            float newBoost = Float.valueOf(valueStr).intValue();
+            float newBoost = Float.parseFloat( valueStr );
             
             // If the word boost changed...
             if( wordBoost != newBoost ) {
@@ -3448,12 +3475,14 @@ public class XMLTextProcessor extends DefaultHandler
         while(  metaIter.hasNext() ) {
             
             // Get the next meta field.
-            MetaField field = (MetaField) metaIter.next();
+            MetaField metaField = (MetaField) metaIter.next();
             
             // Add it to the document as stored, indexed, and maybe tokenized.
-            doc.add( new Field( field.name,
-                                field.value,
-                                true, true, field.tokenize ) );
+            Field docField = new Field( metaField.name,
+                                        metaField.value,
+                                        true, true, metaField.tokenize );
+            docField.setBoost( metaField.wordBoost );
+            doc.add( docField );
             
         } // while(  metaIter.hasNext() )
    
@@ -3715,10 +3744,12 @@ public class XMLTextProcessor extends DefaultHandler
     public String  name;
     public String  value;
     public boolean tokenize;
+    public float   wordBoost;
     
-    public MetaField( String name, boolean tokenize ) {
+    public MetaField( String name, boolean tokenize, float wordBoost ) {
       this.name     = name;
       this.tokenize = tokenize;
+      this.wordBoost    = wordBoost;
     }
 
   } // private class MetaField
