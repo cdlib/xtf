@@ -138,7 +138,7 @@ public class DocHitImpl extends DocHit
             else if( name.equals("chunkCount") )
                 chunkCount = Integer.parseInt( value );
             else if( !name.equals("docInfo") ) 
-                loadMetaField( name, value, spanDoc, metaData );
+                loadMetaField( name, value, spanDoc, metaData, f.isTokenized() );
         }
         
         // We should have gotten at least the special fields.
@@ -154,15 +154,21 @@ public class DocHitImpl extends DocHit
      * @param value     Raw string value of the field
      * @param spanDoc   Spans to use for marking
      * @param metaData  Where to put the resulting data
+     * @param isTokenized true if the field was tokenized and should be
+     *                    marked.
      */
     private void loadMetaField( String name, 
                                 String value, 
                                 SpanDocument spanDoc, 
-                                AttribList metaData )
+                                AttribList metaData,
+                                boolean isTokenized )
     {
         // First, mark up the value.
-        String markedValue = 
-                    snippetMaker.markField(spanDoc, name, value);
+        String markedValue;
+        if( isTokenized )
+            markedValue = snippetMaker.markField(spanDoc, name, value);
+        else
+            markedValue = value;
         
         // Now fix up the result. This involves two operations:
         // (1) Strip the special start-of-field and end-of-field tokens; and
