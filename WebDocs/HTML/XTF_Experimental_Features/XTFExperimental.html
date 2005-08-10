@@ -133,8 +133,11 @@
       <li><a href="#Faceted_Query">Query Parser Tags for Facets</a></li>
       <li><a href="#Facet_Result_Formatter">Result Formatter Tags for Facets</a></li>
       <li><a href="#Facet_Group_Selection">Group Selection</a></li>
-      <li><a href="#Facet_Hierarchical">Hierarchical Facets</a></li>
+      <li><a href="#Facet_Hierarchical">Hierarchical Facets</a><br>
+        <br>
+      </li>
     </ul>
+    <b><a href="#Boost_Sets">Boost Sets</a></b> 
   </ul>
   <p class="Heading1">Introduction<a name="Introduction"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
@@ -856,7 +859,44 @@
   <p>If all the documents were for<span class="Code"> US::California::Berkeley</span>, 
     XTF would simply select that single group.</p>
 </div>
-
+<p class="Heading1">Boost Sets<a name="Boost_Sets"></a></p>
+<!---------------------------------------------------------------------------------------------------------------> 
+<p><b><i>crossQuery </i></b>includes a feature that allows a <b>Boost Set</b> 
+  to be specified in the query produced by the <b>Query Parser</b>. This set specifies, 
+  for each document ID, a boost factor to be applied to that document. This allows 
+  experimentation with different algorithms that assign a global factor to each 
+  document (for instance, Google's PageRank algorithm assigns just such a factor.) 
+  A subsequent query could specify a completely different boost set, allowing 
+  quick side-by-side testing of various global ranking algorithms.</p>
+<p>This feature should be considered very experimental, and may be removed at 
+  some future time.</p>
+<p>A boost set is specified by a<span class="Code"> boostSet=&quot;<span class="MacroCode">boostFilePath</span>&quot; 
+  </span>attribute to the top-level<span class="Code"> &lt;query<span class="MacroCode">...</span>&gt; 
+  </span>element produced by the Query Parser. The attribute value should specify 
+  a path, relative to the XTF base directory, of a boost set file.</p>
+<p>The format of a boost set file is very simple: it should consist of one text 
+  line per document, and each line should contain the document ID, followed by 
+  a<span class="Code"> | </span> symbol, followed by a factor to be multiplied 
+  into the score for that document. For example:</p>
+<pre class="Sample">  doc1|1.5
+  doc2|2.0
+  doc4|0.722</pre>
+<p>Boost factors greater that 1.0 will increase the ranking of a document; factors 
+  between 0.0 and 1.0 will decrease the ranking of the document; factors less 
+  than 0.0 are not valid.</p>
+<p>The lines in the file must be listed in ascending order by document ID. Each 
+  ID in the file will be matched to an entry in the index by extracting the file 
+  name of the indexed XML file and removing path components and file extensions. 
+  Thus, if an indexed file were<span class="Code"> /usr/local/data/00/05/0005123.xml</span>, 
+  its document ID is considered to be<span class="Code"> 0005123</span>. Any documents 
+  not matched in the file are considered to have a boost factor of 1.0 (that is, 
+  their scores are unaltered.)</p>
+<p>Warnings will be logged if document IDs in the file cannot be matched to index 
+  entries, and also if any lines are out of order in the file.</p>
+<p>Note that if the boost file is very large, it may take some time to read and 
+  process the file the first time it is used, but subsequent accesses will be 
+  very fast as the result is cached in memory by the <b><i>crossQuery</i></b> 
+  servlet.</p>
 </body>
 
 </html>
