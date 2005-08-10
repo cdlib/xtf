@@ -33,9 +33,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
+import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
@@ -65,10 +67,13 @@ public class BoostSet
    * to re-read the boost data.
    * 
    * @param indexReader  Index to correlate the data to
+   * @param docNumMap    Used to map chunk numbers to document numbers
    * @param inFile       Which file to read
    * @return             Group data for the specified field
    */
-  public static BoostSet getCachedSet( IndexReader indexReader, File inFile )
+  public static BoostSet getCachedSet( IndexReader indexReader,
+                                       DocNumMap   docNumMap,
+                                       File        inFile )
     throws IOException
   {
     // See if we have a cache for this reader.
@@ -83,7 +88,7 @@ public class BoostSet
     if( set == null )
     {
         // Don't have cached data, so read and remember it.
-        set = new BoostSet( indexReader, inFile );
+        set = new BoostSet( indexReader, docNumMap, inFile );
         readerCache.put( inFile, set );
     }
     
@@ -109,21 +114,25 @@ public class BoostSet
    *  key -> boost factor mappings, and correlating it with the keys in the
    *  given index reader.
    */
-  private BoostSet( IndexReader indexReader, File inFile )
+  private BoostSet( IndexReader indexReader, DocNumMap docNumMap, File inFile )
     throws IOException
   {
-    // Figure out the max doc ID, and make an array that big.
+    // Figure out the max doc ID, make an array that big, and fill it with
+    // the default value (1.0).
+    //
     int maxDoc = indexReader.maxDoc();
     boostByDoc = new float[maxDoc+1];
+    Arrays.fill( boostByDoc, 1.0f );
     
     // Iterate all the keys in the index.
     DocIter docIter = null;
     LineIter lineIter = null;
     try 
     {
-      docIter = new DocIter( indexReader );
+      docIter = new DocIter( indexReader, docNumMap );
       lineIter = new LineIter( new BufferedReader( new FileReader(inFile) ) );
       
+      // Process all matches
       while( !docIter.done() && !lineIter.done() )
       {
           String docKey  = docIter.key();
@@ -141,18 +150,31 @@ public class BoostSet
           }
           
           // Found a match.
-          boostByDoc[docIter.docId()] = lineIter.boost();
+          int docId = docIter.docId();
+          Trace.info( docKey + " -> " + docId );
+          boostByDoc[docId] = lineIter.boost();
           
           docIter.next();
           lineIter.next();
       }
       
+      // Warn about any leftover docs
+      while( !docIter.done() ) {
+          System.out.println( "Skipping doc " + docIter.key() );
+          docIter.next();
+      }
+      
+      // Warn about any leftover lines
+      while( !lineIter.done() ) {
+          warn( "Boost document key '" + lineIter.key() + "' not found in index" );
+          lineIter.next();
+      }
+          
     } finally {
       if( docIter != null )
           docIter.close();
       if( lineIter != null )
           lineIter.close();
-      indexReader.close();
     }
 
   } // constructor
@@ -177,6 +199,7 @@ public class BoostSet
    */
   private class DocIter
   {
+    DocNumMap     docNumMap;
     boolean       done = false;
     String        prevDocKey = "";
     String        docKey;
@@ -185,7 +208,10 @@ public class BoostSet
     TermEnum      termEnum;
     
     /** Construct from an index reader */
-    DocIter( IndexReader indexReader ) throws IOException {
+    DocIter( IndexReader indexReader, DocNumMap docNumMap ) 
+      throws IOException 
+    {
+      this.docNumMap = docNumMap;
       termPositions = indexReader.termPositions();
       termEnum      = indexReader.terms(new Term(field, ""));
       readDocKey();
@@ -200,12 +226,15 @@ public class BoostSet
     /** Gets the Lucene document ID of the current document */
     int docId() throws IOException {
       termPositions.seek( termEnum );
-      if( termPositions.next() ) 
-          return termPositions.doc();
-      else {
-          assert false : "error reading term positions";
-          return 0;
+      while( termPositions.next() ) {
+          int chunk = termPositions.doc();
+          int doc = docNumMap.getDocNum( chunk );
+          assert doc >= 0 : "error mapping first chunk";
+          return doc;
       }
+
+      assert false : "error reading term positions";
+      return -1;
     }
     
     /** Advances to the next document in the index */
@@ -303,11 +332,15 @@ public class BoostSet
           
           if( lineKey.compareTo(prevLineKey) <= 0 ) {
               Trace.error( 
-                  "Error: Boost lines out of order: '" + prevLineKey +
-                  "' came before '" + lineKey + "' but should come after." );
+                  "Error: Boost set lines out of order: '" + prevLineKey +
+                  "' came before '" + lineKey + "', but should come after." );
               done = true;
               break;
           }
+          prevLineKey = lineKey;
+          
+          // Got a valid line.
+          break;
       }
     } // readLine()
     

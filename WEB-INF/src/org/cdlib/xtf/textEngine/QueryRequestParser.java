@@ -750,6 +750,9 @@ public class QueryRequestParser
             specifiedGlobalAttrs.add( attrName );
         }
         
+        else if( attrName.equalsIgnoreCase("boostSet") )
+            req.boostSetPath = onceOnlyPath( req.boostSetPath, el, attrName );
+
         else if( attrName.equals("field") || attrName.equals("metaField") )
             ; // handled elsewhere
         

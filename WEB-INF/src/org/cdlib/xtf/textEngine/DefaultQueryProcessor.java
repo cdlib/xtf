@@ -239,7 +239,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         // get the set now.
         //
         final BoostSet boostSet = (req.boostSetPath == null) ? null :
-            BoostSet.getCachedSet(reader, new File(req.boostSetPath) );
+            BoostSet.getCachedSet(reader, docNumMap, new File(req.boostSetPath) );
         
         // Now for the big show... go get the hits!
         searcher.search( finalQuery, null, new SpanHitCollector() {
