@@ -139,7 +139,7 @@ public class BoostSet
           String lineKey = lineIter.key();
           int diff = docKey.compareTo( lineKey );
           if( diff < 0 ) {
-              System.out.println( "Skipping doc " + docKey );
+              //System.out.println( "Skipping doc " + docKey );
               docIter.next();
               continue;
           }
@@ -160,7 +160,7 @@ public class BoostSet
       
       // Warn about any leftover docs
       while( !docIter.done() ) {
-          System.out.println( "Skipping doc " + docIter.key() );
+          //System.out.println( "Skipping doc " + docIter.key() );
           docIter.next();
       }
       
