@@ -1,4 +1,4 @@
-package org.cdlib.xtf.textEngine.facet;
+package org.cdlib.xtf.util;
 
 /*
  * Copyright (c) 2004, Regents of the University of California
@@ -29,48 +29,24 @@ package org.cdlib.xtf.textEngine.facet;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.HashSet;
+/**
+ * This class provides an equivalent to the Integer.valueOf() method in
+ * Java 1.5, since it is a good thing and not present in Java 1.4.
+ * 
+ * @author Martin Haye
+ */
+public class IntegerValues {
 
-import org.cdlib.xtf.util.IntegerValues;
-
-/** Select the top level of the hierarchy that has a choice. */
-public class SiblingSelector extends GroupSelector
-{
-  private HashSet parents = new HashSet();
+  private static final int CACHE_SIZE = 256;
+  private static Integer[] cache = new Integer[CACHE_SIZE];
   
-  public void reset( boolean conservative ) {
-    super.reset( conservative );
-    parents.clear();
-  }
-  
-  public void process( int group ) 
+  public static Integer valueOf( int i ) 
   {
-    // In conservative mode, we have to select the entire tree
-    if( conservative ) {
-        next.process( group );
-        return;
-    }
-    
-    // Normal (non-conservative mode)... Have we seen this parent before?
-    // If so, ignore it.
-    //
-    int parent = counts.parent( group );
-    Integer parentKey = IntegerValues.valueOf( parent );
-    if( parents.contains(parentKey) )
-        return;
-    
-    // Okay, process all the children under this parent.
-    for( int kid = counts.child(parent); kid >= 0; kid = counts.sibling(kid) ) {
-        if( !counts.shouldInclude(kid) )
-            continue;
-        next.process( kid );
-    }
-    
-    // And record that we've finished this parent now.
-    parents.add( parentKey );
-  } // process()
-  
-  public String toString() {
-    return "siblings -> " + next.toString();
+    final int pos = i - (CACHE_SIZE/2);
+    if( pos < 0 || pos >= cache.length )
+        return new Integer( i );
+    if( cache[pos] == null )
+        cache[pos] = new Integer( i );
+    return cache[pos];
   }
 }

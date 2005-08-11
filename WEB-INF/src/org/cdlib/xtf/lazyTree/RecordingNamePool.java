@@ -31,6 +31,8 @@ package org.cdlib.xtf.lazyTree;
 
 import java.util.HashSet;
 
+import org.cdlib.xtf.util.IntegerValues;
+
 import net.sf.saxon.om.NamePool;
 
 /**
@@ -51,7 +53,7 @@ public class RecordingNamePool extends NamePool
     {
         int namecode = super.allocate( prefix, uriCode, localName );
         int fingerprint = namecode & 0xfffff;
-        fingerprints.add( Integer.valueOf(fingerprint) );
+        fingerprints.add( IntegerValues.valueOf(fingerprint) );
         return namecode;
     }
     

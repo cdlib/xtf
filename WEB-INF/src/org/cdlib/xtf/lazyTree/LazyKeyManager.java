@@ -48,6 +48,7 @@ import java.util.WeakHashMap;
 import java.util.zip.CRC32;
 
 import org.cdlib.xtf.util.DiskHashReader;
+import org.cdlib.xtf.util.IntegerValues;
 import org.cdlib.xtf.util.PackedByteBuf;
 import org.cdlib.xtf.util.Trace;
 
@@ -116,7 +117,7 @@ public class LazyKeyManager extends KeyManager {
 
     public void setKeyDefinition(int fingerprint, KeyDefinition keydef)
     throws TransformerConfigurationException {
-        Integer keykey = Integer.valueOf(fingerprint);
+        Integer keykey = IntegerValues.valueOf(fingerprint);
         if( keyList == null )
             keyList = new HashMap();
         ArrayList v = (ArrayList)keyList.get(keykey);
@@ -152,7 +153,7 @@ public class LazyKeyManager extends KeyManager {
     public List getKeyDefinitions(int fingerprint) 
     {
         // Have we seen this one before?
-        List list = (ArrayList)keyList.get(Integer.valueOf(fingerprint));
+        List list = (ArrayList)keyList.get(IntegerValues.valueOf(fingerprint));
         if( list != null )
             return list;
         

@@ -31,6 +31,8 @@ package org.cdlib.xtf.textEngine.facet;
 
 import java.util.Vector;
 
+import org.cdlib.xtf.util.IntegerValues;
+
 /** Select the top level of the hierarchy that has a choice. */
 public class TopChoiceSelector extends GroupSelector
 {
@@ -69,7 +71,7 @@ public class TopChoiceSelector extends GroupSelector
     // current best candidate, simply add this child to its list.
     //
     if( parent == bestParent ) {
-        bestChildren.add( Integer.valueOf(group) );
+        bestChildren.add( IntegerValues.valueOf(group) );
         return;
     }
     
@@ -88,8 +90,8 @@ public class TopChoiceSelector extends GroupSelector
     bestParent = parent;
     bestLevel  = level;
     bestChildren.setSize( 0 );
-    bestChildren.add( Integer.valueOf(firstChild[parent]) );
-    bestChildren.add( Integer.valueOf(group) );
+    bestChildren.add( IntegerValues.valueOf(firstChild[parent]) );
+    bestChildren.add( IntegerValues.valueOf(group) );
     
   } // process()
   

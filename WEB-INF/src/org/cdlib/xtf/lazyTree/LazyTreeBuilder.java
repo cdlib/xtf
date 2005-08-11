@@ -43,6 +43,7 @@ import org.cdlib.xtf.lazyTree.hackedSaxon.TinyBuilder;
 import org.cdlib.xtf.lazyTree.hackedSaxon.TinyNodeImpl;
 import org.cdlib.xtf.lazyTree.hackedSaxon.TinyTree;
 import org.cdlib.xtf.util.ConsecutiveMap;
+import org.cdlib.xtf.util.IntegerValues;
 import org.cdlib.xtf.util.PackedByteBuf;
 import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.SubStoreWriter;
@@ -247,12 +248,12 @@ public class LazyTreeBuilder
         // Add all the namecodes from elements and attributes.
         for( int i = 0; i < tree.numberOfNodes; i++ ) {
             if( tree.nameCode[i] >= 0 )
-                names.put( Integer.valueOf(tree.nameCode[i]) );
+                names.put( IntegerValues.valueOf(tree.nameCode[i]) );
         }
         
         for( int i = 0; i < tree.numberOfAttributes; i++ ) {  
             if( tree.attCode[i] >= 0 )
-                names.put( Integer.valueOf(tree.attCode[i]) );
+                names.put( IntegerValues.valueOf(tree.attCode[i]) );
         }
         
         // Write out all the namecodes.
@@ -318,7 +319,7 @@ public class LazyTreeBuilder
             
             // Name code
             if( nameCode >= 0 ) {
-                int nameIdx = names.get( Integer.valueOf(nameCode) );
+                int nameIdx = names.get( IntegerValues.valueOf(nameCode) );
                 assert nameIdx >= 0 : "A name was missed when writing name codes";
                 buf.writeInt( nameIdx );
             }
@@ -394,7 +395,7 @@ public class LazyTreeBuilder
             for( j = i; j < i+nAttrs; j++ ) {
             
                 // Name code
-                int nameIdx = names.get( Integer.valueOf(tree.attCode[j]) );
+                int nameIdx = names.get( IntegerValues.valueOf(tree.attCode[j]) );
                 assert nameIdx >= 0 : "A name was missed when writing name codes";
                 buf.writeInt( nameIdx );
                 
@@ -430,7 +431,7 @@ public class LazyTreeBuilder
             for( j = i; j < i+nAttrs; j++ ) {
             
                 // Name code
-                int nameIdx = names.get( Integer.valueOf(tree.attCode[j]) );
+                int nameIdx = names.get( IntegerValues.valueOf(tree.attCode[j]) );
                 assert nameIdx >= 0 : "A name was missed when writing name codes";
                 buf.writeInt( nameIdx );
                 

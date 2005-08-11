@@ -201,10 +201,10 @@ public class CircularQueue
     protected void testImpl() {
         CircularQueue queue = new CircularQueue( 3 );
         
-        Object one   = Integer.valueOf( 1 );
-        Object two   = Integer.valueOf( 2 );
-        Object three = Integer.valueOf( 3 );
-        Object four  = Integer.valueOf( 4 );
+        Object one   = IntegerValues.valueOf( 1 );
+        Object two   = IntegerValues.valueOf( 2 );
+        Object three = IntegerValues.valueOf( 3 );
+        Object four  = IntegerValues.valueOf( 4 );
 
         assert queue.count() == 0;
         assert queue.isEmpty();

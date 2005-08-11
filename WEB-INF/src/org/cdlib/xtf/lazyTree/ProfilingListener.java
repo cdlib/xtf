@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.cdlib.xtf.util.IntegerValues;
 import org.cdlib.xtf.util.Trace;
 
 import net.sf.saxon.expr.XPathContext;
@@ -120,9 +121,9 @@ public class ProfilingListener implements TraceListener
             countMap.put( instr, pc );
         }
         
-        if( !pc.nodes.containsKey(Integer.valueOf(nodeNum)) ) {
+        if( !pc.nodes.containsKey(IntegerValues.valueOf(nodeNum)) ) {
             pc.count++;
-            pc.nodes.put( Integer.valueOf(nodeNum), new Boolean(true) );
+            pc.nodes.put( IntegerValues.valueOf(nodeNum), new Boolean(true) );
         }
     } // bumpCount()
 
