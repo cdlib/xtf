@@ -151,7 +151,6 @@ public class BoostSet
           
           // Found a match.
           int docId = docIter.docId();
-          Trace.info( docKey + " -> " + docId );
           boostByDoc[docId] = lineIter.boost();
           
           docIter.next();
