@@ -673,7 +673,7 @@
   A document search begins with a the user specifying some text to search for 
   on a web page. The query is assembled into a URL of the form: <br>
   <br>
-  <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?text=<span class="MacroCode">TextToFind</span> 
+  <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/search?text=<span class="MacroCode">TextToFind</span> 
     </span> </div>
   <br>
   This query URL is then passed on to the <i><b>crossQuery</b></i> servlet for 
@@ -726,7 +726,7 @@
     of individual words. The resulting query URL that would be passed to the <b><i>crossQuery</i></b> 
     servlet would then look something like this: <br>
     <br>
-    <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?text=man+war&text-exclude=%22Man+of+War%22 
+    <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/search?text=man+war&text-exclude=%22Man+of+War%22 
       </span> </div>
     <br>
     Notice that the first part of the URL (everything before the <b>?</b> symbol) 
@@ -1161,7 +1161,7 @@
       error page.</p>
     <p>The following query will create an error with the sample distribution (it 
       performs a wildcard query on all terms): </p>
-    <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?text=* 
+    <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/search?text=* 
       </span> </div>
     <p>This exceeds the default limit on the number of terms a query can access, 
       so <i><b>crossQuery </b></i>calls the <b>Error Generator</b> with the following 
@@ -1205,7 +1205,7 @@
     a document to view by sending a URL that looks like this (in its simplest 
     form):<br>
   </p>
-  <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML?docId=<span class="MacroCode">DocumentToView</span> 
+  <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=<span class="MacroCode">DocumentToView</span> 
     </span> </div>
   <p>The <i><b>dynaXML </b></i>servlet breaks up the URL parameters and formats 
     them in XML. This is passed to the <b>Document Request Parser</b> stylesheet, 
@@ -1263,8 +1263,7 @@
       with the XTF distribution.) If the user clicks on that title, <i> <b>dynaXML</b></i> 
       is then invoked with a URL like this: </p>
       
-    <pre class="Sample"> http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML?
- docId=ft958009mm&amp;query=apartheid</pre>
+    <pre class="Sample"><b> http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm&amp;query=apartheid</b></pre>
       </div>
     Notice that the first part of the URL (everything before the <b>?</b> symbol) 
     invokes the <b><i>dynaXML</i></b> servlet, and second part of the URL (everything 
@@ -1522,8 +1521,9 @@
       wildcard query on all terms, like this:<br>
     </p>
     <div class="Sample"> 
-      <p><span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML?<br>
-        </span><span class="Code">docId=ft958009mm&query=* </span> </p>
+      
+    <p><span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/view?</span><span class="Code">docId=ft958009mm&query=* 
+      </span> </p>
       </div>
     <p>This exceeds the default limit on the number of terms a query can access, 
       and <i><b>dynaXML </b></i>calls the <b>Error Generator</b> with the following 

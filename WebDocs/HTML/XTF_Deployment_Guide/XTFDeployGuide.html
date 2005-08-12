@@ -223,17 +223,14 @@
       <li>Shut down the servlet container.<br>
         <br>
       </li>
-      <li>Download the latest XTF package (<span class="Code">xtf-<span class="MacroCode">x.x.x</span>.war</span>) 
+      <li>Download the latest XTF package (<span class="Code">xtf.war</span>) 
         from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>.<br>
         <br>
       </li>
       <li>Place the XTF web-archive file inside the <span class="Code">webapps</span> 
         directory of the servlet container you have chosen (such as Resin or Tomcat.) 
         <br>
-        <br>
-      </li>
-      <li><i>Very important:</i> Rename the distribution file to <span class="Code">xtf.war<br>
-        <br>
+        <span class="Code"><br>
         </span></li>
       <li>Restart the servlet container, and browse to a URL referencing one of 
         <i><b>XTF</b></i> servlets (such as the one below). The servlet container 
@@ -248,7 +245,7 @@
     To verify that the dynaXML servlet is running,, bring up your web browser 
     and enter the following URL: <br>
     <br>
-    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML</span> 
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view</span> 
     </div>
     <p> Doing so should bring up an error page like this:</p>
     <p align="center"><img src="Art/DocNotFound.jpg" width="354" height="359"> 
@@ -287,7 +284,9 @@
         <li> Copy the<span class="Code"> sample/data </span>sub-directory up to 
           the<span class="Code"><span class="MacroCode"><span class="Code"> </span>servlet-container-directory</span>/webapps/xtf 
           </span>directory so that the sample source documents are located where 
-          the default XTF configuration expects to see it. </li>
+          the default XTF configuration expects to see it. You should now have 
+          the following directory present (among others):<span class="Code"> sample/data/mm/ft958009mm</span>. 
+          This directory contains the document we will attempt to display.</li>
       </ul>
   </div>
 
@@ -298,7 +297,7 @@
     document retrieval works. To do so, bring up your web browser and enter the 
     following URL: <br>
     <br>
-    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML?docId=ft958009mm&amp;doc.view=frames</span> 
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm&amp;doc.view=frames</span> 
     </div>
     <br>
     Doing so should bring up the cover for the book <i><b>The Opening of the Apartheid 
@@ -359,7 +358,7 @@
     searching works. To do this, bring up your web browser and enter the following 
     URL: <br>
     <br>
-    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery</span> 
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/search</span> 
     </div>
     <br>
     Doing so should bring up a page where you can enter information to search 
@@ -491,8 +490,9 @@
     <li> Start up the servlet container, and browse to a URL referencing an XTF 
       servlet, such as dynaXML:<br>
       <br>
-      <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML?docId=ft958009mm&amp;doc.view=frames</span> 
-      </div>
+      
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm&amp;doc.view=frames</span> 
+    </div>
       <br>
       Accessing this URL should cause the servlet container to unpack the web 
       archive file, creating an <span class="Code">xtf</span> sub-directory below 
@@ -1537,7 +1537,8 @@ Done.
     from the Quick Start guide, an HTML code snippet for retrieving the document 
     might look as follows: <br>
     <br>
-    <pre class="Sample"><b><span class="Code">&lt;a href="http://<span class="MacroCode">yourserver</span>:8080/xtf/servlet/org.cdlib.xtf.dynaXML.DynaXML?docId=ft958009mm&amp;doc.view=frames"&gt;
+    
+  <pre class="Sample"><b><span class="Code">&lt;a href="http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm&amp;doc.view=frames"&gt;
     The Opening of the Apartheid Mind
 &lt;/a&gt</span></b></pre>
     <br>

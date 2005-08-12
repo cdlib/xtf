@@ -696,36 +696,36 @@
   Here are some sample URLS, and how the default query parser interprets each 
   one: <br>
   <br>
-  <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver.org</span>/search?title=apartheid+mind 
+  <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver.org</span>:8080/xtf/search?title=apartheid+mind 
     </span><br>
     <div class="IndentLR"> Interpreted as: <span class="Code">title:(apartheid 
       AND mind)</span> <br>
       <i>(Note that "<span class="Code">+</span>" is the URL coding for a space.)</i> 
     </div>
     <br>
-    <span class="Code"> http://<span class="MacroCode">yourserver.org</span>/search?title=apartheid+mind&amp;title-exclude=mandela 
+    <span class="Code"> http://<span class="MacroCode">yourserver.org</span>:8080/search?title=apartheid+mind&amp;title-exclude=mandela 
     </span><br>
     <div class="IndentLR"> Interpreted as: <span class="Code">title:((apartheid 
       AND mind) NOT (mandela))</span> </div>
     <br>
-    <span class="Code"> http://<span class="MacroCode">yourserver.org</span>/search?title=apartheid+mind&amp;title-join=or 
+    <span class="Code"> http://<span class="MacroCode">yourserver.org</span>:8080/search?title=apartheid+mind&amp;title-join=or 
     </span><br>
     <div class="IndentLR"> Interpreted as: <span class="Code">title:(apartheid 
       OR mind)</span> </div>
     <br>
-    <span class="Code"> http://<span class="MacroCode">yourserver.org</span>/search?title=apartheid&text=mandela 
+    <span class="Code"> http://<span class="MacroCode">yourserver.org</span>:8080/search?title=apartheid&text=mandela 
     </span><br>
     <div class="IndentLR"> Interpreted as: <span class="Code">(title:apartheid) 
       AND (text:mandela)</span> </div>
     <br>
-    <span class="Code"> http://<span class="MacroCode">yourserver.org</span>/search?text=%22Nelson+Mandela%22&subject=africa 
+    <span class="Code"> http://<span class="MacroCode">yourserver.org</span>:8080/search?text=%22Nelson+Mandela%22&subject=africa 
     </span><br>
     <div class="IndentLR"> Interpreted as: <span class="Code">(text:PHRASE "nelson 
       mandela") AND (subject:africa)</span> <br>
       <i>(Note that "<span class="Code">%22</span>" is the URL coding for a quote 
       character.)</i> </div>
     <br>
-    <span class="Code"> http://<span class="MacroCode">yourserver.org</span>/search?text=Mandela+Apartheid&text-join=5 
+    <span class="Code"> http://<span class="MacroCode">yourserver.org</span>:8080/search?text=Mandela+Apartheid&text-join=5 
     </span><br>
     <div class="IndentLR"> Interpreted as: <span class="Code">(text:Mandela NEAR{proximity=5} 
       Apartheid)</span> </div>

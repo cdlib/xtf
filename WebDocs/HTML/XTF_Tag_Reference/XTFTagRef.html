@@ -335,7 +335,7 @@
       This field contains a URL string of the form:<br>
       <br>
    
-      <div class="IndentLR"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:<span class="MacroCode">yourport</span>/xtf/servlet/<span class="MacroCode">servlet</span>?<span class="MacroCode">queryparms</span> 
+      <div class="IndentLR"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:<span class="MacroCode">yourport</span>/xtf/<span class="MacroCode">servlet</span>?<span class="MacroCode">queryparms</span> 
         </span><br>
       </div><br>
       
@@ -356,13 +356,11 @@
             <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">servlet</span></td>
             <td width="80%"> <span class="BaseStyle"> is the name of the servlet 
               to which the request is being sent. Normally, this is either</span><br>
-              <div class="IndentLR">
-                <span class="Code">org.cdlib.xtf.crossQuery.CrossQuery</span>
-              </div>
+              <div class="IndentLR"> <span class="Code">search <span class="BaseStyle">(for 
+                crossQuery)</span></span> </div>
               or
-              <div class="IndentLR">
-                <span class="Code">org.cdlib.xtf.dynaXML.DynaXML</span>
-              </div>
+              <div class="IndentLR"> <span class="Code">view </span><span class="BaseStyle">(for 
+                dynaXML)</span></div>
             </td>
           </tr>
            <tr> 
@@ -2195,8 +2193,7 @@
         stylesheet. This parameter is added to a query URL, and has the form:<br>
         <br>
         <div class="IndentLR"> 
-          <p><span class="Code"> <font color="#999999">http://<font face="Times New Roman, Times, serif"><i>yourserver</i></font>:8080/xtf/servlet/org.cdlib.xtf.crossQuery.CrossQuery?<br>
-            </font></span><span class="Code"><font color="#999999">text=<font face="Times New Roman, Times, serif"><i>TextToFind</i></font>&<b>raw=</b></font><span class="MacroCode">YesOrNo</span></span> 
+          <p><span class="Code"> <font color="#999999">http://<font face="Times New Roman, Times, serif"><i>yourserver</i></font>:8080/xtf/search?</font></span><span class="Code"><font color="#999999">text=<font face="Times New Roman, Times, serif"><i>TextToFind</i></font>&<b>raw=</b></font><span class="MacroCode">YesOrNo</span></span> 
           </p>
           </div>
         <p>where <br>
