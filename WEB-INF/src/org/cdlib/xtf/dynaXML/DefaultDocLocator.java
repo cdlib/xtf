@@ -44,6 +44,7 @@ import net.sf.saxon.om.NamePool;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.DocTypeDeclRemover;
+import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.StructuredStore;
 import org.xml.sax.Attributes;
@@ -173,6 +174,11 @@ public class DefaultDocLocator implements DocLocator
                                  boolean removeDoctypeDecl )
         throws IOException
     {
+        // The directory the lazy file is to be stored in might not exist yet.
+        // If not, we need to create it now before making the lazy file.
+        //
+        Path.createPath( lazyFile.getParent() );
+      
         // While we parse the source document, we're going to also build up 
         // a tree that will be written to the lazy file.
         //
