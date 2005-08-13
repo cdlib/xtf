@@ -316,8 +316,14 @@
 
     <p class="Heading2"> Index the Sample Document Library<a name="QuickIndex"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    Before you can verify that basic document searching works, you need to index 
-    the document library. To do this, follow these steps: 
+    <p>Before you can verify that basic document searching works, you need to 
+      index the document library. To do this, follow the steps below. </p>
+    <p><i><span class="GreyList">Note: </span></i><span class="GreyList">this 
+      procedure depends on a Unix-type shell and a Perl command interpreter. If 
+      you are attempting to run XTF on Windows, you'll need an environment such 
+      as <b>cygwin</b> that includes these things. Alternately, you could create 
+      a driver script that does the same work, namely forming a classpath that 
+      includes all the .jar files in<span class="Code"> WEB-INF/lib</span>.</span></p>
     <ol class="OrderedList">
       <li>From the command prompt, set the<span class="Code"> XTF_HOME </span>environment 
         variable to the directory where the XTF package is installed. This environment 
@@ -469,81 +475,84 @@
   <!-- Run-Time Install/Config --> 
   <p class="Heading1"> XTF Installation/Configuration<a name="XTFInstall"></a> 
   </p>
-  <!---------------------------------------------------------------------------------------------------------------> 
-  Prior to installing the XTF package, install and configure the Run-Time Environment 
+  
+<!---------------------------------------------------------------------------------------------------------------> 
+<p>Prior to installing the XTF package, install and configure the Run-Time Environment 
   as described in the <a href="#RunTimeInstall">previous section</a>. Once the 
-  run-time environment is up and running, do the following to install the XTF 
-  Package: <br>
-  <ol class="OrderedList">
-    <li> Shut down your servlet container, to keep it from prematurely trying 
-      to unpack <b><i>XTF</i></b>.<br>
-      <br>
-    </li>
-    <li> Download the California Digital Library XTF web-archive file (via <a href="http://sourceforge.net/projects/xtf">SourceForge</a>) 
-      and place it in your servlet container's webapps directory.<br>
-      <br>
-    </li>
-    <li> <span class="Red">Very important:</span> Rename the web-archive file 
-      to <span class="Code">xtf.war</span> .<br>
-      <br>
-    </li>
-    <li> Start up the servlet container, and browse to a URL referencing an XTF 
-      servlet, such as dynaXML:<br>
-      <br>
-      
-    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm&amp;doc.view=frames</span> 
+  run-time environment is up and running, do the following steps to install the 
+  XTF Package.</p>
+<p><i><span class="GreyList">Note: </span></i><span class="GreyList">this procedure 
+  depends on a Unix-type shell and a Perl command interpreter. If you are attempting 
+  to run XTF on Windows, you'll need an environment such as <b>cygwin</b> that 
+  includes these things. Alternately, you could create a driver script that does 
+  the same work, namely forming a classpath that includes all the .jar files in<span class="Code"> 
+  WEB-INF/lib</span>.</span><br>
+</p>
+<ol class="OrderedList">
+  <li> Shut down your servlet container, to keep it from prematurely trying to 
+    unpack <b><i>XTF</i></b>.<br>
+    <br>
+  </li>
+  <li> Download the California Digital Library XTF web-archive file (via <a href="http://sourceforge.net/projects/xtf">SourceForge</a>) 
+    and place it in your servlet container's webapps directory. <br>
+    <br>
+  </li>
+  <li> Start up the servlet container, and browse to a URL referencing an XTF 
+    servlet, such as dynaXML:<br>
+    <br>
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm</span> 
     </div>
-      <br>
-      Accessing this URL should cause the servlet container to unpack the web 
-      archive file, creating an <span class="Code">xtf</span> sub-directory below 
-      the container's <span class="Code">webapps</span> directory. This automatically 
-      installs the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, 
-      the <b><i>textIndexer</i></b> tool, and a default configuration that allows 
-      you to work with the Sample Document Library.<br>
-      <br>
-    </li>
-    <li>Download the <b>sample</b> package (<span class="Code">xtf-sample.zip</span>) 
-      from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>.<br>
-      <br>
-    </li>
-    <li>From the command prompt, set the<span class="Code"> XTF_HOME </span>environment 
-      variable to the directory where the XTF package is installed. This environment 
-      variable is used by the <i><b>textIndexer</b></i> (and other tools) to locate 
-      various XTF components. For example, from a BASH shell: <br>
-      <br>
-      <div class="Sample"> <span class="Code"> $ export XTF_HOME=<span class="MacroCode"> 
-        servlet-container-directory</span>/webapps/xtf </span> </div>
-      <br>
-      <div class="Note"> (<u>Note</u>: To avoid having to repeatedly set and export 
-        the<span class="Code"> XTF_HOME </span> environment variable, you may 
-        wish to add these statements to your<span class="Code"> .bashrc </span>file.) 
-      </div>
-      <br>
-    </li>
-    <li> Using this new environment variable, switch to the<span class="Code"> 
-      XTF </span>installation directory: <br>
-      <br>
-      <div class="Sample"> <span class="Code">$ cd $XTF_HOME</span> </div>
-      <br>
-    </li>
-    <li>Extract the Sample Document Library using your favorite ZIP file utility. 
-      For example, using <span class="Code">unzip</span> tool under LINUX, you 
-      would type: <br>
-      <br>
-      <div class="Sample"> <span class="Code">$ unzip xtf-sample.zip</span></div>
-      <br>
-      Doing so will create a new sub-directory called <span class="Code">sample.<br>
-      <br>
-      </span></li>
-    <li>Copy the<span class="Code"> sample/data </span>sub-directory up to the<span class="Code"> 
-      XTF_HOME </span>directory, like so:<br>
-      <br>
-      <div class="Sample"><span class="Code">$ cp ./sample/data ./data</span></div>
-      <br>
-      This will place the Sample Document Library where the default XTF configuration 
-      expects to see it<span class="Code">.</span><br>
-    </li>
-  </ol>
+    <br>
+    Accessing this URL should cause the servlet container to unpack the web archive 
+    file, creating an <span class="Code">xtf</span> sub-directory below the container's 
+    <span class="Code">webapps</span> directory. This automatically installs the 
+    <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, the <b><i>textIndexer</i></b> 
+    tool, and a default configuration that allows you to work with the Sample 
+    Document Library.<br>
+    <br>
+  </li>
+  <li>Download the <b>sample</b> package (<span class="Code">xtf-sample.zip</span>) 
+    from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>.<br>
+    <br>
+  </li>
+  <li>From the command prompt, set the<span class="Code"> XTF_HOME </span>environment 
+    variable to the directory where the XTF package is installed. This environment 
+    variable is used by the <i><b>textIndexer</b></i> (and other tools) to locate 
+    various XTF components. For example, from a BASH shell: <br>
+    <br>
+    <div class="Sample"> <span class="Code"> $ export XTF_HOME=<span class="MacroCode"> 
+      servlet-container-directory</span>/webapps/xtf </span> </div>
+    <br>
+    <div class="Note"> (<u>Note</u>: To avoid having to repeatedly set and export 
+      the<span class="Code"> XTF_HOME </span> environment variable, you may wish 
+      to add these statements to your<span class="Code"> .bashrc </span>file.) 
+    </div>
+    <br>
+  </li>
+  <li> Using this new environment variable, switch to the<span class="Code"> XTF 
+    </span>installation directory: <br>
+    <br>
+    <div class="Sample"> <span class="Code">$ cd $XTF_HOME</span> </div>
+    <br>
+  </li>
+  <li>Extract the Sample Document Library using your favorite ZIP file utility. 
+    For example, using <span class="Code">unzip</span> tool under LINUX, you would 
+    type: <br>
+    <br>
+    <div class="Sample"> <span class="Code">$ unzip sample.zip</span></div>
+    <br>
+    Doing so will create a new sub-directory called <span class="Code">sample.<br>
+    <br>
+    </span></li>
+  <li>Move the<span class="Code"> sample/data </span>sub-directory up to the<span class="Code"> 
+    XTF_HOME </span>directory, like so:<br>
+    <br>
+    <div class="Sample"><span class="Code">$ mv ./sample/data ./data</span></div>
+    <br>
+    This will place the Sample Document Library where the default XTF configuration 
+    expects to see it<span class="Code">.</span><br>
+  </li>
+</ol>
   At this point, the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, 
   and the <b><i>textIndexer</i></b> tool will be installed and ready to use. Also 
   installed are a sample document library and a sample configuration that you 
@@ -569,20 +578,25 @@
     to the bin subdirectory just below the main XTF directory, and typing the 
     following command: <br>
     <br>
-    <div class="Sample"> <span class="Code"> $ TextIndexer {-config <span class="MacroCode">config-file-path</span>} 
+    <div class="Sample"> <span class="Code"> $ textIndexer {-config <span class="MacroCode">config-file-path</span>} 
       {-clean | <b>-incremental</b>} {<b>-optimize</b> | -nooptimize} {-trace 
       <span class="MacroCode">trace-level</span>} {-dir <span class="MacroCode">subdirectory</span>} 
       {-buildlazy | -nobuildlazy} -index <span class="MacroCode">index-name</span> 
       </span> </div>
-    <br>
-    Only the last argument, the <span class="Code">-index <span class="MacroCode">index-name</span></span> 
-    argument, is required. The remaining arguments (shown in braces) are optional 
-    arguments. Note that the order of the arguments is important, since each occurence 
-    of <span class="Code">-index <span class="MacroCode">index-name</span></span> 
-    causes the specified index to be updated using the previously set argument 
-    values. The arguments pased to the <b><i>textIndexer</i></b> have the following 
-    meanings: <br>
-    <br>
+    <p> <i>Note:</i> this invokes a script that relies on a Perl command interpreter. 
+      If you are attempting to run XTF on Windows, you'll need an environment 
+      such as <b>cygwin</b> that includes Perl. Alternately, you could create 
+      a driver script that does the same work, namely forming a classpath that 
+      includes all the .jar files in<span class="Code"> WEB-INF/lib</span>.</p>
+    <p>Only the last argument, the <span class="Code">-index <span class="MacroCode">index-name</span></span> 
+      argument, is required. The remaining arguments (shown in braces) are optional 
+      arguments. Note that the order of the arguments is important, since each 
+      occurence of <span class="Code">-index <span class="MacroCode">index-name</span></span> 
+      causes the specified index to be updated using the previously set argument 
+      values. The arguments pased to the <b><i>textIndexer</i></b> have the following 
+      meanings: <br>
+      <br>
+    </p>
     <div class="GreyList"> <span class="Code">-config <span class="MacroCode">config-file-path</span></span><br>
       This argument is an optional argument that identifies an XML configuration 
       file to use when indexing. If this argument is omitted, the <b><i>textIndexer</i></b> 
@@ -685,7 +699,7 @@
     A simple example of command line parameters for a text indexer run might look 
     like this: <br>
     <br>
-    <div class="Sample"> <span class="Code">$ TextIndexer -config conf/myTextIndexer.conf 
+    <div class="Sample"> <span class="Code">$ textIndexer -config conf/myTextIndexer.conf 
       -clean -index default</span> </div>
     <br>
     This example assumes that the config file is called<span class="Code"> myTextIndexer.conf</span>, 
