@@ -228,8 +228,12 @@
         <br>
       </li>
       <li>Place the XTF web-archive file inside the <span class="Code">webapps</span> 
-        directory of the servlet container you have chosen (such as Resin or Tomcat.) 
+        directory of the servlet container you have chosen (such as Resin or Tomcat.)<br>
         <br>
+      </li>
+      <li><i>Very important: </i>rename the file to<span class="Code"> xtf.war</span>, 
+        so that the servlet container will unpack it to the<span class="Code"> 
+        xtf </span>subdirectory instead of<span class="Code"> xtf-1.<span class="MacroCode">x</span>.<span class="MacroCode">x</span></span>.<br>
         <span class="Code"><br>
         </span></li>
       <li>Restart the servlet container, and browse to a URL referencing one of 
@@ -344,7 +348,8 @@
         to the<span class="Code"> bin </span> sub-directory under the XTF installation 
         directory: <br>
         <br>
-        <div class="Sample"> <span class="Code">$ cd $XTF_HOME/bin</span> </div>
+        <div class="Sample"> <span class="Code">$ cd &quot;$XTF_HOME/bin&quot;</span> 
+        </div>
         <br>
       </li>
       <li> Once in the<span class="Code"> bin </span>sub-directory, make the <span class="Code">textIndexer</span> 
@@ -494,7 +499,12 @@
     <br>
   </li>
   <li> Download the California Digital Library XTF web-archive file (via <a href="http://sourceforge.net/projects/xtf">SourceForge</a>) 
-    and place it in your servlet container's webapps directory. <br>
+    and place it in your servlet container's webapps directory.<br>
+    <br>
+  </li>
+  <li><i>Very important: </i>rename the downloaded file to<span class="Code"> 
+    xtf.war </span>(so that the servlet container will unpack it to the<span class="Code"> 
+    xtf </span>subdirectory instead of<span class="Code"> xtf-1.<span class="MacroCode">x</span>.<span class="MacroCode">x</span></span>).<br>
     <br>
   </li>
   <li> Start up the servlet container, and browse to a URL referencing an XTF 
@@ -532,7 +542,7 @@
   <li> Using this new environment variable, switch to the<span class="Code"> XTF 
     </span>installation directory: <br>
     <br>
-    <div class="Sample"> <span class="Code">$ cd $XTF_HOME</span> </div>
+    <div class="Sample"> <span class="Code">$ cd &quot;$XTF_HOME&quot;</span></div>
     <br>
   </li>
   <li>Extract the Sample Document Library using your favorite ZIP file utility. 
@@ -553,15 +563,15 @@
     expects to see it<span class="Code">.</span><br>
   </li>
 </ol>
-  At this point, the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, 
-  and the <b><i>textIndexer</i></b> tool will be installed and ready to use. Also 
-  installed are a sample document library and a sample configuration that you 
-  can use to index, search for, and retrieve documents from the sample library. 
-  To play with the sample setup, simply follow the steps outlined in the <a href="#QuickIndex">last 
-  two sections</a> of the <b>Quick Start</b> guide above. Alternately, to customize 
-  the sample installation to better suit your needs, see the three remaining <b>XTF 
-  Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>. 
-  <br>
+At this point, the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, 
+and the <b><i>textIndexer</i></b> tool will be installed and ready to use. Also 
+installed are a sample document library and a sample configuration that you can 
+use to index, search for, and retrieve documents from the sample library. To play 
+with the sample setup, simply follow the steps outlined in the <a href="#QuickIndex">last 
+two sections</a> of the <b>Quick Start</b> guide above. Alternately, to customize 
+the sample installation to better suit your needs, see the three remaining <b>XTF 
+Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>. 
+<br>
 <div class="IndentL"> 
   <p class="Heading2">Configuring the textIndexer Tool<a name="XTFTextIndexer"></a></p>
   <!-------------------------------------------------------------------------------------------------------------> 
