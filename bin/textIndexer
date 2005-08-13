@@ -33,6 +33,10 @@ if( $home eq "" ) {
     exit( 1 );
 }
 
+$joiner = `java`;
+$joiner =~ /A (.*) separated list of directories/;
+$joiner = $1;
+
 $args = join( ' ', @ARGV );
 
 $lib  = "$home/WEB-INF/lib";
@@ -41,8 +45,8 @@ opendir DIR, $lib;
 closedir DIR;
 
 $classpath = "$home/WEB-INF/classes";
-foreach $jar (@jars) { $classpath = "$classpath:$lib/$jar"; }
+foreach $jar (@jars) { $classpath = "$classpath$joiner$lib/$jar"; }
 
-$cmd = "java -classpath $classpath -Xms50m -Xmx1000m -Dxtf.home=$home -DentityExpansionLimit=128000 -enableassertions org.cdlib.xtf.textIndexer.TextIndexer $args";
+$cmd = "java -classpath \"$classpath\" -Xms50m -Xmx1000m -Dxtf.home=\"$home\" -DentityExpansionLimit=128000 -enableassertions org.cdlib.xtf.textIndexer.TextIndexer $args";
 
 exec $cmd;
