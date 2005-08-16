@@ -2,13 +2,13 @@
 <classpath>
 	<classpathentry excluding="**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/src"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/servlet.jar"/>
-	<classpathentry sourcepath="WEB-INF/lib/source/winstone" kind="lib" path="WEB-INF/lib/winstone.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/PDFBox-0.6.7a/" kind="lib" path="WEB-INF/lib/PDFBox-0.6.7a.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/log4j-1.2.9.jar"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/jtidy-04aug2000r7-dev" kind="lib" path="WEB-INF/lib/Tidy.jar"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/saxonb-8.3" kind="lib" path="WEB-INF/lib/saxonb-8.3.jar"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/cql-java-0.7" kind="lib" path="WEB-INF/lib/cql-java.jar"/>
-	<classpathentry sourcepath="WEB-INF/lib/source/marc4j" kind="lib" path="WEB-INF/lib/marc4j.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/cdlLib/marc4j.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/cdlLib/winstone.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
