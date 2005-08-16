@@ -151,7 +151,8 @@ public class BoostSet
           
           // Found a match.
           int docId = docIter.docId();
-          boostByDoc[docId] = lineIter.boost();
+          if( docId >= 0 && docId < boostByDoc.length )
+              boostByDoc[docId] = lineIter.boost();
           
           docIter.next();
           lineIter.next();
@@ -228,7 +229,10 @@ public class BoostSet
       while( termPositions.next() ) {
           int chunk = termPositions.doc();
           int doc = docNumMap.getDocNum( chunk );
-          assert doc >= 0 : "error mapping first chunk";
+          if( doc < 0 ) { 
+              warn( "Warning: cannot map chunk " + chunk + 
+                  " to doc... possibly textIndexer is running?" );
+          }
           return doc;
       }
 
@@ -271,7 +275,8 @@ public class BoostSet
       if( dotPos >= 0 )
           docKey = docKey.substring( 0, dotPos );
       
-      assert docKey.compareTo(prevDocKey) > 0 : "doc keys coming out in wrong order";
+      assert docKey.compareTo(prevDocKey) > 0 : 
+          "Document keys coming out in wrong order; directories must be named by first letters of doc key, not last"; 
       prevDocKey = docKey;
     }
     
