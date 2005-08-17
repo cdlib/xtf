@@ -134,7 +134,7 @@ public class RunElement extends ExtensionInstruction
         
         nArgs = args.size();
         
-        if( args.size() > 1 &&
+        if( args.size() > 0 &&
             args.get(args.size()-1) instanceof InputElement.InputInstruction )
         {
             inputExpr = (InputElement.InputInstruction) args.get(args.size()-1); 
@@ -225,6 +225,12 @@ public class RunElement extends ExtensionInstruction
           process.waitFor();
       } // try
       catch( IOException e ) {
+	      if( stdin != null )
+	          try { stdin.close();  } catch( IOException e2 ) { /*ignore*/ }
+	      if( stdout != null )
+	          try { stdout.close(); } catch( IOException e2 ) { /*ignore*/ }
+	      if( stderr != null )
+	          try { stderr.close(); } catch( IOException e2 ) { /*ignore*/ }
           dynamicError( 
               "IO exception occurred processing external command '" + command + 
               "': " + e, context );
@@ -244,12 +250,6 @@ public class RunElement extends ExtensionInstruction
               context );
       }
       finally {
-          if( stdin != null )
-              try { stdin.close();  } catch( IOException e ) { /*ignore*/ }
-          if( stdout != null )
-              try { stdout.close(); } catch( IOException e ) { /*ignore*/ }
-          if( stderr != null )
-              try { stderr.close(); } catch( IOException e ) { /*ignore*/ }
           if( interrupter != null ) {
               synchronized( interrupter ) {
                   timer.cancel(); // avoid further interruptions
@@ -289,6 +289,14 @@ public class RunElement extends ExtensionInstruction
           assert false : "should not be interrupted at this stage";
       }
       
+      // Make sure all the streams are closed (to avoid leaking.)
+      if( stdin != null )
+          try { stdin.close();  } catch( IOException e ) { /*ignore*/ }
+      if( stdout != null )
+          try { stdout.close(); } catch( IOException e ) { /*ignore*/ }
+      if( stderr != null )
+          try { stderr.close(); } catch( IOException e ) { /*ignore*/ }
+
       // If we got a non-zero exit status, and something came out on stderr,
       // then throw an exception.
       //
@@ -307,7 +315,7 @@ public class RunElement extends ExtensionInstruction
       byte[] lookFor  = "<?xml".getBytes();
       int i;
       for( i = 0; i < lookFor.length; i++ ) {
-          if( i > outBytes.length || outBytes[i] != lookFor[i] )
+          if( i >= outBytes.length || outBytes[i] != lookFor[i] )
               break;
       }
       
@@ -404,7 +412,7 @@ public class RunElement extends ExtensionInstruction
     private String                encoding;
     private ByteArrayOutputStream buffer = new ByteArrayOutputStream( 100 );
     
-    public byte[]    outBytes = null;
+    public byte[]    outBytes = new byte[0];
     public Throwable error;
     
     public boolean   done = false;
