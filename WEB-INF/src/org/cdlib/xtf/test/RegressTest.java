@@ -44,6 +44,9 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.Configuration;
@@ -54,6 +57,7 @@ import net.sf.saxon.tree.TreeBuilder;
 import org.apache.lucene.ngram.NgramQueryRewriter;
 import org.apache.lucene.ngram.NgramStopFilter;
 import org.cdlib.xtf.lazyTree.SearchTree;
+import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.QueryProcessor;
@@ -70,6 +74,7 @@ import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
+import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
 /**
  * Runs a series of regression tests. These take a set of test files and index
@@ -97,7 +102,8 @@ public class RegressTest
     File filterFile;
     LinkedList failedTests = new LinkedList();
     Configuration config = new Configuration();
-    
+    StylesheetCache stylesheetCache = new StylesheetCache( 10, 0, false );
+
     public static void main( String[] args )
     {
         // Make sure assertions are enabled.
@@ -361,7 +367,13 @@ public class RegressTest
                 QueryResult result = processor.processRequest( request ); 
                 
                 // Write the hits to a file.
-                writeHits( testFile, result );
+                if( request.displayStyle == null ||
+                    request.displayStyle.indexOf("NullStyle") >= 0 )
+                {
+                    writeHits( testFile, result );
+                }
+                else
+                    formatHits( testFile, result, request.displayStyle );
             }
         }
         catch( Exception e ) {
@@ -430,6 +442,42 @@ public class RegressTest
     } // writeHits()
     
     /**
+     * Formats a list of hits using the resultFormatter stylesheet.
+     *
+     * @param outFile       Where to write the results.
+     * @param result        Hits resulting from the query request
+     * @param displayStyle  Path of the resultFormatter stylesheet
+     */
+    protected void formatHits( File         outFile,
+                               QueryResult  result,
+                               String       displayStyle )
+        throws Exception
+    {
+        // Locate the display stylesheet.
+        Templates displaySheet = stylesheetCache.find( displayStyle );
+
+        // Make a transformer for this specific query.
+        Transformer trans = displaySheet.newTransformer();
+
+        // Make an input document for it based on the document hits. Insert
+        // an attribute documenting how long the query took, including
+        // formatting the hits.
+        //
+        String hitsString = result.hitsToString( "crossQueryResult", null );
+        Source sourceDoc = new StreamSource( new StringReader(hitsString) );
+
+        // Make sure errors get directed to the right place.
+        if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
+            trans.setErrorListener( new XTFSaxonErrorListener() );
+
+        // Do it!
+        FileOutputStream out = new FileOutputStream( outFile );
+        trans.transform( sourceDoc, new StreamResult(out) );
+        out.close();
+    } // formatHits()
+    
+    
+    /**
      * Breaks up a string by newlines into an array of strings, one per line.
      * 
      * @param str   String to break up
@@ -488,9 +536,9 @@ public class RegressTest
         int size = (int) file.length();
         char[] buf = new char[size+1];
         int got = reader.read( buf );
-        if( got == size+1 || got == 0 )
-            throw new IOException( "Error reading file " + file.toString() );
         reader.close();
+        if( got == size+1 || got <= 0 )
+            throw new IOException( "Error reading file " + file.toString() );
         return new String(buf, 0, got).replaceAll("\r\n", "\n");
     } // readFile()
     
