@@ -17,7 +17,7 @@
     Result from external command:
     <exec:run command="echo" xsl:extension-element-prefixes="exec">
       <exec:arg>foo</exec:arg>
-      <exec:arg select="'bar'"/>
+      <exec:arg>bar</exec:arg>
     </exec:run>
   </xsl:template>
    
