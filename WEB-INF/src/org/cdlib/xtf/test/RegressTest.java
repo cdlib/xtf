@@ -516,6 +516,13 @@ public class RegressTest
       if( result1.equals(result2) )
           return true;
       
+      if( result1.startsWith("Exception encountered") &&
+          result1.startsWith("Exception encountered") )
+      {
+          Trace.warning( "\nExceptions differ: " + result1 + "\nvs\n" + result2 );
+          return true;
+      }
+      
       Trace.info( "\n*** Mismatch! ***" );
       return false;
     } // sameResults()
