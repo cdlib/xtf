@@ -1,0 +1,2 @@
+Exception encountered:
+net.sf.saxon.trans.DynamicError: Error parsing XML output from external command 'sed': net.sf.saxon.trans.DynamicError: net.sf.saxon.trans.DynamicError: org.xml.sax.SAXParseException: XML document structures must start and end within the same entity.

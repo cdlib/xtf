@@ -1,0 +1,4 @@
+Exception encountered:
+net.sf.saxon.trans.DynamicError: External command 'sed' exited with status 1. Output from stderr:
+sed: -e expression #1, char 2: unterminated `s' command
+

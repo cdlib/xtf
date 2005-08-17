@@ -1,0 +1,2 @@
+Exception encountered:
+net.sf.saxon.trans.DynamicError: IO exception occurred processing external command 'fribblesnarf': java.io.IOException: CreateProcess: fribblesnarf foo "bar" error=2

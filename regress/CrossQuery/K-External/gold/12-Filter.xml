@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    
+    Output from external command:
+    <tag1>
+   <tag3>Wow foo</tag3>
+   <tag3>Happy bar</tag3>
+   <tag4>Zippy wazoo</tag4>
+</tag1>
+    
+    Applying templates:
+    
+    Tag 3: Wow foo
+    Tag 3: Happy bar
