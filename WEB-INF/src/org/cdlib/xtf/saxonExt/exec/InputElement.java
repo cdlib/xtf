@@ -180,7 +180,7 @@ public class InputElement extends XSLGeneralVariable {
               
               // If no elements, get the simple string value.
               if( !anyElements ) {
-                  String str = value.toString();
+                  String str = value.toString() + "\n";
                   return str.getBytes( "UTF-8" );
               }
               
@@ -205,6 +205,7 @@ public class InputElement extends XSLGeneralVariable {
               trans.transform( node, streamResult );
               
               // All done.
+              outStream.write( "\n".getBytes() );
               outStream.close();
               return outStream.toByteArray();
           }
