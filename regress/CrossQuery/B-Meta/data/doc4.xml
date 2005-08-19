@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <document xmlns:xtf="http://cdlib.org/xtf">
-    <title xtf:meta="true">Asylia: Territorial Inviolability in the Hellenistic World</title>
-    <creator xtf:meta="true">Kent J. Rigsby</creator>
-    <subject xtf:meta="true">Classics</subject>
-    <subject xtf:meta="true">Ancient History</subject>
-    <subject xtf:meta="true">Politics</subject>
-    <subject xtf:meta="true">Classical History</subject>
-    <subject xtf:meta="true">Classical Religions</subject>
-    <subject xtf:meta="true">Classical Politics</subject>
-    <description xtf:meta="true">In the Hellenistic period certain Greek temples and cities came to be declared "sacred and inviolable." Asylia was the practice of declaring religious places precincts of asylum, meaning they were immune to violence and civil authority. The evidence for this phenomenon - mainly inscriptions and coins - is scattered in the published record. The material has never been collected and presented in one publication until now.Kent J. Rigsby lays out these documents and discusses their historical implications in a substantial introduction. He argues that while a hopeful intention of military neutrality lay behind the institution of asylum, the declarations did not in fact change military behavior. Instead, "declared inviolability" became a civic and religious honor for which cities across the Greek world competed during the third to first centuries B.C.</description>
-    <date xtf:meta="true">19970328</date>
-    <type xtf:meta="true">text</type>
-    <identifier xtf:meta="true">http://ark.cdlib.org/ark:/13030/ft2s2004r1</identifier>
+    <title>Asylia: Territorial Inviolability in the Hellenistic World</title>
+    <creator>Kent J. Rigsby</creator>
+    <subject>Classics</subject>
+    <subject>Ancient History</subject>
+    <subject>Politics</subject>
+    <subject>Classical History</subject>
+    <subject>Classical Religions</subject>
+    <subject>Classical Politics</subject>
+    <description>In the Hellenistic period certain Greek temples and cities came to be declared "sacred and inviolable." Asylia was the practice of declaring religious places precincts of asylum, meaning they were immune to violence and civil authority. The evidence for this phenomenon - mainly inscriptions and coins - is scattered in the published record. The material has never been collected and presented in one publication until now.Kent J. Rigsby lays out these documents and discusses their historical implications in a substantial introduction. He argues that while a hopeful intention of military neutrality lay behind the institution of asylum, the declarations did not in fact change military behavior. Instead, "declared inviolability" became a civic and religious honor for which cities across the Greek world competed during the third to first centuries B.C.</description>
+    <date>19970328</date>
+    <type>text</type>
+    <identifier>http://ark.cdlib.org/ark:/13030/ft2s2004r1</identifier>
     <!-- Word boost below should take effect since first, even though not present on second. -->
-    <relation xtf:tokenize="false" xtf:meta="true" xtf:wordBoost="3.0">http://www.ucpress.edu/</relation>
-    <relation xtf:tokenize="no" xtf:meta="true">http://escholarship.cdlib.org/</relation>
-    <rights xtf:meta="true">UCOnly</rights>
+    <relation xtf:tokenize="false" xtf:wordBoost="3.0">http://www.ucpress.edu/</relation>
+    <relation xtf:tokenize="no">http://escholarship.cdlib.org/</relation>
+    <rights>UCOnly</rights>
     <div1 type="chapter" rend="Heading-Heading2B" id="d0e727">
         <head>Introduction</head>
         <pb id="JD_Page_1" n="1"/>

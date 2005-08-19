@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TEI.2 id="ft1c6003wp" xmlns:xtf="http://cdlib.org/xtf">
-   <title xtf:meta="true">California Riparian Systems: Ecology, Conservation, and Productive Management</title>
-   <creator xtf:meta="true">Richard E. Warner and Kathleen M. Hendrix, editors</creator>
-   <subject xtf:meta="true">Environmental Studies</subject>
-   <subject xtf:meta="true">California and the West</subject>
-   <description xtf:meta="true">This volume presents 135 of the papers presented at the 1981 California Riparian Systems Conference. The papers address all aspects of riparian systems: habitat, wildlife, land management, land use policy planning, conservation and water resource management.</description>
-   <date xtf:meta="yes">19841203</date>
-   <type xtf:meta="true">text</type>
-   <identifier xtf:meta="yes">http://ark.cdlib.org/ark:/13030/ft1c6003wp</identifier>
-   <relation xtf:meta="true" xtf:tokenize="no">http://www.ucpress.edu/</relation>
+   <title>California Riparian Systems: Ecology, Conservation, and Productive Management</title>
+   <creator>Richard E. Warner and Kathleen M. Hendrix, editors</creator>
+   <subject>Environmental Studies</subject>
+   <subject>California and the West</subject>
+   <description>This volume presents 135 of the papers presented at the 1981 California Riparian Systems Conference. The papers address all aspects of riparian systems: habitat, wildlife, land management, land use policy planning, conservation and water resource management.</description>
+   <date>19841203</date>
+   <type>text</type>
+   <identifier>http://ark.cdlib.org/ark:/13030/ft1c6003wp</identifier>
+   <relation xtf:tokenize="no">http://www.ucpress.edu/</relation>
    <!-- Word boost below shouldn't take effect, because only the first one counts. -->
-   <relation xtf:meta="yes" xtf:tokenize="false" xtf:wordBoost="10.0">http://escholarship.cdlib.org/</relation>
-   <rights xtf:meta="true">Public</rights>
+   <relation xtf:tokenize="false" xtf:wordBoost="10.0">http://escholarship.cdlib.org/</relation>
+   <rights>Public</rights>
    <text>
       <front>
          <titlePage>
