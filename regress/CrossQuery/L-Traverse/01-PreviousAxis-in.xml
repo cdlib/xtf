@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- regress-search-tree="data/doc1.xml" -->
+
+<query style="01-PreviousAxis-style.xsl" startDoc="0" maxDocs="10">
+  <meta indexPath="IndexDB">
+    <term field="title">apartheid</term>
+  </meta>
+</query>
