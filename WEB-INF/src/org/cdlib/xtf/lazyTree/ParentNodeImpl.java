@@ -49,11 +49,13 @@ abstract class ParentNodeImpl extends NodeImpl
     public NodeInfo getLastChild() {
 
         NodeInfo last = getFirstChild();
-        while( true ) {
-            NodeInfo next = ((NodeImpl)last).getNextSibling();
-            if( next == null )
-                break;
-            last = next;
+        if( last != null ) {
+            while( true ) {
+                NodeInfo next = ((NodeImpl)last).getNextSibling();
+                if( next == null )
+                    break;
+                last = next;
+            }
         }
         return last;
 
