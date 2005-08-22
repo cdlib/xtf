@@ -45,6 +45,20 @@ abstract class ParentNodeImpl extends NodeImpl
         return document.getNode( childNum );
     }
 
+    /** The last child of this Node, or null if none. */
+    public NodeInfo getLastChild() {
+
+        NodeInfo last = getFirstChild();
+        while( true ) {
+            NodeInfo next = ((NodeImpl)last).getNextSibling();
+            if( next == null )
+                break;
+            last = next;
+        }
+        return last;
+
+    } // getLastChild()
+
     /**
     * Return the string-value of the node, that is, the concatenation
     * of the character content of all descendent elements and text nodes.
