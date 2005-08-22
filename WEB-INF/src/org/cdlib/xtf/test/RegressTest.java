@@ -354,12 +354,13 @@ public class RegressTest
                 tree.search( processor, request );
                 
                 // Output the resultant tree.
-                OutputStreamWriter ow = new OutputStreamWriter(
-                    new FileOutputStream(testFile), "UTF-8" );
-                PrintWriter out = new PrintWriter( ow );
-                String strVersion = XMLWriter.toString( tree );
-                out.println( strVersion );
-                out.close();
+                if( request.displayStyle == null ||
+                    request.displayStyle.indexOf("NullStyle") >= 0 )
+                {
+                    writeTree( testFile, tree );
+                }
+                else
+                    formatTree( testFile, tree, request.displayStyle );
             }
             else
             {
@@ -419,7 +420,8 @@ public class RegressTest
         return tmp;
     }
     
-    
+
+    /** Writes the hits in a very simple format to the output file */
     private void writeHits( File outFile, QueryResult result )
         throws IOException
     {
@@ -465,7 +467,7 @@ public class RegressTest
         //
         String hitsString = result.hitsToString( "crossQueryResult", null );
         Source sourceDoc = new StreamSource( new StringReader(hitsString) );
-
+        
         // Make sure errors get directed to the right place.
         if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
             trans.setErrorListener( new XTFSaxonErrorListener() );
@@ -473,6 +475,48 @@ public class RegressTest
         // Do it!
         FileOutputStream out = new FileOutputStream( outFile );
         trans.transform( sourceDoc, new StreamResult(out) );
+        out.close();
+    } // formatHits()
+    
+    
+    /** Writes the search tree to a file */
+    private void writeTree( File outFile, SearchTree tree )
+        throws IOException
+    {
+        OutputStreamWriter ow = new OutputStreamWriter(
+            new FileOutputStream(outFile), "UTF-8" );
+        PrintWriter out = new PrintWriter( ow );
+        String strVersion = XMLWriter.toString( tree );
+        out.println( strVersion );
+        out.close();
+    } // writeHits()
+    
+    /**
+     * Formats a search tree with a stylesheet, and writes it to the output
+     * file.
+     *
+     * @param outFile       Where to write the results.
+     * @param result        Hits resulting from the query request
+     * @param displayStyle  Path of the resultFormatter stylesheet
+     */
+    protected void formatTree( File         outFile,
+                               SearchTree   tree,
+                               String       displayStyle )
+        throws Exception
+    {
+        // Locate the display stylesheet.
+        Templates displaySheet = stylesheetCache.find( displayStyle );
+
+        // Make a transformer for this specific query.
+        Transformer trans = displaySheet.newTransformer();
+
+        // Make sure errors get directed to the right place.
+        if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
+            trans.setErrorListener( new XTFSaxonErrorListener() );
+
+        // Do it!
+        FileOutputStream out = new FileOutputStream( outFile );
+        trans.transform( tree, new StreamResult(out) );
         out.close();
     } // formatHits()
     
