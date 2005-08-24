@@ -73,6 +73,9 @@ public class QueryRequest implements Cloneable
     /** Facet specifications (if any) */
     public FacetSpec[] facetSpecs  = null;
     
+    /** Whether to normalize scores (turn off to help debug ranking problems) */
+    public boolean     normalizeScores = true;
+    
     /** 
      * Experimental, and probably temporary:
      * Path of file containing document keys -> boost factors. 

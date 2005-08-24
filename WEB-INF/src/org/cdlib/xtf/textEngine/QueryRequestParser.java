@@ -752,6 +752,18 @@ public class QueryRequestParser
         
         else if( attrName.equalsIgnoreCase("boostSet") )
             req.boostSetPath = onceOnlyPath( req.boostSetPath, el, attrName );
+        
+        else if( attrName.equalsIgnoreCase("normalizeScores") ) {
+            String yesno = parseStringAttrib( el, "normalizeScores" );
+            if( yesno.equals("yes") || yesno.equals("true") )
+                req.normalizeScores = true;
+            else if( yesno.equals("no") || yesno.equals("false") )
+                req.normalizeScores = false;
+            else
+                error( "'normalizeScores' attribute must have value " +
+                       "'yes', 'no', 'true', or 'false'" );
+            
+        }
 
         else if( attrName.equals("field") || attrName.equals("metaField") )
             ; // handled elsewhere

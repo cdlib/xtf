@@ -183,6 +183,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         result.context.accentMap = accentMap;
         result.context.pluralMap = pluralMap;
         result.context.stopSet   = stopSet;
+        result.scoresNormalized  = req.normalizeScores;
         
         // If no query was specified, then there will be no results.
         Query query = req.query;
@@ -295,7 +296,7 @@ public class DefaultQueryProcessor extends QueryProcessor
 
         // Calculate the document score normalization factor.
         docScoreNorm = 1.0f;
-        if( maxDocScore > 0.0f )  
+        if( req.normalizeScores && maxDocScore > 0.0f )  
             docScoreNorm = 1.0f / maxDocScore;
 
         // Finish off the hits (read in the fields, normalize, make snippets).

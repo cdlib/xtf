@@ -1,6 +1,7 @@
 package org.cdlib.xtf.textEngine;
 
 import java.io.StringReader;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -76,11 +77,20 @@ public class QueryResult
     /** Oridinal rank of the last document hit returned, plus 1 */
     public int endDoc;
     
+    /** 
+     * Whether document scores were normalized so that highest ranking doc
+     * has score 100.
+     */
+    public boolean scoresNormalized;
+    
     /** One hit per document */
     public DocHit[] docHits;
     
     /** Faceted results grouped by field value (if specified in query) */
     public ResultFacet[] facets;
+    
+    /** Formatter for non-normalized scores */
+    private DecimalFormat decFormat;
     
     /**
      * Makes an XML document out of the list of document hits, and returns a
@@ -166,7 +176,7 @@ public class QueryResult
      * @param group   The group to work on
      * @param buf     Buffer to add XML to
      */
-    private static void structureGroup( ResultGroup group, StringBuffer buf )
+    private void structureGroup( ResultGroup group, StringBuffer buf )
     {
         // Do the info for the group itself.
         buf.append( 
@@ -197,19 +207,29 @@ public class QueryResult
      * @param docHits Array of DocHits to structure
      * @param buf     Buffer to add the XML to
      */
-    private static void structureDocHits( DocHit[]     docHits, 
-                                          int          startDoc, 
-                                          StringBuffer buf ) 
+    private void structureDocHits( DocHit[]     docHits, 
+                                   int          startDoc,
+                                   StringBuffer buf ) 
     {
         if( docHits == null )
             return;
         
         for( int i = 0; i < docHits.length; i++ ) {
             DocHit docHit = docHits[i];
+            
+            String scoreStr;
+            if( scoresNormalized )
+                scoreStr = Integer.toString( Math.round(docHit.score * 100) );
+            else {
+                if( decFormat == null )
+                    decFormat = (DecimalFormat) DecimalFormat.getInstance();
+                scoreStr = decFormat.format( docHit.score );
+            }
+            
             buf.append( "<docHit" +
                         " rank=\"" + (i+startDoc+1) + "\"" +
                         " path=\"" + docHit.filePath() + "\"" +
-                        " score=\"" + Math.round(docHit.score * 100) + "\"" +
+                        " score=\"" + scoreStr + "\"" +
                         " totalHits=\"" + docHit.totalSnippets() + "\"" +
                         ">\n" );
             if( !docHit.metaData().isEmpty() ) {
