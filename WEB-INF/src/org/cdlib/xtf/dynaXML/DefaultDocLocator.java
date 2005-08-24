@@ -231,12 +231,8 @@ public class DefaultDocLocator implements DocLocator
         {
             // Apply the pre-filter.
             try {
-                Templates[] array = new Templates[1];
-                array[0] = preFilter;
-                IndexUtil.applyPreFilters( array, 
-                                           xmlParser.getXMLReader(), 
-                                           inSrc, 
-                                           new SAXResult( passthru ) );
+                IndexUtil.applyPreFilter( preFilter, xmlParser, 
+                                          inSrc, passthru );
             }
             catch( Exception e ) { throw new RuntimeException( e ); }
         }
