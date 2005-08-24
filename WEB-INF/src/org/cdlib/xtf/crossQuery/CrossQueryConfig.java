@@ -43,7 +43,9 @@ public class CrossQueryConfig extends TextConfig
     public String queryParserSheet;
     
     /** Default constructor */
-    public CrossQueryConfig() { }
+    public CrossQueryConfig( CrossQuery servlet ) {
+        super( servlet );
+    }
     
     /**
      * Constructor - Reads and parses the global configuration file (XML) for 
@@ -52,9 +54,10 @@ public class CrossQueryConfig extends TextConfig
      * @param  path               Filesystem path to the config file.
      * @throws GeneralException   If a read or parse error occurs.
      */
-    public CrossQueryConfig( String path )
+    public CrossQueryConfig( CrossQuery servlet, String path )
         throws GeneralException
     {
+        super( servlet );
         super.read( "crossQuery-config", path );
         
         // Make sure required things were specified.
@@ -74,7 +77,7 @@ public class CrossQueryConfig extends TextConfig
         
         if( tagName.equals("queryParser") ) {
             if( attrName.equals("path") )
-                queryParserSheet = CrossQuery.getRealPath( strVal );
+                queryParserSheet = servlet.getRealPath( strVal );
             else
                 bad = true;
         }

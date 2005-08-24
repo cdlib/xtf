@@ -109,7 +109,7 @@ class DocInfoCache extends GeneratingCache
         DocInfo info = new DocInfo();
 
         // First, load the lookup stylesheet.
-        Templates pss = TextServlet.stylesheetCache.find( 
+        Templates pss = servlet.stylesheetCache.find( 
             config.docLookupSheet );
         
         // Running the stylesheet may produce additional dependencies if the
@@ -117,7 +117,7 @@ class DocInfoCache extends GeneratingCache
         // having to throw away the stylesheet entry, we record the current
         // dependencies so we can restore them later.
         // 
-        Iterator di = TextServlet.stylesheetCache.getDependencies(
+        Iterator di = servlet.stylesheetCache.getDependencies(
             config.docLookupSheet );
         LinkedList oldStylesheetDeps = new LinkedList();
         while( di.hasNext() )
@@ -173,14 +173,14 @@ class DocInfoCache extends GeneratingCache
         // dependencies directly to our cache entry, not the stylesheet's.
         //
         TreeBuilder result;
-        synchronized( TextServlet.stylesheetCache ) {
-            TextServlet.stylesheetCache.setDependencyReceiver( this );
+        synchronized( servlet.stylesheetCache ) {
+            servlet.stylesheetCache.setDependencyReceiver( this );
             try {
                 result = new TreeBuilder();
                 trans.transform( paramDoc, result );
             }
             finally {
-                TextServlet.stylesheetCache.setDependencyReceiver( null );
+                servlet.stylesheetCache.setDependencyReceiver( null );
             }
         }
 
@@ -192,7 +192,7 @@ class DocInfoCache extends GeneratingCache
         }
         
         // Also, add a dependency on the stylesheet cache entry.
-        addDependency( new CacheDependency(TextServlet.stylesheetCache,
+        addDependency( new CacheDependency(servlet.stylesheetCache,
                                            config.docLookupSheet) );
 
         // Extract the data we need.
@@ -202,25 +202,25 @@ class DocInfoCache extends GeneratingCache
             String   tagName = el.name();
 
             if( tagName.equals("style") )
-                info.style = DynaXML.getRealPath( el.attrValue("path") );
+                info.style = servlet.getRealPath( el.attrValue("path") );
             else if( tagName.equals("source") )
-                info.source = DynaXML.getRealPath( el.attrValue("path") );
+                info.source = servlet.getRealPath( el.attrValue("path") );
             else if( tagName.equals("index") ) {
-                info.indexConfig = DynaXML.getRealPath( el.attrValue("configPath") );
+                info.indexConfig = servlet.getRealPath( el.attrValue("configPath") );
                 info.indexName   = el.attrValue( "name" );
             }
             else if( tagName.equals("brand") )
-                info.brand = DynaXML.getRealPath( el.attrValue("path") );
+                info.brand = servlet.getRealPath( el.attrValue("path") );
             else if( tagName.equals("auth") )
                 info.authSpecs.add( 
-                        DynaXML.authenticator.processAuthTag(el) );
+                        servlet.authenticator.processAuthTag(el) );
             else if( tagName.equals("query") ) {
                 info.query = new QueryRequestParser().parseRequest( 
                                 el.getWrappedNode(), 
-                                new File(TextServlet.getRealPath("")) );
+                                new File(servlet.getRealPath("")) );
             }
             else if( tagName.equalsIgnoreCase("preFilter") )
-                info.preFilter = DynaXML.getRealPath( el.attrValue("path") );
+                info.preFilter = servlet.getRealPath( el.attrValue("path") );
             else if( tagName.equalsIgnoreCase("removeDoctypeDecl") ) {
                 String val = el.attrValue( "flag" );
                 if( val.matches("^yes$|^true$") )
@@ -240,19 +240,19 @@ class DocInfoCache extends GeneratingCache
         } // for node
 
         // If no source, assume that means an invalid document ID.
-        if( DynaXML.isEmpty(info.source) )
+        if( TextServlet.isEmpty(info.source) )
             throw new InvalidDocumentException();
 
         // Make sure a stylesheet was specified.
-        DynaXML.requireOrElse( info.style, 
+        TextServlet.requireOrElse( info.style, 
                                "docReqParser didn't specify 'style'" );
         
         // Index config and index name must be either both specified or both
         // absent.
         //
-        if( DynaXML.isEmpty(info.indexConfig) && !DynaXML.isEmpty(info.indexName) )
+        if( TextServlet.isEmpty(info.indexConfig) && !TextServlet.isEmpty(info.indexName) )
             throw new GeneralException( "docReqParser specified 'indexName' without 'indexConfig'" );
-        if( !DynaXML.isEmpty(info.indexConfig) && DynaXML.isEmpty(info.indexName) )
+        if( !TextServlet.isEmpty(info.indexConfig) && TextServlet.isEmpty(info.indexName) )
             throw new GeneralException( "docReqParser specified 'indexConfig' without 'indexName'" );
         
         // And we're done.

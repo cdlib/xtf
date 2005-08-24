@@ -77,13 +77,13 @@ import org.cdlib.xtf.util.XTFSaxonErrorListener;
 public abstract class TextServlet extends HttpServlet 
 {
     /** Caches stylesheets (based on their URL) */
-    public static StylesheetCache stylesheetCache;
+    public StylesheetCache stylesheetCache;
 
     /** Context useful for mapping partial paths to full paths */
-    private static ServletContext staticContext;
+    private ServletContext staticContext;
 
     /** Base directory specified in servlet config (if any) */
-    private static String baseDir;
+    private String baseDir;
 
     /** Flag to discern whether class has been initialized yet */
     private boolean isInitted = false;
@@ -133,7 +133,7 @@ public abstract class TextServlet extends HttpServlet
      * @param partialPath   A partial (or full) path
      * @return              The full path
      */
-    public static String getRealPath( String partialPath )
+    public String getRealPath( String partialPath )
     {
         if( staticContext == null )
             return partialPath;

@@ -45,6 +45,9 @@ import org.cdlib.xtf.util.*;
 /** Common members and methods for servlet configuration classes */
 public abstract class TextConfig
 {
+    /** Servlet we are part of */
+    public TextServlet servlet;
+    
     /** Logging level: "silent", "errors", "warnings", "info", or "debug" */
     public String  logLevel = "info";
 
@@ -76,6 +79,11 @@ public abstract class TextConfig
     
     /** Configuration used for parsing XML files */
     private Configuration config = new Configuration();
+    
+    /** Create a configuration and attach it to a servlet */
+    public TextConfig( TextServlet servlet ) {
+        this.servlet = servlet;
+    }
 
     /**
      * Constructor - Reads and parses the global configuration file (XML) for 
@@ -195,7 +203,7 @@ public abstract class TextConfig
         
         else if( tagName.equals("errorGen") ) {
             if( attrName.equals("path") )
-                errorGenSheet = TextServlet.getRealPath( strVal );
+                errorGenSheet = servlet.getRealPath( strVal );
             else
                 bad = true;
         }

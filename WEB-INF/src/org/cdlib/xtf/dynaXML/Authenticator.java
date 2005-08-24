@@ -142,7 +142,7 @@ class Authenticator
                 throw new DynaXMLException( 
                     "Auth IP 'list' not specified by docReqParserSheet" );
             ((IPAuthSpec)spec).ipList = 
-                DynaXML.getRealPath( el.attrValue("list") );
+                servlet.getRealPath( el.attrValue("list") );
         }
         else if( type.equals("LDAP") ) {
             LdapAuthSpec lspec = new LdapAuthSpec();

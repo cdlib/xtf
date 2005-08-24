@@ -43,9 +43,10 @@ class SRUConfig extends CrossQueryConfig
      * @param  path               Filesystem path to the config file.
      * @throws GeneralException   If a read or parse error occurs.
      */
-    public SRUConfig( String path )
+    public SRUConfig( SRU servlet, String path )
         throws GeneralException
     {
+        super( servlet );
         super.read( "SRU-config", path );
         
         // Make sure required things were specified.

@@ -68,7 +68,7 @@ import org.cdlib.xtf.util.XTFSaxonErrorListener;
 public class CrossQuery extends TextServlet
 {
     /** Holds global servlet configuration info */
-    protected static CrossQueryConfig config;
+    protected CrossQueryConfig config;
     
     /** Used to format decimal numbers */
     protected static DecimalFormat decimalFormat = new DecimalFormat();
@@ -89,7 +89,7 @@ public class CrossQuery extends TextServlet
         throws Exception
     {
         // Load the configuration file.
-        config = new CrossQueryConfig( configPath );
+        config = new CrossQueryConfig( this, configPath );
 
         // And we're done.
         return config;

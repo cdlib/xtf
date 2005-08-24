@@ -86,13 +86,13 @@ import org.cdlib.xtf.lazyTree.SearchTree;
 public class DynaXML extends TextServlet
 {
     /** Caches docInfo lookups (based on their docId) */
-    private static DocInfoCache docLookupCache;
+    private DocInfoCache docLookupCache;
 
     /** Handles authentication */
-    static Authenticator authenticator;
+    Authenticator authenticator;
 
     /** Holds global servlet configuration info */
-    private static DynaXMLConfig config;
+    private DynaXMLConfig config;
     
     /** Locator used to find lazy and non-lazy document files */
     private DocLocator docLocator = createDocLocator();
@@ -134,7 +134,7 @@ public class DynaXML extends TextServlet
         throws Exception
     {
         // Load the configuration file.
-        config = new DynaXMLConfig( configPath );
+        config = new DynaXMLConfig( this, configPath );
         
         // Create the caches
         docLookupCache = new DocInfoCache( this );
@@ -583,7 +583,7 @@ public class DynaXML extends TextServlet
      * supplied implementation. If not, a {@link DefaultDocLocator} is
      * created.
      */
-    public static DocLocator createDocLocator()
+    public DocLocator createDocLocator()
     {
         // Check the system property.
         final String propName = "org.cdlib.xtf.DocLocatorClass";
@@ -593,7 +593,9 @@ public class DynaXML extends TextServlet
             // Try to create an object of the correct class.
             if( className != null )
                 theClass = Class.forName(className);
-            return (DocLocator) theClass.newInstance();
+            DocLocator loc = (DocLocator) theClass.newInstance();
+            loc.setServlet( this );
+            return loc;
         }
         catch( ClassCastException e ) {
             Trace.error( "Error: Class '" + className + "' specified by " +

@@ -67,7 +67,7 @@ public class SRU extends CrossQuery
         throws Exception
     {
         // Load the configuration file.
-        config = new SRUConfig( configPath );
+        config = new SRUConfig( this, configPath );
         
         // And we're done.
         return config;

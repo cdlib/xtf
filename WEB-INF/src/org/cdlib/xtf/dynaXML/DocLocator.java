@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.xml.transform.Templates;
 
+import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.util.StructuredStore;
 import org.xml.sax.InputSource;
 
@@ -50,6 +51,14 @@ import org.xml.sax.InputSource;
  */
 public interface DocLocator 
 {
+    /** 
+     * Attach this locator to a specific servlet, which can be used to
+     * provide, among other thigns, path mapping services.
+     * 
+     * @param servlet   Servlet to attach to
+     */
+    void setServlet( TextServlet servlet );
+    
     /**
      * Search for a StructuredStore containing the "lazy" or persistent
      * representation of a given document. Index parameters are specified,

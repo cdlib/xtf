@@ -36,12 +36,14 @@ import java.io.InputStream;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.transform.Templates;
+import javax.xml.transform.sax.SAXResult;
 
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceivingContentHandler;
 import net.sf.saxon.om.NamePool;
 
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
+import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.DocTypeDeclRemover;
 import org.cdlib.xtf.util.Path;
@@ -65,6 +67,14 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class DefaultDocLocator implements DocLocator 
 {
+    /** Servlet we are part of */
+    private TextServlet servlet;
+    
+    /** Attach to a servlet */
+    public void setServlet( TextServlet servlet ) {
+        this.servlet = servlet;
+    }
+    
     /**
      * Search for a StructuredStore containing the "lazy" or persistent
      * representation of a given document. Index parameters are specified,
@@ -106,7 +116,7 @@ public class DefaultDocLocator implements DocLocator
             
         // Figure out where the lazy file is (or should be.)
         lazyFile = IndexUtil.calcLazyPath( 
-                          new File(DynaXML.getRealPath("")),
+                          new File(servlet.getRealPath("")),
                           new File(indexConfigPath), indexName,
                           new File(sourcePath), false );
         
@@ -221,8 +231,12 @@ public class DefaultDocLocator implements DocLocator
         {
             // Apply the pre-filter.
             try {
-                IndexUtil.applyPreFilter( preFilter, xmlParser, 
-                                          inSrc, passthru );
+                Templates[] array = new Templates[1];
+                array[0] = preFilter;
+                IndexUtil.applyPreFilters( array, 
+                                           xmlParser.getXMLReader(), 
+                                           inSrc, 
+                                           new SAXResult( passthru ) );
             }
             catch( Exception e ) { throw new RuntimeException( e ); }
         }

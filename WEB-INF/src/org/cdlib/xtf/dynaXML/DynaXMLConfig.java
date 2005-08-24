@@ -94,9 +94,10 @@ class DynaXMLConfig extends TextConfig
      * @param  path                Filesystem path to the config file.
      * @throws DynaXMLException    If a read or parse error occurs.
      */
-    public DynaXMLConfig( String path )
+    public DynaXMLConfig( DynaXML servlet, String path )
         throws GeneralException
     {
+        super( servlet );
         super.read( "dynaXML-config", path );
         
         // Make sure required things were specified.
@@ -137,7 +138,7 @@ class DynaXMLConfig extends TextConfig
 
         else if( tagName.equals("docReqParser") ) {
             if( attrName.equals("path") )
-                docLookupSheet = DynaXML.getRealPath( strVal );
+                docLookupSheet = servlet.getRealPath( strVal );
             else if( attrName.equals("params") )
                 docLookupParams = strVal;
             else
