@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB"
-       boostSet="boostSet.txt" normalizeScores="false">
+       boostSet="boostSet.txt" boostSetField="identifier" normalizeScores="false">
   <or maxSnippets="0">
     <term field="rights">Public</term>
     <term field="rights">UCOnly</term>

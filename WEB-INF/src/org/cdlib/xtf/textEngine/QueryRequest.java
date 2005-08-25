@@ -82,6 +82,12 @@ public class QueryRequest implements Cloneable
      */
     public String     boostSetPath;
     
+    /** 
+     * Experimental, and probably temporary:
+     * Field name for boost set document keys.
+     */
+    public String     boostSetField;
+    
     // Creates an exact copy of this query request.
     public Object clone() 
     {

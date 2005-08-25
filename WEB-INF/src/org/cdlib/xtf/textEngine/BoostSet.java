@@ -37,7 +37,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
-import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
@@ -54,6 +53,9 @@ public class BoostSet
 {
   /** Cached data. If the reader goes away, our cache will too. */
   private static WeakHashMap cache = new WeakHashMap();
+  
+  /** Field to find document keys in */
+  private String field;
   
   /** Number of warnings emitted so far. After 10, we suppress them. */
   private int nWarnings = 0;
@@ -72,8 +74,8 @@ public class BoostSet
    * @return             Group data for the specified field
    */
   public static BoostSet getCachedSet( IndexReader indexReader,
-                                       DocNumMap   docNumMap,
-                                       File        inFile )
+                                       File        inFile,
+                                       String      field )
     throws IOException
   {
     // See if we have a cache for this reader.
@@ -85,10 +87,10 @@ public class BoostSet
     
     // Now see if we've already read data for this field.
     BoostSet set = (BoostSet) readerCache.get( inFile );
-    if( set == null )
+    if( set == null || !set.field.equals(field) )
     {
         // Don't have cached data, so read and remember it.
-        set = new BoostSet( indexReader, docNumMap, inFile );
+        set = new BoostSet( indexReader, inFile, field );
         readerCache.put( inFile, set );
     }
     
@@ -114,9 +116,13 @@ public class BoostSet
    *  key -> boost factor mappings, and correlating it with the keys in the
    *  given index reader.
    */
-  private BoostSet( IndexReader indexReader, DocNumMap docNumMap, File inFile )
+  private BoostSet( IndexReader indexReader, 
+                    File        inFile,
+                    String      field )
     throws IOException
   {
+    this.field = field;
+    
     // Figure out the max doc ID, make an array that big, and fill it with
     // the default value (1.0).
     //
@@ -129,7 +135,7 @@ public class BoostSet
     LineIter lineIter = null;
     try 
     {
-      docIter = new DocIter( indexReader, docNumMap );
+      docIter = new DocIter( indexReader,  field );
       lineIter = new LineIter( new BufferedReader( new FileReader(inFile) ) );
       
       // Process all matches
@@ -199,21 +205,19 @@ public class BoostSet
    */
   private class DocIter
   {
-    DocNumMap     docNumMap;
     boolean       done = false;
-    String        prevDocKey = "";
     String        docKey;
-    final String  field = "key";
+    String        field;
     TermPositions termPositions;
     TermEnum      termEnum;
     
     /** Construct from an index reader */
-    DocIter( IndexReader indexReader, DocNumMap docNumMap ) 
+    DocIter( IndexReader indexReader, String field ) 
       throws IOException 
     {
-      this.docNumMap = docNumMap;
-      termPositions = indexReader.termPositions();
-      termEnum      = indexReader.terms(new Term(field, ""));
+      this.field     = field;
+      termPositions  = indexReader.termPositions();
+      termEnum       = indexReader.terms(new Term(field, ""));
       readDocKey();
     }
     
@@ -226,15 +230,8 @@ public class BoostSet
     /** Gets the Lucene document ID of the current document */
     int docId() throws IOException {
       termPositions.seek( termEnum );
-      while( termPositions.next() ) {
-          int chunk = termPositions.doc();
-          int doc = docNumMap.getDocNum( chunk );
-          if( doc < 0 ) { 
-              warn( "Warning: cannot map chunk " + chunk + 
-                  " to doc... possibly textIndexer is running?" );
-          }
-          return doc;
-      }
+      if( termPositions.next() )
+          return termPositions.doc();
 
       assert false : "error reading term positions";
       return -1;
@@ -263,21 +260,6 @@ public class BoostSet
       }
       
       docKey = term.text();
-      
-      // Strip the path and index name
-      int lastSlash = docKey.lastIndexOf( '/' );
-      if( lastSlash < 0 )
-          lastSlash = docKey.indexOf( ':' );
-      docKey = docKey.substring( lastSlash + 1 );
-      
-      // Strip any file extension(s)
-      int dotPos = docKey.indexOf( '.' );
-      if( dotPos >= 0 )
-          docKey = docKey.substring( 0, dotPos );
-      
-      assert docKey.compareTo(prevDocKey) > 0 : 
-          "Document keys coming out in wrong order; directories must be named by first letters of doc key, not last"; 
-      prevDocKey = docKey;
     }
     
   } // class DocIter

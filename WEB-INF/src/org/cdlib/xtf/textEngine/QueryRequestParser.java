@@ -417,6 +417,12 @@ public class QueryRequestParser
                 parseMainAttrib( parent, attrName, attrVal );
         }
         
+        // Make sure boostSet and boostSetField are specified together
+        if( req.boostSetField != null && req.boostSetPath == null )
+            error( "'boostSetField' specified without 'boostSet'" );
+        if( req.boostSetField == null && req.boostSetPath != null ) 
+            error( "'boostSet' specified without 'boostSetField'" );
+        
         // Do the bulk of the parsing below...
         Query result = parseQuery2( parent, name, field, maxSnippets );
         if( result == null )
@@ -752,6 +758,9 @@ public class QueryRequestParser
         
         else if( attrName.equalsIgnoreCase("boostSet") )
             req.boostSetPath = onceOnlyPath( req.boostSetPath, el, attrName );
+        
+        else if( attrName.equalsIgnoreCase("boostSetField") )
+            req.boostSetField = parseStringAttrib( el, attrName );
         
         else if( attrName.equalsIgnoreCase("normalizeScores") ) {
             String yesno = parseStringAttrib( el, "normalizeScores" );
