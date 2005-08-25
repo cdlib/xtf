@@ -57,6 +57,12 @@ public abstract class DocHit extends ScoreDoc
     public abstract String filePath();
     
     /**
+     * Retrieve this document's record number within the main file, or zero
+     * if this is the only record.
+     */
+    public abstract int recordNum();
+    
+    /**
      * Retrieve a list of all meta-data name/value pairs associated with this
      * document.
      */

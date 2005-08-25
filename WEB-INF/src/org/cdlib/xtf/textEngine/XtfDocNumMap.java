@@ -38,12 +38,16 @@ import org.apache.lucene.index.TermDocs;
 
 /**
  * Used to map chunk indexes to the corresponding document index, and 
- * vice-versa.
+ * vice-versa. Only performs the load when necessary (typically dynaXML uses
+ * the DocNumMap, while crossQuery doesn't.)
  * 
  * @author Martin Haye
  */
 public class XtfDocNumMap implements DocNumMap
 {
+    /** Where to get the data from */
+    private IndexReader reader;
+    
     /** Max number of words in a chunk */
     private int chunkSize;
     
@@ -54,7 +58,7 @@ public class XtfDocNumMap implements DocNumMap
     private int nDocs;
     
     /** Array of indexes, one for each docInfo chunk */
-    private int[] docNums;
+    private int[] docNums = null; /* null until load() called */
     
     /** Caches result of previous scan, used for speed */
     private int prevNum = -1;
@@ -72,25 +76,42 @@ public class XtfDocNumMap implements DocNumMap
     public XtfDocNumMap( IndexReader reader, int chunkSize, int chunkOverlap )
         throws IOException
     {
+        this.reader = reader;
         this.chunkSize = chunkSize;
         this.chunkOverlap = chunkOverlap;
         
-        // Figure out how many entries we'll have, and make our array that big.
-        Term term = new Term( "docInfo", "1" );
-        nDocs = reader.docFreq( term );
-        docNums = new int[nDocs];
-            
-        // Get a list of all the "header" chunks for documents in this
-        // index (i.e., documents with a "docInfo" field.)
-        //
-        TermDocs docHeaders = reader.termDocs( term );
-        
-        // Record each document number.
-        int i = 0;
-        while( docHeaders.next() )
-                docNums[i++] = docHeaders.doc();
-        nDocs = i; // Account for possibly deleted docs
     } // constructor
+    
+    private void load()
+    {
+        // If already loaded, don't do it again.
+        if( docNums != null )
+            return;
+        
+        try 
+        {
+            // Figure out how many entries we'll have, and make our array 
+            // that big.
+            //
+            Term term = new Term( "docInfo", "1" );
+            nDocs = reader.docFreq( term );
+            docNums = new int[nDocs];
+                
+            // Get a list of all the "header" chunks for documents in this
+            // index (i.e., documents with a "docInfo" field.)
+            //
+            TermDocs docHeaders = reader.termDocs( term );
+            
+            // Record each document number.
+            int i = 0;
+            while( docHeaders.next() )
+                    docNums[i++] = docHeaders.doc();
+            nDocs = i; // Account for possibly deleted docs
+        }
+        catch( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
     
     /** Get the max number of words per chunk */
     public int getChunkSize()    { return chunkSize;    }
@@ -168,10 +189,16 @@ public class XtfDocNumMap implements DocNumMap
      * @param num   The number to look for.
      */
     private void scan( int num ) 
-    {
+    { 
         // Early-out
         if( num == prevNum )
             return;
+        
+        // Make sure we load the data the first time. We do this lazily because
+        // some indexes are only used for crossQuery, which doesn't really use
+        // the info in a DocNumMap.
+        //
+        load();
                 
         // Perform a simple binary search.
         int high = nDocs, low = -1, probe;

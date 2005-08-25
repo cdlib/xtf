@@ -213,6 +213,8 @@ public class FastTokenizer extends Tokenizer
         source = str.toCharArray();
     }
     
+    private static int foo = 0;
+    
     /**
      * Retrieve the next token in the stream, or null if there are no more.
      */
@@ -296,6 +298,15 @@ public class FastTokenizer extends Tokenizer
         dribbleReader.setChars( source, start, pos );
         
         Token t2 = stdTokenizer.next();
+        if( pos == tlen && t2.termText().equals(fakeWord) ) 
+        {
+            // Standard tokenizer ate everything we have, and we're back to
+            // the fake token. That means there isn't any valid token left
+            // in the input stream.
+            //
+            return null;
+        }
+        
         assert !t2.termText().equals( fakeWord );
         if( t2.startOffset() - t1.startOffset() == 2 ) {
             assert t2.startOffset() - t1.startOffset() == 2;

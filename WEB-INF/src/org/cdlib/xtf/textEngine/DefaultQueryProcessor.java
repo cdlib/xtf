@@ -250,10 +250,6 @@ public class DefaultQueryProcessor extends QueryProcessor
                 if( score <= 0.0f )
                     return;
                 
-                // Make sure this is really a document, not a chunk.
-                if( docNumMap.getFirstChunk(doc) < 0 )
-                    return;
-                
                 // If we're boosting, apply that factor.
                 if( boostSet != null )
                     score *= boostSet.getBoost( doc );

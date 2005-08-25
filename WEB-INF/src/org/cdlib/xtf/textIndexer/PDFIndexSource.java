@@ -1,7 +1,7 @@
 package org.cdlib.xtf.textIndexer;
 
-/**
- * Copyright (c) 2004, Regents of the University of California
+/*
+ * Copyright (c) 2005, Regents of the University of California
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without 
@@ -29,49 +29,49 @@ package org.cdlib.xtf.textIndexer;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+
 import javax.xml.transform.Templates;
 
 import org.cdlib.xtf.util.StructuredStore;
 import org.xml.sax.InputSource;
 
 /**
- * Simple data holder representing a single file to index, including where to
- * find it, its format, the input filter to use, and the index key.
+ * Transforms a PDF file to a single-record XML file.
+ *
+ * @author Martin Haye
  */
-public class SrcTextInfo 
-{  
-  /** Source to read XML/PDF/HTML/etc. data from */
-  public InputSource source;
+public class PDFIndexSource extends XMLIndexSource 
+{
+  /** Constructor -- initializes all the fields */
+  public PDFIndexSource( File            pdfFile,
+                         String          key,
+                         Templates[]     preFilters,
+                         Templates       displayStyle,
+                         StructuredStore lazyStore )
+  {
+    super( null, pdfFile, key, preFilters, displayStyle, lazyStore );
+    this.pdfFile = pdfFile;
+  }
   
-  /** Format of the input data: must be "XML", "PDF", "HTML", or "Text" */
-  public String format;
-  
-  /** Key used to identify this file in the index */
-  public String key;
-  
-  /** XSLT pre-filter used to massage the XML document (null for none) */
-  public Templates preFilter;
+  /** Source of PDF data */
+  private File pdfFile;
 
-  /** Stylesheet from which to gather XSLT key definitions to be computed
-   *  and cached on disk. Typically, one would use the actual display 
-   *  stylesheet for this purpose, guaranteeing that all of its keys will be 
-   *  pre-cached.<br><br>
-   * 
-   *  Background: stylesheet processing can be optimized by using XSLT 'keys', 
-   *  which are declared with an &lt;xsl:key&gt; tag. The first time a key 
-   *  is used in a given source document, it must be calculated and its values 
-   *  stored on disk. The text indexer can optionally pre-compute the keys so 
-   *  they need not be calculated later during the display process.
-   */
-  public Templates displayStyle;
-  
-  /** 
-   * Empty storage in which to build the persistent version of the
-   * document (aka the "lazy tree"), or null to avoid building it.
-   */
-  public StructuredStore lazyStore;
-  
-  /** Set this to remove DOCTYPE declaration from an XML document */
-  public boolean removeDoctypeDecl = false;
-  
-} // class SrcTextInfo
+  /** Transform the PDF file to XML data */
+  protected InputSource filterInput() throws IOException
+  {
+    // Convert the PDF file into an XML string that we can index.
+    InputStream inStream = new FileInputStream( pdfFile );
+    String pdfXMLStr = PDFToString.convert( inStream );
+    
+    // And make an InputSource with a proper system ID
+    InputSource finalSrc = new InputSource( new StringReader(pdfXMLStr) );
+    finalSrc.setSystemId( pdfFile.toURL().toString() );
+    return finalSrc;
+  } // filterInput()
+
+} // class PDFSrcFile

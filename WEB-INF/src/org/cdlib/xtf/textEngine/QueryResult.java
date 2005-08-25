@@ -230,8 +230,10 @@ public class QueryResult
                         " rank=\"" + (i+startDoc+1) + "\"" +
                         " path=\"" + docHit.filePath() + "\"" +
                         " score=\"" + scoreStr + "\"" +
-                        " totalHits=\"" + docHit.totalSnippets() + "\"" +
-                        ">\n" );
+                        " totalHits=\"" + docHit.totalSnippets() + "\"" );
+            if( docHit.recordNum() > 0 )
+                buf.append( " recordNum=\"" + docHit.recordNum() + "\"" );
+            buf.append( ">\n" );
             if( !docHit.metaData().isEmpty() ) {
                 buf.append( "<meta>\n" );
                 for( Iterator atts = docHit.metaData().iterator(); atts.hasNext(); )

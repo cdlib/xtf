@@ -31,12 +31,9 @@ package org.cdlib.xtf.textIndexer;
 
 import java.io.File;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.index.TermEnum;
 
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.Path;
@@ -102,33 +99,27 @@ public class IdxTreeCuller
     // Start with no Path fields encountered, and no documents culled.
     int docCount  = 0;
     int cullCount = 0;
-    
+
+    IndexReader indexReader = null;
+    TermEnum    termEnum    = null;
     try {
         
         // Try to open the index for reading. If we fail and 
         // throw, skip the index.
         //
         String idxPath = Path.resolveRelOrAbs(xtfHome, idxInfo.indexPath);
-        IndexReader indexReader = IndexReader.open( idxPath );
-        
-        // Get a list of all the "header" chunks for documents in this
-        // index (i.e., documents with a "docInfo" field.)
-        //
-        TermQuery     docQuery = new TermQuery( new Term("docInfo", "1") );
-
-        IndexSearcher indexSearcher = new IndexSearcher( indexReader );
-        Hits hits = indexSearcher.search( docQuery );
-        
-        // Step through each of the documents found.
-        for( int i = 0; i < hits.length(); i++ ) {
+        indexReader    = IndexReader.open( idxPath );
+        termEnum       = indexReader.terms(new Term("key", ""));
+    
+        do {
+            Term term = termEnum.term();
+            if( term == null || !term.field().equals("key") )
+                break;
             
-            // Get the current document.
-            Document doc = indexReader.document( hits.id(i) );
-          
             // Get the key, which contains the index name and the path from its
             // source directory.
             //
-            String key = doc.get( "key" );
+            String key = term.text();
             assert key.indexOf(':') >= 0 : "Invalid index key - missing ':'";
             String indexName = key.substring( 0, key.indexOf(':') );
             String relPath   = key.substring( key.indexOf(':') + 1 );
@@ -185,8 +176,10 @@ public class IdxTreeCuller
                                                 idxInfo, 
                                                 currFile, 
                                                 false );
-                if( !Path.deletePath(lazyFile.toString()) )
-                    Trace.warning( "Could not delete lazy-tree file" );
+                if( lazyFile.canRead() ) {
+                    if( !Path.deletePath(lazyFile.toString()) )
+                        Trace.warning( "Could not delete lazy-tree file" );
+                }
                 
                 ///////////////////////////
                 //   Diagnostic Output   //
@@ -205,11 +198,13 @@ public class IdxTreeCuller
                 
             } // if( !currFile.exists() )
         
-        } // for( int i... )
-        
-        // Close up the index reader and searcher
-        indexSearcher.close();
+        } while (termEnum.next());
+
+        // Close the term enumeration and reader.
+        termEnum.close();
+        termEnum = null;
         indexReader.close();
+        indexReader = null;
         
         // Now if the number of documents encounted equals the number
         // of documents deleted, there's a good chance the index is 
@@ -255,7 +250,22 @@ public class IdxTreeCuller
     
     catch ( Exception e ) {
       
+        // Close the term enumeration
+        if( termEnum != null ) {
+            try { termEnum.close(); } catch( Exception e2 ) { }
+        }
+        
+        // Close up the index reader.
+        if( indexReader != null ) {
+            try { indexReader.close(); } catch( Exception e2 ) { }
+        }
+        
         // Log the problem.
+        Trace.info( "*** Exception encountered removing missing documents: " + 
+            e.getClass() + "\n"  +
+            "    With message: " + 
+            e.getMessage() );
+        
         Trace.error( "Skipped Due to Errors." );
         
         // Pass the exception on.

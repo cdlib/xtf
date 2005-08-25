@@ -62,6 +62,9 @@ public class DocHitImpl extends DocHit
     /** Date the original source XML document was last modified */
     private long fileDate = -1;
     
+    /** Record number of this document within the main file */
+    private int recordNum = 0;
+    
     /** Total number of chunks for this document */
     private int chunkCount = -1;
     
@@ -137,6 +140,8 @@ public class DocHitImpl extends DocHit
                 fileDate = DateField.stringToTime( value );
             else if( name.equals("chunkCount") )
                 chunkCount = Integer.parseInt( value );
+            else if( name.equals("recordNum") )
+                recordNum = Integer.parseInt( value );
             else if( !name.equals("docInfo") ) 
                 loadMetaField( name, value, spanDoc, metaData, f.isTokenized() );
         }
@@ -264,6 +269,16 @@ public class DocHitImpl extends DocHit
     {
         if( docKey == null ) load();
         return docKey;
+    } // filePath()
+    
+    /**
+     * Retrieve the record number of this document within the main file, or
+     * zero if this is the only record.
+     */
+    public final int recordNum()
+    {
+        if( docKey == null ) load();
+        return recordNum;
     } // filePath()
     
     /**

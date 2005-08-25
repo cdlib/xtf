@@ -36,13 +36,16 @@ import java.io.InputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.sax.SAXTransformerFactory;
+
+import net.sf.saxon.Filter;
 
 import org.cdlib.xtf.textIndexer.CrimsonBugWorkaround;
 import org.cdlib.xtf.textIndexer.IndexInfo;
@@ -50,7 +53,6 @@ import org.cdlib.xtf.textIndexer.IndexerConfig;
 import org.cdlib.xtf.util.DocTypeDeclRemover;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -360,17 +362,27 @@ public class IndexUtil
   
   
   /**
-   * Create a Saxon transformer.
+   * Get a TransformerFactory.
    */
-  public static Transformer createTransformer()
+  private static TransformerFactory getTransformerFactory()
   {
       // If we don't have a factory yet, make one.
       if( transformerFactory == null ) 
           transformerFactory = new net.sf.saxon.TransformerFactoryImpl();
       
-      // And make the new transformer that was requested.
+      return transformerFactory;
+      
+  } // getTransformerFactory()
+  
+  
+  /**
+   * Create a Saxon transformer.
+   */
+  public static Transformer createTransformer()
+  {
+      // Make the new transformer that was requested.
       try {
-          return transformerFactory.newTransformer();
+          return getTransformerFactory().newTransformer();
       }
       catch( TransformerConfigurationException e ) {
           throw new RuntimeException( e );
@@ -392,7 +404,7 @@ public class IndexUtil
    * @return            Filtered input stream
    */
   public static InputStream filterXMLDocument( InputStream inStream, 
-                                               SAXParser   saxParser,
+                                               boolean     applyCrimsonWorkaround,
                                                boolean     removeDoctypeDecl )
   {
       // Remove DOCTYPE declarations, since the XML reader will barf if it
@@ -406,42 +418,85 @@ public class IndexUtil
       // and that is preceded by a '>' character then it crashes. The 
       // following filter inserts a space in such cases.
       //
-      if( saxParser.getClass().getName().equals("org.apache.crimson.jaxp.SAXParserImpl") )
+      if( applyCrimsonWorkaround )
           inStream = new CrimsonBugWorkaround( inStream );
       
       return inStream;
   }
   
    
-  public static void applyPreFilter( Templates      prefilterStylesheet,
-                                     SAXParser      saxParser,
-                                     InputSource    inSrc,
-                                     ContentHandler contentHandler )
+  /**
+   * Applies the standard set of filters for an XML document. In our case,
+   * this involves removing document type declarations, and working around
+   * a bug in the Apache Crimson parser.
+   * 
+   * @param inStream    Document stream to filter
+   * @param saxParser   Parser that will be used to parse the document; used
+   *                    to determine whether or not to apply the Crimson
+   *                    parser workaround.
+   * @param removeDoctypeDecl true to remove DOCTYPE declaration; false to
+   *                          leave them alone.
+   * 
+   * @return            Filtered input stream
+   */
+  public static InputStream filterXMLDocument( InputStream inStream, 
+                                               SAXParser   saxParser,
+                                               boolean     removeDoctypeDecl )
+  {
+      boolean applyCrimsonWorkaround = 
+          saxParser.getClass().getName().equals("org.apache.crimson.jaxp.SAXParserImpl");
+      
+      return filterXMLDocument( inStream, applyCrimsonWorkaround, removeDoctypeDecl );
+  }
+  
+   
+  /**
+   * Apply one or more prefilter stylesheets to an XML input source. Pass the
+   * filtered data to to the specified Result.
+   * 
+   * @param prefilterStylesheets    Stylesheets to process
+   * @param reader                  Reader to use for parsing the input XML
+   * @param xmlSource               Source of XML data
+   * @param ultimateResult          Where to send the output
+   */
+  public static void applyPreFilters( Templates[]    prefilterStylesheets,
+                                      XMLReader      reader,
+                                      InputSource    xmlSource,
+                                      Result         ultimateResult )
     throws SAXException, 
            TransformerException,
            TransformerConfigurationException
   {
-    // Create an actual transform filter from the stylesheet for this
-    // particular document we're indexing.
-    //
-    Transformer filter = prefilterStylesheet.newTransformer();
-        
-    // And finally, make a SAX source that combines the XML reader with
-    // the filtered input source.
-    //
-    SAXSource srcText = new SAXSource( saxParser.getXMLReader(), inSrc );
-  
-    // Identify this class as the parser for the XML events that 
-    // the XSLT translation will produce.
-    //
-    SAXResult filteredText = new SAXResult( contentHandler );
-  
-    // Make sure errors get directed to the right place.
-    if( !(filter.getErrorListener() instanceof XTFSaxonErrorListener) )
-        filter.setErrorListener( new XTFSaxonErrorListener() );
+    assert prefilterStylesheets.length > 0 : 
+           "applyPrefilters must have at least one stylesheet";
 
-    // Perform the translation.
-    filter.transform( srcText, filteredText );
+    XMLReader lastInChain = reader;
+    SAXTransformerFactory stf = (SAXTransformerFactory) getTransformerFactory();
+    
+    // Process each prefilter.
+    for( int i = 0; i < prefilterStylesheets.length; i++ )
+    {
+        // Create an XMLFilter from the stylesheet
+        Filter filter = (Filter) stf.newXMLFilter( prefilterStylesheets[i] );
+        Transformer trans = filter.getTransformer();
+        
+        // Make sure errors get directed to the right place.
+        if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
+            trans.setErrorListener( new XTFSaxonErrorListener() );
+        
+        // Hook up its input.
+        filter.setParent( lastInChain );
+        
+        // Onward.
+        lastInChain = filter;
+    } // for i
+    
+    // Set up the transformer to process the SAX events generated
+    // by the last filter in the chain.
+    //
+    Transformer transformer = stf.newTransformer();
+    SAXSource transformSource = new SAXSource( lastInChain, xmlSource );
+    transformer.transform( transformSource, ultimateResult );
     
   } // applyPreFilter()
 

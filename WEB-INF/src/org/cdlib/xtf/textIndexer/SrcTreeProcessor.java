@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -59,6 +61,7 @@ import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
 import org.xml.sax.InputSource;
@@ -554,8 +557,12 @@ public class SrcTreeProcessor
   
   {
     // Gather all the info from the element's attributes.
-    SrcTextInfo info = new SrcTextInfo();
-    String fileName = null;
+    File        srcPath           = null;
+    Vector      preFilterVec      = new Vector();
+    Templates   displayStyle      = null;
+    String      fileName          = null;
+    String      format            = null;
+    boolean     removeDoctypeDecl = false;
     
     for( int i = 0; i < parentEl.nAttrs(); i++ ) {
         String attrName = parentEl.attrName( i );
@@ -564,42 +571,49 @@ public class SrcTreeProcessor
         // Get the file name and check it.
         if( attrName.equalsIgnoreCase("fileName") ) {
             fileName = attrVal; // for extension checking only
-            String srcPath = Path.normalizeFileName(dir+attrVal);
-            info.source    = new InputSource( srcPath ); 
-            File srcFile   = new File( srcPath );
-            if( !srcFile.canRead() ) {
+            srcPath = new File( Path.normalizeFileName(dir+attrVal) );
+            if( !srcPath.canRead() ) {
                 Trace.error( "Error: cannot read input document '" + srcPath + "'" );
                 return false;
             }
         }
         
-        // Is there an input filter specified?
-        else if( attrName.equalsIgnoreCase("preFilter") ) {
-            String preFilterPath = 
-                Path.resolveRelOrAbs(cfgInfo.xtfHomePath, attrVal);
-            info.preFilter  = stylesheetCache.find( preFilterPath );
-        }
+        // Is there an input filter(s) specified?
+        else if( attrName.equalsIgnoreCase("preFilter") ) 
+        {
+            // Break up a list separated by semicolons or commas.
+            StringTokenizer st = new StringTokenizer( attrVal, ";," );
+            while( st.hasMoreTokens() ) 
+            {
+                String partialPath = st.nextToken(); 
+                String preFilterPath = 
+                    Path.resolveRelOrAbs(cfgInfo.xtfHomePath, partialPath);
+                preFilterVec.add( stylesheetCache.find(preFilterPath) );
+            } // while
+        } // else
         
         // If there a display stylesheet specified?
         else if( attrName.equalsIgnoreCase("displayStyle") ) {
             String displayPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, attrVal);
-            info.displayStyle = stylesheetCache.find( displayPath );
+            displayStyle = stylesheetCache.find( displayPath );
         }
     
         // Is there a format specified?
         else if( attrName.equalsIgnoreCase("type") ) {
-            info.format = attrVal;
-            if( info.format.equalsIgnoreCase("XML") )
-                info.format = "XML";
-            else if( info.format.equalsIgnoreCase("PDF") )
-                info.format = "PDF";
-            else if( info.format.equalsIgnoreCase("HTML") )
-                info.format = "HTML";
-            else if( info.format.equalsIgnoreCase("Text") )
-                info.format = "Text";
+            format = attrVal;
+            if( format.equalsIgnoreCase("XML") )
+                format = "XML";
+            else if( format.equalsIgnoreCase("PDF") )
+                format = "PDF";
+            else if( format.equalsIgnoreCase("HTML") )
+                format = "HTML";
+            else if( format.equalsIgnoreCase("Text") )
+                format = "Text";
+            else if( format.equalsIgnoreCase("MARC") )
+                format = "MARC";
             else {
-                Trace.error( "Error: docSelector returned unknown format: '" +
-                             info.format + "'" );
+                Trace.error( "Error: docSelector returned unknown type: '" +
+                             format + "'" );
                 return false;
             }
         }
@@ -607,9 +621,9 @@ public class SrcTreeProcessor
         // Is DOCTYPE declaration removal specified?
         else if( attrName.equalsIgnoreCase("removeDoctypeDecl") ) {
             if( attrVal.matches("^yes$|^true$") )
-                info.removeDoctypeDecl = true;
+                removeDoctypeDecl = true;
             else if( attrVal.matches("^no$|^false$") )
-                info.removeDoctypeDecl = false;
+                removeDoctypeDecl = false;
             else {
                 Trace.error( "Error: docSelector returned invalid value for " +
                              attrName + " attribute: " +
@@ -628,42 +642,86 @@ public class SrcTreeProcessor
     } // while
     
     // Make sure the filename was specified.
-    if( info.source == null ) {
+    if( srcPath == null ) {
         Trace.error( "Error: docSelector must return 'fileName' attribute" );
         return false;
     }
     
     // If no format was specified, make a guess.
-    if( info.format == null && fileName != null ) {
+    if( format == null && fileName != null ) {
         String lcFileName = fileName.toLowerCase();
         if( lcFileName.endsWith(".xml") )
-            info.format = "XML";
+            format = "XML";
         else if( lcFileName.endsWith(".pdf") )
-            info.format = "PDF";
+            format = "PDF";
         else if( lcFileName.endsWith(".htm") || lcFileName.endsWith(".html") )
-            info.format = "HTML";
+            format = "HTML";
         else if( lcFileName.endsWith(".txt") )
-            info.format = "Text";
+            format = "Text";
+        else if( lcFileName.endsWith(".marc") || lcFileName.endsWith(".mrc") )
+            format = "MARC";
         else {
-            Trace.warning( "Warning: cannot deduce format from extension on file '" +
-                           info.source.getSystemId() );
+            Trace.warning( "Warning: cannot deduce file type from extension on file '" +
+                           srcPath );
             return false;
         }
     }
-    
     
     // We need to refer to the file in a way that isn't dependent on the
     // particular location the index is at right now. So calculate a key
     // that just contains the index name and the part of the path after that
     // index's data directory.
     //
-    File srcFile = new File( info.source.getSystemId() );
     String key = IndexUtil.calcDocKey( new File(cfgInfo.xtfHomePath),
-                                           cfgInfo.indexInfo, srcFile );
-    info.key = key;
+                                       cfgInfo.indexInfo, srcPath );
     
-    // Call the XML text file processor to do the work.    
-    textProcessor.checkAndQueueText( info, cfgInfo.buildLazyFiles );
+    // Calculate a proper system ID for this file.
+    String systemId = srcPath.toURL().toString();
+    
+    // Figure out where to put the lazy file (if we've been asked to build one)
+    StructuredStore lazyStore = null;
+    if( cfgInfo.buildLazyFiles )
+    {
+        // Figure out where to put the lazy tree file.
+        File lazyFile = IndexUtil.calcLazyPath( 
+                new File(cfgInfo.xtfHomePath),
+                cfgInfo.indexInfo,
+                srcPath,
+                true );
+        
+        // Use a file proxy so that we don't actually open the file handle
+        // until (and if) the queued file is actually indexed.
+        //
+        lazyStore = new StructuredFileProxy( lazyFile );
+    }
+    
+    // Convert the prefilter(s) to an array.
+    Templates[] preFilters = null;
+    if( !preFilterVec.isEmpty() )
+        preFilters = (Templates[]) preFilterVec.toArray( new Templates[preFilterVec.size()] );
+
+    // Now we have enough info to construct the SrcFile.
+    IndexSource srcFile = null;
+    if( format.equalsIgnoreCase("XML") ) {
+        InputSource finalSrc = new InputSource( systemId );
+        srcFile = new XMLIndexSource( finalSrc, srcPath, key, 
+                                  preFilters, displayStyle, lazyStore );
+        if( removeDoctypeDecl )
+            ((XMLIndexSource)srcFile).removeDoctypeDecl( true );
+    }
+    else if( format.equalsIgnoreCase("PDF") )
+        srcFile = new PDFIndexSource( srcPath, key, preFilters, displayStyle, null );
+    else if( format.equalsIgnoreCase("HTML") )
+        srcFile = new HTMLIndexSource( srcPath, key, preFilters, displayStyle, null );
+    else if( format.equalsIgnoreCase("Text") )
+        srcFile = new TextIndexSource( srcPath, key, preFilters, displayStyle, null );
+    else if( format.equalsIgnoreCase("MARC") )
+        srcFile = new MARCIndexSource( srcPath, key, preFilters, displayStyle );
+    else
+        throw new RuntimeException( "Internal error: code missing support for type" );
+    
+    // Now queue up the file.
+    textProcessor.checkAndQueueText( srcFile );
 
     // Let the caller know we didn't skip the file.
     return true;
