@@ -13,3 +13,6 @@ under the Mozilla Public License 1.1. See LICENSE_SAXON for details.
 
 The CQL parsing library "cql-java" is included, distributed under the
 Lesser Gnu Public License 2.1. See LICENSE_CQL for details.
+
+The MARC4J API for working with MARC data "marc4j" is included, distributed under the
+Lesser Gnu Public License 2.1. See LICENSE_MARC4J for details.
