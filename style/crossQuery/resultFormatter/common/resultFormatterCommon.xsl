@@ -162,13 +162,6 @@
   <xsl:param name="year-exclude"/>
   <xsl:param name="year-max"/>
 
-  <!-- Special XTF Metadata Field containing CDL Profile ARK -->
-  <xsl:param name="profile"/>
-  <xsl:param name="profile-join"/>
-  <xsl:param name="profile-prox"/>
-  <xsl:param name="profile-exclude"/>
-  <xsl:param name="profile-max"/>
-
   <!-- Structural Search -->
   <xsl:param name="sectionType"/>
 
@@ -512,21 +505,6 @@
     <xsl:if test="$year-max">
       <input type="hidden" name="year-max" value="{$year-max}"/>
     </xsl:if>
-    <xsl:if test="$profile">
-      <input type="hidden" name="profile" value="{$profile}"/>
-    </xsl:if>
-    <xsl:if test="$profile-join">
-      <input type="hidden" name="profile-join" value="{$profile-join}"/>
-    </xsl:if>
-    <xsl:if test="$profile-prox">
-      <input type="hidden" name="profile-prox" value="{$profile-prox}"/>
-    </xsl:if>
-    <xsl:if test="$profile-exclude">
-      <input type="hidden" name="profile-exclude" value="{$profile-exclude}"/>
-    </xsl:if>
-    <xsl:if test="$profile-max">
-      <input type="hidden" name="profile-max" value="{$profile-max}"/>
-    </xsl:if>
     <xsl:if test="$sectionType">
       <input type="hidden" name="sectionType" value="{$sectionType}"/>
     </xsl:if>
@@ -535,14 +513,12 @@
   <!-- Human Readable Form of Query -->
   
   <xsl:param name="query">
-    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString,                           
+    <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString,                           
                           '&amp;style=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),
                           '&amp;smode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),
                           '&amp;rmode=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),
                           '&amp;brand=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),
                           '&amp;relation=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
-                          '&amp;profile=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
-                          '&amp;profile-join=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''), 
                           '&amp;fieldList=([A-Za-z0-9&quot;\-\.\*\+ ]+)', ''),      
                           'year=([0-9]+)&amp;year-max=([0-9]+)', 'year=$1-$2'),    
                           'text=([A-Za-z0-9&quot;\-\.\*\+ ]+)&amp;text-prox=([0-9]+)', '$1 within $2 words'), 
@@ -736,7 +712,7 @@
   <!-- ====================================================================== -->
       
   <xsl:template match="subject">
-    <a href="{$xtfURL}{$crossqueryPath}?subject=%22{.}%22&amp;profile={$profile}&amp;profile-join={$profile-join}&amp;style={$style}&amp;smode={$smode}&amp;rmode={$rmode}&amp;brand={$brand}">
+    <a href="{$xtfURL}{$crossqueryPath}?subject=%22{.}%22&amp;style={$style}&amp;smode={$smode}&amp;rmode={$rmode}&amp;brand={$brand}">
       <xsl:apply-templates/>
     </a>
     <xsl:if test="not(position() = last())">
@@ -745,7 +721,7 @@
   </xsl:template>
    
   <!-- ====================================================================== -->
-  <!-- "More" Blocks                                                            -->
+  <!-- "More" Blocks                                                          -->
   <!-- ====================================================================== -->
       
   <xsl:template name="moreBlock">
@@ -798,24 +774,35 @@
           <option value="title">title</option>
           <option value="creator">author</option>
           <option value="year">publication date</option>
+          <option value="reverse-year">reverse date</option>
         </xsl:when>
         <xsl:when test="$sort = 'title'">
           <option value="">relevance</option>
           <option value="title" selected="selected">title</option>
           <option value="creator">author</option>
           <option value="year">publication date</option>
+          <option value="reverse-year">reverse date</option>
         </xsl:when>
         <xsl:when test="$sort = 'creator'">
           <option value="">relevance</option>
           <option value="title">title</option>
           <option value="creator" selected="selected">author</option>
           <option value="year">publication date</option>
+          <option value="reverse-year">reverse date</option>
         </xsl:when>
         <xsl:when test="$sort = 'year'">
           <option value="">relevance</option>
           <option value="title">title</option>
           <option value="creator">author</option>
           <option value="year" selected="selected">publication date</option>
+          <option value="reverse-year">reverse date</option>
+        </xsl:when>
+        <xsl:when test="$sort = 'reverse-year'">
+          <option value="">relevance</option>
+          <option value="title">title</option>
+          <option value="creator">author</option>
+          <option value="year">publication date</option>
+          <option value="reverse-year" selected="selected">reverse date</option>
         </xsl:when>
       </xsl:choose>
     </select>
