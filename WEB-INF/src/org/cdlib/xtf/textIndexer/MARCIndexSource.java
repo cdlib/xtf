@@ -473,7 +473,17 @@ public class MARCIndexSource extends IndexSource
       for( int i = start; i < start+length; i++ ) {
           if( (ch[i] & ~0x7f) != 0 )
               needNormalize = true;
+          
           if( ch[i] == '&' || ch[i] == '<' )
+              ++needEscape;
+          else if( ch[i] < '\u0020' &&
+              (ch[i] != '\t' && ch[i] != '\n' && ch[i] != '\r') )
+          {
+              ++needEscape;
+          }
+          else if( ch[i] >= '\uD800' && ch[i] <= '\uDFFF' )
+              ++needEscape;
+          else if( ch[i] >= '\uFFFE' && ch[i] <= '\uFFFF' )
               ++needEscape;
       }
       
@@ -507,6 +517,15 @@ public class MARCIndexSource extends IndexSource
                   newCh[dp++] = 't';
                   newCh[dp++] = ';';
               }
+              else if( ch[sp] < '\u0020' &&
+                  (ch[sp] != '\t' && ch[sp] != '\n' && ch[sp] != '\r') )
+              {
+                  ; // delete invalid character
+              }
+              else if( ch[sp] >= '\uD800' && ch[sp] <= '\uDFFF' )
+                  ; // delete invalid character
+              else if( ch[sp] >= '\uFFFE' && ch[sp] <= '\uFFFF' )
+                  ; // delete invalid character
               else
                   newCh[dp++] = ch[sp];
           }
