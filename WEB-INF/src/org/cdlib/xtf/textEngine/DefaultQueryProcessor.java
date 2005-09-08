@@ -153,15 +153,16 @@ public class DefaultQueryProcessor extends QueryProcessor
         }
         
         // Apply a work limit to the query if we were requested to.
+        IndexReader limReader = reader;
         if( req.workLimit > 0 ) {
-            reader = new LimIndexReader( reader, 
-                                         req.workLimit );
+            limReader = new LimIndexReader( reader, 
+                                            req.workLimit );
         }
         
         // Make a Lucene searcher that will access the index according to
         // our query.
         //
-        searcher = new IndexSearcher( reader );
+        searcher = new IndexSearcher( limReader );
         
         // Translate -1 maxDocs to "essentially all"
         int maxDocs = req.maxDocs;
@@ -298,7 +299,7 @@ public class DefaultQueryProcessor extends QueryProcessor
             docScoreNorm = 1.0f / maxDocScore;
 
         // Finish off the hits (read in the fields, normalize, make snippets).
-        SnippetMaker snippetMaker = new SnippetMaker( reader,
+        SnippetMaker snippetMaker = new SnippetMaker( limReader,
                                                       docNumMap,
                                                       stopSet,
                                                       pluralMap,
