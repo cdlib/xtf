@@ -123,6 +123,8 @@ public class BoostSet
   {
     this.field = field;
     
+    Trace.debug( "Loading boost set '" + inFile + "'..." );
+    
     // Figure out the max doc ID, make an array that big, and fill it with
     // the default value (1.0).
     //
@@ -175,6 +177,8 @@ public class BoostSet
           warn( "Boost document key '" + lineIter.key() + "' not found in index" );
           lineIter.next();
       }
+      
+      Trace.debug( "... done loading boost set" );
           
     } finally {
       if( docIter != null )
