@@ -97,10 +97,10 @@ public class DefaultQueryProcessor extends QueryProcessor
     private CharMap        accentMap;
     
     /** Total number of documents hit (not just those that scored high) */
-    private int            nDocsHit = 0;
+    private int            nDocsHit;
     
     /** Maximum document score (used to normalize scores) */
-    private float          maxDocScore = 0;
+    private float          maxDocScore;
     
     /** Document normalization factor (calculated from {@link #maxDocScore}) */
     private float          docScoreNorm;
@@ -111,14 +111,22 @@ public class DefaultQueryProcessor extends QueryProcessor
     
     /**
      * This is main entry point. Takes a pre-parsed query request and handles 
-     * searching the index and forming the results.
+     * searching the index and forming the results.<br>
+     * 
+     * This method is synchronized because it uses two instance variables,
+     * so access by multiple threads would result in incorrect counting. For
+     * maximum efficiency, each thread should really use its own instance.
      * 
      * @param req      The pre-parsed request to process
      * @return         Zero or more document hits
      */
-    public QueryResult processRequest( final QueryRequest req )
+    public synchronized QueryResult processRequest( final QueryRequest req )
         throws IOException
     {
+        // Clear out our counters.
+        nDocsHit = 0;
+        maxDocScore = 0;
+        
         // Make an vector to store the hits (we'll make it into an array
         // later, when we know how many we have.)
         //
