@@ -5,14 +5,14 @@
   </description>
 
   <!-- set global properties for this build -->
-  <property name="src"     location="src"/>
+  <property name="src"     location="src:contrib/xtf-lucene/src:backport/src"/>
   <property name="classes" location="classes"/>
   <property name="dist"    location="dist"/>
   <property name="lib"     location="lib"/>
   <property name="cdlLib"  location="cdlLib"/>
   <property name="bin"     location="bin"/>
   <property name="doc"     location="javadoc"/>
-  <property name="libs"    value="${lib}/saxonb-8.3.jar:${lib}/servlet.jar:${lib}/PDFBox-0.6.7a.jar:${lib}/log4j-1.2.9.jar:${lib}/Tidy.jar:${lib}/cql-java.jar:${lib}/marc4j.jar"/>
+  <property name="libs"    value="${lib}/lucene-1.4.3.jar:${lib}/saxonb-8.3.jar:${lib}/servlet.jar:${lib}/PDFBox-0.6.7a.jar:${lib}/log4j-1.2.9.jar:${lib}/Tidy.jar:${lib}/cql-java.jar:${lib}/marc4j.jar"/>
 
   <target name="init">
     <!-- Create the time stamp -->
