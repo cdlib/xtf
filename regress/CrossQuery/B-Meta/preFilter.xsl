@@ -28,7 +28,7 @@
 <!-- Metadata Marking                                                       -->
 <!-- ====================================================================== -->
 
-  <xsl:template match="title|creator|subject|description|date|type|identifier|relation|rights">
+  <xsl:template match="title|creator|subject|description|date|type|identifier|relation|rights|foo">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:attribute name="xtf:meta" select="'true'"/>

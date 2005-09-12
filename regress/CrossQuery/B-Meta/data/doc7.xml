@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <title>Cormorants on the Run</title>
+    <creator>J.T. Ripper</creator>
+    <subject>Murder</subject>
+    <subject>Birds</subject>
+    <description xtf:store="no">Defies all description.</description>
+    <date xtf:index="no">18730215</date>
+    <type>text</type>
+    <identifier xtf:store="false">http://ark.cdlib.org/ark:/13030/7z35ss90</identifier>
+    <relation>http://www.murderburger.com/</relation>
+    <rights xtf:index="no">Public</rights>
+    <foo>bar</foo>
+</document>
