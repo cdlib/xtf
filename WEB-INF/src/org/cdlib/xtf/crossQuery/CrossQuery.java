@@ -340,7 +340,7 @@ public class CrossQuery extends TextServlet
         // formatting the hits.
         //
         String hitsString = result.hitsToString( mainTagName, extraStuff );
-        String prefix = "<crossQueryResult ";
+        String prefix = "<" + mainTagName + " ";
         assert hitsString.startsWith( prefix );
         long queryTime = System.currentTimeMillis() - startTime;
         String formattedTime = decimalFormat.format( queryTime / 1000.0 );
