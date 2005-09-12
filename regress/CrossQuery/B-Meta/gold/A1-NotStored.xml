@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc7.xml" totalHits="0">
+      <meta>
+         <title>Cormorants on the Run</title>
+         <creator>J.T. Ripper</creator>
+         <subject>
+            <snippet rank="1">
+               <hit>
+                  <term>Murder</term>
+               </hit>
+            </snippet>
+         </subject>
+         <subject>Birds</subject>
+         <date>18730215</date>
+         <type>text</type>
+         <relation>http://www.murderburger.com/</relation>
+         <rights>Public</rights>
+         <foo>bar</foo>
+      </meta>
+   </docHit>
+</crossQueryResult>
