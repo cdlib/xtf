@@ -1514,11 +1514,41 @@ public class XMLTextProcessor extends DefaultHandler
         if( metaInfo == null )
             metaInfo = new LinkedList();
 
+        // See if there is a "store" attribute set for this node. If not,
+        // default to true.
+        //
+        boolean store = true;
+        int tokIdx = atts.getIndex( xtfUri, "store" );
+        if( tokIdx >= 0 ) {
+            String tokStr = atts.getValue( tokIdx );
+            if( tokStr != null && (tokStr.equals("no") || tokStr.equals("false")) )
+                store = false;
+        }
+        
+        // See if there is an "index" attribute set for this node. If not,
+        // default to true.
+        //
+        boolean index = true;
+        tokIdx = atts.getIndex( xtfUri, "index" );
+        if( tokIdx >= 0 ) {
+            String tokStr = atts.getValue( tokIdx );
+            if( tokStr != null && (tokStr.equals("no") || tokStr.equals("false")) )
+                index = false;
+        }
+        
+        // See if there is a "noIndex" attribute set for this node.
+        tokIdx = atts.getIndex( xtfUri, "noIndex" );
+        if( tokIdx >= 0 ) {
+            String tokStr = atts.getValue( tokIdx );
+            if( tokStr != null && (tokStr.equals("yes") || tokStr.equals("true")) )
+                index = false;
+        }
+        
         // See if there is a "tokenize" attribute set for this node. If not,
         // default to true.
         //
         boolean tokenize = true;
-        int tokIdx = atts.getIndex( xtfUri, "tokenize" );
+        tokIdx = atts.getIndex( xtfUri, "tokenize" );
         if( tokIdx >= 0 ) {
             String tokStr = atts.getValue( tokIdx );
             if( tokStr != null && (tokStr.equals("no") || tokStr.equals("false")) )
@@ -1538,7 +1568,7 @@ public class XMLTextProcessor extends DefaultHandler
         }
         
         // Allocate a place to store the contents of the meta-data field.
-        metaField = new MetaField( localName, tokenize, boost );
+        metaField = new MetaField( localName, store, index, tokenize, boost );
         assert metaBuf.length() == 0 : "Should have cleared meta-buf";
         
         // If there are non-XTF attributes on the node, record them.
@@ -3450,10 +3480,14 @@ public class XMLTextProcessor extends DefaultHandler
             // Get the next meta field.
             MetaField metaField = (MetaField) metaIter.next();
             
-            // Add it to the document as stored, indexed, and maybe tokenized.
+            // Add it to the document. Store, index, and/or tokenize as
+            // specified by the field.
+            //
             Field docField = new Field( metaField.name,
                                         metaField.value,
-                                        true, true, metaField.tokenize );
+                                        metaField.store,
+                                        metaField.index,
+                                        metaField.tokenize );
             docField.setBoost( metaField.wordBoost );
             doc.add( docField );
             
@@ -3716,11 +3750,20 @@ public class XMLTextProcessor extends DefaultHandler
     
     public String  name;
     public String  value;
+    public boolean store;
+    public boolean index;
     public boolean tokenize;
     public float   wordBoost;
     
-    public MetaField( String name, boolean tokenize, float wordBoost ) {
+    public MetaField( String  name, 
+                      boolean store,
+                      boolean index,
+                      boolean tokenize,
+                      float   wordBoost ) 
+    {
       this.name      = name;
+      this.store     = store;
+      this.index     = index;
       this.tokenize  = tokenize;
       this.wordBoost = wordBoost;
     }
