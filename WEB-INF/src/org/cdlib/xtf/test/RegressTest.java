@@ -54,8 +54,6 @@ import net.sf.saxon.om.AllElementStripper;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
 
-import org.apache.lucene.ngram.NgramQueryRewriter;
-import org.apache.lucene.ngram.NgramStopFilter;
 import org.cdlib.xtf.lazyTree.SearchTree;
 import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IndexUtil;
@@ -64,6 +62,7 @@ import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
+import org.cdlib.xtf.textEngine.XtfBigramQueryRewriter;
 import org.cdlib.xtf.textIndexer.TagFilter;
 import org.cdlib.xtf.textIndexer.TextIndexer;
 import org.cdlib.xtf.util.CircularQueue;
@@ -122,8 +121,7 @@ public class RegressTest
         IntHash.tester.test();
         DiskHashWriter.tester.test();
         CircularQueue.tester.test();
-        NgramStopFilter.tester.test();
-        NgramQueryRewriter.tester.test();
+        XtfBigramQueryRewriter.tester.test();
         TagFilter.tester.test();
         
         // Go for it.

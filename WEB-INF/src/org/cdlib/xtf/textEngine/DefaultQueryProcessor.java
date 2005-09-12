@@ -36,21 +36,21 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.lucene.bigram.BigramSpanRangeQuery;
+import org.apache.lucene.bigram.BigramSpanWildcardQuery;
 import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.chunk.SpanChunkedNotQuery;
 import org.apache.lucene.chunk.SpanDechunkingQuery;
+import org.apache.lucene.chunk.SparseStringComparator;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.limit.LimIndexReader;
-import org.apache.lucene.mark.SpanHitCollector;
-import org.apache.lucene.mark.FieldSpans;
-import org.apache.lucene.ngram.NgramQueryRewriter;
 import org.apache.lucene.search.FieldSortedHitQueue;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.RecordingSearcher;
 import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.SparseStringComparator;
+import org.apache.lucene.search.SpanHitCollector;
+import org.apache.lucene.search.spans.FieldSpans;
 import org.apache.lucene.search.spans.SpanNearQuery;
-import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanRangeQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
 import org.apache.lucene.util.PriorityQueue;
@@ -65,7 +65,7 @@ import org.cdlib.xtf.util.WordMap;
 
 /**
  * Takes a QueryRequest, rewrites the queries if necessary to remove stop-
- * words and form n-grams, then consults the index(es), and produces a 
+ * words and form bi-grams, then consults the index(es), and produces a 
  * QueryResult.
  * 
  * @author Martin Haye
@@ -74,9 +74,6 @@ public class DefaultQueryProcessor extends QueryProcessor
 {
     /** Map of all XtfSearchers, so we can re-use them */
     private static HashMap searchers = new HashMap();
-    
-    /** Lucene searcher to perform the base query */
-    private IndexSearcher  searcher;
     
     /** Lucene reader from which to read index data */
     private IndexReader    reader;
@@ -159,11 +156,6 @@ public class DefaultQueryProcessor extends QueryProcessor
                                             req.workLimit );
         }
         
-        // Make a Lucene searcher that will access the index according to
-        // our query.
-        //
-        searcher = new IndexSearcher( limReader );
-        
         // Translate -1 maxDocs to "essentially all"
         int maxDocs = req.maxDocs;
         if( maxDocs < 0 )
@@ -201,9 +193,9 @@ public class DefaultQueryProcessor extends QueryProcessor
         if( accentMap != null )
             query = new AccentFoldingRewriter(accentMap).rewriteQuery(query);
         
-        // Rewrite the query for ngrams (if we have stop-words to deal with.)
+        // Rewrite the query for bigrams (if we have stop-words to deal with.)
         if( stopSet != null )
-            query = new NgramQueryRewriter(stopSet, chunkOverlap).
+            query = new XtfBigramQueryRewriter(stopSet, chunkOverlap).
                             rewriteQuery(query);
         
         // If there's nothing left (for instance if the query was all stop-words)
@@ -245,6 +237,11 @@ public class DefaultQueryProcessor extends QueryProcessor
                                    new File(req.boostSetPath), 
                                    req.boostSetField );
         
+        // Make a Lucene searcher that will access the index according to
+        // our query.
+        //
+        RecordingSearcher searcher = new RecordingSearcher( limReader );
+        
         // Now for the big show... go get the hits!
         searcher.search( finalQuery, null, new SpanHitCollector() {
             public void collect( int doc, float score, FieldSpans fieldSpans ) 
@@ -276,11 +273,6 @@ public class DefaultQueryProcessor extends QueryProcessor
                         groupCounts[i].addDoc( docHitMaker );
                 }
             } // collect()
-            
-            // If no field marks, just record a null for them.
-            public void collect( int doc, float score ) {
-                collect( doc, score, null );
-            }
         } );
         
         // Take the high-ranking hits and add them to the hit vector.
@@ -419,48 +411,52 @@ public class DefaultQueryProcessor extends QueryProcessor
      * update the slop parameters of queries that need to know. Also informs
      * wildcard and range queries of the stopword set.
      */
-    private void fixupSlop( Query query, DocNumMap docNumMap, Set stopSet )
+    private void fixupSlop( Query query, 
+                            final DocNumMap docNumMap, 
+                            final Set stopSet )
     {
-        // First, fix up this query if necessary.
-        boolean isText = (query instanceof SpanQuery) ?
-            ((SpanQuery)query).getField().equals("text") : false;
+        new XtfQueryTraverser() {
             
-        if( query instanceof SpanNearQuery ) {
-            SpanNearQuery nq = (SpanNearQuery) query;
+            public void traverse( SpanNearQuery q ) 
+            {
+                // For text queries, set the max to the chunk overlap size. For
+                // meta-data fields, set it to the bump between multiple values
+                // for the same field, *minus one* to prevent matches across 
+                // the boundary.
+                //
+                boolean isText = q.getField().equals("text");
+                int maxSlop = isText ? docNumMap.getChunkOverlap() : (1000000-1);
+                q.setSlop( Math.min(q.getSlop(), maxSlop) );
+                super.traverse( q );
+            }
             
-            // For text queries, set the max to the chunk overlap size. For
-            // meta-data fields, set it to the bump between multiple values
-            // for the same field, *minus one* to prevent matches across the
-            // boundary.
-            //
-            int maxSlop = isText ? docNumMap.getChunkOverlap() : (1000000-1);
-            nq.setSlop( Math.min(nq.getSlop(), maxSlop) );
-        }
-        else if( query instanceof SpanChunkedNotQuery ) {
-            SpanChunkedNotQuery nq = (SpanChunkedNotQuery) query;
-            nq.setSlop( 
-                Math.min(nq.getSlop(), docNumMap.getChunkOverlap()),
-                docNumMap.getChunkSize() - docNumMap.getChunkOverlap() ); 
-        }
-        else if( query instanceof SpanDechunkingQuery ) {
-            SpanDechunkingQuery dq = (SpanDechunkingQuery) query;
-            dq.setDocNumMap( docNumMap );
-        }
-        else if( query instanceof SpanWildcardQuery ) {
-            SpanWildcardQuery wq = (SpanWildcardQuery) query;
-            wq.setStopWords( stopSet );
-        }
-        else if( query instanceof SpanRangeQuery ) {
-            SpanRangeQuery rq = (SpanRangeQuery) query;
-            rq.setStopWords( stopSet );
-        }
+            public void traverse( SpanChunkedNotQuery q ) 
+            { 
+                q.setSlop( 
+                    Math.min(q.getSlop(), docNumMap.getChunkOverlap()),
+                    docNumMap.getChunkSize() - docNumMap.getChunkOverlap() ); 
+                super.traverse( q );
+            }  
+            
+            public void traverse( SpanDechunkingQuery q ) { 
+                q.setDocNumMap( docNumMap );
+                super.traverse( q );
+            }  
+            
+            public void traverse( SpanWildcardQuery q ) {
+                assert q instanceof BigramSpanWildcardQuery;
+                ((BigramSpanWildcardQuery)q).setStopWords( stopSet );
+                super.traverse( q );
+            }  
+            
+            public void traverse( SpanRangeQuery q ) {
+                assert q instanceof BigramSpanRangeQuery;
+                ((BigramSpanRangeQuery)q).setStopWords( stopSet );
+                super.traverse( q );
+            }  
+            
+        }.traverseQuery( query );
         
-        // Now process any sub-queries it has.
-        Query[] subQueries = query.getSubQueries();
-        if( subQueries != null ) {
-            for( int i = 0; i < subQueries.length; i++ )
-                fixupSlop( subQueries[i], docNumMap, stopSet );
-        }
     } // fixupSlop()
     
     /**

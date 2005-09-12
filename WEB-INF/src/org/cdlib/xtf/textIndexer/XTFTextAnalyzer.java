@@ -34,7 +34,7 @@ import java.util.Set;
 
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
-import org.apache.lucene.ngram.NgramStopFilter;
+import org.apache.lucene.bigram.BigramStopFilter;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
@@ -108,8 +108,8 @@ import org.cdlib.xtf.util.WordMap;
  * 
  *    To record stop-words in special phases without slowing searching, the 
  *    <code>XTFTextAnalyzer</code> performs an operation called 
- *    <b><i>n-gramming</i></b> for its third phase of filtering. For more 
- *    details about how n-grams actually work, see the {@link NgramStopFilter} 
+ *    <b><i>bi-gramming</i></b> for its third phase of filtering. For more 
+ *    details about how bi-grams actually work, see the {@link BigramStopFilter} 
  *    class. <br><br>
  * 
  *    <u>Adding End Tokens</u><br>
@@ -246,13 +246,13 @@ public class XTFTextAnalyzer extends Analyzer {
     if( accentMap != null )
         result = new AccentFoldingFilter( result, accentMap );
     
-    // Convert stop-words to n-grams (if any stop words were specified). We must
+    // Convert stop-words to bi-grams (if any stop words were specified). We must
     // do this after XtfSpecialTokensFilter to ensure that special tokens don't
-    // become part of any n-grams. Also, we must do it after the lower-case
+    // become part of any bi-grams. Also, we must do it after the lower-case
     // filter so we can properly recognize the stop words.
     //
     if( stopSet != null )
-        result = new NgramStopFilter( result, stopSet );
+        result = new BigramStopFilter( result, stopSet );
     
     // Index with and without the special start-of-field/end-of-field markers.
     // If there aren't any, the filter doesn't do any harm. Also, there'll never

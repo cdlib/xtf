@@ -42,10 +42,12 @@ import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.TreeBuilder;
 
+import org.apache.lucene.bigram.BigramSpanRangeQuery;
+import org.apache.lucene.bigram.BigramSpanWildcardQuery;
 import org.apache.lucene.chunk.SpanChunkedNotQuery;
 import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.mark.SpanDocument;
+import org.apache.lucene.mark.ContextMarker;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
@@ -54,9 +56,7 @@ import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanNotNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanRangeQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.SpanWildcardQuery;
 import org.cdlib.xtf.textEngine.facet.FacetSpec;
 import org.cdlib.xtf.textEngine.facet.GroupSelector;
 import org.cdlib.xtf.textEngine.facet.MarkSelector;
@@ -458,7 +458,7 @@ public class QueryRequestParser
         if( name.equals("term") ) {
             Term term = parseTerm( parent, field, "term" );
             SpanQuery q = isWildcardTerm(term) ? 
-                new SpanWildcardQuery( term, req.termLimit ) :
+                new BigramSpanWildcardQuery( term, req.termLimit ) :
                 new SpanTermQuery( term );
             q.setSpanRecording( maxSnippets );
             return q;
@@ -510,7 +510,7 @@ public class QueryRequestParser
             Query q;
             boolean isNot = false;
             if( el.name().equals("not") ) {
-                q = parseQuery2(el, name, field, maxSnippets);
+                q = parseQuery2(el, name, field, 0);
                 isNot = true;
             }
             else
@@ -737,13 +737,13 @@ public class QueryRequestParser
         else if( attrName.equals("termMode") ) {
             int oldTermMode = req.termMode;
             if( val.equalsIgnoreCase("none") )
-                req.termMode = SpanDocument.MARK_NO_TERMS;
+                req.termMode = ContextMarker.MARK_NO_TERMS;
             else if( val.equalsIgnoreCase("hits") )
-                req.termMode = SpanDocument.MARK_SPAN_TERMS;
+                req.termMode = ContextMarker.MARK_SPAN_TERMS;
             else if( val.equalsIgnoreCase("context") )
-                req.termMode = SpanDocument.MARK_CONTEXT_TERMS;
+                req.termMode = ContextMarker.MARK_CONTEXT_TERMS;
             else if( val.equalsIgnoreCase("all") )
-                req.termMode = SpanDocument.MARK_ALL_TERMS;
+                req.termMode = ContextMarker.MARK_ALL_TERMS;
             else
                 error( "Unknown value for 'termMode'; expecting " +
                        "'none', 'hits', 'context', or 'all'" );
@@ -985,7 +985,7 @@ public class QueryRequestParser
         }
         
         // And we're done.
-        SpanQuery q = new SpanRangeQuery( lower, upper, inclusive, req.termLimit );
+        SpanQuery q = new BigramSpanRangeQuery( lower, upper, inclusive, req.termLimit );
         q.setSpanRecording( maxSnippets );
         return q;
     } // parseRange()
@@ -1064,7 +1064,7 @@ public class QueryRequestParser
                 if( slop == 0 ) {
                     Term t = parseTerm( el, field, "term" );
                     if( isWildcardTerm(t) )
-                        q = new SpanWildcardQuery(t, req.termLimit);
+                        q = new BigramSpanWildcardQuery(t, req.termLimit);
                     else
                         q = new SpanTermQuery(t);
                     q.setSpanRecording( maxSnippets );

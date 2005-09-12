@@ -138,7 +138,7 @@ public class SpanExactQuery extends SpanQuery
             // Construct the new clause.
             SpanTermQuery newClause = new SpanTermQuery(
                 new Term(oldClause.getTerm().field(), term),
-                oldClause.getStopWords() );
+                oldClause.getTermLength() );
             newClause.setBoost( oldClause.getBoost() );
             
             newClauses[i] = newClause;

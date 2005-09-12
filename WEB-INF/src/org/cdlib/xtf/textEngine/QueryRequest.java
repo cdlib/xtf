@@ -1,6 +1,6 @@
 package org.cdlib.xtf.textEngine;
 
-import org.apache.lucene.mark.SpanDocument;
+import org.apache.lucene.mark.ContextMarker;
 import org.apache.lucene.search.Query;
 import org.cdlib.xtf.textEngine.facet.FacetSpec;
 
@@ -68,7 +68,7 @@ public class QueryRequest implements Cloneable
     public int        workLimit    =   0;
     
     /** Term marking mode */
-    public int        termMode     = SpanDocument.MARK_SPAN_TERMS;
+    public int        termMode     = ContextMarker.MARK_SPAN_TERMS;
     
     /** Facet specifications (if any) */
     public FacetSpec[] facetSpecs  = null;

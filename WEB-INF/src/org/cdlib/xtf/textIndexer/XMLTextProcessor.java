@@ -58,7 +58,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.ngram.NgramStopFilter;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
@@ -67,6 +66,7 @@ import org.apache.lucene.store.FSDirectory;
 
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.Token;
+import org.apache.lucene.bigram.BigramStopFilter;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -493,7 +493,7 @@ public class XMLTextProcessor extends DefaultHandler
             
           // Determine the set of stop words to remove (if any)
           if( indexInfo.stopWords != null )
-              stopSet = NgramStopFilter.makeStopSet( indexInfo.stopWords );
+              stopSet = BigramStopFilter.makeStopSet( indexInfo.stopWords );
           
           // If we were told to create a clean index...
           if( clean ) {

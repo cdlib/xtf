@@ -56,7 +56,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.mark.SpanDocument;
+import org.apache.lucene.mark.ContextMarker;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -347,7 +347,7 @@ public class SearchTree extends LazyDocument
         // marking all terms would be really slow.
         //
         termMode = req.termMode;
-        req.termMode = Math.min(req.termMode, SpanDocument.MARK_CONTEXT_TERMS);
+        req.termMode = Math.min(req.termMode, ContextMarker.MARK_CONTEXT_TERMS);
 
         // Add a meta-query that restricts to this document alone. Besides
         // giving us only the hits we want, this also makes the query faster.
@@ -615,7 +615,7 @@ public class SearchTree extends LazyDocument
         // If we're only marking terms within hits and there are no hits in this
         // node, then we need do nothing more.
         //
-        if( termMode < SpanDocument.MARK_ALL_TERMS && hitStart < 0 )
+        if( termMode < ContextMarker.MARK_ALL_TERMS && hitStart < 0 )
             return origNode;
         
         // Okay, now scan every word. Use a fast tokenizer, since the Standard
@@ -709,8 +709,8 @@ public class SearchTree extends LazyDocument
             // If the token matches a query term, mark it.
             if( termMap != null && 
                 termMap.contains(mappedTerm) &&
-                (termMode == SpanDocument.MARK_ALL_TERMS ||
-                 (termMode >= SpanDocument.MARK_SPAN_TERMS && inHit)) &&
+                (termMode == ContextMarker.MARK_ALL_TERMS ||
+                 (termMode >= ContextMarker.MARK_SPAN_TERMS && inHit)) &&
                 (inHit || 
                  stopSet == null || 
                  !stopSet.contains(mappedTerm)) ) 

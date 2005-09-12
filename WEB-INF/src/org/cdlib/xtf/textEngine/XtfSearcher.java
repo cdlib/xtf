@@ -36,11 +36,11 @@ import java.io.InputStream;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.lucene.bigram.BigramQueryRewriter;
 import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.ngram.NgramQueryRewriter;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
@@ -159,7 +159,7 @@ public class XtfSearcher
         String stopWords = doc.get( "stopWords" );
         stopSet = null;
         if( stopWords != null && stopWords.length() > 0 )
-            stopSet = NgramQueryRewriter.makeStopSet( stopWords );
+            stopSet = BigramQueryRewriter.makeStopSet( stopWords );
         
         // If there's a plural map specified, load it.
         String pluralMapName = doc.get( "pluralMap" );

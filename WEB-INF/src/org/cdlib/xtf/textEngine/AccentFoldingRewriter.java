@@ -31,7 +31,6 @@ package org.cdlib.xtf.textEngine;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryRewriter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
@@ -47,7 +46,7 @@ import org.cdlib.xtf.util.CharMap;
  * 
  * @author Martin Haye
  */
-public class AccentFoldingRewriter extends QueryRewriter 
+public class AccentFoldingRewriter extends XtfQueryRewriter 
 {
   
   private CharMap accentMap;
@@ -78,7 +77,7 @@ public class AccentFoldingRewriter extends QueryRewriter
         return q;
     
     Term newTerm = new Term( t.field(), mapped );
-    return copyBoost( q, new SpanTermQuery(newTerm, q.getStopWords()) ); 
+    return copyBoost( q, new SpanTermQuery(newTerm, q.getTermLength()) ); 
   }
   
   /** 

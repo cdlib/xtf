@@ -1,0 +1,5 @@
+This directory contains two kinds of classes:
+
+(1) Code back-ported from the upcoming, but not yet completed, Lucene 1.9 subversion trunk. They are considered to be stable, and are needed to properly handle span queries on large indexes.
+
+(2) Minor changes to Lucene itself, to make it more extensible, with the hope that these changes will soon be incorporated into Lucene.

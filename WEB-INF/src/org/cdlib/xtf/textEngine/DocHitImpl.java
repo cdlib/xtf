@@ -34,9 +34,9 @@ import java.util.Enumeration;
 import java.util.Set;
 
 import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.mark.FieldSpans;
-import org.apache.lucene.mark.SpanDocument;
+import org.apache.lucene.search.spans.FieldSpans;
 import org.cdlib.xtf.util.AttribList;
 
 /**
@@ -117,11 +117,10 @@ public class DocHitImpl extends DocHit
     private void load()
     {
         // Read in our fields
-        SpanDocument spanDoc;
+        Document docContents;
         try {
             assert !snippetMaker.reader.isDeleted( doc );
-            spanDoc = new SpanDocument( snippetMaker.reader.document(doc),
-                                        fieldSpans );
+            docContents = snippetMaker.reader.document( doc );
         }
         catch( IOException e ) {
             throw new HitLoadException( e );
@@ -129,7 +128,7 @@ public class DocHitImpl extends DocHit
         
         // Record the ones of interest.
         metaData = new AttribList();
-        for( Enumeration e = spanDoc.fields(); e.hasMoreElements(); ) {
+        for( Enumeration e = docContents.fields(); e.hasMoreElements(); ) {
             Field f = (Field) e.nextElement();
             String name = f.name();
             String value = f.stringValue();
@@ -143,7 +142,7 @@ public class DocHitImpl extends DocHit
             else if( name.equals("recordNum") )
                 recordNum = Integer.parseInt( value );
             else if( !name.equals("docInfo") ) 
-                loadMetaField( name, value, spanDoc, metaData, f.isTokenized() );
+                loadMetaField( name, value, docContents, metaData, f.isTokenized() );
         }
         
         // We should have gotten at least the special fields.
@@ -164,14 +163,15 @@ public class DocHitImpl extends DocHit
      */
     private void loadMetaField( String name, 
                                 String value, 
-                                SpanDocument spanDoc, 
+                                Document docContents, 
                                 AttribList metaData,
                                 boolean isTokenized )
     {
         // First, mark up the value.
         String markedValue;
         if( isTokenized )
-            markedValue = snippetMaker.markField(spanDoc, name, value);
+            markedValue = snippetMaker.markField( docContents, fieldSpans, 
+                                                  name, value );
         else
             markedValue = value;
         

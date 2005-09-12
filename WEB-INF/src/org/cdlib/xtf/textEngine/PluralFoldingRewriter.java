@@ -31,7 +31,6 @@ package org.cdlib.xtf.textEngine;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryRewriter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.cdlib.xtf.util.WordMap;
@@ -46,7 +45,7 @@ import org.cdlib.xtf.util.WordMap;
  * 
  * @author Martin Haye
  */
-public class PluralFoldingRewriter extends QueryRewriter 
+public class PluralFoldingRewriter extends XtfQueryRewriter 
 {
   
   private WordMap pluralMap;
@@ -77,7 +76,7 @@ public class PluralFoldingRewriter extends QueryRewriter
         return q;
     
     Term newTerm = new Term( t.field(), mapped );
-    return copyBoost( q, new SpanTermQuery(newTerm, q.getStopWords()) ); 
+    return copyBoost( q, new SpanTermQuery(newTerm, q.getTermLength()) ); 
   }
   
 } // class PluralFoldingRewriter

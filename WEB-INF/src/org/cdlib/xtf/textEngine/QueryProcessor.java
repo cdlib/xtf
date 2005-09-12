@@ -37,7 +37,7 @@ import java.io.IOException;
 
 /**
  * Takes a QueryRequest, rewrites the queries if necessary to remove stop-
- * words and form n-grams, then consults the index(es), and produces a 
+ * words and form bi-grams, then consults the index(es), and produces a 
  * QueryResult.
  * 
  * @author Martin Haye

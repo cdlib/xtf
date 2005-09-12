@@ -39,12 +39,13 @@ import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.chunk.DocNumMap;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.mark.FieldSpans;
+import org.apache.lucene.mark.ContextMarker;
 import org.apache.lucene.mark.MarkCollector;
 import org.apache.lucene.mark.MarkPos;
-import org.apache.lucene.mark.SpanDocument;
 import org.apache.lucene.mark.WordIter;
+import org.apache.lucene.search.spans.FieldSpans;
 import org.apache.lucene.search.spans.Span;
 import org.cdlib.xtf.textIndexer.XTFTextAnalyzer;
 import org.cdlib.xtf.util.CharMap;
@@ -181,12 +182,12 @@ public class SnippetMaker
       final Snippet[] snippets = new Snippet[nSnippets];
       
       // Process all the marks as they come
-      SpanDocument.markField( 
+      ContextMarker.markField( 
           fieldSpans, 
           fieldName, 
           wordIter,
           getText ? maxContext : 0,
-          getText ? termMode : SpanDocument.MARK_NO_TERMS,
+          getText ? termMode : ContextMarker.MARK_NO_TERMS,
           stopSet, 
           new MarkCollector() 
           {
@@ -275,7 +276,8 @@ public class SnippetMaker
      * 
      * @return           Marked up text value.
      */
-    public String markField( SpanDocument doc, 
+    public String markField( Document doc,
+                             FieldSpans fieldSpans,
                              final String fieldName,
                              final String value )
     {
@@ -294,7 +296,7 @@ public class SnippetMaker
             new BoundedWordIter( value, stream, chunkOverlap );
         
         // Process all the marks as they come
-        doc.markField( fieldName, wordIter, maxContext, 
+        ContextMarker.markField( fieldSpans, fieldName, wordIter, maxContext, 
           termMode, stopSet, 
           new MarkCollector() 
           {
