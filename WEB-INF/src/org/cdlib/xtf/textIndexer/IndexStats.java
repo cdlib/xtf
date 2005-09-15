@@ -2,13 +2,11 @@ package org.cdlib.xtf.textIndexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.index.TermEnum;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
@@ -51,11 +49,6 @@ import org.cdlib.xtf.util.Trace;
 public class IndexStats 
 {
     
-  private static long totalDocs       = 0;
-  private static long totalChunks     = 0;
-  private static long totalLazySize   = 0;
-  private static long totalLuceneSize = 0;
-
   //////////////////////////////////////////////////////////////////////////////
   
   /** Main entry-point for the statistics gatherer. <br><br>
@@ -90,7 +83,7 @@ public class IndexStats
       boolean showUsage = false;
       
       // Regardless of whether we succeed or fail, say our name.
-      Trace.info( "IndexStats v" + 1.0 );
+      Trace.info( "IndexStats v" + 1.1 );
       Trace.info( "" );
       
       // Make sure the XTF_HOME environment variable is specified.
@@ -179,7 +172,7 @@ public class IndexStats
           } // if( showUsage )    
            
           try {
-                
+               
               // Say what index we're working on.
               Trace.info( "Index: \"" + cfgInfo.indexInfo.indexName +"\"" );
               Trace.tab();
@@ -205,23 +198,12 @@ public class IndexStats
               
               Trace.untab();
               
-              // Calculate the remaining statistics
+              // Calculate and print the remaining statistics
               Trace.info( "" );
               Trace.info( "Statistics..." );
               Trace.tab();
 
               calcStats( cfgInfo );
-              
-              // And print them out
-              Trace.info( "Total Documents     = " + totalDocs );
-              Trace.info( "Avg Chunks Per Doc  = " + 
-                          totalChunks / (totalDocs+1) );
-              Trace.info( "Lucene Index Size   = " + 
-                          printBig(totalLuceneSize) );
-              Trace.info( "Persistent Doc Size = " + 
-                          printBig(totalLazySize) );
-              Trace.info( "Total Index Size    = " + 
-                          printBig(totalLuceneSize + totalLazySize) );
               
               Trace.info( "" );
               
@@ -285,6 +267,9 @@ public class IndexStats
   
   {
     IndexInfo idxInfo = cfgInfo.indexInfo;
+    
+    DecimalFormat decFmt = (DecimalFormat) DecimalFormat.getInstance();
+    decFmt.setMaximumFractionDigits( 1 );
       
     // Try to open the index for reading. If we fail and throw, skip the 
     // index.
@@ -294,65 +279,34 @@ public class IndexStats
     File   idxFile = new File( idxPath );
     IndexReader indexReader = IndexReader.open( idxPath );
     
-    // Get a list of all the "header" chunks for documents in this
-    // index (i.e., documents with a "docInfo" field.)
-    //
-    TermQuery     docQuery = new TermQuery( new Term("docInfo", "1") );
+    // Give an estimate of the total number of documents.
+    long totalDocs = indexReader.docFreq( new Term("docInfo", "1") );
+    long totalChunks = indexReader.numDocs();
     
-    IndexSearcher indexSearcher = new IndexSearcher( indexReader );
-    Hits hits = indexSearcher.search( docQuery );
-    
-    // Step through each of the documents found.
-    for( int i = 0; i < hits.length(); i++ ) {
+    Trace.info( "Total Documents (Records)  = " + totalDocs );
+    Trace.info( "Total Chunks               = " + totalChunks );
+    if( indexReader.hasDeletions() )
+        Trace.more( Trace.info, 
+                    "  (total includes some deleted documents)" );
+    Trace.info( "Avg Chunks Per Doc/Rec     = " + 
+                decFmt.format((totalChunks+1) / (double)(totalDocs+1)) );
+
+    // Calculate the total number of files.
+    int totalFiles = 0;
+    TermEnum termEnum = indexReader.terms( new Term("key", "") );
+    do {
+        Term term = termEnum.term();
+        if( term == null || !term.field().equals("key") )
+            break;
+        totalFiles++;
+    } while (termEnum.next());
         
-        // Get the current document.
-        Document doc = indexReader.document( hits.id(i) );
-      
-        // Get the key, which contains the index name and the path from its
-        // source directory.
-        //
-        String key = doc.get( "key" );
-        assert key.indexOf(':') >= 0 : "Invalid index key - missing ':'";
-        String indexName = key.substring( 0, key.indexOf(':') );
-        String relPath   = key.substring( key.indexOf(':') + 1 );
-        
-        // Skip documents that aren't part of the index we want.
-        if( !indexName.equals(idxInfo.indexName) )
-            continue;
-        
-        // Track how many documents there are.
-        totalDocs++;
-        
-        // Track how many chunks there are.
-        try {
-            totalChunks += Integer.parseInt( doc.get("chunkCount") );
-        }
-        catch( NumberFormatException e ) {
-        }
-      
-        // Create a reference to the source XML document.
-        String sourceDir = Path.resolveRelOrAbs( cfgInfo.xtfHomePath, 
-                                                 idxInfo.sourcePath );
-        String currPath = Path.resolveRelOrAbs( sourceDir, relPath );
-        File   currFile = new File( currPath );
-        
-        // Also find the size of the lazy file, if any.
-        File lazyFile = 
-            IndexUtil.calcLazyPath( new File(cfgInfo.xtfHomePath),
-                                        idxInfo, 
-                                        currFile, 
-                                        false );
-        
-        if( lazyFile.canRead() )
-            totalLazySize += lazyFile.length();
-    
-    } // for( int i... )
-    
-    // Close up the index reader and searcher
-    indexSearcher.close();
-    indexReader.close();
-    
+    Trace.info( "Total Number of Src Files  = " + totalFiles );
+    Trace.info( "Avg Docs/Recs Per File     = " +
+        decFmt.format((totalDocs+1) / (double)(totalFiles+1)) );
+
     // Now calculate the size of the Lucene index files.
+    long totalLuceneSize = 0;
     if( idxFile.isDirectory() ) {
         
         String[] children = idxFile.list();
@@ -363,6 +317,79 @@ public class IndexStats
         }
     }
   
+    Trace.info( "Size of Lucene Index       = " + 
+                printBig(totalLuceneSize) );
+    
+    // Now calculate the size of the lazy files
+    termEnum = indexReader.terms( new Term("key", "") );
+    File xtfHomeFile = new File( cfgInfo.xtfHomePath );
+    long totalSrcSize = 0;
+    long totalLazySize = 0;
+    long filesDone = 0;
+    long prevPercent = 0;
+    do {
+        Term term = termEnum.term();
+        if( term == null || !term.field().equals("key") )
+            break;
+        
+        long percentDone = filesDone * 100 / totalFiles;
+        if( filesDone > 500 && percentDone >= (prevPercent+5) ) {
+            if( prevPercent == 0 )
+                Trace.info( "" );
+            Trace.more( Trace.info,
+                        "\r        (Calculating Source/Lazy File Sizes... " + 
+                            percentDone + "%)" );
+            prevPercent = percentDone;
+        }
+        filesDone++;
+        
+        // Get the key, which contains the index name and the path from its
+        // source directory.
+        //
+        String key = term.text();
+        assert key.indexOf(':') >= 0 : "Invalid index key - missing ':'";
+        String indexName = key.substring( 0, key.indexOf(':') );
+        String relPath   = key.substring( key.indexOf(':') + 1 );
+        
+        // Skip documents that aren't part of the index we want.
+        if( !indexName.equals(idxInfo.indexName) )
+            continue;
+        
+        // Create a reference to the source XML document.
+        String sourceDir = Path.resolveRelOrAbs( cfgInfo.xtfHomePath, 
+                                                 idxInfo.sourcePath );
+        String currPath = Path.resolveRelOrAbs( sourceDir, relPath );
+        File   currFile = new File( currPath ); 
+
+        // Add up the size of the source files
+        totalSrcSize += currFile.length();
+        
+        // Also add up the size of the lazy files.
+        File lazyFile = IndexUtil.calcLazyPath( xtfHomeFile,
+                                                idxInfo, 
+                                                currFile, 
+                                                false );
+        totalLazySize += lazyFile.length();
+    } while (termEnum.next());
+
+    if( prevPercent > 0 && prevPercent < 100 ) {
+        Trace.more( Trace.info, "\r        (Calculating Source/Lazy File Sizes... 100%)" );
+        Trace.info( "" );
+    }
+    
+    // Print out the total sizes.
+    Trace.info( "Size of Source Files       = " + printBig(totalSrcSize) );
+    Trace.info( "Size of Lazy Trees         = " + printBig(totalLazySize) );
+    Trace.info( "Total Index Size           = " + 
+                printBig(totalLuceneSize + totalLazySize) + 
+                "  (Lucene + Lazy)" );
+
+    // Close the term enumeration and reader.
+    termEnum.close();
+    termEnum = null;
+    indexReader.close();
+    indexReader = null;
+    
   } // calcStats()
   
   
