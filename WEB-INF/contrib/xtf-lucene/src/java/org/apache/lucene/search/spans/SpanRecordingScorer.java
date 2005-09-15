@@ -189,8 +189,7 @@ public class SpanRecordingScorer extends Scorer
   }
 
   public void recordSpans(int targetDoc, FieldSpans fieldSpans) {
-    assert nSpans > 0 : "A valid span hit should have at least one span!";
-    if( scoredDoc == targetDoc )
+    if( scoredDoc == targetDoc && totalDeduped > 0 )
         fieldSpans.recordSpans(field, totalDeduped, scoredSpans, terms);
   }
 
