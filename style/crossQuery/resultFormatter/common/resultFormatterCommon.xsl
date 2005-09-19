@@ -878,7 +878,14 @@
       <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
     </xsl:if>
     <xsl:if test="$brand">
-      <xsl:value-of select="concat('&amp;brand=',$brand)"/>
+      <xsl:choose>
+        <xsl:when test="ancestor-or-self::docHit/meta/relation[contains(.,'ucpress')]">
+          <xsl:value-of select="'&amp;brand=ucpress'"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="concat('&amp;brand=',$brand)"/>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
     
     <!-- Do I still need this? -->
