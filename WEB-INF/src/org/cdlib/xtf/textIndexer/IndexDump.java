@@ -31,6 +31,8 @@ package org.cdlib.xtf.textIndexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Vector;
 
 import org.apache.lucene.document.Document;
@@ -81,7 +83,10 @@ public class IndexDump
                        "\" does not exist or cannot be read." );
           return;
       }
-
+      
+      // Write output in UTF-8 format.
+      Writer out = new OutputStreamWriter( System.out, "UTF-8" );
+      
       // Process each index
       for(;;) {
         
@@ -175,7 +180,7 @@ public class IndexDump
           } // if( showUsage )    
            
           // Go for it.
-          dumpFields( cfgInfo, fieldNames );
+          dumpFields( cfgInfo, fieldNames, out );
         
       } // for(;;)
       
@@ -197,7 +202,7 @@ public class IndexDump
         t.printStackTrace( System.out );
         System.exit( 1 );
     }
-      
+    
     // Exit successfully.
     System.exit( 0 );
       
@@ -206,7 +211,9 @@ public class IndexDump
   
   //////////////////////////////////////////////////////////////////////////////
   
-  private static void dumpFields( IndexerConfig cfgInfo, Vector fieldVec )
+  private static void dumpFields( IndexerConfig cfgInfo, 
+                                  Vector        fieldVec,
+                                  Writer        out )
   
     throws IOException
   
@@ -251,16 +258,19 @@ public class IndexDump
         // If we got any values, print out all of them (even the empties.)
         if( gotAny ) {
             for( int j = 0; j < toPrint.size(); j++ ) {
-                System.out.print( (String) toPrint.get(j) );
-                System.out.print( "|" );
+                out.write( (String) toPrint.get(j) );
+                out.write( "|" );
             }
-            System.out.print( "\n" );
+            out.write( "\n" );
         }
     }
     
     // Close the term enumeration and reader.
     indexReader.close();
     indexReader = null;
+    
+    // Make sure all the output is displayed.
+    out.flush();
     
   } // dumpFields()
 
