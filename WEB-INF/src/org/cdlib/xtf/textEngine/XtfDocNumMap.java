@@ -82,7 +82,7 @@ public class XtfDocNumMap implements DocNumMap
         
     } // constructor
     
-    private void load()
+    private synchronized void load()
     {
         // If already loaded, don't do it again.
         if( docNums != null )
@@ -137,7 +137,7 @@ public class XtfDocNumMap implements DocNumMap
      * @param chunkNumber Chunk number to translate
      * @return Document index, or -1 if no match.
      */
-    public final int getDocNum( int chunkNumber )
+    public final synchronized int getDocNum( int chunkNumber )
     {
         // Do a binary search for the chunk
         scan( chunkNumber );
@@ -155,7 +155,7 @@ public class XtfDocNumMap implements DocNumMap
      * Given a document number, this method returns the number of its first
      * chunk.
      */
-    public final int getFirstChunk( int docNum )
+    public final synchronized int getFirstChunk( int docNum )
     {
         // Scan for the document
         scan( docNum );
