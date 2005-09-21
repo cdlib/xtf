@@ -69,8 +69,8 @@ public class BoostSet
    * to re-read the boost data.
    * 
    * @param indexReader  Index to correlate the data to
-   * @param docNumMap    Used to map chunk numbers to document numbers
    * @param inFile       Which file to read
+   * @param field        Field used to key boost values
    * @return             Group data for the specified field
    */
   public static BoostSet getCachedSet( IndexReader indexReader,
@@ -111,7 +111,8 @@ public class BoostSet
     return boostByDoc[docId];
   } // getBoost()
   
-  /** Do not construct directly; use {@link #getCachedSet(IndexReader, File)}
+  /** Do not construct directly; use 
+   *  {@link #getCachedSet(IndexReader, File, String)}
    *  instead. Constructs a BoostSet by reading a file containing document
    *  key -> boost factor mappings, and correlating it with the keys in the
    *  given index reader.

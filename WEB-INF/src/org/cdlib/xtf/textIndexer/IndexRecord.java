@@ -36,8 +36,8 @@ import org.xml.sax.InputSource;
 import org.cdlib.xtf.util.StructuredStore;
 
 /**
- * A single record within a {@link IndexSource}. Note that many source files have
- * only a one record, and that's okay.
+ * A single record within a {@link IndexSource}. Note that many source files 
+ * have only one record, and that's okay.
  *
  * @author Martin Haye
  */
@@ -50,7 +50,7 @@ public abstract class IndexRecord
   public abstract int recordNum();
   
   /** 
-   * Estimate of how much of the whole {@link IndexFile} will have been
+   * Estimate of how much of the whole {@link IndexSource} will have been
    * completed when this record is complete.
    */
   public abstract int percentDone();

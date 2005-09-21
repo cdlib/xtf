@@ -494,7 +494,7 @@ public class RegressTest
      * file.
      *
      * @param outFile       Where to write the results.
-     * @param result        Hits resulting from the query request
+     * @param tree          Tree to output from
      * @param displayStyle  Path of the resultFormatter stylesheet
      */
     protected void formatTree( File         outFile,

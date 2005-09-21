@@ -44,7 +44,6 @@ import org.cdlib.xtf.util.*;
 /** This class provides a single static {@link HTMLToString#convert(InputStream) convert() }
  *  method that converts an HTML file into an XML string that can be
  *  pre-filtered and added to a Lucene database by the 
- *  {@link XMLTextProcessor#parseText(SrcTextInfo) parseText() } method of the 
  *  {@link XMLTextProcessor } class. <br><br>
  * 
  *  Internally, the HTML to XML file conversion is performed by the jTidy

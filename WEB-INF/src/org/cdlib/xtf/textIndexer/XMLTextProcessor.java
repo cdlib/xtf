@@ -985,8 +985,7 @@ public class XMLTextProcessor extends DefaultHandler
   /** Process the list of files queued for indexing or reindexing. <br><br>
    * 
    *  This method iterates through the list of queued source text files,
-   *  calling the {@link XMLTextProcessor#processText(IndexSource, int) processText()}
-   *  method to (re)index the file as needed. <br><br>
+   *  (re)indexing the files as needed. <br><br>
    *
    *  @throws 
    *    IOException   Any I/O exceptions encountered when reading the source
@@ -1296,8 +1295,6 @@ public class XMLTextProcessor extends DefaultHandler
    *  actual text in the XML source document, "blurbifying" the text, breaking
    *  it up into overlapping chunks, and adding it to the Lucene index. <br><br>
    * 
-   *  @param file The XML source document to parse. <br><br>
-   * 
    *  @return  <code>0</code> - XML source file successfully parsed and indexed.
    *                            <br>
    *           <code>-1</code> - One or more errors encountered processing 
@@ -1383,8 +1380,6 @@ public class XMLTextProcessor extends DefaultHandler
    *  This method reads a stylesheet that should contain the xsl:key 
    *  declarations that will be used. It then generates each key and stores
    *  it in the lazy file.
-   * 
-   * @param file            The file being worked on.
    * 
    * @throws Exception      If anything goes awry.
    */

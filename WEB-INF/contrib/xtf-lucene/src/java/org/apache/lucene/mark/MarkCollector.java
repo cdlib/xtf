@@ -20,12 +20,12 @@ import org.apache.lucene.search.spans.Span;
 
 /**
  * Receives callbacks to mark terms, context start/end, and span start/end
- * by {@link SpanDocument#markField(String, MarkCollector)} and its cousins.
+ * notifications from {@link ContextMarker}.
  *
  * <p>Created: Dec 14, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: MarkCollector.java,v 1.1 2005-09-12 19:06:11 mhaye Exp $
+ * @version $Id: MarkCollector.java,v 1.2 2005-09-21 20:21:08 mhaye Exp $
  */
 public interface MarkCollector
 {

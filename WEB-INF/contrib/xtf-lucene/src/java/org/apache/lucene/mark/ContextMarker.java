@@ -32,7 +32,7 @@ import org.apache.lucene.search.spans.SpanPosComparator;
  * <p>Created: Dec 26, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: ContextMarker.java,v 1.1 2005-09-12 19:06:11 mhaye Exp $
+ * @version $Id: ContextMarker.java,v 1.2 2005-09-21 20:21:08 mhaye Exp $
  */
 public class ContextMarker {
   
@@ -78,7 +78,7 @@ public class ContextMarker {
   private Set stopSet;
 
   /** Whether to mark terms inside/outside hits, context, etc. See
-   *  {@link SpanDocument#MARK_SPAN_TERMS}, etc.
+   *  {@link #MARK_SPAN_TERMS}, etc.
    */
   private int termMode;
 

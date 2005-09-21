@@ -397,7 +397,8 @@ public class IndexUtil
    * a bug in the Apache Crimson parser.
    * 
    * @param inStream    Document stream to filter
-   * @param saxParser   Parser that will be used to parse the document
+   * @param applyCrimsonWorkaround true to apply the workaround for the
+   *                               8193-byte bug in the Crimson XML parser.
    * @param removeDoctypeDecl true to remove DOCTYPE declaration; false to
    *                          leave them alone.
    * 

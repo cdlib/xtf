@@ -156,7 +156,7 @@ public class DocHitImpl extends DocHit
      * 
      * @param name      Name of the field
      * @param value     Raw string value of the field
-     * @param spanDoc   Spans to use for marking
+     * @param docContents   Where to get spans from
      * @param metaData  Where to put the resulting data
      * @param isTokenized true if the field was tokenized and should be
      *                    marked.

@@ -167,7 +167,6 @@ public class SparseStringComparator implements SortComparatorSource {
      * Returns the value used to sort the given document.  The
      * object returned must implement the java.io.Serializable
      * interface.  This is used by multisearchers to determine how to collate results from their searchers.
-     * @see FieldDoc
      * @param i Document
      * @return Serializable object
      */

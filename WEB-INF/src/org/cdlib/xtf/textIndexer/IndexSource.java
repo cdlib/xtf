@@ -79,4 +79,4 @@ public abstract class IndexSource
   /** Obtain the next record from the file, or null if no more. */
   public abstract IndexRecord nextRecord() throws SAXException, IOException;
 
-} // class SrcTextInfo
+} // class IndexSource

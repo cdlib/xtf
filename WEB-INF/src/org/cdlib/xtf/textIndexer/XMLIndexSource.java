@@ -46,8 +46,7 @@ import org.xml.sax.SAXException;
 
 /**
  * Supplies a single file containing a single record to the 
- * {@link XMLTextProcessor}. Classes must supply the {@link #xmlSource()}
- * method depending on the kind of input data.
+ * {@link XMLTextProcessor}.
  *
  * @author Martin Haye
  */
