@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TEI.2 xmlns:xtf="http://cdlib.org/xtf" id="ft958009mm" xtf:hitCount="1" xtf:firstHit="1">
    <xtf:snippets totalHitCount="1" hitCount="1">
-      <xtf:snippet rank="1" hitNum="1">a Independência Total de Angola, the <xtf:hit>
+      <xtf:snippet rank="1" hitNum="1">para a Independência &lt;Total&gt; de &amp; Angola, the <xtf:hit>
             <xtf:term>U.S.</xtf:term>
-         </xtf:hit> - and South Africa-supported movement</xtf:snippet>
+         </xtf:hit> - and South Africa-supported</xtf:snippet>
    </xtf:snippets>
    <teiHeader type="text" status="new">
       <fileDesc>
@@ -178,7 +178,7 @@
                <label>UF</label>
                <item>Urban Foundation</item>
                <label>Unita</label>
-               <item xtf:hitCount="1" xtf:firstHit="1">Uniâo Nacional para a Independência Total de Angola, the <xtf:hit rank="1" hitNum="1" more="no">
+               <item xtf:hitCount="1" xtf:firstHit="1">Uniâo Nacional para a Independência &lt;Total&gt; de &amp; Angola, the <xtf:hit rank="1" hitNum="1" more="no">
                      <xtf:term>U.S.</xtf:term>
                   </xtf:hit>- and South Africa-supported movement led by Jonas Savimbi</item>
                <label>Uwusa</label>

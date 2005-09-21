@@ -2,8 +2,8 @@
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
    <docHit rank="1" file="doc7.xml" totalHits="0">
       <meta>
-         <title>Cormorants on the Run</title>
-         <creator>J.T. Ripper</creator>
+         <title>Cormorants &lt; on &gt; the Run</title>
+         <creator>J.T. &amp; Ripper</creator>
          <subject>
             <snippet rank="1">
                <hit>
