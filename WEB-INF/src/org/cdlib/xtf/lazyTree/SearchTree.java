@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import net.sf.saxon.om.ArrayIterator;
 import net.sf.saxon.om.Axis;
@@ -1071,6 +1072,29 @@ public class SearchTree extends LazyDocument
 
     } // createSnippetNode()
 
+    // Precompiled patterns for undoing entity expansion in snippets
+    private static final Pattern ampPattern = Pattern.compile( "&amp;" );
+    private static final Pattern ltPattern  = Pattern.compile( "&lt;" );
+    private static final Pattern gtPattern  = Pattern.compile( "&gt;" );
+    
+    /**
+     * Change entities back into normal text (entities are created inside
+     * snippets to differentiate them from normal tags.)
+     * 
+     * @param str   String to replace entities within
+     * @return      Modified string (or same string if no entities found).
+     */
+    private String undoEntities( String str )
+    {
+        if( str.indexOf("&amp;") >= 0 )
+            str = ampPattern.matcher(str).replaceAll("&");
+        if( str.indexOf("&lt;") >= 0 )
+            str = ltPattern.matcher(str).replaceAll("<");
+        if( str.indexOf("&gt;") >= 0 )
+            str = gtPattern.matcher(str).replaceAll(">");
+        return str;
+    } // undoEntities()
+    
     /**
      * Create the appropriate node(s) for text within a snippet, including
      * elements for any marked &lt;term&gt;s.
@@ -1097,6 +1121,7 @@ public class SearchTree extends LazyDocument
             // there isn't a marker).
             //
             String beforeText = text.substring( startPos, markerPos );
+            beforeText = undoEntities( beforeText );
             prev = addText( prev, beforeText, addAsChild );
             addAsChild = false;
 
@@ -1108,6 +1133,7 @@ public class SearchTree extends LazyDocument
             int termStart = text.indexOf( '>', markerPos ) + 1;
             int markEnd = text.indexOf( "</term>", markerPos );
             String termText = text.substring( termStart, markEnd );
+            termText = undoEntities( termText );
             prev = addElement( prev, termElementCode, 0, false );
             addText( prev, termText, true );
 

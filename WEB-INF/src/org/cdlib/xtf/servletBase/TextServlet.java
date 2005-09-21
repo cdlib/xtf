@@ -500,7 +500,23 @@ public abstract class TextServlet extends HttpServlet
                 buf.append( c );
                 continue;
             }
-                
+            
+            // Leave existing entities alone.
+            if( c == '&' ) {
+                int j;
+                for( j = i+1; j < s.length(); j++ ) {
+                    if( !Character.isLetterOrDigit(s.charAt(j)) )
+                        break;
+                }
+                if( j < s.length() && s.charAt(j) == ';' ) {
+                    while( i <= j )
+                        buf.append( s.charAt(i++) );
+                    i--;
+                    continue;
+                }
+            }
+            
+            // Translate special characters to known HTML entities     
             switch( c ) {
                 case '<':  buf.append( "&lt;" ); break;
                 case '>':  buf.append( "&gt;" ); break;
