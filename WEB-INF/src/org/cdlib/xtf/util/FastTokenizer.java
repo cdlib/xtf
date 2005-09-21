@@ -213,8 +213,6 @@ public class FastTokenizer extends Tokenizer
         source = str.toCharArray();
     }
     
-    private static int foo = 0;
-    
     /**
      * Retrieve the next token in the stream, or null if there are no more.
      */
