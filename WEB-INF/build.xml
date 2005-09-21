@@ -5,7 +5,9 @@
   </description>
 
   <!-- set global properties for this build -->
-  <property name="src"     location="src:contrib/xtf-lucene/src/java:backport/src/java"/>
+  <property name="src1"    location="src"/>
+  <property name="src2"    location="contrib/xtf-lucene/src/java"/>
+  <property name="src3"    location="backport/src/java"/>
   <property name="classes" location="classes"/>
   <property name="dist"    location="dist"/>
   <property name="lib"     location="lib"/>
@@ -29,10 +31,13 @@
            source="1.4" 
            debug="true"
            classpath="${libs}"
-           srcdir="${src}" 
            encoding="UTF-8"
            excludes="**/.sf/**/*,**/.cdl/**/*"
-           destdir="${classes}"/>
+           destdir="${classes}">
+      <src path="${src1}"/>
+      <src path="${src2}"/>
+      <src path="${src3}"/>
+    </javac>
   </target>
 	
   <target name="tokenizer" description="compile the XTF tokenizer">
@@ -120,18 +125,43 @@
         <include name="WEB-INF/build.xml"/>
         <include name="WEB-INF/web.xml"/>
         <include name="WEB-INF/lib/*.jar"/>
-        <exclude name="WEB-INF/lib/servlet.jet"/>
+        <exclude name="WEB-INF/lib/servlet.jar"/>
 
       </fileset>
     </copy>
 
     <!-- Now make the main distribution WAR file -->
-    <delete file="${dist}/xtf-dev-${DSTAMP}.war" quiet="true"/>
-    <jar jarfile="${dist}/xtf-dev-${DSTAMP}.war">
+    <delete file="${dist}/xtf-${DSTAMP}.war" quiet="true"/>
+    <jar jarfile="${dist}/xtf-${DSTAMP}.war">
       <fileset dir="build-tmp">
         <include name="**/*"/>
       </fileset>
     </jar>
+
+    <!-- Make a subset for the "core" distribution -->
+    <delete file="${dist}/xtf-core-${DSTAMP}.zip" quiet="true"/>
+    <zip destfile="${dist}/xtf-core-${DSTAMP}.zip">
+      <fileset dir="build-tmp">
+        <include name="bin/**/*"/>
+        <include name="WEB-INF/**/*"/>
+        <include name="INSTALL"/>
+        <include name="LICENSE*"/>
+        <include name="WebDocs/HTML/**/*"/>
+      </fileset>
+    </zip>
+
+    <!-- Make a subset for the "example" distribution -->
+    <delete file="${dist}/xtf-example-${DSTAMP}.zip" quiet="true"/>
+    <zip destfile="${dist}/xtf-example-${DSTAMP}.zip">
+      <fileset dir="build-tmp">
+        <include name="brand/**/*"/>
+        <include name="conf/**/*"/>
+        <include name="css/**/*"/>
+        <include name="icons/**/*"/>
+        <include name="profiles/**/*"/>
+        <include name="style/**/*"/>
+      </fileset>
+    </zip>
 
     <delete dir="build-tmp" quiet="true"/>
     <delete file="${dist}/xtf.jar" quiet="true"/>
@@ -151,7 +181,8 @@
       <tag name=".notes" description="Notes:"/>
       <tag name=".warnings" description="Warnings:"/>
       <tag name="todo" description="To Do:"/>
-      <packageset dir="${src}">
+
+      <packageset dir="${src1}">
         <include name="**"/>
         <exclude name="**/.sf/**"/>
         <exclude name="**/.cdl/**"/>
@@ -160,6 +191,18 @@
              we can't fix.
         -->
         <exclude name="**/org/cdlib/xtf/textIndexer/tokenizer/**"/>
+      </packageset>
+
+      <packageset dir="${src2}">
+        <include name="**"/>
+        <exclude name="**/.sf/**"/>
+        <exclude name="**/.cdl/**"/>
+      </packageset>
+
+      <packageset dir="${src3}">
+        <include name="**"/>
+        <exclude name="**/.sf/**"/>
+        <exclude name="**/.cdl/**"/>
       </packageset>
     </javadoc>
   </target>
