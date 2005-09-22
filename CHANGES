@@ -1,4 +1,4 @@
-Changes in 1.6.0-b1 (beta release)
+Changes in 1.6.0-beta1 (beta release)
 ===============================
 
 - Fixed caching problem that caused sort/group data to be reloaded on each query, rather than cached between queries as was intended.
