@@ -1,0 +1,43 @@
+Changes in 1.6.0-b1 (beta release)
+===============================
+
+- Fixed caching problem that caused sort/group data to be reloaded on each query, rather than cached between queries as was intended.
+
+- Fixed static variable problem that was causing the SRU and crossQuery servlets to conflict with each other.
+
+- Fixed multi-threading bug: when many simultaneous crossQuery threads tried to access the same index, they would sometimes corrupt each others' span results.
+
+- Fixed bug: for apps that use the QueryProcessor Java API, the hit count and score normalization were not being reset from one use to the next. This bug did not affect crossQuery or dynaXML, which make a new QueryProcessor for every request.
+
+- Fixed to avoid marking terms specified in a <not> query.
+
+- Fixed a bug causing the indexer to crash when tokenizing certain fields ending in "."
+
+- Fixed 'textIndexer' and 'indexStats' scripts to work properly under Microsoft Windows.
+
+- Fixed a bug in handling of '&', '<', and '>' in source documents: they were being double-escaped. For instance, '&' would become '&amp;amp' instead of '&amp;'.
+
+- Fixed a bug in handling of the XSLT 'previous::*' axis. The axis would operate incorrectly on lazy trees, essentially acting just like 'previous-sibling::*'.
+
+- The SRU servlet was completely broken, but is now working again.
+
+- Sample stylesheets now provide an option to reverse the order of sort-by-year.
+
+- Added a new feature (as yet undocumented) that allows stylesheets to call out to external command-line tools. Robustly handles XML input and output, and allows a timeout specification. See regress/CrossQuery/K-External for examples of how to use this facility.
+
+- Distribution now available as either a full distribution as before, or split into "core" and "example" pieces. The "core" piece is especially useful for existing users to upgrade the core while leaving all their stylesheets and configuration files intact.
+
+- Minor documentation corrections
+
+Changes in 1.5.1
+================
+
+- Now works again under Java 1.4 (was using Integer.valueOf(int), which is only present in Java 1.5) 
+
+- Corrected problem where dynaXML wouldn't run unless an index was present (tried to create lazy file in a directory that didn't exist yet.) 
+
+- Fixed textIndexer and indexStats scripts to allow spaces in the XTF_HOME path, and to properly switch between ":" classpath separation on Unix and ";" on Windows. 
+
+- crossQuery servlet now passes the time (in seconds) it took to parse and process the query to the resultFormatter stylesheet. Documetation reflects this. 
+
+- Installation procedures corrected and simplified. Please see new documentation for more details.
