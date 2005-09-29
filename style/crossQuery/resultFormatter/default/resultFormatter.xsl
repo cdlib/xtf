@@ -116,7 +116,24 @@
       </xsl:choose>
     </xsl:variable>
 
-    <xsl:variable name="modifyString" select="replace($queryString, '(smode=[A-Za-z0-9]*)', '$1-modify')"/>
+    <xsl:variable name="modifyString">
+      <xsl:choose>
+        <xsl:when test="contains($queryString, 'smode')">
+          <xsl:analyze-string select="$queryString" regex=".*(smode=[A-Za-z0-9]+).*">
+            <xsl:matching-substring>
+              <xsl:value-of select="regex-group(1)"/>
+              <xsl:value-of select="'-modify'"/>
+            </xsl:matching-substring>
+            <xsl:non-matching-substring>
+              <xsl:value-of select="."/>
+            </xsl:non-matching-substring>
+          </xsl:analyze-string>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="concat($queryString, 'smode=simple-modify')"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
 
     <html>
       <head>
