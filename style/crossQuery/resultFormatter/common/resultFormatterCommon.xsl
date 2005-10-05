@@ -761,9 +761,9 @@
       <xsl:variable name="pageStart" as="xs:integer" select="(($pageNum - 1) * $perPage) + 1"/>
 
       <!-- Individual Paging -->
-      <xsl:if test="($pageNum = 1) and ($pageStart != $startDoc)">
-        <xsl:variable name="prevPage" as="xs:integer" select="$startDoc - $docsPerPage"/>
-        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$prevPage}">Prev</a>
+      <xsl:if test="($pageNum = 1) and ($pageStart != $start)">
+        <xsl:variable name="prevPage" as="xs:integer" select="$start - $perPage"/>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;{$startName}={$prevPage}">Prev</a>
         <xsl:text>&#160;&#160;</xsl:text>
       </xsl:if>
       
@@ -799,14 +799,15 @@
       <!-- Paging by Blocks -->   
       <xsl:variable name="nextBlock" as="xs:integer" select="(($blockStart + $blockSize) * $perPage) - ($perPage - 1)"/>
       <xsl:if test="($pageNum = $showPages) and (($showPages * $perPage) &gt; $nextBlock)">
-        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$nextBlock}">...</a>
+        <xsl:text>&#160;&#160;</xsl:text>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;{$startName}={$nextBlock}">...</a>
       </xsl:if>
 
       <!-- Individual Paging -->      
-      <xsl:if test="($pageNum = $showPages) and ($pageStart != $startDoc)">
-        <xsl:variable name="nextPage" as="xs:integer" select="$startDoc + $docsPerPage"/>
+      <xsl:if test="($pageNum = $showPages) and ($pageStart != $start)">
+        <xsl:variable name="nextPage" as="xs:integer" select="$start + $perPage"/>
         <xsl:text>&#160;&#160;</xsl:text>
-        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$nextPage}">Next</a>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;{$startName}={$nextPage}">Next</a>
       </xsl:if>
 
     </xsl:for-each>
