@@ -63,6 +63,85 @@
     </sort-year>
     
   </xsl:template>
+
+  <!-- generate group fields -->
+  <xsl:template match="*" mode="group"> 
+    <xsl:variable name="name">
+      <xsl:choose>
+        <!-- To disambiguate types -->
+        <xsl:when test="name() = 'type'">
+          <xsl:value-of select="concat('group-',name(),'-',position())"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="concat('group-',name())"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <!-- Get rid of quotes -->
+    <xsl:variable name="value" select="replace(string(.), '&quot;', '')"/>
+    <xsl:element name="{$name}">
+      <xsl:attribute name="xtf:meta" select="'true'"/>
+      <xsl:attribute name="xtf:tokenize" select="'no'"/>
+      <xsl:choose>
+        <xsl:when test="normalize-space() = ''">
+          <xsl:value-of select="'1 EMPTY'"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$value"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:element>
+  </xsl:template>
+  
+  <!-- missing elements? -->
+  <xsl:template name="metaMissing">
+    <xsl:if test="not(title)">
+      <group-title xtf:meta="true" xtf:tokenize="no">1 MISSING</group-title>
+      <title xtf:meta="true">1 MISSING TITLE</title>
+    </xsl:if>
+    <xsl:if test="not(creator)">
+      <group-creator xtf:meta="true" xtf:tokenize="no">1 MISSING</group-creator>
+    </xsl:if>
+    <xsl:if test="not(subject)">
+      <group-subject xtf:meta="true" xtf:tokenize="no">1 MISSING</group-subject>
+    </xsl:if>
+    <xsl:if test="not(description)">
+      <group-description xtf:meta="true" xtf:tokenize="no">1 MISSING</group-description>
+    </xsl:if>
+    <xsl:if test="not(publisher)">
+      <group-publisher xtf:meta="true" xtf:tokenize="no">1 MISSING</group-publisher>
+    </xsl:if>
+    <xsl:if test="not(contributor)">
+      <group-contributor xtf:meta="true" xtf:tokenize="no">1 MISSING</group-contributor>
+    </xsl:if>
+    <xsl:if test="not(date)">
+      <group-date xtf:meta="true" xtf:tokenize="no">1 MISSING</group-date>
+    </xsl:if>
+    <xsl:if test="not(type)">
+      <group-type xtf:meta="true" xtf:tokenize="no">1 MISSING</group-type>
+    </xsl:if>
+    <xsl:if test="not(format)">
+      <group-format xtf:meta="true" xtf:tokenize="no">1 MISSING</group-format>
+    </xsl:if>
+    <xsl:if test="not(identifier)">
+      <group-identifier xtf:meta="true" xtf:tokenize="no">1 MISSING</group-identifier>
+    </xsl:if>
+    <xsl:if test="not(source)">
+      <group-source xtf:meta="true" xtf:tokenize="no">1 MISSING</group-source>
+    </xsl:if>
+    <xsl:if test="not(language)">
+      <group-language xtf:meta="true" xtf:tokenize="no">1 MISSING</group-language>
+    </xsl:if>
+    <xsl:if test="not(relation)">
+      <group-relation xtf:meta="true" xtf:tokenize="no">1 MISSING</group-relation>
+    </xsl:if>
+    <xsl:if test="not(coverage)">
+      <group-coverage xtf:meta="true" xtf:tokenize="no">1 MISSING</group-coverage>
+    </xsl:if>
+    <xsl:if test="not(rights)">
+      <group-rights xtf:meta="true" xtf:tokenize="no">1 MISSING</group-rights>
+    </xsl:if>
+  </xsl:template>    
   
 <!-- ====================================================================== -->
 <!-- Functions                                                              -->
