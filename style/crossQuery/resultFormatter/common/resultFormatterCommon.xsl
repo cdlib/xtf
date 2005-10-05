@@ -207,9 +207,9 @@
   <!-- Page Block Size -->
   <xsl:param name="blockSize" as="xs:integer" select="5"/>
   <!-- Maximum number of hits allowed -->
-  <xsl:param name="maxHits" as="xs:integer" select="1000"/>  
+  <xsl:param name="maxHits" as="xs:integer" select="100000"/>  
   <!-- Maximum Pages -->
-  <xsl:param name="maxPages" as="xs:integer" select="100"/>
+  <xsl:param name="maxPages" as="xs:integer" select="$maxHits div $docsPerPage"/>
 
   <!-- Path Parameters -->
   <xsl:param name="servlet.path"/>
@@ -219,6 +219,14 @@
   <xsl:param name="crossqueryPath" select="if (matches($servlet.path, 'org.cdlib.xtf.dynaXML.DynaXML')) then 'org.cdlib.xtf.crossQuery.CrossQuery' else 'search'"/>
   <xsl:param name="dynaxmlPath" select="if (matches($servlet.path, 'org.cdlib.xtf.crossQuery.CrossQuery')) then 'org.cdlib.xtf.dynaXML.DynaXML' else 'view'"/>
 
+  <!-- Grouping Parameters -->
+  <xsl:param name="facet"/>
+  <xsl:param name="group"/>
+  <xsl:param name="startGroup" as="xs:integer" select="1"/>
+  <xsl:param name="groupsPerPage" as="xs:integer" select="20"/>
+  <xsl:param name="sortGroupsBy"/>
+  <xsl:param name="sortDocsBy"/>
+  
   <!-- Query String -->
   <!-- grab url -->
   <xsl:param name="http.URL"/>
@@ -229,8 +237,8 @@
       '&amp;[0-9A-Za-z\-]+=$', '&amp;'), 
       '&amp;+', '&amp;'),
       '&amp;startDoc=[0-9]+', '')"/>
-  </xsl:param>
-
+  </xsl:param> 
+  
   <!-- Hidden Query String -->
 
   <xsl:template name="hidden.query">   
@@ -579,26 +587,59 @@
     
     <xsl:param name="object-type"/>
     
-    <xsl:variable name="totalDocs" as="xs:integer" select="@totalDocs"/>
+    <!-- Switch for group paging -->
+    <xsl:param name="groups"/>
+    
+    <xsl:variable name="total" as="xs:integer">
+      <xsl:choose>
+        <xsl:when test="$groups">
+          <xsl:value-of select="facet/@totalGroups"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="@totalDocs"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     
     <xsl:variable name="lastOnPage" as="xs:integer">
       <xsl:choose>
-        <xsl:when test="(($startDoc + $docsPerPage)-1) > $totalDocs">
-          <xsl:value-of select="$totalDocs"/>
+        <xsl:when test="$groups">
+          <xsl:choose>
+            <xsl:when test="(($startGroup + $groupsPerPage)-1) > $total">
+              <xsl:value-of select="$total"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="($startGroup + $groupsPerPage)-1"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="($startDoc + $docsPerPage)-1"/>
+          <xsl:choose>
+            <xsl:when test="(($startDoc + $docsPerPage)-1) > $total">
+              <xsl:value-of select="$total"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="($startDoc + $docsPerPage)-1"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>    
     
     <xsl:text> Displaying </xsl:text>
-    <xsl:value-of select="$startDoc"/>
+    <xsl:choose>
+      <xsl:when test="$groups">
+        <xsl:value-of select="$startGroup"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$startDoc"/>
+      </xsl:otherwise>
+    </xsl:choose>
     <xsl:text> - </xsl:text>
     <xsl:value-of select="$lastOnPage"/>
     <xsl:text> of </xsl:text>
     <strong>
-      <xsl:value-of select="@totalDocs"/>
+      <xsl:value-of select="$total"/>
     </strong>
     <xsl:text> </xsl:text>
     <xsl:value-of select="$object-type"/>
@@ -608,8 +649,63 @@
   <!-- Page Linking -->  
   <xsl:template name="pages">
     
-    <xsl:variable name="totalDocs" as="xs:integer" select="@totalDocs"/>
-    <xsl:variable name="nPages" as="xs:double" select="floor((($totalDocs+$docsPerPage)-1) div $docsPerPage)+1"/>
+    <!-- Switch for group paging -->
+    <xsl:param name="groups"/>
+    
+    <xsl:variable name="total" as="xs:integer">
+      <xsl:choose>
+        <xsl:when test="$groups">
+          <xsl:value-of select="facet/@totalGroups"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="@totalDocs"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    
+    <xsl:variable name="start" as="xs:integer">
+      <xsl:choose>
+        <xsl:when test="$groups">
+          <xsl:value-of select="$startGroup"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$startDoc"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    
+    <xsl:variable name="startName">
+      <xsl:choose>
+        <xsl:when test="$groups">
+          <xsl:value-of select="'startGroup'"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="'startDoc'"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    
+    <xsl:variable name="perPage" as="xs:integer">
+      <xsl:choose>
+        <xsl:when test="$groups">
+          <xsl:value-of select="$groupsPerPage"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$docsPerPage"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    
+    <xsl:variable name="nPages" as="xs:double">
+      <xsl:choose>
+        <xsl:when test="$groups">
+          <xsl:value-of select="floor((($total+$groupsPerPage)-1) div $groupsPerPage)+1"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="floor((($total+$perPage)-1) div $perPage)+1"/>
+        </xsl:otherwise>
+      </xsl:choose>      
+    </xsl:variable>
 
     <xsl:variable name="showPages" as="xs:integer">
       <xsl:choose>
@@ -622,7 +718,7 @@
       </xsl:choose>
     </xsl:variable>
     
-    <xsl:variable name="pageQueryString">
+    <!--<xsl:variable name="pageQueryString">
       <xsl:choose>
         <xsl:when test="$sort != ''">
           <xsl:value-of select="concat($queryString, '&amp;sort=', $sort)"/>
@@ -631,7 +727,18 @@
           <xsl:value-of select="$queryString"/>
         </xsl:otherwise>
       </xsl:choose>
-    </xsl:variable>
+    </xsl:variable>-->
+    
+    <xsl:variable name="pageQueryString">
+      <xsl:choose>
+        <xsl:when test="$groups">
+          <xsl:value-of select="replace(replace($queryString, '&amp;startGroup=[0-9]+', ''), '&amp;group=[0-9A-Za-z\-\+''%% ]+', '')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="replace($queryString, '&amp;startDoc=[0-9]+', '')"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>   
     
     <xsl:if test="$nPages &gt; 2">
       <xsl:text>Page: </xsl:text>
@@ -641,17 +748,17 @@
       <!-- Figure out which block you need to be in -->
       <xsl:variable name="blockStart" as="xs:integer">
         <xsl:choose>
-          <xsl:when test="$startDoc &lt;= ($docsPerPage * $blockSize)">
+          <xsl:when test="$start &lt;= ($perPage * $blockSize)">
             <xsl:value-of select="1"/>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:value-of select="((floor($startDoc div ($docsPerPage * $blockSize))) * $blockSize) + 1"/>
+            <xsl:value-of select="((floor($start div ($perPage * $blockSize))) * $blockSize) + 1"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
       <!-- Figure out what page we're on -->
       <xsl:variable name="pageNum" as="xs:integer" select="position()"/>
-      <xsl:variable name="pageStart" as="xs:integer" select="(($pageNum - 1) * $docsPerPage) + 1"/>
+      <xsl:variable name="pageStart" as="xs:integer" select="(($pageNum - 1) * $perPage) + 1"/>
 
       <!-- Individual Paging -->
       <xsl:if test="($pageNum = 1) and ($pageStart != $startDoc)">
@@ -661,10 +768,10 @@
       </xsl:if>
       
       <!-- Paging by Blocks -->
-      <xsl:variable name="prevBlock" as="xs:integer" select="(($blockStart - $blockSize) * $docsPerPage) - ($docsPerPage - 1)"/>
+      <xsl:variable name="prevBlock" as="xs:integer" select="(($blockStart - $blockSize) * $perPage) - ($perPage - 1)"/>
       <xsl:if test="($pageNum = 1) and ($prevBlock &gt;= 1)">
-        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$prevBlock}">...</a>
-        <xsl:text>&#160;</xsl:text>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;{$startName}={$prevBlock}">...</a>
+        <xsl:text>&#160;&#160;</xsl:text>
       </xsl:if>
                 
       <!-- If there are hits on the page, show it -->
@@ -672,15 +779,15 @@
                     (($nPages &gt; $pageNum) and ($nPages &gt; 2))">
         <xsl:choose>
           <!-- Make a hyperlink if it's not the page we're currently on. -->
-          <xsl:when test="($pageStart != $startDoc)">
-            <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$pageStart}">
+          <xsl:when test="($pageStart != $start)">
+            <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;{$startName}={$pageStart}">
               <xsl:value-of select="$pageNum"/>
             </a>
             <xsl:if test="$pageNum &lt; $showPages">
               <xsl:text>&#160;</xsl:text>
             </xsl:if>
           </xsl:when>
-          <xsl:when test="($pageStart = $startDoc)">
+          <xsl:when test="($pageStart = $start)">
             <xsl:value-of select="$pageNum"/>
             <xsl:if test="$pageNum &lt; $showPages">
               <xsl:text>&#160;</xsl:text>
@@ -690,9 +797,8 @@
       </xsl:if>
 
       <!-- Paging by Blocks -->   
-      <xsl:variable name="nextBlock" as="xs:integer" select="(($blockStart + $blockSize) * $docsPerPage) - ($docsPerPage - 1)"/>
-      <xsl:if test="($pageNum = $showPages) and (($showPages * $docsPerPage) &gt; $nextBlock)">
-        <!-- xsl:text>&#160;&#160;</xsl:text -->
+      <xsl:variable name="nextBlock" as="xs:integer" select="(($blockStart + $blockSize) * $perPage) - ($perPage - 1)"/>
+      <xsl:if test="($pageNum = $showPages) and (($showPages * $perPage) &gt; $nextBlock)">
         <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;startDoc={$nextBlock}">...</a>
       </xsl:if>
 
@@ -710,18 +816,18 @@
   <!-- ====================================================================== -->
   <!-- Subject Links                                                          -->
   <!-- ====================================================================== -->
-      
+
   <xsl:template match="subject">
-    <a href="{$xtfURL}{$crossqueryPath}?subject=%22{.}%22&amp;style={$style}&amp;smode={$smode}&amp;rmode={$rmode}&amp;brand={$brand}">
+    <a href="{$xtfURL}{$crossqueryPath}?subject=%22{.}%22&amp;style={$style}&amp;smode={$smode}&amp;rmode={$rmode}&amp;brand={$brand}&amp;facet={$facet}">
       <xsl:apply-templates/>
     </a>
     <xsl:if test="not(position() = last())">
       <xsl:text> | </xsl:text>
     </xsl:if>
   </xsl:template>
-   
+
   <!-- ====================================================================== -->
-  <!-- "More" Blocks                                                          -->
+  <!-- "More" Blocks                                                            -->
   <!-- ====================================================================== -->
       
   <xsl:template name="moreBlock">
@@ -767,7 +873,7 @@
   <!-- ====================================================================== -->
   <!-- Sort Options                                                           -->
   <!-- ====================================================================== -->
-   
+  
   <xsl:template name="sort.options">
     <select size="1" name="sort">
       <xsl:choose>
@@ -808,7 +914,7 @@
         </xsl:when>
       </xsl:choose>
     </select>
-  </xsl:template>
+  </xsl:template>  
     
   <!-- ====================================================================== -->
   <!-- Access Options                                                         -->
@@ -838,8 +944,19 @@
   <xsl:template name="dynaxml.url">
     
     <xsl:param name="fullark"/>
-    <xsl:variable name="ark" select="substring($fullark, string-length($fullark)-9)"/>
-    <xsl:variable name="subDir" select="substring($ark, 9, 2)"/>
+    
+    <xsl:variable name="docId">
+      <xsl:choose>
+        <xsl:when test="matches($fullark,'ark:')">
+          <xsl:value-of select="substring($fullark, string-length($fullark)-9)"/>
+        </xsl:when>
+        <!-- When you want to pass in a pre-created docId -->
+        <xsl:otherwise>
+          <xsl:value-of select="$fullark"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    
     <xsl:variable name="query">
       <xsl:choose>
         <xsl:when test="$keyword != ''">
@@ -848,10 +965,10 @@
         <xsl:otherwise>
           <xsl:value-of select="$text"/>
         </xsl:otherwise>
-      </xsl:choose>     
+      </xsl:choose>
     </xsl:variable>
     
-    <xsl:value-of select="concat($dynaxmlPath, '?docId=', $ark, '&amp;query=', replace($query, '&amp;', '%26'))"/>
+    <xsl:value-of select="concat($dynaxmlPath, '?docId=', $docId, '&amp;query=', replace($query, '&amp;', '%26'))"/>
     <!-- -join & -prox are mutually exclusive -->
     <xsl:choose>
       <xsl:when test="$text-prox">
@@ -889,16 +1006,6 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:if>
-    
-    <!-- Do I still need this? -->
-    <!--<xsl:choose>
-      <xsl:when test="ancestor::docHit/meta/relation[contains(.,'ucpress')]">
-        <xsl:value-of select="'&amp;brand=ucpress'"/>
-      </xsl:when>
-      <xsl:when test="ancestor::docHit/meta/relation[contains(.,'escholarship')]">
-        <xsl:value-of select="'&amp;brand=eschol'"/>
-      </xsl:when>
-    </xsl:choose>-->
     
   </xsl:template>
     
