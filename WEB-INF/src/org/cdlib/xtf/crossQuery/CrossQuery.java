@@ -135,8 +135,13 @@ public class CrossQuery extends TextServlet
             res.setContentType("text/html");
 
             // If in step mode, output the frameset and top frame...
-            if( stepSetup(req, res) )
+            String stepStr = stepSetup( req );
+            if( stepStr != null ) {
+                ServletOutputStream out = res.getOutputStream();
+                out.println( stepStr );
+                out.close();
                 return;
+            }
             
             // Output extended debugging info if requested.
             Trace.debug( "Processing request: " +
@@ -386,11 +391,10 @@ public class CrossQuery extends TextServlet
      * @param     req            The HTTP request (in)
      * @param     res            The HTTP response (out)
      * 
-     * @return true if in step setup phase, false to do normal processing
+     * @return A string to output if in step setup phase, null to do normal 
+     *         processing
      */
-    protected boolean stepSetup( HttpServletRequest  req, 
-                                 HttpServletResponse res )
-        throws IOException
+    protected String stepSetup( HttpServletRequest req ) throws IOException
     {
         String baseUrl = req.getRequestURL().toString();
         if( !baseUrl.startsWith("http") )
@@ -398,7 +402,7 @@ public class CrossQuery extends TextServlet
             
         String step = req.getParameter( "debugStep" );
         if( step == null || step.length() == 0 )
-            return false;
+            return null;
         
         // Output the frame set, with two frames: one for info, one for data.
         if( step.matches("^1$|^2$|^3$|^4$") ) 
@@ -406,8 +410,7 @@ public class CrossQuery extends TextServlet
             String urlA = baseUrl.replaceAll( "debugStep="+step, "debugStep="+step+"a" );
             String urlB = baseUrl.replaceAll( "debugStep="+step, "debugStep="+step+"b" );
             
-            ServletOutputStream out = res.getOutputStream();
-            out.println( 
+            return 
                 "<html>\n" +
                 "  <head>\n" +
                 "    <title>crossQuery Step " + step + "</title>\n" +
@@ -417,15 +420,14 @@ public class CrossQuery extends TextServlet
                 "    <frame title=\"Info\" name=\"info\" src=\"" + urlA + "\">\n" +
                 "    <frame title=\"Data\" name=\"data\" src=\"" + urlB + "\">\n" +
                 "  </frameset>\n" +
-                "</html>" );
-            return true;
+                "</html>";
         }
         
         // Output the contents of the info frame
         if( step.matches("^1a$|^2a$|^3a$|^4a$") ) {
-            ServletOutputStream out = res.getOutputStream();
             int stepNum = Integer.parseInt( step.substring(0,1) );
-            out.println( 
+            StringBuffer out = new StringBuffer();
+            out.append( 
                 "<html>\n" +
                 "  <body>\n" +
                 "    <b><i>crossQuery</b></i> Step " + stepNum + " &nbsp;&nbsp; " );
@@ -436,80 +438,82 @@ public class CrossQuery extends TextServlet
                 baseUrl.replaceAll( "debugStep="+step, "debugStep="+(stepNum+1) );
               
             if( stepNum > 1 )
-                out.println( "<a href=\"" + prevUrl + "\" target=\"_top\">[Previous]</a> " );
+                out.append( "<a href=\"" + prevUrl + "\" target=\"_top\">[Previous]</a> " );
             else
-                out.println( "<font color=\"#C0C0C0\">[Previous]</font> " );
+                out.append( "<font color=\"#C0C0C0\">[Previous]</font> " );
             
             if( stepNum < 4 )
-                out.println( "<a href=\"" + nextUrl + "\" target=\"_top\">[Next]</a>" );
+                out.append( "<a href=\"" + nextUrl + "\" target=\"_top\">[Next]</a>" );
             else
-                out.println( "<font color=\"#C0C0C0\">[Next]</font>" );
+                out.append( "<font color=\"#C0C0C0\">[Next]</font>" );
             
-            out.println(
+            out.append(
                 "    <table cellspacing=\"12\" cellpadding=\"0\">\n" +
                 "      <tr>\n" );
             
             for( int i = 1; i <= 4; i++ ) {
                 if( i == stepNum )
-                    out.print( "<td bgcolor=\"#E0E0E0\"><b>" );
+                    out.append( "<td bgcolor=\"#E0E0E0\"><b>" );
                 else
-                    out.print( "<td>" );
+                    out.append( "<td>" );
 
                 if( i != stepNum ) {
                     String link = baseUrl.replaceAll( "debugStep="+step, "debugStep="+i );
-                    out.print( "<a href=\"" + link + "\" target=\"_top\">" );
+                    out.append( "<a href=\"" + link + "\" target=\"_top\">" );
                 }
-                out.print( "Step " + i + "<br>" );
+                out.append( "Step " + i + "<br>" );
                 if( i != stepNum )
-                    out.print( "</a>" );
+                    out.append( "</a>" );
 
                 switch( i ) {
-                case 1: out.print( "URL parameters" ); break;
-                case 2: out.print( "XML query" ); break;
-                case 3: out.print( "Raw results" ); break;
-                case 4: out.print( "Formatted results" ); break;
+                case 1: out.append( "URL parameters" ); break;
+                case 2: out.append( "XML query" ); break;
+                case 3: out.append( "Raw results" ); break;
+                case 4: out.append( "Formatted results" ); break;
                 }
                 
-                out.print( "</td>" );
+                out.append( "</td>" );
                 if( i < 4 ) {
-                    out.print( "<td>--> " );
+                    out.append( "<td>--> " );
                     switch( i ) {
-                    case 1: out.print( "Query Parser" ); break;
-                    case 2: out.print( "Text Engine" ); break;
-                    case 3: out.print( "Result Formatter" ); break;
+                    case 1: out.append( "Query Parser" ); break;
+                    case 2: out.append( "Text Engine" ); break;
+                    case 3: out.append( "Result Formatter" ); break;
                     }
-                    out.print( " --></td>" );
+                    out.append( " --></td>" );
                 }
                 
                 if( i == stepNum )
-                    out.print( "</b>" );
-                out.print( "</td>\n" );
+                    out.append( "</b>" );
+                out.append( "</td>\n" );
             }
             
-            out.println(
+            out.append(
                 "      </tr>\n" +
                 "    </table>\n" );
             
             switch( stepNum ) {
-            case 1: out.println( 
+            case 1: out.append( 
                         "In step 1, parameters specified in the URL are " +
                         "translated to an XML <code>&lt;parameters&gt;</code> " +
                         "block (shown below). Next, this will be fed to the " +
                         "<b>Query Parser</b> stylesheet, <code><b>" +
                         config.queryParserSheet + "</b></code>. The result " +
                         "should be an XML query in " +
-                        "<a href=\"" + nextUrl + "\" target=\"_top\">step 2</a>" );
+                        "<a href=\"" + nextUrl + "\" target=\"_top\">step 2</a>." );
                     break;
-            case 2: out.println( 
+            case 2: out.append( 
                         "Step 2: The URL parameters from " +
                         "<a href=\"" + prevUrl + "\" target=\"_top\">step 1</a> " +
                         "have now been translated by the <b>Query Parser</b> stylesheet " +
                         "into an XML query, shown below. Next, XTF's <b>Text Engine</b> " +
                         "will process this query to produce the raw search " +
                         "results in " +
-                        "<a href=\"" + nextUrl + "\" target=\"_top\">step 3</a>." );
+                        "<a href=\"" + nextUrl + "\" target=\"_top\">step 3</a>. " +
+                        "Note that the final <b>Result Formatter</b> stylesheet " +
+                        "(for step 4) is specified here as well." );
                     break;
-            case 3: out.println( 
+            case 3: out.append( 
                         "In step 3, XTF's <b>Text Engine</b> has processed " +
                         "the XML query from " +
                         "<a href=\"" + prevUrl + "\" target=\"_top\">step 2</a> " +
@@ -518,20 +522,21 @@ public class CrossQuery extends TextServlet
                         "to produce the final HTML page in " +
                         "<a href=\"" + nextUrl + "\" target=\"_top\">step 4</a>." );
                         break;
-            case 4: out.println( 
+            case 4: out.append( 
                         "Step 4 shows the final HTML result produced by " +
                         "feeding the raw search results from " +
                         "<a href=\"" + prevUrl + "\" target=\"_top\">step 3</a> " +
                         "into the <b>Result Formatter</b> stylesheet." );
             }
             
-            out.println(
+            out.append(
                 "  </body>\n" +
                 "</html>" );
-            return true;
+            
+            return out.toString();
         }
         
-        return false;
+        return null;
     } // stepSetup()
     
 } // class CrossQuery

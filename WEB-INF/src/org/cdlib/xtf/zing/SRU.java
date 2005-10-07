@@ -100,9 +100,24 @@ public class SRU extends CrossQuery
         XMLFormatter fmt = new XMLFormatter();
         tokenizeParams( attribs, fmt );
 
+        // If in step 1, just output the parameter block.
+        String step = req.getParameter( "debugStep" );
+        if( "1b".equals(step) ) {
+            res.setContentType("text/xml");
+            res.getOutputStream().println( fmt.toString() );
+            return;
+        }
+        
         // Generate a query request document from the queryParser stylesheet.
         NodeInfo queryReqDoc = (NodeInfo) generateQueryReq( req, attribs, fmt.toNode() );
         
+        // If we're on step 2b, simply output the query request.
+        if( "2b".equals(step) ) {
+            res.setContentType("text/xml");
+            res.getOutputStream().println( XMLWriter.toString(queryReqDoc) );
+            return;
+        }
+
         // If it actually contains an SRW explain response, or an SRW
         // diagnostic, simply output that directly.
         //
@@ -130,6 +145,25 @@ public class SRU extends CrossQuery
     }
     
     
+    /** Add additional stuff to the usual debug step mode */
+    protected String stepSetup( HttpServletRequest req ) throws IOException
+    {
+        String stepStr = super.stepSetup( req );
+        if( stepStr != null ) {
+            stepStr = stepStr.replaceAll( "crossQuery", "SRU" );
+            String step = req.getParameter( "debugStep" );
+            if( step.equals("1a") )
+                stepStr = stepStr.replaceAll( "Next,",
+                    "Note that the 'query' parameter has been " +
+                    "parsed as CQL. Next," ); 
+            stepStr = stepStr.replaceAll( "final HTML", "final SRW-formatted XML" );
+            stepStr = stepStr.replaceAll( "XML page", "XML result" );
+        }
+
+        return stepStr;
+    }
+    
+
     /**
      * Scans the node and its descendants for an SRW 'explainResponse' or
      * 'diagnostics'. If found, it is output directly.
