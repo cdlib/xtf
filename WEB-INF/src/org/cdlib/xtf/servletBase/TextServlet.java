@@ -670,6 +670,8 @@ public abstract class TextServlet extends HttpServlet
                 continue;
             if( att.key.equals("raw") )
                 continue;
+            if( att.key.equals("debugStep") )
+                continue;
             
             // Don't tokenize empty attributes.
             if( att.value == null || att.value.length() == 0 )
