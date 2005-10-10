@@ -35,6 +35,7 @@ import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.WeakHashMap;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -279,6 +280,28 @@ public class Trace
 
   //////////////////////////////////////////////////////////////////////////////
   
+  /** Retrieve the thread identifier that is printed for the current thread.
+   */
+  public static String getCurrentThreadId() {
+      return getThreadTrace().threadId;
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  
+  /** Retrieve the thread identifier that is printed for messages from the 
+   *  specified thread.
+   */
+  public static String getThreadId( Thread thread ) {
+      Trace trace = (Trace) threadTraces.get( thread );
+      if( trace == null )
+          return null;
+      return trace.threadId;
+  }
+  
+  
+  //////////////////////////////////////////////////////////////////////////////
+  
   /** Output a message at the 'error' level. If the output level established
    *  by {@link #setOutputLevel(int)} is {@link #errors}, {@link #warnings},
    *  {@link #info}, or {@link #debug}, the message will be printed. If
@@ -464,10 +487,10 @@ public class Trace
    */
   private static Trace getThreadTrace() {
 
-      Trace trace = (Trace) threadTrace.get();
+      Trace trace = (Trace) threadTraces.get( Thread.currentThread() );
       if( trace == null ) {
           trace = new Trace();
-          threadTrace.set( trace );
+          threadTraces.put( Thread.currentThread(), trace );
       }
       return trace;
       
@@ -561,7 +584,7 @@ public class Trace
   } // output()
   
   /** Trace instance for the current thread */
-  private static final ThreadLocal threadTrace = new ThreadLocal();
+  private static final WeakHashMap threadTraces = new WeakHashMap();
   
   /** Trace instance that last wrote to the output stream */
   private static Trace prevTrace = null;
