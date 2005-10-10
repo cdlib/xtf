@@ -836,13 +836,13 @@
     <xsl:param name="block"/>    
     <xsl:param name="identifier"/>
     <xsl:variable name="string" select="normalize-space(string($block))"/>
-    <xsl:variable name="hideString" select="replace($queryString, 'rmode=[A-Za-z0-9]*', 'rmode=hideDescrip')"/>
+    <xsl:variable name="hideString" select="replace($queryString, 'rmode=[A-Za-z0-9]*', '')"/>
 
     <xsl:choose>
       <xsl:when test="(contains($rmode, 'showDescrip')) and (matches($string , '.{500}'))">
         <xsl:apply-templates select="$block"/>
         <xsl:text>&#160;&#160;&#160;</xsl:text>
-        <a href="{$xtfURL}{$crossqueryPath}?{$hideString}&amp;startDoc={$startDoc}#{$identifier}">[brief]</a>         
+        <a href="{$xtfURL}{$crossqueryPath}?{$hideString}&amp;startDoc={$startDoc}&amp;rmode=hideDescrip#{$identifier}">[brief]</a>         
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates select="$block" mode="crop">
@@ -857,13 +857,13 @@
     
     <xsl:param name="identifier"/>
     <xsl:variable name="string" select="normalize-space(string(.))"/>   
-    <xsl:variable name="moreString" select="replace($queryString, 'rmode=[A-Za-z0-9]*', 'rmode=showDescrip')"/>
+    <xsl:variable name="moreString" select="replace($queryString, 'rmode=[A-Za-z0-9]*', '')"/>
     
     <xsl:choose>
       <xsl:when test="matches($string , '.{300}')">
         <xsl:value-of select="replace($string, '(.{300}).+', '$1')"/>
         <xsl:text> . . . </xsl:text>
-        <a href="{$xtfURL}{$crossqueryPath}?{$moreString}&amp;startDoc={$startDoc}#{$identifier}">[more]</a>  
+        <a href="{$xtfURL}{$crossqueryPath}?{$moreString}&amp;startDoc={$startDoc}&amp;rmode=showDescrip#{$identifier}">[more]</a>  
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates/>
