@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +66,7 @@ import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.ThreadWatcher;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLFormatter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
@@ -78,6 +80,16 @@ public abstract class TextServlet extends HttpServlet
 {
     /** Caches stylesheets (based on their URL) */
     public StylesheetCache stylesheetCache;
+    
+    /** 
+     * Amount of time (in milliseconds) that a request is allowed to run
+     * before we consider it a possible "runaway" and start logging warning
+     * messages. Default: 10 seconds
+     */
+    public long runawayTime = 10*1000;
+    
+    /** Allow extra time for the first request to complete */ 
+    private static boolean firstRequest = true;
 
     /** Context useful for mapping partial paths to full paths */
     private ServletContext staticContext;
@@ -258,6 +270,35 @@ public abstract class TextServlet extends HttpServlet
             isInitted = true;
         }
     } // firstTimeInit()
+    
+
+    /**
+     * General service method. We set a watch on each request in case it
+     * becomes a "runaway".
+     */
+    protected void service( HttpServletRequest req, 
+                            HttpServletResponse res )
+        throws ServletException, IOException
+    {
+        try {
+            String descrip = req.getRequestURL().toString();
+            if( descrip.indexOf('?') < 0 && req.getQueryString() != null )
+                descrip += "?" + req.getQueryString();
+            
+            long time = runawayTime;
+            if( firstRequest ) {
+                time *= 2;
+                firstRequest = false;
+            }
+            
+            ThreadWatcher.beginWatch( descrip, time );
+            super.service( req, res );
+        }
+        finally {
+            ThreadWatcher.endWatch();
+        }
+        
+    } // service()
     
     
     /**

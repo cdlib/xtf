@@ -136,8 +136,7 @@ public class FakeServletRequest implements HttpServletRequest
   }
   public String getMethod()
   {
-    assert false;
-    return null;
+    return "GET";
   }
   public String getPathInfo()
   {
