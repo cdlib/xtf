@@ -355,7 +355,11 @@ public class LazyKeyManager extends KeyManager {
     } // calcIndexName()
 
     /**
-     * Build the index for a particular document for a named key
+     * Build the index for a particular document for a named key.
+     * 
+     * This method is *NOT* synchronized, because synchronization is handled
+     * at the level of the caller.
+     * 
      * @param fingerprint The fingerprint of the name of the required key
      * @param doc The source document in question
      * @param context The dynamic context
@@ -364,7 +368,7 @@ public class LazyKeyManager extends KeyManager {
      *         value onto an ArrayList of nodes.
      */
 
-    private synchronized Object buildIndex(int fingerprint,
+    private Object buildIndex(int fingerprint,
                                            int itemType,
                                            DocumentInfo doc,
                                            XPathContext context) throws XPathException {
@@ -695,9 +699,8 @@ public class LazyKeyManager extends KeyManager {
             // when key indexes are being built. We serialize to guarantee
             // that the same key doesn't get built twice.
             //
-            String keyName = context.getController().getNamePool().
-                                            getDisplayName(fingerprint);
-            synchronized( keyName.intern() )
+            String docName = doc.getSystemId();
+            synchronized( docName.intern() )
             {
                 indexObject = getIndex(doc, fingerprint, itemType);
                 if( indexObject == null ) {

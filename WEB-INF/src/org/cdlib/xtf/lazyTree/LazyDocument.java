@@ -314,8 +314,12 @@ public class LazyDocument extends ParentNodeImpl
             writer.put( key, buf ); 
         } // for iter
             
-        // Now write out the full hash.
-        writer.outputTo( mainStore.createSubStore(indexName) );
+        // Now write out the full hash. Be careful to avoid writing two files
+        // at the same time.
+        //
+        synchronized( mainStore ) {
+            writer.outputTo( mainStore.createSubStore(indexName) );
+        }
     } // putIndex()
     
     /**
@@ -329,8 +333,10 @@ public class LazyDocument extends ParentNodeImpl
     public DiskHashReader getIndex( String indexName )
     {
         try {
-            SubStoreReader indexFile = mainStore.openSubStore( indexName );
-            return new DiskHashReader( indexFile );
+            synchronized( mainStore ) {
+                SubStoreReader indexFile = mainStore.openSubStore( indexName );
+                return new DiskHashReader( indexFile );
+            }
         }
         catch( Exception e ) {
             return null;
