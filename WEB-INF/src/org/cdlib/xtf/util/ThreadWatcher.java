@@ -154,7 +154,7 @@ public class ThreadWatcher
         while( true ) 
         {
             // Wait a while
-            Thread.sleep( 1000 );
+            Thread.sleep( 5100 );
             
             // Check for and count runaways
             synchronized( beingWatched )
@@ -172,21 +172,16 @@ public class ThreadWatcher
                         continue;
                     }
                     
-                    // Mark this as a potential runaway, and check it again
-                    // in 5 seconds (or the specified max time, whichever
-                    // is less.)
-                    //
+                    // Mark this as a potential runaway, and mark it to be
+                    // printed below.
                     e.runaway = true;
                     ++nRunaways;
-                    long nextTime = Math.min( 5000, e.maxTime );
-                    e.nextCheckTime = curTime + nextTime;
-                    
-                    // Mark it to be printed below.
                     e.needPrint = true;
                 } // while iter
 
                 // Now print out those that need it.
                 int count = 0;
+                curTime = System.currentTimeMillis();
                 iter = beingWatched.values().iterator();
                 while( iter.hasNext() ) 
                 {
@@ -196,7 +191,7 @@ public class ThreadWatcher
                     
                     if( !e.needPrint )
                         continue;
-
+                    
                     // Report it
                     String id = Trace.getThreadId(e.thread);
                     if( id == null )
@@ -229,6 +224,23 @@ public class ThreadWatcher
                     } 
                     catch( Exception exc ) { }
                 } // while iter
+                
+                // Finally, reschedule each thread we printed.
+                curTime = System.currentTimeMillis();
+                iter = beingWatched.values().iterator();
+                while( iter.hasNext() ) 
+                {
+                    Entry e = (Entry) iter.next();
+                    if( !e.needPrint )
+                        continue;
+                    
+                    // Don't print twice.
+                    e.needPrint = false;
+
+                    // Reschedule this one.
+                    e.nextCheckTime = curTime + e.maxTime;
+                } // while iter
+
             } // synchronized
         } // while true
     } // try
