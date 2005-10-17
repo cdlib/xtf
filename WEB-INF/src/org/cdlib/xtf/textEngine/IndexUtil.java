@@ -188,8 +188,10 @@ public class IndexUtil
     File lazyFile = new File(lazyPath);
     
     // If we've been asked to create the directory, do it now.
-    if( createDir )
-        Path.createPath( lazyFile.getParentFile().toString() );
+    if( createDir ) {
+        if( !Path.createPath(lazyFile.getParentFile().toString()) )
+            throw new IOException( "Error creating lazy file path" );
+    }
 
     // And we're done.
     return lazyFile;
