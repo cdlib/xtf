@@ -148,8 +148,13 @@ public class IdxTreeOptimizer
                                                    new StandardAnalyzer(), 
                                                    false );
         
-        // Don't use compound files, since they can't be added to later.
-        indexWriter.setUseCompoundFile( false );
+        // Previously we were paranoid about using compound files, on the
+        // mistaken assumption that indexes could not be modified. This is
+        // not true... the modifications simply take place at the next merge,
+        // which is always the case in Lucene (compound or not.)
+        //
+        // Thus, do not do the following:
+        // NO NO NO: indexWriter.setUseCompoundFile( false );
         
         // Optimize the index.
         indexWriter.optimize();
