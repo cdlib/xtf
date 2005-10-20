@@ -43,7 +43,6 @@ import org.apache.lucene.chunk.SpanChunkedNotQuery;
 import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.chunk.SparseStringComparator;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.limit.LimIndexReader;
 import org.apache.lucene.search.FieldSortedHitQueue;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RecordingSearcher;
@@ -162,7 +161,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         // (because we still need it to check periodically if the thread 
         // should kill itself.)
         //
-        IndexReader limReader = new LimIndexReader( reader, 
+        IndexReader limReader = new XtfLimIndexReader( reader, 
             (req.workLimit > 0) ? req.workLimit : Integer.MAX_VALUE );
         
         // Translate -1 maxDocs to "essentially all"
