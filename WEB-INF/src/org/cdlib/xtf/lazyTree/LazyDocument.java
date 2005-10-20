@@ -29,6 +29,7 @@ import org.cdlib.xtf.util.PackedByteBuf;
 import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.SubStoreReader;
 import org.cdlib.xtf.util.SubStoreWriter;
+import org.cdlib.xtf.util.ThreadWatcher;
 import org.cdlib.xtf.util.Trace;
 
 /**
@@ -138,6 +139,13 @@ public class LazyDocument extends ParentNodeImpl
     /** Notified of profile-related events */
     private ProfilingListener profileListener;
     
+    /** Counter to govern periodic checking for thread time limit */
+    private int killCheckCounter = 0;
+    
+    /** 
+     * Construct a new (empty) document. Should call 
+     * {@link #init(NamePool, StructuredStore)} afterward. 
+     */
     public LazyDocument() {
         super( null );
     }
@@ -526,6 +534,15 @@ public class LazyDocument extends ParentNodeImpl
      */
     protected NodeImpl checkCache( int num ) 
     {
+      // Every once in a while, check if our thread has exceeded its time
+      // limit and should kill itself.
+      //
+      if( killCheckCounter++ > 1000 ) {
+          killCheckCounter = 0;
+          if( ThreadWatcher.shouldDie(Thread.currentThread()) )
+              throw new RuntimeException( "Runaway request - time limit exceeded" );
+      }
+      
       // Do we have a reference in the cache? If not, return. And if it's a
       // strong reference to a node, return it.
       //
