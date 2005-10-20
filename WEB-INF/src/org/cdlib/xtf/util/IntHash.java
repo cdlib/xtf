@@ -38,8 +38,9 @@ package org.cdlib.xtf.util;
  */
 public class IntHash
 {
-    private final int size;
+    private final int hashSize;
     private final Ent[] ents;
+    private int curSize;
 
     /**
      * Create the hash table that can comfortably hold the specified number
@@ -48,10 +49,11 @@ public class IntHash
      * 
      * @param size  Max # of entries
      */
-    public IntHash( int size )
+    public IntHash( int maxSize )
     {
-        this.size = Prime.findAfter( size*2 );
-        ents = new Ent[size];
+        this.hashSize = Prime.findAfter( maxSize*2 );
+        ents = new Ent[hashSize];
+        curSize = 0;
     } // constructor
     
     
@@ -62,15 +64,18 @@ public class IntHash
      */
     public void put( int key, Object val )
     {
-        int bucket = key % size;
+        int bucket = key % hashSize;
         
         // Is there already an entry for this key?
         Ent e;
+        int count = 0;
         for( e = ents[bucket]; e != null; e = e.next ) {
             if( key == e.key ) {
                 e.val = val;
                 return;
             }
+            count++;
+            assert count < 10;
         } // for e
         
         // Okay, make a new entry
@@ -81,6 +86,9 @@ public class IntHash
         // And link it in.
         e.next = ents[bucket];
         ents[bucket] = e;
+        
+        // All done.
+        ++curSize;
     } // put()
     
    
@@ -89,7 +97,7 @@ public class IntHash
      */
     public boolean contains( int key )
     {
-        for( Ent e = ents[key%size]; e != null; e = e.next )
+        for( Ent e = ents[key%hashSize]; e != null; e = e.next )
             if( key == e.key )
                 return true;
         return false;
@@ -104,11 +112,18 @@ public class IntHash
      */
     public Object get( int key )
     {
-        for( Ent e = ents[key%size]; e != null; e = e.next )
+        for( Ent e = ents[key%hashSize]; e != null; e = e.next )
             if( key == e.key )
                 return e.val;
         return null;
     } // get()
+    
+    
+    /** Tells how many entries are currently in the hash table */
+    public int size() 
+    {
+        return curSize;
+    } // size()
     
     
     /**
@@ -134,6 +149,7 @@ public class IntHash
             assert hash.contains(100);
             assert !hash.contains(111);
             assert hash.get(100).equals("hello");
+            assert hash.size() == 1;
             
             hash.put( 200, "foo" );
             hash.put( 211, "bar" );
@@ -142,6 +158,7 @@ public class IntHash
             assert hash.contains(211);
             assert !hash.contains(111);
             assert !hash.contains(212);
+            assert hash.size() == 3;
             
             assert hash.get(100).equals("hello");
             assert hash.get(200).equals("foo");
