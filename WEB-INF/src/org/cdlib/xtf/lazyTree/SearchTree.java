@@ -462,8 +462,11 @@ public class SearchTree extends LazyDocument
         if( num >= HIT_ELMT_MARKER && num < HIT_ELMT_MARKER+MARKER_RANGE )
             return getHitElement( num - HIT_ELMT_MARKER );
 
-        // We have to treat requests for the previous sibling as special. Detect
-        // whether this has been so marked.
+        // We have to treat requests for the previous sibling as special. This
+        // is because the previous node might be a text node which needs to be
+        // expanded. We use this detection logic so we can secretly expand it
+        // and get the last node from the expansion as the previous sibling of
+        // this node.
         //
         int normNum = num;
         if( num >= PREV_SIB_MARKER && num < PREV_SIB_MARKER+MARKER_RANGE ) {
@@ -497,7 +500,10 @@ public class SearchTree extends LazyDocument
             assert node.prevSibNum >= 0;
         }
 
-        // Gotta do special stuff to text nodes.
+        // Gotta do special stuff to text nodes. And if we're getting the 
+        // previous sibling, return the *last* node of the expansion rather 
+        // than the first.
+        //
         if( node instanceof SearchTextImpl )
             node = expandText( (SearchTextImpl)node, normNum != num );
 
