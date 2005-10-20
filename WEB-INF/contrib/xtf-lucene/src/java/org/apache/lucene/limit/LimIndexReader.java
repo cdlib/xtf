@@ -35,7 +35,7 @@ import org.apache.lucene.store.Directory;
  * Limiting work in this way helps protect against malicious queries.
  * 
  * @author Martin Haye
- * @version $Id: LimIndexReader.java,v 1.1 2005-09-12 19:06:11 mhaye Exp $
+ * @version $Id: LimIndexReader.java,v 1.2 2005-10-20 20:21:15 mhaye Exp $
  */
 public class LimIndexReader extends IndexReader 
 {
@@ -63,7 +63,7 @@ public class LimIndexReader extends IndexReader
    * @param amount    How much work has been done. The unit is typically one
    *                  term or term-position.
    */
-  final void work(int amount) throws IOException {
+  protected void work(int amount) throws IOException {
     workCount += amount;
     if (workCount > workLimit)
       throw new ExcessiveWorkException();
