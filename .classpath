@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/src"/>
+	<classpathentry excluding="**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/contrib/xtf-lucene/src/java"/>
+	<classpathentry excluding="**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/backport/src/java"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/servlet.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/PDFBox-0.6.7a/" kind="lib" path="WEB-INF/lib/PDFBox-0.6.7a.jar"/>
@@ -8,7 +10,8 @@
 	<classpathentry sourcepath="WEB-INF/lib/source/jtidy-04aug2000r7-dev" kind="lib" path="WEB-INF/lib/Tidy.jar"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/saxonb-8.3" kind="lib" path="WEB-INF/lib/saxonb-8.3.jar"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/cql-java-0.7" kind="lib" path="WEB-INF/lib/cql-java.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/cdlLib/marc4j.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/cdlLib/winstone.jar"/>
+	<classpathentry sourcepath="WEB-INF/lib/source/winstone" kind="lib" path="WEB-INF/cdlLib/winstone.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/marc4j.jar"/>
+	<classpathentry sourcepath="WEB-INF/lib/source/lucene-1.4.3" kind="lib" path="WEB-INF/lib/lucene-1.4.3.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
