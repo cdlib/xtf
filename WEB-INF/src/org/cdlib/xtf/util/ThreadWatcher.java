@@ -48,13 +48,16 @@ public class ThreadWatcher
    * description will be used in log messages. The thread should call
    * {@link #endWatch()} when it completes the operation.
    * 
-   * @param descrip   Description of the operation being started, used
-   *                  for log messages.
-   * @param maxTime   Max number of milliseconds the operation is expected
-   *                  to take, after which warnings will be printed
-   *                  about the thread being "runaway."
+   * @param descrip     Description of the operation being started, used
+   *                    for log messages.
+   * @param normalTime  Max number of milliseconds the operation is expected
+   *                    to take, after which warnings will be printed
+   *                    about the thread being "runaway."
+   * @param killTime    Number of milliseconds after which the thread should
+   *                    be killed (by setting a flag that hopefully it will
+   *                    check.)                    
    */
-  public static void beginWatch( String descrip, long maxTime )
+  public static void beginWatch( String descrip, long normalTime, long killTime )
   {
     Thread curThread = Thread.currentThread();
     
@@ -67,7 +70,8 @@ public class ThreadWatcher
         }
         
         // Add it to the list
-        beingWatched.put( curThread, new Entry(curThread, descrip, maxTime) );
+        beingWatched.put( curThread, 
+            new Entry(curThread, descrip, normalTime, killTime) );
         
         // Make sure the watcher thread is running.
         if( watcherThread == null ) {
@@ -104,13 +108,10 @@ public class ThreadWatcher
         
         // If it was runaway, report that it finally finished.
         if( e.runaway ) {
-            String id = Trace.getThreadId(e.thread);
-            if( id == null )
-                id = "";
             double secs = (System.currentTimeMillis() - e.startTime) / 1000.0;
             String secStr = DecimalFormat.getInstance().format( secs );
             Trace.warning( 
-                "Thread " + id + "finally finished after " + secStr + 
+                "This thread finally finished after " + secStr + 
                 " secs. Descrip: " + e.descrip );
         }
         
@@ -143,6 +144,23 @@ public class ThreadWatcher
     
   } // endWatch()
   
+  
+  /** 
+   * Tells whether the specified thread has exceeded its kill limit and should
+   * kill itself off.
+   */
+  public static boolean shouldDie( Thread thread )
+  {
+    synchronized( beingWatched ) 
+    {
+        Entry e = (Entry) beingWatched.get( thread );
+        if( e == null )
+            return false;
+        return e.kill;
+    } // synchronized
+    
+  } // shouldDie()
+  
 
   /**
    * This is the worker function that runs in a separate thread and keeps an
@@ -166,7 +184,26 @@ public class ThreadWatcher
                 while( iter.hasNext() ) 
                 {
                     Entry e = (Entry) iter.next();
-                    if( curTime < e.nextCheckTime ) {
+                    
+                    // If it has exceeded the kill time, request a kill. It
+                    // won't take effect unless and until the thread asks
+                    // if it should kill itself and does so.
+                    //
+                    if( !e.kill && 
+                        e.killTime > 0 &&
+                        (curTime - e.startTime) > e.killTime ) 
+                    {
+                        e.kill = true;
+                        e.runaway = true;
+                        ++nRunaways;
+                        e.needPrint = true;
+                        continue;
+                    }
+                    
+                    // If it's not time to check for normal runaways, skip
+                    // until next time.
+                    //
+                    if( e.normalTime <= 0 || curTime < e.nextCheckTime ) {
                         if( e.runaway )
                             ++nRunaways;
                         continue;
@@ -177,6 +214,7 @@ public class ThreadWatcher
                     e.runaway = true;
                     ++nRunaways;
                     e.needPrint = true;
+                    
                 } // while iter
 
                 // Now print out those that need it.
@@ -203,6 +241,7 @@ public class ThreadWatcher
                         "runaway (running " + secStr + 
                         " secs so far; runaway #" + count + 
                         " of " + nRunaways + "). " +
+                        (e.kill ? "Kill time exceeded. " : "") +
                         "Descrip: " + e.descrip );
                     
                     // Report a stack trace if we have a new enough JVM
@@ -238,7 +277,7 @@ public class ThreadWatcher
                     e.needPrint = false;
 
                     // Reschedule this one.
-                    e.nextCheckTime = curTime + e.maxTime;
+                    e.nextCheckTime = curTime + e.normalTime;
                 } // while iter
 
             } // synchronized
@@ -256,16 +295,19 @@ public class ThreadWatcher
     String  descrip;
     long    startTime;
     long    nextCheckTime;
-    long    maxTime;
+    long    normalTime;
+    long    killTime;
     boolean runaway = false;
     boolean needPrint = false;
+    boolean kill = false;
     
-    Entry( Thread t, String d, long m ) {
+    Entry( Thread t, String d, long n, long k ) {
       thread = t;
       descrip = d;
-      maxTime = m;
+      normalTime = n;
+      killTime = k;
       startTime = System.currentTimeMillis();
-      nextCheckTime = startTime + maxTime;
+      nextCheckTime = startTime + normalTime;
     }
   } // class Entry
   
