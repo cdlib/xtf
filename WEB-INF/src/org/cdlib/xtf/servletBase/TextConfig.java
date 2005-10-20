@@ -74,6 +74,19 @@ public abstract class TextConfig
      */
     public boolean reportLatency = false;
 
+    /** 
+     * Amount of time (in seconds) that a request is allowed to run
+     * before we consider it a possible "runaway" and start logging warning
+     * messages. Default: 10 seconds
+     */
+    public long runawayNormalTime = 0;
+    
+    /** 
+     * Amount of time (in seconds) after which a request should 
+     * voluntarily kill itself. Default: 5 minutes (300 seconds)
+     */
+    public long runawayKillTime = 0;
+    
     /** All the configuration attributes in the form of name/value pairs */
     public AttribList attribs = new AttribList();
     
@@ -222,6 +235,15 @@ public abstract class TextConfig
                 reportLatency = !(strVal.equals("no")) &&
                                 !(strVal.equals("false")) &&
                                 !(strVal.equals("0"));
+            else
+                bad = true;
+        }
+            
+        else if( tagName.equals("runawayTimer") ) {
+            if( attrName.equals("normalTime") )
+                runawayNormalTime = intVal;
+            else if( attrName.equals("killTime") )
+                runawayKillTime = intVal;
             else
                 bad = true;
         }

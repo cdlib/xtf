@@ -64,7 +64,6 @@ public class SRU extends CrossQuery
 
     // inherit JavaDoc
     protected TextConfig readConfig( String configPath )
-        throws Exception
     {
         // Load the configuration file.
         config = new SRUConfig( this, configPath );

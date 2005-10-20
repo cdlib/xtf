@@ -81,13 +81,6 @@ public abstract class TextServlet extends HttpServlet
     /** Caches stylesheets (based on their URL) */
     public StylesheetCache stylesheetCache;
     
-    /** 
-     * Amount of time (in milliseconds) that a request is allowed to run
-     * before we consider it a possible "runaway" and start logging warning
-     * messages. Default: 10 seconds
-     */
-    public long runawayTime = 10*1000;
-    
     /** Allow extra time for the first request to complete */ 
     private static boolean firstRequest = true;
 
@@ -195,8 +188,7 @@ public abstract class TextServlet extends HttpServlet
      * 
      * @throws Exception    If an error occurs reading config
      */
-    protected final void firstTimeInit( boolean forceInit )
-        throws Exception
+    private final void firstTimeInit( boolean forceInit )
     {
         // Even if multiple instances get called at the same time, make sure
         // that we init once and only once.
@@ -280,22 +272,34 @@ public abstract class TextServlet extends HttpServlet
                             HttpServletResponse res )
         throws ServletException, IOException
     {
+        // If we've been asked to clear the caches, do it now, by simply
+        // forcing a re-init.
+        //
+        // If not initialized yet, do it now.
+        String clearCaches = req.getParameter( "clear-caches" );
+        firstTimeInit( "yes".equals(clearCaches) );
+        
+        // Turn on runaway tracking if enabled.
+        TextConfig config = getConfig();
+        boolean trackRunaway = (config.runawayNormalTime > 0) ||
+                               (config.runawayKillTime   > 0);
+        
         try {
-            String descrip = req.getRequestURL().toString();
-            if( descrip.indexOf('?') < 0 && req.getQueryString() != null )
-                descrip += "?" + req.getQueryString();
-            
-            long time = runawayTime;
-            if( firstRequest ) {
-                time *= 2;
-                firstRequest = false;
+            if( trackRunaway ) {
+                String descrip = req.getRequestURL().toString();
+                if( descrip.indexOf('?') < 0 && req.getQueryString() != null )
+                    descrip += "?" + req.getQueryString();
+    
+                ThreadWatcher.beginWatch( descrip, 
+                                          config.runawayNormalTime * 1000,
+                                          config.runawayKillTime   * 1000 );
             }
             
-            ThreadWatcher.beginWatch( descrip, time );
             super.service( req, res );
         }
         finally {
-            ThreadWatcher.endWatch();
+            if( trackRunaway )
+                ThreadWatcher.endWatch();
         }
         
     } // service()
@@ -325,8 +329,7 @@ public abstract class TextServlet extends HttpServlet
      * @param path        Path to the configuration file
      * @return            Parsed config information
      */
-    protected abstract TextConfig readConfig( String path )
-        throws Exception;
+    protected abstract TextConfig readConfig( String path );
 
 
     /** 
@@ -1011,10 +1014,11 @@ public abstract class TextServlet extends HttpServlet
             doc.append( "</" + className + ">\n" );
 
             // If this is a severe problem, log it.
-            if( exc instanceof GeneralException && 
+            if( !(exc instanceof GeneralException) || 
                 ((GeneralException)exc).isSevere() )
             {          
-                Trace.error( "Error: " + doc.toString() );
+                Trace.error( "Error: " + 
+                    doc.toString().replaceAll("<br/>\n", "") );
             }
 
             // Now produce the error page.

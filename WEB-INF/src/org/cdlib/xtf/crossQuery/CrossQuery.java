@@ -87,7 +87,6 @@ public class CrossQuery extends TextServlet
      * @throws Exception    If an error occurs reading config
      */
     protected TextConfig readConfig( String configPath )
-        throws Exception
     {
         // Load the configuration file.
         config = new CrossQueryConfig( this, configPath );
@@ -122,15 +121,6 @@ public class CrossQuery extends TextServlet
         
         try {
 
-            // Get the parameters out of the request structure.
-            String clearCaches = req.getParameter( "clear-caches" );
-
-            // If we've been asked to clear the caches, do it now, by simply
-            // forcing a re-init.
-            //
-            // If not initialized yet, do it now.
-            firstTimeInit( "yes".equals(clearCaches) );
-            
             // Set the default output content type
             res.setContentType("text/html");
 

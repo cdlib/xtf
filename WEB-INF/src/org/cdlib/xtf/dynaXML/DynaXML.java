@@ -131,7 +131,6 @@ public class DynaXML extends TextServlet
      * @throws Exception    If an error occurs reading config
      */
     protected TextConfig readConfig( String configPath )
-        throws Exception
     {
         // Load the configuration file.
         config = new DynaXMLConfig( this, configPath );
@@ -230,15 +229,8 @@ public class DynaXML extends TextServlet
         try {
 
             // Get the parameters out of the request structure.
-            String clearCaches = req.getParameter( "clear-caches" );
             String source      = req.getParameter( "source" );
 
-            // If we've been asked to clear the caches, do it now, by simply
-            // forcing a re-init.
-            //
-            // If not initialized yet, do it now.
-            firstTimeInit( "yes".equals(clearCaches) );
-            
             // If profiling is enabled, we have to notify the stylesheet
             // cache.
             //

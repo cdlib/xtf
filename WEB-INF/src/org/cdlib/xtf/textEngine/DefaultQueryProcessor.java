@@ -157,12 +157,13 @@ public class DefaultQueryProcessor extends QueryProcessor
             accentMap    = xtfSearcher.accentMap();
         }
         
-        // Apply a work limit to the query if we were requested to.
-        IndexReader limReader = reader;
-        if( req.workLimit > 0 ) {
-            limReader = new LimIndexReader( reader, 
-                                            req.workLimit );
-        }
+        // Apply a work limit to the query if we were requested to. If no
+        // specific limit was set, use a limiter with an infinite limit 
+        // (because we still need it to check periodically if the thread 
+        // should kill itself.)
+        //
+        IndexReader limReader = new LimIndexReader( reader, 
+            (req.workLimit > 0) ? req.workLimit : Integer.MAX_VALUE );
         
         // Translate -1 maxDocs to "essentially all"
         int maxDocs = req.maxDocs;
