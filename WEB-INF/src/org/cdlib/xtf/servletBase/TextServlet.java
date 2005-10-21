@@ -286,11 +286,7 @@ public abstract class TextServlet extends HttpServlet
         
         try {
             if( trackRunaway ) {
-                String descrip = req.getRequestURL().toString();
-                if( descrip.indexOf('?') < 0 && req.getQueryString() != null )
-                    descrip += "?" + req.getQueryString();
-    
-                ThreadWatcher.beginWatch( descrip, 
+                ThreadWatcher.beginWatch( getRequestURL(req), 
                                           config.runawayNormalTime * 1000,
                                           config.runawayKillTime   * 1000 );
             }
@@ -337,7 +333,32 @@ public abstract class TextServlet extends HttpServlet
      * configuration info that was read previously by readConfig()
      */
     protected abstract TextConfig getConfig();
-
+    
+    
+    /** 
+     * Gets the full URL, including query parameters, from an HTTP
+     * request. This is a bit tricky since different servlet containers
+     * return slightly different info.
+     */
+    public static String getRequestURL( HttpServletRequest req )
+    {
+        // Start with the basics
+        String url = req.getRequestURL().toString();
+        
+        // Sometimes we don't get the query parameters, sometimes we do. If
+        // we didn't get them but there are some, add them on.
+        //
+        if( url.indexOf('?') < 0 &&
+            req.getQueryString() != null && 
+            req.getQueryString().length() > 0 )
+        {
+            url = url + "?" + req.getQueryString();
+        }
+        
+        // All done.
+        return url;
+    } // getRequestURL()
+    
 
     /**
      * Adds all URL attributes from the request into a transformer.
@@ -430,13 +451,7 @@ public abstract class TextServlet extends HttpServlet
         // use if it wants to.
         //
         Enumeration i = req.getHeaderNames();
-        String url = req.getRequestURL().toString();
-        if( req.getQueryString() != null && req.getQueryString().length() > 0 &&
-            url.indexOf('?') < 0 )
-        {
-            url = url + "?" + req.getQueryString();
-        }
-        trans.setParameter( "http.URL", url );
+        trans.setParameter( "http.URL", getRequestURL(req) );
         while( i.hasMoreElements() ) {
             String name = (String) i.nextElement();
             String value = req.getHeader( name );

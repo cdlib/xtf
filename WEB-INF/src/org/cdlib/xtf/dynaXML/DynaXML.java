@@ -240,8 +240,7 @@ public class DynaXML extends TextServlet
             res.setContentType("text/html");
 
             // Output extended debugging info if requested.
-            Trace.debug( "Processing request: " + 
-                req.getRequestURL().toString() + "?" + req.getQueryString());
+            Trace.debug( "Processing request: " + getRequestURL(req) );
 
             // Get the document info, given the current URL params.
             StringTokenizer st = new StringTokenizer( config.docLookupParams, 
@@ -292,7 +291,7 @@ public class DynaXML extends TextServlet
             if( config.reportLatency ) {
                 long latency = System.currentTimeMillis() - reqStartTime;
                 Trace.info( "Latency: " + latency + " msec for request: " +
-                    req.getRequestURL().toString() + "?" + req.getQueryString());
+                    getRequestURL(req) );
             }
         }
     } // doGet()
@@ -420,6 +419,14 @@ public class DynaXML extends TextServlet
             transformer.transform( sourceDoc, new StreamResult(out) );
         }
         catch( Exception e ) {
+            if( config.stylesheetProfiling )
+            {
+                Trace.info( "Profile for request: " + getRequestURL(req) );
+                Trace.tab();
+                ((PersistentTree)sourceDoc).printProfile();
+                Trace.untab();
+                Trace.info( "End of profile." );
+            }
             if( dump && sourceDoc instanceof SearchTree ) {
                 ((SearchTree)sourceDoc).pruneUnused();
                 File file = new File( "C:\\tmp\\tree.dump" );
@@ -437,9 +444,7 @@ public class DynaXML extends TextServlet
         // Clean up.
         if( config.stylesheetProfiling )
         {
-            Trace.info( "Profile for request: " + 
-                        req.getRequestURL().toString() + "?" + 
-                        req.getQueryString() );
+            Trace.info( "Profile for request: " + getRequestURL(req) ); 
             Trace.tab();
             ((PersistentTree)sourceDoc).printProfile();
             Trace.untab();

@@ -134,8 +134,7 @@ public class CrossQuery extends TextServlet
             }
             
             // Output extended debugging info if requested.
-            Trace.debug( "Processing request: " +
-                req.getRequestURL().toString() + "?" + req.getQueryString());
+            Trace.debug( "Processing request: " + getRequestURL(req) );
 
             // Translate the URL parameters to an AttribList
             AttribList attribs = new AttribList();
@@ -171,7 +170,7 @@ public class CrossQuery extends TextServlet
             if( config.reportLatency ) {
                 long latency = System.currentTimeMillis() - reqStartTime;
                 Trace.info( "Latency: " + latency + " msec for request: " +
-                    req.getRequestURL().toString() + "?" + req.getQueryString());
+                    getRequestURL(req) );
             }
         }
     } // doGet()
@@ -386,9 +385,7 @@ public class CrossQuery extends TextServlet
      */
     protected String stepSetup( HttpServletRequest req ) throws IOException
     {
-        String baseUrl = req.getRequestURL().toString();
-        if( !baseUrl.startsWith("http") )
-            baseUrl = req.getRequestURI();
+        String baseUrl = getRequestURL(req);
             
         String step = req.getParameter( "debugStep" );
         if( step == null || step.length() == 0 )
