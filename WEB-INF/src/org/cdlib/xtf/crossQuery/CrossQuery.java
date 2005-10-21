@@ -402,7 +402,7 @@ public class CrossQuery extends TextServlet
                 "  <head>\n" +
                 "    <title>crossQuery Step " + step + "</title>\n" +
                 "  </head>\n" +
-                "  <frameset rows=\"150,*\" border=\"2\" framespacing=\"2\" " +
+                "  <frameset rows=\"195,*\" border=\"2\" framespacing=\"2\" " +
                             "frameborder=\"1\">\n" +
                 "    <frame title=\"Info\" name=\"info\" src=\"" + urlA + "\">\n" +
                 "    <frame title=\"Data\" name=\"data\" src=\"" + urlB + "\">\n" +
