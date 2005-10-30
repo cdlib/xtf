@@ -78,10 +78,10 @@ public class XTFSaxonErrorListener implements ErrorListener {
 
     public void error(TransformerException exception) throws TransformerException {
         String message = (exception instanceof ValidationException ?
-                            "Validation error " :
-                            "Error ") +
+                            "Validation Error " :
+                            "Saxon Error ") +
                          getLocationMessage(exception) +
-                         "\n  " +
+                         ": " +
                          wordWrap(getExpandedMessage(exception));
         Trace.error(message);
     }
