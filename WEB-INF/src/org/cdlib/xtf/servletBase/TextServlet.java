@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
@@ -227,11 +226,8 @@ public abstract class TextServlet extends HttpServlet
             // Read in the configuration file.
             TextConfig config = readConfig( configPath );
 
-            // Set up the Trace facility. We want timestamps, and we use a
-            // format that matches Resin's.
-            //
+            // Set up the Trace facility. We want timestamps.
             Trace.printTimestamps( true );
-            Trace.dateFormat = new SimpleDateFormat( "HH:mm:ss.SSS" );
             
             // Make sure output lines get flushed immediately, since we may
             // be sharing the log file with other servlets.
