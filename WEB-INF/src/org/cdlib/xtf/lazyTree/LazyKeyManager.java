@@ -401,7 +401,7 @@ public class LazyKeyManager extends KeyManager {
                 return reader;
 
             if( document.getDebug() ) {
-                Trace.debug( "Building key index " +
+                Trace.info( "Building key index " +
                                     new File(doc.getSystemId()).getName() + ": '" + 
                                     fingerName + 
                                     "' {" + indexName + "}..." );
@@ -437,8 +437,12 @@ public class LazyKeyManager extends KeyManager {
                 return hashMap;
             }
 
-            if( document.getDebug() )
-                Trace.debug( "...done" );
+            if( document.getDebug() ) {
+                if( fingerName.indexOf("dynamic") < 0 ) 
+                    Trace.info( "...done" );
+                else
+                    Trace.debug( "...done" );
+            }
             
             return document.getIndex( indexName );
         }
