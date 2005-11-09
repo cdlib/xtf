@@ -74,6 +74,18 @@ public abstract class QueryRewriter {
     assert false : "unsupported query type for rewriting";
     return null;
   } // rewriteQuery()
+  
+  /**
+   * Can be used to force some or all queries to be rewritten even if no
+   * changes. This is useful for copying queries, or easily making changes
+   * to them.
+   * 
+   * The base class always returns false; derived classes should override
+   * this method if they want copying behavior.
+   */
+  public boolean forceRewrite(Query q) {
+    return false;
+  }
 
   /**
    * Rewrite a BooleanQuery.
@@ -102,7 +114,8 @@ public abstract class QueryRewriter {
     }
 
     // If no clauses changed, then the BooleanQuery doesn't change either.
-    if (!anyChange)
+    boolean force = forceRewrite(bq);
+    if (!anyChange && !force)
         return bq;
     
     // If we ended up with nothing, let the caller know.
@@ -110,7 +123,7 @@ public abstract class QueryRewriter {
         return null;
     
     // If we ended up with a single clause, return just that.
-    if (newClauses.size() == 1)
+    if (newClauses.size() == 1 && !force)
       return combineBoost(bq, (Query) newClauses.elementAt(0));
 
     // Otherwise, we need to construct a new BooleanQuery.
@@ -149,7 +162,8 @@ public abstract class QueryRewriter {
     } // for i
 
     // If no changes, just return the original query.
-    if (!anyChanges)
+    boolean force = forceRewrite(nq);
+    if (!anyChanges && !force)
       return nq;
 
     // If we end up with no clauses, let the caller know.
@@ -157,7 +171,7 @@ public abstract class QueryRewriter {
       return null;
 
     // If we end up with a single clause, return just that.
-    if (newClauses.size() == 1) {
+    if (newClauses.size() == 1 && !force) {
 
       // Since we're getting rid of the parent, pass on its boost to the
       // child.
@@ -198,7 +212,8 @@ public abstract class QueryRewriter {
     } // for i
 
     // If no changes, just return the original query.
-    if (!anyChanges)
+    boolean force = forceRewrite(oq);
+    if (!anyChanges && !force)
       return oq;
 
     // If no clauses, let the caller know they can delete this query.
@@ -208,7 +223,7 @@ public abstract class QueryRewriter {
     // If we have only one clause, return just that. Pass on the parent's
     // boost to the only child.
     //
-    if (newClauses.size() == 1)
+    if (newClauses.size() == 1 && !force)
       return combineBoost(oq, (Query) newClauses.elementAt(0));
 
     // Construct a new 'or' query joining all the rewritten clauses.
@@ -231,7 +246,8 @@ public abstract class QueryRewriter {
     SpanQuery exclude = (SpanQuery) rewriteQuery(nq.getExclude());
 
     // If the sub-queries didn't change, then neither does this NOT.
-    if (include == nq.getInclude() && exclude == nq.getExclude())
+    if (include == nq.getInclude() && exclude == nq.getExclude() &&
+        !forceRewrite(nq))
       return nq;
 
     // Make a new NOT query
@@ -254,7 +270,8 @@ public abstract class QueryRewriter {
     SpanQuery exclude = (SpanQuery) rewriteQuery(nq.getExclude());
 
     // If the sub-queries didn't change, then neither does this NOT.
-    if (include == nq.getInclude() && exclude == nq.getExclude())
+    if (include == nq.getInclude() && exclude == nq.getExclude() &&
+        !forceRewrite(nq))
       return nq;
 
     // Make a new NOT query
@@ -277,7 +294,8 @@ public abstract class QueryRewriter {
     SpanQuery exclude = (SpanQuery) rewriteQuery(nq.getExclude());
 
     // If the sub-queries didn't change, then neither does this NOT.
-    if (include == nq.getInclude() && exclude == nq.getExclude())
+    if (include == nq.getInclude() && exclude == nq.getExclude() &&
+        !forceRewrite(nq))
       return nq;
 
     // Make a new NOT query
@@ -299,7 +317,7 @@ public abstract class QueryRewriter {
     SpanQuery sub = (SpanQuery) rewriteQuery(nq.getWrapped());
 
     // If the sub-query didn't change, then neither does the main query.
-    if (sub == nq.getWrapped())
+    if (sub == nq.getWrapped() && !forceRewrite(nq))
       return nq;
     
     // No sub-query? Don't wrap it then.
@@ -324,33 +342,36 @@ public abstract class QueryRewriter {
   }
   
   /** 
-   * Rewrite a span term query. The base class does nothing.
+   * Rewrite a span term query. The base class does nothing unless
+   * rewriting is forced.
    * 
    * @param q  The query to rewrite
    * @return   Rewritten version, or 'q' unchanged if no changed needed.
    */
   protected Query rewrite(SpanTermQuery q) {
-    return q;
+    return forceRewrite(q) ? ((Query)q.clone()) : q;
   }
   
   /** 
-   * Rewrite a span wildcard query. The base class does nothing.
+   * Rewrite a span wildcard query. The base class does nothing unless
+   * rewriting is forced.
    * 
    * @param q  The query to rewrite
    * @return   Rewritten version, or 'q' unchanged if no changed needed.
    */
   protected Query rewrite(SpanWildcardQuery q) {
-    return q;
+    return forceRewrite(q) ? ((Query)q.clone()) : q;
   }
   
   /** 
-   * Rewrite a span range query. The base class does nothing.
+   * Rewrite a span range query. The base class does nothing unless
+   * rewriting is forced.
    * 
    * @param q  The query to rewrite
    * @return   Rewritten version, or 'q' unchanged if no changed needed.
    */
   protected Query rewrite(SpanRangeQuery q) {
-    return q;
+    return forceRewrite(q) ? ((Query)q.clone()) : q;
   }
   
   /**

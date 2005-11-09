@@ -59,7 +59,8 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
 
     // If the sub-queries didn't change, then neither does the main query.
     if (textQuery == stq.getTextQuery()
-        && secTypeQuery == stq.getSectionTypeQuery())
+        && secTypeQuery == stq.getSectionTypeQuery()
+        && !forceRewrite(stq))
       return stq;
 
     // Make a new query
@@ -90,7 +91,8 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
     } // for i
 
     // If no changes, just return the original query.
-    if (!anyChanges)
+    boolean force = forceRewrite(eq);
+    if (!anyChanges && !force)
       return eq;
 
     // If no clauses, let the caller know they can delete this query.
@@ -100,7 +102,7 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
     // If we have only one clause, return just that. Pass on the parent's
     // boost to the only child.
     //
-    if (newClauses.size() == 1)
+    if (newClauses.size() == 1 && !force)
       return combineBoost(eq, (Query) newClauses.elementAt(0));
 
     // Construct a new 'exact' query joining all the rewritten clauses.
