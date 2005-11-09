@@ -3,6 +3,7 @@
         xmlns:xtf="http://cdlib.org/xtf"
         xmlns:date="http://exslt.org/dates-and-times"
         xmlns:parse="http://cdlib.org/xtf/parse"
+        xmlns:expand="http://cdlib.org/xtf/expand"
         extension-element-prefixes="date"
         exclude-result-prefixes="#all">
 
@@ -92,6 +93,132 @@
       </xsl:choose>
     </xsl:element>
   </xsl:template>
+
+  <!-- generate group-title -->
+  <xsl:template match="title" mode="group"> 
+    <xsl:variable name="title" select="string(.)"/>
+    <group-title>
+      <xsl:attribute name="xtf:meta" select="'true'"/>
+      <xsl:attribute name="xtf:tokenize" select="'no'"/>
+      <xsl:choose>
+        <!-- for numeric titles -->
+        <xsl:when test="matches(parse:title($title), '^[0-9]')">
+          <xsl:value-of select="'0-9'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:title($title), '^[A-Ca-c]')">
+          <xsl:value-of select="'A-C'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:title($title), '^[D-Fd-f]')">
+          <xsl:value-of select="'D-F'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:title($title), '^[G-Ig-i]')">
+          <xsl:value-of select="'G-I'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:title($title), '^[J-Lj-l]')">
+          <xsl:value-of select="'J-L'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:title($title), '^[M-Om-o]')">
+          <xsl:value-of select="'M-O'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:title($title), '^[P-Rp-r]')">
+          <xsl:value-of select="'P-R'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:title($title), '^[S-Vs-v]')">
+          <xsl:value-of select="'S-V'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:title($title), '^[W-Zw-z\w]')">
+          <xsl:value-of select="'W-Z'"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <!-- to catch unusual titles -->
+          <xsl:value-of select="'OTHER'"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </group-title>
+  </xsl:template>
+  
+  <!-- generate group-creator -->
+  <xsl:template match="creator" mode="group"> 
+    <xsl:variable name="creator" select="string(.)"/>
+    <group-creator>
+      <xsl:attribute name="xtf:meta" select="'true'"/>
+      <xsl:attribute name="xtf:tokenize" select="'no'"/>
+      <xsl:choose>
+        <xsl:when test="matches(parse:name($creator), '^[A-Ca-c]')">
+          <xsl:value-of select="'A-C'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:name($creator), '^[D-Fd-f]')">
+          <xsl:value-of select="'D-F'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:name($creator), '^[G-Ig-i]')">
+          <xsl:value-of select="'G-I'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:name($creator), '^[J-Lj-l]')">
+          <xsl:value-of select="'J-L'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:name($creator), '^[M-Om-o]')">
+          <xsl:value-of select="'M-O'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:name($creator), '^[P-Rp-r]')">
+          <xsl:value-of select="'P-R'"/>
+        </xsl:when>
+        <xsl:when test="matches(parse:name($creator), '^[S-Vs-v]')">
+          <xsl:value-of select="'S-V'"/>
+        </xsl:when>
+        <!-- also includes all diacritics, which seem to be sorted to the end by XTF -->
+        <xsl:when test="matches(parse:name($creator), '^[W-Zw-z\w]')">
+          <xsl:value-of select="'W-Z'"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <!-- to catch unusal creators -->
+          <xsl:value-of select="'OTHER'"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </group-creator>
+  </xsl:template>
+  
+  <!-- generate group-date -->
+  <xsl:template match="date" mode="group">   
+    <xsl:variable name="date" select="string(.)"/>
+    <group-date>
+      <xsl:attribute name="xtf:meta" select="'true'"/>
+      <xsl:attribute name="xtf:tokenize" select="'no'"/>
+      <xsl:value-of select="expand:date($date)"/>
+    </group-date>
+  </xsl:template>
+  
+  <xsl:function name="expand:date">
+    <xsl:param name="date"/>
+    
+    <xsl:variable name="year" select="replace($date, '[0-9]+/[0-9]+/([0-9]+)', '$1')"/>
+    
+    <xsl:variable name="month">
+      <xsl:choose>
+        <xsl:when test="matches($date,'^[0-9]/[0-9]+/[0-9]+')">
+          <xsl:value-of select="0"/>
+          <xsl:value-of select="replace($date, '^([0-9])/[0-9]+/[0-9]+', '$1')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="replace($date, '([0-9]+)/[0-9]+/[0-9]+', '$1')"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>  
+    
+    <xsl:variable name="day">
+      <xsl:choose>
+        <xsl:when test="matches($date,'[0-9]+/[0-9]/[0-9]+')">
+          <xsl:value-of select="0"/>
+          <xsl:value-of select="replace($date, '[0-9]+/([0-9])/[0-9]+', '$1')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="replace($date, '[0-9]+/([0-9]+)/[0-9]+', '$1')"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    
+    <xsl:value-of select="concat($year, '::', $month, '::', $day)"/>
+    
+  </xsl:function>
   
   <!-- missing elements? -->
   <xsl:template name="metaMissing">
