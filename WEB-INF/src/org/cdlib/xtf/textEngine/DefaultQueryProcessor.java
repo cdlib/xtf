@@ -36,11 +36,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.apache.lucene.bigram.BigramSpanRangeQuery;
-import org.apache.lucene.bigram.BigramSpanWildcardQuery;
 import org.apache.lucene.chunk.DocNumMap;
-import org.apache.lucene.chunk.SpanChunkedNotQuery;
-import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.chunk.SparseStringComparator;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.FieldSortedHitQueue;
@@ -49,9 +45,6 @@ import org.apache.lucene.search.RecordingSearcher;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.SpanHitCollector;
 import org.apache.lucene.search.spans.FieldSpans;
-import org.apache.lucene.search.spans.SpanNearQuery;
-import org.apache.lucene.search.spans.SpanRangeQuery;
-import org.apache.lucene.search.spans.SpanWildcardQuery;
 import org.apache.lucene.util.PriorityQueue;
 import org.cdlib.xtf.textEngine.facet.FacetSpec;
 import org.cdlib.xtf.textEngine.facet.GroupCounts;
@@ -214,16 +207,19 @@ public class DefaultQueryProcessor extends QueryProcessor
             return result;
         }
         
-        final Query finalQuery = query;
-        if( finalQuery != req.query )
-            Trace.debug( "Rewritten query: " + finalQuery.toString() );
-
         // Fix up all the "infinite" slop entries to be actually limited to
         // the chunk overlap size. That way, we'll get consistent results and
         // the user won't be able to tell where the chunk boundaries are.
         //
-        fixupSlop( finalQuery, docNumMap, stopSet );
+        final Query finalQuery = new SlopFixupRewriter(docNumMap, stopSet).
+                                         rewriteQuery(query);
         
+        // If debugging is enabled, print out the final rewritten and fixed
+        // up query.
+        //
+        if( finalQuery != req.query )
+            Trace.debug( "Rewritten query: " + finalQuery.toString() );
+
         // If grouping was specified by the query, read in all the group data.
         // Note that the GroupData class holds its own cache so we don't have
         // to read data for a given field more than once.
@@ -414,59 +410,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         
     } // finishGroup()
     
-    /**
-     * After index parameters are known, this method should be called to
-     * update the slop parameters of queries that need to know. Also informs
-     * wildcard and range queries of the stopword set.
-     */
-    private void fixupSlop( Query query, 
-                            final DocNumMap docNumMap, 
-                            final Set stopSet )
-    {
-        new XtfQueryTraverser() {
-            
-            public void traverse( SpanNearQuery q ) 
-            {
-                // For text queries, set the max to the chunk overlap size. For
-                // meta-data fields, set it to the bump between multiple values
-                // for the same field, *minus one* to prevent matches across 
-                // the boundary.
-                //
-                boolean isText = q.getField().equals("text");
-                int maxSlop = isText ? docNumMap.getChunkOverlap() : (1000000-1);
-                q.setSlop( Math.min(q.getSlop(), maxSlop) );
-                super.traverse( q );
-            }
-            
-            public void traverse( SpanChunkedNotQuery q ) 
-            { 
-                q.setSlop( 
-                    Math.min(q.getSlop(), docNumMap.getChunkOverlap()),
-                    docNumMap.getChunkSize() - docNumMap.getChunkOverlap() ); 
-                super.traverse( q );
-            }  
-            
-            public void traverse( SpanDechunkingQuery q ) { 
-                q.setDocNumMap( docNumMap );
-                super.traverse( q );
-            }  
-            
-            public void traverse( SpanWildcardQuery q ) {
-                assert q instanceof BigramSpanWildcardQuery;
-                ((BigramSpanWildcardQuery)q).setStopWords( stopSet );
-                super.traverse( q );
-            }  
-            
-            public void traverse( SpanRangeQuery q ) {
-                assert q instanceof BigramSpanRangeQuery;
-                ((BigramSpanRangeQuery)q).setStopWords( stopSet );
-                super.traverse( q );
-            }  
-            
-        }.traverseQuery( query );
-        
-    } // fixupSlop()
-    
+
     /**
      * QueryProcessor maintains a static cache of Lucene searchers, one for
      * each index directory. If data is changed, normally it's not recognized
