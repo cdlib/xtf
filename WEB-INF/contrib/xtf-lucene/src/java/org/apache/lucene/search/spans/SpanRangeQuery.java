@@ -19,7 +19,6 @@ package org.apache.lucene.search.spans;
 import java.io.IOException;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.lucene.index.IndexReader;
@@ -38,7 +37,6 @@ public class SpanRangeQuery extends SpanQuery {
   private Term lowerTerm;
   private Term upperTerm;
   private boolean inclusive;
-  private Set stopSet;
 
   /** Limit on the number of terms to report on an error */
   private static final int TERMS_TO_REPORT = 50;
