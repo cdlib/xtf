@@ -269,6 +269,72 @@
       <group-rights xtf:meta="true" xtf:tokenize="no">1 MISSING</group-rights>
     </xsl:if>
   </xsl:template>    
+	
+	<!-- generate callnum class group fields -->
+	<xsl:template name="createGroupCallnumClass"> 
+		<xsl:param name="label"/>
+		<xsl:param name="string"/>
+		<xsl:variable name="name" select="concat('group-', $label)"/>
+	  <!-- get rid of spaces -->
+	  <xsl:variable name="value" select="replace($string, ' ', '')"/>
+	  <xsl:variable name="subject">
+	    <xsl:choose>
+	      <xsl:when test="matches($value, '^[A-Z]+')">
+	        <xsl:choose>
+	          <xsl:when test="matches($value, '^[A-Z][A-Z][A-Z]')">
+	            <xsl:analyze-string select="$value" regex="^([A-Z])([A-Z])([A-Z])">
+	              <xsl:matching-substring>
+	                <xsl:value-of select="regex-group(1)"/>
+	                <xsl:text>::</xsl:text>
+	                <xsl:value-of select="regex-group(2)"/>
+	                <xsl:text>::</xsl:text>
+	                <xsl:value-of select="regex-group(3)"/>
+	                <xsl:text>::</xsl:text>
+	              </xsl:matching-substring>
+	            </xsl:analyze-string>
+	          </xsl:when>
+	          <xsl:when test="matches($value, '^[A-Z][A-Z]')">
+	            <xsl:analyze-string select="$value" regex="^([A-Z])([A-Z])">
+	              <xsl:matching-substring>
+	                <xsl:value-of select="regex-group(1)"/>
+	                <xsl:text>::</xsl:text>
+	                <xsl:value-of select="regex-group(2)"/>
+	                <xsl:text>::</xsl:text>
+	              </xsl:matching-substring>
+	            </xsl:analyze-string>
+	          </xsl:when>
+	          <xsl:when test="matches($value, '^[A-Z]')">
+	            <xsl:analyze-string select="$value" regex="^([A-Z]+)">
+	              <xsl:matching-substring>
+	                <xsl:value-of select="regex-group(1)"/>
+	                <xsl:text>::</xsl:text>
+	              </xsl:matching-substring>
+	            </xsl:analyze-string>
+	          </xsl:when>
+	        </xsl:choose>
+	        <xsl:if test="matches($value, '^[A-Z]+[0-9]+')">
+	          <xsl:analyze-string select="$value" regex="^[A-Z]+([0-9]+)">
+	            <xsl:matching-substring>
+	              <xsl:value-of select="regex-group(1)"/>
+	            </xsl:matching-substring>
+	          </xsl:analyze-string>
+	        </xsl:if>
+	      </xsl:when>
+	      <xsl:otherwise>
+	        <xsl:value-of select="$value"/>
+	      </xsl:otherwise>
+	    </xsl:choose>
+	  </xsl:variable>
+		<xsl:element name="{$name}">
+			<xsl:attribute name="xtf:meta">
+				<xsl:value-of select="'true'"/>
+			</xsl:attribute>
+			<xsl:attribute name="xtf:tokenize">
+				<xsl:value-of select="'no'"/>
+			</xsl:attribute>
+			<xsl:value-of select="$subject"/>
+		</xsl:element>
+	</xsl:template>
   
 <!-- ====================================================================== -->
 <!-- Functions                                                              -->
