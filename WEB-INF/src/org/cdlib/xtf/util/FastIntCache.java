@@ -37,7 +37,7 @@ package org.cdlib.xtf.util;
  * 
  * @author Martin Haye
  */
-public class FastCache
+public class FastIntCache
 {
   private int size;
   
@@ -52,13 +52,20 @@ public class FastCache
    * 
    * @param size  How large to make each of the two internal hash tables.
    */
-  public FastCache( int size )
+  public FastIntCache( int size )
   {
     this.size = size;
-    oldHash = new IntHash( 1 );
-    newHash = new IntHash( size );
+    clear();
   } // FastCache()
 
+  
+  /** Clears all entries from the cache */
+  public void clear()
+  {
+    oldHash = new IntHash( 1 );
+    newHash = new IntHash( size );
+  }
+  
   
   /** Check whether the given key is present in the cache */
   public boolean contains( int key )
@@ -108,9 +115,11 @@ public class FastCache
     /**
      * Basic regression test
      */
-    public static final Tester tester = new Tester("FastCache") {
+    public static final Tester tester = new Tester("FastIntCache") {
         protected void testImpl() {
-            FastCache cache = new FastCache( 3 );
+            IntHash.tester.test();
+            
+            FastIntCache cache = new FastIntCache( 3 );
             
             cache.put( 1, "a" );
             cache.put( 2, "b" );
@@ -132,4 +141,4 @@ public class FastCache
         } // testImpl()
     };
     
-} // class FastCache
+} // class FastIntCache
