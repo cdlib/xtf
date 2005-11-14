@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 
 
 /**
@@ -47,14 +46,19 @@ import java.util.HashMap;
  * ("|") character. The first word is considered the "key", the second is the
  * "value". Each should be a four-digit hex number representing a Unicode
  * code point.
+ * 
+ * For speed, an in-memory cache of recently mapped words is maintained.
  */
 public class CharMap 
 {
     /** The mapping of chars. */
     private char[] map = new char[65536];
     
-    /** Cache of mapped words */
-    private HashMap cache = new HashMap(100);
+    /** How many recent mappings to maintain */
+    private static final int CACHE_SIZE = 5000;
+    
+    /** Keep a cache of lookups performed to-date */
+    private FastStringCache cache = new FastStringCache( CACHE_SIZE );
     
     /** Construct a char map by reading in a file. */
     public CharMap( File f ) 
@@ -77,7 +81,7 @@ public class CharMap
     {
         // Have we already looked up this word? If so, save time.
         String val = null;
-        if( cache.containsKey(word) ) {
+        if( cache.contains(word) ) {
             val = (String) cache.get(word);
             return val;
         }

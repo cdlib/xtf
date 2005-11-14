@@ -48,11 +48,16 @@ import java.util.Map;
  * The format of file entries should be one pair per line, separated by a bar
  * ("|") character. The first word is considered the "key", the second is the
  * "value".
+ * 
+ * For speed, an in-memory cache of recently mapped words is maintained.
  */
 public class WordMap 
 {
+    /** How many recent mappings to maintain */
+    private static final int CACHE_SIZE = 5000;
+    
     /** Keep a cache of lookups performed to-date */
-    private HashMap   cache      = new HashMap( 100 );
+    private FastStringCache cache = new FastStringCache( CACHE_SIZE );
     
     /** Map of blocks, keyed by the first word in each block */
     private HashMap   blockMap   = new HashMap( 100 );
@@ -79,7 +84,7 @@ public class WordMap
     {
         // Have we already looked up this word? If so, save time.
         String val = null;
-        if( cache.containsKey(word) ) {
+        if( cache.contains(word) ) {
             val = (String) cache.get(word);
             return val;
         }
