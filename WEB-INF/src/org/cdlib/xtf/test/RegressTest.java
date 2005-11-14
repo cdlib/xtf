@@ -67,6 +67,8 @@ import org.cdlib.xtf.textIndexer.TagFilter;
 import org.cdlib.xtf.textIndexer.TextIndexer;
 import org.cdlib.xtf.util.CircularQueue;
 import org.cdlib.xtf.util.DiskHashWriter;
+import org.cdlib.xtf.util.FastIntCache;
+import org.cdlib.xtf.util.FastStringCache;
 import org.cdlib.xtf.util.IntHash;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
@@ -123,6 +125,8 @@ public class RegressTest
         CircularQueue.tester.test();
         XtfBigramQueryRewriter.tester.test();
         TagFilter.tester.test();
+        FastIntCache.tester.test();
+        FastStringCache.tester.test();
         
         // Go for it.
         RegressTest test = new RegressTest();
