@@ -270,14 +270,14 @@
     </xsl:if>
   </xsl:template>    
 	
-	<!-- generate callnum class group fields -->
-	<xsl:template name="createGroupCallnumClass"> 
+	<!-- generate callnum class facet fields -->
+	<xsl:template name="createFacetCallnumClass"> 
 		<xsl:param name="label"/>
 		<xsl:param name="string"/>
-		<xsl:variable name="name" select="concat('group-', $label)"/>
+		<xsl:variable name="name" select="concat('facet-', $label)"/>
 	  <!-- get rid of spaces -->
 	  <xsl:variable name="value" select="replace($string, ' ', '')"/>
-	  <xsl:variable name="subject">
+	  <xsl:variable name="hierarchy">
 	    <xsl:choose>
 	      <xsl:when test="matches($value, '^[A-Z]+')">
 	        <xsl:choose>
@@ -286,8 +286,11 @@
 	              <xsl:matching-substring>
 	                <xsl:value-of select="regex-group(1)"/>
 	                <xsl:text>::</xsl:text>
+	                <xsl:value-of select="regex-group(1)"/>
 	                <xsl:value-of select="regex-group(2)"/>
 	                <xsl:text>::</xsl:text>
+	                <xsl:value-of select="regex-group(1)"/>
+	                <xsl:value-of select="regex-group(2)"/>
 	                <xsl:value-of select="regex-group(3)"/>
 	                <xsl:text>::</xsl:text>
 	              </xsl:matching-substring>
@@ -298,6 +301,7 @@
 	              <xsl:matching-substring>
 	                <xsl:value-of select="regex-group(1)"/>
 	                <xsl:text>::</xsl:text>
+	                <xsl:value-of select="regex-group(1)"/>
 	                <xsl:value-of select="regex-group(2)"/>
 	                <xsl:text>::</xsl:text>
 	              </xsl:matching-substring>
@@ -313,7 +317,7 @@
 	          </xsl:when>
 	        </xsl:choose>
 	        <xsl:if test="matches($value, '^[A-Z]+[0-9]+')">
-	          <xsl:analyze-string select="$value" regex="^[A-Z]+([0-9]+)">
+	          <xsl:analyze-string select="$value" regex="^([A-Z]+[0-9]+)">
 	            <xsl:matching-substring>
 	              <xsl:value-of select="regex-group(1)"/>
 	            </xsl:matching-substring>
@@ -325,6 +329,7 @@
 	      </xsl:otherwise>
 	    </xsl:choose>
 	  </xsl:variable>
+	  <xsl:variable name="callnum" select="replace($hierarchy, '::$', '')"/>
 		<xsl:element name="{$name}">
 			<xsl:attribute name="xtf:meta">
 				<xsl:value-of select="'true'"/>
@@ -332,9 +337,14 @@
 			<xsl:attribute name="xtf:tokenize">
 				<xsl:value-of select="'no'"/>
 			</xsl:attribute>
-			<xsl:value-of select="$subject"/>
+			<xsl:value-of select="$callnum"/>
 		</xsl:element>
 	</xsl:template>
+  
+  <xsl:template name="createSubjectHierarchy">
+    <xsl:param name="subject"/>
+    <xsl:value-of select="replace($subject, ' -- ', '::')"/>
+  </xsl:template>
   
 <!-- ====================================================================== -->
 <!-- Functions                                                              -->
