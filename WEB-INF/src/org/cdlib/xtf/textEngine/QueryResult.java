@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.lucene.search.Explanation;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.facet.ResultFacet;
 import org.cdlib.xtf.textEngine.facet.ResultGroup;
@@ -234,6 +235,11 @@ public class QueryResult
             if( docHit.recordNum() > 0 )
                 buf.append( " recordNum=\"" + docHit.recordNum() + "\"" );
             buf.append( ">\n" );
+            
+            Explanation explanation = docHit.explanation();
+            if( explanation != null )
+                structureExplanation( explanation, buf );
+            
             if( !docHit.metaData().isEmpty() ) {
                 buf.append( "<meta>\n" );
                 for( Iterator atts = docHit.metaData().iterator(); atts.hasNext(); )
@@ -264,4 +270,25 @@ public class QueryResult
         
     } // structureDocHits()
 
+    /**
+     * Does the work of turning a score explanation into XML.
+     */
+    private void structureExplanation( Explanation exp, StringBuffer buf )
+    {
+        buf.append( "<explanation value=\"" );
+        buf.append( exp.getValue() );
+        buf.append( "\" description=\"" );
+        buf.append( exp.getDescription() );
+        buf.append( "\">\n" );
+        
+        Explanation[] subs = exp.getDetails();
+        if( subs != null ) {
+            for( int i = 0; i < subs.length; i++ )
+                structureExplanation( subs[i], buf );
+        }
+        
+        buf.append( "</explanation>\n" );
+        
+    } // structureExplanation
+    
 } // class QueryResult

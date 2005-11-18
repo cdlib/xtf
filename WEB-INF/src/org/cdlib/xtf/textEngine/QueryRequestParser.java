@@ -774,6 +774,18 @@ public class QueryRequestParser
             
         }
 
+        else if( attrName.equalsIgnoreCase("explainScores") ) {
+            String yesno = parseStringAttrib( el, "explainScores" );
+            if( yesno.equals("yes") || yesno.equals("true") )
+                req.explainScores = true;
+            else if( yesno.equals("no") || yesno.equals("false") )
+                req.explainScores = false;
+            else
+                error( "'explainScores' attribute must have value " +
+                       "'yes', 'no', 'true', or 'false'" );
+            
+        }
+
         else if( attrName.equals("field") || attrName.equals("metaField") )
             ; // handled elsewhere
         

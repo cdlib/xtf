@@ -74,7 +74,13 @@ public class QueryRequest implements Cloneable
     public FacetSpec[] facetSpecs  = null;
     
     /** Whether to normalize scores (turn off to help debug ranking problems) */
-    public boolean     normalizeScores = true;
+    public boolean    normalizeScores = true;
+    
+    /** 
+     * Whether to calculate an explanation of each score. Time-consuming, so
+     * should not be used except during development 
+     */
+    public boolean    explainScores = false;
     
     /** 
      * Experimental, and probably temporary:
