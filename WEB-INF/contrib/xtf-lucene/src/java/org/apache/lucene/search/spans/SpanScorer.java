@@ -18,26 +18,28 @@ package org.apache.lucene.search.spans;
 
 import java.io.IOException;
 
-import org.apache.lucene.search.Explanation;
-import org.apache.lucene.search.Scorer;
-import org.apache.lucene.search.Similarity;
 import org.apache.lucene.search.Weight;
+import org.apache.lucene.search.Scorer;
+import org.apache.lucene.search.Explanation;
+import org.apache.lucene.search.Similarity;
 
 
 class SpanScorer extends Scorer {
-  private Spans spans;
-  private float value;
+  protected Spans spans;
+  protected Weight weight;
+  protected float value;
 
-  private boolean firstTime = true;
-  private boolean more = true;
+  protected boolean firstTime = true;
+  protected boolean more = true;
 
-  private int doc;
-  private float freq;
+  protected int doc;
+  protected float freq;
 
   SpanScorer(Spans spans, Weight weight, Similarity similarity)
     throws IOException {
     super(similarity);
     this.spans = spans;
+    this.weight = weight;
     this.value = weight.getValue();
   }
 
@@ -46,6 +48,10 @@ class SpanScorer extends Scorer {
       more = spans.next();
       firstTime = false;
     }
+    return advance();
+  }
+  
+  protected boolean advance() throws IOException {
 
     if (!more) return false;
 
@@ -53,8 +59,7 @@ class SpanScorer extends Scorer {
     doc = spans.doc();
 
     while (more && doc == spans.doc()) {
-      int matchLength = spans.end() - spans.start();
-      freq += getSimilarity().sloppyFreq(matchLength);
+      freq += spans.score();
       more = spans.next();
     }
 
@@ -64,8 +69,8 @@ class SpanScorer extends Scorer {
   public int doc() { return doc; }
 
   public float score() throws IOException {
-    // doc norm has already been accounted for in SpanTermQuery
-    return getSimilarity().tf(freq) * value;
+    // norms taken care of now by the term query.
+    return getSimilarity().tf(freq) * value; // raw score
   }
 
   public boolean skipTo(int target) throws IOException {
@@ -73,32 +78,38 @@ class SpanScorer extends Scorer {
     // one step more than is reported back, we have to avoid skipping if the
     // effect of the skip has already been achieved.
     //
-    if (doc == 0 || target > spans.doc())
+    if (firstTime || target > spans.doc()) {
       more = spans.skipTo(target);
-
-    if (!more) return false;
-
-    freq = 0.0f;
-    doc = spans.doc();
-
-    while (more && spans.doc() == target) {
-      freq += getSimilarity().sloppyFreq(spans.end() - spans.start());
-      more = spans.next();
+      firstTime = false;
     }
-
-    return more || freq != 0.0f;
+    
+    return advance();
   }
 
-  public Explanation explain(final int doc) throws IOException {
-    Explanation tfExplanation = new Explanation();
+  public Explanation explain(final int target) throws IOException {
 
-    skipTo(doc);
+    Explanation pfExpl = new Explanation(0.0f, "phraseFreq, sum of:" );
+    
+    more = spans.skipTo(target);
+    freq = 0.0f;
 
-    float phraseFreq = (doc() == doc) ? freq : 0.0f;
-    tfExplanation.setValue(getSimilarity().tf(phraseFreq));
-    tfExplanation.setDescription("tf(phraseFreq=" + phraseFreq + ")");
+    while (more && spans.doc() == target) {
+      final float score = spans.score();
+      pfExpl.addDetail(spans.explain());
+      freq += score;
+      more = spans.next();
+    }
+    
+    pfExpl.setValue(freq);
 
-    return tfExplanation;
+    Explanation tfExpl = new Explanation(
+        getSimilarity().tf(freq),
+        "tf(phraseFreq=" + freq + ")");
+    if (pfExpl.getDetails().length == 1)
+      tfExpl.addDetail(pfExpl.getDetails()[0]);
+    else
+      tfExpl.addDetail(pfExpl);
+    return tfExpl;
   }
 
 }
