@@ -227,7 +227,7 @@ public class GroupCounts
             // And add this document to the hit queue.
             if( maxDocs[group] >= 999999999 )
                 hitQueue[group].ensureCapacity( 1 );
-            hitQueue[group].insert( docHitMaker.getDocHit() );
+            docHitMaker.insertInto( hitQueue[group] );
         } // for group
     } // for link
     
@@ -425,8 +425,8 @@ public class GroupCounts
   }
   
   public static interface DocHitMaker {
-    int           getDocNum();
-    DocHit        getDocHit();
+    int     getDocNum();
+    boolean insertInto( PriorityQueue queue );
   }
   
 } // class GroupCounts
