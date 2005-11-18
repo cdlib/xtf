@@ -64,9 +64,9 @@ public class RecordingSearcher extends IndexSearcher {
       final BitSet bits = filter.bits(reader);
       collector = new SpanHitCollector() {
         private final SpanHitCollector mresults = (SpanHitCollector)results;
-        public final void collect(int doc, float score, FieldSpans spans) {
+        public final void collect(int doc, float score, FieldSpanSource src) {
           if (bits.get(doc)) {		  // skip docs not in bits
-            mresults.collect(doc, score, spans);
+            mresults.collect(doc, score, src);
           }
         }
       };
@@ -87,15 +87,15 @@ public class RecordingSearcher extends IndexSearcher {
     }
     if (scorer == null)
       return;
+    FieldSpanSource spanSource = new FieldSpanSource(recordingScorers);
     
     // Now process all the documents and collect them and their spans.
     while (scorer.next()) {
       FieldSpans fieldSpans = new FieldSpans();
       int doc = scorer.doc();
+      spanSource.curDoc = doc;
       float score = scorer.score(); // must call before recordSpans()
-      for (int i=0; i<recordingScorers.length; i++)
-        recordingScorers[i].recordSpans(doc, fieldSpans);
-      collector.collect(doc, score, fieldSpans);
+      collector.collect(doc, score, spanSource);
     }
   }
 
@@ -103,6 +103,7 @@ public class RecordingSearcher extends IndexSearcher {
   // will register themselves.
   //
   public void registerRecordingScorer(SpanRecordingScorer scorer) {
-    registered.add(scorer);
+    if( registered != null )
+        registered.add(scorer);
   }
 }

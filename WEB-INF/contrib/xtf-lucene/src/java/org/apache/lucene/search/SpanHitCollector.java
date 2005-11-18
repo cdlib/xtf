@@ -17,7 +17,6 @@ package org.apache.lucene.search;
  */
 
 import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.spans.FieldSpans;
 
 /** Lower-level search API.
  * Collects hits and their associated matching spans.
@@ -51,5 +50,5 @@ public abstract class SpanHitCollector
    * In other words, the score will not necessarily be a float whose value is
    * between 0 and 1.
    */
-  public abstract void collect(int doc, float score, FieldSpans spans);
+  public abstract void collect(int doc, float score, FieldSpanSource spans);
 }

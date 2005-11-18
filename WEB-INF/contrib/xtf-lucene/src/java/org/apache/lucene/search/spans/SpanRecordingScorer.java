@@ -26,61 +26,44 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.RecordingSearcher;
-import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Similarity;
 
 /** Runs a span query and scores the resulting spans, passing them to a
  *  SpanHitCollector if specified.
  */
-public class SpanRecordingScorer extends Scorer 
+public class SpanRecordingScorer extends SpanScorer 
 {
-  /** Sequence of spans  to score */
-  private Spans spans;
-  
-  /** Weighted value for scoring this query */
-  private float value;
-  
   /** Field being queried (a Span query can only work on one field */
   private String field;
   
   /** Max # of spans to record (highest scoring are kept, others tossed) */
   private int maxSpans;
 
-  /** true before {@link #next()} is called the first time */
-  private boolean firstTime = true;
-  
-  /** true if there are more spans to process */
-  private boolean more = true;
-
-  /** Current document whose spans we're looking at */
-  private int doc;
-  
-  /** Cumulative score for the current document */
-  private float freq;
-
   /** Number of spans recorded for this document */
-  int     nSpans;
+  int nSpans;
   
-  /** Last document that was scored and deduped */
-  int     scoredDoc;
-  
-  /** Spans from last document scored */
-  ArrayList scoredSpans;
+  /** Last document that was scored */
+  int scoredDoc;
   
   /** Total deduped, not limited by {@link #maxSpans} */
-  int     totalDeduped;
+  int totalDeduped;
   
   /** Array of recorded spans, in position order */
-  Span[]  posOrder = new Span[0];
+  Span[] posOrder = new Span[0];
+  
+  /** Array to de-dupe, in position order */
+  Span[] toDedupe = new Span[0];
+  
+  /** How many spans to de-duplicate */
+  int nToDedupe;
   
   /** Array of recorded spans, in descending score order */
   ScoreOrder[] scoreOrder;
   
   /** Set of all search terms */
-  Set     terms;
+  Set terms;
 
   /**
    * Construct a recording scorer.
@@ -95,7 +78,7 @@ public class SpanRecordingScorer extends Scorer
                       int maxSpans)
     throws IOException
   {
-    super(similarity);
+    super(spans, weight, similarity);
 
     this.spans = spans;
     this.maxSpans = maxSpans;
@@ -128,18 +111,8 @@ public class SpanRecordingScorer extends Scorer
     }
   }
 
-  // inherit javadoc
-  public boolean next() throws IOException {
-    if (firstTime) {
-      more = spans.next();
-      firstTime = false;
-    }
-
-    return advance();
-  }
-
   /** Worker method used by {@link #next()} and {@link #skipTo(int)}. */
-  private final boolean advance() throws IOException {
+  protected boolean advance() throws IOException {
     if (!more)
       return false;
 
@@ -177,6 +150,11 @@ public class SpanRecordingScorer extends Scorer
       System.arraycopy(posOrder, 0, newSpans, 0, nSpans);
     posOrder = newSpans;
 
+    Span[] newSpans2 = new Span[top];
+    if( toDedupe != null )
+      System.arraycopy(toDedupe, 0, newSpans2, 0, nSpans);
+    toDedupe = newSpans2;
+
     ScoreOrder[] newScore = new ScoreOrder[top];
     if( scoreOrder != null )
       System.arraycopy(scoreOrder, 0, newScore, 0, nSpans);
@@ -184,43 +162,38 @@ public class SpanRecordingScorer extends Scorer
 
     for (int i=nSpans; i<top; i++) {
       posOrder[i] = new Span();
+      toDedupe[i] = new Span();
       scoreOrder[i] = new ScoreOrder();
     }
   }
 
   public void recordSpans(int targetDoc, FieldSpans fieldSpans) {
-    if( scoredDoc == targetDoc && totalDeduped > 0 )
-        fieldSpans.recordSpans(field, totalDeduped, scoredSpans, terms);
+    if( scoredDoc == targetDoc ) {
+        ArrayList scoredSpans = deduplicate();
+        if( totalDeduped > 0 )
+            fieldSpans.recordSpans(field, totalDeduped, scoredSpans, terms);
+    }
   }
-
-  public int doc() { return doc; }
-
+  
   public float score() throws IOException {
 
-    // Deduplicate the spans we have, because recordSpans() will be called.
-    scoredDoc = doc;
-    scoredSpans = deduplicate();
+    // Remember that this scorer is part of the result, so we know to record
+    // spans for it.
+    //
+    if(scoredDoc != doc) {
+        scoredDoc = doc;
+
+        // Save the current spans in a special area awaiting deduplication
+        // (put off deduplication until actually requested.)
+        //
+        Span[] tmp = posOrder;
+        posOrder = toDedupe;
+        toDedupe = tmp;
+        nToDedupe = nSpans;
+    }
     
-    // doc norm has already been accounted for in SpanTermQuery
-    return getSimilarity().tf(freq) * value;
-  }
-
-  public boolean skipTo(int target) throws IOException {
-    if (doc == 0 || (more && target > spans.doc()))
-      more = spans.skipTo(target);
-    return advance();
-  }
-
-  public Explanation explain(final int doc) throws IOException {
-    Explanation tfExplanation = new Explanation();
-
-    skipTo(doc);
-
-    float phraseFreq = (doc() == doc) ? freq : 0.0f;
-    tfExplanation.setValue(getSimilarity().tf(phraseFreq));
-    tfExplanation.setDescription("tf(phraseFreq=" + phraseFreq + ")");
-
-    return tfExplanation;
+    // Calculate the score as usual.
+    return super.score();
   }
 
   /**
@@ -233,22 +206,22 @@ public class SpanRecordingScorer extends Scorer
     // First, sort the spans in ascending order by start/end. This will make
     // it easy to detect overlap later.
     //
-    Arrays.sort(posOrder, 0, nSpans, SpanPosComparator.theInstance);
+    Arrays.sort(toDedupe, 0, nToDedupe, SpanPosComparator.theInstance);
 
     // Record the links in start/end order.
-    for (int i=0; i<nSpans; i++) {
-      scoreOrder[i].span = posOrder[i];
+    for (int i=0; i<nToDedupe; i++) {
+      scoreOrder[i].span = toDedupe[i];
       scoreOrder[i].posOrder = i;
       scoreOrder[i].cancelled = false;
       scoreOrder[i].prevInPosOrder = 
           ((i-1) >= 0)     ? scoreOrder[i-1] : null;
       scoreOrder[i].nextInPosOrder = 
-          ((i+1) < nSpans) ? scoreOrder[i+1] : null;
+          ((i+1) < nToDedupe) ? scoreOrder[i+1] : null;
       scoreOrder[i].nextDeduped = null;
     }
 
     // Now make a second sort, this time by descending score.
-    Arrays.sort(scoreOrder, 0, nSpans, theScoreComparator);
+    Arrays.sort(scoreOrder, 0, nToDedupe, theScoreComparator);
 
     // De-duplicate the score array, starting with the high scores first.
     int nDeduped = 0;
@@ -256,7 +229,7 @@ public class SpanRecordingScorer extends Scorer
     ScoreOrder firstDeduped = null;
     ScoreOrder lastDeduped = null;
     ScoreOrder o;
-    for (int i=0; i<nSpans; i++) {
+    for (int i=0; i<nToDedupe; i++) {
       // Skip entries that have already been cancelled.
       if (scoreOrder[i].cancelled)
         continue;
@@ -288,7 +261,7 @@ public class SpanRecordingScorer extends Scorer
       o = scoreOrder[i].nextInPosOrder; 
       while (o != null && o.span.start < scoreSpan.end) {
         o.cancelled = true;
-        assert o.posOrder == nSpans-1 ||
+        assert o.posOrder == nToDedupe-1 ||
                o.nextInPosOrder.posOrder == o.posOrder+1;
         o = o.nextInPosOrder;
       }
