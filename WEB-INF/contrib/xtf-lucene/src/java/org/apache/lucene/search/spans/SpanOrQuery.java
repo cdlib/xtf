@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.util.PriorityQueue;
@@ -207,6 +208,7 @@ public class SpanOrQuery extends SpanQuery {
              :(queue.size()>0?(doc()+":"+start()+"-"+end()):"END"));
         }
 
+        public Explanation explain() { throw new UnsupportedOperationException(); }
       };
   }
 

@@ -18,6 +18,8 @@ package org.apache.lucene.search.spans;
 
 import java.io.IOException;
 
+import org.apache.lucene.search.Explanation;
+
 /** Expert: an enumeration of span matches.  Used to implement span searching.
  * Each span represents a range of term positions within a document.  Matches
  * are enumerated in order, by increasing document number, within that by
@@ -52,4 +54,7 @@ public interface Spans {
   
   /** Returns the score of the current match. Initially invalid. */
   float score();
+  
+  /** Returns an explanation of how the score was arrived at. Initially invalid. */
+  Explanation explain() throws IOException;
 }

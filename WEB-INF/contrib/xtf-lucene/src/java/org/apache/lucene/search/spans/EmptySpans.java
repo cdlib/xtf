@@ -19,6 +19,8 @@ package org.apache.lucene.search.spans;
 import java.io.IOException;
 import java.util.Set;
 
+import org.apache.lucene.search.Explanation;
+
 /** 
  * Expert: An empty list of spans, suitable for ORing with other lists.
  */
@@ -42,4 +44,7 @@ public class EmptySpans implements Spans {
   public float score() { throw new UnsupportedOperationException(); }
   
   public void collectTerms(Set terms) { }
+  
+  public Explanation explain() { throw new UnsupportedOperationException(); }
+
 }

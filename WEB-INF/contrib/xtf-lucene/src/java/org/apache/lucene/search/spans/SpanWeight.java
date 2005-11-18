@@ -18,33 +18,25 @@ package org.apache.lucene.search.spans;
 
 import java.io.IOException;
 
-import java.util.Iterator;
-import java.util.Collection;
-
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Weight;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Explanation;
-import org.apache.lucene.search.Similarity;
 
 class SpanWeight implements Weight {
   private Searcher searcher;
   private float value;
-  private float idf;
   private float queryNorm;
   private float queryWeight;
 
-  private Collection terms;
   private SpanQuery query;
 
   public SpanWeight(SpanQuery query, Searcher searcher) {
     this.searcher = searcher;
     this.query = query;
-    this.terms = query.getTerms();
   }
 
   public Searcher getSearcher() { return searcher; }
@@ -52,15 +44,14 @@ class SpanWeight implements Weight {
   public float getValue() { return value; }
 
   public float sumOfSquaredWeights() throws IOException {
-    idf = this.query.getSimilarity(searcher).idf(terms, searcher);
-    queryWeight = idf * query.getBoost();         // compute query weight
+    queryWeight = query.getBoost();         // compute query weight
     return queryWeight * queryWeight;             // square it
   }
 
   public void normalize(float queryNorm) {
     this.queryNorm = queryNorm;
     queryWeight *= queryNorm;                     // normalize query weight
-    value = queryWeight * idf;                    // idf for document
+    value = queryWeight;                          // idf handled at lower level
   }
 
   public Scorer scorer(IndexReader reader) throws IOException {
@@ -69,9 +60,9 @@ class SpanWeight implements Weight {
                             query.getSimilarity(searcher));
     } else {
       return new SpanRecordingScorer(query.getSpans(reader, searcher),
-                                   this,
-                                   query.getSimilarity(searcher),
-                                   query.getSpanRecording());
+                                     this,
+                                     query.getSimilarity(searcher),
+                                     query.getSpanRecording());
     }
   }
 
@@ -82,22 +73,6 @@ class SpanWeight implements Weight {
     result.setDescription("weight("+getQuery()+" in "+doc+"), product of:");
     String field = ((SpanQuery)getQuery()).getField();
 
-    StringBuffer docFreqs = new StringBuffer();
-    Iterator i = terms.iterator();
-    while (i.hasNext()) {
-      Term term = (Term)i.next();
-      docFreqs.append(term.text());
-      docFreqs.append("=");
-      docFreqs.append(searcher.docFreq(term));
-
-      if (i.hasNext()) {
-        docFreqs.append(" ");
-      }
-    }
-
-    Explanation idfExpl =
-      new Explanation(idf, "idf(" + field + ": " + docFreqs + ")");
-
     // explain query weight
     Explanation queryExpl = new Explanation();
     queryExpl.setDescription("queryWeight(" + getQuery() + "), product of:");
@@ -105,45 +80,24 @@ class SpanWeight implements Weight {
     Explanation boostExpl = new Explanation(getQuery().getBoost(), "boost");
     if (getQuery().getBoost() != 1.0f)
       queryExpl.addDetail(boostExpl);
-    queryExpl.addDetail(idfExpl);
 
-    Explanation queryNormExpl = new Explanation(queryNorm,"queryNorm");
+    Explanation queryNormExpl = new Explanation(queryNorm, "queryNorm");
     queryExpl.addDetail(queryNormExpl);
 
     queryExpl.setValue(boostExpl.getValue() *
-                       idfExpl.getValue() *
                        queryNormExpl.getValue());
 
     result.addDetail(queryExpl);
 
     // explain field weight
-    Explanation fieldExpl = new Explanation();
-    fieldExpl.setDescription("fieldWeight("+field+":"+query.toString(field)+
-                             " in "+doc+"), product of:");
-
     Explanation tfExpl = scorer(reader).explain(doc);
-    fieldExpl.addDetail(tfExpl);
-    fieldExpl.addDetail(idfExpl);
-
-    Explanation fieldNormExpl = new Explanation();
-    byte[] fieldNorms = reader.norms(field);
-    float fieldNorm =
-      fieldNorms!=null ? Similarity.decodeNorm(fieldNorms[doc]) : 0.0f;
-    fieldNormExpl.setValue(fieldNorm);
-    fieldNormExpl.setDescription("fieldNorm(field="+field+", doc="+doc+")");
-    fieldExpl.addDetail(fieldNormExpl);
-
-    fieldExpl.setValue(tfExpl.getValue() *
-                       idfExpl.getValue() *
-                       fieldNormExpl.getValue());
-
-    result.addDetail(fieldExpl);
+    result.addDetail(tfExpl);
 
     // combine them
-    result.setValue(queryExpl.getValue() * fieldExpl.getValue());
+    result.setValue(queryExpl.getValue() * tfExpl.getValue());
 
     if (queryExpl.getValue() == 1.0f)
-      return fieldExpl;
+      return tfExpl;
 
     return result;
   }

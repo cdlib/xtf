@@ -25,6 +25,7 @@ import java.util.Set;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermPositions;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Similarity;
 
@@ -72,10 +73,10 @@ public class SpanTermQuery extends SpanQuery {
   {
 
     // Calculate a score value for this term, including the boost.
-    float idf = getSimilarity(searcher).idf(term, searcher); // compute idf
+    final float idf = getSimilarity(searcher).idf(term, searcher); // compute idf
     final float value = idf * getBoost();             // compute query weight
 
-    final byte[] docNorms = reader.norms(term.field());
+    final byte[] fieldNorms = reader.norms(term.field());
 
     return new Spans() {
         private TermPositions positions = reader.termPositions(term);
@@ -120,14 +121,43 @@ public class SpanTermQuery extends SpanQuery {
         public int start() { return position; }
         public int end() { return position + termLength; }
         public float score() { return value * 
-                               Similarity.decodeNorm(docNorms[doc]); }
+                               Similarity.decodeNorm(fieldNorms[doc]); }
         public void collectTerms(Set terms) { terms.add(term.text()); }
 
         public String toString() {
           return "spans(" + SpanTermQuery.this.toString() + ")@"+
-            (doc==-1?"START":(doc==Integer.MAX_VALUE)?"END":doc+"-"+position);
+            (doc==-1?"START":(doc==Integer.MAX_VALUE)?"END":doc+":"+position);
         }
 
+        public Explanation explain() throws IOException {
+    
+          Explanation result = new Explanation();
+          result.setDescription("weight("+toString()+"), product of:");
+    
+          // Explain idf
+          Explanation idfExpl =
+            new Explanation(idf, "idf(docFreq=" + searcher.docFreq(term) + ")");
+          result.addDetail(idfExpl);
+    
+          // Explain boost
+          Explanation boostExpl = new Explanation(getBoost(), "boost");
+          if (getBoost() != 1.0f) {
+            result.addDetail(boostExpl);
+          }
+          
+          // Explain norm 
+          Explanation fieldNormExpl = new Explanation();
+          float fieldNorm =
+            fieldNorms!=null ? Similarity.decodeNorm(fieldNorms[doc]) : 0.0f;
+          fieldNormExpl.setValue(fieldNorm);
+          fieldNormExpl.setDescription("fieldNorm(field="+getField()+", doc="+doc+")");
+          result.addDetail(fieldNormExpl);
+      
+          result.setValue(boostExpl.getValue() *
+                          idfExpl.getValue() *
+                          fieldNormExpl.getValue());
+          return result;
+        }
       };
   }
 

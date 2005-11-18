@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Similarity;
 import org.apache.lucene.util.PriorityQueue;
@@ -138,6 +139,7 @@ class NearSpans implements Spans {
     public int start() { return spans.start(); }
     public int end() { return spans.end(); }
     public float score() { throw new UnsupportedOperationException(); } 
+    public Explanation explain() throws IOException { return spans.explain(); }
     public void collectTerms(Set terms) { }
     
     public String toString() { return spans.toString() + "#" + index; }
@@ -405,5 +407,37 @@ class NearSpans implements Spans {
     } // for i
     
     return totalSlop = matchSlop;
+  }
+  
+  public Explanation explain() throws IOException {
+    
+    Explanation result = new Explanation(0, "weight("+toString()+"), product of:");
+    Explanation sumExpl = new Explanation(0, "totalMatchScore, sum of:");
+    
+    // Explain the sum of the matches
+    float totalScore = 0.0f;
+    for (int i = 0; i < ordered.size(); i++) { 
+      SpansCell cell = (SpansCell)ordered.get(i);
+      totalScore += cell.score;
+      sumExpl.addDetail(cell.spans.explain());
+    }
+    sumExpl.setValue(totalScore);
+    result.addDetail(sumExpl);
+
+    // Explain the boost, if any.
+    Explanation boostExpl = new Explanation(query.getBoost(), "boost");
+    if (query.getBoost() != 1.0f)
+      result.addDetail(boostExpl);
+    
+    // And explain the slop adjustment.
+    int totalSlop = totalSlop();
+    Explanation slopExpl = new Explanation(similarity.sloppyFreq(totalSlop), 
+        "sloppyFreq(slop=" + totalSlop + ")");
+    result.addDetail(slopExpl);
+    
+    result.setValue(sumExpl.getValue() *
+                    boostExpl.getValue() *
+                    slopExpl.getValue());
+    return result;
   }
 }

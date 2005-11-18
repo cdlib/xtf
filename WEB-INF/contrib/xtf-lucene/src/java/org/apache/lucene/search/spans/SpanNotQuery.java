@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 
@@ -147,6 +148,7 @@ public class SpanNotQuery extends SpanQuery {
           return "spans(" + SpanNotQuery.this.toString() + ")";
         }
 
+        public Explanation explain() { throw new UnsupportedOperationException(); }
       };
   }
 
