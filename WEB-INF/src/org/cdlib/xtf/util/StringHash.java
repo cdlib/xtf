@@ -68,14 +68,11 @@ public class StringHash
         
         // Is there already an entry for this key?
         Ent e;
-        int count = 0;
         for( e = ents[bucket]; e != null; e = e.next ) {
             if( key.equals(e.key) ) {
                 e.val = val;
                 return;
             }
-            count++;
-            assert count < 10;
         } // for e
         
         // Okay, make a new entry
