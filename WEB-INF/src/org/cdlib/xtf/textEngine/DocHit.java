@@ -29,6 +29,7 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.ScoreDoc;
 import org.cdlib.xtf.util.AttribList;
 
@@ -94,5 +95,11 @@ public abstract class DocHit extends ScoreDoc
      *                  
      */ 
     public abstract Snippet snippet( int hitNum, boolean getText ); 
+    
+    /** 
+     * Get an explanation of this document's score. Only available if 
+     * requested at query time.
+     */
+    public Explanation explanation() { return null; }
 
 } // class DocHit

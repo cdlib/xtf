@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -145,7 +146,7 @@ public class SpanSectionTypeQuery extends SpanQuery
         public int end() { return textSpans.end(); }
         public float score() { return textSpans.score() * getBoost(); }
         public String toString() { return textSpans.toString(); }
-
+        public Explanation explain() { throw new UnsupportedOperationException(); }
       };
     }
     

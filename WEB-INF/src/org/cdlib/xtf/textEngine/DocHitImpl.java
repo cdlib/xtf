@@ -36,6 +36,8 @@ import java.util.Set;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.search.Explanation;
+import org.apache.lucene.search.Weight;
 import org.apache.lucene.search.spans.FieldSpans;
 import org.cdlib.xtf.util.AttribList;
 
@@ -71,8 +73,11 @@ public class DocHitImpl extends DocHit
     /** Document's meta-data fields (copied from the docInfo chunk) */
     private AttribList metaData;
     
+    /** Explanation of this document's score */
+    private Explanation explanation;
+    
     /** Bump marker used to denote different meta-data fields w/ same name */
-    private char bumpMarker = Constants.BUMP_MARKER;
+    private static final char bumpMarker = Constants.BUMP_MARKER;
     
     /**
      * Construct a document hit. Package-private because these should only
@@ -81,8 +86,14 @@ public class DocHitImpl extends DocHit
      * @param docNum    Lucene ID for the document info chunk
      * @param score     Score for this hit
      */
-    DocHitImpl( int docNum, float score, FieldSpans spans ) {
+    DocHitImpl( int docNum, float score ) {
         super(docNum, score);
+    }
+    
+    /**
+     * Sets the spans after they've been recorded and de-duped.
+     */
+    void setSpans( FieldSpans spans ) {
         this.fieldSpans = spans;
     }
     
@@ -109,6 +120,34 @@ public class DocHitImpl extends DocHit
         // Adjust our score.
         score *= docScoreNorm;
     } // finish()
+    
+    /**
+     * Called after all hits have been gathered to normalize the scores and
+     * associate a snippetMaker for later use. Also calculates an explanation
+     * of the score.
+     * 
+     * @param snippetMaker    Will be used later by snippet() to actually
+     *                        create the snippets.
+     * @param docScoreNorm    Multiplied into the document's score
+     * @param weight          The query weight that will be used to calculate
+     *                        an explanation.
+     */
+    void finishWithExplain( SnippetMaker snippetMaker,
+                            float        docScoreNorm,
+                            Weight       weight )
+        throws IOException
+    {
+        // Don't do this twice.
+        if( this.snippetMaker != null )
+            return;
+        
+        // Do the normal work first.
+        finish( snippetMaker, docScoreNorm );
+        
+        // And figure out an explanation.
+        explanation = weight.explain( snippetMaker.reader, doc );
+      
+    } // finishWithExplain()
     
     /**
      * Read in the document info chunk and record the path, date, etc. that
@@ -329,5 +368,10 @@ public class DocHitImpl extends DocHit
         // Return the pre-built snippet.
         return snippets[hitNum];
     } // snippet()
+    
+    /** Retrieve an explanation of this document's score */
+    public Explanation explanation() {
+        return explanation;
+    }
     
 } // class DocHit
