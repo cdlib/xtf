@@ -88,27 +88,29 @@ class SpanScorer extends Scorer {
 
   public Explanation explain(final int target) throws IOException {
 
-    Explanation pfExpl = new Explanation(0.0f, "phraseFreq, sum of:" );
+    Explanation sfExpl = new Explanation(0.0f, "spanFreq, sum of:" );
     
     more = spans.skipTo(target);
     freq = 0.0f;
 
+    int nSpans = 0;
     while (more && spans.doc() == target) {
       final float score = spans.score();
-      pfExpl.addDetail(spans.explain());
+      sfExpl.addDetail(spans.explain());
+      nSpans++;
       freq += score;
       more = spans.next();
     }
     
-    pfExpl.setValue(freq);
+    sfExpl.setValue(freq);
 
     Explanation tfExpl = new Explanation(
         getSimilarity().tf(freq),
-        "tf(phraseFreq=" + freq + ")");
-    if (pfExpl.getDetails().length == 1)
-      tfExpl.addDetail(pfExpl.getDetails()[0]);
+        "tf(spanFreq=" + freq + ")");
+    if (nSpans == 1)
+      tfExpl.addDetail(sfExpl.getDetails()[0]);
     else
-      tfExpl.addDetail(pfExpl);
+      tfExpl.addDetail(sfExpl);
     return tfExpl;
   }
 

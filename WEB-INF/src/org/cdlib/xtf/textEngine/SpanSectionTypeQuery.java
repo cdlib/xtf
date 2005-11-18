@@ -146,7 +146,22 @@ public class SpanSectionTypeQuery extends SpanQuery
         public int end() { return textSpans.end(); }
         public float score() { return textSpans.score() * getBoost(); }
         public String toString() { return textSpans.toString(); }
-        public Explanation explain() { throw new UnsupportedOperationException(); }
+        public Explanation explain() throws IOException { 
+          if (getBoost() == 1.0f)
+            return textSpans.explain();
+          
+          Explanation result = new Explanation(0, 
+              "weight("+toString()+"), product of:" );
+          
+          Explanation boostExpl = new Explanation(getBoost(), "boost");
+          result.addDetail(boostExpl);
+          
+          Explanation inclExpl = textSpans.explain(); 
+          result.addDetail(inclExpl);
+          
+          result.setValue(boostExpl.getValue() * inclExpl.getValue());
+          return result;
+        }
       };
     }
     

@@ -141,9 +141,8 @@ public class SpanTermQuery extends SpanQuery {
     
           // Explain boost
           Explanation boostExpl = new Explanation(getBoost(), "boost");
-          if (getBoost() != 1.0f) {
+          if (getBoost() != 1.0f)
             result.addDetail(boostExpl);
-          }
           
           // Explain norm 
           Explanation fieldNormExpl = new Explanation();

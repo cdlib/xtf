@@ -200,7 +200,7 @@ public class SpanOrQuery extends SpanQuery {
         public int doc() { return top().doc(); }
         public int start() { return top().start(); }
         public int end() { return top().end(); }
-        public float score() { return top().score(); }
+        public float score() { return top().score() * getBoost(); }
 
         public String toString() {
           return "spans("+SpanOrQuery.this+")@"+
@@ -208,7 +208,22 @@ public class SpanOrQuery extends SpanQuery {
              :(queue.size()>0?(doc()+":"+start()+"-"+end()):"END"));
         }
 
-        public Explanation explain() { throw new UnsupportedOperationException(); }
+        public Explanation explain() throws IOException { 
+          if (getBoost() == 1.0f)
+            return top().explain();
+          
+          Explanation result = new Explanation(0, 
+              "weight("+toString()+"), product of:" );
+          
+          Explanation boostExpl = new Explanation(getBoost(), "boost");
+          result.addDetail(boostExpl);
+          
+          Explanation inclExpl = top().explain(); 
+          result.addDetail(inclExpl);
+          
+          result.setValue(boostExpl.getValue() * inclExpl.getValue());
+          return result;
+        }
       };
   }
 

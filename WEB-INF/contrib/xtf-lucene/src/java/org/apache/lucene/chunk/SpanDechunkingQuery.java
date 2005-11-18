@@ -165,7 +165,20 @@ public class SpanDechunkingQuery extends SpanQuery {
       }
 
       public Explanation explain() throws IOException {
-        throw new UnsupportedOperationException();
+        if (getBoost() == 1.0f)
+          return spans.explain();
+        
+        Explanation result = new Explanation(0, 
+            "weight("+toString()+"), product of:" );
+        
+        Explanation boostExpl = new Explanation(getBoost(), "boost");
+        result.addDetail(boostExpl);
+        
+        Explanation inclExpl = spans.explain(); 
+        result.addDetail(inclExpl);
+        
+        result.setValue(boostExpl.getValue() * inclExpl.getValue());
+        return result;
       }
     };
   }

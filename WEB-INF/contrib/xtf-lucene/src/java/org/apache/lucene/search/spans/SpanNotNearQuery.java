@@ -145,7 +145,22 @@ public class SpanNotNearQuery extends SpanQuery {
           return "spans(" + SpanNotNearQuery.this.toString() + ")";
         }
         
-        public Explanation explain() { throw new UnsupportedOperationException(); }
+        public Explanation explain() throws IOException { 
+          if (getBoost() == 1.0f)
+            return includeSpans.explain();
+          
+          Explanation result = new Explanation(0, 
+              "weight("+toString()+"), product of:" );
+          
+          Explanation boostExpl = new Explanation(getBoost(), "boost");
+          result.addDetail(boostExpl);
+          
+          Explanation inclExpl = includeSpans.explain(); 
+          result.addDetail(inclExpl);
+          
+          result.setValue(boostExpl.getValue() * inclExpl.getValue());
+          return result;
+        }
       };
   }
 
