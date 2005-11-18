@@ -44,7 +44,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RecordingSearcher;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.SpanHitCollector;
-import org.apache.lucene.search.spans.FieldSpans;
+import org.apache.lucene.search.Weight;
+import org.apache.lucene.search.FieldSpanSource;
 import org.apache.lucene.util.PriorityQueue;
 import org.cdlib.xtf.textEngine.facet.FacetSpec;
 import org.cdlib.xtf.textEngine.facet.GroupCounts;
@@ -248,7 +249,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         // Now for the big show... go get the hits!
         searcher.search( finalQuery, null, new SpanHitCollector() {
-            public void collect( int doc, float score, FieldSpans fieldSpans ) 
+            public void collect( int doc, float score, FieldSpanSource spanSource ) 
             {
                 // Ignore deleted entries.
                 if( score <= 0.0f )
@@ -264,11 +265,11 @@ public class DefaultQueryProcessor extends QueryProcessor
                     maxDocScore = score;
                 
                 // Record the hit.
-                docHitMaker.reset( doc, score, fieldSpans );
+                docHitMaker.reset( doc, score, spanSource );
                 if( req.maxDocs > 0 ) {
                     if( req.maxDocs >= 999999999 )
                         docHitQueue.ensureCapacity( 1 );
-                    docHitQueue.insert( docHitMaker.getDocHit() );
+                    docHitMaker.insertInto( docHitQueue );
                 }
                 
                 // If grouping is enabled, add this document to the counts.
@@ -293,6 +294,13 @@ public class DefaultQueryProcessor extends QueryProcessor
         docScoreNorm = 1.0f;
         if( req.normalizeScores && maxDocScore > 0.0f )  
             docScoreNorm = 1.0f / maxDocScore;
+        
+        // We'll need a query weight if we're being asked to explain the
+        // scores.
+        //
+        Weight weight = null;
+        if( req.explainScores )
+            weight = finalQuery.weight( searcher );
 
         // Finish off the hits (read in the fields, normalize, make snippets).
         SnippetMaker snippetMaker = new SnippetMaker( limReader,
@@ -303,7 +311,12 @@ public class DefaultQueryProcessor extends QueryProcessor
                                                       req.maxContext,
                                                       req.termMode );
         for( int i = req.startDoc; i < nFound; i++ ) {
-            hitArray[i].finish( snippetMaker, docScoreNorm );
+            if( req.explainScores ) {
+                hitArray[i].finishWithExplain( 
+                    snippetMaker, docScoreNorm, weight );
+            }
+            else
+                hitArray[i].finish( snippetMaker, docScoreNorm );
             if( result.textTerms == null )
                 result.textTerms = hitArray[i].textTerms();
             hitVec.add( hitArray[i] );
@@ -492,15 +505,15 @@ public class DefaultQueryProcessor extends QueryProcessor
 
     private static class DocHitMakerImpl implements GroupCounts.DocHitMaker
     {
-      private int        doc;
-      private float      score;
-      private FieldSpans spans;
-      private DocHit     docHit;
+      private int             doc;
+      private float           score;
+      private FieldSpanSource spanSrc;
+      private DocHitImpl      docHit;
       
-      public final void reset( int doc, float score, FieldSpans spans ) {
-        this.doc   = doc;
-        this.score = score;
-        this.spans = spans;
+      public final void reset( int doc, float score, FieldSpanSource spanSrc ) {
+        this.doc     = doc;
+        this.score   = score;
+        this.spanSrc = spanSrc;
         
         docHit = null;
       }
@@ -509,10 +522,19 @@ public class DefaultQueryProcessor extends QueryProcessor
         return doc;
       }
       
-      public final DocHit getDocHit() {
-        if( docHit == null )
-            docHit = new DocHitImpl( doc, score, spans );
-        return docHit;
+      public final boolean insertInto( PriorityQueue queue ) {
+        boolean justMade = false;
+        if( docHit == null ) {
+            docHit = new DocHitImpl( doc, score );
+            justMade = true;
+        }
+        
+        boolean inserted = queue.insert( docHit );
+        
+        if( inserted && justMade )
+            docHit.setSpans( spanSrc.getSpans(doc) );
+        
+        return inserted;
       }
     } // class DocHitMaker
     
