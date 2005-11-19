@@ -75,6 +75,10 @@
 
   <!-- raw XML dump flag -->
   <xsl:param name="raw"/>
+  
+  <!-- score normalization and explanation (for debugging) -->
+  <xsl:param name="normalizeScores"/>
+  <xsl:param name="explainScores"/>
 
   <!-- first hit on page -->
   <xsl:param name="startDoc" select="1"/>
@@ -127,6 +131,14 @@
         </xsl:attribute>
       </xsl:if>
       
+      <!-- score normalization and explanation -->
+      <xsl:if test="$normalizeScores">
+        <xsl:attribute name="normalizeScores" select="$normalizeScores"/>
+      </xsl:if>
+      <xsl:if test="$explainScores">
+        <xsl:attribute name="explainScores" select="$explainScores"/>
+      </xsl:if>
+      
       <!-- process query -->
       <xsl:apply-templates/>
       
@@ -146,7 +158,7 @@
     <xsl:variable name="textParam" select="$queryParams[matches(@name, 'text|query')]"/>
     
     <!-- Find the meta-data queries, if any -->
-    <xsl:variable name="metaParams" select="$queryParams[not(matches(@name, 'text*|query*|style|smode|rmode|brand|sort|startDoc|docsPerPage|sectionType|fieldList|.*-ignore'))]"/>
+    <xsl:variable name="metaParams" select="$queryParams[not(matches(@name, 'text*|query*|style|smode|rmode|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|.*-ignore'))]"/>
  
     <and>
       <!-- Process the meta-data queries, if any -->

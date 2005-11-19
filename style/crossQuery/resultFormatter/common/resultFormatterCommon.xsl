@@ -175,6 +175,10 @@
   <!-- XML Output Parameter -->
   <xsl:param name="raw"/>
   
+  <!-- Score normalization and explanation -->
+  <xsl:param name="normalizeScores"/>
+  <xsl:param name="explainScores"/>
+  
   <!-- Retrieve Branding Nodes -->
   <xsl:variable name="brand.file">
     <xsl:choose>

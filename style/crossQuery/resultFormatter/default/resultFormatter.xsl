@@ -512,7 +512,12 @@
         </a>
       </td>
       <td align="center">
-        <span class="heading"><xsl:value-of select="@score"/>%</span>
+        <span class="heading">
+          <xsl:value-of select="@score"/>
+          <xsl:if test="not(matches($normalizeScores, 'no|false'))">
+            <xsl:text>%</xsl:text>
+          </xsl:if>
+        </span>
       </td>
     </tr>
     <tr>
@@ -592,6 +597,22 @@
         </td>
       </tr>
     </xsl:if>
+    <xsl:if test="explanation">
+      <tr>
+        <td align="right">
+          <xsl:text>&#160;</xsl:text>
+        </td>
+        <td align="right" valign="top">
+          <span class="heading">Explanation:&#160;&#160;</span>
+        </td>
+        <td align="left">
+          <xsl:apply-templates select="explanation"/>
+        </td>
+        <td align="right">
+          <xsl:text>&#160;</xsl:text>
+        </td>
+      </tr>
+    </xsl:if>
     <tr>
       <td colspan="4">
         <hr size="1" width="100%"/>
@@ -651,4 +672,19 @@
    
   </xsl:template>
 
+  <!-- ====================================================================== -->
+  <!-- Explanation Template                                                   -->
+  <!-- ====================================================================== -->
+  
+  <xsl:template match="explanation">
+    <ul>
+      <li>
+        <xsl:value-of select="@value"/>
+        <xsl:text> = </xsl:text>
+        <xsl:value-of select="@description"/>
+      </li>
+      <xsl:apply-templates/>
+    </ul>
+  </xsl:template>
+    
 </xsl:stylesheet>
