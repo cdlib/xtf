@@ -123,16 +123,13 @@ public class BigramQueryRewriter extends QueryRewriter {
     for (int i = 0; i < clauses.length; i++) {
       assert !(clauses[i].prohibited && clauses[i].required) : "clauses cannot be both prohibited and required";
 
-      // Single stop words which are either prohibited or not required
-      // must be removed. Make sure to add them to the removed list
-      // so the user will be notified.
+      // Single stop words must be removed. Make sure to add them to the 
+      // removed list so the user will be notified.
       //
-      if (clauses[i].prohibited || !clauses[i].required) {
-        if (stopSet.contains(extractTermText(clauses[i].query))) {
-          removedTerms.add(extractTermText(clauses[i].query));
-          anyChange = true;
-          continue;
-        }
+      if (stopSet.contains(extractTermText(clauses[i].query))) {
+        removedTerms.add(extractTermText(clauses[i].query));
+        anyChange = true;
+        continue;
       }
 
       // Rewrite the clause and/or its descendants
@@ -151,11 +148,9 @@ public class BigramQueryRewriter extends QueryRewriter {
         allowed.add(rewrittenQuery);
     } // for i
 
-    // Bi-gram the required clauses, but not looking for an exact match.
-    if (!required.isEmpty()) {
-      if (bigramQueries(required, maxSlop))
-        anyChange = true;
-    }
+    // NOTE: 
+    // Do NOT bi-gram the required clauses, because they don't have any real
+    // order, and besides, they might be from entirely different fields.
 
     // If no changes were needed, return the original query unchanged.
     if (!anyChange)
