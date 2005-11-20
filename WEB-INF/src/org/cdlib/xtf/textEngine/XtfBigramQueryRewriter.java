@@ -456,9 +456,6 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
       testUnchanged(bool(regTerm("hello"), true, false, regTerm("kitty"),
           false, true, regTerm("pencil"), true, false));
 
-      testQuery(bool(regTerm("this"), true, false, regTerm("is"), true, false,
-          regTerm("fun"), true, false),
-          "\"(this OR this~is) (is~fun OR fun)\"~20");
       testQuery(bool(regTerm("cats"), true, false, regTerm("and"), false, true,
           regTerm("hats"), true, false), "(+cats +hats)");
       testQuery(bool(regTerm("cats"), true, false, regTerm("and"), false,
@@ -469,22 +466,8 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
       // Test BooleanQuery with non~term clauses
       testQuery(bool(regTerm("whip"), true, false, or(terms("it them")), true,
           false, regTerm("good"), true, false), "(+whip +them +good)");
-      testQuery(bool(regTerm("whip"), true, false, and(terms("the dog")), true,
-          false, regTerm("good"), true, false),
-          "(+whip +(the~dog OR dog) +good)");
-      testQuery(bool(regTerm("whip"), true, false, and(terms("the funny dog")),
-          true, false, regTerm("good"), true, false),
-          "(+whip +\"(the~funny OR funny) dog\"~20 +good)");
 
       // Test boost propagation
-      testQuery(
-          boost(2, bool(boost(3, regTerm("pick")), true, false, boost(4,
-              regTerm("the")), true, false, boost(5, regTerm("dirt")), true,
-              false)), "\"(pick^3 OR pick~the^4) (the~dirt^5 OR dirt^5)\"~20^2");
-      testQuery(boost(2,
-          bool(boost(3, regTerm("the")), true, false,
-              boost(4, regTerm("dirt")), true, false, boost(5, regTerm("man")),
-              false, false)), "(+(the~dirt^4 OR dirt^4) man^5)^2");
       testQuery(boost(2, bool(boost(3, regTerm("it")), false, false, boost(4,
           regTerm("and")), false, false, boost(5, regTerm("harry")), true,
           false)), "harry^10");
