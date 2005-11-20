@@ -89,6 +89,9 @@ public class DefaultQueryProcessor extends QueryProcessor
     /** Mapping of accented chars to chars without diacritics */
     private CharMap        accentMap;
     
+    /** Whether the index is "sparse" (i.e. more than 5 chunks per doc) */
+    private boolean        isSparse;
+    
     /** Total number of documents hit (not just those that scored high) */
     private int            nDocsHit;
     
@@ -148,6 +151,7 @@ public class DefaultQueryProcessor extends QueryProcessor
             stopSet      = xtfSearcher.stopSet();
             pluralMap    = xtfSearcher.pluralMap();
             accentMap    = xtfSearcher.accentMap();
+            isSparse     = xtfSearcher.isSparse();
         }
         
         // Apply a work limit to the query if we were requested to. If no
@@ -170,7 +174,8 @@ public class DefaultQueryProcessor extends QueryProcessor
         final PriorityQueue docHitQueue =
             createHitQueue( reader, 
                             req.startDoc + req.maxDocs, 
-                            req.sortMetaFields );
+                            req.sortMetaFields,
+                            isSparse );
         
         // Start making the result by filling in its context.
         QueryResult result = new QueryResult();
@@ -360,8 +365,8 @@ public class DefaultQueryProcessor extends QueryProcessor
         for( int i = 0; i < req.facetSpecs.length; i++ ) {
             FacetSpec spec = req.facetSpecs[i];
             GroupData data = GroupData.getCachedData( reader, spec.field );
-            HitQueueMakerImpl maker = 
-                                new HitQueueMakerImpl( reader, spec.sortDocsBy );
+            HitQueueMakerImpl maker = new HitQueueMakerImpl( 
+                reader, spec.sortDocsBy, isSparse );
             groupCounts[i] = new GroupCounts( data, spec, maker );
         }
         
@@ -445,11 +450,13 @@ public class DefaultQueryProcessor extends QueryProcessor
      * @param reader     will be used to read the field contents
      * @param size       size of the queue (typically startDoc + maxDocs)
      * @param sortFields space or comma delimited list of fields to sort by
+     * @param isSparse   if index is sparse (i.e. more than 5 chunks per doc)
      * @return           an appropriate hit queue
      */
     private static PriorityQueue createHitQueue( IndexReader  reader,
                                                  int          size,
-                                                 String       sortFields )
+                                                 String       sortFields,
+                                                 boolean      isSparse )
         throws IOException
     {
         // If a large size is requested, start with a small queue and expand
@@ -494,7 +501,10 @@ public class DefaultQueryProcessor extends QueryProcessor
                 name = name.substring( 1 );
             }
             
-            fields[i] = new SortField( name, sparseStringComparator, reverse );
+            if( isSparse )
+                fields[i] = new SortField( name, sparseStringComparator, reverse );
+            else
+                fields[i] = new SortField( name, SortField.STRING, reverse );
         }
         fields[fieldNames.size()] = SortField.FIELD_SCORE;
         
@@ -542,16 +552,21 @@ public class DefaultQueryProcessor extends QueryProcessor
     {
       private IndexReader reader;
       private String      sortFields;
+      private boolean     isSparse;
       
-      public HitQueueMakerImpl( IndexReader reader, String sortFields ) {
+      public HitQueueMakerImpl( IndexReader reader, 
+                                String sortFields, 
+                                boolean isSparse ) 
+      {
         this.reader = reader;
         this.sortFields = sortFields;
+        this.isSparse = isSparse;
       }
       
       public PriorityQueue makeQueue( int size ) {
         try {
             return DefaultQueryProcessor.createHitQueue( 
-                         reader, size, sortFields );
+                         reader, size, sortFields, isSparse );
         }
         catch( IOException e ) {
             throw new RuntimeException( e );

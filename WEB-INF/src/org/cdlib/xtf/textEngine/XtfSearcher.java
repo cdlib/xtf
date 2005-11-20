@@ -93,6 +93,9 @@ public class XtfSearcher
     /** Map of accented chars to remove diacritics from */
     private CharMap       accentMap;
     
+    /** Whether this index is "sparse" (i.e. more than 5 chunks per doc) */
+    private boolean       isSparse;
+    
     /** 
      * Construct a searcher set on the given directory.
      * 
@@ -181,6 +184,15 @@ public class XtfSearcher
             accentMap = new CharMap( stream );
         }
 
+        // Determine whether this is a "sparse" index. Our definition of
+        // sparse is that there are more than 5 chunks per document, meaning
+        // that meta-data sorting and grouping will waste a lot of memory
+        // if they allocate a slot per chunk.
+        //
+        int nDocs   = reader.docFreq( new Term("docInfo", "1") );
+        int nChunks = reader.maxDoc();
+        isSparse = nChunks > (nDocs*5);
+        
         // Remember the version that we've checked.
         curVersion = ver;
     } // update()
@@ -239,6 +251,14 @@ public class XtfSearcher
      */
     public CharMap accentMap() {
         return accentMap;
+    }
+    
+    
+    /** 
+     * Find out if the index is sparse (i.e. more than 5 chunks per doc)
+     */
+    public boolean isSparse() {
+        return isSparse;
     }
 
     
