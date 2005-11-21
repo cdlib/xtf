@@ -213,7 +213,17 @@
   <!-- Maximum number of hits allowed -->
   <xsl:param name="maxHits" as="xs:integer" select="100000"/>  
   <!-- Maximum Pages -->
-  <xsl:param name="maxPages" as="xs:integer" select="$maxHits div $docsPerPage"/>
+  <!--<xsl:param name="maxPages" as="xs:integer" select="$maxHits div $docsPerPage"/>-->  
+  <xsl:param name="maxPages" as="xs:integer">
+    <xsl:choose>
+      <xsl:when test="$docsPerPage > 0">
+        <xsl:value-of select="$maxHits div $docsPerPage"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="0"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:param>
 
   <!-- Path Parameters -->
   <xsl:param name="servlet.path"/>
