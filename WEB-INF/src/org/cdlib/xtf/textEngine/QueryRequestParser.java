@@ -252,8 +252,10 @@ public class QueryRequestParser
             EasyNode el = main.child( i );
             if( !el.isElement() )
                 continue;
-            if( "facet".equals(el.name()) )
+            else if( "facet".equals(el.name()) )
                 parseFacetSpec( el );
+            else if( "resultData".equals(el.name()) )
+                continue;
             else {
                 req.query = 
                     deChunk( parseQuery(el, null, DEFAULT_MAX_SNIPPETS) );
@@ -506,6 +508,8 @@ public class QueryRequestParser
                 continue;
             if( el.name().equals("sectionType") )
                 continue; // handled elsewhere
+            else if( el.name().equals("resultData") )
+                continue; // ignore, handled by client's resultFormatter.xsl
 
             Query q;
             boolean isNot = false;
