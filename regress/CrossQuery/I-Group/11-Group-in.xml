@@ -4,11 +4,5 @@
   <facet field="group-subject" 
          sortDocsBy="title"
          select="*[1-5]|Politics#all"/>
-  <!-- old
-    <groupField field="group-subject">
-      <countGroups startGroup="1" maxGroups="5"/>
-      <groupHits value="Politics" sortDocsBy="title"/>
-    </groupField>
-  -->
   <term field="collection" maxSnippets="0">UC</term>
 </query>

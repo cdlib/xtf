@@ -2,15 +2,15 @@
 
 <TEI.2 id="ft1c6003wp" xmlns:xtf="http://cdlib.org/xtf">
     <title xtf:tokenize="no" xtf:meta="yes">This is Document 5</title>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Environmental Studies</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">California and the West</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Environmental Studies</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">California and the West</group-subject>
     <subject xtf:meta="true">Environmental Studies</subject>
     <subject xtf:meta="true">California and the West</subject>
     <type xtf:meta="true">text</type>
     <collection xtf:meta="true">UC</collection>
     <geography xtf:meta="true">US::Nevada::Reno</geography>
     <geography xtf:meta="true">US::California::Santa Cruz</geography>
-    <geography-sort xtf:meta="true" xtf:tokenize="false">US::Nevada::Reno</geography-sort>
-    <geography-sort xtf:meta="true" xtf:tokenize="false">US::California::Santa Cruz</geography-sort>
+    <geography-sort xtf:meta="true" xtf:facet="true">US::Nevada::Reno</geography-sort>
+    <geography-sort xtf:meta="true" xtf:facet="true">US::California::Santa Cruz</geography-sort>
     Document 5 text here. Blah blah blah.
 </TEI.2>

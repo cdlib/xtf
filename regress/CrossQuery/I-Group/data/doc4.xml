@@ -2,12 +2,12 @@
 
 <document xmlns:xtf="http://cdlib.org/xtf">
     <title xtf:tokenize="no" xtf:meta="yes">Why? Document 4</title>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Classics</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Ancient History</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Politics</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Classical History</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Classical Religions</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Classical Politics</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Classics</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Ancient History</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Politics</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Classical History</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Classical Religions</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Classical Politics</group-subject>
     <subject xtf:meta="true">Classics</subject>
     <subject xtf:meta="true">Ancient History</subject>
     <subject xtf:meta="true">Politics</subject>
@@ -17,6 +17,6 @@
     <type xtf:meta="true">text</type>
     <collection xtf:meta="true">UC</collection>
     <geography xtf:meta="true">US::Nevada::Las Vegas</geography>
-    <geography-sort xtf:meta="true" xtf:tokenize="false">US::Nevada::Las Vegas</geography-sort>
+    <geography-sort xtf:meta="true" xtf:facet="true">US::Nevada::Las Vegas</geography-sort>
     Document 4 text here. Blah blah blah.
 </document>

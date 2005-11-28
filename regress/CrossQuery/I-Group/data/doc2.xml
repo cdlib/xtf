@@ -2,11 +2,11 @@
 
 <document xmlns:xtf="http://cdlib.org/xtf">
     <title xtf:tokenize="no" xtf:meta="yes">ABC: Document 2</title>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Politics</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Philosophy</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Political Theory</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Social and Political Thought</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Social Theory</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Politics</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Philosophy</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Political Theory</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Social and Political Thought</group-subject>
+    <group-subject xtf:facet="yes" xtf:meta="true">Social Theory</group-subject>
     <subject xtf:meta="true">Politics</subject>
     <subject xtf:meta="true">Philosophy</subject>
     <subject xtf:meta="true">Political Theory</subject>
@@ -15,6 +15,6 @@
     <type xtf:meta="true">text</type>
     <collection xtf:meta="true">UC</collection>
     <geography xtf:meta="true">US::California::Santa Cruz</geography>
-    <geography-sort xtf:meta="true" xtf:tokenize="false">US::California::Santa Cruz</geography-sort>
+    <geography-sort xtf:meta="true" xtf:facet="true">US::California::Santa Cruz</geography-sort>
     Document 2 text here. Blah blah blah.
 </document>

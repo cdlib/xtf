@@ -2,11 +2,5 @@
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
   <facet field="group-subject" select="*[1-5]|Politics#2-4"/>
-  <!-- old
-    <groupField field="group-subject">
-      <countGroups startGroup="1" maxGroups="5"/>
-      <groupHits value="Politics" startDoc="2" maxDocs="3"/>
-    </groupField>
-  -->
   <term field="collection" maxSnippets="0">UC</term>
 </query>

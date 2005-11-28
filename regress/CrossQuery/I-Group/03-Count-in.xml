@@ -2,10 +2,5 @@
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
   <facet field="group-subject" sortGroupsBy="totalDocs" select="*[6-10]"/>
-  <!-- old
-    <groupField field="group-subject" sortGroupsBy="totalDocs">
-      <countGroups startGroup="6" maxGroups="5"/>
-    </groupField>
-  -->
   <term field="collection">UC</term>
 </query>

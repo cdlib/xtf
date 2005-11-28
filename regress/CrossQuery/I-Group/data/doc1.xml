@@ -2,15 +2,15 @@
 
 <document xmlns:xtf="http://cdlib.org/xtf">
     <title xtf:tokenize="no" xtf:meta="yes">XYZ: Document 1</title>
-    <group-subject xtf:tokenize="no" xtf:meta="yes">African Studies</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">Politics</group-subject>
-    <group-subject xtf:tokenize="no" xtf:meta="true">African History</group-subject>
+    <group-subject xtf:facet="true" xtf:meta="yes">African Studies</group-subject>
+    <group-subject xtf:facet="true" xtf:meta="true">Politics</group-subject>
+    <group-subject xtf:facet="true" xtf:meta="true">African History</group-subject>
     <subject xtf:meta="yes">African Studies</subject>
     <subject xtf:meta="true">Politics</subject>
     <subject xtf:meta="true">African History</subject>
     <type xtf:meta="true">text</type>
     <collection xtf:meta="true">UC</collection>
     <geography xtf:meta="true">US::California::Berkeley</geography>
-    <geography-sort xtf:meta="true" xtf:tokenize="false">US::California::Berkeley</geography-sort>
+    <geography-sort xtf:meta="true" xtf:facet="true">US::California::Berkeley</geography-sort>
     Document 1 text here. Blah blah blah.
 </document>

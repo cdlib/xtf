@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="10" startDoc="0" endDoc="0">
+   <facet field="group-subject" totalGroups="16" totalDocs="10">
+      <group value="Politics" rank="1" totalSubGroups="0" totalDocs="7" startDoc="1" endDoc="4">
+         <docHit rank="1" file="doc1.xml" totalHits="0">
+            <meta>
+               <title>XYZ: Document 1</title>
+               <group-subject>African Studies</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>African History</group-subject>
+               <subject>African Studies</subject>
+               <subject>Politics</subject>
+               <subject>African History</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::California::Berkeley</geography>
+               <geography-sort>US::California::Berkeley</geography-sort>
+            </meta>
+         </docHit>
+         <docHit rank="2" file="doc2.xml" totalHits="0">
+            <meta>
+               <title>ABC: Document 2</title>
+               <group-subject>Politics</group-subject>
+               <group-subject>Philosophy</group-subject>
+               <group-subject>Political Theory</group-subject>
+               <group-subject>Social and Political Thought</group-subject>
+               <group-subject>Social Theory</group-subject>
+               <subject>Politics</subject>
+               <subject>Philosophy</subject>
+               <subject>Political Theory</subject>
+               <subject>Social and Political Thought</subject>
+               <subject>Social Theory</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::California::Santa Cruz</geography>
+               <geography-sort>US::California::Santa Cruz</geography-sort>
+            </meta>
+         </docHit>
+         <docHit rank="3" file="doc3.xml" totalHits="0">
+            <meta>
+               <title>Hello: Document 3</title>
+               <group-subject>Politics</group-subject>
+               <group-subject>Sociology</group-subject>
+               <group-subject>Urban Studies</group-subject>
+               <subject>Politics</subject>
+               <subject>Sociology</subject>
+               <subject>Urban Studies</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>Canada::Quebec::Toronto</geography>
+               <geography-sort>Canada::Ontario:Toronto</geography-sort>
+            </meta>
+         </docHit>
+         <docHit rank="4" file="doc4.xml" totalHits="0">
+            <meta>
+               <title>Why? Document 4</title>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Classical Politics</group-subject>
+               <subject>Classics</subject>
+               <subject>Ancient History</subject>
+               <subject>Politics</subject>
+               <subject>Classical History</subject>
+               <subject>Classical Religions</subject>
+               <subject>Classical Politics</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::Nevada::Las Vegas</geography>
+               <geography-sort>US::Nevada::Las Vegas</geography-sort>
+            </meta>
+         </docHit>
+      </group>
+      <group value="Ancient History" rank="2" totalSubGroups="0" totalDocs="3" startDoc="1" endDoc="3">
+         <docHit rank="1" file="doc4.xml" totalHits="0">
+            <meta>
+               <title>Why? Document 4</title>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Classical Politics</group-subject>
+               <subject>Classics</subject>
+               <subject>Ancient History</subject>
+               <subject>Politics</subject>
+               <subject>Classical History</subject>
+               <subject>Classical Religions</subject>
+               <subject>Classical Politics</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::Nevada::Las Vegas</geography>
+               <geography-sort>US::Nevada::Las Vegas</geography-sort>
+            </meta>
+         </docHit>
+         <docHit rank="2" file="doc7.xml" totalHits="0">
+            <meta>
+               <title>Do read Document 7</title>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
+               <subject>Politics</subject>
+               <subject>Classics</subject>
+               <subject>Ancient History</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::California::Mendocino</geography>
+               <geography-sort>US::California::Mendocino</geography-sort>
+            </meta>
+         </docHit>
+         <docHit rank="3" file="doc9.xml" totalHits="0">
+            <meta>
+               <title>Document 9 is absolutely cool</title>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Classical Politics</group-subject>
+               <subject>Classics</subject>
+               <subject>Ancient History</subject>
+               <subject>Politics</subject>
+               <subject>Classical History</subject>
+               <subject>Classical Religions</subject>
+               <subject>Classical Politics</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::California::Oakland</geography>
+               <geography-sort>US::California::Oakland</geography-sort>
+            </meta>
+         </docHit>
+      </group>
+      <group value="Classical History" rank="3" totalSubGroups="0" totalDocs="3" startDoc="1" endDoc="3">
+         <docHit rank="1" file="doc4.xml" totalHits="0">
+            <meta>
+               <title>Why? Document 4</title>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Classical Politics</group-subject>
+               <subject>Classics</subject>
+               <subject>Ancient History</subject>
+               <subject>Politics</subject>
+               <subject>Classical History</subject>
+               <subject>Classical Religions</subject>
+               <subject>Classical Politics</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::Nevada::Las Vegas</geography>
+               <geography-sort>US::Nevada::Las Vegas</geography-sort>
+            </meta>
+         </docHit>
+         <docHit rank="2" file="doc8.xml" totalHits="0">
+            <meta>
+               <title>Document 8 is cool</title>
+               <group-subject>Politics</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Urban Studies</group-subject>
+               <subject>Politics</subject>
+               <subject>Politics</subject>
+               <subject>Classical History</subject>
+               <subject>Classical Religions</subject>
+               <subject>Urban Studies</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::California::Santa Cruz</geography>
+               <geography-sort>US::California::Santa Cruz</geography-sort>
+            </meta>
+         </docHit>
+         <docHit rank="3" file="doc9.xml" totalHits="0">
+            <meta>
+               <title>Document 9 is absolutely cool</title>
+               <group-subject>Classics</group-subject>
+               <group-subject>Ancient History</group-subject>
+               <group-subject>Politics</group-subject>
+               <group-subject>Classical History</group-subject>
+               <group-subject>Classical Religions</group-subject>
+               <group-subject>Classical Politics</group-subject>
+               <subject>Classics</subject>
+               <subject>Ancient History</subject>
+               <subject>Politics</subject>
+               <subject>Classical History</subject>
+               <subject>Classical Religions</subject>
+               <subject>Classical Politics</subject>
+               <type>text</type>
+               <collection>UC</collection>
+               <geography>US::California::Oakland</geography>
+               <geography-sort>US::California::Oakland</geography-sort>
+            </meta>
+         </docHit>
+      </group>
+      <group value="Classical Religions" rank="4" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Classics" rank="5" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
+   </facet>
+</crossQueryResult>

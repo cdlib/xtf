@@ -2,8 +2,5 @@
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
   <facet field="group-subject"/>
-  <!-- old
-    <groupField field="group-subject"/>
-  -->
   <term field="collection">UC</term>
 </query>

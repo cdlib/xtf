@@ -4,10 +4,5 @@
   <facet field="group-subject" 
          sortGroupsBy="value"
          includeEmptyGroups="true"/>
-  <!-- old
-    <groupField field="group-subject" includeEmptyGroups="true" sortGroupsBy="value">
-      <countGroups startGroup="1"/>
-    </groupField>
-  -->
   <term field="subject" maxSnippets="0">sociology</term>
 </query>

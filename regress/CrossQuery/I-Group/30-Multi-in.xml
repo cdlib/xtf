@@ -3,12 +3,6 @@
 <query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
   <facet field="group-subject"/>
   <facet field="geography-sort" select="US::Nevada#all|**[selected][siblings]"/>
-  <!-- old
-    <groupField field="group-subject"/>
-    <groupField field="geography-sort">
-      <groupHits value="US::Nevada"/>
-    </groupField>
-  -->
   <and>
     <term field="collection" maxSnippets="0">UC</term>
     <term field="geography" maxSnippets="0">US</term>

@@ -2,11 +2,5 @@
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
   <facet field="geography-sort" select="**[topChoices]"/>
-  <!-- old
-    <groupField field="geography-sort"/>
-  -->
-  <and>
-    <term field="collection">UC</term>
-    <term field="geography">US</term>
-  </and>
+  <term field="geography-sort">US</term>
 </query>
