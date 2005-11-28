@@ -134,6 +134,7 @@ public class GroupData
     Vector  groupVec = new Vector();
     HashMap childMap = new HashMap();
     HashMap docMap   = new HashMap();
+    HashSet lcTerms  = new HashSet();       
     int     nLinks   = 0;
     
     // Add a default root group.
@@ -151,6 +152,15 @@ public class GroupData
             Term term = termEnum.term();
             if( !term.field().equals(field) )
                 break;
+            
+            // If we've seen this term before, skip it. This can happen if
+            // the real term was mixed case, and we encounter the lower-case
+            // version later.
+            //
+            String lcTerm = term.text().toLowerCase();
+            if( lcTerms.contains(lcTerm) )
+                continue;
+            lcTerms.add( lcTerm );
     
             // Add a group key for this term. Also, if it's hierarchical,
             // find the ancestor groups and add them to the child map.
