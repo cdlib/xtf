@@ -1550,6 +1550,17 @@ public class XMLTextProcessor extends DefaultHandler
                 tokenize = false;
         }
         
+        // See if there is a "tokenize" attribute set for this node. If not,
+        // default to true.
+        //
+        boolean isFacet = false;
+        tokIdx = atts.getIndex( xtfUri, "facet" );
+        if( tokIdx >= 0 ) {
+            String tokStr = atts.getValue( tokIdx );
+            if( tokStr != null && (tokStr.equals("yes") || tokStr.equals("true")) )
+                isFacet = true;
+        }
+        
         // See if there is a "wordBoost" attribute for this node. If not, 
         // default to 1.0f.
         //
@@ -1563,7 +1574,8 @@ public class XMLTextProcessor extends DefaultHandler
         }
         
         // Allocate a place to store the contents of the meta-data field.
-        metaField = new MetaField( localName, store, index, tokenize, boost );
+        metaField = 
+            new MetaField( localName, store, index, tokenize, isFacet, boost );
         assert metaBuf.length() == 0 : "Should have cleared meta-buf";
         
         // If there are non-XTF attributes on the node, record them.
@@ -1745,7 +1757,7 @@ public class XMLTextProcessor extends DefaultHandler
         // If tokenized, add the special start-of-field and end-of-field tokens
         // to the meta-data value.
         //
-        if( metaField.tokenize ) 
+        if( metaField.tokenize && !metaField.isFacet ) 
         {
             // If attributes were recorded for the top-level node, be sure to
             // put the start marker after them.
@@ -1784,7 +1796,7 @@ public class XMLTextProcessor extends DefaultHandler
             boolean found = mf.name.equals(metaField.name) ;
             if( found )
                 ++nFound;
-            if( found && mf.tokenize ) {
+            if( found && mf.tokenize && !mf.isFacet ) {
                 StringBuffer buf = new StringBuffer();
                 buf.append( mf.value );
                 buf.append( Constants.BUMP_MARKER );
@@ -3455,6 +3467,12 @@ public class XMLTextProcessor extends DefaultHandler
         doc.add( new Field( "fileDate", fileDateStr, true, false, false ) );
     }
     
+    // Get the analyzer that will be used to tokenize fields. Tell it to
+    // forget what it knows about facet fields (we'll re-mark them below.)
+    //
+    XTFTextAnalyzer analyzer = (XTFTextAnalyzer) indexWriter.getAnalyzer();
+    analyzer.clearFacetFields();
+    
     // Make sure we got meta-info for this document.
     if( metaInfo == null || metaInfo.isEmpty() ) {
         Trace.tab();
@@ -3474,6 +3492,14 @@ public class XMLTextProcessor extends DefaultHandler
             
             // Get the next meta field.
             MetaField metaField = (MetaField) metaIter.next();
+            
+            // If it's a facet field, tell the analyzer so it knows to apply
+            // special tokenization.
+            //
+            if( metaField.isFacet && metaField.index ) {
+                metaField.tokenize = true;
+                analyzer.addFacetField( metaField.name );
+            }
             
             // Add it to the document. Store, index, and/or tokenize as
             // specified by the field.
@@ -3758,18 +3784,21 @@ public class XMLTextProcessor extends DefaultHandler
     public boolean store;
     public boolean index;
     public boolean tokenize;
+    public boolean isFacet;
     public float   wordBoost;
     
     public MetaField( String  name, 
                       boolean store,
                       boolean index,
                       boolean tokenize,
+                      boolean isFacet,
                       float   wordBoost ) 
     {
       this.name      = name;
       this.store     = store;
       this.index     = index;
       this.tokenize  = tokenize;
+      this.isFacet   = isFacet;
       this.wordBoost = wordBoost;
     }
 

@@ -30,6 +30,7 @@ package org.cdlib.xtf.textIndexer;
  */
 
 import java.io.Reader;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.lucene.analysis.*;
@@ -144,6 +145,13 @@ public class XTFTextAnalyzer extends Analyzer {
    */
   private String srcText;
   
+  /** 
+   * List of fields that marked as "facets" and thus get special 
+   * tokenization 
+   */
+  private HashSet facetFields = new HashSet();
+  
+  
   //////////////////////////////////////////////////////////////////////////////
 
   /** Constructor. <br><br>
@@ -187,6 +195,28 @@ public class XTFTextAnalyzer extends Analyzer {
     
   } // public XTFTextAnalyzer( stopWords, blurbedText )
   
+  
+  /**
+   * Clears the list of fields marked as facets. Facet fields receive special
+   * tokenization.
+   */
+  public void clearFacetFields()
+  {
+    facetFields.clear();
+  }
+  
+
+  /**
+   * Mark a field as a "facet field", that will receive special tokenization
+   * to deal with hierarchy.
+   * 
+   * @param fieldName   Name of the field to consider a facet field.
+   */
+  public void addFacetField( String fieldName )
+  {
+    facetFields.add( fieldName );
+  }
+  
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -217,6 +247,10 @@ public class XTFTextAnalyzer extends Analyzer {
     
     // Record the text string for later use.
     srcText = fastReader.getString();
+    
+    // If this is a facet field, tokenize it specially.
+    if( facetFields.contains(fieldName) )
+        return new FacetTokenizer( srcText );
     
     // Convert the text into tokens.
     TokenStream result = new FastTokenizer(fastReader);
