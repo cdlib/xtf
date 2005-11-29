@@ -178,6 +178,9 @@
   <!-- Score normalization and explanation -->
   <xsl:param name="normalizeScores"/>
   <xsl:param name="explainScores"/>
+   
+  <!-- Recommendation parameters -->
+  <xsl:param name="maxRecords" as="xs:integer" select="10"/>
   
   <!-- Retrieve Branding Nodes -->
   <xsl:variable name="brand.file">
@@ -607,7 +610,14 @@
     <xsl:variable name="total" as="xs:integer">
       <xsl:choose>
         <xsl:when test="$groups">
-          <xsl:value-of select="facet/@totalGroups"/>
+          <xsl:choose>
+            <xsl:when test="facet//group[docHit]">
+              <xsl:value-of select="facet//group[docHit]/@totalSubGroups"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="facet/@totalGroups"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="@totalDocs"/>
@@ -669,7 +679,14 @@
     <xsl:variable name="total" as="xs:integer">
       <xsl:choose>
         <xsl:when test="$groups">
-          <xsl:value-of select="facet/@totalGroups"/>
+          <xsl:choose>
+            <xsl:when test="facet//group[docHit]">
+              <xsl:value-of select="facet//group[docHit]/@totalSubGroups"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="facet/@totalGroups"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="@totalDocs"/>
@@ -731,17 +748,6 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    
-    <!--<xsl:variable name="pageQueryString">
-      <xsl:choose>
-        <xsl:when test="$sort != ''">
-          <xsl:value-of select="concat($queryString, '&amp;sort=', $sort)"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$queryString"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>-->
     
     <xsl:variable name="pageQueryString">
       <xsl:choose>
