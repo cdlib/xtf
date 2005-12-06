@@ -128,22 +128,22 @@
     <xsl:apply-templates select="creator" mode="sort"/>
     <xsl:apply-templates select="date" mode="sort"/>
     
-    <!-- create grouping fields -->
-    <xsl:apply-templates select="title" mode="group"/>
-    <xsl:apply-templates select="creator" mode="group"/>
-    <xsl:apply-templates select="subject" mode="group"/>
-    <xsl:apply-templates select="description" mode="group"/>
-    <xsl:apply-templates select="publisher" mode="group"/>
-    <xsl:apply-templates select="contributor" mode="group"/>
-    <xsl:apply-templates select="date" mode="group"/>
-    <xsl:apply-templates select="type" mode="group"/>
-    <xsl:apply-templates select="format" mode="group"/>
-    <xsl:apply-templates select="identifier" mode="group"/>
-    <xsl:apply-templates select="source" mode="group"/>
-    <xsl:apply-templates select="language" mode="group"/>
-    <xsl:apply-templates select="relation" mode="group"/>
-    <xsl:apply-templates select="coverage" mode="group"/>
-    <xsl:apply-templates select="rights" mode="group"/>
+    <!-- create facet fields -->
+    <xsl:apply-templates select="title" mode="facet"/>
+    <xsl:apply-templates select="creator" mode="facet"/>
+    <xsl:apply-templates select="subject" mode="facet"/>
+    <xsl:apply-templates select="description" mode="facet"/>
+    <xsl:apply-templates select="publisher" mode="facet"/>
+    <xsl:apply-templates select="contributor" mode="facet"/>
+    <xsl:apply-templates select="date" mode="facet"/>
+    <xsl:apply-templates select="type" mode="facet"/>
+    <xsl:apply-templates select="format" mode="facet"/>
+    <xsl:apply-templates select="identifier" mode="facet"/>
+    <xsl:apply-templates select="source" mode="facet"/>
+    <xsl:apply-templates select="language" mode="facet"/>
+    <xsl:apply-templates select="relation" mode="facet"/>
+    <xsl:apply-templates select="coverage" mode="facet"/>
+    <xsl:apply-templates select="rights" mode="facet"/>
     
     <xsl:call-template name="metaMissing"/>
     

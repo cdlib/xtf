@@ -65,8 +65,8 @@
     
   </xsl:template>
 
-  <!-- generate group fields -->
-  <xsl:template match="*" mode="group"> 
+  <!-- generate facet fields -->
+  <xsl:template match="*" mode="facet"> 
     <xsl:variable name="name">
       <xsl:choose>
         <!-- To disambiguate types -->
@@ -94,10 +94,10 @@
     </xsl:element>
   </xsl:template>
 
-  <!-- generate group-title -->
-  <xsl:template match="title" mode="group"> 
+  <!-- generate facet-title -->
+  <xsl:template match="title" mode="facet"> 
     <xsl:variable name="title" select="string(.)"/>
-    <group-title>
+    <facet-title>
       <xsl:attribute name="xtf:meta" select="'true'"/>
       <xsl:attribute name="xtf:tokenize" select="'no'"/>
       <xsl:choose>
@@ -134,13 +134,13 @@
           <xsl:value-of select="'OTHER'"/>
         </xsl:otherwise>
       </xsl:choose>
-    </group-title>
+    </facet-title>
   </xsl:template>
   
-  <!-- generate group-creator -->
-  <xsl:template match="creator" mode="group"> 
+  <!-- generate facet-creator -->
+  <xsl:template match="creator" mode="facet"> 
     <xsl:variable name="creator" select="string(.)"/>
-    <group-creator>
+    <facet-creator>
       <xsl:attribute name="xtf:meta" select="'true'"/>
       <xsl:attribute name="xtf:tokenize" select="'no'"/>
       <xsl:choose>
@@ -174,17 +174,17 @@
           <xsl:value-of select="'OTHER'"/>
         </xsl:otherwise>
       </xsl:choose>
-    </group-creator>
+    </facet-creator>
   </xsl:template>
   
-  <!-- generate group-date -->
-  <xsl:template match="date" mode="group">   
+  <!-- generate facet-date -->
+  <xsl:template match="date" mode="facet">   
     <xsl:variable name="date" select="string(.)"/>
-    <group-date>
+    <facet-date>
       <xsl:attribute name="xtf:meta" select="'true'"/>
       <xsl:attribute name="xtf:tokenize" select="'no'"/>
       <xsl:value-of select="expand:date($date)"/>
-    </group-date>
+    </facet-date>
   </xsl:template>
   
   <xsl:function name="expand:date">
@@ -223,50 +223,50 @@
   <!-- missing elements? -->
   <xsl:template name="metaMissing">
     <xsl:if test="not(title)">
-      <group-title xtf:meta="true" xtf:tokenize="no">1 MISSING</group-title>
+      <facet-title xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-title>
       <title xtf:meta="true">1 MISSING TITLE</title>
     </xsl:if>
     <xsl:if test="not(creator)">
-      <group-creator xtf:meta="true" xtf:tokenize="no">1 MISSING</group-creator>
+      <facet-creator xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-creator>
     </xsl:if>
     <xsl:if test="not(subject)">
-      <group-subject xtf:meta="true" xtf:tokenize="no">1 MISSING</group-subject>
+      <facet-subject xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-subject>
     </xsl:if>
     <xsl:if test="not(description)">
-      <group-description xtf:meta="true" xtf:tokenize="no">1 MISSING</group-description>
+      <facet-description xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-description>
     </xsl:if>
     <xsl:if test="not(publisher)">
-      <group-publisher xtf:meta="true" xtf:tokenize="no">1 MISSING</group-publisher>
+      <facet-publisher xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-publisher>
     </xsl:if>
     <xsl:if test="not(contributor)">
-      <group-contributor xtf:meta="true" xtf:tokenize="no">1 MISSING</group-contributor>
+      <facet-contributor xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-contributor>
     </xsl:if>
     <xsl:if test="not(date)">
-      <group-date xtf:meta="true" xtf:tokenize="no">1 MISSING</group-date>
+      <facet-date xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-date>
     </xsl:if>
     <xsl:if test="not(type)">
-      <group-type xtf:meta="true" xtf:tokenize="no">1 MISSING</group-type>
+      <facet-type xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-type>
     </xsl:if>
     <xsl:if test="not(format)">
-      <group-format xtf:meta="true" xtf:tokenize="no">1 MISSING</group-format>
+      <facet-format xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-format>
     </xsl:if>
     <xsl:if test="not(identifier)">
-      <group-identifier xtf:meta="true" xtf:tokenize="no">1 MISSING</group-identifier>
+      <facet-identifier xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-identifier>
     </xsl:if>
     <xsl:if test="not(source)">
-      <group-source xtf:meta="true" xtf:tokenize="no">1 MISSING</group-source>
+      <facet-source xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-source>
     </xsl:if>
     <xsl:if test="not(language)">
-      <group-language xtf:meta="true" xtf:tokenize="no">1 MISSING</group-language>
+      <facet-language xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-language>
     </xsl:if>
     <xsl:if test="not(relation)">
-      <group-relation xtf:meta="true" xtf:tokenize="no">1 MISSING</group-relation>
+      <facet-relation xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-relation>
     </xsl:if>
     <xsl:if test="not(coverage)">
-      <group-coverage xtf:meta="true" xtf:tokenize="no">1 MISSING</group-coverage>
+      <facet-coverage xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-coverage>
     </xsl:if>
     <xsl:if test="not(rights)">
-      <group-rights xtf:meta="true" xtf:tokenize="no">1 MISSING</group-rights>
+      <facet-rights xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-rights>
     </xsl:if>
   </xsl:template>    
 
