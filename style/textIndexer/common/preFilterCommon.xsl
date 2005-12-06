@@ -71,10 +71,10 @@
       <xsl:choose>
         <!-- To disambiguate types -->
         <xsl:when test="name() = 'type'">
-          <xsl:value-of select="concat('group-',name(),'-',position())"/>
+          <xsl:value-of select="concat('facet-',name(),'-',position())"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="concat('group-',name())"/>
+          <xsl:value-of select="concat('facet-',name())"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
