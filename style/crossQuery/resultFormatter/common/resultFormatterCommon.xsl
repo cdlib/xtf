@@ -35,6 +35,8 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
                               xmlns:xs="http://www.w3.org/2001/XMLSchema">
   
+  <xsl:import href="format-query.xsl"/>
+  
   <!-- ====================================================================== -->
   <!-- Output Parameters                                                      -->
   <!-- ====================================================================== -->
@@ -536,6 +538,7 @@
   </xsl:template>
   
   <!-- Human Readable Form of Query -->
+  <!-- This should be phased out in favor of $queryString -->
   
   <xsl:param name="query">
     <xsl:copy-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($queryString,                           
@@ -554,47 +557,7 @@
                           '&amp;', ' and '),
                           '^ and ', '')"/>
   </xsl:param>
-    
-  <!-- ====================================================================== -->
-  <!-- Format Query for Display                                               -->
-  <!-- ====================================================================== -->
-  
-  <xsl:template name="format-query">
-    
-    <xsl:param name="query"/>
-    
-    <xsl:analyze-string select="$query" regex="XX ([A-Za-z0-9&quot;\-\.\*\+ ]+?) in ([A-Za-z0-9\-]+) XX">
-      <xsl:matching-substring>
-        <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
-        <xsl:text> in </xsl:text>
-        <span class="search-type"><xsl:value-of select="regex-group(2)"/></span>
-      </xsl:matching-substring>
-      <xsl:non-matching-substring>
-        <xsl:value-of select="."/>
-      </xsl:non-matching-substring>
-    </xsl:analyze-string>
-    
-  </xsl:template>
 
-  <!-- How do I chain the one above and this one? -->
-  <xsl:template name="format-proximity">
-    
-    <xsl:param name="query"/>
-
-    <xsl:analyze-string select="$query" regex="([A-Za-z0-9&quot;\-\.\*\+ ]+?) within ([0-9]+) words">
-      <xsl:matching-substring>
-        <span class="search-term"><xsl:value-of select="regex-group(1)"/></span>
-        <xsl:text> within </xsl:text>
-        <span class="search-type"><xsl:value-of select="regex-group(2)"/></span>
-        <xsl:text> words</xsl:text>
-      </xsl:matching-substring>
-      <xsl:non-matching-substring>
-        <xsl:value-of select="."/>
-      </xsl:non-matching-substring>
-    </xsl:analyze-string>
-    
-  </xsl:template>
-    
   <!-- ====================================================================== -->
   <!-- Result Paging                                                          -->
   <!-- ====================================================================== -->
@@ -839,7 +802,7 @@
   <!-- ====================================================================== -->
 
   <xsl:template match="subject">
-    <a href="{$xtfURL}{$crossqueryPath}?subject=%22{.}%22&amp;style={$style}&amp;smode={$smode}&amp;rmode={$rmode}&amp;brand={$brand}&amp;facet={$facet}">
+    <a href="{$xtfURL}{$crossqueryPath}?subject={.}&amp;subject-join=exact&amp;style={$style}&amp;smode={$smode}&amp;rmode={$rmode}&amp;brand={$brand}&amp;facet={$facet}">
       <xsl:apply-templates/>
     </a>
     <xsl:if test="not(position() = last())">
