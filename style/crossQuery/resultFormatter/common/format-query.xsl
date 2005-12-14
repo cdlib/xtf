@@ -37,23 +37,28 @@
     </xsl:template>
     
     <xsl:template match="and | or | exact | near | range | not" mode="query">
-        
-        <xsl:value-of select="name(..)"/><xsl:text> </xsl:text>
-        <xsl:apply-templates mode="query"/>
-        <xsl:if test="@field">
-            <xsl:text> in </xsl:text>
-            <span class="search-type">
-                <xsl:choose>
-                    <xsl:when test="@field = 'text'">
-                        <xsl:text> the full text </xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="@field"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </span>
-        </xsl:if>
-        
+        <xsl:choose>
+            <xsl:when test="@field">    
+                <xsl:if test="not(position() = 2)">
+                    <xsl:value-of select="name(..)"/><xsl:text> </xsl:text>
+                </xsl:if>
+                <xsl:apply-templates mode="query"/>
+                <xsl:text> in </xsl:text>
+                <span class="search-type">
+                    <xsl:choose>
+                        <xsl:when test="@field = 'text'">
+                            <xsl:text> the full text </xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="@field"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </span>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates mode="query"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     
     <xsl:template match="term" mode="query">
