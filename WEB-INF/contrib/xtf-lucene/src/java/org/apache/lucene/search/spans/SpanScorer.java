@@ -78,7 +78,7 @@ class SpanScorer extends Scorer {
     // one step more than is reported back, we have to avoid skipping if the
     // effect of the skip has already been achieved.
     //
-    if (firstTime || target > spans.doc()) {
+    if (firstTime || (more && target > spans.doc())) {
       more = spans.skipTo(target);
       firstTime = false;
     }
