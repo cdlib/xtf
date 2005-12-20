@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc8.xml" totalHits="0">
+      <meta>
+         <title>Earthquake Madness</title>
+         <creator>anonymous</creator>
+         <subject>...1906 Earthquake...</subject>
+         <subject>(unrecognizable)</subject>
+         <subject>
+            <snippet rank="1">
+               <hit>;<term>1</term> 
+                  <term>oz</term>., <term>pure</term> 
+                  <term>gld</term>.</hit>
+            </snippet>
+         </subject>
+         <type>text</type>
+         <relation>http://www.orangecrush.com/</relation>
+         <rights>Public</rights>
+         <foo>bar</foo>
+      </meta>
+   </docHit>
+</crossQueryResult>
