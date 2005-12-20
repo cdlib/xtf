@@ -32,7 +32,7 @@ import org.apache.lucene.search.spans.SpanPosComparator;
  * <p>Created: Dec 26, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: ContextMarker.java,v 1.2 2005-09-21 20:21:08 mhaye Exp $
+ * @version $Id: ContextMarker.java,v 1.3 2005-12-20 19:15:41 mhaye Exp $
  */
 public class ContextMarker {
   
@@ -285,7 +285,7 @@ public class ContextMarker {
     assert assertionsEnabled = true;
     if (assertionsEnabled && terms != null) {
       String startTerm = iter0.term();
-      if (!terms.contains(startTerm)) {
+      if (!terms.contains(startTerm) && startTerm.length() > 0) {
         ArrayList sortTerms = new ArrayList(terms.size());
         sortTerms.addAll(terms);
         Collections.sort(sortTerms);
@@ -294,7 +294,7 @@ public class ContextMarker {
       }
 
       String endTerm = iter1.term();
-      if (!terms.contains(endTerm)) {
+      if (!terms.contains(endTerm) && endTerm.length() > 0) {
         ArrayList sortTerms = new ArrayList(terms.size());
         sortTerms.addAll(terms);
         Collections.sort(sortTerms);
