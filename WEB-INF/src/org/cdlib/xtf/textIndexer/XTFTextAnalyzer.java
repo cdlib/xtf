@@ -36,6 +36,7 @@ import java.util.Set;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.bigram.BigramStopFilter;
+import org.cdlib.xtf.textEngine.Constants;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
@@ -283,10 +284,29 @@ public class XTFTextAnalyzer extends Analyzer {
     // Convert stop-words to bi-grams (if any stop words were specified). We must
     // do this after XtfSpecialTokensFilter to ensure that special tokens don't
     // become part of any bi-grams. Also, we must do it after the lower-case
-    // filter so we can properly recognize the stop words.
+    // filter so we can properly recognize the stop words.  
     //
-    if( stopSet != null )
-        result = new BigramStopFilter( result, stopSet );
+    if( stopSet != null ) {
+        if( fieldName.equals("text") )
+            result = new BigramStopFilter( result, stopSet );
+        else 
+        {
+            // For meta-data fields, include special code to ignore the 
+            // field start/end markers during the bi-gramming process.
+            //
+            result = new BigramStopFilter(result, stopSet) { 
+              protected boolean isStopWord( String word ) {
+                if( word.length() > 0 && 
+                    word.charAt(0) == Constants.FIELD_START_MARKER )
+                    word = word.substring( 1 );
+                if( word.length() > 0 && 
+                    word.charAt(word.length()-1) == Constants.FIELD_END_MARKER )
+                    word = word.substring( 0, word.length()-1 );
+                return super.isStopWord( word );
+              }
+            };
+        }
+    }
     
     // Index with and without the special start-of-field/end-of-field markers.
     // If there aren't any, the filter doesn't do any harm. Also, there'll never
