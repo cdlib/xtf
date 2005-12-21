@@ -377,11 +377,12 @@ public class BigramQueryRewriter extends QueryRewriter {
     else {
       // This case is a bit strange. Since doing an inexact query will end
       // up eliminating at least one stop word, we also do an exact query,
-      // and let the best match win.
+      // and let the best match win. Give boost priority to the exact one.
       //
       SpanQuery[] both = new SpanQuery[2];
       both[0] = bigramTermsExact(queries, terms, slop);
       both[1] = bigramTermsInexact(queries, terms, slop);
+      reduceBoost(both[1]);
       queryVec.add(new SpanOrQuery(both));
     }
 
@@ -441,11 +442,14 @@ public class BigramQueryRewriter extends QueryRewriter {
         }
 
         // Case 3: Real followed by stop. In this case, we make an
-        // OR-query, like this: (real OR real-stop)
+        // OR-query, like this: (real OR real-stop). Slightly reduce the
+        // boost factor on the real alone, so that the real-stop pair 
+        // will be scored higher.
         //
         SpanQuery[] both = new SpanQuery[2];
         both[0] = convertToSpanQuery(queries[i]);
         both[1] = convertToSpanQuery(glomQueries(queries[i], queries[i + 1]));
+        reduceBoost(both[0]);
         clauses[nClauses++] = new SpanOrQuery(both);
         continue;
       }
@@ -458,12 +462,15 @@ public class BigramQueryRewriter extends QueryRewriter {
         continue;
 
       // Case (5): Stop followed by real. In this case, we make an OR
-      //           query, like this: (stop-real OR real)
+      //           query, like this: (stop-real OR real). Reduce the
+      //           boost factor on the real word alone, so that the
+      //           stop-real pair will score higher.
       //
       if (!stopSet.contains(terms[i + 1])) {
         SpanQuery[] both = new SpanQuery[2];
         both[0] = convertToSpanQuery(glomQueries(queries[i], queries[i + 1]));
         both[1] = convertToSpanQuery(queries[i + 1]);
+        reduceBoost(both[1]);
         clauses[nClauses++] = new SpanOrQuery(both);
         continue;
       }
@@ -757,4 +764,12 @@ public class BigramQueryRewriter extends QueryRewriter {
     return null;
   } // extractTerm()
 
+  /**
+   * Reduces the boost factor of a query (typically the non-bigram of a pair in
+   * an OR) so that the bigram will get scored higher.
+   */
+  protected void reduceBoost(Query query) {
+    query.setBoost(query.getBoost()*0.8f);
+  } // reduceBoost()
+  
 } // class BigramQueryRewriter
