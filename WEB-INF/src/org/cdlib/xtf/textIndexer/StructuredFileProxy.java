@@ -32,6 +32,7 @@ package org.cdlib.xtf.textIndexer;
 import java.io.File;
 import java.io.IOException;
 
+import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.SubStoreReader;
@@ -98,6 +99,7 @@ public class StructuredFileProxy implements StructuredStore
         if( realStore == null ) {
             if( path.canRead() )
                 path.delete();
+            Path.createPath( path.getParent() );
             realStore = StructuredFile.create( path );
         }
         return realStore;
