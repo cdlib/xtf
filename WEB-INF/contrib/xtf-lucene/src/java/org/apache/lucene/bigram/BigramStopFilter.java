@@ -140,7 +140,7 @@ public class BigramStopFilter extends TokenFilter
       nextToken = nextInput();
 
       // Flags.
-      boolean curIsReal = !stopSet.contains(curToken.termText());
+      boolean curIsReal = !isStopWord(curToken.termText());
 
       // There are four main cases to deal with:
       // (1) A real word followed by another real word
@@ -152,7 +152,7 @@ public class BigramStopFilter extends TokenFilter
       // First, deal with cases (1) and (2), which begin with a real word.
       if (curIsReal) {
         boolean nextIsReal = nextToken != null
-            && !stopSet.contains(nextToken.termText())
+            && !isStopWord(nextToken.termText())
             && nextToken.getPositionIncrement() == 1;
 
         // In all cases, we're going to return the real word. So take care
@@ -206,6 +206,14 @@ public class BigramStopFilter extends TokenFilter
     if (t != null)
       inputPos += t.getPositionIncrement();
     return t;
+  }
+  
+  /** 
+   * Tells whether the token is a stop-word. Can be overridden for
+   * special processing. 
+   */
+  protected boolean isStopWord(String word) {
+    return stopSet.contains(word);
   }
 
   /**
