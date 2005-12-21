@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <phrase field="subject">
+    <term>fribble</term>
+    <term>color</term>
+    <term>wheel</term>
+    <term>smarmy</term>
+  </phrase>
+</query>
