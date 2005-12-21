@@ -333,11 +333,6 @@ public class XMLTextProcessor extends DefaultHandler
    */
   private ReceivingContentHandler lazyHandler;
 
-  /** Actual file path of the "lazy tree" being built.
-   *  See {@link XMLTextProcessor#lazyBuilder lazyBuilder} for more details.
-   */
-  private File lazyFile;
-  
   /** Character buffer for accumulating partial text blocks (possibly) passed
    *  in to the {@link XMLTextProcessor#characters(char[],int,int) characters()}
    *  method from the SAX parser.
@@ -882,7 +877,7 @@ public class XMLTextProcessor extends DefaultHandler
         // Delete the old lazy file, if any. Might as well delete any
         // empty parent directories as well.
         //
-        lazyFile = IndexUtil.calcLazyPath(
+        File lazyFile = IndexUtil.calcLazyPath(
                                          new File(xtfHomePath),
                                          indexInfo, 
                                          srcFile,
