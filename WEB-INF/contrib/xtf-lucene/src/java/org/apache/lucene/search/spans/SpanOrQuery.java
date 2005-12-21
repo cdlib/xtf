@@ -115,7 +115,12 @@ public class SpanOrQuery extends SpanQuery {
       Spans spans2 = (Spans)o2;
       if (spans1.doc() == spans2.doc()) {
         if (spans1.start() == spans2.start()) {
-          return spans1.end() < spans2.end();
+          if (spans1.score() == spans2.score()) {
+            return spans1.end() < spans2.end();
+          }
+          else {
+            return spans1.score() > spans2.score();
+          }
         } else {
           return spans1.start() < spans2.start();
         }
