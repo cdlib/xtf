@@ -322,7 +322,7 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
      */
     protected void testImpl() {
       stopSet = BigramQueryRewriter.makeStopSet("a and it is the of");
-
+      
       ////////////////////////////////////////////////////////////////////////
       // PHRASE QUERIES
       ////////////////////////////////////////////////////////////////////////
@@ -359,16 +359,16 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
       // Start with simple ones
       testUnchanged(and(terms("hello there")));
       testQuery(and(terms("man of war")),
-          "\"(man OR man~of) (of~war OR war)\"~20");
+          "\"(man^0 OR man~of) (of~war OR war^0)\"~20");
 
       // Test AND queries with non~term clauses.
       testQuery(
           and(join(term("the"), or(terms("white beige")), term("rabbit"))),
-          "\"((the~white OR the~beige) OR (white OR beige)) rabbit\"~20");
+          "\"((the~white OR the~beige) OR (white OR beige)^0) rabbit\"~20");
 
       // Test boost propagation
       testQuery(boost(2, and(join(term("eat"), boost(5, term("the")),
-          term("wave")))), "\"(eat OR eat~the^5) (the~wave^5 OR wave)\"~20^2");
+          term("wave")))), "\"(eat^0 OR eat~the^5) (the~wave^5 OR wave^0)\"~20^2");
       testQuery(boost(5, and(join(boost(2, term("eat")), boost(3,
           or(terms("the a")))))), "eat^10");
 
@@ -380,35 +380,35 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
       testUnchanged(near(5, join(term("three"), or(terms("freezy breezy")),
           term("trees"))));
       testQuery(near(5, terms("man of war")),
-          "\"(man OR man~of) (of~war OR war)\"~5");
+          "\"(man^0 OR man~of) (of~war OR war^0)\"~5");
       testQuery(near(5, terms("when it is a problem")),
           "(\"when~it it~is is~a a~problem\"~5 OR "
-              + "\"(when OR when~it) (a~problem OR problem)\"~5)");
+              + "\"(when^0 OR when~it) (a~problem OR problem^0)\"~5^0)");
       testQuery(near(5, terms("it is a problem")),
-          "(\"it~is is~a a~problem\"~5 OR (a~problem OR problem))");
+          "(\"it~is is~a a~problem\"~5 OR (a~problem OR problem^0)^0)");
       testQuery(near(5, terms("when it is a")),
-          "(\"when~it it~is is~a\"~5 OR (when OR when~it))");
+          "(\"when~it it~is is~a\"~5 OR (when^0 OR when~it)^0)");
 
       // Try some near queries with non~term clauses.
       testQuery(near(5, join(or(terms("shake bake")), term("it"))),
-          "((shake OR bake) OR (shake~it OR bake~it))");
+          "((shake OR bake)^0 OR (shake~it OR bake~it))");
       testQuery(
           near(5, join(or(terms("shake bake")), term("it"), term("now"))),
-          "\"((shake OR bake) OR (shake~it OR bake~it)) "
-              + "(it~now OR now)\"~5");
+          "\"((shake OR bake)^0 OR (shake~it OR bake~it)) "
+              + "(it~now OR now^0)\"~5");
       testQuery(near(5, join(term("jeff"), or(terms("shakes bakes")),
           term("it"))),
-          "\"jeff ((shakes OR bakes) OR (shakes~it OR bakes~it))\"~5");
+          "\"jeff ((shakes OR bakes)^0 OR (shakes~it OR bakes~it))\"~5");
 
       // Test boost propagation
       testQuery(boost(2, near(5, join(boost(3, or(join(boost(4, term("shake")),
           boost(5, term("bake"))))), boost(6, term("it")),
-          boost(7, term("now"))))), "\"((shake^4 OR bake^5)^3 OR "
-          + "(shake~it^6 OR bake~it^6)^3) " + "(it~now^7 OR now^7)\"~5^2");
+          boost(7, term("now"))))), "\"((shake^4 OR bake^5)^2 OR "
+          + "(shake~it^6 OR bake~it^6)^3) " + "(it~now^7 OR now^5)\"~5^2");
       testQuery(boost(7, near(5, join(boost(6, or(join(boost(5, term("shake")),
           boost(4, term("bake"))))), boost(3, term("it")),
-          boost(2, term("now"))))), "\"((shake^5 OR bake^4)^6 OR "
-          + "(shake~it^5 OR bake~it^4)^6) " + "(it~now^3 OR now^2)\"~5^7");
+          boost(2, term("now"))))), "\"((shake^5 OR bake^4)^4 OR "
+          + "(shake~it^5 OR bake~it^4)^6) " + "(it~now^3 OR now^1)\"~5^7");
 
       ////////////////////////////////////////////////////////////////////////
       // OR QUERIES
@@ -416,7 +416,7 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
 
       testUnchanged(or(join(term("foo"), and(terms("bar gaz")))));
       testQuery(or(join(term("arf"), and(terms("the dog")), term("said"))),
-          "(arf OR (the~dog OR dog) OR said)");
+          "(arf OR (the~dog OR dog^0) OR said)");
       testQuery(or(join(term("the"), and(terms("very nice")), term("rabbit"))),
           "(\"very nice\"~20 OR rabbit)");
 
@@ -432,10 +432,10 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
       ////////////////////////////////////////////////////////////////////////
       testUnchanged(not(5, term("hello"), term("there")));
       testQuery(not(5, and(terms("the cow")), and(terms("the dog"))),
-          "((the~cow OR cow) NOT (the~dog OR dog))~5");
+          "((the~cow OR cow^0) NOT (the~dog OR dog^0))~5");
       testQuery(and(join(term("like"), term("a"), not(5, term("cow"),
           term("dog")))),
-          "\"(like OR like~a) ((a~cow NOT dog)~5 OR (cow NOT dog)~5)\"~20");
+          "\"(like^0 OR like~a) ((a~cow NOT dog)~5 OR (cow NOT dog)~5^0)\"~20");
 
       // A couple tests anticipating future support for case sensitivity and 
       // accent insensitivity.
@@ -443,10 +443,10 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
       testQuery(and(join(term("the"), not(0, term("hat"),
           or(terms("hat~p hat~c"))), term("trick"))),
           "\"((the~hat NOT (hat~p OR hat~c))~0 OR "
-              + "(hat NOT (hat~p OR hat~c))~0) trick\"~20");
+              + "(hat NOT (hat~p OR hat~c))~0^0) trick\"~20");
       testQuery(and(join(term("hank"), not(0, term("hat"),
           or(terms("hat~p hat~c"))), term("is"))),
-          "\"hank ((hat NOT (hat~p OR hat~c))~0 OR "
+          "\"hank ((hat NOT (hat~p OR hat~c))~0^0 OR "
               + "(hat~is NOT (hat~p OR hat~c))~0)\"~20");
 
       ////////////////////////////////////////////////////////////////////////
