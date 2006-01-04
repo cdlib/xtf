@@ -397,7 +397,7 @@ public class DynaXML extends TextServlet
         String raw = req.getParameter("raw");
         if( "yes".equals(raw) || "true".equals(raw) || "1".equals(raw) ) 
         {
-            res.setContentType("text/html");
+            res.setContentType("text/xml");
             
             transformer = IndexUtil.createTransformer();
             Properties props = transformer.getOutputProperties();
