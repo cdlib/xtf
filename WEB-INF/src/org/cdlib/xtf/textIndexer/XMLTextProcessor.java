@@ -1881,6 +1881,26 @@ public class XMLTextProcessor extends DefaultHandler
   
   ////////////////////////////////////////////////////////////////////////////
 
+  public void startPrefixMapping( String prefix, String uri )
+  throws SAXException
+  {
+      if( lazyHandler != null )
+          lazyHandler.startPrefixMapping( prefix, uri );
+  } // startPrefixMapping()
+
+
+  ////////////////////////////////////////////////////////////////////////////
+
+  public void endPrefixMapping( String prefix )
+  throws SAXException
+  {
+      if( lazyHandler != null )
+          lazyHandler.endPrefixMapping( prefix );
+  } // endPrefixMapping()
+    
+    
+  ////////////////////////////////////////////////////////////////////////////
+
   /** Perform any final document processing when the end of the XML source 
    *  text has been reached. <br><br>
    * 
