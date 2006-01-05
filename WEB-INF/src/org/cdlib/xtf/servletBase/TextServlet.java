@@ -362,8 +362,8 @@ public abstract class TextServlet extends HttpServlet
      * @param   trans   The transformer to stuff the parameters in
      * @param   req     The request containing the parameters
      */
-    public static void stuffAttribs( Transformer trans, 
-                                     HttpServletRequest req )
+    public void stuffAttribs( Transformer trans, 
+                              HttpServletRequest req )
     {
         Enumeration p = req.getParameterNames();
         while( p.hasMoreElements() ) {
@@ -406,9 +406,10 @@ public abstract class TextServlet extends HttpServlet
 
     /**
      * Calculates and adds the "servlet.path" and "root.path" attributes 
-     * to the given transformer.
+     * to the given transformer. Also adds "xtf.home" based on the servlet
+     * root directory.
      */
-    public static void 
+    public void 
     stuffSpecialAttribs( HttpServletRequest req, Transformer trans )
     {
     
@@ -421,7 +422,9 @@ public abstract class TextServlet extends HttpServlet
             uri = req.getRequestURI();
         if( uri.indexOf('?') >= 0 )
             uri = uri.substring(0, uri.indexOf('?') );
-        trans.setParameter( "servlet.path", new StringValue(uri) );
+        
+        trans.setParameter( "servlet.URL", new StringValue(uri) );
+        trans.setParameter( "servlet.path", new StringValue(uri) ); // old
         
         // Another useful parameter is the path to this instance in the
         // servlet container, for other resources such as icons and
@@ -441,7 +444,16 @@ public abstract class TextServlet extends HttpServlet
                                    rootPath.length() - lookFor.length() );
         
         rootPath = rootPath + "/";
-        trans.setParameter( "root.path", new StringValue(rootPath) );
+        trans.setParameter( "root.URL", new StringValue(rootPath) );
+        trans.setParameter( "root.path", new StringValue(rootPath) ); // old
+        
+        // Stylesheets often access local files directly, and it can be quite 
+        // a pain for them to always use relative paths, since Saxon resolves
+        // these relative to the stylesheet directory. Therefore, pass the
+        // servlet home directory to allow direct access.
+        //
+        String xtfHome = Path.normalizePath( getRealPath("") );
+        trans.setParameter( "servlet.dir", xtfHome );
         
         // Stuff all the HTTP request parameters for the stylesheet to
         // use if it wants to.
