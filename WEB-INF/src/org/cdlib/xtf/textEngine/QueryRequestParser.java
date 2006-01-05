@@ -424,6 +424,8 @@ public class QueryRequestParser
             error( "'boostSetField' specified without 'boostSet'" );
         if( req.boostSetField == null && req.boostSetPath != null ) 
             error( "'boostSet' specified without 'boostSetField'" );
+        if( req.boostSetExponent != 1.0f && req.boostSetPath == null ) 
+            error( "'boostSetExponent' specified without 'boostSet'" );
         
         // Do the bulk of the parsing below...
         Query result = parseQuery2( parent, name, field, maxSnippets );
@@ -765,6 +767,20 @@ public class QueryRequestParser
         
         else if( attrName.equalsIgnoreCase("boostSetField") )
             req.boostSetField = parseStringAttrib( el, attrName );
+        
+        else if( attrName.equalsIgnoreCase("boostSetExponent") ) 
+        {
+            try {
+                req.boostSetExponent = Float.parseFloat(
+                    parseStringAttrib(el, attrName) );
+            }
+            catch( NumberFormatException e ) {
+                error( "Invalid float value \"" + val + "\" for " +
+                       "'" + attrName + "' attribute" );
+            }
+            if( req.boostSetExponent < 0.0 )
+                error( "Value of '" + attrName + "' attribute cannot be negative" );
+        }
         
         else if( attrName.equalsIgnoreCase("normalizeScores") ) {
             String yesno = parseStringAttrib( el, "normalizeScores" );

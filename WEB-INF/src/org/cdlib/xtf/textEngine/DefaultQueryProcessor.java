@@ -261,8 +261,12 @@ public class DefaultQueryProcessor extends QueryProcessor
                     return;
                 
                 // If we're boosting, apply that factor.
-                if( boostSet != null )
-                    score *= boostSet.getBoost( doc );
+                if( boostSet != null ) {
+                    float boost = boostSet.getBoost( doc );
+                    if( req.boostSetExponent != 1.0f )
+                        boost = (float) Math.pow(boost, req.boostSetExponent);
+                    score *= boost;
+                }
 
                 // Bump the count of documents hit, and update the max score.
                 nDocsHit++;
@@ -318,7 +322,8 @@ public class DefaultQueryProcessor extends QueryProcessor
         for( int i = req.startDoc; i < nFound; i++ ) {
             if( req.explainScores ) {
                 hitArray[i].finishWithExplain( 
-                    snippetMaker, docScoreNorm, weight );
+                    snippetMaker, docScoreNorm, weight,
+                    boostSet, req.boostSetExponent );
             }
             else
                 hitArray[i].finish( snippetMaker, docScoreNorm );
