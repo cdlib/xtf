@@ -131,10 +131,14 @@ public class DocHitImpl extends DocHit
      * @param docScoreNorm    Multiplied into the document's score
      * @param weight          The query weight that will be used to calculate
      *                        an explanation.
+     * @param boostSet        The boost set used, or null if none
+     * @param boostSetExponent Exponent applied to the boost set factor
      */
     void finishWithExplain( SnippetMaker snippetMaker,
                             float        docScoreNorm,
-                            Weight       weight )
+                            Weight       weight,
+                            BoostSet     boostSet,
+                            float        boostSetExponent )
         throws IOException
     {
         // Don't do this twice.
@@ -146,6 +150,30 @@ public class DocHitImpl extends DocHit
         
         // And figure out an explanation.
         explanation = weight.explain( snippetMaker.reader, doc );
+        
+        // Add any boost set stuff if necessary.
+        if( boostSet != null ) 
+        {
+            Explanation result = new Explanation(0, 
+                "boosted, product of:" );
+            
+            Explanation boostExpl = 
+                new Explanation(boostSet.getBoost(doc), "boostSetFactor");
+            if( boostSetExponent != 1.0f ) {
+                Explanation exponentExpl = new Explanation(
+                    (float)Math.pow(boostExpl.getValue(), boostSetExponent), 
+                    "exponentBoosted" );
+                exponentExpl.addDetail( boostExpl );
+                exponentExpl.addDetail( new Explanation(boostSetExponent, "boostSetExponent") );
+                boostExpl = exponentExpl;
+            }
+            
+            result.addDetail( boostExpl );
+            result.addDetail( explanation );
+            result.setValue( boostExpl.getValue() * explanation.getValue() );
+            
+            explanation = result;
+        }
       
     } // finishWithExplain()
     
