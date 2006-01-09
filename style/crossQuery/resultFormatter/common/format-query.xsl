@@ -37,7 +37,8 @@
                 <xsl:apply-templates select="(query//*[@field])[1]/*" mode="query"/>
                 <xsl:text> in </xsl:text>
                 <span class="search-type"> keywords </span>
-                <xsl:apply-templates select="query//*[@field != 'newKeyword']" mode="query"/>
+                <!-- The boost business is to support the newKeyword -->
+                <xsl:apply-templates select="query//*[@field != 'newKeyword'][not(parent::or[@boost=0])]" mode="query"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:apply-templates select="query" mode="query"/>
