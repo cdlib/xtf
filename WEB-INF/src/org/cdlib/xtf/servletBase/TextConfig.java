@@ -73,6 +73,13 @@ public abstract class TextConfig
      * Turns on latency reporting for the servlet.
      */
     public boolean reportLatency = false;
+    
+    /**
+     * Enables a cutoff size for latency reporting (if {@link #reportLatency} 
+     * is true.) Specifies the number of bytes after which a latency message 
+     * will be printed, even if the output is not complete.
+     */
+    public int latencyCutoffSize = 0;
 
     /** 
      * Amount of time (in seconds) that a request is allowed to run
@@ -191,8 +198,8 @@ public abstract class TextConfig
     {
         boolean bad = false;
         
-        if( tagName.equals("logging") ) {
-            if( attrName.equals("level") ) {
+        if( tagName.equalsIgnoreCase("logging") ) {
+            if( attrName.equalsIgnoreCase("level") ) {
                 if( strVal.equals("0") )
                     strVal = "silent";
                 else if( strVal.equals("1") )
@@ -205,44 +212,47 @@ public abstract class TextConfig
                 bad = true;
         }
 
-        else if( tagName.equals("stylesheetCache") ) {
-            if( attrName.equals("size") )
+        else if( tagName.equalsIgnoreCase("stylesheetCache") ) {
+            if( attrName.equalsIgnoreCase("size") )
                 stylesheetCacheSize = intVal;
-            else if( attrName.equals("expire") )
+            else if( attrName.equalsIgnoreCase("expire") )
                 stylesheetCacheExpire = intVal;
             else
                 bad = true;
         }
         
-        else if( tagName.equals("errorGen") ) {
-            if( attrName.equals("path") )
+        else if( tagName.equalsIgnoreCase("errorGen") ) {
+            if( attrName.equalsIgnoreCase("path") )
                 errorGenSheet = servlet.getRealPath( strVal );
             else
                 bad = true;
         }
 
-        else if( tagName.equals("dependencyChecking") ) {
-            if( attrName.equals("check") )
-                dependencyCheckingEnabled = !(strVal.equals("no")) &&
-                                            !(strVal.equals("false")) &&
+        else if( tagName.equalsIgnoreCase("dependencyChecking") ) {
+            if( attrName.equalsIgnoreCase("check") )
+                dependencyCheckingEnabled = !(strVal.equalsIgnoreCase("no")) &&
+                                            !(strVal.equalsIgnoreCase("false")) &&
                                             !(strVal.equals("0"));
             else
                 bad = true;
         }
             
-        else if( tagName.equals("reportLatency") ) {
-            if( attrName.equals("enable") )
-                reportLatency = !(strVal.equals("no")) &&
-                                !(strVal.equals("false")) &&
+        else if( tagName.equalsIgnoreCase("reportLatency") ) {
+            if( attrName.equalsIgnoreCase("report") ||
+                attrName.equalsIgnoreCase("enable") /* old, for backward compat */ )
+                reportLatency = !(strVal.equalsIgnoreCase("no")) &&
+                                !(strVal.equalsIgnoreCase("false")) &&
                                 !(strVal.equals("0"));
+            else if( attrName.equalsIgnoreCase("cutoffSize") )
+                latencyCutoffSize = intVal;
             else
                 bad = true;
         }
             
-        else if( tagName.equals("runawayTimer") ) {
-            if( attrName.equals("normalTime") )
+        else if( tagName.equalsIgnoreCase("runawayTimer") ) {
+            if( attrName.equalsIgnoreCase("normalTime") )
                 runawayNormalTime = intVal;
-            else if( attrName.equals("killTime") )
+            else if( attrName.equalsIgnoreCase("killTime") )
                 runawayKillTime = intVal;
             else
                 bad = true;
