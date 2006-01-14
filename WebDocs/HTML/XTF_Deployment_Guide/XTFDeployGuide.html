@@ -1150,7 +1150,8 @@ Done.
     &lt;loginCache size="<span class="MacroCode">Entries</span>" expire="<span class="MacroCode">Seconds</span>"/&gt;
 
     &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt;
-
+    &lt;reportlatency enable="<span class="MacroCode">YesOrNo</span>" {cutoffSize="<span class="MacroCode">NumBytes</span>"}/&gt;
+    &lt;runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} {killTime="<span class="MacroCode">Seconds</span>"}/&gt;
     &lt;stylesheetProfiling profile="<span class="MacroCode">YesOrNo</span>"/&gt;
  
     &lt;!-- Your tags go here --&gt;
@@ -1306,20 +1307,81 @@ Done.
         last little bit of speed is critical. Otherwise, set it to <b class="Code">yes</b>. 
       </div>
     </div>
+    <div class="GreyList"> <span class="Code"> &lt;<b>reportlatency report="<span class="MacroCode">YesOrNo</span>" 
+      {cutoffSize="<span class="MacroCode">NumBytes</span>"}</b>&gt; </span><br>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet will report the latency of each request, 
+          that is, how long each request took to process and deliver to the client. 
+          When<span class="Code"> report </span>is set to<span class="Code"> yes</span>, 
+          the servlet will record and log how many milliseconds were spent processing 
+          each request (regardless of whether the request succeeded or produced 
+          an error page.) This information can be useful for accumulating statistical 
+          data, or to target optimization efforts on those requests that took 
+          longest to serve. Set it to "no" if you want to avoid logging and don't 
+          need the information. </p>
+        <p>Depending on the data you're looking for, you might want to exclude 
+          latency of large requests (e.g. a whole book). To do this, set the<span class="Code"> 
+          cutoffSize </span>attribute to a number of bytes; when any request has 
+          output that much data, the servlet will report the latency immediately, 
+          labeled "Latency (cutoff)". When the request finally completes, the 
+          total latency will be reported with the label "Latency (final)". Leaving 
+          out the<span class="Code"> cutoffSize </span>attribute, or setting it 
+          to zero, disables cutoff reporting. 
+        <p>Latency reporting has very little impact on system performance, so 
+          is safe to enable in production environments.
+        <p><span class="Red">Note:</span> The reports are logged at the "info" 
+          level, so if the<span class="Code"> &lt;logging&gt; </span>level above 
+          is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, <reportlatency> nothing will appear. 
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;<b>runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} 
+      {killTime="<span class="MacroCode">Seconds</span>"}</b>&gt; </span><br>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet tracks, reports, and optionally kills 
+          potential "runaway" requests. The<span class="Code"> normalTime </span>attribute 
+          specifies the maximum amount of time, in seconds, that requests are 
+          generally expected to take. Any requests that exceed this time will 
+          be logged (with a call stack trace on Java 5.0 and above.) If set to 
+          zero or not specified, no logging of potential runaway requests will 
+          be performed. </p>
+        <p>The<span class="Code"> killTime </span>attribute specifies the time 
+          after which a request is truly considered runaway and should be killed. 
+          After this time is exceeded a flag is set, and many of the major processing 
+          loops in XTF will check the flag and kill off the request. However, 
+          some parts (deeply buried in third-party libraries) do not check this 
+          flag and thus the request might not be successfully killed. If set to 
+          zero, threads will never be killed before they complete.</p>
+        <p>Runaway timing can introduce significant overhead, and should be enabled 
+          only if one is experiencing problems that might be due to runaway requests. 
+          Set these to zero for general use.</p>
+        <p><span class="Red">Note:</span> Runaway reports are logged at the "info" 
+          level, so if the<span class="Code"> &lt;logging&gt; </span>level above 
+          is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, <reportlatency> nothing will appear. 
+      </div>
+    </div>
     <div class="GreyList"> <span class="Code"> &lt;<b>stylesheetProfiling profile="<span class="MacroCode">YesOrNo</span>"</b>&gt; 
       </span><br>
-      <div class="IndentLR"> Controls whether a profile is generated for each 
-        document request. A profile identifies the stylesheet and line number 
-        of each XSLT command that was executed for the query, and a relative count 
-        that identifes roughly how long it took to execute that command. Within 
-        the profile, the executed commands are ordered such that the most used 
-        commands appear first, and the least used commands appear last. This provides 
-        clues as to where the stylesheet is spending its time and thus could possibly 
-        be optimized. When enabled, profiles are written to the dynaXML servlet's 
-        activity log. <br>
-        <br>
-        Set this to<b class="Code"> no </b> for general use, since collecting 
-        the profile information can be time-consuming. </div>
+      <div class="IndentLR"> 
+        <p>Controls whether a profile is generated for each document request. 
+          A profile identifies the stylesheet and line number of each XSLT command 
+          that was executed for the query, and a relative count that identifes 
+          roughly how long it took to execute that command. Within the profile, 
+          the executed commands are ordered such that the most used commands appear 
+          first, and the least used commands appear last. This provides clues 
+          as to where the stylesheet is spending its time and thus could possibly 
+          be optimized. When enabled, profiles are written to the dynaXML servlet's 
+          activity log. <br>
+          <br>
+          Set this to<b class="Code"> no </b> for general use, since collecting 
+          the profile information can be time-consuming. </p>
+        <p><span class="Red">Note:</span> The profile information is logged at 
+          the "info" level, so if the<span class="Code"> &lt;logging&gt; </span>level 
+          above is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, <reportlatency> nothing will appear. 
+        </p>
+      </div>
     </div>
     <br>
     <b><u>The docReqParser.xsl Request Parser</u></b> <br>
@@ -1408,8 +1470,9 @@ Done.
     &lt;errorGen path="<span class="MacroCode">LocationOfErrorPageGenerator</span>"/&gt;
 
     &lt;stylesheetCache size="<span class="MacroCode">Entries</span>" expire="<span class="MacroCode">Seconds</span>"/&gt;
-
     &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt;
+    &lt;reportlatency enable="<span class="MacroCode">YesOrNo</span>" {cutoffSize="<span class="MacroCode">NumBytes</span>"}/&gt;
+    &lt;runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} {killTime="<span class="MacroCode">Seconds</span>"}/&gt;
 
     &lt;!-- Your tags go here --&gt;
 
@@ -1492,6 +1555,60 @@ Done.
         <br>
         Set this to "no" for a production system where every last little bit of 
         speed is critical. Otherwise, set it to "yes". </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;<b>reportlatency report="<span class="MacroCode">YesOrNo</span>" 
+      {cutoffSize="<span class="MacroCode">NumBytes</span>"}</b>&gt; </span><br>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet will report the latency of each request, 
+          that is, how long each request took to process and deliver to the client. 
+          When<span class="Code"> report </span>is set to<span class="Code"> yes</span>, 
+          the servlet will record and log how many milliseconds were spent processing 
+          each request (regardless of whether the request succeeded or produced 
+          an error page.) This information can be useful for accumulating statistical 
+          data, or to target optimization efforts on those requests that took 
+          longest to serve. Set it to "no" if you want to avoid logging and don't 
+          need the information. </p>
+        <p>Depending on the data you're looking for, you might want to exclude 
+          latency of large requests (e.g. a whole book). To do this, set the<span class="Code"> 
+          cutoffSize </span>attribute to a number of bytes; when any request has 
+          output that much data, the servlet will report the latency immediately, 
+          labeled "Latency (cutoff)". When the request finally completes, the 
+          total latency will be reported with the label "Latency (final)". Leaving 
+          out the<span class="Code"> cutoffSize </span>attribute, or setting it 
+          to zero, disables cutoff reporting. 
+        <p>Latency reporting has very little impact on system performance, so 
+          is safe to enable in production environments.
+        <p><span class="Red">Note:</span> The reports are logged at the "info" 
+          level, so if the<span class="Code"> &lt;logging&gt; </span>level above 
+          is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, <reportlatency> nothing will appear. 
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;<b>runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} 
+      {killTime="<span class="MacroCode">Seconds</span>"}</b>&gt; </span><br>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet tracks, reports, and optionally kills 
+          potential "runaway" requests. The<span class="Code"> normalTime </span>attribute 
+          specifies the maximum amount of time, in seconds, that requests are 
+          generally expected to take. Any requests that exceed this time will 
+          be logged (with a call stack trace on Java 5.0 and above.) If set to 
+          zero or not specified, no logging of potential runaway requests will 
+          be performed. </p>
+        <p>The<span class="Code"> killTime </span>attribute specifies the time 
+          after which a request is truly considered runaway and should be killed. 
+          After this time is exceeded a flag is set, and many of the major processing 
+          loops in XTF will check the flag and kill off the request. However, 
+          some parts (deeply buried in third-party libraries) do not check this 
+          flag and thus the request might not be successfully killed. If set to 
+          zero, threads will never be killed before they complete.</p>
+        <p>Runaway timing can introduce significant overhead, and should be enabled 
+          only if one is experiencing problems that might be due to runaway requests. 
+          Set these to zero for general use.</p>
+        <p><span class="Red">Note:</span> Runaway reports are logged at the "info" 
+          level, so if the<span class="Code"> &lt;logging&gt; </span>level above 
+          is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, <reportlatency> nothing will appear. 
+      </div>
     </div>
     <br>
     <br>
