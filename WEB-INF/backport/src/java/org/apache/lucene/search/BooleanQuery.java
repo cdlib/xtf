@@ -226,7 +226,7 @@ public class BooleanQuery extends Query {
             return new Explanation(0.0f, "match prohibited");
           }
         } else if (c.required) {
-          return new Explanation(0.0f, "match required");
+          continue;
         }
       }
       sumExpl.setValue(sum);
