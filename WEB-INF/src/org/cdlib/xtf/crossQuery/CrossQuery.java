@@ -42,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.om.NodeInfo;
@@ -144,16 +143,6 @@ public class CrossQuery extends TextServlet
                 String value = req.getParameter( name );
                 attribs.put( name, convertUTF8inURL(value) );
             }
-
-            // This is useful so the stylesheet can be entirely
-            // portable... it can call itself in new URLs by simply using
-            // this path. Some servlet containers include the parameters,
-            // so strip those if present.
-            //
-            String uri = req.getRequestURI();
-            if( uri.indexOf('?') >= 0 )
-                uri = uri.substring(0, uri.indexOf('?') );
-            attribs.put( "servlet.path", uri );
 
             // This does the bulk of the work.
             apply( attribs, req, res );
@@ -358,7 +347,7 @@ public class CrossQuery extends TextServlet
             trans.setErrorListener( new XTFSaxonErrorListener() );
 
         // Do it!
-        trans.transform( sourceDoc, new StreamResult(res.getOutputStream()) );
+        trans.transform( sourceDoc, createFilteredReceiver(trans, req, res) );
     } // formatHits()
 
     

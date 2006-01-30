@@ -47,7 +47,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamResult;
 
 import net.sf.saxon.Controller;
 import net.sf.saxon.instruct.Executable;
@@ -405,7 +404,8 @@ public class DynaXML extends TextServlet
         
         // Now do the bulk of the work
         try {
-            transformer.transform( sourceDoc, new StreamResult(out) );
+            transformer.transform( sourceDoc, 
+                createFilteredReceiver(transformer, req, res) );
         }
         catch( Exception e ) {
             if( config.stylesheetProfiling )
