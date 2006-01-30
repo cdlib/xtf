@@ -148,6 +148,22 @@ public class FakeServletRequest implements HttpServletRequest
     assert false;
     return null;
   }
+  public String getLocalAddr() {
+    assert false;
+    return null;
+  }
+  public String getLocalName() {
+    assert false;
+    return null;
+  }
+  public int getLocalPort() {
+    assert false;
+    return 0;
+  }
+  public int getRemotePort() {
+    assert false;
+    return 0;
+  }
   public String getQueryString()
   {
     StringBuffer buf = new StringBuffer();

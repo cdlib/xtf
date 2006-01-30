@@ -55,6 +55,13 @@ public class FakeServletResponse implements HttpServletResponse
     assert false;
 
   }
+  public String getContentType() {
+    assert false;
+    return null;
+  }
+  public void setCharacterEncoding(String arg0) {
+    assert false;
+  }
   public void addDateHeader( String name, long date )
   {
     assert false;
