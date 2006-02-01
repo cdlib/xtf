@@ -120,7 +120,7 @@ public class CrossQuery extends TextServlet
             res.setContentType("text/html");
 
             // If in step mode, output the frameset and top frame...
-            String stepStr = stepSetup( req );
+            String stepStr = stepSetup( req, res );
             if( stepStr != null ) {
                 ServletOutputStream out = res.getOutputStream();
                 out.println( stepStr );
@@ -361,9 +361,11 @@ public class CrossQuery extends TextServlet
      * @return A string to output if in step setup phase, null to do normal 
      *         processing
      */
-    protected String stepSetup( HttpServletRequest req ) throws IOException
+    protected String stepSetup( HttpServletRequest  req,
+                                HttpServletResponse res) 
+        throws IOException
     {
-        String baseUrl = getRequestURL(req);
+        String baseUrl = res.encodeURL( getRequestURL(req) );
             
         String step = req.getParameter( "debugStep" );
         if( step == null || step.length() == 0 )
