@@ -145,9 +145,11 @@ public class SRU extends CrossQuery
     
     
     /** Add additional stuff to the usual debug step mode */
-    protected String stepSetup( HttpServletRequest req ) throws IOException
+    protected String stepSetup( HttpServletRequest  req,
+                                HttpServletResponse res ) 
+        throws IOException
     {
-        String stepStr = super.stepSetup( req );
+        String stepStr = super.stepSetup( req, res );
         if( stepStr != null ) {
             stepStr = stepStr.replaceAll( "crossQuery", "SRU" );
             String step = req.getParameter( "debugStep" );
