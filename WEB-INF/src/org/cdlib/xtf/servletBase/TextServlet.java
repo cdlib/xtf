@@ -352,6 +352,10 @@ public abstract class TextServlet extends HttpServlet
         curServlet.set( this );
         curRequest.set( req );
         curResponse.set( res );
+        
+        // Get or create a session if enabled.
+        if( config.trackSessions )
+            req.getSession( true );
       
         // Turn on runaway tracking if enabled.
         boolean trackRunaway = (config.runawayNormalTime > 0) ||
@@ -421,6 +425,12 @@ public abstract class TextServlet extends HttpServlet
      * configuration info that was read previously by readConfig()
      */
     protected abstract TextConfig getConfig();
+    
+    
+    /** Tells whether session tracking was enabled in the config file */
+    public boolean isSessionTrackingEnabled() {
+        return getConfig().trackSessions;
+    }
     
     
     /** 

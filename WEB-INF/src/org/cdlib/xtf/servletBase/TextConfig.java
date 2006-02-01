@@ -94,6 +94,9 @@ public abstract class TextConfig
      */
     public long runawayKillTime = 0;
     
+    /** Whether session tracking is enabled. Default: false */
+    public boolean trackSessions = false;
+    
     /** All the configuration attributes in the form of name/value pairs */
     public AttribList attribs = new AttribList();
     
@@ -254,6 +257,15 @@ public abstract class TextConfig
                 runawayNormalTime = intVal;
             else if( attrName.equalsIgnoreCase("killTime") )
                 runawayKillTime = intVal;
+            else
+                bad = true;
+        }
+            
+        else if( tagName.equalsIgnoreCase("trackSessions") ) {
+            if( attrName.equalsIgnoreCase("track") )
+                trackSessions = !(strVal.equalsIgnoreCase("no")) &&
+                                !(strVal.equalsIgnoreCase("false")) &&
+                                !(strVal.equals("0"));
             else
                 bad = true;
         }
