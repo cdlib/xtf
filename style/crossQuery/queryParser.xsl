@@ -48,6 +48,7 @@
                               xmlns:xlink="http://www.w3.org/TR/xlink" 
                               xmlns:xs="http://www.w3.org/2001/XMLSchema"
                               xmlns:parse="http://cdlib.org/parse"
+                              xmlns:session="java:org.cdlib.xtf.xslt.Session"
                               exclude-result-prefixes="xsl dc mets xlink xs parse">
   
   <xsl:output method="xml" indent="yes" encoding="utf-8"/>
@@ -140,8 +141,21 @@
       </xsl:if>
       
       <!-- process query -->
-      <xsl:apply-templates/>
-      
+      <xsl:choose>
+        <xsl:when test="$smode = 'addToBag'">
+          <xsl:call-template name="addToBag"/>
+        </xsl:when>
+        <xsl:when test="$smode = 'removeFromBag'">
+          <xsl:call-template name="removeFromBag"/>
+        </xsl:when>
+        <xsl:when test="$smode = 'showBag'">
+          <xsl:call-template name="showBag"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates/>
+        </xsl:otherwise>
+      </xsl:choose>
+  
     </query>
   </xsl:template>
 
@@ -391,4 +405,50 @@
     
   </xsl:template>
   
+<!-- ====================================================================== -->
+<!-- "Add To Bag" template                                                  -->
+<!--                                                                        -->
+<!-- Adds the document identifier specified in the URL to the bag in the    -->
+<!-- current session.                                                       -->
+<!-- ====================================================================== -->
+  
+  <xsl:template name="addToBag">
+    <xsl:variable name="oldBag" select="session:getData('bag')"/>
+    <xsl:variable name="identifier" select="string(//param[@name='identifier']/@value)"/>
+    <xsl:value-of select="session:setData('bag', concat($identifier, ';', $oldBag))"/>
+  </xsl:template>
+    
+<!-- ====================================================================== -->
+<!-- "Remove From Bag" template                                             -->
+<!--                                                                        -->
+<!-- Removes the document identifier specified in the URL from the bag in   -->
+<!-- the current session.                                                   -->
+<!-- ====================================================================== -->
+  
+  <xsl:template name="removeFromBag">
+    <xsl:variable name="oldBag" select="session:getData('bag')"/>
+    <xsl:variable name="identifier" select="string(//param[@name='identifier']/@value)"/>
+    <xsl:value-of select="session:setData('bag', replace($oldBag, concat($identifier, ';'), ''))"/>
+  </xsl:template>
+    
+<!-- ====================================================================== -->
+<!-- "Show Bag" template                                                    -->
+<!--                                                                        -->
+<!-- Forms a query of all the documents currently in the bag.               -->
+<!-- ====================================================================== -->
+  
+  <xsl:template name="showBag">
+    <xsl:variable name="bag" select="session:getData('bag')"/>
+    <xsl:message>bag: <xsl:copy-of select="$bag"/></xsl:message>
+    <xsl:if test="$bag != ''">
+      <or>
+        <xsl:analyze-string select="session:getData('bag')" regex="[^;]+">
+          <xsl:matching-substring>
+            <term field="identifier"><xsl:value-of select="."/></term>
+          </xsl:matching-substring>
+        </xsl:analyze-string>
+      </or>
+    </xsl:if>
+  </xsl:template>
+    
 </xsl:stylesheet>

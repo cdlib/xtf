@@ -35,7 +35,8 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
                               xmlns:dc="http://purl.org/dc/elements/1.1/" 
                               xmlns:mets="http://www.loc.gov/METS/" 
-                              xmlns:xlink="http://www.w3.org/TR/xlink">
+                              xmlns:xlink="http://www.w3.org/TR/xlink"
+                              xmlns:session="java:org.cdlib.xtf.xslt.Session">
   
   <!-- ====================================================================== -->
   <!-- Import Common Templates                                                -->
@@ -61,6 +62,12 @@
   
   <xsl:template match="/">
     <xsl:choose>
+      <xsl:when test="$smode = 'addToBag'">
+        <span class="highlight">Added to bag.</span>
+      </xsl:when>
+      <xsl:when test="$smode = 'removeFromBag'">
+        <!-- No output needed -->
+      </xsl:when>
       <xsl:when test="$smode = 'test'">
         <xsl:apply-templates select="crossQueryResult" mode="test"/>
       </xsl:when>
@@ -84,7 +91,8 @@
         $relation or 
         $coverage or 
         $rights or 
-        $year">
+        $year or
+        $smode ='showBag'">
         <xsl:apply-templates select="crossQueryResult" mode="results"/>
       </xsl:when>
       <xsl:otherwise>
@@ -139,6 +147,13 @@
       <head>
         <title>XTF: Search Results</title>
         <xsl:copy-of select="$brand.links"/>
+        
+        <!-- If session tracking enabled, load bag tracking scripts -->
+        <xsl:if test="session:isEnabled()">
+          <script src="script/AsyncLoader.js"/>
+          <script src="script/BookBag.js"/>
+        </xsl:if>
+        
       </head>
       <body bgcolor="ivory">
         
@@ -153,9 +168,16 @@
             </td>
             <td width="1%"/>
             <td align="left">
-              <xsl:call-template name="format-query">
-                <xsl:with-param name="query" select="$query"/>
-              </xsl:call-template>
+              <xsl:choose>
+                <xsl:when test="$smode = 'showBag'">
+                  Bag contents
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:call-template name="format-query">
+                    <xsl:with-param name="query" select="$query"/>
+                  </xsl:call-template>
+                </xsl:otherwise>
+              </xsl:choose>
             </td>
           </tr>
           <tr>
@@ -164,7 +186,9 @@
             </td>
             <td width="1%"/>
             <td align="left">
-              <xsl:value-of select="@totalDocs"/>
+              <span id="itemCount">
+                <xsl:value-of select="@totalDocs"/>
+              </span>
               <xsl:text> Item(s)</xsl:text>
             </td>
           </tr>
@@ -188,13 +212,21 @@
           </tr> 
           <tr>
             <td colspan="3" align="center">
-              <a class="highlight" href="{$xtfURL}{$crossqueryPath}?{$modifyString}">
-                <xsl:text>Modify Search</xsl:text>
-              </a>
-              <xsl:text>&#160;&#160;</xsl:text>
+              <xsl:if test="$smode != 'showBag'">
+                <a class="highlight" href="{$xtfURL}{$crossqueryPath}?{$modifyString}">
+                  <xsl:text>Modify Search</xsl:text>
+                </a>
+                <xsl:text>&#160;&#160;</xsl:text>
+              </xsl:if>
               <a class="highlight" href="{$xtfURL}{$crossqueryPath}">
                 <xsl:text>Begin New Search</xsl:text>
               </a>
+              <xsl:if test="$smode = 'showBag'">
+                <xsl:text>&#160;&#160;</xsl:text>
+                <a class="highlight" href="{session:getData('queryURL')}">
+                  <xsl:text>Return to Search Results</xsl:text>
+                </a>
+              </xsl:if>
             </td>
           </tr>
         </table>
@@ -206,8 +238,8 @@
                 <hr size="1" width="100%"/>
               </td>
             </tr>    
-            <xsl:apply-templates select="*"/>
           </table>
+          <xsl:apply-templates select="*"/>
         </xsl:if>
         
         <xsl:copy-of select="$brand.footer"/>    
@@ -454,7 +486,11 @@
 
     <xsl:variable name="fullark" select="meta/identifier[1]"/>
     <xsl:variable name="ark" select="substring($fullark, string-length($fullark)-9)"/>
+    <xsl:variable name="quotedArk" select="concat('&quot;', $ark, '&quot;')"/>
     <xsl:variable name="collection" select="string(meta/collection)"/>
+
+    <!-- The identifier stored in the index is the full ark minus "http:/cdlib/ark:/" -->    
+    <xsl:variable name="indexId" select="replace($fullark, '.*:/', '')"/>
 
     <xsl:variable name="anchor">
       <xsl:choose>
@@ -466,158 +502,210 @@
         </xsl:when>
       </xsl:choose>
     </xsl:variable>
-    
-    <tr>
-      <td align="right" width="4%">
-        <xsl:choose>
-          <xsl:when test="$sort != 'title' and $sort != 'creator' and $sort != 'year'">
-            <span class="heading"><xsl:value-of select="@rank"/></span>
-          </xsl:when>
-          <xsl:otherwise>
+
+    <div id="{$ark}-main">    
+      <table width="100%" cellpading="0" cellspacing="2" bgcolor="ivory">          
+
+        <tr>
+          <td align="right" width="4%">
+            <xsl:choose>
+              <xsl:when test="$sort != 'title' and $sort != 'creator' and $sort != 'year'">
+                <span class="heading"><xsl:value-of select="@rank"/></span>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>&#160;</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
+          </td>
+          <td align="right" width="10%">
+            <xsl:if test="$sort = 'creator'">
+              <a name="{$anchor}"/>
+            </xsl:if>
+            <span class="heading">Author:&#160;&#160;</span>
+          </td>
+          <td align="left">
+            <xsl:apply-templates select="meta/creator[1]"/>
+          </td>
+          <td align="right" width="4%">
             <xsl:text>&#160;</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-      </td>
-      <td align="right" width="10%">
-        <xsl:if test="$sort = 'creator'">
-          <a name="{$anchor}"/>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <xsl:text>&#160;</xsl:text>
+          </td>
+          <td align="right">
+            <xsl:if test="$sort = 'title'">
+              <a name="{$anchor}"/>
+            </xsl:if>
+            <span class="heading">Title:&#160;&#160;</span>
+          </td>
+          <td align="left">
+            <a>
+              <xsl:attribute name="href">
+                <xsl:call-template name="dynaxml.url">
+                  <xsl:with-param name="fullark" select="$fullark"/>
+                </xsl:call-template>
+              </xsl:attribute>
+              <xsl:apply-templates select="meta/title[1]"/>
+            </a>
+          </td>
+          <td align="center">
+            <span class="heading">
+              <xsl:value-of select="@score"/>
+              <xsl:if test="not(matches($normalizeScores, 'no|false'))">
+                <xsl:text>%</xsl:text>
+              </xsl:if>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <xsl:text>&#160;</xsl:text>
+          </td>
+          <td align="right">
+            <span class="heading">Collection:&#160;&#160;</span>
+          </td>
+          <td align="left">
+            <!-- THIS NEEDS WORK -->
+            <xsl:choose>
+              <xsl:when test="contains(meta/relation[2], 'escholarship')">
+                <xsl:text>eScholarship Editions&#160;&#160;</xsl:text>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:apply-templates select="meta/relation[1]"/>
+                <xsl:text>&#160;&#160;</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
+          </td>
+          <td align="right">
+            <xsl:text>&#160;</xsl:text>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <xsl:text>&#160;</xsl:text>
+          </td>
+          <td align="right">
+            <span class="heading">Published:&#160;&#160;</span>
+          </td>
+          <td align="left">
+            <!-- THIS NEEDS WORK -->
+            <xsl:choose>
+              <xsl:when test="contains(meta/relation[1], 'ucpress')">
+                <xsl:text>University of California Press.&#160;&#160;</xsl:text>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:apply-templates select="meta/relation[1]"/>
+                <xsl:text>&#160;&#160;</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
+            <xsl:apply-templates select="meta/year"/>
+          </td>
+          <td align="right">
+            <xsl:text>&#160;</xsl:text>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <xsl:text>&#160;</xsl:text>
+          </td>
+          <td align="right">
+            <span class="heading">Subjects:&#160;&#160;</span>
+          </td>
+          <td align="left">
+            <xsl:apply-templates select="meta/subject"/>
+          </td>
+          <td align="right">
+            <xsl:text>&#160;</xsl:text>
+          </td>
+        </tr>
+        <xsl:if test="(snippet) and ($sort != 'title' and $sort != 'creator' and $sort != 'year')">
+          <tr>
+            <td align="right">
+              <xsl:text>&#160;</xsl:text>
+            </td>
+            <td align="right" valign="top">
+              <span class="heading">Matches:&#160;&#160;</span>
+            </td>
+            <td align="left">
+              <xsl:apply-templates select="snippet"/>
+            </td>
+            <td align="right">
+              <xsl:text>&#160;</xsl:text>
+            </td>
+          </tr>
         </xsl:if>
-        <span class="heading">Author:&#160;&#160;</span>
-      </td>
-      <td align="left">
-        <xsl:apply-templates select="meta/creator[1]"/>
-      </td>
-      <td align="right" width="4%">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-    </tr>
-    <tr>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-      <td align="right">
-        <xsl:if test="$sort = 'title'">
-          <a name="{$anchor}"/>
+        <xsl:if test="explanation">
+          <tr>
+            <td align="right">
+              <xsl:text>&#160;</xsl:text>
+            </td>
+            <td align="right" valign="top">
+              <span class="heading">Explanation:&#160;&#160;</span>
+            </td>
+            <td align="left">
+              <xsl:apply-templates select="explanation"/>
+            </td>
+            <td align="right">
+              <xsl:text>&#160;</xsl:text>
+            </td>
+          </tr>
         </xsl:if>
-        <span class="heading">Title:&#160;&#160;</span>
-      </td>
-      <td align="left">
-        <a>
-          <xsl:attribute name="href">
-            <xsl:call-template name="dynaxml.url">
-              <xsl:with-param name="fullark" select="$fullark"/>
-            </xsl:call-template>
-          </xsl:attribute>
-          <xsl:apply-templates select="meta/title[1]"/>
-        </a>
-      </td>
-      <td align="center">
-        <span class="heading">
-          <xsl:value-of select="@score"/>
-          <xsl:if test="not(matches($normalizeScores, 'no|false'))">
-            <xsl:text>%</xsl:text>
-          </xsl:if>
-        </span>
-      </td>
-    </tr>
-    <tr>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-      <td align="right">
-        <span class="heading">Collection:&#160;&#160;</span>
-      </td>
-      <td align="left">
-        <!-- THIS NEEDS WORK -->
-        <xsl:choose>
-          <xsl:when test="contains(meta/relation[2], 'escholarship')">
-            <xsl:text>eScholarship Editions&#160;&#160;</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:apply-templates select="meta/relation[1]"/>
-            <xsl:text>&#160;&#160;</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-      </td>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-    </tr>
-    <tr>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-      <td align="right">
-        <span class="heading">Published:&#160;&#160;</span>
-      </td>
-      <td align="left">
-        <!-- THIS NEEDS WORK -->
-        <xsl:choose>
-          <xsl:when test="contains(meta/relation[1], 'ucpress')">
-            <xsl:text>University of California Press.&#160;&#160;</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:apply-templates select="meta/relation[1]"/>
-            <xsl:text>&#160;&#160;</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-        <xsl:apply-templates select="meta/year"/>
-      </td>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-    </tr>
-    <tr>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-      <td align="right">
-        <span class="heading">Subjects:&#160;&#160;</span>
-      </td>
-      <td align="left">
-        <xsl:apply-templates select="meta/subject"/>
-      </td>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-    </tr>
-    <xsl:if test="(snippet) and ($sort != 'title' and $sort != 'creator' and $sort != 'year')">
-      <tr>
-        <td align="right">
-          <xsl:text>&#160;</xsl:text>
-        </td>
-        <td align="right" valign="top">
-          <span class="heading">Matches:&#160;&#160;</span>
-        </td>
-        <td align="left">
-          <xsl:apply-templates select="snippet"/>
-        </td>
-        <td align="right">
-          <xsl:text>&#160;</xsl:text>
-        </td>
-      </tr>
-    </xsl:if>
-    <xsl:if test="explanation">
-      <tr>
-        <td align="right">
-          <xsl:text>&#160;</xsl:text>
-        </td>
-        <td align="right" valign="top">
-          <span class="heading">Explanation:&#160;&#160;</span>
-        </td>
-        <td align="left">
-          <xsl:apply-templates select="explanation"/>
-        </td>
-        <td align="right">
-          <xsl:text>&#160;</xsl:text>
-        </td>
-      </tr>
-    </xsl:if>
-    <tr>
-      <td colspan="4">
-        <hr size="1" width="100%"/>
-      </td>
-    </tr>
+
+        <!-- Add/remove logic for the session bag (only if session tracking enabled) -->
+        <xsl:if test="session:isEnabled()">
+          <tr>
+            <td align="right">
+              <xsl:text>&#160;</xsl:text>
+            </td>
+            <td align="right" valign="top">
+              <span class="heading">Bag:&#160;&#160;</span>
+            </td>
+            <td align="left">
+
+              <xsl:choose>
+                <xsl:when test="$smode = 'showBag'">
+                  <xsl:variable name="removeURL" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=removeFromBag&amp;identifier=', $indexId))"/>
+                  <span id="{$ark}-remove">
+                    <a class="highlight" href="{concat('javascript:removeFromBag(', $quotedArk, ', &quot;', $removeURL, '&quot;)')}">
+                      Remove from bag
+                    </a>
+                  </span>
+                </xsl:when>
+                <xsl:otherwise>
+                  <a href="{concat($xtfURL, $crossqueryPath, '?smode=showBag&amp;', $queryString)}">Show bag</a> |
+                  <xsl:choose>
+                    <xsl:when test="contains(session:getData('bag'), $indexId)">
+                      <span class="highlight">In bag.</span>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:variable name="addURL" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=addToBag&amp;identifier=', $indexId))"/>
+                      <span id="{$ark}-add">
+                        <a href="{concat('javascript:addToBag(', $quotedArk, ', &quot;', $addURL, '&quot;)')}">
+                          Add to bag
+                        </a>
+                      </span>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                  <xsl:value-of select="session:setData('queryURL', concat($xtfURL, $crossqueryPath, '?', $queryString))"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </td>
+            <td align="right">
+              <xsl:text>&#160;</xsl:text>
+            </td>
+          </tr>
+        </xsl:if>
+
+        <tr>
+          <td colspan="4">
+            <hr size="1" width="100%"/>
+          </td>
+        </tr>
+
+      </table>
+    </div>
     
   </xsl:template>
     
