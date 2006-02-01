@@ -263,9 +263,9 @@ public class QueryRequestParser
             }
         }
 
-        if( nChildQueries != 1 ) {
+        if( nChildQueries > 1 ) {
             error( "<" + main.name() + "> element must have " +
-                   " exactly one child query" );
+                   " at most one child query" );
         }
         
         if( main.name().equals("query") &&
