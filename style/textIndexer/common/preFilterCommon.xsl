@@ -70,8 +70,8 @@
     <xsl:variable name="name">
       <xsl:choose>
         <!-- To disambiguate types -->
-        <xsl:when test="name() = 'type'">
-          <xsl:value-of select="concat('facet-',name(),'-',position())"/>
+        <xsl:when test="name() = 'type' and position() = 1">
+          <xsl:value-of select="'facet-type-tab'"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="concat('facet-',name())"/>
@@ -79,19 +79,54 @@
       </xsl:choose>
     </xsl:variable>
     <!-- Get rid of quotes -->
-    <xsl:variable name="value" select="replace(string(.), '&quot;', '')"/>
-    <xsl:element name="{$name}">
-      <xsl:attribute name="xtf:meta" select="'true'"/>
-      <xsl:attribute name="xtf:tokenize" select="'no'"/>
+    <xsl:variable name="value">
       <xsl:choose>
-        <xsl:when test="normalize-space() = ''">
-          <xsl:value-of select="'1 EMPTY'"/>
+        <xsl:when test="name() = 'type' and position() = 1">
+          <xsl:choose>
+            <xsl:when test="matches(.,'mixed','i')">
+              <xsl:value-of select="'Mixed'"/>
+            </xsl:when>
+            <xsl:when test="matches(.,'image|cartographic','i')">
+              <xsl:value-of select="'Image'"/>
+            </xsl:when>
+            <xsl:when test="matches(.,'text','i')">
+              <xsl:value-of select="'Text'"/>
+            </xsl:when>
+            <xsl:when test="matches(.,'website','i')">
+              <xsl:value-of select="'Website'"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="'OTHER'"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="$value"/>
+          <xsl:value-of select="replace(string(.), '&quot;', '')"/>
         </xsl:otherwise>
       </xsl:choose>
-    </xsl:element>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="$value = 'Mixed'">
+        <facet-type-tab xtf:meta="true" xtf:tokenize="no">Image</facet-type-tab>
+        <facet-type-tab xtf:meta="true" xtf:tokenize="no">Text</facet-type-tab>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:element name="{$name}">
+          <xsl:attribute name="xtf:meta" select="'true'"/>
+          <xsl:attribute name="xtf:tokenize" select="'no'"/>
+          <xsl:choose>
+            <xsl:when test="normalize-space() = ''">
+              <xsl:value-of select="'1 EMPTY'"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$value"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:element>
+      </xsl:otherwise>
+    </xsl:choose>
+    
+    
   </xsl:template>
 
   <!-- generate facet-title -->
