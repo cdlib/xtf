@@ -162,8 +162,12 @@ public class TagFilter extends TokenFilter
                 tokVal = "<";
             else if( curToken.termText().equals("gt") )
                 tokVal = ">";
+            else if( curToken.termText().equals("quot") )
+                tokVal = "\"";
+            else if( curToken.termText().equals("apos") )
+                tokVal = "'";
             else
-                throw new RuntimeException( "Unexpected entity ref" );
+                return null;
             
             return new Token( tokVal, startPos-1, endPos+1, XML_TYPE );  
         }
