@@ -369,10 +369,12 @@ public class QueryRequestParser
         if( !name.matches(
                 "^query$|^term$|^all$|^range$|^phrase$|^exact$|^near$" +
                 "|^and$|^or$|^not$" +
+                "|^moreLike$" +               // experimental
                 "|^combine$|^meta$|^text$") ) // old stuff, for compatability
         {
             error( "Expected: 'query', 'term', 'all', 'range', 'phrase', " +
-                   "'exact', 'near', 'and', 'or', or 'not'; found '" + name + "'" );
+                   "'exact', 'near', 'and', 'or', 'not', or 'moreLike'; " +
+                   "found '" + name + "'" );
         }
         
         // Old stuff, for compatability.
@@ -474,6 +476,10 @@ public class QueryRequestParser
         // Range queries are also pretty simple.
         if( name.equals("range") )
             return parseRange( parent, field, maxSnippets );
+        
+        // Handle 'moreLike' queries separately.
+        if( name.equals("moreLike") )
+            return parseMoreLike( parent, field, maxSnippets );
 
         // For text queries, 'all', 'phrase', 'exact', and 'near' can be viewed
         // as phrase queries with different slop values.
@@ -1133,6 +1139,36 @@ public class QueryRequestParser
         return q;
         
     } // makeTextAllQuery()
+    
+    /**
+     * Parses a "more like this" query.
+     */
+    private Query parseMoreLike( EasyNode parent, 
+                                 String   field, 
+                                 int      maxSnippets )
+    {
+        // First, parse the sub-query.
+        Query subQuery = null;
+        for( int i = 0; i < parent.nChildren(); i++ ) {
+            EasyNode el = parent.child( i );
+            if( !el.isElement() )
+                continue;
+            else if( el.name().equals("resultData") )
+                continue; // ignore, handled by client's resultFormatter.xsl
+
+            if( subQuery != null )
+                error( "'moreLike' element may not have more than one sub-query" );
+            
+            subQuery = parseQuery( el, field, 0 ); // no snippets
+        }
+
+        if( subQuery == null )
+            error( "'moreLike' element requires a sub-query" );
+        
+        // Form up the result.
+        return new MoreLikeThisQuery( subQuery );
+      
+    } // parseMoreLike()
     
     
     /**

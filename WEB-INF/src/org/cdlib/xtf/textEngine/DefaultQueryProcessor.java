@@ -217,8 +217,9 @@ public class DefaultQueryProcessor extends QueryProcessor
         // the chunk overlap size. That way, we'll get consistent results and
         // the user won't be able to tell where the chunk boundaries are.
         //
-        final Query finalQuery = new SlopFixupRewriter(docNumMap, stopSet).
-                                         rewriteQuery(query);
+        final Query finalQuery = 
+            new SlopFixupRewriter(docNumMap, stopSet, pluralMap, accentMap).
+            rewriteQuery(query);
         
         // If debugging is enabled, print out the final rewritten and fixed
         // up query.

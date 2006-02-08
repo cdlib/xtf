@@ -40,6 +40,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanRangeQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
+import org.cdlib.xtf.util.CharMap;
+import org.cdlib.xtf.util.WordMap;
 
 /**
  * Fix up all the "infinite" slop entries to be actually limited to
@@ -54,11 +56,19 @@ public class SlopFixupRewriter extends XtfQueryRewriter
 {
   private DocNumMap docNumMap;
   private Set       stopSet;
+  private WordMap   pluralMap;
+  private CharMap   accentMap;
 
   /** Construct a new rewriter */
-  public SlopFixupRewriter( DocNumMap docNumMap, Set stopSet ) {
+  public SlopFixupRewriter( DocNumMap docNumMap, 
+                            Set       stopSet,
+                            WordMap   pluralMap,
+                            CharMap   accentMap ) 
+  {
     this.docNumMap = docNumMap;
     this.stopSet   = stopSet;
+    this.pluralMap = pluralMap;
+    this.accentMap = accentMap;
   }
   
   public boolean forceRewrite( Query q ) {
@@ -66,7 +76,8 @@ public class SlopFixupRewriter extends XtfQueryRewriter
            (q instanceof SpanChunkedNotQuery) ||
            (q instanceof SpanDechunkingQuery) ||
            (q instanceof SpanWildcardQuery) ||
-           (q instanceof SpanRangeQuery);
+           (q instanceof SpanRangeQuery) ||
+           (q instanceof MoreLikeThisQuery);
   }
   
   public Query rewrite( SpanNearQuery nq ) 
@@ -122,5 +133,14 @@ public class SlopFixupRewriter extends XtfQueryRewriter
       assert newq != q;
       newq.setStopWords( stopSet );
       return newq;
-  }  
+  }
+  
+  public Query rewrite( MoreLikeThisQuery q ) {
+      MoreLikeThisQuery newq = (MoreLikeThisQuery) super.rewrite( q );
+      assert newq != q;
+      newq.setStopWords( stopSet );
+      newq.setPluralMap( pluralMap );
+      newq.setAccentMap( accentMap );
+      return newq;
+  }
 } // class SlopFixupRewriter

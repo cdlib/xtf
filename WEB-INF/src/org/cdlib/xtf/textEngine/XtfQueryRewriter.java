@@ -41,6 +41,8 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
       return rewrite((SpanSectionTypeQuery) q);
     else if (q instanceof SpanExactQuery)
       return rewrite((SpanExactQuery)q);
+    else if (q instanceof MoreLikeThisQuery)
+      return rewrite((MoreLikeThisQuery)q);
     else
       return super.rewriteQuery(q);
   } // rewriteQuery()
@@ -110,6 +112,14 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
     return copyBoost(eq, new SpanExactQuery((SpanQuery[]) newClauses
         .toArray(newArray)));
 
+  }
+  
+  /** Rewrite a "more like this" query */
+  protected Query rewrite(MoreLikeThisQuery mlt) {
+    Query rewrittenSub = rewriteQuery(mlt.getSubQuery());
+    if (rewrittenSub == mlt.getSubQuery() && !forceRewrite(mlt))
+        return mlt;
+    return copyBoost(mlt, new MoreLikeThisQuery(rewrittenSub));
   }
   
 }

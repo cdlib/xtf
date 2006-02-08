@@ -69,6 +69,8 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
       return rewrite((SpanSectionTypeQuery) q);
     else if( q instanceof SpanExactQuery )
         return rewrite((SpanExactQuery)q);
+    else if( q instanceof MoreLikeThisQuery )
+        return rewrite((MoreLikeThisQuery)q);
     return super.rewriteQuery(q);
   }
   
@@ -149,6 +151,14 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
         new SpanExactQuery((SpanQuery[]) newClauses.toArray(newArray)));
   } // rewrite()
 
+  /** Rewrite a "more like this" query */
+  protected Query rewrite(MoreLikeThisQuery mlt) {
+    Query rewrittenSub = rewriteQuery(mlt.getSubQuery());
+    if (rewrittenSub == mlt.getSubQuery() && !forceRewrite(mlt))
+        return mlt;
+    return copyBoost(mlt, new MoreLikeThisQuery(rewrittenSub));
+  }
+  
   /**
    * Basic regression test
    */
