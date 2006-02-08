@@ -151,6 +151,9 @@
         <xsl:when test="$smode = 'showBag'">
           <xsl:call-template name="showBag"/>
         </xsl:when>
+        <xsl:when test="$smode = 'moreLike'">
+          <xsl:call-template name="moreLike"/>
+        </xsl:when>
         <xsl:otherwise>
           <xsl:apply-templates/>
         </xsl:otherwise>
@@ -449,6 +452,19 @@
         </xsl:analyze-string>
       </or>
     </xsl:if>
+  </xsl:template>
+    
+<!-- ====================================================================== -->
+<!-- "More Like This" template                                              -->
+<!--                                                                        -->
+<!-- Forms a query of a single document ID, and fetches documents like it.  -->
+<!-- ====================================================================== -->
+  
+  <xsl:template name="moreLike">
+    <xsl:variable name="identifier" select="string(//param[@name='identifier']/@value)"/>
+    <moreLike>
+      <term field="identifier"><xsl:value-of select="$identifier"/></term>
+    </moreLike>
   </xsl:template>
     
 </xsl:stylesheet>
