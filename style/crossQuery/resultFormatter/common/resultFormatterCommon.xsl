@@ -182,7 +182,7 @@
   <xsl:param name="explainScores"/>
    
   <!-- Recommendation parameters -->
-  <xsl:param name="maxRecords" as="xs:integer" select="10"/>
+  <xsl:param name="maxRecords" as="xs:integer" select="5"/>
   
   <!-- Retrieve Branding Nodes -->
   <xsl:variable name="brand.file">
