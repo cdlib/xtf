@@ -84,16 +84,19 @@
         <xsl:when test="name() = 'type' and position() = 1">
           <xsl:choose>
             <xsl:when test="matches(.,'mixed','i')">
-              <xsl:value-of select="'Mixed'"/>
+              <xsl:value-of select="'mixed'"/>
             </xsl:when>
             <xsl:when test="matches(.,'image|cartographic','i')">
-              <xsl:value-of select="'Image'"/>
+              <xsl:value-of select="'image'"/>
             </xsl:when>
             <xsl:when test="matches(.,'text','i')">
-              <xsl:value-of select="'Text'"/>
+              <xsl:value-of select="'text'"/>
             </xsl:when>
             <xsl:when test="matches(.,'website','i')">
-              <xsl:value-of select="'Website'"/>
+              <xsl:value-of select="'website'"/>
+            </xsl:when>
+            <xsl:when test="matches(.,'archival collection','i')">
+              <xsl:value-of select="'finding aid'"/>
             </xsl:when>
             <xsl:otherwise>
               <xsl:value-of select="'OTHER'"/>
@@ -106,11 +109,11 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:choose>
-      <xsl:when test="$value = 'Mixed'">
+      <xsl:when test="$value = 'mixed'">
         <facet-type-tab xtf:meta="true" xtf:tokenize="no">Image</facet-type-tab>
         <facet-type-tab xtf:meta="true" xtf:tokenize="no">Text</facet-type-tab>
       </xsl:when>
-      <xsl:otherwise>
+      <xsl:when test="not($value = 'OTHER')">
         <xsl:element name="{$name}">
           <xsl:attribute name="xtf:meta" select="'true'"/>
           <xsl:attribute name="xtf:tokenize" select="'no'"/>
@@ -123,10 +126,9 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:element>
-      </xsl:otherwise>
+      </xsl:when>
     </xsl:choose>
-    
-    
+
   </xsl:template>
 
   <!-- generate facet-title -->
