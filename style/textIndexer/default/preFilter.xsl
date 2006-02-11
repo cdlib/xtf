@@ -146,6 +146,7 @@
     <xsl:apply-templates select="rights" mode="facet"/>
     
     <xsl:call-template name="metaMissing"/>
+    <xsl:call-template name="newKeyword"/>
     
   </xsl:template>
   

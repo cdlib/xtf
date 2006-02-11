@@ -78,7 +78,6 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <!-- Get rid of quotes -->
     <xsl:variable name="value">
       <xsl:choose>
         <xsl:when test="name() = 'type' and position() = 1">
@@ -110,8 +109,8 @@
     </xsl:variable>
     <xsl:choose>
       <xsl:when test="$value = 'mixed'">
-        <facet-type-tab xtf:meta="true" xtf:tokenize="no">Image</facet-type-tab>
-        <facet-type-tab xtf:meta="true" xtf:tokenize="no">Text</facet-type-tab>
+        <facet-type-tab xtf:meta="true" xtf:tokenize="no">image</facet-type-tab>
+        <facet-type-tab xtf:meta="true" xtf:tokenize="no">text</facet-type-tab>
       </xsl:when>
       <xsl:when test="not($value = 'OTHER')">
         <xsl:element name="{$name}">
@@ -306,6 +305,27 @@
       <facet-rights xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-rights>
     </xsl:if>
   </xsl:template>    
+  
+  <xsl:template name="newKeyword">
+    <!-- Had to name newKeyword because of other forms of keyword -->
+    <newKeyword xtf:meta="true" xtf:store="no">
+      <xsl:for-each select="title">
+        <xsl:value-of select="string(.)"/>
+      </xsl:for-each>
+      <xsl:text> </xsl:text>
+      <xsl:for-each select="creator">
+        <xsl:value-of select="string(.)"/>
+      </xsl:for-each>
+      <xsl:text> </xsl:text>
+      <xsl:for-each select="subject">
+        <xsl:value-of select="string(.)"/>
+      </xsl:for-each>
+      <xsl:text> </xsl:text>
+      <xsl:for-each select="description">
+        <xsl:value-of select="string(.)"/>
+      </xsl:for-each>
+    </newKeyword>  
+  </xsl:template>
 
 <!-- ====================================================================== -->
 <!-- Functions                                                              -->
