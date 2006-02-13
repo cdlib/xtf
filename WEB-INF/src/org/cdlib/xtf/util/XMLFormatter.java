@@ -233,11 +233,8 @@ public class XMLFormatter {
     // If there's no tag open, simply return.
     if( !tagStartOpen ) return;
     
-    // Emit the closing bracket.
-    buf.append( ">" );
-    
-    // Add a newline if requested.
-    if( mBlankLineAfterTag ) buf.append( "\n" );
+    // Emit the closing bracket and a newline.
+    buf.append( ">\n" );
     
     // All done.
     tagStartOpen = false;
