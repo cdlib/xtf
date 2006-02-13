@@ -102,6 +102,15 @@ public class QueryRequest implements Cloneable
     public float      boostSetExponent = 1.0f;
     
     
+    /** Optional: the <parameters> block sent to the query parser stylesheet */
+    public String     parserInput = null;
+    
+    
+    /** Optional: the raw output of the query parser stylesheet */
+    public String     parserOutput = null;
+    
+    
+    
     // Creates an exact copy of this query request.
     public Object clone() 
     {
