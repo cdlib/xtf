@@ -152,19 +152,15 @@ public abstract class TextConfig
                 // Scan each attribute of each element.
                 for( int j = 0; j < el.nAttrs(); j++ ) {
                     String attrName = el.attrName( j );
-                    String  strVal  = el.attrValue( j );
-                    int     intVal  = -1;
-                    char firstChar = (strVal.length() > 0) ? strVal.charAt(0) : ' ';
-                    if( Character.isDigit(firstChar) || firstChar == '.' || firstChar == '-' ) {
-                        try { 
-                            intVal = Integer.parseInt( strVal );
-                        }
-                        catch( Exception e ) { }
+                    String strVal  = el.attrValue( j );
+
+                    // See if we recognize the property (if so, handle it).
+                    if( !handleProperty(tagName + "." + attrName, strVal) ) {
+                        throw new GeneralException( "Config file property " +
+                            tagName + "." + attrName + " not recognized" );
                     }
-                    
-                    // See if we recognize handle it
-                    handleProperty(tagName, attrName, strVal, intVal);
-                    
+        
+
                     // Also put this tag in the attribute list so it can be
                     // passed to the stylesheets.
                     attribs.put( tagName + "." + attrName, strVal );
@@ -188,98 +184,121 @@ public abstract class TextConfig
      * recognize the property, should call the base class version of
      * handleProperty().
      * 
-     * @param tagName   Name of the element being considered
-     * @param attrName  Name of the attribute being considered
+     * @param tagAttr   Combined element/attribute name being considered
      * @param strVal    It's string value
-     * @param intVal    Integer version of the string value, or -1.
+     * @return          true if handled, false if unrecognized
      */
-    protected void handleProperty( String tagName,
-                                   String attrName,
-                                   String strVal,
-                                   int    intVal )
-        throws GeneralException
+    protected boolean handleProperty( String tagAttr, String strVal )
     {
-        boolean bad = false;
-        
-        if( tagName.equalsIgnoreCase("logging") ) {
-            if( attrName.equalsIgnoreCase("level") ) {
-                if( strVal.equals("0") )
-                    strVal = "silent";
-                else if( strVal.equals("1") )
-                    strVal = "info";
-                else if( strVal.equals("2") )
-                    strVal = "debug";
-                logLevel = strVal;
-            }
-            else
-                bad = true;
+        if( tagAttr.equalsIgnoreCase("logging.level") ) {
+            if( strVal.equals("0") )
+                strVal = "silent";
+            else if( strVal.equals("1") )
+                strVal = "info";
+            else if( strVal.equals("2") )
+                strVal = "debug";
+            logLevel = strVal;
+            return true;
         }
 
-        else if( tagName.equalsIgnoreCase("stylesheetCache") ) {
-            if( attrName.equalsIgnoreCase("size") )
-                stylesheetCacheSize = intVal;
-            else if( attrName.equalsIgnoreCase("expire") )
-                stylesheetCacheExpire = intVal;
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("stylesheetCache.size") ) {
+            stylesheetCacheSize = parseInt( tagAttr, strVal );
+            return true;
+        }
+        else if( tagAttr.equalsIgnoreCase("stylesheetCache.expire") ) {
+            stylesheetCacheExpire = parseInt( tagAttr, strVal );
+            return true;
         }
         
-        else if( tagName.equalsIgnoreCase("errorGen") ) {
-            if( attrName.equalsIgnoreCase("path") )
-                errorGenSheet = servlet.getRealPath( strVal );
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("errorGen.path") ) {
+            errorGenSheet = servlet.getRealPath( strVal );
+            return true;
         }
 
-        else if( tagName.equalsIgnoreCase("dependencyChecking") ) {
-            if( attrName.equalsIgnoreCase("check") )
-                dependencyCheckingEnabled = !(strVal.equalsIgnoreCase("no")) &&
-                                            !(strVal.equalsIgnoreCase("false")) &&
-                                            !(strVal.equals("0"));
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("dependencyChecking.check") ) {
+            dependencyCheckingEnabled = parseBoolean( tagAttr, strVal );
+            return true;
         }
             
-        else if( tagName.equalsIgnoreCase("reportLatency") ) {
-            if( attrName.equalsIgnoreCase("report") ||
-                attrName.equalsIgnoreCase("enable") /* old, for backward compat */ )
-                reportLatency = !(strVal.equalsIgnoreCase("no")) &&
-                                !(strVal.equalsIgnoreCase("false")) &&
-                                !(strVal.equals("0"));
-            else if( attrName.equalsIgnoreCase("cutoffSize") )
-                latencyCutoffSize = intVal;
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("reportLatency.report") ||
+                tagAttr.equalsIgnoreCase("reportLatency.enable") /* old, for backward compat */ )
+        {
+            reportLatency = parseBoolean( tagAttr, strVal );
+            return true;
+        }
+        else if( tagAttr.equalsIgnoreCase("reportLatency.cutoffSize") ) {
+            latencyCutoffSize = parseInt( tagAttr, strVal );
+            return true;
         }
             
-        else if( tagName.equalsIgnoreCase("runawayTimer") ) {
-            if( attrName.equalsIgnoreCase("normalTime") )
-                runawayNormalTime = intVal;
-            else if( attrName.equalsIgnoreCase("killTime") )
-                runawayKillTime = intVal;
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("runawayTimer.normalTime") ) {
+            runawayNormalTime = parseInt( tagAttr, strVal );
+            return true;
+        }
+        else if( tagAttr.equalsIgnoreCase("runawayTimer.killTime") ) {
+            runawayKillTime = parseInt( tagAttr, strVal );
+            return true;
         }
             
-        else if( tagName.equalsIgnoreCase("trackSessions") ) {
-            if( attrName.equalsIgnoreCase("track") )
-                trackSessions = !(strVal.equalsIgnoreCase("no")) &&
-                                !(strVal.equalsIgnoreCase("false")) &&
-                                !(strVal.equals("0"));
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("trackSessions.track") ) {
+            trackSessions = parseBoolean( tagAttr, strVal );
+            return true;
         }
-            
-        // If we found an element we recognize with an attribute we don't,
-        // then barf out.
-        //
-        if( bad )
-            throw new GeneralException( "Config file property " +
-                                        tagName + "." + attrName +
-                                        " not recognized" );
-        
+
+        // Not recognized.
+        return false;
     } // handleProperty()
     
+    
+    /** 
+     * Utility function - parse an integer value. If a valid integer isn't
+     * specified, throws an exception.
+     *
+     * @param tagAttr   Name of the element/attribute being considered
+     * @param strVal    It's string value
+     */
+    public static int parseInt( String tagAttr, String strVal )
+        throws GeneralException
+    {
+        try {
+            return Integer.parseInt( strVal );
+        }
+        catch( NumberFormatException e ) {
+            throw new GeneralException( "Integer value expected for " + tagAttr );
+        }
+    } // parseBoolean()
+
+    /** 
+     * Utility function - parse a boolean value. Allows "true", "false",
+     * "yes", "no", "1", or "0". If not one of these, throws an exception.
+     *
+     * @param tagAttr   Name of the element/attribute being considered
+     * @param strVal    It's string value
+     */
+    public static boolean parseBoolean( String tagAttr, 
+                                        String strVal )
+        throws GeneralException
+    {
+        if( strVal.equalsIgnoreCase("true") ||
+            strVal.equalsIgnoreCase("yes") ||
+            strVal.equals("1") )
+        {
+            return true;
+        }
+        
+        if( strVal.equalsIgnoreCase("false") ||
+            strVal.equalsIgnoreCase("no") ||
+            strVal.equals("0") )
+        {
+            return false;
+        }
+            
+        throw new GeneralException( "Boolean value expected for " +
+                      tagAttr + " (value must be one of: " +
+                      "'true', 'false', 'yes', 'no', '1', or '0')" );
+        
+    } // parseBoolean()
+
     
     /** 
      * Utility function - if the value is empty, throws an exception.

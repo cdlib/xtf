@@ -36,6 +36,7 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -78,6 +79,8 @@ import org.cdlib.xtf.util.ThreadWatcher;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLFormatter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
+import org.z3950.zing.cql.CQLNode;
+import org.z3950.zing.cql.CQLParser;
 
 /**
  * Base class for the crossQuery and dynaXML servlets. Handles first-time
@@ -851,16 +854,23 @@ public abstract class TextServlet extends HttpServlet
      * Creates a document containing tokenized and untokenized versions of each
      * parameter.
      */
-    public void tokenizeParams( AttribList atts, XMLFormatter fmt )
+    public void buildParamBlock( AttribList atts, 
+                                 XMLFormatter fmt, 
+                                 HashMap tokenizerMap,
+                                 String extra )
     {
         // The top-level node marks the fact that this is the parameter list.
         fmt.beginTag( "parameters" );
+        
+        // Insert extra text here, verbatim.
+        if( extra != null )
+            fmt.rawText( extra + "\n" );
         
         // Add each parameter to the document.
         for( Iterator iter = atts.iterator(); iter.hasNext(); ) {
             Attrib att = (Attrib) iter.next();
             
-            // Don't tokenize build-in attributes.
+            // Don't add built-in attributes.
             if( att.key.equals("servlet.path") )
                 continue;
             if( att.key.equals("root.path") )
@@ -872,16 +882,16 @@ public abstract class TextServlet extends HttpServlet
             if( att.key.equals("debugStep") )
                 continue;
             
-            // Don't tokenize empty attributes.
+            // Don't add empty attributes.
             if( att.value == null || att.value.length() == 0 )
                 continue;
             
-            // Got one. Let's tokenize it.
-            addParam( fmt, att.key, att.value );
+            // Got one. Let's add (and optionally tokenize) it.
+            addParam( fmt, att.key, att.value, tokenizerMap );
         }
         
         fmt.endTag();
-    } // tokenizeParams()
+    } // buildParamBlock()
     
     
     /**
@@ -891,8 +901,10 @@ public abstract class TextServlet extends HttpServlet
      * @param fmt formatter to add to
      * @param name Name of the URL parameter
      * @param val String value of the URL parameter
+     * @param tokenize true to tokenize, false to skip that step
      */
-    protected void addParam( XMLFormatter fmt, String name, String val )
+    protected void addParam( XMLFormatter fmt, String name, String val,
+                             HashMap tokenizerMap )
     {
         // Create the parameter node and assign its name and value.
         fmt.beginTag( "param" );
@@ -900,7 +912,17 @@ public abstract class TextServlet extends HttpServlet
         fmt.attr( "value", val );
         
         // Now tokenize it.
-        tokenize( fmt, name, val );
+        if( tokenizerMap != null ) {
+            String tokenizer = (String) tokenizerMap.get( name );
+            if( tokenizer == null ||
+                tokenizer.equalsIgnoreCase("default") ||
+                tokenizer.equalsIgnoreCase("basic") )
+            {
+                defaultTokenize( fmt, name, val );
+            }
+            else if( tokenizer.equalsIgnoreCase("CQL") )
+                cqlTokenize( fmt, name, val );
+        }
         
         // All done.
         fmt.endTag();
@@ -914,7 +936,7 @@ public abstract class TextServlet extends HttpServlet
      * @param name Name of the URL parameter
      * @param val value to tokenize
      */
-    protected void tokenize( XMLFormatter fmt, String name, String val )
+    protected void defaultTokenize( XMLFormatter fmt, String name, String val )
     {
         char[] chars   = val.toCharArray();
         char   inQuote = 0;
@@ -954,6 +976,30 @@ public abstract class TextServlet extends HttpServlet
     
     
     /**
+     * Parse 'val' as a CQL query, and add the resulting XCQL to the parameter.
+     * 
+     * @param fmt formatter to add to
+     * @param name Name of the URL parameter
+     * @param val value to tokenize
+     */
+    protected void cqlTokenize( XMLFormatter fmt, String name, String val )
+    {
+        CQLParser parser = new CQLParser();
+        try {
+            CQLNode parsed = parser.parse( val );
+            String text = parsed.toXCQL( fmt.tabCount() / 2 );
+            fmt.rawText( text );
+        }
+        catch( org.z3950.zing.cql.CQLParseException e ) {
+            throw new CQLParseException( e.getMessage() );
+        }
+        catch( IOException e ) {
+            throw new RuntimeException( e );
+        }
+        
+    } // tokenize()
+
+    /**
      * Adds one or more token elements to a parameter node. Also handles
      * phrase nodes.
      * 
@@ -969,7 +1015,7 @@ public abstract class TextServlet extends HttpServlet
         if( inQuote != 0 ) {
             fmt.beginTag( "phrase" );
             fmt.attr( "value", str );
-            tokenize( fmt, "phrase", str );
+            defaultTokenize( fmt, "phrase", str );
             fmt.endTag();
             return;
         }
