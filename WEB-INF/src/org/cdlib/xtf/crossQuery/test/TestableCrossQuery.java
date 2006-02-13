@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.cdlib.xtf.crossQuery.CrossQuery;
+import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.Trace;
@@ -54,15 +55,14 @@ public class TestableCrossQuery extends CrossQuery
                              HttpServletRequest  req,
                              HttpServletResponse res,
                              AttribList          attribs,
-                             QueryResult         result,
-                             String              displayStyle,
-                             String              extraStuff,
+                             QueryRequest        queryRequest,
+                             QueryResult         queryResult,
                              long                startTime )
       throws Exception
   {
-    nHits = result.totalDocs;
-    super.formatHits( mainTagName, req, res, attribs, result, 
-                      displayStyle, extraStuff, startTime );
+    nHits = queryResult.totalDocs;
+    super.formatHits( mainTagName, req, res, attribs, 
+                      queryRequest, queryResult, startTime );
   }
     
   // inherit Javadoc

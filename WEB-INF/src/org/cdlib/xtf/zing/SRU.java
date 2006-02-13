@@ -29,27 +29,23 @@ package org.cdlib.xtf.zing;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.Source;
 
 import net.sf.saxon.om.NodeInfo;
 
 import org.cdlib.xtf.crossQuery.CrossQuery;
+import org.cdlib.xtf.crossQuery.QueryRoute;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
-import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.EasyNode;
-import org.cdlib.xtf.util.XMLFormatter;
 import org.cdlib.xtf.util.XMLWriter;
-
-import org.z3950.zing.cql.CQLNode;
-import org.z3950.zing.cql.CQLParser;
 
 /**
  * The SRU servlet coordinates the process of parsing a URL query,
@@ -95,53 +91,51 @@ public class SRU extends CrossQuery
         // Switch the default output mode to XML.
         res.setContentType("text/xml");
       
-        // Make a <parameters> block.
-        XMLFormatter fmt = new XMLFormatter();
-        tokenizeParams( attribs, fmt );
-
-        // If in step 1, just output the parameter block.
-        String step = req.getParameter( "debugStep" );
-        if( "1b".equals(step) ) {
-            res.setContentType("text/xml");
-            res.getOutputStream().println( fmt.toString() );
-            return;
-        }
+        // Make a default route, but set up to do CQL parsing on the query
+        // parameter instead of the default tokenization.
+        //
+        QueryRoute route = QueryRoute.createDefault( config.queryParserSheet );
+        route.tokenizerMap.put( "query", "CQL" );
         
         // Generate a query request document from the queryParser stylesheet.
-        NodeInfo queryReqDoc = (NodeInfo) generateQueryReq( req, attribs, fmt.toNode() );
-        
-        // If we're on step 2b, simply output the query request.
-        if( "2b".equals(step) ) {
-            res.setContentType("text/xml");
-            res.getOutputStream().println( XMLWriter.toString(queryReqDoc) );
-            return;
-        }
-
-        // If it actually contains an SRW explain response, or an SRW
-        // diagnostic, simply output that directly.
-        //
-        EasyNode node = new EasyNode( queryReqDoc );
-        if( directOutput(node, "diagnostics", res) )
-            return;
-        if( directOutput(node, "explainResponse", res) )
+        QueryRequest queryReq = runQueryParser( req, res, route, attribs );
+        if( queryReq == null )
             return;
         
         // Process it to generate result document hits
         QueryProcessor proc     = createQueryProcessor();
-        QueryRequest   queryReq = new QueryRequestParser().parseRequest(
-                                          queryReqDoc, 
-                                          new File(getRealPath("")) ); 
         QueryResult    result   = proc.processRequest( queryReq );
         
         // Format the hits for the output document. Include the <parameters> block
         // and the actual query request, in case the stylesheet wants to use these
         // things.
         //
-        formatHits( "SRUResult",
-                    req, res, attribs, result, queryReq.displayStyle, 
-                    fmt.toString() + XMLWriter.toString(queryReqDoc, false),
-                    startTime );
+        formatHits( "SRUResult", req, res, attribs, queryReq, result, startTime );
     }
+    
+    
+    /**
+     * Called right after the raw query request has been generated, but
+     * before it is parsed. Gives us a chance to stop processing here in
+     * if SRW diagnostics should be output instead of running a query.
+     */
+    protected boolean shuntQueryReq( HttpServletRequest req,
+                                     HttpServletResponse res,
+                                     Source queryReqDoc )
+        throws IOException
+    {
+        // If it actually contains an SRW explain response, or an SRW
+        // diagnostic, simply output that directly.
+        //
+        EasyNode node = new EasyNode( (NodeInfo)queryReqDoc );
+        if( directOutput(node, "diagnostics", res) )
+            return true;
+        if( directOutput(node, "explainResponse", res) )
+            return true;
+        
+        return super.shuntQueryReq( req, res, queryReqDoc );
+        
+    } // shuntQueryReq()
     
     
     /** Add additional stuff to the usual debug step mode */
@@ -153,7 +147,7 @@ public class SRU extends CrossQuery
         if( stepStr != null ) {
             stepStr = stepStr.replaceAll( "crossQuery", "SRU" );
             String step = req.getParameter( "debugStep" );
-            if( step.equals("1a") )
+            if( step.equals("2a") )
                 stepStr = stepStr.replaceAll( "Next,",
                     "Note that the 'query' parameter has been " +
                     "parsed as CQL. Next," ); 
@@ -197,38 +191,5 @@ public class SRU extends CrossQuery
         return false;
               
     } // directOutput()
-    
-      
-    /**
-     * Break 'val' up into its component tokens and add elements for them.
-     * Treats the SRU/SRW 'query' parameter specially, parsing it as CQL.
-     * 
-     * @param fmt formatter to add to
-     * @param name Name of the URL parameter
-     * @param val value to tokenize
-     */
-    protected void tokenize( XMLFormatter fmt, String name, String val )
-    {
-        // Treat all URL parameters except 'query' normally.
-        if( !name.equals("query") ) {
-            super.tokenize( fmt, name, val );
-            return;
-        }
-        
-        // Got a CQL query. Translate it to XCQL (the XML version of CQL).
-        CQLParser parser = new CQLParser();
-        try {
-            CQLNode parsed = parser.parse( val );
-            String text = parsed.toXCQL( fmt.tabCount() / 2 );
-            fmt.rawText( text );
-        }
-        catch( org.z3950.zing.cql.CQLParseException e ) {
-            throw new CQLParseException( e.getMessage() );
-        }
-        catch( IOException e ) {
-            throw new RuntimeException( e );
-        }
-        
-    } // tokenize()
 
 } // class SRU

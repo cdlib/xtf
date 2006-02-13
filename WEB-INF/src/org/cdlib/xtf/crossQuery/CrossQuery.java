@@ -182,41 +182,23 @@ public class CrossQuery extends TextServlet
         // Record the start time.
         long startTime = System.currentTimeMillis();
         
-        // Make a <parameters> block.
-        XMLFormatter fmt = new XMLFormatter();
-        tokenizeParams( attribs, fmt );
-
-        // If in step 1, just output the parameter block.
-        String step = req.getParameter( "debugStep" );
-        if( "1b".equals(step) ) {
-            res.setContentType("text/xml");
-            res.getOutputStream().println( fmt.toString() );
+        // If a query router was specified, run it.
+        QueryRoute queryRoute = runQueryRouter( req, res, attribs );
+        if( queryRoute == null )
             return;
-        }
         
-        // Generate a query request document from the queryParser stylesheet.
-        Source queryReqDoc = generateQueryReq( req, attribs, fmt.toNode() );
-        
-        // If we're on step 2b, simply output the query request.
-        if( "2b".equals(step) ) {
-            res.setContentType("text/xml");
-            res.getOutputStream().println( XMLWriter.toString(queryReqDoc) );
+        // Generate a query request.
+        QueryRequest queryReq = runQueryParser( req, res, queryRoute, attribs );
+        if( queryReq == null )
             return;
-        }
-
+        
         // Process it to generate result document hits
-        QueryProcessor proc     = createQueryProcessor();
-        QueryRequest   queryReq = new QueryRequestParser().parseRequest(
-                                         queryReqDoc,
-                                         new File(getRealPath("")) );
-        QueryResult    result   = proc.processRequest( queryReq ); 
+        QueryProcessor proc = createQueryProcessor();
+        QueryResult queryResult = proc.processRequest( queryReq ); 
         
         // Format the hits for the output document.
-        formatHits( "crossQueryResult",
-                    req, res, attribs, result, 
-                    queryReq.displayStyle, 
-                    fmt.toString() + XMLWriter.toString(queryReqDoc, false),
-                    startTime );
+        formatHits( "crossQueryResult", req, res, attribs, 
+                    queryReq, queryResult, startTime );
 
     } // apply()
 
@@ -226,16 +208,130 @@ public class CrossQuery extends TextServlet
      * attributes.
      *
      * @param req          The original HTTP request
+     * @param res          The HTTP response (used for step mode only)
      * @param attribs      Attributes to pass to the stylesheet.
-     * @param paramBlock   Tokenized versions of the input attributes
+     * @return             A route to the parser, or null if before that step
      */
-    protected Source generateQueryReq( HttpServletRequest req,
-                                       AttribList         attribs,
-                                       NodeInfo           paramBlock )
+    protected QueryRoute runQueryRouter( HttpServletRequest  req,
+                                         HttpServletResponse res,
+                                         AttribList          attribs )
         throws Exception
     {
+        String step = req.getParameter( "debugStep" );
+        
+        // If no router specified but a parser was, return a default route.
+        // This is for backward compatibility.
+        //
+        if( config.queryRouterSheet == null ) {
+            if( "1b".equals(step) ) {
+                res.setContentType("text/html");
+                res.getOutputStream().println( 
+                    "queryRouter stylesheet not specified;<br/> " +
+                    "using default route to: " + config.queryParserSheet );
+                return null;
+            }
+            
+            return QueryRoute.createDefault( config.queryParserSheet );
+        }
+      
+        // Make a <parameters> block, without tokenizing
+        XMLFormatter fmt = new XMLFormatter();
+        fmt.blankLineAfterTag( false );
+        buildParamBlock( attribs, fmt, null, null );
+
+        // If in step 1, just output the parameter block.
+        if( "1b".equals(step) ) {
+            res.setContentType("text/xml");
+            res.getOutputStream().println( fmt.toString() );
+            return null;
+        }
+        
+        // Locate the stylesheet and make a tranformer.
+        Templates   sheet = stylesheetCache.find( config.queryRouterSheet );
+        Transformer trans = sheet.newTransformer();
+
+        // Stuff all the common config properties into the transformer in
+        // case the query router needs access to them.
+        //
+        stuffAttribs( trans, config.attribs );
+
+        // Also stuff the URL parameters, in case it wants them that way.
+        stuffAttribs( trans, attribs );
+
+        // Add the special computed attributes.
+        stuffSpecialAttribs( req, trans );
+        
+        if( Trace.getOutputLevel() >= Trace.debug ) {
+            String tmp = fmt.toString();
+            if( tmp.endsWith("\n") ) tmp = tmp.substring(0, tmp.length()-1);
+            Trace.debug( "*** queryRouter input ***\n" + tmp );
+        }
+
+        // Make sure errors get directed to the right place.
+        if( !(trans.getErrorListener() instanceof XTFSaxonErrorListener) )
+            trans.setErrorListener( new XTFSaxonErrorListener() );
+
+        // Now perform the transformation.
+        TreeBuilder output = new TreeBuilder();
+        trans.transform( fmt.toSource(), output );
+
+        // Get the result.
+        Source queryRouteDoc = output.getCurrentRoot();
+        
+        if( Trace.getOutputLevel() >= Trace.debug ) {
+            Trace.debug( "*** queryRouter output ***\n" +
+                         XMLWriter.toString(queryRouteDoc, false) );
+        }
+        
+        // Parse it into the final route.
+        QueryRoute route = QueryRoute.parse( (NodeInfo) queryRouteDoc );
+        
+        // Translate relative path, if necessary.
+        route.queryParserSheet = getRealPath( route.queryParserSheet );
+        
+        // Record extra stuff for debugging/step mode
+        route.routerInput = fmt.toString();
+        route.routerOutput = XMLWriter.toString( queryRouteDoc, false );
+        
+        // All done.
+        return route;
+      
+    } // runQueryRouter()
+
+     
+    /**
+     * Creates a query request using the queryParser stylesheet and the given
+     * attributes.
+     *
+     * @param req          The original HTTP request
+     * @param res          The HTTP response (used for step mode only)
+     * @param route        Route to the query parser
+     * @param attribs      Attributes to pass to the stylesheet.
+     * @param paramBlock   Tokenized versions of the input attributes
+     * @return             A parsed query request, or null if before that step
+     */
+    protected QueryRequest runQueryParser( HttpServletRequest  req,
+                                           HttpServletResponse res,
+                                           QueryRoute          route,
+                                           AttribList          attribs )
+        throws Exception
+    {
+        // Make a <parameters> block.
+        XMLFormatter fmt = new XMLFormatter();
+        fmt.blankLineAfterTag( false );
+        buildParamBlock( attribs, fmt, 
+                         route.tokenizerMap, route.routerOutput );
+        
+        // If in step 2, just output the parameter block.
+        String step = req.getParameter( "debugStep" );
+        if( "2b".equals(step) ) {
+            res.setContentType("text/xml");
+            res.getOutputStream().println( fmt.toString() );
+            return null;
+        }
+        
         // Locate the query formatting stylesheet.
-        Templates genSheet = stylesheetCache.find( config.queryParserSheet );
+        Templates genSheet = stylesheetCache.find( route.queryParserSheet );
 
         // Make a transformer for this specific query.
         Transformer trans = genSheet.newTransformer();
@@ -254,8 +350,9 @@ public class CrossQuery extends TextServlet
         stuffSpecialAttribs( req, trans );
         
         if( Trace.getOutputLevel() >= Trace.debug ) {
-            Trace.debug( "*** queryParser input ***" );
-            Trace.debug( XMLWriter.toString(paramBlock) );
+            String tmp = fmt.toString();
+            if( tmp.endsWith("\n") ) tmp = tmp.substring(0, tmp.length()-1);
+            Trace.debug( "*** queryParser input ***\n" + tmp );
         }
 
         // Make sure errors get directed to the right place.
@@ -264,12 +361,58 @@ public class CrossQuery extends TextServlet
 
         // Now perform the transformation.
         TreeBuilder output = new TreeBuilder();
-        trans.transform( paramBlock, output );
+        trans.transform( fmt.toSource(), output );
 
-        // And return the output tree.
-        return output.getCurrentRoot();
-    } // generateQueryReq()
+        // Get the result.
+        Source queryReqDoc = output.getCurrentRoot();
+        
+        // Output useful debug info
+        if( Trace.getOutputLevel() >= Trace.debug ) {
+            Trace.debug( "*** queryParser output ***\n" + 
+                         XMLWriter.toString(queryReqDoc, false) );
+        }
 
+        // Shunt if necessary (for instance, in step mode)
+        if( shuntQueryReq(req, res, queryReqDoc) )
+            return null;
+
+        // Process it to generate result document hits
+        QueryRequest queryReq = new QueryRequestParser().parseRequest(
+                                       queryReqDoc, new File(getRealPath("")) );
+        
+        // Fill in the auxiliary info
+        queryReq.parserInput  = fmt.toString();
+        queryReq.parserOutput = XMLWriter.toString( queryReqDoc, false );
+        
+        // All done.
+        return queryReq;
+      
+    } // runQueryParser()
+
+     
+    /**
+     * Called right after the raw query request has been generated, but
+     * before it is parsed. Gives us a chance to stop processing here in
+     * step mode.
+     */
+    protected boolean shuntQueryReq( HttpServletRequest req,
+                                     HttpServletResponse res,
+                                     Source queryReqDoc )
+        throws IOException
+    {
+        // If we're on step 2b, simply output the query request.
+        String step = req.getParameter( "debugStep" );
+        if( "3b".equals(step) ) {
+            res.setContentType("text/xml");
+            res.getOutputStream().println( XMLWriter.toString(queryReqDoc) );
+            return true;
+        }
+        
+        return false;
+        
+    } // shuntQueryReq()
+    
+    
     /**
      * Formats a list of hits using the resultFormatter stylesheet.
      *
@@ -278,7 +421,7 @@ public class CrossQuery extends TextServlet
      * @param req           The original HTTP request
      * @param res           Where to send the HTML response
      * @param attribs       Parameters to pass to the stylesheet
-     * @param result        Hits resulting from the query request
+     * @param queryResult        Hits resulting from the query request
      * @param displayStyle  Path of the resultFormatter stylesheet
      * @param extraStuff    Additional XML to insert into the query
      *                      result document. Typically includes <parameters>
@@ -289,14 +432,13 @@ public class CrossQuery extends TextServlet
                                HttpServletRequest  req,
                                HttpServletResponse res,
                                AttribList          attribs,
-                               QueryResult         result,
-                               String              displayStyle,
-                               String              extraStuff,
+                               QueryRequest        queryRequest,
+                               QueryResult         queryResult,
                                long                startTime )
         throws Exception
     {
         // Locate the display stylesheet.
-        Templates displaySheet = stylesheetCache.find( displayStyle );
+        Templates displaySheet = stylesheetCache.find( queryRequest.displayStyle );
 
         // Make a transformer for this specific query.
         Transformer trans = displaySheet.newTransformer();
@@ -316,7 +458,12 @@ public class CrossQuery extends TextServlet
         // an attribute documenting how long the query took, including
         // formatting the hits.
         //
-        String hitsString = result.hitsToString( mainTagName, extraStuff );
+        StringBuffer extraStuff = new StringBuffer();
+        if( queryRequest.parserInput != null )
+            extraStuff.append( queryRequest.parserInput );
+        if( queryRequest.parserOutput != null )
+            extraStuff.append( queryRequest.parserOutput );
+        String hitsString = queryResult.hitsToString( mainTagName, extraStuff.toString() );
         String prefix = "<" + mainTagName + " ";
         assert hitsString.startsWith( prefix );
         long queryTime = System.currentTimeMillis() - startTime;
@@ -325,13 +472,13 @@ public class CrossQuery extends TextServlet
             hitsString.substring(prefix.length());
         Source sourceDoc = new StreamSource( new StringReader(hitsString) );
 
-        // If we are in raw mode (or on step 3 in step mode), use a null 
+        // If we are in raw mode (or on step 4 in step mode), use a null 
         // transform instead of the stylesheet.
         //
         String raw = req.getParameter( "raw" );
         String step = req.getParameter( "debugStep" );
         if( "yes".equals(raw) || "true".equals(raw) || "1".equals(raw) ||
-            "3b".equals(step) )
+            "4b".equals(step) )
         {
             res.setContentType("text/xml");
 
@@ -372,7 +519,7 @@ public class CrossQuery extends TextServlet
             return null;
         
         // Output the frame set, with two frames: one for info, one for data.
-        if( step.matches("^1$|^2$|^3$|^4$") ) 
+        if( step.matches("^[0-9]$") ) 
         {
             String urlA = baseUrl.replaceAll( "debugStep="+step, "debugStep="+step+"a" );
             String urlB = baseUrl.replaceAll( "debugStep="+step, "debugStep="+step+"b" );
@@ -391,7 +538,7 @@ public class CrossQuery extends TextServlet
         }
         
         // Output the contents of the info frame
-        if( step.matches("^1a$|^2a$|^3a$|^4a$") ) {
+        if( step.matches("^[0-9]a$") ) {
             int stepNum = Integer.parseInt( step.substring(0,1) );
             StringBuffer out = new StringBuffer();
             out.append( 
@@ -401,7 +548,7 @@ public class CrossQuery extends TextServlet
             
             String prevUrl = (stepNum == 1) ? null :
                 baseUrl.replaceAll( "debugStep="+step, "debugStep="+(stepNum-1) );
-            String nextUrl = (stepNum == 4) ? null :
+            String nextUrl = (stepNum == 5) ? null :
                 baseUrl.replaceAll( "debugStep="+step, "debugStep="+(stepNum+1) );
               
             if( stepNum > 1 )
@@ -409,16 +556,16 @@ public class CrossQuery extends TextServlet
             else
                 out.append( "<font color=\"#C0C0C0\">[Previous]</font> " );
             
-            if( stepNum < 4 )
+            if( stepNum < 5 )
                 out.append( "<a href=\"" + nextUrl + "\" target=\"_top\">[Next]</a>" );
             else
                 out.append( "<font color=\"#C0C0C0\">[Next]</font>" );
             
             out.append(
-                "    <table cellspacing=\"12\" cellpadding=\"0\">\n" +
+                "    <table cellspacing=\"5\" cellpadding=\"0\">\n" +
                 "      <tr>\n" );
             
-            for( int i = 1; i <= 4; i++ ) {
+            for( int i = 1; i <= 5; i++ ) {
                 if( i == stepNum )
                     out.append( "<td bgcolor=\"#E0E0E0\"><b>" );
                 else
@@ -433,21 +580,23 @@ public class CrossQuery extends TextServlet
                     out.append( "</a>" );
 
                 switch( i ) {
-                case 1: out.append( "URL parameters" ); break;
-                case 2: out.append( "XML query" ); break;
-                case 3: out.append( "Raw results" ); break;
-                case 4: out.append( "Formatted results" ); break;
+                case 1: out.append( "Raw URL parameters" ); break;
+                case 2: out.append( "Tokenized URL parameters" ); break;
+                case 3: out.append( "XML query" ); break;
+                case 4: out.append( "Raw results" ); break;
+                case 5: out.append( "Formatted results" ); break;
                 }
                 
                 out.append( "</td>" );
-                if( i < 4 ) {
-                    out.append( "<td>--> " );
+                if( i < 5 ) {
+                    out.append( "<td>--></td><td>" );
                     switch( i ) {
-                    case 1: out.append( "Query Parser" ); break;
-                    case 2: out.append( "Text Engine" ); break;
-                    case 3: out.append( "Result Formatter" ); break;
+                    case 1: out.append( "Query Router" ); break;
+                    case 2: out.append( "Query Parser" ); break;
+                    case 3: out.append( "Text Engine" ); break;
+                    case 4: out.append( "Result Formatter" ); break;
                     }
-                    out.append( " --></td>" );
+                    out.append( "</td><td>--></td>" );
                 }
                 
                 if( i == stepNum )
@@ -460,39 +609,58 @@ public class CrossQuery extends TextServlet
                 "    </table>\n" );
             
             switch( stepNum ) {
-            case 1: out.append( 
+            case 1: 
+                    if( config.queryRouterSheet == null ) {
+                        out.append( "Step 1 is the raw URL parameters to be fed to the " +
+                        "<b>Query Router</b> stylesheet. Since no query router was " +
+                        "specified, the request will be routed automatically to " +
+                        "<code><b>" + config.queryParserSheet + "</b></code>. Skip to " +
+                        "<a href=\"" + nextUrl + "\" target=\"_top\">step 2</a>." );
+                        break;
+                    }
+                    out.append( 
                         "In step 1, parameters specified in the URL are " +
-                        "translated to an XML <code>&lt;parameters&gt;</code> " +
+                        "translated, without tokenizing, to an XML " +
+                        "<code>&lt;parameters&gt;</code> " +
                         "block (shown below). Next, this will be fed to the " +
-                        "<b>Query Parser</b> stylesheet, <code><b>" +
-                        config.queryParserSheet + "</b></code>. The result " +
-                        "should be an XML query in " +
+                        "<b>Query Router</b> stylesheet, <code><b>" +
+                        config.queryRouterSheet + "</b></code>. The result " +
+                        "should be the route to a query parser stylesheet in " +
                         "<a href=\"" + nextUrl + "\" target=\"_top\">step 2</a>." );
                     break;
             case 2: out.append( 
-                        "Step 2: The URL parameters from " +
-                        "<a href=\"" + prevUrl + "\" target=\"_top\">step 1</a> " +
-                        "have now been translated by the <b>Query Parser</b> stylesheet " +
-                        "into an XML query, shown below. Next, XTF's <b>Text Engine</b> " +
-                        "will process this query to produce the raw search " +
-                        "results in " +
-                        "<a href=\"" + nextUrl + "\" target=\"_top\">step 3</a>. " +
-                        "Note that the final <b>Result Formatter</b> stylesheet " +
-                        "(for step 4) is specified here as well." );
+                        "In step 2, parameters specified in the URL are " +
+                        "tokenized and translated to an XML " +
+                        "<code>&lt;parameters&gt;</code> " +
+                        "block (shown below). Next, this will be fed to the " +
+                        "<b>Query Parser</b> stylesheet. The result " +
+                        "should be an XML query in " +
+                        "<a href=\"" + nextUrl + "\" target=\"_top\">step 3</a>." );
                     break;
             case 3: out.append( 
-                        "In step 3, XTF's <b>Text Engine</b> has processed " +
-                        "the XML query from " +
+                        "Step 3: The URL parameters from " +
                         "<a href=\"" + prevUrl + "\" target=\"_top\">step 2</a> " +
+                        "have now been processed by the <b>Query Parser</b> stylesheet " +
+                        "into an XML query, shown below. Next, XTF's <b>Text Engine</b> " +
+                        "will execute this query to produce the raw search " +
+                        "results in " +
+                        "<a href=\"" + nextUrl + "\" target=\"_top\">step 4</a>. " +
+                        "Note that the final <b>Result Formatter</b> stylesheet " +
+                        "(for step 5) is specified here as well." );
+                    break;
+            case 4: out.append( 
+                        "In step 4, XTF's <b>Text Engine</b> has executed " +
+                        "the XML query from " +
+                        "<a href=\"" + prevUrl + "\" target=\"_top\">step 3</a> " +
                         "to produce raw search results, shown below. These will be " +
                         "fed in turn to the <b>Result Formatter</b> stylesheet " +
                         "to produce the final HTML page in " +
-                        "<a href=\"" + nextUrl + "\" target=\"_top\">step 4</a>." );
+                        "<a href=\"" + nextUrl + "\" target=\"_top\">step 5</a>." );
                         break;
-            case 4: out.append( 
-                        "Step 4 shows the final HTML result produced by " +
+            case 5: out.append( 
+                        "Step 5 shows the final HTML result produced by " +
                         "feeding the raw search results from " +
-                        "<a href=\"" + prevUrl + "\" target=\"_top\">step 3</a> " +
+                        "<a href=\"" + prevUrl + "\" target=\"_top\">step 4</a> " +
                         "into the <b>Result Formatter</b> stylesheet." );
             }
             

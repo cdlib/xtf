@@ -37,8 +37,14 @@ import org.cdlib.xtf.util.GeneralException;
 public class CrossQueryConfig extends TextConfig
 {
     /** 
+     * The stylesheet used route an HTTP request to the appropriate query
+     * parser stylesheet.
+     */
+    public String queryRouterSheet;
+    
+    /** 
      * The stylesheet used to parse a query from an HTTP request, into an XML
-     * format usable by the text engine.
+     * format usable by the text engine (only specified if no query router).
      */
     public String queryParserSheet;
     
@@ -61,8 +67,11 @@ public class CrossQueryConfig extends TextConfig
         super.read( "crossQuery-config", path );
         
         // Make sure required things were specified.
-        requireOrElse( queryParserSheet, 
-            "Config file error: queryParser path not specified" );
+        if( queryRouterSheet == null || queryRouterSheet.length() == 0 ) {
+            if( queryParserSheet == null || queryParserSheet.length() == 0 ) 
+                requireOrElse( queryRouterSheet, 
+                    "Config file error: queryRouter path not specified" );
+        }
     }
 
     /**
@@ -70,27 +79,20 @@ public class CrossQueryConfig extends TextConfig
      * If we recognize the property we process it here; otherwise, we pass
      * it on to the base class for recognition there.
      */
-    public void handleProperty( String tagName, String attrName,
-                                String strVal, int intVal )
+    public boolean handleProperty( String tagAttr,
+                                   String strVal )
     {
-        boolean bad = false;
-        
-        if( tagName.equals("queryParser") ) {
-            if( attrName.equals("path") )
-                queryParserSheet = servlet.getRealPath( strVal );
-            else
-                bad = true;
+        if( tagAttr.equalsIgnoreCase("queryRouter.path") ) { 
+            queryRouterSheet = servlet.getRealPath( strVal );
+            return true;
         }
-        else
-            super.handleProperty( tagName, attrName, strVal, intVal );
+        else if( tagAttr.equalsIgnoreCase("queryParser.path") ) {
+            queryParserSheet = servlet.getRealPath( strVal );
+            return true;
+        }
         
-        // If we found an element we recognize with an attribute we don't,
-        // then barf out.
-        //
-        if( bad )
-            throw new GeneralException( "Config file property " +
-                                        tagName + "." + attrName +
-                                        " not recognized" );
+        // Don't recognize it... see if the base class does.
+        return super.handleProperty( tagAttr, strVal );
     } // handleProperty()
 
 } // class CrossQueryConfig
