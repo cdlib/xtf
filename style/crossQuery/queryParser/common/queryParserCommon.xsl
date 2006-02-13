@@ -1,5 +1,5 @@
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-<!-- Simple query parser stylesheet                                         -->
+<!-- Common templates for query parser stylesheets                          -->
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 <!--
@@ -43,17 +43,8 @@
 -->
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                              xmlns:dc="http://purl.org/dc/elements/1.1/" 
-                              xmlns:mets="http://www.loc.gov/METS/"
-                              xmlns:xlink="http://www.w3.org/TR/xlink" 
-                              xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                              xmlns:parse="http://cdlib.org/parse"
                               xmlns:session="java:org.cdlib.xtf.xslt.Session"
-                              exclude-result-prefixes="xsl dc mets xlink xs parse">
-  
-  <xsl:output method="xml" indent="yes" encoding="utf-8"/>
-  
-  <xsl:strip-space elements="*"/>
+                              exclude-result-prefixes="xsl">
   
 <!-- ====================================================================== -->
 <!-- Global parameters (specified in the URL)                               -->
@@ -99,101 +90,6 @@
   <!-- list of keyword search fields -->
   <xsl:param name="fieldList"/>
    
-<!-- ====================================================================== -->
-<!-- Root Template                                                          -->
-<!-- ====================================================================== -->
-  
-  <xsl:template match="/">
-    
-    <xsl:variable name="stylesheet" select="'style/crossQuery/resultFormatter/default/resultFormatter.xsl'"/>
-
-    <!-- The top-level query element tells what stylesheet will be used to
-       format the results, which document to start on, and how many documents
-       to display on this page. -->
-    <query indexPath="index" termLimit="1000" workLimit="1000000" style="{$stylesheet}" startDoc="{$startDoc}" maxDocs="{$docsPerPage}">
-
-      <!-- sort attribute -->
-      <xsl:if test="$sort">
-        <xsl:attribute name="sortMetaFields">
-          <xsl:choose>
-            <xsl:when test="$sort='title'">
-              <xsl:value-of select="'sort-title,sort-creator,sort-publisher,sort-year'"/>
-            </xsl:when>
-            <xsl:when test="$sort='year'">
-              <xsl:value-of select="'sort-year,sort-title,sort-creator,sort-publisher'"/>
-            </xsl:when>              
-            <xsl:when test="$sort='creator'">
-              <xsl:value-of select="'sort-creator,sort-year,sort-title'"/>
-            </xsl:when>
-            <xsl:when test="$sort='publisher'">
-              <xsl:value-of select="'sort-publisher,sort-title,sort-year'"/>
-            </xsl:when>              
-          </xsl:choose>
-        </xsl:attribute>
-      </xsl:if>
-      
-      <!-- score normalization and explanation -->
-      <xsl:if test="$normalizeScores">
-        <xsl:attribute name="normalizeScores" select="$normalizeScores"/>
-      </xsl:if>
-      <xsl:if test="$explainScores">
-        <xsl:attribute name="explainScores" select="$explainScores"/>
-      </xsl:if>
-      
-      <!-- process query -->
-      <xsl:choose>
-        <xsl:when test="$smode = 'addToBag'">
-          <xsl:call-template name="addToBag"/>
-        </xsl:when>
-        <xsl:when test="$smode = 'removeFromBag'">
-          <xsl:call-template name="removeFromBag"/>
-        </xsl:when>
-        <xsl:when test="$smode = 'showBag'">
-          <xsl:call-template name="showBag"/>
-        </xsl:when>
-        <xsl:when test="$smode = 'moreLike'">
-          <xsl:call-template name="moreLike"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:apply-templates/>
-        </xsl:otherwise>
-      </xsl:choose>
-  
-    </query>
-  </xsl:template>
-
-  <xsl:template match="parameters">
-
-    <!-- Scan for non-empty parameters (but skip "-exclude", "-join", "-prox", "-max", and "-ignore") -->
-    <xsl:variable name="queryParams" select="param[count(*) &gt; 0 and not(matches(@name, '.*-exclude')) 
-                                                                   and not(matches(@name, '.*-join')) 
-                                                                   and not(matches(@name, '.*-prox')) 
-                                                                   and not(matches(@name, '.*-max')) 
-                                                                   and not(matches(@name, '.*-ignore'))]"/>
-
-    <!-- Find the full-text query, if any -->
-    <xsl:variable name="textParam" select="$queryParams[matches(@name, 'text|query')]"/>
-    
-    <!-- Find the meta-data queries, if any -->
-    <xsl:variable name="metaParams" select="$queryParams[not(matches(@name, 'text*|query*|style|smode|rmode|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|.*-ignore'))]"/>
- 
-    <and>
-      <!-- Process the meta-data queries, if any -->
-      <xsl:if test="count($metaParams) &gt; 0">
-        <xsl:apply-templates select="$metaParams"/>
-      </xsl:if>       
-      <!-- Process the text query, if any -->
-      <xsl:if test="count($textParam) &gt; 0">
-        <xsl:apply-templates select="$textParam"/>
-      </xsl:if>     
-      <!-- If there are no meta and no text queries, output a dummy -->
-      <xsl:if test="count($metaParams) = 0 and count($textParam) = 0">
-        <term field="text">$!@$$@!$</term>
-      </xsl:if>
-    </and>
-    
-  </xsl:template>
-  
 <!-- ====================================================================== -->
 <!-- Single-field parameter template                                        -->
 <!--                                                                        -->
@@ -407,7 +303,8 @@
     </xsl:choose>
     
   </xsl:template>
-  
+ 
+
 <!-- ====================================================================== -->
 <!-- "Add To Bag" template                                                  -->
 <!--                                                                        -->
