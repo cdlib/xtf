@@ -66,7 +66,6 @@ import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
-import org.cdlib.xtf.util.XMLWriter;
 
 /**
  * Processes URL parameters into a Lucene query, using a stylesheet to perform
@@ -124,12 +123,6 @@ public class QueryRequestParser
         this.baseDir = baseDir;
         req.indexPath = defaultIndexPath;
         
-        // Output useful debug info
-        if( Trace.getOutputLevel() >= Trace.debug ) {
-            Trace.debug( "*** query request ***" );
-            Trace.debug( XMLWriter.toString(queryDoc) );
-        }
-
         // Now parse it, according to the kind of Source.
         if( queryDoc instanceof NodeInfo )
             parseOutputTop( new EasyNode((NodeInfo)queryDoc) );
