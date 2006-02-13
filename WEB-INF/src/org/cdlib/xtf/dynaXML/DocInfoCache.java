@@ -158,7 +158,7 @@ class DocInfoCache extends GeneratingCache
         // of the parameters (typically useful for queries.)
         //
         XMLFormatter paramBlock = new XMLFormatter();
-        servlet.tokenizeParams( attrList, paramBlock );
+        servlet.buildParamBlock( attrList, paramBlock, null, null );
         NodeInfo paramDoc = paramBlock.toNode();
 
         if( Trace.getOutputLevel() >= Trace.debug ) {

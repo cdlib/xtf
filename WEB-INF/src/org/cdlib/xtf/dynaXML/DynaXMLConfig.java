@@ -112,85 +112,70 @@ class DynaXMLConfig extends TextConfig
      * If we recognize the property we process it here; otherwise, we pass
      * it on to the base class for recognition there.
      */
-    public void handleProperty( String tagName, String attrName,
-                                String strVal, int intVal )
-        throws GeneralException
+    public boolean handleProperty( String tagAttr, String strVal )
     {
-        boolean bad = false;
-        
-        if( tagName.equals("reverseProxy") ) {
-            if( attrName.equalsIgnoreCase("IP") )
-                reverseProxyIP = strVal;
-            else if( attrName.equals("marker") )
-                reverseProxyMarker = strVal;
-            else
-                bad = true;
+        if( tagAttr.equalsIgnoreCase("reverseProxy.IP") ) {
+            reverseProxyIP = strVal;
+            return true;
+        }
+        else if( tagAttr.equalsIgnoreCase("reverseProxy.marker") ) {
+            reverseProxyMarker = strVal;
+            return true;
         }
 
-        else if( tagName.equals("reqParserCache") ) {
-            if( attrName.equals("size") )
-                docLookupCacheSize = intVal;
-            else if( attrName.equals("expire") )
-                docLookupCacheExpire = intVal;
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("reqParserCache.size") ) {
+            docLookupCacheSize = parseInt( tagAttr, strVal );
+            return true;
+        }
+        else if( tagAttr.equalsIgnoreCase("reqParserCache.expire") ) {
+            docLookupCacheExpire = parseInt( tagAttr, strVal );
+            return true;
         }
 
-        else if( tagName.equals("docReqParser") ) {
-            if( attrName.equals("path") )
-                docLookupSheet = servlet.getRealPath( strVal );
-            else if( attrName.equals("params") )
-                docLookupParams = strVal;
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("docReqParser.path") ) {
+            docLookupSheet = servlet.getRealPath( strVal );
+            return true;
         }
-        
-        else if( tagName.equals("ipListCache") ) {
-            if( attrName.equals("size") )
-                ipListCacheSize = intVal;
-            else if( attrName.equals("expire") )
-                ipListCacheExpire = intVal;
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("docReqParser.params") ) {
+            docLookupParams = strVal;
+            return true;
+        }
+    
+        else if( tagAttr.equalsIgnoreCase("ipListCache.size") ) {
+            ipListCacheSize = parseInt( tagAttr, strVal );
+            return true;
+        }
+        else if( tagAttr.equalsIgnoreCase("ipListCache.expire") ) {
+            ipListCacheExpire = parseInt( tagAttr, strVal );
+            return true;
         }
 
-        else if( tagName.equals("authCache") ) {
-            if( attrName.equals("size") )
-                authCacheSize = intVal;
-            else if( attrName.equals("expire") )
-                authCacheExpire = intVal;
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("authCache.size") ) {
+            authCacheSize = parseInt( tagAttr, strVal );
+            return true;
+        }
+        else if( tagAttr.equalsIgnoreCase("authCache.expire") ) {
+            authCacheExpire = parseInt( tagAttr, strVal );
+            return true;
         }
         
-        else if( tagName.equals("loginCache") ) {
-            if( attrName.equals("size") )
-                loginCacheSize = intVal;
-            else if( attrName.equals("expire") )
-                loginCacheExpire = intVal;
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("loginCache.size") ) {
+            loginCacheSize = parseInt( tagAttr, strVal );
+            return true;
         }
-        
-        else if( tagName.equals("stylesheetProfiling") ) {
-            if( attrName.equals("profile") )
-                stylesheetProfiling = strVal.equals("yes") ||
-                                      strVal.equals("true") ||
-                                      strVal.equals("1");
-            else
-                bad = true;
+        else if( tagAttr.equalsIgnoreCase("loginCache.expire") ) {
+            loginCacheExpire = parseInt( tagAttr, strVal );
+            return true;
         }
-            
-        else
-            super.handleProperty( tagName, attrName, strVal, intVal );
+    
+        else if( tagAttr.equalsIgnoreCase("stylesheetProfiling.profile") ) {
+            stylesheetProfiling = parseBoolean( tagAttr, strVal );
+            return true;
+        }
+
+        // Don't recognize it... see if the base class does.
+        return super.handleProperty( tagAttr, strVal );
         
-        // If we found an element we recognize with an attribute we don't,
-        // then barf out.
-        //
-        if( bad )
-            throw new GeneralException( "Config file property " +
-                                        tagName + "." + attrName +
-                                        " not recognized" );
     } // handleProperty()
 
 } // class DynaXMLConfig
