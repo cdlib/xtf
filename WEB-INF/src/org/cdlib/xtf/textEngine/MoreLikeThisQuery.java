@@ -152,13 +152,15 @@ public class MoreLikeThisQuery extends Query
     mlt.setMinTermFreq( 2 );
     mlt.setBoost( true );
     mlt.setMaxQueryTerms( 10 );
-
+    
     // Make the similarity query
-    Query ret = mlt.like( targetDoc );
+    Query rawQuery = mlt.like( targetDoc );
+    
+    // Exclude the original document in the result set.
+    Query ret = new ExcludeDocQuery( rawQuery, targetDoc );
     if( Trace.getOutputLevel() >= Trace.debug )
         Trace.debug( "More-like query: " + ret );
-    
-    // TODO: Remove the target document from the result set.
+
     return ret;
   }
 
