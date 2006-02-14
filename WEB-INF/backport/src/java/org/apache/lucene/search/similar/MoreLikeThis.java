@@ -146,7 +146,7 @@ import java.util.ArrayList;
  * @author Bruce Ritchie
  * @author Mark Harwood
  */
-public final class MoreLikeThis {
+public class MoreLikeThis {
 
 	/**
 	 * Default maximum number of tokens to parse in each example doc field that is not stored with TermVector support.
@@ -700,6 +700,7 @@ public final class MoreLikeThis {
         sb.append("\t" + "boost          : " + boost + "\n");
         sb.append("\t" + "minTermFreq    : " + minTermFreq + "\n");
         sb.append("\t" + "minDocFreq     : " + minDocFreq + "\n");
+        sb.append("\t" + "maxDocFreq     : " + maxDocFreq + "\n");
         return sb.toString();
     }
 
@@ -861,7 +862,7 @@ public final class MoreLikeThis {
 	 * @param term The word being considered
 	 * @return true if should be ignored, false if should be used in further analysis
 	 */
-	private boolean isNoiseWord(String term)
+	protected boolean isNoiseWord(String term)
 	{
 		int len = term.length();
 		if (minWordLen > 0 && len < minWordLen) {
