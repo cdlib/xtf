@@ -105,7 +105,19 @@ public class MoreLikeThisQuery extends Query
     // Use a helper class to construct the query for similar documents. Use 
     // the indexer's actual analyzer, so that our results always agree. 
     //
-    MoreLikeThis mlt = new MoreLikeThis( reader );
+    MoreLikeThis mlt = new MoreLikeThis( reader ) {
+        protected boolean isNoiseWord( String term ) {
+            if( term.length() > 0 ) {
+                if( term.charAt(0) == Constants.FIELD_START_MARKER ||
+                    term.charAt(term.length()-1) == Constants.FIELD_END_MARKER )
+                {
+                    return true;
+                }
+            }
+            return super.isNoiseWord( term );
+        }
+    };
+
     mlt.setAnalyzer( new XTFTextAnalyzer(null, pluralMap, accentMap) );
     mlt.setStopWords( stopSet );
     
@@ -114,13 +126,15 @@ public class MoreLikeThisQuery extends Query
     ArrayList fieldList = new ArrayList( fieldColl.size() );
     for( Iterator iter = fieldColl.iterator(); iter.hasNext(); ) {
         String field = (String) iter.next();
-        if( !field.equals("text") && 
-            !field.equals("key") && 
-            !field.equals("fileDate") &&
-            !field.equals("chunkCount") &&
-            !field.equals("recordNum") &&
+        if( !field.equals("chunkCount") &&
             !field.equals("docInfo") &&
-            !field.startsWith("sort-") )
+            !field.equals("fileDate") &&
+            !field.equals("indexInfo") && 
+            !field.equals("key") && 
+            !field.equals("recordNum") &&
+            !field.equals("text") &&
+            !field.startsWith("sort-") &&
+            !field.startsWith("facet-") )
         {
             fieldList.add( field );
         }
@@ -133,12 +147,12 @@ public class MoreLikeThisQuery extends Query
     mlt.setMaxWordLen( 12 );
     mlt.setMinDocFreq( 2 );
     int nDocs = reader.docFreq(new Term("docInfo", "1"));
-    int maxDocFreq = Math.max( 5, nDocs / 10 );
+    int maxDocFreq = Math.max( 5, nDocs / 20 );
     mlt.setMaxDocFreq( maxDocFreq );
     mlt.setMinTermFreq( 2 );
     mlt.setBoost( true );
-    mlt.setMaxQueryTerms( 20 );
-    
+    mlt.setMaxQueryTerms( 10 );
+
     // Make the similarity query
     Query ret = mlt.like( targetDoc );
     if( Trace.getOutputLevel() >= Trace.debug )
