@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
+  <facet field="group-subject" 
+         sortGroupsBy="value"
+         includeEmptyGroups="true"
+         select="*|*[nonEmpty][1]#1-2"/>
+  <term field="subject" maxSnippets="0">sociology</term>
+</query>
