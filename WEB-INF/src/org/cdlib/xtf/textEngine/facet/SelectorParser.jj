@@ -205,7 +205,7 @@ GroupSelector filter() :
           else if( t.toString().equalsIgnoreCase("selected") )
               s = new SelectedSelector( true );
           else if( t.toString().equalsIgnoreCase("siblings") )
-              s = new SiblingSelector( true );
+              s = new SiblingSelector();
           else if( t.toString().equalsIgnoreCase("page") )
               s = new PageSelector();
           else
@@ -238,10 +238,10 @@ GroupSelector rangeFilter() :
 {
   Token t;
   int from;
-  int to = 999999999;
+  int to;
 }
 {
-  t = <NUMBER>  { from = Integer.parseInt(t.toString()); }
+  t = <NUMBER>  { from = to = Integer.parseInt(t.toString()); }
   
   ( <DASH>
     t = <NUMBER>  { to = Integer.parseInt(t.toString()); }

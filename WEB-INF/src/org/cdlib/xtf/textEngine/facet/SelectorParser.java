@@ -247,9 +247,9 @@ public class SelectorParser implements SelectorParserConstants {
   final public GroupSelector rangeFilter() throws ParseException {
   Token t;
   int from;
-  int to = 999999999;
+  int to;
     t = jj_consume_token(NUMBER);
-                  from = Integer.parseInt(t.toString());
+                  from = to = Integer.parseInt(t.toString());
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case DASH:
       jj_consume_token(DASH);
