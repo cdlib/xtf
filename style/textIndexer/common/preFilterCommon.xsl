@@ -94,9 +94,9 @@
             <xsl:when test="matches(.,'website','i')">
               <xsl:value-of select="'website'"/>
             </xsl:when>
-            <xsl:when test="matches(.,'archival collection','i')">
+            <!--<xsl:when test="matches(.,'archival collection','i')">
               <xsl:value-of select="'finding aid'"/>
-            </xsl:when>
+            </xsl:when>-->
             <xsl:otherwise>
               <xsl:value-of select="'OTHER'"/>
             </xsl:otherwise>
