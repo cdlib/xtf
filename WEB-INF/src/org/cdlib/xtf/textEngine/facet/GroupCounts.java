@@ -187,6 +187,11 @@ public class GroupCounts
     return selection[group] == 1;
   }
   
+  /** Find out the number of doc hits for the given group */
+  public final int nDocHits( int group ) {
+    return count[group];
+  }
+  
   /** Add a document hit to the counts */
   public void addDoc( DocHitMaker docHitMaker )
   {

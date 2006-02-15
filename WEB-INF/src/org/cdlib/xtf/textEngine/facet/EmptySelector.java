@@ -39,7 +39,7 @@ public class EmptySelector extends GroupSelector
   }
   
   public void process( int group ) {
-    boolean isEmpty = counts.child(group) < 0;
+    boolean isEmpty = (counts.nDocHits(group) == 0);
     if( conservative || (isEmpty == flag) )
         next.process( group );
   }
