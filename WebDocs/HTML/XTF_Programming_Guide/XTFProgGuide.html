@@ -134,7 +134,7 @@
       <ul class="NoBullets">
         <li><a href="#crossQuery_QueryParser_Prog">Query Parser Programming</a></li>
         <li><a href="#crossQuery_ResultFormatter_Prog">Result Formatter Programming</a></li>
-        <li><a href="#crossQuery_ErrorGen_Prog">Error Generator Programming</a></li>
+        <li><a href="#crossQuery_Common_Prog">Other Common Tasks</a></li>
       </ul>
     </li>
     <br>
@@ -142,7 +142,14 @@
       <ul class="NoBullets">
         <li><a href="#dynaXML_DocReqParser_Prog">Document Request Parser Programming</a></li>
         <li><a href="#dynaXML_DocFormatter_Prog">Document Formatter Programming</a></li>
-        <li><a href="#dynaXML_ErrorGen_Prog">Error Generator Programming</a></li>
+        <li><a href="#dynaXML_Common_Prog">Other Common Tasks</a></li>
+      </ul>
+    </li>
+    <br>
+    <li> <b><a href="#Common_Prog">Common crossQuery/dynaXML Programming Tasks</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#Common_ErrorGen_Prog">Error Generator Programming</a></li>
+        <li><a href="#Common_Session_Prog">Tracking Session State</a></li>
       </ul>
     </li>
     <br>
@@ -156,7 +163,7 @@
   and that their correct operation has been verified. <br>
   <br>
   The XTF system consists of Java Servlets and tools that permit users to perform 
-  Web-based searching and retrieval of electronic documents. Its basic organization 
+  Web-based searching and retrieval of electronic documents. The basic organization 
   of the XTF components can be illustrated as follows: 
   <p align="center"> <a name="SummaryDiagram"></a> <img src="../Common_Art/SummaryDiagram.gif"><br>
     Figure 1: Extensible Text Framework (XTF) Overview </p>
@@ -661,6 +668,7 @@
     is a good starting point for creating your own customized pre-filters. </div>
   <br>
   <!-- textIndexer --> 
+  <hr>
   <p class="Heading1">crossQuery Programming<a name="crossQuery_Prog"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
   The <b><i>crossQuery</i></b> servlet previously shown in the XTF overview allows 
@@ -1132,63 +1140,18 @@
       to the <a href="../XTF_Tag_Reference/XTFTagRef.html#crossQuery_ResultFormatter_Tags">Result 
       Formatter Tag Reference</a>.<br>
     </p>
-    <p class="Heading2">Error Generator Programming for crossQuery<a name="crossQuery_ErrorGen_Prog"></a></p>
+    
+  <p class="Heading2">Other Common Tasks<a name="crossQuery_Common_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    <p>It's not a perfect world, and errors happen. For the times when they do, 
-      the <i><b>crossQuery</b></i> servlet includes a handy stylesheet-based mechanism 
-      to put a nice face on things, creating a nicely formatted HTML page letting 
-      the user know what happened, and potentially how to fix it. This stylesheet 
-      is called the <b>Error Generator</b>.</p>
-    <p>Here are the main sources of errors that activate the servlet's error handling 
-      mechanism:</p>
-    <ol>
-      <li>Configuration errors, such as invalid parameters in the<span class="Code"> 
-        crossQuery.conf </span>file, or missing stylesheets.</li>
-      <li>Errors detected by the<b> Query Parser </b>stylesheet. It lets the servlet 
-        know something went wrong by outputting an<span class="Code"> &lt;error&gt; 
-        </span>tag instead of the normal<span class="Code"> &lt;query&gt; </span>tag.</li>
-      <li>Incorrect syntax in the<span class="Code"> &lt;query&gt; </span>tag 
-        produced by the <b>Query Parser</b>.</li>
-      <li>Problems that occur while the<b> Text Engine </b>is executing the query, 
-        such as a wildcard query accessing too many terms.</li>
-      <li>Bugs in the XTF system itself (hopefully very rare.)</li>
-    </ol>
-    <p>In all these cases, the servlet looks in the<span class="Code"> crossQuery.conf 
-      </span>file for the<span class="Code"> &lt;errorGen&gt; </span>tag that 
-      specifies an <b>Error Generator </b>stylesheet to run. The servlet constructs 
-      a small input document with details about the particular error and passes 
-      it to the <b>Error Generator</b>, whose job is to output a nice-looking 
-      error page.</p>
-    <p>The following query will create an error with the sample distribution (it 
-      performs a wildcard query on all terms): </p>
-    <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/search?text=* 
-      </span> </div>
-    <p>This exceeds the default limit on the number of terms a query can access, 
-      so <i><b>crossQuery </b></i>calls the <b>Error Generator</b> with the following 
-      input:</p>
-    <pre class="Sample"><b>&lt;TermLimit>
-   &lt;message>
-     Wildcard query on 'text' matched too many terms (more than 1000). 
-     First 50 matches: $ + 0 0.0 0.00 0.0001 0.001 0.0015 0.0029 0.003 
-     0.0034 0.004 0.005 0.006 0.007 0.008 0.009 0.01 0.010 0.011 0.012 
-     <span class="MacroCode">...more terms here...
-</span>   &lt;/message&gt;
-&lt;/TermLimit></b></pre>
-    <p>Writing the XSLT code that transforms the various error tags is beyond 
-      the scope of this document, but the default <b>Error Generator</b> included 
-      with the XTF distribution is a good place to start. It can be found in the<span class="Code"> 
-      style/crossQuery </span>directory. </p>
-    <p>An easy way to check the input to your <b>Error Generator</b> is to add<span class="Code"> 
-      &amp;raw=1 </span>to your query URL. When an error occurs, <b><i>crossQuery</i></b> 
-      will dump the raw XML to the browser, instead of sending it to the stylesheet.</p>
-    <p>Each kind of error specifies different information for the <b>Error Generator</b> 
-      to work on. For instance, authentication failures include the requestor's 
-      IP address, whereas internal errors include a Java stack trace. For a full 
-      list of the various errors that may be sent by <i><b>crossQuery </b></i>to 
-      the <b> Error Generator</b>, please consult the <a href="../XTF_Tag_Reference/XTFTagRef.html#crossQuery_ErrorGen_Tags">crossQuery 
-      Error Generator Tag Reference</a>.</p>
-    <!-- crossQuery -->
- </div>
+    
+  <p>A fully fleshed-out <b><i>crossQuery</i></b> system will need to handle errors 
+    gracefully. You may also wish to add session state features (to record data 
+    that persists across page views.) Since these tasks are common to both servlets, 
+    they are documented in the <a href="#Common_Prog">Common <i><b>crossQuery/dynaXML</b></i> 
+    Programming Tasks</a> section below. </p>
+  <p><!-- crossQuery --> </p>
+</div>
+  <hr>
   <p class="Heading1">dynaXML Programming<a name="dynaXML_Prog"></a></p>
   <!-------------------------------------------------------------------------------------------------------------> 
   <p>The <b><i>dynaXML</i></b> servlet is in charge of displaying a single XML 
@@ -1264,7 +1227,6 @@
       is then invoked with a URL like this: </p>
       
     <pre class="Sample"><b> http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm&amp;query=apartheid</b></pre>
-      </div>
     Notice that the first part of the URL (everything before the <b>?</b> symbol) 
     invokes the <b><i>dynaXML</i></b> servlet, and second part of the URL (everything 
     after the <b>?</b> symbol) defines which document to display and a text query 
@@ -1494,41 +1456,64 @@
       distribution.</p>
     <p>As with everything in XTF, it is advisable (and fun) to start with something 
       simple and then progressively refine the stylesheets over time.</p>
-    <p class="Heading2">Error Generator Programming for dynaXML<a name="dynaXML_ErrorGen_Prog"></a></p>
-    <!-------------------------------------------------------------------------------------------------------------> 
-    <p>Sometimes unexpected problems occur, and when they do the <i><b>dynaXML 
-      </b></i>servlet utilizes an <b>Error Generator</b> stylesheet that you supply 
-      to format a nice HTML error message for the end user.</p>
-    <p> Here are the main sources of errors that activate the servlet's error 
-      handling mechanism:</p>
-    <ol>
-      <li>Configuration errors, such as invalid parameters in the<span class="Code"> 
-        dynaXML.conf </span>file, or missing stylesheets.</li>
-      <li>Incorrect syntax in the tags produced by the <b>Document Request Parser</b>.</li>
-      <li>Problems that occur while the<b> Text Engine </b>is reading the input 
-        document or executing a query. Some such errors include trying to query 
-        a document that hasn't been indexed, or attempting a wildcard query on 
-        too many terms.</li>
-      <li>Bugs in the XTF system itself (hopefully very rare.)</li>
-    </ol>
-    <p>In all these cases, the servlet looks in the<span class="Code"> dynaXML.conf 
-      </span>file for the<span class="Code"> &lt;errorGen&gt; </span>tag that 
-      specifies an <b>Error Generator </b>stylesheet to run. The servlet constructs 
-      a small input document with details about the particular error and passes 
-      it to the <b>Error Generator</b>, whose job is to output a nice-looking 
-      error page.</p>
-    <p>One way to create an error with the sample distribution is to perform a 
-      wildcard query on all terms, like this:<br>
-    </p>
-    <div class="Sample"> 
-      
-    <p><span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/view?</span><span class="Code">docId=ft958009mm&query=* 
-      </span> </p>
-      </div>
-    <p>This exceeds the default limit on the number of terms a query can access, 
-      and <i><b>dynaXML </b></i>calls the <b>Error Generator</b> with the following 
-      input:</p>
-    <pre class="Sample"><b>&lt;TermLimit>
+    
+  <p class="Heading2">Other Common Tasks<a name="dynaXML_Common_Prog"></a></p>
+  <!-------------------------------------------------------------------------------------------------------------> 
+  <p>A fully fleshed-out <b><i>dynaXML</i></b> system will need to handle errors 
+    gracefully. You may also wish to add session state features (to record data 
+    that persists across page views.) Since these tasks are common to both servlets, 
+    they are documented in the <a href="#Common_Prog">Common <i><b>crossQuery/dynaXML</b></i> 
+    Programming Tasks</a> section below.<br>
+  </p>
+  </div>
+  <hr>
+<p class="Heading1">Common <i>crossQuery/dynaXML</i> Programming Tasks<a name="Common_Prog"></a></p>
+  <!-------------------------------------------------------------------------------------------------------------> 
+  
+<p>The <b><i>dynaXML</i></b> and <b><i>crossQuery </i></b>servlets share some 
+  aspects of their operation. Instead of repeating the documentation for these 
+  common parts in each section, these common tasks are collected below.</p>
+<div class="IndentL"> 
+  <p class="Heading2">Error Generator Programming for <i><b>crossQuer</b></i>y 
+    and<i><b> dynaXML</b></i><a name="Common_ErrorGen_Prog"></a></p>
+<!-------------------------------------------------------------------------------------------------------------> 
+  <p>It's not a perfect world, and errors happen. For the times when they do, 
+    the <i><b>crossQuery</b></i> and <b><i>dynaXML </i></b>servlets include a 
+    handy stylesheet-based mechanism to put a nice face on things, creating a 
+    formatted HTML page letting the user know what happened, and potentially how 
+    to fix it. This stylesheet is called the <b>Error Generator</b>.</p>
+<p>Here are the main sources of errors that activate the servlet's error handling 
+  mechanism:</p>
+  <ol>
+    <li>Configuration errors, such as invalid parameters in the<span class="Code"> 
+      crossQuery.conf </span>or<span class="Code"> dynaXML.conf </span>file, or 
+      missing stylesheets.</li>
+    <li>Errors detected by the<b> Query Parser </b>stylesheet. It lets the servlet 
+      know something went wrong by outputting an<span class="Code"> &lt;error&gt; 
+      </span>tag instead of the normal<span class="Code"> &lt;query&gt; </span>tag.</li>
+    <li>Incorrect syntax in the<span class="Code"> &lt;query&gt; </span>tag produced 
+      by the <b>Query Parser</b>.</li>
+    <li>Incorrect syntax in the tags produced by the <b>Document Request Parser</b>.</li>
+    <li>Problems that occur while the<b> Text Engine </b>is reading the input 
+      document or executing a query. Some such errors include trying to query 
+      a document that hasn't been indexed, or attempting a wildcard query on too 
+      many terms.</li>
+    <li>Bugs in the XTF system itself (hopefully very rare.)</li>
+  </ol>
+  <p>In all these cases, the servlet looks in the<span class="Code"> crossQuery.conf 
+    </span>or<span class="Code"> dynaXML.conf </span>file for the<span class="Code"> 
+    &lt;errorGen&gt; </span>tag that specifies an <b>Error Generator </b>stylesheet 
+    to run. The servlet constructs a small input document with details about the 
+    particular error and passes it to the <b>Error Generator</b>, whose job is 
+    to output a nice-looking error page.</p>
+<p>The following query will create an error with the sample distribution (it performs 
+  a wildcard query on all terms): </p>
+<div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/search?text=* 
+  </span> </div>
+<p>This exceeds the default limit on the number of terms a query can access, so 
+  <i><b>crossQuery </b></i>calls the <b>Error Generator</b> with the following 
+  input:</p>
+<pre class="Sample"><b>&lt;TermLimit>
    &lt;message>
      Wildcard query on 'text' matched too many terms (more than 1000). 
      First 50 matches: $ + 0 0.0 0.00 0.0001 0.001 0.0015 0.0029 0.003 
@@ -1536,23 +1521,24 @@
      <span class="MacroCode">...more terms here...
 </span>   &lt;/message&gt;
 &lt;/TermLimit></b></pre>
-    <p>Writing the XSLT code that transforms the various error tags is beyond 
-      the scope of this document, but the default <b>Error Generator</b> included 
-      with the XTF distribution is a good place to start. It can be found in the<span class="Code"> 
-      style/dynaXML </span>directory. </p>
-    <p>An easy way to check the input to your <b>Error Generator</b> is to add<span class="Code"> 
-      &amp;raw=1 </span>to your query URL. When an error occurs, <b><i>dynaXML</i></b> 
-      will dump the raw XML to the browser, instead of sending it to the stylesheet.</p>
-    <p>Each kind of error specifies different information for the <b>Error Generator</b> 
-      to work on. For instance, authentication failures include the requestor's 
-      IP address, whereas internal errors include a Java stack trace. For a full 
-      list of the various errors that may be sent by <i><b>crossQuery </b></i>to 
-      the <b> Error Generator</b>, please consult the <a href="../XTF_Tag_Reference/XTFTagRef.html#dynaXML_ErrorGen_Tags">dynaXML 
-      Error Generator Tag Reference</a>.</p>
-    </div>
-  <br>
-  <!-- dynaXML --> <!---------------------------------------------------------------------------------------------------------------><br>
-
+<p>Writing the XSLT code that transforms the various error tags is beyond the 
+  scope of this document, but the default <b>Error Generator</b> included with 
+  the XTF distribution is a good place to start. It can be found in the<span class="Code"> 
+  style/crossQuery </span>directory. </p>
+  <p>An easy way to check the input to your <b>Error Generator</b> is to add<span class="Code"> 
+    &amp;raw=1 </span>to your query URL. When an error occurs, the servlet will 
+    dump the raw XML to the browser, instead of sending it to the stylesheet.</p>
+  <p>Each kind of error specifies different information for the <b>Error Generator</b> 
+    to work on. For instance, authentication failures include the requestor's 
+    IP address, whereas internal errors include a Java stack trace. For a full 
+    list of the various errors that may be sent by <i><b>crossQuery </b></i>to 
+    the <b> Error Generator</b>, please consult the <a href="../XTF_Tag_Reference/XTFTagRef.html#Error_Generators">Error 
+    Generator Stylesheet Reference</a>.</p>
+  </div>
+  <!-- Common --> 
+  <!---------------------------------------------------------------------------------------------------------------><br>
+</div>
 </body>
+
 
 </html>
