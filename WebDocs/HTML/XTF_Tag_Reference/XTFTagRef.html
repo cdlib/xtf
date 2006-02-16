@@ -123,344 +123,257 @@
     <li> <b><a href="#XTF_Tag_Ref"><font size="+1">Introduction</font></a></b></li>
     <br>
     <br>
-    <li> <b><a href="#XTF_Tag_Ref"> <font size="+1">XTF Stylesheet Tag Reference</font></a></b><br>
+    <li class="ListItem"> <font size="+1"><a href="#textIndexer_Tag_Ref"><b>textIndexer 
+      Stylesheet Reference</b></a></font><br>
       <br>
       <ul class="NoBullets">
-        <li class="ListItem"> <a href="#Request_Param_Ref"><b>HTTP Request Parameter 
-          Reference</b></a> 
-          <ul class ="NoBullets">
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#http_URL_Att">http.URL</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#http_Agent_Att">http.User-Agent</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#http_Referer_Att">http.Referer</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#http_IfModSince_Att">http.If-Modified-Since</a></span></font></li>
-          </ul>
-        </li>
-        <br>
-        <li class="ListItem"> <a href="#textIndexer_Tag_Ref"><b>textIndexer Tag 
-          Reference</b></a><br>
-          <br>
+        <li> <a href="#textIndexer_DocSel_Tags">Document Selector</a><br>
           <ul class="NoBullets">
-            <li> <a href="#textIndexer_DocSel_Tags">Document Selector Tags</a><br>
-              <br>
-              <ul class="NoBullets">
-                <li class="ListItem"><a href="#textIndexer_DocSel_Input_Tags">Input 
-                  Tags</a> 
-                  <ul class="NoBullets">
-                    <li class="Code"><font size="-1"><a href="#textIndexer_DocSel_Input_Dir">&lt;directory<span class="BaseStyle"> ... </span>&gt;</a></font></li>
-                    <li class="Code"><font size="-1"><a href="#textIndexer_DocSel_Input_File">&lt;file<span class="BaseStyle"> ... </span>&gt;</a></font></li>
-                  </ul>
-                </li>
-                <br>
-                <li class="ListItem"><a href="#textIndexer_DocSel_Output_Tags">Output 
-                  Tags</a> 
-                  <ul class="NoBullets">
-                    <li class="Code"><font size="-1"><a href="#textIndexer_DocSel_Output_IndexFiles">&lt;indexFiles&gt;</a></font></li>
-                    <li class="Code"><font size="-1"><a href="#textIndexer_DocSel_Output_File">&lt;file<span class="BaseStyle"> ... </span>&gt;</a></font></li>
-                  </ul>
-                </li>
-                <br>
-              </ul>
-            </li>
-            <li><a href="#textIndexer_PreFilter_Tags">Pre-Filter Attributes</a> 
-              <ul class="NoBullets">
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Index">&lt;xsl:attribute 
-                  name="xtf:index"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_NoIndex">&lt;xsl:attribute 
-                  name="xtf:noindex"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Meta">&lt;xsl:attribute 
-                  name="xtf:meta"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Tokenize">&lt;xsl:attribute 
-                  name="xtf:tokenize"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_ProxBreak">&lt;xsl:attribute 
-                  name="xtf:proximitybreak"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SentBump">&lt;xsl:attribute 
-                  name="xtf:sentenceBump"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SectType">&lt;xsl:attribute 
-                  name="xtf:sectionType"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SectBump">&lt;xsl:attribute 
-                  name="xtf:sectionBump"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_WordBoost">&lt;xsl:attribute 
-                  name="xtf:wordBoost"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <br>
-        <li class="ListItem"> <a href="#crossQuery_Tag_Ref"><b>crossQuery Tag 
-          Reference</b></a><br>
-          <br>
-          <ul class="NoBullets">
-            <li><a href="#crossQuery_QueryParser_Tags">Query Parser Tags</a><br>
-              <br>
-              <ul class="NoBullets">
-                <li class="ListItem"><a href="#crossQuery_QueryParser_Input_Tags">Input Tags</a>
-                  <ul class="NoBullets">
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Input_Parameters">&lt;parameters&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Input_Param">&lt;param<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Input_Token">&lt;token<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Input_Phrase">&lt;phrase<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                  </ul>
-                </li>
-                <br>
-                <li class="ListItem"><a href="#crossQuery_QueryParser_Output_Tags">Output Tags</a>  
-                  <ul class="NoBullets">
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Query">&lt;query<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Error">&lt;error<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Term">&lt;term<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Phrase">&lt;phrase<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Exact">&lt;exact<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_And">&lt;and<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Or">&lt;or<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Not">&lt;not<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Near">&lt;near<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Range">&lt;range<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_SectionType">&lt;sectionType<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <br>
-            <li><a href="#crossQuery_ResultFormatter_Tags">Search Result Formatter 
+            <li class="ListItem"><a href="#textIndexer_DocSel_Input_Tags">Input 
               Tags</a> 
               <ul class="NoBullets">
-                <li class="ListItem"><a href="#crossQuery_ResultFormatter_Raw">Raw Dump URL Parameter</a></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_CrossQRes">&lt;crossQueryResult<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_DocHit">&lt;docHit<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Meta">&lt;meta&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Snippet">&lt;snippet<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Hit">&lt;hit&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Term">&lt;term&gt;</a></span></font></li>
-              </ul>
-            </li><br>
-            <li><a href="#crossQuery_ErrorGen_Tags">Error Generator Tags</a> 
-              <ul class="Code">
-                <li class="ListItem"><font size="-1"><a href="#crossQuery_ErrorGen_QueryFormat">&lt;QueryFormat&gt;</a></font></li>
-                <li class="ListItem"><font size="-1"><a href="#crossQuery_ErrorGen_TermLimit">&lt;TermLimit&gt;</a></font></li>
-                <li class="ListItem"><font size="-1"><a href="#crossQuery_ErrorGen_ExcessiveWork">&lt;ExcessiveWork&gt;</a></font></li>
-                <li class="ListItem"><font size="-1"><a href="#crossQuery_ErrorGen_General">&lt;<span class="MacroCode">GeneralExceptionName</span>&gt;</a></font></li>
+                <li class="Code"><font size="-1"><a href="#textIndexer_DocSel_Input_Dir">&lt;directory<span class="BaseStyle"> 
+                  ... </span>&gt;</a></font></li>
+                <li class="Code"><font size="-1"><a href="#textIndexer_DocSel_Input_File">&lt;file<span class="BaseStyle"> 
+                  ... </span>&gt;</a></font></li>
               </ul>
             </li>
-          </ul>
-        </li>
-        <br>
-        <li class="ListItem"> <a href="#dynaXML_Tag_Ref"><b>dynaXML Tag Reference</b></a><br>
-          <br>
-          <ul class="NoBullets">
-            <li class="ListItem"><a href="#dynaXML_DocReqParser_Tags">Document 
-              Request Parser Tags</a><br>
-              <br>
-              <ul class="NoBullets">
-                <li class="ListItem"><a href="#dynaXML_ReqParser_Input_Tags">Input Tags</a> 
-                  <ul class="NoBullets">
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Input_Parameters">&lt;parameters&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Input_Param">&lt;param<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Input_Token">&lt;token<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Input_Phrase">&lt;phrase<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                  </ul>
-                </li>
-                <br>
-                <li class="ListItem"><a href="#dynaXML_ReqParser_Output_Tags">Output Tags</a>
-                  <ul class="NoBullets">
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Output_Style">&lt;style<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Output_Source">&lt;source<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Output_Brand">&lt;brand<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Output_Index">&lt;index<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                    <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Output_Query">&lt;query&gt;</a></span></font></li>
-                    <li class="ListItem"><a href="#dynaXML_ReqParser_Output_PublicAuth">Public Authentication</a></li>
-                    <li class="ListItem"><a href="#dynaXML_ReqParser_Output_IPAuth">IP List Authentication</a></li>
-                    <li class="ListItem"><a href="#dynaXML_ReqParser_Output_LDAPAuth">LDAP Authentication</a></li>
-                    <li class="ListItem"><a href="#dynaXML_ReqParser_Output_ExtAuth">External Authentication</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <br>
-            <li class="ListItem"><a href="#dynaXML_DocFormatter_Tags">Document 
-              Formatter Tags and Attributes</a> 
-              <ul class="NoBullets">
-                <li class="ListItem"><a href="#dynaXML_DocFormatter_HitCount"><font size="-1"><span class="Code">xtf:hitCount</span></font> Attribute</a></li>
-                <li class="ListItem"><a href="#dynaXML_DocFormatter_FirstHit"><font size="-1"><span class="Code">xtf:firstHit</span></font> Attribute</a></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_DocFormatter_Snippets">&lt;xtf:snippets&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_DocFormatter_Snippet">&lt;xtf:snippet<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_DocFormatter_Hit">&lt;xtf:hit<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_DocFormatter_More">&lt;xtf:more<span class="BaseStyle"> ... </span>&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_DocFormatter_Term">&lt;xtf:term&gt;</a></span></font></li> 
-              </ul>
-            </li>
-            <br>
-            <li class="ListItem"><a href="#dynaXML_ErrorGen_Tags">Error Generator 
+            <li class="ListItem"><a href="#textIndexer_DocSel_Output_Tags">Output 
               Tags</a> 
               <ul class="NoBullets">
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ErrorGen_UnsupportedQuery">&lt;UnsupportedQuery&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ErrorGen_QueryFormat">&lt;QueryFormat&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ErrorGen_TermLimit">&lt;TermLimit&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ErrorGen_ExcessiveWork">&lt;ExcessiveWork&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ErrorGen_General">&lt;<span class="MacroCode">GeneralExceptionName</span>&gt;</a></span></font></li>
+                <li class="Code"><font size="-1"><a href="#textIndexer_DocSel_Output_IndexFiles">&lt;indexFiles&gt;</a></font></li>
+                <li class="Code"><font size="-1"><a href="#textIndexer_DocSel_Output_File">&lt;file<span class="BaseStyle"> 
+                  ... </span>&gt;</a></font></li>
               </ul>
             </li>
+            <br>
+          </ul>
+        </li>
+        <li><a href="#textIndexer_PreFilter_Tags">Pre-Filter</a> 
+          <ul class="NoBullets">
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Index">&lt;xsl:attribute 
+              name="xtf:index"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_NoIndex">&lt;xsl:attribute 
+              name="xtf:noindex"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Meta">&lt;xsl:attribute 
+              name="xtf:meta"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Tokenize">&lt;xsl:attribute 
+              name="xtf:tokenize"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code">&lt;xsl:attribute 
+              name="xtf:store"<span class="BaseStyle"> ... </span>/&gt;</span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_ProxBreak">&lt;xsl:attribute 
+              name="xtf:proximitybreak"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SentBump">&lt;xsl:attribute 
+              name="xtf:sentenceBump"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SectType">&lt;xsl:attribute 
+              name="xtf:sectionType"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SectBump">&lt;xsl:attribute 
+              name="xtf:sectionBump"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_WordBoost">&lt;xsl:attribute 
+              name="xtf:wordBoost"<span class="BaseStyle"> ... </span>/&gt;</a></span></font></li>
           </ul>
         </li>
       </ul>
     </li>
     <br>
+    <li class="ListItem"><b><font size="+1"><a href="#Common_Ref">Common crossQuery/dynaXML 
+      Stylesheet Reference</a></font></b><br>
+      <br>
+      <ul class="NoBullets">
+        <li><a href="#Common_Stylesheet_Parameters">Common Stylesheet Parameters</a> 
+          <ul class ="NoBullets">
+            <li class="Code"><font size="-1">servlet.URL</font></li>
+            <li class="Code"><font size="-1">root.URL</font></li>
+            <li class="Code"><font size="-1">servlet.dir</font></li>
+            <li><font size="-1"><span class="Code"><a href="#http_URL_Att">http.URL</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#http_Agent_Att">http.User-Agent</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#http_Referer_Att">http.Referer</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#http_IfModSince_Att">http.If-Modified-Since</a></span></font></li>
+            <li class="Code"><font size="-1">http.<span class="MacroCode">OtherHeaders</span></font></li>
+          </ul>
+        </li>
+      </ul>
+      <br>
+      <ul class="NoBullets">
+        <li><a href="#Common_Parser_Input_Tags">Common Parser Input Tags (Query 
+          Parser / Document Request Parser)</a><br>
+          <ul class="NoBullets">
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#Parser_Input_Parameters">&lt;parameters&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#Parser_Input_Param">&lt;param<span class="BaseStyle"> 
+              ... </span>&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#Parser_Input_Token">&lt;token<span class="BaseStyle"> 
+              ... </span>&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#Parser_Input_Phrase">&lt;phrase<span class="BaseStyle"> 
+              ... </span>&gt;</a></span></font></li>
+          </ul>
+        </li>
+        <br>
+        <li><a href="#Error_Generators">Error Generator Stylesheets</a> 
+          <ul class="Code">
+            <li class="ListItem"><font size="-1"><a href="#ErrorGenerator_QueryFormat">&lt;QueryFormat&gt;</a></font></li>
+            <li class="ListItem"><font size="-1"><a href="#ErrorGenerator_TermLimit">&lt;TermLimit&gt;</a></font></li>
+            <li class="ListItem"><font size="-1"><a href="#ErrorGenerator_ExcessiveWork">&lt;ExcessiveWork&gt;</a></font></li>
+            <li class="ListItem"><font size="-1"><a href="#ErrorGenerator_UnsupportedQuery">&lt;UnsupportedQuery&gt;</a></font></li>
+            <li class="ListItem"><font size="-1"><a href="#ErrorGenerator_General">&lt;<span class="MacroCode">GeneralExceptionName</span>&gt;</a><br>
+              <br>
+              </font></li>
+          </ul>
+        </li>
+        <li><a href="#Raw_Dump_Mode">Raw Dump Mode</a><br>
+          <br>
+        </li>
+        <li>Session State<br>
+          <br>
+        </li>
+        <li>Checking for File Existence<br>
+          <br>
+        </li>
+        <li>Calling Out to External Programs<br>
+        </li>
+      </ul>
+    </li>
+    <br>
+    <li><a href="#crossQuery_Tag_Ref"><b><font size="+1">crossQuery Stylesheet 
+      Reference</font></b></a><br>
+      <br>
+      <ul class="NoBullets">
+        <li>Debug Step Mode<br>
+          <br>
+        </li>
+        <li><a href="#crossQuery_QueryParser_Tags">Query Parser</a><br>
+          <ul class="NoBullets">
+            <li class="ListItem"><a href="#crossQuery_QueryParser_Input_Tags">Input 
+              Tags and Parameters</a></li>
+            <li class="ListItem"><a href="#crossQuery_QueryParser_Output_Tags">Output 
+              Tags</a> 
+              <ul class="NoBullets">
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Query">&lt;query<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Error">&lt;error<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Term">&lt;term<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Phrase">&lt;phrase<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Exact">&lt;exact<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_And">&lt;and<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Or">&lt;or<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Not">&lt;not<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Near">&lt;near<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Range">&lt;range<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_SectionType">&lt;sectionType<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li><font size="-1"><span class="Code">&lt;resultData&gt;</span></font></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <br>
+        <li><a href="#crossQuery_ResultFormatter_Tags">Search Result Formatter</a> 
+          <ul class="NoBullets">
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_CrossQRes">&lt;crossQueryResult<span class="BaseStyle"> 
+              ... </span>&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_DocHit">&lt;docHit<span class="BaseStyle"> 
+              ... </span>&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Meta">&lt;meta&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Snippet">&lt;snippet<span class="BaseStyle"> 
+              ... </span>&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Hit">&lt;hit&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Term">&lt;term&gt;</a></span></font></li>
+          </ul>
+        </li>
+        <br>
+        <li><a href="#crossQuery_ErrorGen_Tags">Error Generator</a></li>
+      </ul>
+    </li>
+    <br>
+    <li class="ListItem"> <a href="#dynaXML_Tag_Ref"><b><font size="+1">dynaXML 
+      Stylesheet Reference</font></b></a><br>
+      <br>
+      <ul class="NoBullets">
+        <li class="ListItem"><a href="#dynaXML_DocReqParser_Tags">Document Request 
+          Parser</a> 
+          <ul class="NoBullets">
+            <li class="ListItem"><a href="#dynaXML_ReqParser_Input_Tags">Input 
+              Tags and Parameters </a></li>
+            <li class="ListItem"><a href="#dynaXML_ReqParser_Output_Tags">Output 
+              Tags</a> 
+              <ul class="NoBullets">
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Output_Style">&lt;style<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Output_Source">&lt;source<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Output_Brand">&lt;brand<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Output_Index">&lt;index<span class="BaseStyle"> 
+                  ... </span>&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_ReqParser_Output_Query">&lt;query&gt;</a></span></font></li>
+                <li class="ListItem"><a href="#dynaXML_ReqParser_Output_PublicAuth">Public 
+                  Authentication</a></li>
+                <li class="ListItem"><a href="#dynaXML_ReqParser_Output_IPAuth">IP 
+                  List Authentication</a></li>
+                <li class="ListItem"><a href="#dynaXML_ReqParser_Output_LDAPAuth">LDAP 
+                  Authentication</a></li>
+                <li class="ListItem"><a href="#dynaXML_ReqParser_Output_ExtAuth">External 
+                  Authentication</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <br>
+        <li class="ListItem"><a href="#dynaXML_DocFormatter_Tags">Document Formatter</a> 
+          <ul class="NoBullets">
+            <li class="ListItem"><a href="#dynaXML_DocFormatter_HitCount"><font size="-1"><span class="Code">xtf:hitCount</span></font> 
+              Attribute</a></li>
+            <li class="ListItem"><a href="#dynaXML_DocFormatter_FirstHit"><font size="-1"><span class="Code">xtf:firstHit</span></font> 
+              Attribute</a></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_DocFormatter_Snippets">&lt;xtf:snippets&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_DocFormatter_Snippet">&lt;xtf:snippet<span class="BaseStyle"> 
+              ... </span>&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_DocFormatter_Hit">&lt;xtf:hit<span class="BaseStyle"> 
+              ... </span>&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_DocFormatter_More">&lt;xtf:more<span class="BaseStyle"> 
+              ... </span>&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#dynaXML_DocFormatter_Term">&lt;xtf:term&gt;</a></span></font></li>
+          </ul>
+        </li>
+        <br>
+        <li class="ListItem"><a href="#dynaXML_ErrorGen_Tags">Error Generator</a> 
+          <br>
+        </li>
+      </ul>
+    </li>
   </ul>
   <br>
   <p class="Heading1">Introduction<a name="Introduction"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
-  This document provides a reference for the tags used by XSLT stylesheets in 
-  various parts of the E<b>X</b>tensible <b>T</b>ext <b>F</b>ramework (<b><i>XTF</i></b>) 
-  This document assumes that you are familiar with the general organization of 
-  the XTF system as described in the <a href="../XTF_Programming_Guide/XTFProgGuide.html">XTF 
-  Programmer's Guide</a>.<br>
-  <p class="Heading1">XTF Stylesheet Tag Reference<a name="XTF_Tag_Ref"></a></p>
-  <p>This section provides a quick reference to the various XTF sytlesheet tags recognized 
-    by the <b><i>textIndexer</i></b> tool, and the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> 
-    servlets. <br>
+  <p>This document provides a reference for the tags, parameters, and utilities 
+    usable in XSLT stylesheets in various parts of the E<b>X</b>tensible <b>T</b>ext 
+    <b>F</b>ramework (<b><i>XTF</i></b>). This document assumes that you are familiar 
+    with the general organization of the XTF system as described in the <a href="../XTF_Programming_Guide/XTFProgGuide.html">XTF 
+    Programmer's Guide</a>.</p>
+  <p>The first section covers the two stylesheets used by the <i><b>textIndexer</b></i>: 
+    the Document Selector and the Prefilter. The second section goes over parameters, 
+    tags, and utilities that are common in both <b><i>crossQuery</i></b> and <i><b>dynaXML</b></i>. 
+    The final two sections cover the unique parameters and tags of stylesheets 
+    unique to each servlet; first <i><b>crossQuery</b></i> and then <i><b>dynaXML</b></i>.<br>
   </p>
-  <div class="IndentL"> 
-    <p class="Heading2">HTTP Request Parameter Reference<a name="Request_Param_Ref"></a></p>
+<hr>
+<p class="Heading1">textIndexer Stylesheet Reference<a name="textIndexer_Tag_Ref"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    <p>This section summarizes the standard HTTP request fields available to every 
-      stylesheet used by the <i><b>crossQuery</b></i> and <i><b>dynaXML</b></i> 
-      servlets. These fields are presented to a servlet stylesheet as XSL parameters 
-      with the prefix<span class="Code"> http. </span>and refer to the original 
-      request URL sent to the XTF system.</p>
     
-    <div class="GreyList"> <b><u>Request URL</u></b><a name="http_URL_Att"></a><br>
-      This field identifies the full URL passed to the XTF system for the current 
-      request. It is accessed via the XSL parameter<br>
-      <br>
-        
-      <div class="IndentLR"><span class="code">http.URL</span></div><br>
-      This field contains a URL string of the form:<br>
-      <br>
-   
-      <div class="IndentLR"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:<span class="MacroCode">yourport</span>/xtf/<span class="MacroCode">servlet</span>?<span class="MacroCode">queryparms</span> 
-        </span><br>
-      </div><br>
-      
-      where 
-      <div class="IndentLR"> 
-        <table cellpadding="0" cellspacing="12">
-          <tr> 
-            <td width="20%" align="right" valign="top" class="MacroCode"> yourserver 
-            </td>
-            <td width="80%"><span class="BaseStyle">is the name of your XTF server</span></td>
-          </tr>
-          <tr> 
-            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">yourport</span></td>
-            <td width="80%"> <span class="BaseStyle"> is the port through which 
-              XTF requests are routed (typically 8080)</span> </td>
-          </tr>
-          <tr> 
-            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">servlet</span></td>
-            <td width="80%"> <span class="BaseStyle"> is the name of the servlet 
-              to which the request is being sent. Normally, this is either</span><br>
-              <div class="IndentLR"> <span class="Code">search <span class="BaseStyle">(for 
-                crossQuery)</span></span> </div>
-              or
-              <div class="IndentLR"> <span class="Code">view </span><span class="BaseStyle">(for 
-                dynaXML)</span></div>
-            </td>
-          </tr>
-           <tr> 
-            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">queryparms</span></td>
-            <td width="80%"> <span class="BaseStyle"> is the list of parameters 
-              that defines the actual request being sent to the servlet.</span> 
-            </td>
-          </tr>
-        </table>
-      </div>
-    </div>
-    <br>
-    <div class="GreyList"> <b><u>User-Agent Identifier</u></b><a name="http_Agent_Att"></a><br>
-      This field identifies the browser that issued the current request. It is 
-      accessed via the XSL parameter<br>
-      <br>
-        
-      <div class="IndentLR">
-        <span class="code">http.User-Agent</span>
-      </div><br>
-      This field contains a string that identifies the browser that made the current request. For example:
-      <br><br>
-      <div class="IndentLR"> <span class="Code">Mozilla/4.0 (compatible; MSIE 
-        5.0; Windows 98; DigExt; empas)</span></div>
-      <br>
-      Note that the contents of this field vary widely depending on which browser 
-      made the request, and a detailed description is beyond the scope of this 
-      document. </div>
-    <br>
-    <div class="GreyList"> <b><u>Referer Identifier</u></b><a name="http_Referer_Att"></a><br>
-      This field identifies the web page from which the request URL was issued. 
-      It is accessed via the XSL parameter<br>
-      <br>
-        
-      <div class="IndentLR"><span class="code">http.Referer</span></div>
-      <br>
-      This contents of this field is a URL string identifying the web page that 
-      issued the request.<br>
-   
-      <div class="IndentLR"> <span class="Code"> </span></div>
-    </div><br>
-    <div class="GreyList"> <b><u>If-Modified-Since Identifier</u></b><a name="http_IfModSince_Att"></a><br>
-      This field identifies the last time a particular request URL was issued 
-      by a browser. This field can be used by an XTF stylesheet to determine if 
-      a request needs to be processed because the XTF database has changed, or 
-      whether the requesting browser can use its previously cached results. This 
-      field is accessed via the XSL parameter<br>
-      <br>
-        
-      <div class="IndentLR"><span class="code">http.If-Modified-Since</span></div>
-      <br>
-      This contents of this time string of the form:<br>
-      <br>
-   
-      <div class="IndentLR"> <span class="Code"> <span class="MacroCode">weekday</span>, 
-        <span class="MacroCode">dd</span>-<span class="MacroCode">mmm</span>-<span class="MacroCode">yy</span> 
-        <span class="MacroCode">hh</span>:<span class="MacroCode">mm</span>:<span class="MacroCode">ss</span> 
-        <span class="MacroCode">timezone</span> </span><br>
-      </div><br>
-      
-      where 
-      <div class="IndentLR"> 
-        <table cellpadding="0" cellspacing="12">
-          <tr> 
-            <td width="20%" align="right" valign="top" class="MacroCode"> weekday 
-            </td>
-            <td width="80%"><span class="BaseStyle">is the day of the week the 
-              request was last issued</span></td>
-          </tr>
-          <tr> 
-            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">dd</span>-<span class="MacroCode">mmm</span>-<span class="MacroCode">yy</span></td>
-            <td width="80%"> <span class="BaseStyle"> is the day, three letter 
-              month abbreviation, and year the request was last issued</span></td>
-          </tr>
-          <tr> 
-            <td width="20%" align="right" valign="top" class="Code" height="25"> 
-              <span class="MacroCode">hh</span>:<span class="MacroCode">mm</span>:<span class="MacroCode">ss</span></td>
-            <td width="80%" height="25"> <span class="BaseStyle"> is the time 
-              the request was last issued, represented as a 24 hour GMT based 
-              time</span><span class="Code"></span> </td>
-          </tr>
-           <tr> 
-            <td width="20%" align="right" valign="top" class="Code" height="20"> 
-              <span class="MacroCode">timezone</span></td>
-            <td width="80%" height="20"> <span class="BaseStyle"> is the offset 
-              in hours of the timezone from which the request was last issued.</span></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-    <p><br>
-    </p>
-    </div>
-  <div class="IndentL"> 
-    <p class="Heading2">textIndexer Tag Reference<a name="textIndexer_Tag_Ref"></a></p>
-    <!-------------------------------------------------------------------------------------------------------------> 
-    This section summarizes the XTF specific tags for the <b><i>textIndexer </i></b> 
-    <b>Documentg Selector</b> stylesheet and the <b>Pre-Filter</b> stylesheet.<br>
+<p>This section summarizes the XTF specific tags for the <b><i>textIndexer </i></b> 
+  <b><a href="#textIndexer_DocSel_Tags">Document Selector</a></b> stylesheet and 
+  the <b><a href="#textIndexer_PreFilter_Tags">Pre-Filter</a></b> stylesheet.</p>
     <div class="IndentL"> 
-      <p class="Heading3">Document Selector Tags<a name="textIndexer_DocSel_Tags"></a></p>
+      
+  <p class="Heading2">Document Selector<a name="textIndexer_DocSel_Tags"></a></p>
       This section summarizes the attributes defined for <b>Document Selector</b> 
       stylesheet used by the <b><i>textIndexer</i></b> tool. 
       <div class="IndentL"> 
@@ -634,7 +547,8 @@
         </div>
       </div>
       <br>
-      <p class="Heading3">Pre-Filter Attributes<a name="textIndexer_PreFilter_Tags"></a></p>
+      
+  <p class="Heading2">Pre-Filter<a name="textIndexer_PreFilter_Tags"></a></p>
       This section summarizes the attributes defined for the <b>Pre-Filter</b> stylesheet 
       used by the <b><i>textIndexer</i></b> tool. <br>
       <br>
@@ -776,38 +690,164 @@
             value is defined.) </div>
         </div>
       </div>
-    </div>
     <!-- textIndexer Pre-Filter Tags --> </div>
   <!-- textIndexer Reference --> 
-  <div class="IndentL"> 
-    <p class="Heading2">crossQuery Tag Reference<a name="crossQuery_Tag_Ref"></a></p>
+  
+  <hr>
+  <p class="Heading1">Common crossQuery/dynaXML Stylesheet Reference<a name="Common_Ref"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    This section summarizes the XTF specific tags for the <b><i>crossQuery</i></b> 
-    <a href="#crossQuery_QueryParser_Tags"><b>Query Parser</b></a> stylesheet 
-    and the <b><a href="#crossQuery_ResultFormatter_Tags">Result Formatter</a></b> 
-    stylesheet. <br>
-    <div class="IndentL"> 
-      <p class="Heading3">Query Parser Tags<a name="crossQuery_QueryParser_Tags"></a></p>
-      <!-----------------------------------------------------------------------------------------------------------> 
-      The tags listed here are XML tags associated with the <b>Query Parser</b> 
-      stylesheet. The tags are divided into two categories: <a href="#crossQuery_QueryParser_Input_Tags">input 
-      tags</a> and <a href="#crossQuery_QueryParser_Output_Tags">output tags</a>. 
-      The input tags are used by the <b><i>crossQuery</i></b> Servlet to translate 
-      the original query URL into a simple XML representation that can act as 
-      input to the <b>Query Parser</b> stylesheet. The output tags are then used 
-      by the <b>Query Parser</b> stylesheet to form the actual XML query passed 
-      to the <b><i>crossQuery</i></b> servlet's <b>Text Search Engine</b> for 
-      processing. <br>
-      <div class="IndentL"> 
-        <p class="Heading3">Input Tags<a name="crossQuery_QueryParser_Input_Tags"></a></p>
-        <p>The following tags make up the XML input for the <b>Query Parser</b> 
-          stylesheet. They constitute a simple XML representation of the query 
-          URL supplied to the <b><i>crossQuery</i></b> servlet from the user query 
-          web-page. </p>
+    
+  <p>This section details the XTF specific parameters, input tags, and utilties 
+    available to all stylesheets in <b><i>crossQuery </i></b>and <i><b>dynaXML</b></i>. 
+    It also documents the error generator stylesheets present in both servlets.</p>
+  <div class="IndentL"> 
+    <p class="Heading2">Common Stylesheet Parameters<a name="Common_Stylesheet_Parameters"></a></p>
+    <!-------------------------------------------------------------------------------------------------------------> 
+    <p>This section summarizes the standard set of XSL parameters available to 
+      every stylesheet used by the <i><b>crossQuery</b></i> and <i><b>dynaXML</b></i> 
+      servlets. These include the original URL of the current request (in a few 
+      handy forms), the XTF base directory, and headers from the HTTP request.</p>
+    
+    <div class="GreyList"> <b><u>Request URL</u></b><a name="http_URL_Att"></a><br>
+      This field identifies the full URL passed to the XTF system for the current 
+      request. It is accessed via the XSL parameter<br>
+      <br>
+        
+      <div class="IndentLR"><span class="code">http.URL</span></div><br>
+      This field contains a URL string of the form:<br>
+      <br>
+   
+      <div class="IndentLR"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:<span class="MacroCode">yourport</span>/xtf/<span class="MacroCode">servlet</span>?<span class="MacroCode">queryparms</span> 
+        </span><br>
+      </div><br>
+      
+      where 
+      <div class="IndentLR"> 
+        <table cellpadding="0" cellspacing="12">
+          <tr> 
+            <td width="20%" align="right" valign="top" class="MacroCode"> yourserver 
+            </td>
+            <td width="80%"><span class="BaseStyle">is the name of your XTF server</span></td>
+          </tr>
+          <tr> 
+            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">yourport</span></td>
+            <td width="80%"> <span class="BaseStyle"> is the port through which 
+              XTF requests are routed (typically 8080)</span> </td>
+          </tr>
+          <tr> 
+            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">servlet</span></td>
+            <td width="80%"> <span class="BaseStyle"> is the name of the servlet 
+              to which the request is being sent. Normally, this is either</span><br>
+              <div class="IndentLR"> <span class="Code">search <span class="BaseStyle">(for 
+                crossQuery)</span></span> </div>
+              or
+              <div class="IndentLR"> <span class="Code">view </span><span class="BaseStyle">(for 
+                dynaXML)</span></div>
+            </td>
+          </tr>
+           <tr> 
+            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">queryparms</span></td>
+            <td width="80%"> <span class="BaseStyle"> is the list of parameters 
+              that defines the actual request being sent to the servlet.</span> 
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <br>
+    <div class="GreyList"> <b><u>User-Agent Identifier</u></b><a name="http_Agent_Att"></a><br>
+      This field identifies the browser that issued the current request. It is 
+      accessed via the XSL parameter<br>
+      <br>
+        
+      <div class="IndentLR">
+        <span class="code">http.User-Agent</span>
+      </div><br>
+      This field contains a string that identifies the browser that made the current request. For example:
+      <br><br>
+      <div class="IndentLR"> <span class="Code">Mozilla/4.0 (compatible; MSIE 
+        5.0; Windows 98; DigExt; empas)</span></div>
+      <br>
+      Note that the contents of this field vary widely depending on which browser 
+      made the request, and a detailed description is beyond the scope of this 
+      document. </div>
+    <br>
+    <div class="GreyList"> <b><u>Referer Identifier</u></b><a name="http_Referer_Att"></a><br>
+      This field identifies the web page from which the request URL was issued. 
+      It is accessed via the XSL parameter<br>
+      <br>
+        
+      <div class="IndentLR"><span class="code">http.Referer</span></div>
+      <br>
+      This contents of this field is a URL string identifying the web page that 
+      issued the request.<br>
+   
+      <div class="IndentLR"> <span class="Code"> </span></div>
+    </div><br>
+    <div class="GreyList"> <b><u>If-Modified-Since Identifier</u></b><a name="http_IfModSince_Att"></a><br>
+      This field identifies the last time a particular request URL was issued 
+      by a browser. This field can be used by an XTF stylesheet to determine if 
+      a request needs to be processed because the XTF database has changed, or 
+      whether the requesting browser can use its previously cached results. This 
+      field is accessed via the XSL parameter<br>
+      <br>
+        
+      <div class="IndentLR"><span class="code">http.If-Modified-Since</span></div>
+      <br>
+      This contents of this time string of the form:<br>
+      <br>
+   
+      <div class="IndentLR"> <span class="Code"> <span class="MacroCode">weekday</span>, 
+        <span class="MacroCode">dd</span>-<span class="MacroCode">mmm</span>-<span class="MacroCode">yy</span> 
+        <span class="MacroCode">hh</span>:<span class="MacroCode">mm</span>:<span class="MacroCode">ss</span> 
+        <span class="MacroCode">timezone</span> </span><br>
+      </div><br>
+      
+      where 
+      <div class="IndentLR"> 
+        <table cellpadding="0" cellspacing="12">
+          <tr> 
+            <td width="20%" align="right" valign="top" class="MacroCode"> weekday 
+            </td>
+            <td width="80%"><span class="BaseStyle">is the day of the week the 
+              request was last issued</span></td>
+          </tr>
+          <tr> 
+            <td width="20%" align="right" valign="top" class="Code"> <span class="MacroCode">dd</span>-<span class="MacroCode">mmm</span>-<span class="MacroCode">yy</span></td>
+            <td width="80%"> <span class="BaseStyle"> is the day, three letter 
+              month abbreviation, and year the request was last issued</span></td>
+          </tr>
+          <tr> 
+            <td width="20%" align="right" valign="top" class="Code" height="25"> 
+              <span class="MacroCode">hh</span>:<span class="MacroCode">mm</span>:<span class="MacroCode">ss</span></td>
+            <td width="80%" height="25"> <span class="BaseStyle"> is the time 
+              the request was last issued, represented as a 24 hour GMT based 
+              time</span><span class="Code"></span> </td>
+          </tr>
+           <tr> 
+            <td width="20%" align="right" valign="top" class="Code" height="20"> 
+              <span class="MacroCode">timezone</span></td>
+            <td width="80%" height="20"> <span class="BaseStyle"> is the offset 
+              in hours of the timezone from which the request was last issued.</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <p><br>
+    </p>
+    </div>
+      
+<div class="IndentL"> 
+  <p class="Heading2">Common Parser Input Tags (Query Parser / Document Request 
+    Parser)<a name="Common_Parser_Input_Tags"></a></p>
+  <p>The following tags make up the XML input for both the <b>Query Parser</b> 
+    and <b>Document Request Parser</b> stylesheets. They constitute a simple XML 
+    representation of the query URL supplied to the <b><i>crossQuery</i></b> or 
+    <b><i>dynaXML </i></b>servlet. </p>
         <br>
-        <div class="Sample"> <b><u>Container Tag</u></b><a name="crossQuery_QueryParser_Input_Parameters"></a><br>
-          This tag is the outer-most tag for the XML input fragment sent to the <b>Query 
-          Parser</b> stylesheet for translation. It has the form:<br>
+        <div class="Sample"> <b><u>Container Tag</u></b><a name="Parser_Input_Parameters"></a><br>
+    This tag is the outer-most tag for the XML input fragment sent to the parser 
+    stylesheet for translation. It has the form:<br>
           <br>
           <div class="IndentLR"> 
             <pre class="code">&lt;parameters&gt;
@@ -818,9 +858,9 @@
           </div>
         </div>
         <br>
-        <div class="Sample"> <b><u>Parameter Block Tag</u></b><a name="crossQuery_QueryParser_Input_Param"></a><br>
-          This tag is the XML input to the <span class="Code">queryParser.xsl</span> 
-          for a single parameter in a user query URL. It has the form:<br>
+        <div class="Sample"> <b><u>Parameter Block Tag</u></b><a name="Parser_Input_Param"></a><br>
+    This tag is the XML input to the parser for a single parameter in a user query 
+    URL. It has the form:<br>
           <br>
           <div class="IndentLR"> 
             <pre class="code">
@@ -858,7 +898,7 @@
           This allows query parameters to be accessed either through th standard template 
           driven XML or through stylesheet parameters. </div>
         <br>
-        <div class="Sample"> <b><u>Token Tag</u></b><a name="crossQuery_QueryParser_Input_Token"></a><br>
+        <div class="Sample"> <b><u>Token Tag</u></b><a name="Parser_Input_Token"></a><br>
           This tag identifies a single word or token taken from the query URL. It 
           has the form: <br>
           <br>
@@ -885,7 +925,7 @@
           </div>
         </div>
         <br>
-        <div class="Sample"> <b><u>Phrase Tag</u></b><a name="crossQuery_QueryParser_Input_Phrase"></a><br>
+        <div class="Sample"> <b><u>Phrase Tag</u></b><a name="Parser_Input_Phrase"></a><br>
           This tag identifies a literal phrase taken from the query URL. It has the 
           form: <br>
           <br>
@@ -915,8 +955,208 @@
               </tr>
             </table>
           </div>
+        </div><br>
+    <p class="Heading2">Error Generator Stylesheets<a name="Error_Generators"></a></p>
+      
+    <!-----------------------------------------------------------------------------------------------------------> 
+    The purpose of the <b>Error Generator</b> stylesheet is to generate a web-page 
+    that displays user friendly messages when <b><i>crossQuery</i></b> or <b><i>dynaXML 
+    </i></b>errors occur. Since its output is simply HTML, the only tags that 
+    this reference section covers are the input XML tags passed to the <b>Error 
+    Generator</b> by the servlets. <br>
+      <br>
+      For convenience, all of the error information passed into the <b>Error Generator</b> 
+      stylesheet as XML tags is also available in the following XSLT parameters: <br>
+      <br>
+      <div class="IndentLR"> 
+        <div class="Sample"> 
+          <table class="Sample" cellspacing="12">
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code"> $exception 
+              </td>
+              <td> <span class="BaseStyle"> A string containing the name of the 
+                exception that occurred. This will be the name of one of the error/exception 
+                tags listed below (e.g., <span class="Code"> "ExcessiveWork"</span>,<span class="Code"> 
+                "TermLimit"</span>,<span class="Code"> </span>etc.) </span> </td>
+            </tr>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code"> $message 
+              </td>
+              <td> <span class="BaseStyle"> The descriptive message for the error/exception 
+                (if any; may be an empty string.) </span> </td>
+            </tr>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code"> $stackTrace 
+              </td>
+              <td> <span class="BaseStyle"> The HTML-Formatted Java Stack Trace 
+                generated by the exception, (if any; may be an empty string.) 
+                </span> </td>
+            </tr>
+          </table>
         </div>
+      </div>
+      <!-- XSLT Variable List Indent --> 
+      <p class="Heading3"></p>
+      <br>
+      <div class="Sample"> <b><u>Query Format Error Tag<a name="ErrorGenerator_QueryFormat"></a></u></b><br>
+      <!----------------------------------------------------------------------------------> 
+      This error tag is issued by the <b>Query Parser</b> or <b>Document Request 
+      Parser </b>stylesheet if its code determines that there is an error in the 
+      query URL received from the user. It has the form: 
+      <div class="IndentLR"> 
+          <pre class="Code">&lt;QueryFormat&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/QueryFormat&gt;</pre>
+        </div>
+        To generate such an error, the <b>Query Parser</b> simply issues a <br>
         <br>
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;error message="<span class="MacroCode">Error Message</span>"/&gt;</pre>
+        </div>
+        tag instead of a<span class="Code"> query </span>tag. The error message 
+      specified by the parser's error tag is then transferred to the <b>Query 
+      Format Error Tag</b>, for processing by the servlet's <b>Error Generator</b> 
+      stylesheet. </div>
+      <br>
+      <div class="Sample"> <b><u>Term Limit Error Tag<a name="ErrorGenerator_TermLimit"></a></u></b><br>
+        <!------------------------------------------------------------------------------> 
+        This error tag is issued when the number terms or clauses in a query exceeds 
+        the maximum term limit established by the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">termLimit</a> 
+        </span>attribute of the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">query</a> 
+        </span>tag produced by the <a href="../XTF_Programming_Guide/XTFProgGuide.html#crossQuery_QueryParser_Prog"><b>Query 
+        Parser</b></a>. It has the form: 
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;TermLimit&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/TermLimit&gt;</pre>
+        </div>
+        This error is most often generated by the expansion of wildcard and range 
+        queries. </div>
+      <br>
+      <div class="Sample"> <b><u>Excessive Work Error Tag<a name="ErrorGenerator_ExcessiveWork"></a></u></b><br>
+        <!--------------------------------------------------------------------------------------> 
+        This error tag is issued when a query exceeds the maximum work limit established 
+        by the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">workLimit</a> 
+        </span>attribute of the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">query</a> 
+        </span>tag produced by the <a href="../XTF_Programming_Guide/XTFProgGuide.html#crossQuery_QueryParser_Prog"><b>Query 
+        Parser</b></a>. It has the form: 
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;ExcessiveWork&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/ExcessiveWork&gt;</pre>
+        </div>
+      </div>
+      
+    <div class="Sample"><b><u>Unsuppored Query Tag<a name="ErrorGenerator_UnsupportedQuery"></a></u></b><br>
+      <!---------------------------------------------------------------------------------> 
+      This error tag is issued by the <b><i>dynaXML</i></b> servlet if a document 
+      request issued by the <b>Document Request Parser</b> stylesheet has an error. 
+      It has the form: 
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;UnsupporedQuery&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+&lt;/UnsupporedQuery&gt;</pre>
+      </div>
+      Usually, this error is generated when a<span class="Code"> <a href="#dynaXML_ReqParser_Output_Query">query</a> 
+      </span>tag has been used in a document request without the required<span class="Code"> 
+      <a href="#dynaXML_ReqParser_Output_Index">index</a> </span>tag. </div>
+    <div class="Sample"></div>
+    <br>
+    <div class="Sample"> <b><u>General Exception Tag<a name="ErrorGenerator_General"></a></u></b><br>
+        <!---------------------------------------------------------------------------------> 
+        This error tag is generated whenever an internal exception occurs in the <b><i>crossQuery</i></b> 
+        Servlet. This tag looks as follows: 
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;<span class="MacroCode">GeneralExceptionName</span>&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+    &lt;stackTrace&gt;<span class="MacroCode">HTML-Formatted Java Stack Trace</span>&lt;/stackTrace&gt;
+&lt;/<span class="MacroCode">GeneralExceptionName</span>&gt;</pre>
+        </div>
+        Exceptions are usually generated by anomalous fatal conditions like missing 
+        required files, corrupted indexes, or files locked by other applications. 
+      </div>
+      <br>
+    </div>
+   
+  <p class="Heading2">Raw Dump Mode<a name="Raw_Dump_Mode"></a></p>
+      
+    
+  <!-----------------------------------------------------------------------------------------------------------> 
+  <p>The<span class="Code"> raw </span>URL parameter can be helpful when debugging 
+    a <b>Search Result Formatter</b> or <b>Document Hit Formatter</b> stylesheet. 
+    When specified, the servlet (either <i><b>crossQuery</b></i> or <i><b>dynaXML</b></i>) 
+    will dump the formatter input directly to the browser, bypassing the formatter 
+    stylesheet. The raw dump can help in formulating templates to correctly format 
+    the final output.<br>
+  </p>
+  <div class="Sample"><b><u>Raw Dump URL Parameter<a name="crossQuery_ResultFormatter_Raw"></a></u></b><br>
+    <!-----------------------------------------------------------------------> 
+    This parameter is added to a query URL, and has the form:<br>
+        <br>
+        <div class="IndentLR"> 
+          
+      <p><span class="Code"> <font color="#999999">http://<font face="Times New Roman, Times, serif"><i>yourserver</i></font>:8080/xtf/search?<font face="Times New Roman, Times, serif"><i>queryParameters</i></font><font color="#000000">&<b>raw=</b></font></font><span class="MacroCode">YesOrNo</span></span></p>
+      </div><p>or</p><div class="IndentLR">
+      <p><span class="Code"><font color="#999999">http://<font face="Times New Roman, Times, serif"><i>yourserver</i></font>:8080/xtf/view?<font face="Times New Roman, Times, serif"><i>viewParameters</i></font><font color="#000000">&<b>raw=</b></font></font><span class="MacroCode">YesOrNo</span></span> 
+      </p>
+          </div>
+        <p>where <br>
+        </p>
+        <div class="IndentLR"> 
+          <table cellspacing="12">
+            <tr> 
+              <td align="right" valign="top" class="Code"> <span class="MacroCode">YesOrNo</span> 
+              </td>
+              
+          <td> <span class="BaseStyle"> specifies whether or not raw XML search 
+            results are sent to your browser. If set to <b class="Code">yes</b> 
+            , the formatter stylesheet is disabled for the query, and raw XML 
+            search results or marked up document contents are sent to your browser. 
+            If set to<span class="Code"><b> no</b></span> , the XML is sent to 
+            the formatter stylesheet for processing, and its output in turn is 
+            sent to the browser. If this URL parameter is not specified, it defaults 
+            to<span class="Code"> no</span>.</span></td>
+            </tr>
+          </table>
+          <br>
+        </div>
+      </div>
+      
+  
+  <!-- crossQuery Tag Reference --> <br>
+  <br>
+</div>
+
+  <hr>
+  <p class="Heading1">crossQuery Stylesheet Reference<a name="crossQuery_Tag_Ref"></a></p>
+    <!-------------------------------------------------------------------------------------------------------------> 
+    <p>This section summarizes the XTF specific tags for the <b><i>crossQuery</i></b> 
+    <a href="#crossQuery_QueryParser_Tags"><b>Query Parser</b></a> stylesheet 
+    and the <b><a href="#crossQuery_ResultFormatter_Tags">Result Formatter</a></b> 
+    stylesheet. </p>
+    <div class="IndentL"> 
+      
+  <p class="Heading2">Query Parser<a name="crossQuery_QueryParser_Tags"></a></p>
+      <!-----------------------------------------------------------------------------------------------------------> 
+      The tags listed here are XML tags associated with the <b>Query Parser</b> 
+      stylesheet. The tags are divided into two categories: <a href="#crossQuery_QueryParser_Input_Tags">input 
+      tags</a> and <a href="#crossQuery_QueryParser_Output_Tags">output tags</a>. 
+      The input tags are used by the <b><i>crossQuery</i></b> Servlet to translate 
+      the original query URL into a simple XML representation that can act as 
+      input to the <b>Query Parser</b> stylesheet. The output tags are then used 
+      by the <b>Query Parser</b> stylesheet to form the actual XML query passed 
+      to the <b><i>crossQuery</i></b> servlet's <b>Text Search Engine</b> for 
+      processing. <br>
+      <div class="IndentL"> 
+        <p class="Heading3">Input Tags and Parameters<a name="crossQuery_QueryParser_Input_Tags"></a></p>
+        
+    <p>The XML input to the Query Parser stylesheet is a simple XML representation 
+      of the query URL supplied to the <b><i>crossQuery</i></b> servlet from the 
+      user query web-page. The XML input and and XSL parameters are the same as 
+      those for the <b><i>dynaXML </i></b>Document Request Parser, and are documented 
+      in the <a href="#Common_Parser_Input_Tags">Common Parser Input Tags</a> 
+      and <a href="#Common_Stylesheet_Parameters">Common Stylesheet Parameters</a> 
+      sections above. </p>
         <p class="Heading3">Output Tags<a name="crossQuery_QueryParser_Output_Tags"></a></p>
         <p>These tags are used by the <b>Query Parser</b> stylesheet to form the 
           XML query passed to the <b><i>crossQuery</i></b> search engine<b> </b>for 
@@ -2187,50 +2427,19 @@
             <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag.</p>
           </div>
         <!-- Range Tag --></div>
-      <!-- Input/Output Tags indent --> <p>&nbsp;</p></div>
+      
+  <!-- Input/Output Tags indent --></div>
     <!-- queryParser Tags indent --> 
     <div class="IndentL"> 
-      <p class="Heading3">Search Result Formatter Tags<a name="crossQuery_ResultFormatter_Tags"></a></p>
+      <p class="Heading2">Search Result Formatter<a name="crossQuery_ResultFormatter_Tags"></a></p>
       <!-----------------------------------------------------------------------------------------------------------> 
       The following tags make up the XML input for the <b>Search Result Formatter</b> 
       stylesheet. They constitute a simple XML representation of the matching text 
       found for the most recent query. The <b>Search Result Formatter</b> stylesheet 
       uses these input tags to generate the HTML for the actual search result web-page 
       viewed by the user. <br>
-      <br> 
-      <div class="Sample"> <b><u>Raw Dump URL Parameter<a name="crossQuery_ResultFormatter_Raw"></a></u></b><br>
-        <!-----------------------------------------------------------------------> 
-        While technically not an XML tag, the<span class="Code"> RAW </span>URL 
-        parameter can be helpful when debugging a <b>Search Result Formatter</b> 
-        stylesheet. This parameter is added to a query URL, and has the form:<br>
-        <br>
-        <div class="IndentLR"> 
-          <p><span class="Code"> <font color="#999999">http://<font face="Times New Roman, Times, serif"><i>yourserver</i></font>:8080/xtf/search?</font></span><span class="Code"><font color="#999999">text=<font face="Times New Roman, Times, serif"><i>TextToFind</i></font>&<b>raw=</b></font><span class="MacroCode">YesOrNo</span></span> 
-          </p>
-          </div>
-        <p>where <br>
-        </p>
-        <div class="IndentLR"> 
-          <table cellspacing="12">
-            <tr> 
-              <td align="right" valign="top" class="Code"> <span class="MacroCode">YesOrNo</span> 
-              </td>
-              <td> <span class="BaseStyle"> specifies whether or not raw XML search 
-                results are sent to your browser. If set to <b class="Code">yes</b> 
-                , the <b>Search Result Formatter</b> stylesheet is disabled for 
-                the query, and raw XML search results are sent to your browser. 
-                If set to<span class="Code"><b> no</b></span> , the XML search 
-                results are sent to the<b> Search Result Formatter </b>stylesheet 
-                for processing, and its output in turn is sent to the browser. 
-                If this URL parameter is not specified, it defaults to<span class="Code"> 
-                no</span>.</span></td>
-            </tr>
-          </table>
-          <br>
-        </div>
-      </div>
-      <br>
-      <div class="Sample"> <b><u>Query Result Tag<a name="crossQuery_ResultFormatter_CrossQRes"></a></u></b><br>
+  <br>
+  <div class="Sample"> <b><u>Query Result Tag<a name="crossQuery_ResultFormatter_CrossQRes"></a></u></b><br>
         <!-----------------------------------------------------------------------> 
         This tag is the outer-most container tag for the results produced by the crossQuery 
         servlet. It has the form:<br> 
@@ -2466,264 +2675,51 @@
 &lt;/term&gt;</pre>
         </div>
         A<span class="Code"> term </span>tag may or may not be inside a<span class="Code"> 
-        <a href="#crossQuery_ResultFormatter_Hit">hit</a> </span>tag, depending 
-        on whether the occurence of the matched word is within the primary match 
-        for a snippet, or simply another occurence within the context text. </div>
-    </div>
-    <div class="IndentL"> 
-      <p class="Heading3">Error Generator Tags<a name="crossQuery_ErrorGen_Tags"></a></p>
-      <!-----------------------------------------------------------------------------------------------------------> 
-      The purpose of the <b>Error Generator</b> stylesheet is to generate a web-page 
-      that displays user friendly messages when <b><i>crossQuery</i></b> errors occur. 
-      Since its output is obviously HTML, the only tags that this reference section 
-      covers are the input XML tags passed to the <b>Error Generator</b> by the <b><i>crossQuery</i></b> 
-      Servlet. <br>
-      <br>
-      For convenience, all of the error information passed into the <b>Error Generator</b> 
-      stylesheet as XML tags is also available in the following XSLT parameters: <br>
-      <br>
-      <div class="IndentLR"> 
-        <div class="Sample"> 
-          <table class="Sample" cellspacing="12">
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code"> $exception 
-              </td>
-              <td> <span class="BaseStyle"> A string containing the name of the 
-                exception that occurred. This will be the name of one of the error/exception 
-                tags listed below (e.g., <span class="Code"> "ExcessiveWork"</span>,<span class="Code"> 
-                "TermLimit"</span>,<span class="Code"> </span>etc.) </span> </td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code"> $message 
-              </td>
-              <td> <span class="BaseStyle"> The descriptive message for the error/exception 
-                (if any; may be an empty string.) </span> </td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code"> $stackTrace 
-              </td>
-              <td> <span class="BaseStyle"> The HTML-Formatted Java Stack Trace 
-                generated by the exception, (if any; may be an empty string.) 
-                </span> </td>
-            </tr>
-          </table>
-        </div>
-      </div>
-      <!-- XSLT Variable List Indent --> 
-      <p class="Heading3"></p>
-      <br>
-      <div class="Sample"> <b><u>Query Format Error Tag<a name="crossQuery_ErrorGen_QueryFormat"></a></u></b><br>
-        <!----------------------------------------------------------------------------------> 
-        This error tag is issued by the <b>Query Parser</b> stylesheet if its code 
-        determines that there is an error in the query URL received from the user. 
-        It has the form: 
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;QueryFormat&gt;
-    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
-&lt;/QueryFormat&gt;</pre>
-        </div>
-        To generate such an error, the <b>Query Parser</b> simply issues a <br>
-        <br>
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;error message="<span class="MacroCode">Error Message</span>"/&gt;</pre>
-        </div>
-        tag instead of a<span class="Code"> query </span>tag. The error message specified 
-        by the <b>Query Parser</b>'s error tag is then transferred to the <b>Query 
-        Format Error Tag</b>, for processing by the <b><i>crossQuery</i></b> <b>Error 
-        Generator</b> stylesheet. </div>
-      <br>
-      <div class="Sample"> <b><u>Term Limit Error Tag<a name="crossQuery_ErrorGen_TermLimit"></a></u></b><br>
-        <!------------------------------------------------------------------------------> 
-        This error tag is issued when the number terms or clauses in a query exceeds 
-        the maximum term limit established by the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">termLimit</a> 
-        </span>attribute of the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">query</a> 
-        </span>tag produced by the <a href="../XTF_Programming_Guide/XTFProgGuide.html#crossQuery_QueryParser_Prog"><b>Query 
-        Parser</b></a>. It has the form: 
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;TermLimit&gt;
-    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
-&lt;/TermLimit&gt;</pre>
-        </div>
-        This error is most often generated by the expansion of wildcard and range 
-        queries. </div>
-      <br>
-      <div class="Sample"> <b><u>Excessive Work Error Tag<a name="crossQuery_ErrorGen_ExcessiveWork"></a></u></b><br>
-        <!--------------------------------------------------------------------------------------> 
-        This error tag is issued when a query exceeds the maximum work limit established 
-        by the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">workLimit</a> 
-        </span>attribute of the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">query</a> 
-        </span>tag produced by the <a href="../XTF_Programming_Guide/XTFProgGuide.html#crossQuery_QueryParser_Prog"><b>Query 
-        Parser</b></a>. It has the form: 
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;ExcessiveWork&gt;
-    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
-&lt;/ExcessiveWork&gt;</pre>
-        </div>
-      </div>
-      <br>
-      <div class="Sample"> <b><u>General Exception Tag<a name="crossQuery_ErrorGen_General"></a></u></b><br>
-        <!---------------------------------------------------------------------------------> 
-        This error tag is generated whenever an internal exception occurs in the <b><i>crossQuery</i></b> 
-        Servlet. This tag looks as follows: 
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;<span class="MacroCode">GeneralExceptionName</span>&gt;
-    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
-    &lt;stackTrace&gt;<span class="MacroCode">HTML-Formatted Java Stack Trace</span>&lt;/stackTrace&gt;
-&lt;/<span class="MacroCode">GeneralExceptionName</span>&gt;</pre>
-        </div>
-        Exceptions are usually generated by anomalous fatal conditions like missing 
-        required files, corrupted indexes, or files locked by other applications. 
-      </div>
-      <br>
-    </div>
-  </div>
-  <!-- crossQuery Tag Reference --> 
-  <div class="IndentL"> 
-    <p class="Heading2">dynaXML Tag Reference<a name="dynaXML_Tag_Ref"></a></p>
+    <a href="#crossQuery_ResultFormatter_Hit">hit</a> </span>tag, depending on 
+    whether the occurence of the matched word is within the primary match for 
+    a snippet, or simply another occurence within the context text. </div>
+</div>
+<div class="IndentL">
+<p class="Heading2">
+    Error Generator<a name="crossQuery_ErrorGen_Tags"></a></p>
+  <!-----------------------------------------------------------------------------------------------------------> 
+  The purpose of the <b>Error Generator</b> stylesheet is to generate a web-page 
+  that displays user friendly messages when <b><i>crossQuery</i></b> errors occur. 
+  Since this stylesheet works the same way in both <i><b>dynaXML</b></i> and <i><b>crossQuery</b></i>, 
+  it is documented in the <a href="#Error_Generators">Error Generator Stylesheets</a> 
+  section of the Common <i><b>crossQuery/dynaXM</b></i>L Stylesheet Reference 
+  above.<br>
+  <br>
+</div>
+  
+<hr>
+<p class="Heading1">dynaXML Stylesheet Reference<a name="dynaXML_Tag_Ref"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    This section provides a quick reference to the various XTF sytlesheet tags recognized 
-    by the <b><i>dynaXML</i></b> stylesheets. <br>
-    <br>
+    <p>This section provides a quick reference to the various XTF sytlesheet tags recognized 
+    by the <b><i>dynaXML</i></b> stylesheets. </p>
     <div class="IndentL"> 
-      <p class="Heading3">Document Request Parser Tags<a name="dynaXML_DocReqParser_Tags"></a></p>
-      <!-----------------------------------------------------------------------------------------------------------> 
-      The tags listed here are XML tags associated with the <b>Document Request Parser</b> 
-      stylesheet. The tags are divided into two categories: input tags and output 
-      tags. The input tags are used by the <b><i>dynaXML</i></b> servlet to translate 
-      the original document request URL into a simple XML representation that can 
-      act as input to the <b>Document Request Parser</b> stylesheet. The output tags 
-      are then used by the <b>Document Request Parser</b> stylesheet to form the actual 
-      XML document request passed to the <b><i>dynaXML</i></b> servlet's <b>Document 
-      Retrieval Engine</b> for processing. <br>
+      <p class="Heading2">Document Request Parser<a name="dynaXML_DocReqParser_Tags"></a></p>
+      
+  <!-----------------------------------------------------------------------------------------------------------> 
+  The tags listed here are XML tags associated with the <b>Document Request Parser</b> 
+  stylesheet. The tags are divided into two categories: input tags and output 
+  tags. The <a href="#dynaXML_ReqParser_Input_Tags">input tags and parameters</a> 
+  are used by the <b><i>dynaXML</i></b> servlet to translate the original document 
+  request URL into a simple XML representation that can act as input to the <b>Document 
+  Request Parser</b> stylesheet. The <a href="#dynaXML_ReqParser_Output_Tags">output 
+  tags</a> are then used by the <b>Document Request Parser</b> stylesheet to form 
+  the actual XML document request passed to the <b><i>dynaXML</i></b> servlet's 
+  <b>Document Retrieval Engine</b> for processing. <br>
       <div class="IndentL"> 
-        <p class="Heading3">Input Tags<a name="dynaXML_ReqParser_Input_Tags"></a></p>
+        <p class="Heading3">Input Tags and Parameters<a name="dynaXML_ReqParser_Input_Tags"></a></p>
         These tags form the XML input fragment passed to the <b>Document Request 
-        Parser</b> stylesheet. They constitute a simple XML representation of 
-        the document request URL supplied to the <b><i>dynaXML</i></b> servlet 
-        from either a document catalog web-page or a <b><i>crossQuery</i></b> 
-        search result web-page. <br>
-        <br>
-        <div class="Sample"> <b><u>Container Tag</u></b><a name="dynaXML_ReqParser_Input_Parameters"></a><br>
-          This tag is the outer-most tag for the XML input fragment sent to the <b>Document 
-          Request Parser</b> stylesheet for translation. It has the form: <br>
-          <br>
-          <pre class="code">&lt;parameters&gt;
-    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Param">ParameterBlock</a></span>
-    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Param">ParameterBlock</a></span>
-         <img src="../Common_Art/vDotDotDot.gif">
-&lt;/parameters&gt;</pre>
-        </div>
-        <br>
-        <div class="Sample"> <b><u>Parameter Block Tag</u></b><a name="dynaXML_ReqParser_Input_Param"></a><br>
-          This tag is the XML input to the <b>Document Request Parser</b> for a single 
-          parameter in a user query URL. It has the form:<br>
-          <br>
-          <div class="IndentLR"> 
-            <pre class="code">
-&lt;param name="<span class="MacroCode">ParamName</span>" value="<span class="MacroCode">ParamValue</span>"&gt;
-    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Token">Token</a></span> | <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Phrase">Phrase</a></span>
-    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Token">Token</a></span> | <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Phrase">Phrase</a></span>
-          <img src="../Common_Art/vDotDotDot.gif">
-&lt;/param&gt;</pre>
-          </div>
-          where <br>
-          <div class="IndentLR"> 
-            <table cellpadding="0" cellspacing="12">
-              <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> name="<span class="MacroCode">ParamName</span>" 
-                </td>
-                <td> <span class="BaseStyle"> is the name of the parameter extracted 
-                  from the original document request URL. </span></td>
-              </tr>
-              <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">ParamValue</span>" 
-                </td>
-                <td> <span class="BaseStyle"> is the original text in the document 
-                  request URL that is assigned to the specified parameter. </span> 
-                </td>
-              </tr>
-            </table>
-          </div>
-          <br>
-          Each parameter from the document request URL is also available as a standard 
-          XSL parameter with the form: <br>
-          <br>
-          <div class="Sample"> <span class="Code"> &lt;xsl:param name="<span class="MacroCode">ParamName</span>" 
-            select="<span class="MacroCode">DefaultValueIfNotInURL</span>"/&gt; </span> 
-          </div>
-          <br>
-          This allows document request parameters to be accessed either through the 
-          standard template driven XSLT or through stylesheet parameters. <br>
-          <br>
-          Note that not all the parameters in the document request URL will be passed 
-          to the <b>Document Request Parser</b>. Only the parameters listed in the<span class="Code"> 
-          dynaXML.conf </span> under the<span class="code"> params </span>attribute 
-          of the &lt;docReqParser&gt; configuration tag are passed to the <b>Document 
-          Request Parser</b>. </div>
-        <br>
-        <div class="Sample"> <b><u>Token Tag</u></b><a name="dynaXML_ReqParser_Input_Token"></a><br>
-          This tag identifies a single word or token taken from the document request 
-          URL. It has the form: <br>
-          <br>
-          <div class="IndentLR"> <span class="Code"> &lt;token value="<span class="MacroCode">Word</span>" 
-            isWord="<span class="MacroCode">YesOrNo</span>"/&gt; </span> </div>
-          <br>
-          where <br>
-          <div class="IndentLR"> 
-            <table cellspacing="12">
-              <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">Word</span>" 
-                </td>
-                <td width="10">&nbsp;</td>
-                <td><span class="BaseStyle">is the actual word or symbol extracted 
-                  from the URL.</span></td>
-              </tr>
-              <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> isWord="<span class="MacroCode">YesOrNo</span>" 
-                </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> identifies whether the token is a word 
-                  (<span class="Code">isWord="yes"</span>) or a punctuation symbol 
-                  (<span class="Code">isWord="no"</span>.) </span> </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-        <br>
-        <div class="Sample"> <b><u>Phrase Tag</u></b><a name="dynaXML_ReqParser_Input_Phrase"></a><br>
-          This tag identifies a literal phrase taken from the document request URL. 
-          It has the form: <br>
-          <br>
-          <div class="IndentLR"> 
-            <pre class="Code">&lt;phrase value="<span class="MacroCode">StringOfWords</span>"&gt;
-    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Token">Token</a></span>
-    <span class="MacroCode"><a href="#dynaXML_ReqParser_Input_Token">Token</a></span>
-      <img src="../Common_Art/vDotDotDot.gif">
-&lt;/phrase&gt;
-</pre>
-          </div>
-          where <br>
-          <div class="IndentLR"> 
-            <table cellspacing="12">
-              <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> value="<span class="MacroCode">StringOfWords</span>" 
-                </td>
-                <td width="10">&nbsp;</td>
-                <td><span class="BaseStyle">is the entire phrase extracted from the 
-                  URL as a single string.</span></td>
-              </tr>
-              <tr> 
-                <td width="16%" align="right" valign="top" class="Code"> <span class="MacroCode">Token, 
-                  Token</span>... </td>
-                <td width="10">&nbsp;</td>
-                <td> <span class="BaseStyle"> is the original phrase broken down 
-                  into one or more <a href="#dynaXML_ReqParser_Input_Token">token</a> 
-                  tags (one for each word or symbol in the phrase.) </span> </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-        <br>
+    Parser</b> stylesheet. They constitute a simple XML representation of the 
+    document request URL supplied to the <b><i>dynaXML</i></b> servlet from either 
+    a document catalog web-page or a <b><i>crossQuery</i></b> search result web-page. 
+    The XML input and and XSL parameters are the same as those for the <i><b>crossQuery</b></i><b><i> 
+    </i>Query Parser</b>, and are documented in the <a href="#Common_Parser_Input_Tags">Common 
+    Parser Input Tags</a> and <a href="#Common_Stylesheet_Parameters">Common Stylesheet 
+    Parameters</a> sections above. <br>
         <p class="Heading3">Output Tags<a name="dynaXML_ReqParser_Output_Tags"></a></p>
         These tags are used by the <b>Document Request Parser</b> stylesheet to 
         form the XML query passed to the <b><i>dynaXML</i></b> <b>Document Retrieval 
@@ -3128,7 +3124,8 @@
       </div>
     </div>
     <div class="IndentL"> 
-      <p class="Heading3">Document Formatter Tags and Attributes<a name="dynaXML_DocFormatter_Tags"></a></p>
+      
+  <p class="Heading2">Document Formatter<a name="dynaXML_DocFormatter_Tags"></a></p>
       <!-----------------------------------------------------------------------------------------------------------> 
       The following tags and attributes are added by the <b><i>dynaXML</i></b> servlet 
       to the original XML tags that make up the requested XML document, which are 
@@ -3407,131 +3404,19 @@
           </table>
         </div>
       </div>
-    </div>
+    </div><br>
     <div class="IndentL"> 
-      <p class="Heading3">Error Generator Tags<a name="dynaXML_ErrorGen_Tags"></a></p>
-      <!-----------------------------------------------------------------------------------------------------------> 
-      The purpose of the <b>Error Generator</b> stylesheet is to generate a web-page 
-      that displays user friendly messages when <b><i>dynaXML</i></b> errors occur. 
-      Since its output is obviously HTML, the only tags that this reference section 
-      covers are the input XML tags passed to the <b>Error Generator</b> by the <b><i>dynaXML</i></b> 
-      Servlet. <br>
-      <br>
-      For convenience, all of the error information passed into the <b>Error Generator</b> 
-      stylesheet as XML tags is also available in the following XSLT parameters: <br>
-      <br>
-      <div class="IndentLR"> 
-        <div class="Sample"> 
-          <table class="Sample" cellspacing="12">
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code"> $exception 
-              </td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> A string containing the name of the exception 
-                that occurred. This will be the name of one of the error/exception 
-                tags listed below (e.g., <span class="Code"> "UnsupportedQuery"</span>,<span class="Code"> 
-                "TermLimit"</span>,<span class="Code"> </span>etc.) </span> </td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code"> $message </td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> The descriptive message for the error/exception 
-                (if any; may be an empty string.) </span> </td>
-            </tr>
-            <tr> 
-              <td width="16%" align="right" valign="top" class="Code"> $stackTrace 
-              </td>
-              <td width="10">&nbsp;</td>
-              <td> <span class="BaseStyle"> The HTML-Formatted Java Stack Trace generated 
-                by the exception, (if any; may be an empty string.) </span> </td>
-            </tr>
-          </table>
-        </div>
-      </div>
-      <!-- XSLT Variable List Indent --> 
-      <p class="Heading3"></p>
-      <br>
-      <div class="Sample"> <b><u>Unsuppored Query Tag<a name="dynaXML_ErrorGen_UnsupportedQuery"></a></u></b><br>
-        <!---------------------------------------------------------------------------------> 
-        This error tag is issued by the <b><i>dynaXML</i></b> servlet if a document 
-        request issued by the <b>Document Request Parser</b> stylesheet has an error. 
-        It has the form: 
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;UnsupporedQuery&gt;
-    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
-&lt;/UnsupporedQuery&gt;</pre>
-        </div>
-        Usually, this error is generated when a<span class="Code"> <a href="#dynaXML_ReqParser_Output_Query">query</a> 
-        </span>tag has been used in a document request without the required<span class="Code"> 
-        <a href="#dynaXML_ReqParser_Output_Index">index</a> </span>tag. </div>
-      <br>
-      <div class="Sample"> <b><u>Query Format Error Tag<a name="dynaXML_ErrorGen_QueryFormat"></a></u></b><br>
-        <!-------------------------------------------------------------------------------> 
-        This error tag is issued by the <b>Document Request Parser</b> stylesheet 
-        if its code determines that there is an error in the query URL received from 
-        a document request. It has the form: 
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;QueryFormat&gt;
-    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
-&lt;/QueryFormat&gt;</pre>
-        </div>
-        To generate such an error, the <b>Document Requeste Parser</b> simply issues 
-        a <br>
-        <br>
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;error message="<span class="MacroCode">Error Message</span>"/&gt;</pre>
-        </div>
-        tag instead of a<span class="Code"> query </span>tag. The error message specified 
-        by the <b>Document Request Parser</b>'s error tag is then transferred to the 
-        <b>Query Format Error Tag</b>, for processing by the <b><i>dynaXML</i></b> 
-        <b>Error Generator</b> stylesheet. </div>
-      <br>
-      <div class="Sample"> <b><u>Term Limit Error Tag<a name="dynaXML_ErrorGen_TermLimit"></a></u></b><br>
-        <!------------------------------------------------------------------------------> 
-        This error tag is issued when the number of terms or clauses in a query 
-        issued by the <b>Document Request Parser</b> exceeds the maximum term 
-        limit established by the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">termLimit</a> 
-        </span>attribute of the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">query</a> 
-        </span>tag produced by the <a href="../XTF_Programming_Guide/XTFProgGuide.html#crossQuery_QueryParser_Prog"><b>Query 
-        Parser</b></a>. It has the form: 
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;TermLimit&gt;
-    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
-&lt;/TermLimit&gt;</pre>
-        </div>
-        This error is most often generated by the expansion of wildcard and range 
-        queries. </div>
-      <br>
-      <div class="Sample"> <b><u>Excessive Work Error Tag<a name="dynaXML_ErrorGen_ExcessiveWork"></a></u></b><br>
-        <!--------------------------------------------------------------------------------------> 
-        This error tag is issued when a query exceeds the maximum work limit established 
-        by the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">workLimit</a> 
-        </span>attribute of the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">query</a> 
-        </span>tag produced by the <a href="../XTF_Programming_Guide/XTFProgGuide.html#crossQuery_QueryParser_Prog"><b>Query 
-        Parser</b></a>. It has the form: 
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;ExcessiveWork&gt;
-    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
-&lt;/ExcessiveWork&gt;</pre>
-        </div>
-      </div>
-      <br>
-      <div class="Sample"> <b><u>General Exception Tag<a name="dynaXML_ErrorGen_General"></a></u></b><br>
-        <!---------------------------------------------------------------------------------> 
-        This error tag is generated whenever an internal exception occurs in the <b><i>dynaXML</i></b> 
-        Servlet. This tag looks as follows: 
-        <div class="IndentLR"> 
-          <pre class="Code">&lt;<span class="MacroCode">GeneralExceptionName</span>&gt;
-    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
-    &lt;stackTrace&gt;<span class="MacroCode">HTML-Formatted Java Stack Trace</span>&lt;/stackTrace&gt;
-&lt;/<span class="MacroCode">GeneralExceptionName</span>&gt;</pre>
-        </div>
-        Exceptions are usually generated by anomalous fatal conditions like missing 
-        required files, corrupted indexes, or files locked by other applications. 
-      </div>
-      <br>
-    </div>
-  </div>
+      
+  <p class="Heading2">Error Generator<a name="dynaXML_ErrorGen_Tags"></a></p>
+      
+  <!-----------------------------------------------------------------------------------------------------------> 
+  The purpose of the <b>Error Generator</b> stylesheet is to generate a web-page 
+  that displays user friendly messages when <b><i>dynaXML</i></b> errors occur. 
+  Since this stylesheet works the same way in both <i><b>dynaXML</b></i> and <i><b>crossQuery</b></i>, 
+  it is documented in the <a href="#Error_Generators">Error Generator Stylesheets</a> 
+  section of the Common <i><b>crossQuery/dynaXM</b></i>L Stylesheet Reference 
+  above.<br>
+  <br>
   <!-- dynaXML Tag Reference --> </div>
 <!-- BaseStyle -->
 
