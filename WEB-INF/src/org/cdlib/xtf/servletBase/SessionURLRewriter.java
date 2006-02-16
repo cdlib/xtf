@@ -91,12 +91,12 @@ public class SessionURLRewriter extends ProxyReceiver
     // Is this an attribute we want to edit? Right now, we try to be 
     // conservative:
     //
-    // (1) "href" attribute of any element;
+    // (1) "href" attribute of a <a> element;
     // (2) "action" attribute of a <form> element;
     // (3) "src" attribute of a <frame> element.
     //
     String attrName = getLocalName( nameCode );
-    if( !attrName.equals("href") && 
+    if( !(elementName.equals("a") && attrName.equals("href")) && 
         !(elementName.equals("form") && attrName.equals("action")) &&
         !(elementName.equals("frame") && attrName.equals("src")) )
     {
