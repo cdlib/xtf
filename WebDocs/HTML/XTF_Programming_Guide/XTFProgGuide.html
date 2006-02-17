@@ -149,7 +149,7 @@
     <li> <b><a href="#Common_Prog">Common crossQuery/dynaXML Programming Tasks</a></b> 
       <ul class="NoBullets">
         <li><a href="#Common_ErrorGen_Prog">Error Generator Programming</a></li>
-        <li><a href="#Common_Session_Prog">Tracking Session State</a></li>
+        <li><a href="#Common_Session_State">Tracking Session State</a></li>
       </ul>
     </li>
     <br>
@@ -195,10 +195,10 @@
   filtered XML is then passed on to the actual <b><i>Text Indexer Engine</i></b>, 
   which breaks the text up into smaller overlapping chunks and then adds them 
   to a Lucene based word index. The index can then be used by the <b><i>crossQuery</i></b> 
-  servlet to quicky locate files in the document library containing any text requested 
-  by the user. Optionally, the <b><i>dynaXML</i></b> servlet can also use the 
-  index to highlight in context any matches in the original XML documents when 
-  they are viewed. <br>
+  servlet to quickly locate files in the document library containing any text 
+  requested by the user. Optionally, the <b><i>dynaXML</i></b> servlet can also 
+  use the index to highlight in context any matches in the original XML documents 
+  when they are viewed. <br>
   <br>
   The <span class="Code">textIndexer.conf</span> file, the <b>Document Selector</b> 
   stylesheet, and the <b>Pre-filter</b> stylesheet together define how the <b><i>textIndexer</i></b> 
@@ -206,7 +206,7 @@
   file appears in the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF 
   Deployment Guide</a>, and so will not be discussed in any great depth here. 
   The inner workings of the <b>Document Selector</b> and <b>Pre-Filter</b> stylesheets 
-  however, are the subject of the following sub-sections. 
+  however, are the subject of the following subsections. 
   <div class="IndentL"> 
     <p class="Heading2">Document Selector Programming<a name="textIndexer_DocSelector_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
@@ -215,7 +215,7 @@
     the <b>Document Selector</b> is an XSLT stylesheet, its input is in fact an 
     XML fragment that identifies a single directory in the document library and 
     the files that it contains. The <b>Document Selector</b> stylesheet is invoked 
-    one time for each sub-directory encountered in the document library, and the 
+    one time for each subdirectory encountered in the document library, and the 
     input it receives looks as follows: 
     <pre class="Sample"><b>&lt;directory dirPath="<span class="MacroCode">DirectoryPath</span>"&gt;
 
@@ -348,7 +348,7 @@
     modify the XML representation of a document prior to indexing it. The pre-filter 
     used for any particular document is defined by the <b>Document Selector</b>. 
     The main aspects of programming a pre-filter are described in the following 
-    six sub-sections. <br>
+    six subsections. <br>
     <div class="IndentLR"> 
       <p class="Heading3">Defining the XTF Namespace</p>
       <br>
@@ -383,7 +383,7 @@
           can be added to the tag to tell the <b><i>textIndexer</i></b> to ignore 
           its contents when indexing. </li>
       </ol>
-      Eliminating certain tags through the use of standard XSLT techiques has 
+      Eliminating certain tags through the use of standard XSLT techniques has 
       the advantage that it saves space. The tag's text is not added to the search 
       index, nor is it stored by the fast retrieval database for later display 
       by the <b><i>dynaXML</i></b> servlet. By contrast, the <span class="Code">noindex</span> 
@@ -462,7 +462,7 @@
       span two "chapter" tags. <br>
       <br>
       Sometimes it may still be desirable to find proximity matches across sections, 
-      but deemphasize them compared to matches found entirely within a section. 
+      but de-emphasize them compared to matches found entirely within a section. 
       In this case, the<span class="Code"> sectionBump </span>attribute can be 
       used in place of a proximity break. Unlike the<span class="Code"> proximityBreak 
       </span>tag, the<span class="Code"> sectionBump </span> tag can be told how 
@@ -478,15 +478,15 @@
     &lt;/xsl:copy&gt;
 
 &lt;/xsl:template&gt;</b></pre>
-      would separate adjacent chapters from eachother by ten words. Proximity 
+      would separate adjacent chapters from each other by ten words. Proximity 
       matches across chapters would still be found, but they would be considered 
       10 words further apart (and therefore less relevant) than similar matches 
       found entirely within a single section. <br>
       <br>
-      Just as it may be desirable to deemphasize proximity matches across adjacent 
-      sections, it may also be desireable to control proximity matches across 
-      sentence boundaries. To accomplish this, the sentenceBump attribute can 
-      be added to a tag like this: <br>
+      Just as it may be desirable to de-emphasize proximity matches across adjacent 
+      sections, it may also be desirable to control proximity matches across sentence 
+      boundaries. To accomplish this, the sentenceBump attribute can be added 
+      to a tag like this: <br>
       <br>
       <pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="DocText"</font>&gt;
 
@@ -506,7 +506,7 @@
       <!-----------------------------------------------------------------------------------------------------------> 
       Another attribute that can be added to document tags is the<span class="Code"> 
       sectionType </span>attribute. This attribute allows you to assign names 
-      to tags witin a document. Doing so would allow permit advanced user queries 
+      to tags within a document. Doing so would allow permit advanced user queries 
       that only search for text in specific section types. Consider the following 
       example: <br>
       <br>
@@ -532,12 +532,12 @@
       section types when a given section/tag ends. 
       <p class="Heading3">Relevance Boost</p>
       <!-----------------------------------------------------------------------------------------------------------> 
-      There may be times when it is useful to boost or deemphasize the relevance 
+      There may be times when it is useful to boost or de-emphasize the relevance 
       of text in a particular part of a document. Consider the case where you 
       had a document that was a book of quotations. In such a document, it might 
       make sense to boost the relevance of the text in the actual quotations as 
       compared to any text that discussions the quotations. To facilitate this, 
-      the <b><i>textIndexer</i></b> pre-filter provides a <b><i>wordboost</i></b> 
+      the <b><i>textIndexer</i></b> pre-filter provides a <b><i>wordBoost</i></b> 
       attribute. The following example illustrates its use: <br>
       <br>
       <pre class="Sample"><b>&lt;xsl:template <font color="#990000">match="Quotation"</font>&gt;
@@ -551,7 +551,7 @@
 &lt;/xsl:template&gt;</b></pre>
       This XSLT code simply boosts text found in <span class="Code">Quotation</span> 
       tags to be 1.5 times more relevant than non-boosted text in the document. 
-      Conversely, to deemphasize text simply use a value between zero and one 
+      Conversely, to de-emphasize text simply use a value between zero and one 
       (e.g., a boost of 0.5 would make text half as relevant when searching.) 
       <br>
       <br>
@@ -622,7 +622,7 @@
       <p class="Heading3">Pre-Filters and Lazy-Tree Building</p>
       <!-----------------------------------------------------------------------------------------------------------> 
       <p>The XTF system makes use of <i><b>Lazy Tree</b></i> files to help speed 
-        document retrieval and to help the <i><b>dynaXML</b></i> applet highlight 
+        document retrieval and to help the <i><b>dynaXML</b></i> servlet highlight 
         search results in context. By default, lazy tree files are generated at 
         index time by the <i><b>textIndexer</b></i>. However, through the use 
         of the<span class="Code"> -nobuildlazy </span> command-line argument, 
@@ -691,7 +691,7 @@
   <br>
   <br>
   The <b><i>crossQuery</i></b> search engine then uses the XML query to look for 
-  occurences of the specified text in the document index. Any matches that are 
+  occurrences of the specified text in the document index. Any matches that are 
   found in the index are assembled into a list of XML tags, and passed on to <b>Result 
   Formatter</b> stylesheet (<span class="Code">resultFormatter.xsl</span>.) The 
   <b>Result Formatter</b> stylesheet then converts the list of matches into HTML 
@@ -706,7 +706,7 @@
     a URL based query into an XML query that the search engine can actually understand. 
     Consider the following pseudo-query: <br>
     <br>
-    <div class="IndentLR"> <span class="Code">Find all occurences of "man" and 
+    <div class="IndentLR"> <span class="Code">Find all occurrences of "man" and 
       "war" but not "Man of War".</span> </div>
     <br>
     What we're trying to find here is any document containing both "man" and "war", 
@@ -762,7 +762,7 @@
     hexadecimal values. <br>
     <br>
     Since the <b>Query Parser</b> is written in XSLT, it actually expects an XML 
-    document as its input, and not a URL like the one presented above. Consquently, 
+    document as its input, and not a URL like the one presented above. Consequently, 
     the <b><i>crossQuery</i></b> servlet preprocesses the query URL and turns 
     it into an XML input fragment for the <b>Query Parser</b> to translate. In 
     general, the input XML passed to the <b>Query Parser</b> looks like this: 
@@ -1014,7 +1014,7 @@
       to run some sample queries and look at the raw XML, then try to envision 
       how you want it to look in HTML.</p>
     <p>Here's a real-life sample of <b>Result Formatter</b> input, coming from 
-      a query for the words &quot;man&quot; and &quot;war&quot;. Much of the repetetive 
+      a query for the words &quot;man&quot; and &quot;war&quot;. Much of the repetitive 
       information has been snipped out so you can get a quick idea of the structure 
       without getting bogged down in details.</p>
     <pre class="Sample">&lt;<b>crossQueryResult</b> queryTime=&quot;0.32&quot; totalDocs="8" startDoc="1" endDoc="8">
@@ -1474,8 +1474,8 @@
   aspects of their operation. Instead of repeating the documentation for these 
   common parts in each section, these common tasks are collected below.</p>
 <div class="IndentL"> 
-  <p class="Heading2">Error Generator Programming for <i><b>crossQuer</b></i>y 
-    and<i><b> dynaXML</b></i><a name="Common_ErrorGen_Prog"></a></p>
+    <p class="Heading2">Error Generator Programming for <i><b>crossQuery</b></i> 
+      and<i><b> dynaXML</b></i><a name="Common_ErrorGen_Prog"></a></p>
 <!-------------------------------------------------------------------------------------------------------------> 
   <p>It's not a perfect world, and errors happen. For the times when they do, 
     the <i><b>crossQuery</b></i> and <b><i>dynaXML </i></b>servlets include a 
@@ -1534,7 +1534,102 @@
     list of the various errors that may be sent by <i><b>crossQuery </b></i>to 
     the <b> Error Generator</b>, please consult the <a href="../XTF_Tag_Reference/XTFTagRef.html#Error_Generators">Error 
     Generator Stylesheet Reference</a>.</p>
+
+  <!-------------------------------------------------------------------------------------------------------------> 
+  <p class="Heading2">Tracking Session State<a name="Common_Session_State"></a></p>
+    <p>By default, <i><b>crossQuery </b></i>and <i><b>dynaXML </b></i>are &quot;stateless&quot;, 
+      that is, they don't remember anything from one request to the next. Any 
+      given URL request is treated separately, and all the servlet knows is what 
+      is present in the URL parameters.</p>
+    <p>URL parameters are fine for small pieces of data that change frequently, 
+      such as query parameters, page number, document ID, etc. However they're 
+      cumbersome for large amounts of data, or information that doesn't change 
+      frequently. This is where <i><b>XTF</b></i>'s <b>Session State Tracking</b> 
+      facilities come in handy.</p>
+    <p>Once session tracking enabled, XTF will associate a session ID with the 
+      first request made by a particular user. As the user clicks on links from 
+      that page, the session ID will automatically track along with each page 
+      view. Your parsing and formatting stylesheets can store and retrieve data 
+      in the session, and this data will be available on subsequent requests.</p>
+    <p>A brief tutorial on session tracking follows; details of the functions 
+      are detailed in the <a href="../XTF_Tag_Reference/XTFTagRef.html#Session_State">Session 
+      State</a> section of the XTF Stylesheet Reference.<br>
+    </p>
+    <div class="IndentLR"> 
+      <p class="Heading3">Enabling Session Tracking</p>
+      <p> <!-----------------------------------------------------------------------------------------------------------> 
+        Before attempting to store or retrieve session data, you must enable session 
+        tracking in the configuration file of the servlet(s) you're using (i.e.<span class="Code"> 
+        dynaXML.conf </span>and/or<span class="Code"> crossQuery.conf</span>). 
+        The line to enable tracking looks like this:</p>
+      <div class="Sample"> <span class="Code"> </span> <span class="Code">&lt;<b>trackSessions 
+        track=&quot;yes&quot;</b>/&gt; </span></div>
+      <p class="Heading3">Storing and Retrieving Session Data</p>
+      <p> <!-----------------------------------------------------------------------------------------------------------> 
+        Once enabled, XTF's built-in XSL extension functions can be used to store 
+        or retrieve data in the session associated with a given request. For example, 
+        here's some XSL code to store a value in the session:</p>
+      <pre class="Sample"><b>&lt;xsl:stylesheet <span class="Red">xmlns:session="java:org.cdlib.xtf.xslt.Session</span>"<span class="MacroCode">...</span>&gt;<span class="MacroCode">
+...</span>
+  &lt;xsl:value-of select="<span class="Red">session:setData</span>('<span class="MacroCode">someName</span>', '<span class="MacroCode">someValue</span>')"></b></pre>
+      <p>As you see, the<span class="Code"> session:setData </span>function can 
+        be used like any other XPath function, as long as the proper namespace 
+        has been declared. It places data into the session under the given name 
+        (replacing any previous data with that name.)</p>
+      <p>In general the session data can contain as many name/value pairs as you 
+        wish to place into it. The names and values must be simple strings; XTF 
+        doesn't support storing structured XML data in the session.</p>
+      <p>Retrieving session data is also very simple:</p>
+      <pre class="Sample"><b>&lt;xsl:variable name=&quot;myData&quot; select=&quot;<span class="Red">session:getData</span>('<span class="MacroCode">someName</span>')"></b></pre>
+      <p></p>
+      <p>The<span class="Code"> session:getData </span>function retrieves the 
+        data value established for this name by<span class="Code"> session:setData</span>. 
+        If no data was previously stored under that name, an empty string is returned. 
+      </p>
+      <p class="Heading3">The Session ID and How it is Tracked</p>
+      <p> <!-----------------------------------------------------------------------------------------------------------> 
+        XTF automatically creates and tracks session identifiers for you. In general 
+        you don't have to do any additional work for this to happen transparently 
+        in the background. However, one case may require more work.</p>
+      <p>By default, when session tracking is enabled, XTF attempts to set a cookie 
+        in the user's browser. This cookie simply contains the session ID, and 
+        is timed to expire at the end of the user's browsing session. On subsequent 
+        requests, the browser will automatically return the cookie to XTF, providing 
+        the session ID.</p>
+      <p>However, some users disable cookies due to privacy concerns. If XTF detects 
+        that the cookie was not accepted, it automatically switches to using the 
+        URL to store the session identifier. Typically you'll see &quot;<span class="Code">;jsessionid=<span class="MacroCode">xxxxx</span></span>&quot; 
+        added to the URL in this case, just before the '<span class="Code">?</span>' 
+        that begins the normal URL parameters.</p>
+      <p class="Heading3">URL Encoding of the Session ID</p>
+      <p> <!-----------------------------------------------------------------------------------------------------------> 
+        When URL encoding is activated, XTF automatically intercepts URLs that 
+        your stylesheets produce as part of<span class="Code"> &lt;form&gt;</span>,<span class="Code"> 
+        &lt;a&gt;</span>, and<span class="Code"> &lt;frame&gt; </span>elements 
+        in the output HTML. XTF will then add the session ID to the URLs as appropriate. 
+      </p>
+      <p>Though not common, if your HTML output contains URLs as part of other 
+        elements or in JavaScript calls, then you'll need to inform XTF that these 
+        URLs may need to have the session ID added. This is done using the<span class="Code"> 
+        session:encodeURL </span>function like this:</p>
+      <pre class="Sample"><b>&lt;xsl:variable name=&quot;originalURL&quot; select=&quot;<span class="MacroCode">some value here</span>&quot;/&gt;
+&lt;xsl:variable name=&quot;encodedURL&quot; select=&quot;<span class="Red">session:encodeURL</span>($originalURL)&quot;/&gt;</b> </pre>
+      <p>XTF will check the URL and if it points to an XTF servlet and the session 
+        ID needs to be tracked in the URL, it will return a modified version of 
+        the URL that contains the session ID.</p>
+      <p class="Heading3">Checking Whether Session Tracking is Enabled</p>
+      <p> <!-----------------------------------------------------------------------------------------------------------> 
+        If you wish, you can create stylesheet code that works differently depending 
+        on whether session tracking is enabled in the configuration file for the 
+        particular servlet you're working in. It looks like this:</p>
+      <pre class="Sample"><b>&lt;xsl:if test=&quot;<span class="Red">session:isEnabled()</span>&quot;&gt;
+  &lt;!-- Do session-related stuff here --&gt;
+&lt;/xsl:if&gt;</b> </pre>
+      <p></p>
+      <p>&nbsp;</p>
+    </div>
   </div>
+
   <!-- Common --> 
   <!---------------------------------------------------------------------------------------------------------------><br>
 </div>

@@ -1150,9 +1150,10 @@ Done.
     &lt;loginCache size="<span class="MacroCode">Entries</span>" expire="<span class="MacroCode">Seconds</span>"/&gt;
 
     &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt;
-    &lt;reportlatency enable="<span class="MacroCode">YesOrNo</span>" {cutoffSize="<span class="MacroCode">NumBytes</span>"}/&gt;
-    &lt;runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} {killTime="<span class="MacroCode">Seconds</span>"}/&gt;
+    &lt;reportlatency report="<span class="MacroCode">YesOrNo</span>" {cutoffSize="<span class="MacroCode">NumBytes</span>"}/&gt;
     &lt;stylesheetProfiling profile="<span class="MacroCode">YesOrNo</span>"/&gt;
+    &lt;runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} {killTime="<span class="MacroCode">Seconds</span>"}/&gt;
+    &lt;trackSessions track="<span class="MacroCode">YesOrNo</span>"/&gt;
  
     &lt;!-- Your tags go here --&gt;
 
@@ -1191,7 +1192,7 @@ Done.
         If this argument is not specified, the <i><b>dynaXML</b></i> servlet defaults 
         to displaying informational (<span class="Code">info</span>) level messages. 
       </div>
-    </div>
+    </div><br>
     <div class="GreyList"> <span class="Code"> &lt;reverseProxy IP="<span class="MacroCode">ddd.ddd.ddd.ddd</span>" 
       marker="<span class="MacroCode">MarkerString</span>"/&gt; </span> <br>
       <div class="IndentLR"> 
@@ -1210,7 +1211,7 @@ Done.
         Use this attribute if you wish to tell the <b><i>dynaXML</i></b> servlet 
         to use a forwarding marker other than the default <span class="Code">X-Forwarded-For</span> 
         marker. </div>
-    </div>
+    </div><br>
     <div class="GreyList"> <span class="Code"> &lt;docReqParser path="<span class="MacroCode">LocationOfDocReqestParser</span>" 
       params="<span class="MacroCode">DocReqParserParams</span>"/&gt;<br>
       </span><br>
@@ -1235,7 +1236,7 @@ Done.
         <div class="Note"> (<u>Note</u>: To ensure cache efficiency, the number 
           of parameters passed should be kept to the minimum. </div>
       </div>
-    </div>
+    </div><br>
     <div class="GreyList"> <span class="Code"> &lt;errorGen path="<span class="MacroCode">LocationOfErrorPageGenerator</span>"/&gt; 
       </span><br>
       <div class="IndentLR"> When an error occurs (either user authentication 
@@ -1246,7 +1247,7 @@ Done.
         <br>
         For a more detailed description, see the comments in the sample <span class="Code">errorGen.xsl</span> 
         files. </div>
-    </div>
+    </div><br>
     <div class="GreyList"> <span class="Code"> &lt;stylesheetCache size="<span class="MacroCode">Entries</span>" 
       expire="<span class="MacroCode">Seconds</span>"/&gt; </span><br>
       <span class="Code"> &lt;reqParserCache size="<span class="MacroCode">Entries</span>" 
@@ -1262,7 +1263,7 @@ Done.
         The five distinct caches used by the <b><i>dynaXML</i></b> servlet are 
         as follows:<br>
         <br>
-        <table cellpadding="0" cellspacing="10" width="896">
+        <table cellpadding="0" cellspacing="10" width="100%">
           <tr> 
             <td width="137" align="right" valign="top" class="Code">styleSheetCache</td>
             <td width="722"> <span class="BaseStyle"> Compiled versions of stylesheets 
@@ -1295,6 +1296,7 @@ Done.
         </table>
       </div>
     </div>
+<br>
     <div class="GreyList"> <span class="Code"> &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt; 
       </span><br>
       <div class="IndentLR"> Whenever consulting one of its internal caches, the 
@@ -1306,9 +1308,9 @@ Done.
         Set this to<b class="Code"> no </b> for a production system where every 
         last little bit of speed is critical. Otherwise, set it to <b class="Code">yes</b>. 
       </div>
-    </div>
+    </div><br>
     <div class="GreyList"> <span class="Code"> &lt;<b>reportlatency report="<span class="MacroCode">YesOrNo</span>" 
-      {cutoffSize="<span class="MacroCode">NumBytes</span>"}</b>&gt; </span><br>
+      {cutoffSize="<span class="MacroCode">NumBytes</span>"}/</b>&gt; </span><br>
       <div class="IndentLR"> 
         <p>Controls whether the servlet will report the latency of each request, 
           that is, how long each request took to process and deliver to the client. 
@@ -1334,9 +1336,31 @@ Done.
           is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
           or <span class="Code">silent</span>, <reportlatency> nothing will appear. 
       </div>
+    </div><br>
+    <div class="GreyList"> <span class="Code"> &lt;<b>stylesheetProfiling profile="<span class="MacroCode">YesOrNo</span>"</b>/&gt; 
+      </span><br>
+      <div class="IndentLR"> 
+        <p>Controls whether a profile is generated for each document request. 
+          A profile identifies the stylesheet and line number of each XSLT command 
+          that was executed for the query, and a relative count that identifes 
+          roughly how long it took to execute that command. Within the profile, 
+          the executed commands are ordered such that the most used commands appear 
+          first, and the least used commands appear last. This provides clues 
+          as to where the stylesheet is spending its time and thus could possibly 
+          be optimized. When enabled, profiles are written to the dynaXML servlet's 
+          activity log. <br>
+          <br>
+          Set this to<b class="Code"> no </b> for general use, since collecting 
+          the profile information can be time-consuming. </p>
+        <p><span class="Red">Note:</span> The profile information is logged at 
+          the "info" level, so if the<span class="Code"> &lt;logging&gt; </span>level 
+          above is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, <reportlatency> nothing will appear. 
+        </p>
+      </div>
     </div>
     <div class="GreyList"> <span class="Code"> &lt;<b>runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} 
-      {killTime="<span class="MacroCode">Seconds</span>"}</b>&gt; </span><br>
+      {killTime="<span class="MacroCode">Seconds</span>"}/</b>&gt; </span><br>
       <div class="IndentLR"> 
         <p>Controls whether the servlet tracks, reports, and optionally kills 
           potential "runaway" requests. The<span class="Code"> normalTime </span>attribute 
@@ -1361,27 +1385,23 @@ Done.
           or <span class="Code">silent</span>, <reportlatency> nothing will appear. 
       </div>
     </div>
-    <div class="GreyList"> <span class="Code"> &lt;<b>stylesheetProfiling profile="<span class="MacroCode">YesOrNo</span>"</b>&gt; 
+    <br>
+    <div class="GreyList"> <span class="Code"> &lt;<b>trackSessions track=&quot;<span class="MacroCode">YesOrNo</span>"</b>/&gt; 
       </span><br>
       <div class="IndentLR"> 
-        <p>Controls whether a profile is generated for each document request. 
-          A profile identifies the stylesheet and line number of each XSLT command 
-          that was executed for the query, and a relative count that identifes 
-          roughly how long it took to execute that command. Within the profile, 
-          the executed commands are ordered such that the most used commands appear 
-          first, and the least used commands appear last. This provides clues 
-          as to where the stylesheet is spending its time and thus could possibly 
-          be optimized. When enabled, profiles are written to the dynaXML servlet's 
-          activity log. <br>
-          <br>
-          Set this to<b class="Code"> no </b> for general use, since collecting 
-          the profile information can be time-consuming. </p>
-        <p><span class="Red">Note:</span> The profile information is logged at 
-          the "info" level, so if the<span class="Code"> &lt;logging&gt; </span>level 
-          above is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
-          or <span class="Code">silent</span>, <reportlatency> nothing will appear. 
-        </p>
-      </div>
+        <p>Controls whether the servlet associates a session with each request. 
+          If enabled, a session will be created the first time a given user connects 
+          to the servlet. The session is assigned a unique identifier which is 
+          passed through on subsequent page views either through a cookie or by 
+          encoding the session identifier in the URL.</p>
+        <p>The main purpose of sessions is to store long-lasting or large data 
+          items that would be inconvenient to pass as URL parameters. The data 
+          can be stored and retrieved using XSL extension functions available 
+          in XTF. See <a href="../XTF_Programming_Guide/XTFProgGuide.html#Common_Session_State">Tracking 
+          Session State</a> in the XTF Programmer's Guide for details.</p>
+        <p>Generally, this should only be enabled if you plan to store and use 
+          session data. </p>
+        </div>
     </div>
     <br>
     <b><u>The docReqParser.xsl Request Parser</u></b> <br>
@@ -1514,7 +1534,7 @@ Done.
         If this argument is not specified, the <i><b>crossQuery</b></i> servlet 
         defaults to displaying informational (<span class="Code">info</span>) 
         level messages. </div>
-    </div>
+    </div><br>
     <div class="GreyList"> <span class="Code">&lt;queryParser path="<span class="MacroCode">LocationOfQueryParser</span>"/&gt;</span> 
       <div class="IndentLR"> This tag specifies the name and path to the XSLT 
         template used by the <b><i>crossQuery</i></b> servlet to convert incoming 
@@ -1537,14 +1557,14 @@ Done.
         <br>
         For a more detailed description, see the comments in the sample <span class="Code">errorGen.xsl</span> 
         file. </div>
-    </div>
+    </div><br>
     <div class="GreyList"> <span class="Code"> &lt;stylesheetCache size="<span class="MacroCode">Entries</span>" 
       expire="<span class="MacroCode">Seconds</span>"/&gt; </span><br>
       <div class="IndentLR"> This tag (if specified) overrides the defaults number 
         of entries and the expiration time (in seconds) for the <b>styleSheetCache</b>, 
         which maintains compiled versions of the XSLT templates used by the <b><i>crossQuery</i></b> 
         servlet. Usually, these attributes need not be changed. </div>
-    </div>
+    </div><br>
     <div class="GreyList"> <span class="Code"> &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt; 
       </span><br>
       <div class="IndentLR"> Whenever consulting one of its internal caches, the 
@@ -1555,7 +1575,7 @@ Done.
         <br>
         Set this to "no" for a production system where every last little bit of 
         speed is critical. Otherwise, set it to "yes". </div>
-    </div>
+    </div><br>
     <div class="GreyList"> <span class="Code"> &lt;<b>reportlatency report="<span class="MacroCode">YesOrNo</span>" 
       {cutoffSize="<span class="MacroCode">NumBytes</span>"}</b>&gt; </span><br>
       <div class="IndentLR"> 
@@ -1583,7 +1603,7 @@ Done.
           is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
           or <span class="Code">silent</span>, <reportlatency> nothing will appear. 
       </div>
-    </div>
+    </div><br>
     <div class="GreyList"> <span class="Code"> &lt;<b>runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} 
       {killTime="<span class="MacroCode">Seconds</span>"}</b>&gt; </span><br>
       <div class="IndentLR"> 
@@ -1611,6 +1631,23 @@ Done.
       </div>
     </div>
     <br>
+    <div class="GreyList"> <span class="Code"> &lt;<b>trackSessions track=&quot;<span class="MacroCode">YesOrNo</span>"</b>&gt; 
+      </span><br>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet associates a session with each request. 
+          If enabled, a session will be created the first time a given user connects 
+          to the servlet. The session is assigned a unique identifier which is 
+          passed through on subsequent page views either through a cookie or by 
+          encoding the session identifier in the URL.</p>
+        <p>The main purpose of sessions is to store long-lasting or large data 
+          items that would be inconvenient to pass as URL parameters. The data 
+          can be stored and retrieved using XSL extension functions available 
+          in XTF. See <a href="../XTF_Programming_Guide/XTFProgGuide.html#Common_Session_State">Tracking 
+          Session State</a> in the XTF Programmer's Guide for details.</p>
+        <p>Generally, this should only be enabled if you plan to store and use 
+          session data. </p>
+        </div>
+    </div>
     <br>
     <br>
     <b><u>The queryParser.xsl Query Parser</u></b> <br>
