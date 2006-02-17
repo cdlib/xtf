@@ -324,6 +324,10 @@
       <xsl:for-each select="description">
         <xsl:value-of select="string(.)"/>
       </xsl:for-each>
+      <xsl:text> </xsl:text>
+      <xsl:for-each select="publisher">
+        <xsl:value-of select="string(.)"/>
+      </xsl:for-each>
     </newKeyword>  
   </xsl:template>
 
