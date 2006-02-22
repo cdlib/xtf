@@ -213,7 +213,7 @@ public class StylesheetCache extends GeneratingCache
             if( href.indexOf(' ') >= 0 )
                href = href.replaceAll( " ", "%20" );
 
-            if( base.indexOf(' ') >= 0 )
+            if( base != null && base.indexOf(' ') >= 0 )
                 base = base.replaceAll( " ", "%20" );
              
             // First, do the real resolution.
