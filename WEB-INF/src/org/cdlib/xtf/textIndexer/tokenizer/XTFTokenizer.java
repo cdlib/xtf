@@ -159,8 +159,8 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[18];
-    for (int i = 0; i < 18; i++) {
+    boolean[] la1tokens = new boolean[19];
+    for (int i = 0; i < 19; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
@@ -176,7 +176,7 @@ public class XTFTokenizer extends org.apache.lucene.analysis.Tokenizer implement
         }
       }
     }
-    for (int i = 0; i < 18; i++) {
+    for (int i = 0; i < 19; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

@@ -87,37 +87,37 @@ PARSER_END(XTFTokenizer)
 TOKEN : {					  // token patterns
 
   // basic word: a sequence of digits & letters
-  <BASIC: (<XTF_SPECIAL>)? (<LETTER>|<DIGIT>)+ (<XTF_SPECIAL>)? >
+  <BASIC: <OPT_START> (<LETTER>|<DIGIT>)+ <OPT_END> >
 
   // internal apostrophes: O'Reilly, you're, O'Reilly's
   // use a post-filter to remove possesives
-| <APOSTROPHE: <ALPHA> ("'" <ALPHA>)+ >
+| <APOSTROPHE: <OPT_START> <ALPHA> ("'" <ALPHA>)+ <OPT_END> >
 
   // acronyms: U.S.A., I.B.M., etc.
   // use a post-filter to remove dots
-| <ACRONYM: <ALPHA> "." (<ALPHA> ".")+ >
+| <ACRONYM: <OPT_START> <ALPHA> "." (<ALPHA> ".")+ <OPT_END> >
 
   // company names like AT&T and Excite@Home.
-| <COMPANY: <ALPHA> ("&"|"@") <ALPHA> >
+| <COMPANY: <OPT_START> <ALPHA> ("&"|"@") <ALPHA> <OPT_END> >
 
   // email addresses
-| <EMAIL: <ALPHANUM> (("."|"-"|"_") <ALPHANUM>)* "@" <ALPHANUM> (("."|"-") <ALPHANUM>)+ >
+| <EMAIL: <OPT_START> <ALPHANUM> (("."|"-"|"_") <ALPHANUM>)* "@" <ALPHANUM> (("."|"-") <ALPHANUM>)+ <OPT_END> >
 
   // hostname
-| <HOST: <ALPHANUM> ("." <ALPHANUM>)+ >
+| <HOST: <OPT_START> <ALPHANUM> ("." <ALPHANUM>)+ <OPT_END> >
 
   // floating point, serial, model numbers, ip addresses, etc.
   // every other segment must have at least one digit
-| <NUM: (<ALPHANUM> <P> <HAS_DIGIT>
-       | <HAS_DIGIT> <P> <ALPHANUM>
-       | <ALPHANUM> (<P> <HAS_DIGIT> <P> <ALPHANUM>)+
-       | <HAS_DIGIT> (<P> <ALPHANUM> <P> <HAS_DIGIT>)+
-       | <ALPHANUM> <P> <HAS_DIGIT> (<P> <ALPHANUM> <P> <HAS_DIGIT>)+
-       | <HAS_DIGIT> <P> <ALPHANUM> (<P> <HAS_DIGIT> <P> <ALPHANUM>)+
+| <NUM: (<OPT_START> <ALPHANUM> <P> <HAS_DIGIT> <OPT_END> 
+       | <OPT_START> <HAS_DIGIT> <P> <ALPHANUM> <OPT_END> 
+       | <OPT_START> <ALPHANUM> (<P> <HAS_DIGIT> <P> <ALPHANUM>)+ <OPT_END> 
+       | <OPT_START> <HAS_DIGIT> (<P> <ALPHANUM> <P> <HAS_DIGIT>)+ <OPT_END> 
+       | <OPT_START> <ALPHANUM> <P> <HAS_DIGIT> (<P> <ALPHANUM> <P> <HAS_DIGIT>)+ <OPT_END>
+       | <OPT_START> <HAS_DIGIT> <P> <ALPHANUM> (<P> <HAS_DIGIT> <P> <ALPHANUM>)+ <OPT_END>
        )
   >
 
-| <SYMBOL:
+| <SYMBOL: <OPT_START> 
      [
       // Monetary symbols
       "\u0024", // Dollar
@@ -187,7 +187,7 @@ TOKEN : {					  // token patterns
       "\u00ae", // registered trademark
       "\u00a9", // copyright
       "\u2122"  // trademark
-     ]
+     ] <OPT_END>
   >
     	
 | <#ALPHANUM: (<LETTER>|<DIGIT>)+ >
@@ -238,11 +238,11 @@ TOKEN : {					  // token patterns
        "\u1040"-"\u1049"
       ]
   >
-| < #XTF_SPECIAL:					  // unicode letters
-      [
-        "\uEBEB",  // start-of-field marker
-        "\uEE1D"   // end-of-field marker
-      ]
+| < #OPT_START:					  
+      (["\uEBEB"])?  // optioanl start-of-field marker
+  >
+| < #OPT_END:           
+      (["\uEE1D"])?   // optional end-of-field marker
   >
 }
 
