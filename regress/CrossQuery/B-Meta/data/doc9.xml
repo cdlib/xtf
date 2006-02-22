@@ -9,4 +9,5 @@
     <relation>http://www.orangecrush.com/</relation>
     <rights xtf:index="no">Public</rights>
     <foo>bar</foo>
+    <family xtf:meta="yes" xtf:store="no">O'Connell family</family>
 </document>

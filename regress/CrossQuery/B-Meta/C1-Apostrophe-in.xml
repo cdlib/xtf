@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <and field="family">
+    <term>o'connell</term>
+    <term>family</term>
+  </and>
+</query>
