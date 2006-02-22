@@ -36,7 +36,7 @@
    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
    POSSIBILITY OF SUCH DAMAGE.
 -->
-  
+
 <!-- ====================================================================== -->
 <!-- Templates                                                              -->
 <!-- ====================================================================== -->
@@ -213,6 +213,30 @@
     </facet-creator>
   </xsl:template>
   
+  <!-- generate facet-subject & az-browse for Calisphere -->
+  <xsl:template match="subject" mode="facet">   
+    <xsl:variable name="subject" select="string(.)"/>
+    <xsl:variable name="browseSubject" select="$subject"/><!-- Do I need to lower-case this? -->
+    <xsl:variable name="map" select="document('../calisphere/calisphere_azBrowse.xsl')//xtf:subject-map"/>
+    <xsl:variable name="group" select="string($map//xtf:mapping[1]/xtf:group[preceding-sibling::xtf:subject/text()=$browseSubject])"/>
+
+    <facet-subject>
+      <xsl:attribute name="xtf:meta" select="'true'"/>
+      <xsl:attribute name="xtf:tokenize" select="'no'"/>
+      <xsl:value-of select="$subject"/>
+    </facet-subject>
+    
+    <!-- Generate azBrowse. This is not a facet, but supports exact browsing -->
+    <xsl:if test="$group != ''">
+      <azBrowse>
+        <xsl:attribute name="xtf:meta" select="'true'"/>
+        <xsl:attribute name="xtf:tokenize" select="'yes'"/><!-- Otherwise we would have to look at multiple facet query problem -->
+        <xsl:value-of select="$group"/>
+      </azBrowse>
+    </xsl:if>
+    
+  </xsl:template>
+  
   <!-- generate facet-date -->
   <xsl:template match="date" mode="facet">   
     <xsl:variable name="date" select="string(.)"/>
@@ -332,7 +356,7 @@
   </xsl:template>
 
 <!-- ====================================================================== -->
-<!-- Functions                                                              -->
+<!-- Functions                                                                                                                                             -->
 <!-- ====================================================================== -->
   
   <!-- Function to parse normalized titles out of dc:title -->  
@@ -560,5 +584,5 @@
     </xsl:choose>
     
   </xsl:function>
-
+  
 </xsl:stylesheet>
