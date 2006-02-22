@@ -41,7 +41,7 @@
   </target>
 	
   <target name="tokenizer" description="compile the XTF tokenizer">
-    <javacc target="${src}/org/cdlib/xtf/textIndexer/tokenizer/XTFTokenizer.jj"
+    <javacc target="${src1}/org/cdlib/xtf/textIndexer/tokenizer/XTFTokenizer.jj"
   	        javacchome="${lib}"/>
   </target>
 
@@ -176,8 +176,7 @@
              source="1.4"
              encoding="UTF-8"
              classpath="${libs}"
-             sourcepath="${src}"
-    		 noqualifier="all">
+             noqualifier="all">
       <tag name=".notes" description="Notes:"/>
       <tag name=".warnings" description="Warnings:"/>
       <tag name="todo" description="To Do:"/>
