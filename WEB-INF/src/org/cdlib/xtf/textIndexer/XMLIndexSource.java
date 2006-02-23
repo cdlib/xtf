@@ -196,8 +196,10 @@ public class XMLIndexSource extends IndexSource
     {
         // Make sure we can read the file.
         String path = Path.normalizeFileName( inSrc.getSystemId() );
-        if( path.startsWith("file:/") )
+        if( path.startsWith("file://") )
             path = path.substring( 6 );
+        else if( path.startsWith("file:/") )
+            path = path.substring( 5 );
         if( !(new File(path).canRead()) )
             throw new FileNotFoundException( inSrc.getSystemId() );
         inStream = new FileInputStream( path );
