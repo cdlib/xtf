@@ -216,9 +216,10 @@
   <!-- generate facet-subject & az-browse for Calisphere -->
   <xsl:template match="subject" mode="facet">   
     <xsl:variable name="subject" select="string(.)"/>
-    <xsl:variable name="browseSubject" select="$subject"/><!-- Do I need to lower-case this? -->
+    <!-- lower-case, remove terminal period, and normalize spaces around hyphens -->
+    <xsl:variable name="browseSubject" select="lower-case(replace(replace(replace($subject,'\.$',''),' +-','-'),'- +','-'))"/>
     <xsl:variable name="map" select="document('../calisphere/calisphere_azBrowse.xsl')//xtf:subject-map"/>
-    <xsl:variable name="group" select="string($map//xtf:mapping[1]/xtf:group[preceding-sibling::xtf:subject/text()=$browseSubject])"/>
+    <xsl:variable name="group" select="string($map//xtf:mapping[xtf:subject/text()=$browseSubject][1]/xtf:group)"/>
 
     <facet-subject>
       <xsl:attribute name="xtf:meta" select="'true'"/>
@@ -230,7 +231,7 @@
     <xsl:if test="$group != ''">
       <azBrowse>
         <xsl:attribute name="xtf:meta" select="'true'"/>
-        <xsl:attribute name="xtf:tokenize" select="'yes'"/><!-- Otherwise we would have to look at multiple facet query problem -->
+        <xsl:attribute name="xtf:tokenize" select="'yes'"/><!-- change if this becomes a facet -->
         <xsl:value-of select="$group"/>
       </azBrowse>
     </xsl:if>
