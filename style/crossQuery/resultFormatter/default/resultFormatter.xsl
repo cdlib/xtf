@@ -680,7 +680,7 @@
             <xsl:otherwise>
               <a href="{concat($xtfURL, $crossqueryPath, '?smode=showBag&amp;', $queryString)}">Show bag</a> |
               <xsl:choose>
-                <xsl:when test="contains(session:getData('bag'), $indexId)">
+                <xsl:when test="session:getData('bag')/bag/savedDoc[@id=$indexId]">
                   <span class="highlight">In bag.</span>
                 </xsl:when>
                 <xsl:otherwise>

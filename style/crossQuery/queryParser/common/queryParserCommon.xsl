@@ -44,7 +44,7 @@
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                               xmlns:session="java:org.cdlib.xtf.xslt.Session"
-                              exclude-result-prefixes="xsl">
+                              exclude-result-prefixes="xsl session">
   
 <!-- ====================================================================== -->
 <!-- Global parameters (specified in the URL)                               -->
@@ -313,9 +313,14 @@
 <!-- ====================================================================== -->
   
   <xsl:template name="addToBag">
-    <xsl:variable name="oldBag" select="session:getData('bag')"/>
     <xsl:variable name="identifier" select="string(//param[@name='identifier']/@value)"/>
-    <xsl:value-of select="session:setData('bag', concat($identifier, ';', $oldBag))"/>
+    <xsl:variable name="newBag">
+      <bag>
+        <xsl:copy-of select="session:getData('bag')/bag/savedDoc"/>
+        <savedDoc id="{$identifier}"/>
+      </bag>
+    </xsl:variable>
+    <xsl:value-of select="session:setData('bag', $newBag)"/>
   </xsl:template>
     
 <!-- ====================================================================== -->
@@ -326,9 +331,13 @@
 <!-- ====================================================================== -->
   
   <xsl:template name="removeFromBag">
-    <xsl:variable name="oldBag" select="session:getData('bag')"/>
     <xsl:variable name="identifier" select="string(//param[@name='identifier']/@value)"/>
-    <xsl:value-of select="session:setData('bag', replace($oldBag, concat($identifier, ';'), ''))"/>
+    <xsl:variable name="newBag">
+      <bag>
+        <xsl:copy-of select="session:getData('bag')/bag/savedDoc[not(@id=$identifier)]"/>
+      </bag>
+    </xsl:variable>
+    <xsl:value-of select="session:setData('bag', $newBag)"/>
   </xsl:template>
     
 <!-- ====================================================================== -->
@@ -339,14 +348,11 @@
   
   <xsl:template name="showBag">
     <xsl:variable name="bag" select="session:getData('bag')"/>
-    <xsl:message>bag: <xsl:copy-of select="$bag"/></xsl:message>
-    <xsl:if test="$bag != ''">
+    <xsl:if test="$bag/bag/savedDoc">
       <or>
-        <xsl:analyze-string select="session:getData('bag')" regex="[^;]+">
-          <xsl:matching-substring>
-            <term field="identifier"><xsl:value-of select="."/></term>
-          </xsl:matching-substring>
-        </xsl:analyze-string>
+        <xsl:for-each select="$bag/bag/savedDoc">
+          <term field="identifier"><xsl:value-of select="@id"/></term>
+        </xsl:for-each>
       </or>
     </xsl:if>
   </xsl:template>
