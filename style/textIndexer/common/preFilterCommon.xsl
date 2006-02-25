@@ -219,8 +219,13 @@
     <!-- lower-case, remove terminal period, and normalize spaces around hyphens -->
     <xsl:variable name="browseSubject" select="lower-case(replace(replace(replace($subject,'\.$',''),' +-','-'),'- +','-'))"/>
     <xsl:variable name="map" select="document('../calisphere/calisphere_azBrowse.xsl')//xtf:subject-map"/>
-    <xsl:variable name="group" select="string($map//xtf:mapping[xtf:subject/text()=$browseSubject][1]/xtf:group)"/>
-
+    <!--<xsl:variable name="group" select="string($map//xtf:mapping[xtf:subject/text()=$browseSubject][1]/xtf:group)"/>-->
+    <xsl:variable name="group">
+      <xsl:if test="$subject != ''">
+        <xsl:value-of select="string($map//xtf:mapping[matches(xtf:subject/text(),$browseSubject)][1]/xtf:group)"/>
+      </xsl:if>"
+    </xsl:variable>
+    
     <facet-subject>
       <xsl:attribute name="xtf:meta" select="'true'"/>
       <xsl:attribute name="xtf:tokenize" select="'no'"/>
