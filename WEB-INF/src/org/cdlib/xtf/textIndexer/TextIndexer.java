@@ -154,9 +154,11 @@ public class TextIndexer
       
       boolean firstIndex = true;
       
+      long startTime = System.currentTimeMillis();
+      
 
       // Regardless of whether we succeed or fail, say our name.
-      Trace.info( "TextIndexer v" + 1.0 );
+      Trace.info( "TextIndexer v" + 1.7 );
       Trace.info( "" );
       Trace.tab();
       
@@ -239,19 +241,21 @@ public class TextIndexer
               
           } // else( args.length >= 4 )
           
-          // If the config file was read successfully, we can begin processing.
+          // If the config file was not okay, print a message and bail out.
           if( showUsage ) {
               
               // Do so...
-              Trace.error( "  usage: " );
+              Trace.error( "Usage: textIndexer {options} -index indexname" );
+              Trace.error( "Available options:" );
               Trace.tab();
-              Trace.error( "TextIndexer {-config <configfile>}? "  +
-                           "{-incremental|-clean}? "               +
-                           "{-optimize|-nooptimize}? "             +
-                           "{-trace errors|warnings|info|debug}? " +
-                           "{-dir <subdir>}? "                     +
-                           "{-buildlazy|-nobuildlazy}? "           +
-                           "-index <indexname>}+ \n\n" );
+              Trace.error( "-config <configfile>                  Default: -config textIndexer.conf" );
+              Trace.error( "-incremental|-clean                   Default: -incremental" );
+              Trace.error( "-optimize|-nooptimize                 Default: -optimize" );
+              Trace.error( "-trace errors|warnings|info|debug     Default: -trace info" );
+              Trace.error( "-dir <subdir>                         Default: (all data directories)" );
+              Trace.error( "-buildlazy|-nobuildlazy               Default: -buildlazy" );
+              Trace.error( "-updatespell|-noupdatespell           Default: -updatespell" );
+              Trace.error( "\n" );
               Trace.untab();
               
               // And then bail.
@@ -259,6 +263,7 @@ public class TextIndexer
               
           } // if( showUsage )    
            
+          // Begin processing.
           File xtfHomeFile = new File( cfgInfo.xtfHomePath );
 
           // If this is our first time through, purge any incomplete
@@ -352,7 +357,7 @@ public class TextIndexer
         IdxTreeOptimizer optimizer = new IdxTreeOptimizer();
        
         Trace.info("");
-        Trace.info( "Optimizing Indexes:" );
+        Trace.info( "Optimizing Index:" );
         Trace.tab();
         
         File idxRootDir = new File( cfgInfo.indexInfo.indexPath );      
@@ -368,8 +373,49 @@ public class TextIndexer
       }
         
       
+      // Create spelling dictionaries, now that we're done indexing.
+      if( cfgInfo.updateSpellDict ) {
+        
+        // Create a tree culler.
+        IdxTreeDictMaker dictMaker = new IdxTreeDictMaker();
+       
+        Trace.info("");
+        Trace.info( "Updating Spellcheck Dictionary:" );
+        Trace.tab();
+        
+        File idxRootDir = new File( cfgInfo.indexInfo.indexPath );      
+        dictMaker.processDir( idxRootDir );
+        
+        Trace.untab();
+        Trace.info( "Done." );
+        
+      }
+      else {
+        Trace.info("");
+        Trace.info( "Skipping Spellcheck Dictionary Pass." );
+      }
+        
+      
       Trace.untab();
       Trace.info("");
+      
+      long timeMsec = System.currentTimeMillis() - startTime;
+      long timeSec  = timeMsec / 1000;
+      long timeMin  = timeSec / 60;
+      long timeHour = timeMin / 60;
+      
+      Trace.info( "Total time: " );
+      if( timeHour > 0 ) {
+          String ending = (timeHour == 1) ? "" : "s";
+          Trace.more( Trace.info, timeHour + " hour" + ending + ", " );
+      }
+      if( timeMin > 0 ) {
+          String ending = ((timeMin % 60) == 1) ? "" : "s";
+          Trace.more( Trace.info, (timeMin % 60) + " minute" + ending + ", " );
+      }
+      String ending = ((timeSec % 60) == 1) ? "" : "s";
+      Trace.more( Trace.info, (timeSec % 60) + " second" + ending + "." );
+      
       Trace.info( "Indexing complete." );
       Trace.info("");
 
