@@ -62,6 +62,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.spell.SpellWriter;
 import org.apache.lucene.store.FSDirectory;
 
 import org.apache.lucene.analysis.*;
@@ -95,7 +96,7 @@ import org.cdlib.xtf.util.WordMap;
  * This class performs the actual parsing of the XML source text files and 
  * generates index information for it. <br><br>
  * 
- * The <code>XMLTextParser</code> class uses the configuration information 
+ * The <code>XMLTextProcessor</code> class uses the configuration information 
  * recorded in the {@link IndexerConfig} instance passed to add one or more
  * source text documents to the associated Lucene index. The process of indexing
  * an XML source document consists of breaking the document up into small 
@@ -375,6 +376,9 @@ public class XMLTextProcessor extends DefaultHandler
    */
   private IndexWriter indexWriter;
   
+  /** Queues words for spelling dictionary creator */
+  private SpellWriter spellWriter;
+  
   /** Maximum number of document deletions to do in a single batch */
   private static final int MAX_DELETION_BATCH = 50;
   
@@ -446,7 +450,7 @@ public class XMLTextProcessor extends DefaultHandler
    * 
    * @param  clean    true to truncate any existing index; false to add to it.
    *                  <br><br>
-   *  
+   *                  
    * @.notes
    *   This method will create an index if it doesn't exist, or truncate an index
    *   that does exist if the <code>clean</code> flag is set in the 
@@ -515,7 +519,7 @@ public class XMLTextProcessor extends DefaultHandler
               if( !IndexReader.indexExists( idxDir ) ) createIndex( indexInfo );
             
           } // else( !clean )
-
+          
           // Try to open the index for reading and searching.
           openIdxForReading();
           
@@ -629,11 +633,12 @@ public class XMLTextProcessor extends DefaultHandler
   public void close() throws IOException
 
   {
-      
+      if( spellWriter   != null ) spellWriter.close();
       if( indexWriter   != null ) indexWriter.close();
       if( indexSearcher != null ) indexSearcher.close();
       if( indexReader   != null ) indexReader.close();
       
+      spellWriter   = null;
       indexWriter   = null;
       indexSearcher = null;
       indexReader   = null;
@@ -1083,6 +1088,8 @@ public class XMLTextProcessor extends DefaultHandler
                   if( recordNum == 0 || ((recordNum % recordBatchSize) == 1) ) {
                       if( printDone )
                           Trace.more( Trace.info, "Done." );
+                      
+                      // Print a message for the next record.
                       String msg = "";
                       msg = ("(" + percentDone + "%) ");
                       while( msg.length() < 7 )
@@ -1099,13 +1106,13 @@ public class XMLTextProcessor extends DefaultHandler
           catch( SAXException e ) {
               throw new RuntimeException( e );
           }
-          
+
           if( printDone )
               Trace.more( Trace.info, "Done." );
                   
           processedSize += idxFile.totalSize();
       }
-      
+
   } // processQueuedTexts()
   
 
@@ -3723,6 +3730,10 @@ public class XMLTextProcessor extends DefaultHandler
     if( indexWriter != null ) 
         indexWriter.close();
     indexWriter = null;
+    
+    if( spellWriter != null )
+        spellWriter.close();
+    spellWriter = null;
       
     if( indexReader == null )
         indexReader = IndexReader.open( indexPath );
@@ -3758,14 +3769,15 @@ public class XMLTextProcessor extends DefaultHandler
     // If already open for writing, it would be bad to do it over again.
     if( indexWriter != null )
         return;
-
+    
+    // Make an analyzer that does all kinds of special stuff for us.
+    XTFTextAnalyzer analyzer = new XTFTextAnalyzer(
+        stopSet, pluralMap, accentMap );
+    
     // Create an index writer, using the selected index db Path
     // and create mode. Pass it our own text analyzer. 
     //
-    indexWriter = new IndexWriter( 
-                           indexPath,
-                           new XTFTextAnalyzer(stopSet, pluralMap, accentMap),
-                           false );
+    indexWriter = new IndexWriter( indexPath, analyzer, false );
       
     // Since we end up adding tons of little 'documents' to Lucene, it's much 
     // faster to queue up a bunch in RAM before sorting and writing them out. 
@@ -3779,13 +3791,17 @@ public class XMLTextProcessor extends DefaultHandler
     //
     IndexWriter.COMMIT_LOCK_TIMEOUT = 60 * 1000;
 
-    // Previously we were paranoid about using compound files, on the
-    // mistaken assumption that indexes could not be modified. This is
-    // not true... the modifications simply take place at the next merge,
-    // which is always the case in Lucene (compound or not.)
+    // If requested to make a spellcheck dictionary for this index, attach 
+    // a spelling writer to the text analyzer, so that tokenized words get 
+    // passed to it and queued.
     //
-    // Thus, do not do the following:
-    // NO NO NO: indexWriter.setUseCompoundFile( false );
+    if( indexInfo.createSpellcheckDict ) {
+        if( spellWriter == null ) {
+            spellWriter = new SpellWriter();
+            spellWriter.open( indexPath + "spellDict/" );
+        }
+        analyzer.setSpellWriter( spellWriter );
+    }
     
   } // private openIdxForWriting()  
 

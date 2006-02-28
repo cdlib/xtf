@@ -36,6 +36,7 @@ import java.util.Set;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.bigram.BigramStopFilter;
+import org.apache.lucene.search.spell.SpellWriter;
 import org.cdlib.xtf.textEngine.Constants;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;
@@ -152,6 +153,9 @@ public class XTFTextAnalyzer extends Analyzer {
    */
   private HashSet facetFields = new HashSet();
   
+  /** If building a spelling correction dictionary, this is the writer */
+  private SpellWriter spellWriter = null;
+  
   
   //////////////////////////////////////////////////////////////////////////////
 
@@ -219,6 +223,18 @@ public class XTFTextAnalyzer extends Analyzer {
   }
   
 
+  /**
+   * Sets a writer to receive tokenized words just before they are indexed.
+   * Use this to build a spelling correction dictionary at index time.
+   * 
+   * @param writer    The writer to add words to
+   */
+  public void setSpellWriter( SpellWriter writer )
+  {
+    this.spellWriter = writer;
+  }
+  
+
   //////////////////////////////////////////////////////////////////////////////
 
   /** Convert a chunk of contiguous text to a list of tokens, ready for
@@ -270,6 +286,10 @@ public class XTFTextAnalyzer extends Analyzer {
     
     // Normalize everything to be lowercase.
     result = new LowerCaseFilter( result );
+    
+    // If adding to a spelling dictionary, put an adder in the chain.
+    if( spellWriter != null )
+        result = new SpellWritingFilter( result, spellWriter );
     
     // If a plural map was specified, fold plural and singular words together.
     if( pluralMap != null )

@@ -100,6 +100,16 @@ public class IndexerConfig
    */
   public boolean   optimize;
   
+  /** 
+   * Flag indicating whether or not to build spelling dictionaries for 
+   * the index after building it.
+   * <br><br>
+   *  
+   *  true  = Build spelling dictionaries for index after building.  <br>
+   *  false = Do not build spelling dictionaries index. <br><br>
+   */
+  public boolean   updateSpellDict;
+  
   /** Index specific information for the current index being created or 
    *  updated.
    */
@@ -128,6 +138,9 @@ public class IndexerConfig
     
     // Default to always optimizing the index.
     optimize = true;
+    
+    // Default to making spellcheck dictionary (if enabled in the index's info)
+    updateSpellDict = true;
     
     // Set the default trace level to display errors.
     traceLevel = Trace.info;
@@ -268,6 +281,14 @@ public class IndexerConfig
         // If the user asked for no optimization after build, flag it.
         else if( args[i].equalsIgnoreCase("-nooptimize") )
               optimize = false;
+        
+        // If the user asked for optimization after build, flag it.
+        else if( args[i].equalsIgnoreCase("-updatespell") )
+              updateSpellDict = true;
+        
+        // If the user asked for no optimization after build, flag it.
+        else if( args[i].equalsIgnoreCase("-noupdatespell") )
+              updateSpellDict = false;
         
         // If the user asked for lazy files to be built, flag it.
         else if( args[i].equalsIgnoreCase("-buildlazy") )

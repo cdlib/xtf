@@ -288,7 +288,7 @@ public class XMLConfigParser extends DefaultHandler
     // If we encountered a config ID tag, flag that we're actually in a 
     // config file.
     //
-    if( qName.compareToIgnoreCase("textIndexer-config") == 0 ) {
+    if( qName.equalsIgnoreCase("textIndexer-config") ) {
         isConfigFile = true;
         return;
     }
@@ -299,7 +299,7 @@ public class XMLConfigParser extends DefaultHandler
     if( !isConfigFile ) return;
     
     // If we encountered an index configuration tag...
-    if( qName.compareToIgnoreCase("index") == 0 ) {
+    if( qName.equalsIgnoreCase("index") ) {
         
         // Get the index name for this configuration block.
         String xmlIdxName = atts.getValue("name").trim();
@@ -316,7 +316,7 @@ public class XMLConfigParser extends DefaultHandler
         // flag that we're in the right block, and should record any
         // config items that may follow.
         //
-        if( xmlIdxName.compareToIgnoreCase( idxName ) == 0 ) {
+        if( xmlIdxName.equalsIgnoreCase( idxName ) ) {
             indexNameFound    = true;
             inNamedIndexBlock = true;
             return;
@@ -326,7 +326,7 @@ public class XMLConfigParser extends DefaultHandler
         inNamedIndexBlock = false;
         return;
         
-    } // if( qName.compareToIgnoreCase("index") == 0 )
+    } // if( qName.equalsIgnoreCase("index") )
 
     // For all other configuration tags, if we are not in the right
     // config block, ignore them.
@@ -334,7 +334,7 @@ public class XMLConfigParser extends DefaultHandler
     if( !inNamedIndexBlock ) return;
     
     // If the current tag is an index database Path...
-    if( qName.compareToIgnoreCase("db") == 0 ) {
+    if( qName.equalsIgnoreCase("db") ) {
       
         // Save it away as the database root directory. 
         configInfo.indexInfo.indexPath = 
@@ -344,7 +344,7 @@ public class XMLConfigParser extends DefaultHandler
     }
     
     // If the current tag is an index source text Path...
-    if( qName.compareToIgnoreCase("src") == 0 ) {
+    if( qName.equalsIgnoreCase("src") ) {
       
         // Save it away as the root directory from which to get the
         // source XML text files.
@@ -355,7 +355,7 @@ public class XMLConfigParser extends DefaultHandler
     }
           
     // If the current tag is a docSelector stylesheet path...
-    if( qName.compareToIgnoreCase("docSelector") == 0 ) {
+    if( qName.equalsIgnoreCase("docSelector") ) {
       
         // Save it away
         configInfo.indexInfo.docSelectorPath = 
@@ -365,7 +365,7 @@ public class XMLConfigParser extends DefaultHandler
     }
     
     // If the current tag is the chunk size info...
-    if( qName.compareToIgnoreCase( "chunk") == 0 ) {
+    if( qName.equalsIgnoreCase( "chunk") ) {
       
         // Get the size (in words) of the chunk to use.
         String value = atts.getValue("size");
@@ -404,10 +404,10 @@ public class XMLConfigParser extends DefaultHandler
         configInfo.indexInfo.setChunkOvlp( Integer.parseInt(value) );
         return;
     
-    } // if( qName.compareToIgnoreCase( "chunk") == 0 )
+    } // if( qName.equalsIgnoreCase( "chunk") == 0 )
     
     // If the current tag tells us to do stop-word removal...
-    if( qName.compareToIgnoreCase("stopwords") == 0 ) {
+    if( qName.equalsIgnoreCase("stopwords") ) {
 
         // Was the value specified in-line?
         String list = atts.getValue("list");
@@ -446,7 +446,7 @@ public class XMLConfigParser extends DefaultHandler
     }
     
     // If the current tag tells us to map plural words...
-    if( qName.compareToIgnoreCase("pluralmap") == 0 ) {
+    if( qName.equalsIgnoreCase("pluralmap") ) {
 
         // Save the path.
         configInfo.indexInfo.pluralMapPath = 
@@ -455,11 +455,30 @@ public class XMLConfigParser extends DefaultHandler
     }
     
     // If the current tag tells us to map accented chars...
-    if( qName.compareToIgnoreCase("accentmap") == 0 ) {
+    if( qName.equalsIgnoreCase("accentmap") ) {
 
         // Save the path.
         configInfo.indexInfo.accentMapPath = 
             Path.normalizePath( atts.getValue("path") );
+        return;
+    }
+    
+    // If the current tag tells us to create a spellcheck dictionary...
+    if( qName.equalsIgnoreCase("spellcheck") ) {
+
+        // Validate the attribute.
+        String val = atts.getValue( "createDict" );
+        if( val == null )
+            val = atts.getValue( "createdict" );
+        if( "yes".equals(val) || "true".equals(val) )
+            configInfo.indexInfo.createSpellcheckDict = true;
+        else if( "no".equals(val) || "false".equals(val) )
+            configInfo.indexInfo.createSpellcheckDict = false;
+        else {
+            Trace.error( "Unrecognized value for 'createDict' attribute of " +
+                "config option: '" + qName + "'" );
+            System.exit( 1 );
+        }
         return;
     }
     
@@ -516,7 +535,7 @@ public class XMLConfigParser extends DefaultHandler
     //        the indexNameFound tag will get set back to true, and reading
     //        of config info will resume.)
     //
-    if( qName.compareToIgnoreCase("index") == 0 ) 
+    if( qName.equalsIgnoreCase("index") ) 
         inNamedIndexBlock = false;
     
   } // public endElement()
