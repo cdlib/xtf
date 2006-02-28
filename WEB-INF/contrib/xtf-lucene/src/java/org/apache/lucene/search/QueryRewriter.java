@@ -71,7 +71,7 @@ public abstract class QueryRewriter {
     if (q instanceof SpanRangeQuery)
       return rewrite((SpanRangeQuery)q);
 
-    assert false : "unsupported query type for rewriting";
+    assert false : "Unsupported query type for rewriting: " + q.getClass().getName();
     return null;
   } // rewriteQuery()
   
