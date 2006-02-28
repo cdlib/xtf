@@ -527,7 +527,7 @@ public class DynaXML extends TextServlet
         // If a query was specified, make a SearchTree; otherwise, make
         // a normal lazy tree.
         //
-        if( docInfo.query != null ) {
+        if( docInfo.query != null && docInfo.query.query != null ) {
             String docKey = IndexUtil.calcDocKey(
                                       new File(getRealPath("")),
                                       new File(docInfo.indexConfig),
