@@ -213,69 +213,14 @@
     </facet-creator>
   </xsl:template>
   
-  <!-- generate facet-subject & az-browse for Calisphere -->
+  <!-- generate facet-subject -->
   <xsl:template match="subject" mode="facet">   
-    
     <xsl:variable name="subject" select="string(.)"/>
-    
-    <!-- lower-case, remove terminal period, normalize spaces around hyphens, and remove terminal semi-colon -->
-    <xsl:variable name="azSubject" select="lower-case(replace(replace(replace(replace($subject,'\.$',''),' +-','-'),'- +','-'),'; *$',''))"/>
-
-    <!-- To handle concatenated subjects -->
-    <!-- escape all meta-characters -->
-    <xsl:variable name="multiSubject" select="concat('^',replace(replace(replace(replace(replace(replace(replace(replace($azSubject,'\.','\\.'),'\?','\\?'),'\-','\\-'),'\[','\\['),'\]','\\]'),'\(','\\('),'\)','\\)'),' *; *','\$|^'),'$')"/>
-    
-    <!-- mapping stylesheet -->
-    <xsl:variable name="map" select="document('../calisphere/calisphere_azBrowse.xsl')//xtf:subject-map"/>
-
-    <xsl:variable name="group">
-      <xsl:if test="normalize-space($azSubject) != ''">
-        <xsl:choose>
-          <xsl:when test="contains($multiSubject,'|')">
-            <xsl:value-of select="string($map//xtf:mapping[matches(xtf:subject/text(),$multiSubject)][1]/xtf:group)"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="string($map//xtf:mapping[xtf:subject/text()=$azSubject][1]/xtf:group)"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:if>
-    </xsl:variable>
-    
     <facet-subject>
       <xsl:attribute name="xtf:meta" select="'true'"/>
       <xsl:attribute name="xtf:tokenize" select="'no'"/>
       <xsl:value-of select="$subject"/>
     </facet-subject>
-    
-    <!-- Generate azBrowse. This is not a facet, but supports exact browsing -->
-    <xsl:if test="normalize-space($group) != ''">
-      <azBrowse>
-        <xsl:attribute name="xtf:meta" select="'true'"/>
-        <xsl:attribute name="xtf:tokenize" select="'yes'"/><!-- change if this becomes a facet -->
-        <xsl:value-of select="$group"/>
-      </azBrowse>
-      
-      <!-- REMOVE: for debugging -->
-      <!--<xsl:choose>
-        <xsl:when test="contains($multiSubject,'|')">
-          <xsl:message>
-             subject: <xsl:value-of select="$multiSubject"/>
-             match: <xsl:value-of select="$map//xtf:mapping[matches(xtf:subject/text(),$multiSubject)][1]/xtf:subject"/>
-             assigned group: <xsl:value-of select="$map//xtf:mapping[matches(xtf:subject/text(),$multiSubject)][1]/xtf:group"/>
-          </xsl:message>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:message>
-             subject: <xsl:value-of select="$azSubject"/>
-             match: <xsl:value-of select="$map//xtf:mapping[xtf:subject/text()=$azSubject][1]/xtf:subject"/>
-             assigned group: <xsl:value-of select="$map//xtf:mapping[xtf:subject/text()=$azSubject][1]/xtf:group"/>
-          </xsl:message>
-        </xsl:otherwise>
-      </xsl:choose>-->
-      <!-- REMOVE -->
-      
-    </xsl:if>
-    
   </xsl:template>
   
   <!-- generate facet-date -->
