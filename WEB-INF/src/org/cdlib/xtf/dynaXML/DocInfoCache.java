@@ -30,6 +30,7 @@ package org.cdlib.xtf.dynaXML;
  */
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -158,7 +159,7 @@ class DocInfoCache extends GeneratingCache
         // of the parameters (typically useful for queries.)
         //
         XMLFormatter paramBlock = new XMLFormatter();
-        servlet.buildParamBlock( attrList, paramBlock, null, null );
+        servlet.buildParamBlock( attrList, paramBlock, new HashMap(), null );
         NodeInfo paramDoc = paramBlock.toNode();
 
         if( Trace.getOutputLevel() >= Trace.debug ) {
