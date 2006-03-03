@@ -22,13 +22,17 @@ package org.apache.lucene.search.spell;
  * 
  *  @author Nicolas Maisonneuve
  */
- final class SuggestWord {
+ public final class SuggestWord {
     /**
      * the score of the word
      */
     public float score;
+    
+    
+    /** Extra boost based on frequency */
+    public float origScore;
 
-
+    
     /**
      * The freq of the word
      */
