@@ -38,25 +38,28 @@ public abstract class XtfQueryTraverser extends QueryTraverser {
       traverse((SpanSectionTypeQuery) q);
     else if (q instanceof SpanExactQuery)
       traverse((SpanExactQuery)q);
+    else if (q instanceof MoreLikeThisQuery)
+      traverse((MoreLikeThisQuery)q);
     else
       super.traverseQuery(q);
   } // traverseQuery()
 
-  /**
-   * Traverse a section type query. If's very simple: simply rewrite the
-   * 
-   * @param stq  The query to traverse
-   */
+  /** Traverse a section type query. */
   protected void traverse(SpanSectionTypeQuery stq) {
     traverseQuery(stq.getTextQuery());
     traverseQuery(stq.getSectionTypeQuery());
   } // traverse()
 
-  /** Traverse an exact query. The base class rewrites each of the sub-clauses. */
+  /** Traverse an "exact" query. */
   protected void traverse(SpanExactQuery eq) {
     SpanQuery[] clauses = eq.getClauses();
     for (int i = 0; i < clauses.length; i++)
       traverseQuery(clauses[i]);
+  }
+  
+  /** Traverse a "more like this" query */
+  protected void traverse(MoreLikeThisQuery mlt) {
+    traverseQuery(mlt.getSubQuery());
   }
   
 }
