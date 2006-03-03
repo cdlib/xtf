@@ -44,6 +44,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.spell.SpellReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.util.CharMap;
@@ -73,10 +74,13 @@ public class XtfSearcher
     private long          curVersion;
     
     /** Reader used to access the index */
-    private IndexReader   reader;
+    private IndexReader   indexReader;
     
     /** Keeps track of which chunks belong to which documents */
     private DocNumMap     docNumMap;
+    
+    /** Fetching spelling suggestions */
+    private SpellReader   spellReader;
     
     /** Max # of words in a chunk */
     private int           chunkSize;
@@ -138,10 +142,10 @@ public class XtfSearcher
         
         // Okay, better re-open to get the fresh data.
         close();
-        reader    = IndexReader.open( directory );
+        indexReader    = IndexReader.open( directory );
     
         // Fetch the chunk size and overlap from the index.
-        Hits match = new IndexSearcher(reader).search( 
+        Hits match = new IndexSearcher(indexReader).search( 
                            new TermQuery( new Term("indexInfo", "1")) );
         if( match.length() == 0 )
             throw new IOException( "Index missing indexInfo doc" );
@@ -156,7 +160,7 @@ public class XtfSearcher
             throw new IOException( "Invalid chunkSize/overlap in index" );
         
         // Construct a map from doc # to chunk #'s (and vice-versa)
-        docNumMap = new XtfDocNumMap( reader, chunkSize, chunkOverlap );
+        docNumMap = new XtfDocNumMap( indexReader, chunkSize, chunkOverlap );
 
         // Get the stop-word set.
         String stopWords = doc.get( "stopWords" );
@@ -183,14 +187,21 @@ public class XtfSearcher
                 stream = new GZIPInputStream( stream );
             accentMap = new CharMap( stream );
         }
+        
+        // If there's a spelling correction dictionary, attach to it.
+        File spellDir = new File( indexPath, "spellDict" );
+        if( spellDir.isDirectory() ) {
+            FSDirectory dir = FSDirectory.getDirectory(spellDir, false);
+            spellReader = new SpellReader( dir );
+        }
 
         // Determine whether this is a "sparse" index. Our definition of
         // sparse is that there are more than 5 chunks per document, meaning
         // that meta-data sorting and grouping will waste a lot of memory
         // if they allocate a slot per chunk.
         //
-        int nDocs   = reader.docFreq( new Term("docInfo", "1") );
-        int nChunks = reader.maxDoc();
+        int nDocs   = indexReader.docFreq( new Term("docInfo", "1") );
+        int nChunks = indexReader.maxDoc();
         isSparse = nChunks > (nDocs*5);
         
         // Remember the version that we've checked.
@@ -201,8 +212,8 @@ public class XtfSearcher
     /**
      * Gets the reader this searcher is using to read indexes.
      */
-    public IndexReader reader() {
-        return reader;
+    public IndexReader indexReader() {
+        return indexReader;
     }
     
     
@@ -254,6 +265,12 @@ public class XtfSearcher
     }
     
     
+    public SpellReader spellReader() 
+    {
+        return spellReader;
+    }
+    
+    
     /** 
      * Find out if the index is sparse (i.e. more than 5 chunks per doc)
      */
@@ -268,9 +285,14 @@ public class XtfSearcher
     public void close() throws IOException {
         docNumMap = null;
         
-        if( reader != null ) {
-            reader.close();
-            reader = null;
+        if( indexReader != null ) {
+            indexReader.close();
+            indexReader = null;
+        }
+        
+        if( spellReader != null ) {
+            spellReader.close();
+            spellReader = null;
         }
         
         curVersion = -99;

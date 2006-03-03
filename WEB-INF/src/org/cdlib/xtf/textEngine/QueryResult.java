@@ -9,6 +9,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.lucene.search.Explanation;
+import org.apache.lucene.search.spell.SuggestWord;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.facet.ResultFacet;
 import org.cdlib.xtf.textEngine.facet.ResultGroup;
@@ -90,6 +91,9 @@ public class QueryResult
     /** Faceted results grouped by field value (if specified in query) */
     public ResultFacet[] facets;
     
+    /** Spelling suggestions for query terms (if spellcheck specified) */
+    public SpellingSuggestion[] suggestions;
+    
     /** Formatter for non-normalized scores */
     private DecimalFormat decFormat;
     
@@ -138,6 +142,10 @@ public class QueryResult
         // If extra XML was specified, dump it in here.
         if( extraStuff != null )
             buf.append( extraStuff );
+        
+        // If spelling suggestions were made, put them in.
+        if( suggestions != null )
+            structureSuggestions( buf );
         
         // Add the top-level doc hits.
         structureDocHits( docHits, startDoc, buf );
@@ -290,5 +298,33 @@ public class QueryResult
         buf.append( "</explanation>\n" );
         
     } // structureExplanation
+    
+    /**
+     * Does the work of translating spelling suggestions into XML.
+     */
+    private void structureSuggestions( StringBuffer buf )
+    {
+        buf.append( "<spelling>\n" );
+        
+        for( int i = 0; i < suggestions.length; i++ )
+        {
+            SpellingSuggestion sugg = suggestions[i];
+            buf.append( "<term field=\"" + sugg.origTerm.field() + "\" " +
+                              "term=\"" + sugg.origTerm.text() + "\">\n" );
+            
+            for( int j = 0; j < sugg.altWords.length; j++ ) 
+            {
+                SuggestWord alt = sugg.altWords[j];
+                buf.append( "<suggestion rank=\"" + (j+1) + "\" " +
+                                        "term=\"" + alt.string + "\" " +
+                                        "score=\"" + alt.score + "\" " +
+                                        "freq=\"" + alt.freq + "\"/>\n" );
+            }
+            
+            buf.append( "</term>\n" );
+        } // for i
+        
+        buf.append( "</spelling>\n" );
+    } // structureSuggestions()
     
 } // class QueryResult

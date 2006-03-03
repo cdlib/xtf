@@ -31,21 +31,31 @@ package org.cdlib.xtf.textEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.apache.lucene.chunk.DocNumMap;
+import org.apache.lucene.chunk.SpanChunkedNotQuery;
 import org.apache.lucene.chunk.SparseStringComparator;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.FieldSortedHitQueue;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RecordingSearcher;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.SpanHitCollector;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.Weight;
 import org.apache.lucene.search.FieldSpanSource;
+import org.apache.lucene.search.spans.SpanNotNearQuery;
+import org.apache.lucene.search.spans.SpanNotQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.search.spell.SpellReader;
 import org.apache.lucene.util.PriorityQueue;
 import org.cdlib.xtf.textEngine.facet.FacetSpec;
 import org.cdlib.xtf.textEngine.facet.GroupCounts;
@@ -69,7 +79,10 @@ public class DefaultQueryProcessor extends QueryProcessor
     private static HashMap searchers = new HashMap();
     
     /** Lucene reader from which to read index data */
-    private IndexReader    reader;
+    private IndexReader    indexReader;
+    
+    /** Fetches spelling suggestions */
+    private SpellReader    spellReader;
 
     /** Keeps track of which chunks belong to which documents */
     private DocNumMap      docNumMap;
@@ -144,13 +157,14 @@ public class DefaultQueryProcessor extends QueryProcessor
         //
         synchronized( xtfSearcher ) {
             xtfSearcher.update();
-            reader       = xtfSearcher.reader();
+            indexReader  = xtfSearcher.indexReader();
             docNumMap    = xtfSearcher.docNumMap();
             chunkSize    = xtfSearcher.chunkSize();
             chunkOverlap = xtfSearcher.chunkOverlap();
             stopSet      = xtfSearcher.stopSet();
             pluralMap    = xtfSearcher.pluralMap();
             accentMap    = xtfSearcher.accentMap();
+            spellReader  = xtfSearcher.spellReader();
             isSparse     = xtfSearcher.isSparse();
         }
         
@@ -159,7 +173,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         // (because we still need it to check periodically if the thread 
         // should kill itself.)
         //
-        IndexReader limReader = new XtfLimIndexReader( reader, 
+        IndexReader limReader = new XtfLimIndexReader( indexReader, 
             (req.workLimit > 0) ? req.workLimit : Integer.MAX_VALUE );
         
         // Translate -1 maxDocs to "essentially all"
@@ -172,7 +186,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         // do it in field-sorted order; otherwise, sort by score.
         //
         final PriorityQueue docHitQueue =
-            createHitQueue( reader, 
+            createHitQueue( indexReader, 
                             req.startDoc + req.maxDocs, 
                             req.sortMetaFields,
                             isSparse );
@@ -244,7 +258,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         // get the set now.
         //
         final BoostSet boostSet = (req.boostSetPath == null) ? null :
-            BoostSet.getCachedSet( reader, 
+            BoostSet.getCachedSet( indexReader, 
                                    new File(req.boostSetPath), 
                                    req.boostSetField );
         
@@ -348,6 +362,10 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         assert req.maxDocs < 0 || hitVec.size() <= req.maxDocs;
         
+        // Make spelling suggestions if applicable.
+        if( spellReader != null && req.spellcheckParams != null )
+            spellCheck( req, result );
+        
         // And we're done. Pack up the results into a tidy array.
         result.totalDocs = nDocsHit;
         result.startDoc  = req.startDoc;
@@ -356,6 +374,110 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         return result;
     } // processReq()
+    
+    /**
+     * Checks spelling of query terms, if spelling suggestion is enabled and
+     * the result falls below the cutoff threshholds.
+     * 
+     * @param req   Original query request
+     * @param res   Results of the query
+     */
+    private void spellCheck( QueryRequest req, QueryResult res )
+        throws IOException
+    {
+        // First, gather a list of all the query terms.
+        ArrayList queryTerms = gatherTerms( req.query );
+        
+        // We can use a handy reference to the spellcheck params, and to the
+        // field list.
+        //
+        SpellcheckParams params = req.spellcheckParams;
+        
+        // Check the cutoffs. If the documents scored well, or there were
+        // a lot of them, then suggestions aren't needed.
+        //
+        if( maxDocScore > params.docScoreCutoff )
+            return;
+        if( res.totalDocs > params.totalDocsCutoff )
+            return;
+        
+        // Make suggestions for each term
+        ArrayList out = new ArrayList();
+        for( int i = 0; i < queryTerms.size(); i++ ) 
+        {
+            // Check if this term's field falls within the list of fields 
+            // for which we want suggestions. If not, skip it.
+            //
+            Term term = (Term) queryTerms.get( i );
+            if( params.fields != null && !params.fields.contains(term.field()) )
+                continue;
+          
+            // Get some suggestions
+            SpellingSuggestion sugg = new SpellingSuggestion();
+            sugg.origTerm = term;
+            sugg.altWords = spellReader.suggestSimilar(
+                term.text(),
+                req.spellcheckParams.suggestionsPerTerm,
+                indexReader,
+                term.field(),
+                params.termOccurrenceFactor,
+                params.accuracy );
+            
+            // If any alternatives suggested, record the result.
+            if( sugg.altWords.length > 0 )
+                out.add( sugg );
+        } // for i
+        
+        // Convert to an array.
+        if( out.size() > 0 ) {
+            res.suggestions = (SpellingSuggestion[])
+                out.toArray( new SpellingSuggestion[out.size()] );
+        }
+        
+    } // spellCheck()
+    
+    
+    /**
+     * Make a list of all the terms present in the given query.
+     * 
+     * @param query   The query to traverse
+     * @return        List of the terms
+     */
+    private ArrayList gatherTerms( Query query )
+    {
+        final ArrayList list = new ArrayList();
+        
+        XtfQueryTraverser trav = new XtfQueryTraverser() {
+          protected void traverse( TermQuery q ) {
+              list.add( q.getTerm() );
+          }
+          protected void traverse( SpanTermQuery q ) {
+              list.add( q.getTerm() );
+          }
+          protected void traverse(BooleanQuery bq) {
+              BooleanClause[] clauses = bq.getClauses();
+              for (int i = 0; i < clauses.length; i++) {
+                  if( !clauses[i].prohibited )
+                      traverseQuery(clauses[i].query);
+              }
+          } // traverse()
+          protected void traverse(SpanChunkedNotQuery nq) {
+              traverseQuery(nq.getInclude());
+              // No: traverseQuery(nq.getExclude());
+          } // traverse()
+          protected void traverse(SpanNotQuery nq) {
+            traverseQuery(nq.getInclude());
+            // No: traverseQuery(nq.getExclude());
+          } // traverse()
+          protected void traverse(SpanNotNearQuery nq) {
+            traverseQuery(nq.getInclude());
+            // No: traverseQuery(nq.getExclude());
+          } // traverse()
+        };
+        trav.traverseQuery( query );
+        
+        return list;
+    } // gatherTerms()
 
     /**
      * Create the GroupCounts objects for the given query request. Also handles
@@ -370,9 +492,9 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         for( int i = 0; i < req.facetSpecs.length; i++ ) {
             FacetSpec spec = req.facetSpecs[i];
-            GroupData data = GroupData.getCachedData( reader, spec.field );
+            GroupData data = GroupData.getCachedData( indexReader, spec.field );
             HitQueueMakerImpl maker = new HitQueueMakerImpl( 
-                reader, spec.sortDocsBy, isSparse );
+                indexReader, spec.sortDocsBy, isSparse );
             groupCounts[i] = new GroupCounts( data, spec, maker );
         }
         

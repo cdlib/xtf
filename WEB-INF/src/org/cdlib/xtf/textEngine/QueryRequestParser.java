@@ -245,9 +245,11 @@ public class QueryRequestParser
             EasyNode el = main.child( i );
             if( !el.isElement() )
                 continue;
-            else if( "facet".equals(el.name()) )
+            else if( "facet".equalsIgnoreCase(el.name()) )
                 parseFacetSpec( el );
-            else if( "resultData".equals(el.name()) )
+            else if( "spellcheck".equalsIgnoreCase(el.name()) )
+                parseSpellcheck( el );
+            else if( "resultData".equalsIgnoreCase(el.name()) )
                 continue;
             else {
                 req.query = 
@@ -349,7 +351,54 @@ public class QueryRequestParser
         // Finally, add the new group spec to the query.
         groupSpecs.add( fs );
         
-    } // parseGroupSpec
+    } // parseFacetSpec
+    
+    
+    /**
+     * Parses a 'spellcheck' element and adds a SpellcheckParams to the query.
+     * 
+     * @param el  The 'spellcheck' element to parse
+     */
+    void parseSpellcheck( EasyNode el ) 
+    {
+        SpellcheckParams params = new SpellcheckParams();
+        
+        // Process all the attributes.
+        FacetSpec fs = new FacetSpec();
+        for( int i = 0; i < el.nAttrs(); i++ ) 
+        {
+            String attr = el.attrName(i);
+            
+            if( attr.equalsIgnoreCase("suggestionsPerTerm") )
+                params.suggestionsPerTerm = parseIntAttrib( el, attr );
+            else if( attr.equalsIgnoreCase("fields") ||
+                     attr.equalsIgnoreCase("field") )
+            {
+            }
+            else if( attr.equalsIgnoreCase("docScoreCutoff") )
+                params.docScoreCutoff = parseFloatAttrib( el, attr );
+            else if( attr.equalsIgnoreCase("totalDocsCutoff") )
+                params.totalDocsCutoff = parseIntAttrib( el, attr );
+            else if( attr.equalsIgnoreCase("termOccurrenceFactor") ||
+                     attr.equalsIgnoreCase("termOcurrenceFactor") ||
+                     attr.equalsIgnoreCase("termOccurenceFactor") )
+            {
+                params.termOccurrenceFactor = parseFloatAttrib( el, attr );
+            }
+            else if( attr.equalsIgnoreCase("accuracy") )
+                params.accuracy = parseFloatAttrib( el, attr );
+            else
+                error( "Unknown attribute '" + attr + "' on '" + el.name() + "' element" );
+        } // for i
+        
+        // Make sure the number of suggestions was specified.
+        if( params.suggestionsPerTerm <= 0 )
+            error( "'" + el.name() + "' element requires 'suggestionsPerTerm' attribute" );
+        
+        // Finally, add the new params to the query.
+        req.spellcheckParams = params;
+        
+    } // parseSpellcheck
     
     
     /**
@@ -387,17 +436,8 @@ public class QueryRequestParser
             String attrName = parent.attrName( i );
             String attrVal  = parent.attrValue( i );
             
-            if( attrName.equals("boost") ) {
-                try {
-                    boost = Float.parseFloat( attrVal );
-                }
-                catch( NumberFormatException e ) {
-                    error( "Invalid float value \"" + attrVal + "\" for " +
-                           "'boost' attribute" );
-                }
-                if( boost < 0.0 )
-                    error( "Value of 'boost' attribute cannot be negative" );
-            }
+            if( attrName.equals("boost") )
+                boost = parseFloatAttrib( parent, attrName );
             else if( attrName.equals("maxSnippets") ) {
                 int oldVal = maxSnippets;
                 maxSnippets = parseIntAttrib( parent, attrName );
@@ -509,7 +549,7 @@ public class QueryRequestParser
                 continue;
             if( el.name().equals("sectionType") )
                 continue; // handled elsewhere
-            else if( el.name().equals("resultData") )
+            else if( el.name().equalsIgnoreCase("resultData") )
                 continue; // ignore, handled by client's resultFormatter.xsl
 
             Query q;
@@ -767,19 +807,8 @@ public class QueryRequestParser
         else if( attrName.equalsIgnoreCase("boostSetField") )
             req.boostSetField = parseStringAttrib( el, attrName );
         
-        else if( attrName.equalsIgnoreCase("boostSetExponent") ) 
-        {
-            try {
-                req.boostSetExponent = Float.parseFloat(
-                    parseStringAttrib(el, attrName) );
-            }
-            catch( NumberFormatException e ) {
-                error( "Invalid float value \"" + val + "\" for " +
-                       "'" + attrName + "' attribute" );
-            }
-            if( req.boostSetExponent < 0.0 )
-                error( "Value of '" + attrName + "' attribute cannot be negative" );
-        }
+        else if( attrName.equalsIgnoreCase("boostSetExponent") )
+            req.boostSetExponent = parseFloatAttrib( el, attrName );
         
         else if( attrName.equalsIgnoreCase("normalizeScores") ) {
             String yesno = parseStringAttrib( el, "normalizeScores" );
@@ -1146,7 +1175,7 @@ public class QueryRequestParser
             EasyNode el = parent.child( i );
             if( !el.isElement() )
                 continue;
-            else if( el.name().equals("resultData") )
+            else if( el.name().equalsIgnoreCase("resultData") )
                 continue; // ignore, handled by client's resultFormatter.xsl
 
             if( subQuery != null )
@@ -1381,6 +1410,74 @@ public class QueryRequestParser
             return 0;
         }
     } // parseIntAttrib()
+    
+    
+    /**
+     * Locate the named attribute and retrieve its value as a float.
+     * If not found, an error exception is thrown.
+     * 
+     * @param el Element to search
+     * @param attribName Attribute to find
+     */
+    private float parseFloatAttrib( EasyNode el, String attribName )
+        throws QueryGenException
+    {
+        return parseFloatAttrib( el, attribName, false, 0 );
+    }
+    
+    /**
+     * Locate the named attribute and retrieve its value as a float.
+     * If not found, return a default value.
+     * 
+     * @param el EasyNode to search
+     * @param attribName Attribute to find
+     * @param defaultVal If not found and useDefault is true, return this 
+     *                   value.
+     */
+    private float parseFloatAttrib( EasyNode el, 
+                                    String attribName, 
+                                    float defaultVal  )
+        throws QueryGenException
+    {
+        return parseFloatAttrib( el, attribName, true, defaultVal );
+    }
+    
+    /**
+     * Locate the named attribute and retrieve its value as a float. Negative
+     * values are not allowed. Handles default processing if requested.
+     * 
+     * @param el EasyNode to search
+     * @param attribName Attribute to find
+     * @param useDefault true to supply a default value if none found,
+     *                   false to throw an exception if not found.
+     * @param defaultVal If not found and useDefault is true, return this 
+     *                   value.
+     */
+    private float parseFloatAttrib( EasyNode el, String attribName, 
+                                    boolean useDefault, float defaultVal )
+        throws QueryGenException
+    {
+        String elName = el.name();
+        String str = parseStringAttrib( el, 
+                                        attribName,
+                                        useDefault,
+                                        null );
+        if( str == null && useDefault )
+            return defaultVal;
+        
+        try {
+            float ret = Float.parseFloat( str );
+            if( ret < 0 ) {
+                error( "'" + attribName + "' attribute of '" + elName + 
+                   "' element is not allowed to be negative" );
+            }
+            return ret;
+        } catch( NumberFormatException e ) {
+            error( "'" + attribName + "' attribute of '" + elName + 
+                   "' element is not a valid floating-point number" );
+            return 0;
+        }
+    } // parseFloatAttrib()
     
     
     /**

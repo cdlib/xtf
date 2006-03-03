@@ -94,22 +94,20 @@ public class QueryRequest implements Cloneable
      */
     public String     boostSetField;
     
-    
     /** 
      * Experimental, and probably temporary:
      * Exponent applied to all boost set values.
      */
     public float      boostSetExponent = 1.0f;
     
+    /** Experimental: provide spelling suggestions */
+    public SpellcheckParams spellcheckParams = null;
     
     /** Optional: the <parameters> block sent to the query parser stylesheet */
     public String     parserInput = null;
     
-    
     /** Optional: the raw output of the query parser stylesheet */
     public String     parserOutput = null;
-    
-    
     
     // Creates an exact copy of this query request.
     public Object clone() 
