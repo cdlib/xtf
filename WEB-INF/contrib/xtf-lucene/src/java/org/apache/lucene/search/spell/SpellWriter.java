@@ -1,7 +1,7 @@
 package org.apache.lucene.search.spell;
 
 /**
- * Copyright 2002-2004 The Apache Software Foundation
+ * Copyright 2002-2006 The Apache Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import java.util.BitSet;
 import java.util.Collections;
 
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -42,6 +44,7 @@ import org.cdlib.xtf.util.FastStringCache;
 /**
  * <p>
  * Spell Writer class <br/>(built on Nicolas Maisonneuve / David Spencer code).
+ * Provides efficient, high-volume updates to a spelling correction index.
  * </p>
  * 
  * @author Martin Haye
@@ -277,8 +280,7 @@ public class SpellWriter {
       String word = (String) block.get(i);
       int len = word.length();
 
-      indexWriter.addDocument(SpellChecker.createDocument(word, SpellChecker
-          .getMin(len), SpellChecker.getMax(len)));
+      indexWriter.addDocument(createDocument(word, getMin(len), getMax(len)));
       ++totalAdded;
       
       // Every 1000 words or so, update the progress counter 
@@ -367,6 +369,90 @@ public class SpellWriter {
         indexWriter = null;
     }
   } // closeIndexWriter()
+
+  static int getMin (int l) {
+      if (l>5) {
+          return 3;
+      }
+      if (l==5) {
+          return 2;
+      }
+      return 1;
+  }
+
+
+  static int getMax (int l) {
+      if (l>5) {
+          return 4;
+      }
+      if (l==5) {
+          return 3;
+      }
+      return 2;
+  }
+
+
+  static Document createDocument (String text, int ng1, int ng2) {
+      Document doc=new Document();
+      doc.add(new Field(F_WORD, text, true, true, false)); // orig term
+      addGram(text, doc, ng1, ng2);
+      addTrans(text, doc);
+      addDrop(text, doc);
+      return doc;
+  }
+
+
+  static void addGram (String text, Document doc, int ng1, int ng2) {
+      int len=text.length();
+      for (int ng=ng1; ng<=ng2; ng++) {
+          String key="gram"+ng;
+          String end=null;
+          for (int i=0; i<len-ng+1; i++) {
+              String gram=text.substring(i, i+ng);
+              doc.add(new Field(key, gram, true, true, false));
+              if (i==0) {
+                  doc.add(new Field("start"+ng, gram, true, true, false));
+              }
+              end=gram;
+          }
+          if (end!=null) { // may not be present if len==ng1
+              doc.add(new Field("end"+ng, end, true, true, false));
+          }
+      }
+  }
+
+
+  static void addTrans (String text, Document doc) {
+      final int len=text.length();
+      final char[] ch = text.toCharArray();
+      final String key="trans";
+
+      char tmp;
+      for (int i=0; i<len-1; i++) {
+          tmp = ch[i];
+          ch[i] = ch[i+1];
+          ch[i+1] = tmp;
+          
+          doc.add(new Field(key, new String(ch), true, true, false));
+          
+          tmp = ch[i];
+          ch[i] = ch[i+1];
+          ch[i+1] = tmp;
+      }
+  }
+
+
+  static void addDrop (String text, Document doc) {
+      final int len=text.length();
+      final String key="drop";
+      for (int i=0; i<len; i++) {
+          String dropped = text.substring(0, i) + 
+                           text.substring(Math.min(len, i+1));
+          if( dropped.length() > 0 )
+              doc.add(new Field(key, dropped, true, true, false));
+      }
+  }
+
 
   protected void finalize() throws Throwable {
     close();
