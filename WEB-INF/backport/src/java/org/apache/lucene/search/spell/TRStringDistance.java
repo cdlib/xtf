@@ -37,58 +37,58 @@ final class TRStringDistance {
     }
 
 
-    //*****************************
-     // Compute Levenshtein distance
-     //*****************************
+      /**
+       * Compute Damerau-Levenstein distance between the target string and
+       * another string. Damerau-Levenstein is similar to Levenstein except
+       * that it also accounts for transposition in the set of edit operations.
+       * This more fully reflects a common source of misspellings. 
+       */
       public final int getDistance (String other) {
           int d[][]; // matrix
-          int cost; // cost
+          int baseCost, replaceCost, insertCost, deleteCost, transposeCost;
 
-          // Step 1
+          // First, initialize the matrix.
           final char[] ta=other.toCharArray();
           final int m=ta.length;
-          if (n==0) {
+          if (n==0)
               return m;
-          }
-          if (m==0) {
+          if (m==0)
               return n;
-          }
 
-          if (m>=cache.length) {
+          if (m>=cache.length)
               d=form(n, m);
-          }
-          else if (cache[m]!=null) {
+          else if (cache[m]!=null)
               d=cache[m];
-          }
-          else {
+          else
               d=cache[m]=form(n, m);
-
-              // Step 3
-
-          }
-          for (int i=1; i<=n; i++) {
+          
+          // Process each source character
+          char s_i2 = 0;
+          for (int i=1; i<=n; i++) 
+          {
               final char s_i=sa[i-1];
 
-              // Step 4
-
-              for (int j=1; j<=m; j++) {
+              // Process each target character
+              char t_j2 = 0;
+              for (int j=1; j<=m; j++) 
+              {
                   final char t_j=ta[j-1];
 
-                  // Step 5
-
-                  if (s_i==t_j) { // same
-                      cost=0;
-                  }
-                  else { // not a match
-                      cost=1;
-
-                      // Step 6
-
-                  }
-                  d[i][j]=min3(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost);
-
+                  baseCost      = s_i == t_j ? 0 : 2;
+                  replaceCost   = d[i-1][j-1] + baseCost;
+                  insertCost    = d[i-1][j]   + (s_i == s_i2 ? 1 : 2);
+                  deleteCost    = d[i][j-1]   + (t_j == t_j2 ? 1 : 2);
+                  
+                  d[i][j]=min3(replaceCost, insertCost, deleteCost);
+                  
+                  // Check for transposition
+                  if (s_i == t_j2 && t_j == s_i2)
+                     d[i][j] = Math.min(d[i][j], d[i-2][j-2] + baseCost);
+                  
+                  t_j2 = t_j;
               }
-
+              
+              s_i2 = s_i;
           }
 
           // Step 7
