@@ -32,10 +32,10 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
 
 /**
- * Utility class for performing external rewriting, or transformation, tasks
- * on Lucene queries. The base class simply provides a framework. Derived
- * classes should override methods for those parts of a query they need to
- * rewrite, and the base will take care of gluing them together properly. 
+ * Utility class for performing external traversal tasks on Lucene queries. 
+ * The base class simply provides a framework. Derived classes should override 
+ * methods for those parts of a query they need to process, rewrite, and the 
+ * base will take care of calling them properly. 
  */
 public abstract class QueryTraverser {
 
