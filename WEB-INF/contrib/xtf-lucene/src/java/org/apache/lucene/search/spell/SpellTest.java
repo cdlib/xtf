@@ -54,7 +54,7 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class SpellTest 
 {
-  private String stopAt = "b";
+  private String stopAt = null; //"b";
   
   /**
    * Command-line driver.
@@ -210,8 +210,8 @@ public class SpellTest
     FSDirectory indexDir = FSDirectory.getDirectory( "index", false );
     IndexReader indexReader = IndexReader.open( indexDir );
     
-    //final int[] sizes = { 1, 5, 10, 25, 50 };
-    final int[] sizes = { 10 };
+    final int[] sizes = { 1, 5, 10, 25, 50 };
+    //final int[] sizes = { 1 };
     final int[] totals = new int[sizes.length];
     int nWords = 0;
     
@@ -262,14 +262,12 @@ public class SpellTest
         // Bump the word count.
         ++nWords;
         
+        // Skip if the target word isn't in our dictionary.
+        if( !spellReader.inDictionary(correction) )
+            continue;
+        
         System.out.print( word + " " + correction );
             
-        // Skip if the target word isn't in our dictionary.
-        if( !spellReader.inDictionary(correction) ) {
-            System.out.println( " -1" );
-            continue;
-        }
-        
         // Get some suggestions.
         int bestPos = 9999999;
         int prevSize = 0;
@@ -333,33 +331,7 @@ public class SpellTest
   {
     SuggestWord[] suggestions = spellReader.suggestSimilar( 
         word, nSuggestions, indexReader, "words", 
-        2.0f, 0.5f );
-    
-    /* Achieves 6.2%
-    // Calculate the average frequency
-    if( suggestions.length > 0 )
-    {
-        // Boost any suggestions higher than that.
-        ArrayList newList = new ArrayList();
-        for( int i = 0; i < suggestions.length; i++ )
-        {
-            SuggestWord sugg = suggestions[i];
-            sugg.origScore = sugg.score;
-            if( sugg.freq > 2 )
-                sugg.score += 0.1;
-            else if( sugg.freq > 1 )
-                sugg.score += 0.1;
-            newList.add( sugg );
-        } // for i
-        Collections.sort( newList, new Comparator() {
-          public int compare( Object o1, Object o2 ) {
-            return ((SuggestWord)o2).compareTo((SuggestWord)o1);
-          }
-        });
-        suggestions = (SuggestWord[])
-            newList.toArray( new SuggestWord[newList.size()] );
-    }
-    */
+        0, 0.5f );
     
     int found = -1;
     for( int i = 0; i < suggestions.length; i++ )
@@ -369,9 +341,10 @@ public class SpellTest
             break;
         }
     } // for i
-    
+
+    /*
     if( found != 0 ) {
-        System.out.println( "...orig metaphone: " + spellReader.calcDMPH(word) );
+        System.out.println( "...orig metaphone: " + SpellWriter.calcMetaphone(word) );
         for( int i = 0; i < suggestions.length; i++ ) {
             SuggestWord sugg = suggestions[i];
             System.out.print( "   " );
@@ -380,9 +353,10 @@ public class SpellTest
                 "\t" + sugg.score +
                 "\t" + sugg.origScore +
                 "\t" + sugg.freq +
-                "\t" + spellReader.calcDMPH(sugg.string) );
+                "\t" + SpellWriter.calcMetaphone(sugg.string) );
         }
     }
+    */
     
     return found;
     

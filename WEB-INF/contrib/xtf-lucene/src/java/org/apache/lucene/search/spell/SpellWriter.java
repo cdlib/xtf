@@ -87,6 +87,9 @@ public class SpellWriter {
   /** For writing new terms */
   private IndexWriter indexWriter;
 
+  /** Used for calculating double metaphone keys */
+  private static DoubleMetaphone doubleMetaphone = new DoubleMetaphone();
+    
   /** 
    * Establishes the directory to store the dictionary in. 
    */
@@ -392,17 +395,37 @@ public class SpellWriter {
   }
 
 
+  public static String calcMetaphone( String word )
+  {
+    String ret = doubleMetaphone.doubleMetaphone( word );
+    if( word.endsWith("s") && !ret.endsWith("S") )
+        ret += "S";
+    return ret;
+  }
+
+
+  static String removeDoubles(String text) {
+    for (int i=0; i<text.length()-1; i++) {
+        if (text.charAt(i) == text.charAt(i+1))
+            text = text.substring(0, i) + text.substring(i+1);
+    }
+    return text;
+  }
+  
+  
   static Document createDocument (String text, int ng1, int ng2) {
       Document doc=new Document();
       doc.add(new Field(F_WORD, text, true, true, false)); // orig term
       addGram(text, doc, ng1, ng2);
-      addTrans(text, doc);
-      addDrop(text, doc);
+      //addTrans(text, doc);
+      addMetaphone(text, doc);
+      //addDrop(text, doc);
       return doc;
   }
 
 
   static void addGram (String text, Document doc, int ng1, int ng2) {
+      text = removeDoubles(text);
       int len=text.length();
       for (int ng=ng1; ng<=ng2; ng++) {
           String key="gram"+ng;
@@ -439,6 +462,12 @@ public class SpellWriter {
           ch[i] = ch[i+1];
           ch[i+1] = tmp;
       }
+  }
+
+
+  static void addMetaphone (String text, Document doc) {
+      String metaPhone = calcMetaphone(text);
+      doc.add(new Field("metaphone", metaPhone, true, true, false));
   }
 
 

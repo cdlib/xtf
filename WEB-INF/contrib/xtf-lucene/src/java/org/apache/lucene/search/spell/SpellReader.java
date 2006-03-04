@@ -60,13 +60,13 @@ public class SpellReader
   
   /** Boost value for single-char deletion */
   private float bDelete=2.0f;
+  
+  /** Boost value for metaphones */
+  private float bMetaphone=3.0f;
 
   /** Index searcher, querying the spelling index */
   private IndexSearcher searcher;
 
-  /** Used for calculating double metaphone keys */
-  private static DoubleMetaphone dmph = new DoubleMetaphone();
-    
   /** Construct a reader for the given spelling index directory */
   public SpellReader (Directory spellIndex) {
     this.spellIndex = spellIndex;
@@ -174,15 +174,16 @@ public class SpellReader
     // If the word exists in the index and we're not concerned about finding
     // a more popular one (or more than one), then we have nothing to suggest.
     //
-    if (docFreq > goalFreq && num_sug == 1)
-        return new SuggestWord[0];
+    //if (docFreq > goalFreq && num_sug == 1)
+    //    return new SuggestWord[0];
 
     // Form a query using ngrams of each length from the original word.
     BooleanQuery query=new BooleanQuery();
     String[] grams;
     String key;
 
-    add(query, "trans", word, bTrans);
+    //add(query, "trans", word, bTrans);
+    /*
     add(query, "drop", word, bInsert);
     for (int i=0; i<word.length(); i++) {
         String dropped = word.substring(0, i) + 
@@ -190,6 +191,9 @@ public class SpellReader
         if( dropped.length() > 0 )
             add(query, "word", dropped, bDelete);
     }
+    */
+    addTrans(query, word, bTrans);
+    add(query, "metaphone", SpellWriter.calcMetaphone(word), bMetaphone);
 
     for (int ng=SpellWriter.getMin(lengthWord); 
          ng<=SpellWriter.getMax(lengthWord); 
@@ -216,23 +220,25 @@ public class SpellReader
     // To ensure that we've caught all the good candidates, scan ten times the
     // requested number of matches (and at least 100).
     //
-    
     int nToScan = Math.max(100, 10*num_sug);
     TopDocs hits = searcher.search( query, null, nToScan );
     
     // Calculate the main word's metaphone once.
-    String wordDMPH = calcDMPH( word );
+    String metaphone = SpellWriter.calcMetaphone( word );
 
     // Make a queue of the best matches. Leave a little extra room for some
     // to hang off the end at the same score but different frequencies.
     //
     float min = accuracy;
     SuggestWord sugword = new SuggestWord();
-    final SuggestWordQueue sugqueue = new SuggestWordQueue(num_sug+10);
+    int queueSize = num_sug+10;
+    final SuggestWordQueue sugqueue = new SuggestWordQueue(queueSize);
     for( int i = 0; i < hits.scoreDocs.length; i++ )
     {
         // Get original word
-        sugword.string = searcher.doc(hits.scoreDocs[i].doc).get(F_WORD); 
+        sugword.string = searcher.doc(hits.scoreDocs[i].doc).get(F_WORD);
+        
+        //System.out.println( "L: " + sugword.string + ", " + hits.scoreDocs[i].score );
 
         // Don't suggest a word for itself, that would be silly.
         if (sugword.string.equals(word))
@@ -265,13 +271,13 @@ public class SpellReader
         }
         
         // If the metaphone matches, nudge the score
-        if( calcDMPH(sugword.string).equals(wordDMPH) )
+        if( SpellWriter.calcMetaphone(sugword.string).equals(metaphone) )
             sugword.score += 0.10f;
         
         sugqueue.insert(sugword);
         
         // If queue full, maintain the min score
-        if (sugqueue.size()==num_sug)
+        if (sugqueue.size()==queueSize)
             min=((SuggestWord) sugqueue.top()).score;
         
         // Prepare for next go-round.
@@ -289,18 +295,6 @@ public class SpellReader
   }
   
   
-  /**
-   * Calculate the double-metaphone for a word.
-   */
-  public String calcDMPH( String word )
-  {
-    String ret = dmph.doubleMetaphone( word );
-    if( word.endsWith("s") && !ret.endsWith("S") )
-        ret += "S";
-    return ret;
-  }
-
-
   /**
    * Add a clause to a boolean query.
    */
@@ -320,39 +314,39 @@ public class SpellReader
 
 
   /**
+   * Add clauses for simple transpositions of the source word.
+   */
+  private static void addTrans (BooleanQuery q, String text, float boost) {
+      final int len=text.length();
+      final char[] ch = text.toCharArray();
+
+      char tmp;
+      for (int i=0; i<len-1; i++) {
+          tmp = ch[i];
+          ch[i] = ch[i+1];
+          ch[i+1] = tmp;
+          
+          add(q, F_WORD, new String(ch), boost); 
+          
+          tmp = ch[i];
+          ch[i] = ch[i+1];
+          ch[i+1] = tmp;
+      }
+  }
+  /**
    * Form all ngrams for a given word.
    * @param text the word to parse
    * @param ng the ngram length e.g. 3
    * @return an array of all ngrams in the word and note that duplicates are not removed
    */
   private static String[] formGrams (String text, int ng) {
+    text = SpellWriter.removeDoubles(text);
     int len=text.length();
     String[] res=new String[len-ng+1];
     for (int i=0; i<len-ng+1; i++) {
         res[i]=text.substring(i, i+ng);
     }
     return res;
-  }
-  
-  
-  /**
-   * Check if the first word can be transformed into the second word by a 
-   * simple transposition of two characters. This is a common form of typo.
-   */
-  private boolean isTranspose( String w1, String w2 ) {
-    if (w1.length() != w2.length() || w1.equals(w2))
-        return false;
-    int i = 0;
-    while (w1.charAt(i) == w2.charAt(i))
-        i++;
-    
-    int j = w1.length() - 1;
-    while (w1.charAt(j) == w2.charAt(j))
-        j--;
-    
-    return (i+1 == j) && 
-           (w1.charAt(i) == w2.charAt(j)) && 
-           (w1.charAt(j) == w2.charAt(i));
   }
 
   
