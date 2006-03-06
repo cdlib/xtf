@@ -398,8 +398,15 @@ public class SpellWriter {
   public static String calcMetaphone( String word )
   {
     String ret = doubleMetaphone.doubleMetaphone( word );
-    if( word.endsWith("s") && !ret.endsWith("S") )
-        ret += "S";
+    
+    String beg = word.substring(0, 1).toUpperCase();
+    if( !ret.startsWith(beg) )
+        ret = beg + ret;
+    
+    String end = word.substring(word.length()-1).toUpperCase();
+    if( !ret.endsWith(end) )
+        ret += end;
+    
     return ret;
   }
 

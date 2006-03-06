@@ -264,7 +264,13 @@ public class SpellReader
             
             // If this word is more frequent than normal, give it a nudge up.
             sugword.origScore = sugword.score;
-            if( sugword.freq > 2 )
+            if( sugword.freq > 1000 )
+                sugword.score += 0.25;
+            else if( sugword.freq > 40 )
+                sugword.score += 0.20;
+            else if( sugword.freq > 4 )
+                sugword.score += 0.15;
+            else if( sugword.freq > 2 )
                 sugword.score += 0.10f;
             else if (sugword.freq > 1 )
                 sugword.score += 0.05f;

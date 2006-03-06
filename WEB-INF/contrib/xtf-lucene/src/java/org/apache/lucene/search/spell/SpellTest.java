@@ -210,8 +210,8 @@ public class SpellTest
     FSDirectory indexDir = FSDirectory.getDirectory( "index", false );
     IndexReader indexReader = IndexReader.open( indexDir );
     
-    final int[] sizes = { 1, 5, 10, 25, 50 };
-    //final int[] sizes = { 1 };
+    //final int[] sizes = { 1, 5, 10, 25, 50 };
+    final int[] sizes = { 1 };
     final int[] totals = new int[sizes.length];
     int nWords = 0;
     
@@ -259,12 +259,12 @@ public class SpellTest
         if( stopAt != null && word.compareTo(stopAt) >= 0 )
             break;
         
-        // Bump the word count.
-        ++nWords;
-        
         // Skip if the target word isn't in our dictionary.
         if( !spellReader.inDictionary(correction) )
             continue;
+        
+        // Bump the word count.
+        ++nWords;
         
         System.out.print( word + " " + correction );
             
