@@ -82,8 +82,8 @@ final class TRStringDistance {
                   d[i][j]=min3(replaceCost, insertCost, deleteCost);
                   
                   // Check for transposition
-                  if (s_i == t_j2 && t_j == s_i2)
-                     d[i][j] = Math.min(d[i][j], d[i-2][j-2] + baseCost);
+                  if (s_i != t_j && s_i == t_j2 && t_j == s_i2)
+                     d[i][j] = Math.min(d[i][j], d[i-2][j-2] + 1);
                   
                   t_j2 = t_j;
               }
@@ -95,8 +95,7 @@ final class TRStringDistance {
           return d[n][m];
 
       }
-
-
+      
     /**
      *
      */
