@@ -210,8 +210,7 @@ public class SpellTest
     FSDirectory indexDir = FSDirectory.getDirectory( "index", false );
     IndexReader indexReader = IndexReader.open( indexDir );
     
-    //final int[] sizes = { 1, 5, 10, 25, 50 };
-    final int[] sizes = { 1 };
+    final int[] sizes = { 1, 5, 10, 25, 50 };
     final int[] totals = new int[sizes.length];
     int nWords = 0;
     
@@ -267,33 +266,23 @@ public class SpellTest
         ++nWords;
         
         System.out.print( word + " " + correction );
-            
+
         // Get some suggestions.
-        int bestPos = 9999999;
-        int prevSize = 0;
-        for( int j = 0; j < sizes.length; j++ )
+        int pos = trySpell( spellReader, indexReader, 
+                            word, correction, sizes[sizes.length-1] );
+        
+        // Increment the correct totals.
+        if( pos < 0 )
+            missed.add( word );
+        else
         {
-            int size = sizes[j];
-            int pos = trySpell( spellReader, indexReader, 
-                                word, correction, sizes[j] );
-            if( pos >= 0 ) {
-                totals[j]++;
-                if( pos < prevSize )
-                    pos = prevSize;
-                if( pos < bestPos )
-                    bestPos = pos;
+            for( int j = 0; j < sizes.length; j++ ) {
+                if( pos < sizes[j] )
+                    totals[j]++;
             }
-            
-            prevSize = size;
         }
         
-        if( bestPos == 9999999 )
-            bestPos = -1;
-        
-        if( bestPos != 0 )
-            missed.add( word ); 
-        
-        System.out.println( " " + (bestPos+1) );
+        System.out.println( " " + (pos+1) );
         
     } // while
     
