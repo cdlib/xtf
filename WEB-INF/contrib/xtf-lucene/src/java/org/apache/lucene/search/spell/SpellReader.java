@@ -17,9 +17,14 @@ package org.apache.lucene.search.spell;
  */
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -64,8 +69,11 @@ public class SpellReader
   /** Boost value for metaphones */
   private float bMetaphone=3.0f;
 
-  /** Index searcher, querying the spelling index */
+  /** Index searcher, for querying the spelling index */
   private IndexSearcher searcher;
+
+  /** Cache of term frequencies per field */
+  private static final WeakHashMap termFreqCache = new WeakHashMap();
 
   /** Construct a reader for the given spelling index directory */
   public SpellReader (Directory spellIndex) {
@@ -182,16 +190,6 @@ public class SpellReader
     String[] grams;
     String key;
 
-    //add(query, "trans", word, bTrans);
-    /*
-    add(query, "drop", word, bInsert);
-    for (int i=0; i<word.length(); i++) {
-        String dropped = word.substring(0, i) + 
-                         word.substring(Math.min(word.length(), i+1));
-        if( dropped.length() > 0 )
-            add(query, "word", dropped, bDelete);
-    }
-    */
     addTrans(query, word, bTrans);
     add(query, "metaphone", SpellWriter.calcMetaphone(word), bMetaphone);
 
@@ -225,6 +223,13 @@ public class SpellReader
     
     // Calculate the main word's metaphone once.
     String metaphone = SpellWriter.calcMetaphone( word );
+    
+    // If we're checking index frequencies, get data on which terms are rare
+    // and which are common.
+    //
+    int[] termFreqs = null;
+    if (ir != null && field != null)
+        termFreqs = getTermFreqs(ir, field);
 
     // Make a queue of the best matches. Leave a little extra room for some
     // to hang off the end at the same score but different frequencies.
@@ -264,15 +269,15 @@ public class SpellReader
             
             // If this word is more frequent than normal, give it a nudge up.
             sugword.origScore = sugword.score;
-            if( sugword.freq > 1000 )
+            if( sugword.freq >= termFreqs[0] ) // 1000
                 sugword.score += 0.25;
-            else if( sugword.freq > 40 )
+            else if( sugword.freq >= termFreqs[1] ) // 40
                 sugword.score += 0.20;
-            else if( sugword.freq > 4 )
+            else if( sugword.freq >= termFreqs[2] ) // 4
                 sugword.score += 0.15;
-            else if( sugword.freq > 2 )
+            else if( sugword.freq >= termFreqs[3] ) // 2
                 sugword.score += 0.10f;
-            else if (sugword.freq > 1 )
+            else if (sugword.freq >= termFreqs[4] ) // 1
                 sugword.score += 0.05f;
         }
         
@@ -300,7 +305,121 @@ public class SpellReader
     return list;
   }
   
-  
+  /** Get the term frequencies array for the given field. */
+  private int[] getTermFreqs(IndexReader reader, String fieldName)
+      throws IOException 
+  {
+    // Check if we have a cache for this reader yet. If not, make one.
+    Map readerCache = (Map) termFreqCache.get(reader);
+    if (readerCache == null) {
+      readerCache = new HashMap();
+      termFreqCache.put(reader, readerCache);
+    }
+
+    // Now check if we have a frequencies array already for this field.
+    fieldName = fieldName.intern();
+    int[] res = (int[]) readerCache.get(fieldName);
+    if (res != null)
+      return res;
+
+    // Calculate the mean of the term frequencies
+    long totalFreq = 0;
+    int nTerms = 0;
+    TermEnum terms = reader.terms( new Term(fieldName, "") );
+    while( terms.next() ) {
+        totalFreq += terms.docFreq();
+        ++nTerms;
+    }
+    terms.close();
+    double avgFreq = totalFreq / (double)nTerms;
+    
+    /*
+    // Now calculate the standard deviation
+    double variation = 0;
+    terms = reader.terms( new Term(fieldName, "") );
+    while( terms.next() ) {
+        double diff = terms.docFreq() - avgFreq;
+        variation += diff*diff;
+        ++nTerms;
+    }
+    terms.close();
+    
+    double stddev = Math.sqrt(variation / (nTerms+1));
+    
+    // If not enough terms, turn off frequency boosting.
+    res = new int[5];
+    if( nTerms < 500 )
+        res[0] = res[1] = res[2] = res[3] = res[4] = res[5] = Integer.MAX_VALUE;
+    else
+    {
+        // Sort the frequencies, and pick out the levels of interest to us.
+        res[0] = (int) (avgFreq + (stddev *22.077520));
+        res[1] = (int) (avgFreq + (stddev * 0.848076));
+        res[2] = (int) (avgFreq + (stddev * 0.051972));
+        res[3] = (int) (avgFreq + (stddev * 0.007800));
+        res[4] = (int) (avgFreq);
+    }
+    */
+    
+    // Okay, we have to build a new one. Sample at least 10000 above-average
+    // terms (if there are that many.)
+    //
+    final int BUF_SIZE = 20000;
+    int[] buffer = new int[BUF_SIZE];
+    int termsPerSlot = 1;
+    int pos = 0;
+    int cycle = 0;
+    int cutoff = (int) avgFreq;
+    terms = reader.terms( new Term(fieldName, "") );
+    while( terms.next() ) 
+    {
+        int freq = terms.docFreq();
+        if( freq <= cutoff )
+            continue;
+        
+        if( ++cycle == termsPerSlot ) 
+        {
+            cycle = 0;
+            buffer[pos++] = freq;
+            
+            // If the buffer is full, toss half the data and increase the 
+            // terms per slot.
+            //
+            if( pos == BUF_SIZE ) {
+                for( int i = 0; i < pos/2; i++ )
+                    buffer[i] = buffer[i*2];
+                termsPerSlot *= 2;
+                pos /= 2;
+            }
+        }
+        ++nTerms;
+    }
+    
+    res = new int[5];
+    
+    // If not enough terms, turn off frequency boosting.
+    if( nTerms < 500 )
+        res[0] = res[1] = res[2] = res[3] = res[4] = res[5] = Integer.MAX_VALUE;
+    else
+    {
+        // Sort the frequencies, and pick out the levels of interest to us.
+        Arrays.sort( buffer, 0, pos );
+        res[0] = buffer[(int) (pos * 0.99)]; // top 1%
+        res[1] = buffer[(int) (pos * 0.90)]; // top 10%
+        res[2] = buffer[(int) (pos * 0.50)]; // top 50%
+        res[3] = buffer[(int) (pos * 0.25)]; // top 75%
+        res[4] = cutoff;                     // all above-avg words
+    }
+      
+    // Store the new array in the cache, so we don't have to build it again.
+    readerCache.put(fieldName, res);
+    
+    // All done.
+    return res;
+
+  } // getTermFreqs()
+
+
   /**
    * Add a clause to a boolean query.
    */
