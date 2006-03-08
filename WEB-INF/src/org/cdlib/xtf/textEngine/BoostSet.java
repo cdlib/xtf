@@ -61,7 +61,10 @@ public class BoostSet
   private int nWarnings = 0;
   
   /** Set of boost values, one per document ID */
-  float[] boostByDoc;
+  private float[] boostByDoc;
+  
+  /** Marker for the default value */
+  private static float DEFAULT_MARKER = -99.0f; 
   
   /**
    * Retrieves BoostSet for a given File from a given reader. Maintains a cache
@@ -98,17 +101,21 @@ public class BoostSet
     
   } // getCachedSet()
   
-  /** Get the boost factor associated with the given document, or 1.0f if
-   *  not found.
+  /** Get the boost factor associated with the given document, or the default
+   *  boost value if not found.
    *  
-   *  @param docId   Document ID to look up
-   *  @return        Boost factor, or 1.0f if not found.
+   *  @param docId        Document ID to look up
+   *  @param defaultBoost What to return if not found
+   *  @return             Boost factor, or defaultBoost if not found.
    */
-  public final float getBoost( int docId )
+  public final float getBoost( int docId, float defaultBoost )
   {
     if( docId < 0 || docId >= boostByDoc.length )
-        return 1.0f;
-    return boostByDoc[docId];
+        return defaultBoost;
+    float ret = boostByDoc[docId];
+    if( ret == DEFAULT_MARKER )
+        return defaultBoost;
+    return ret;
   } // getBoost()
   
   /** Do not construct directly; use 
@@ -122,16 +129,16 @@ public class BoostSet
                     String      field )
     throws IOException
   {
-    this.field = field;
+    this.field        = field;
     
     Trace.debug( "Loading boost set '" + inFile + "'..." );
     
     // Figure out the max doc ID, make an array that big, and fill it with
-    // the default value (1.0).
+    // a marker for the default value.
     //
     int maxDoc = indexReader.maxDoc();
     boostByDoc = new float[maxDoc+1];
-    Arrays.fill( boostByDoc, 1.0f );
+    Arrays.fill( boostByDoc, DEFAULT_MARKER );
     
     // Iterate all the keys in the index.
     DocIter docIter = null;

@@ -138,7 +138,7 @@ public class DocHitImpl extends DocHit
                             float        docScoreNorm,
                             Weight       weight,
                             BoostSet     boostSet,
-                            float        boostSetExponent )
+                            BoostSetParams boostParams )
         throws IOException
     {
         // Don't do this twice.
@@ -158,13 +158,13 @@ public class DocHitImpl extends DocHit
                 "boosted, product of:" );
             
             Explanation boostExpl = 
-                new Explanation(boostSet.getBoost(doc), "boostSetFactor");
-            if( boostSetExponent != 1.0f ) {
+                new Explanation(boostSet.getBoost(doc, boostParams.defaultBoost), "boostSetFactor");
+            if( boostParams.exponent != 1.0f ) {
                 Explanation exponentExpl = new Explanation(
-                    (float)Math.pow(boostExpl.getValue(), boostSetExponent), 
+                    (float)Math.pow(boostExpl.getValue(), boostParams.exponent), 
                     "exponentBoosted" );
                 exponentExpl.addDetail( boostExpl );
-                exponentExpl.addDetail( new Explanation(boostSetExponent, "boostSetExponent") );
+                exponentExpl.addDetail( new Explanation(boostParams.exponent, "boostSetExponent") );
                 boostExpl = exponentExpl;
             }
             

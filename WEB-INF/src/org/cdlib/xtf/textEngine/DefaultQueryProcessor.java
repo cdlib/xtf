@@ -257,10 +257,10 @@ public class DefaultQueryProcessor extends QueryProcessor
         // If we're to apply a set of additional boost sets to the documents,
         // get the set now.
         //
-        final BoostSet boostSet = (req.boostSetPath == null) ? null :
+        final BoostSet boostSet = (req.boostSetParams == null) ? null :
             BoostSet.getCachedSet( indexReader, 
-                                   new File(req.boostSetPath), 
-                                   req.boostSetField );
+                                   new File(req.boostSetParams.path), 
+                                   req.boostSetParams.field );
         
         // Make a Lucene searcher that will access the index according to
         // our query.
@@ -277,10 +277,14 @@ public class DefaultQueryProcessor extends QueryProcessor
                 
                 // If we're boosting, apply that factor.
                 if( boostSet != null ) {
-                    float boost = boostSet.getBoost( doc );
-                    if( req.boostSetExponent != 1.0f )
-                        boost = (float) Math.pow(boost, req.boostSetExponent);
+                    float boost = boostSet.getBoost( doc, req.boostSetParams.defaultBoost );
+                    if( req.boostSetParams.exponent != 1.0f )
+                        boost = (float) Math.pow(boost, req.boostSetParams.exponent);
                     score *= boost;
+                    
+                    // Ignore entries boosted down to zero.
+                    if( score <= 0.0f )
+                        return;
                 }
 
                 // Bump the count of documents hit, and update the max score.
@@ -338,7 +342,7 @@ public class DefaultQueryProcessor extends QueryProcessor
             if( req.explainScores ) {
                 hitArray[i].finishWithExplain( 
                     snippetMaker, docScoreNorm, weight,
-                    boostSet, req.boostSetExponent );
+                    boostSet, req.boostSetParams );
             }
             else
                 hitArray[i].finish( snippetMaker, docScoreNorm );

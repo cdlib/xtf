@@ -455,12 +455,16 @@ public class QueryRequestParser
         }
         
         // Make sure boostSet and boostSetField are specified together
-        if( req.boostSetField != null && req.boostSetPath == null )
-            error( "'boostSetField' specified without 'boostSet'" );
-        if( req.boostSetField == null && req.boostSetPath != null ) 
-            error( "'boostSet' specified without 'boostSetField'" );
-        if( req.boostSetExponent != 1.0f && req.boostSetPath == null ) 
-            error( "'boostSetExponent' specified without 'boostSet'" );
+        if( req.boostSetParams != null ) {
+            if( req.boostSetParams.field != null && req.boostSetParams.path == null )
+                error( "'boostSetField' specified without 'boostSet'" );
+            if( req.boostSetParams.field == null && req.boostSetParams.path != null ) 
+                error( "'boostSet' specified without 'boostSetField'" );
+            if( req.boostSetParams.exponent != 1.0f && req.boostSetParams.path == null ) 
+                error( "'boostSetExponent' specified without 'boostSet'" );
+            if( req.boostSetParams.defaultBoost != 1.0f && req.boostSetParams.path == null ) 
+                error( "'boostSetDefault' specified without 'boostSet'" );
+        }
         
         // Do the bulk of the parsing below...
         Query result = parseQuery2( parent, name, field, maxSnippets );
@@ -801,14 +805,29 @@ public class QueryRequestParser
             specifiedGlobalAttrs.add( attrName );
         }
         
-        else if( attrName.equalsIgnoreCase("boostSet") )
-            req.boostSetPath = onceOnlyPath( req.boostSetPath, el, attrName );
+        else if( attrName.equalsIgnoreCase("boostSet") ) {
+            if( req.boostSetParams == null )
+                req.boostSetParams = new BoostSetParams();
+            req.boostSetParams.path = onceOnlyPath( req.boostSetParams.path, el, attrName );
+        }
         
-        else if( attrName.equalsIgnoreCase("boostSetField") )
-            req.boostSetField = parseStringAttrib( el, attrName );
+        else if( attrName.equalsIgnoreCase("boostSetField") ){
+            if( req.boostSetParams == null )
+                req.boostSetParams = new BoostSetParams();
+            req.boostSetParams.field = parseStringAttrib( el, attrName );
+        }
         
-        else if( attrName.equalsIgnoreCase("boostSetExponent") )
-            req.boostSetExponent = parseFloatAttrib( el, attrName );
+        else if( attrName.equalsIgnoreCase("boostSetExponent") ){
+            if( req.boostSetParams == null )
+                req.boostSetParams = new BoostSetParams();
+            req.boostSetParams.exponent = parseFloatAttrib( el, attrName );
+        }
+        
+        else if( attrName.equalsIgnoreCase("boostSetDefault") ){
+            if( req.boostSetParams == null )
+                req.boostSetParams = new BoostSetParams();
+            req.boostSetParams.defaultBoost = parseFloatAttrib( el, attrName );
+        }
         
         else if( attrName.equalsIgnoreCase("normalizeScores") ) {
             String yesno = parseStringAttrib( el, "normalizeScores" );

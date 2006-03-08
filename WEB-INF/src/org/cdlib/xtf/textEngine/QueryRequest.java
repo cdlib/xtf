@@ -82,23 +82,8 @@ public class QueryRequest implements Cloneable
      */
     public boolean    explainScores = false;
     
-    /** 
-     * Experimental, and probably temporary:
-     * Path of file containing document keys -> boost factors. 
-     */
-    public String     boostSetPath;
-    
-    /** 
-     * Experimental, and probably temporary:
-     * Field name for boost set document keys.
-     */
-    public String     boostSetField;
-    
-    /** 
-     * Experimental, and probably temporary:
-     * Exponent applied to all boost set values.
-     */
-    public float      boostSetExponent = 1.0f;
+    /** Experimental, and probably temporary: Boost set info */
+    public BoostSetParams boostSetParams = null;
     
     /** Experimental: provide spelling suggestions */
     public SpellcheckParams spellcheckParams = null;
