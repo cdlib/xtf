@@ -123,6 +123,21 @@ public class Session
     String mappedURL = res.encodeURL( origURL );
     return mappedURL;
   } // encodeURL()
+  
+  public static String getID()
+  {
+    // Make sure session tracking is enabled in the servlet.
+    if( !TextServlet.getCurServlet().isSessionTrackingEnabled() ) {
+        throw new RuntimeException( 
+            "Error: session tracking must be enabled in servlet config file " +
+            "before storing session data" );
+    }
+    
+    // Now get the session ID.
+    HttpServletRequest req = TextServlet.getCurRequest();
+    HttpSession session = req.getSession( true );
+    return session.getId();
+  } // getSessionID()
 
   /**
    * Gets a proper string for the value. If the value is simply a string, we
