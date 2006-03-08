@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB"
+       boostSet="boostSet.txt" boostSetField="identifier" boostSetDefault="0.0">
+  <or maxSnippets="0">
+    <term field="rights">Public</term>
+    <term field="rights">UCOnly</term>
+  </or>
+</query>
