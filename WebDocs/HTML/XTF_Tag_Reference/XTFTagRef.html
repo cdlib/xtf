@@ -1134,7 +1134,9 @@
           <tr> 
             <td align="right" valign="top" class="Code"><span class="MacroCode">Value</span> 
             </td>
-            <td>specifies the particular value to store.</td>
+            <td>specifies the particular value to store. It may be either a string, 
+              or a structured piece of XML with a single outer-level element (and 
+              any number of inner elements.)</td>
           </tr>
         </table>
         <br>
@@ -1186,11 +1188,36 @@
       </div>
       <p>This function searches the session data for a value with a matching name 
         and returns the value (in this case, assigning it to the given XSLT variable.) 
-        If not found, an empty string is returned.</p>
-      <p>Note that if session tracking isn't enabled, an empty string is always 
-        returned. See the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF 
-        Deployment Guide</a> for more information on enabling session tracking.</p>
+        If not found, null is returned (i.e. empty string/empty sequence.)</p>
+      <p>Note that if session tracking isn't enabled, null is always returned. 
+        See the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF Deployment 
+        Guide</a> for more information on enabling session tracking.</p>
       </div><p>
+    <div class="Sample"><b><u>Get Session Identifier<a name="Session_getData"></a></u></b><br>
+      <!-----------------------------------------------------------------------> 
+      This function can be called within a stylesheet to obtain the current session 
+      identifier string, like this:<br>
+      <br>
+      <div class="IndentLR"> 
+        <p><span class="Code">&lt<b>xsl:variable name=&quot;sessionID&quot; select="session:getID()"/&gt;</b></span></p>
+      </div>
+      <p>where <br>
+      </p>
+      <div class="IndentLR"> 
+        <table cellspacing="12">
+          <tr> 
+            <td align="right" valign="top" class="Code">session:</td>
+            <td><span class="BaseStyle">is a namespace prefix to differentiate 
+              this function from any other.</span> The namespace URI for this 
+              prefix must be: <span class="Code"><b>java:org.cdlib.xtf.xslt.Session</b></span>.</td>
+          </tr>
+        </table>
+        <br>
+      </div>
+      <p>This function returns the unique identifier assigned by the servlet container 
+        (e.g. Resin or Tomcat) to the current user session. </p>
+      </div>
+    <p>
     <div class="Sample"><b><u>Check Enabled Status Function<a name="Session_getData"></a></u></b><br>
       <!-----------------------------------------------------------------------> 
       This function can be called within a stylesheet to check whether session 

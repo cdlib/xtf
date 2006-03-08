@@ -1577,15 +1577,26 @@
         has been declared. It places data into the session under the given name 
         (replacing any previous data with that name.)</p>
       <p>In general the session data can contain as many name/value pairs as you 
-        wish to place into it. The names and values must be simple strings; XTF 
-        doesn't support storing structured XML data in the session.</p>
+        wish to place into it. The the value can be either a string or structured 
+        XML; if you use XML that contains more than one element, be sure to include 
+        a single outer wrapper element as in the following example:</p>
+      <pre class="Sample"><b>&lt;xsl:variable name=&quot;newValue&quot;&gt;
+  <span class="Red">&lt;myWrapper&gt;</span>
+    &lt;element1&gt;<span class="MacroCode">...</span>&lt;/element1&gt;
+    &lt;element2&gt;<span class="MacroCode">...</span>&lt;/element2&gt;
+    <span class="MacroCode">...</span>
+  <span class="Red">&lt;/myWrapper&gt;</span>
+&lt;/xsl:variable&gt;
+
+&lt;xsl:value-of select="session:setData('<span class="MacroCode">someName</span>', $newValue)"></b></pre>
+      <p></p>
       <p>Retrieving session data is also very simple:</p>
       <pre class="Sample"><b>&lt;xsl:variable name=&quot;myData&quot; select=&quot;<span class="Red">session:getData</span>('<span class="MacroCode">someName</span>')"></b></pre>
       <p></p>
       <p>The<span class="Code"> session:getData </span>function retrieves the 
         data value established for this name by<span class="Code"> session:setData</span>. 
-        If no data was previously stored under that name, an empty string is returned. 
-      </p>
+        If no data was previously stored under that name, null is returned. (i.e. 
+        empty string/empty sequence). </p>
       <p class="Heading3">The Session ID and How it is Tracked</p>
       <p> <!-----------------------------------------------------------------------------------------------------------> 
         XTF automatically creates and tracks session identifiers for you. In general 
@@ -1617,6 +1628,11 @@
       <p>XTF will check the URL and if it points to an XTF servlet and the session 
         ID needs to be tracked in the URL, it will return a modified version of 
         the URL that contains the session ID.</p>
+      <p class="Heading3">Getting the session ID</p>
+      <p> <!-----------------------------------------------------------------------------------------------------------> 
+        You may want to record the identifier of the current session for reference 
+        in a database. To obtain the identifier, use code like this:</p>
+      <pre class="Sample"><b>&lt;xsl:variable name=&quot;sessionID&quot; select=&quot;<span class="Red">session:getID()</span>&quot;/&gt;</b> </pre>
       <p class="Heading3">Checking Whether Session Tracking is Enabled</p>
       <p> <!-----------------------------------------------------------------------------------------------------------> 
         If you wish, you can create stylesheet code that works differently depending 
