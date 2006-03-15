@@ -1,5 +1,41 @@
-Changes in 1.6.0-beta1 (beta release)
-===============================
+Changes in 1.6.1
+================
+
+- New "debug step" mode added, which can be very handy both to understand crossQuery and to debug stylesheet problems. This is enabled by adding "&debugStep=1" to the crossQuery URL. This also works in the experimental SRU servlet.
+
+- Added optional ability to turn on a "runaway" timer, that will report and optionally kill off requests that exceed specified time limits. This can help in tracking down intermittent server slowdowns. This is configured in conf/crossQuery.conf and conf/dynaXML.conf.
+
+- Added optional cutoff size for latency reporting. After a request has exceeded this amount of data, the servlet will report the latency immediately. When the request finally finishes, the final latency is also reported. This is configured in conf/crossQuery.conf and conf/dynaXML.conf.
+
+- Minor improvements to paging behavior in crossQuery resultFormatterCommon.xsl.
+
+- Fixed "Modify Query" link in crossQuery default/resultFormatter.xsl.
+
+- Fixed bug that caused the Content-Type of "raw" mode output from dynaXML to be "text/html" instead of the proper "text/xml".
+
+- Fixed a potential thread synchronization issue in lazy file access.
+
+- Changed timestamp output to be more compatible with Resin and Tomcat.
+
+- Fixed thread contention issue with query rewriting.
+
+- Fixed memory leak with performing searches in dynaXML.
+
+- Fixed handling of '&quot;' and '&amp;' characters in meta-data fields during indexing (was throwing an exception instead of passing these through.)
+
+- Switched indexer to using Lucene's "compound files" mode. This results in indexes that have many fewer files, and thus avoids problems with running out of filesystem handles. The indexes are compatible, and the indexer will silently upgrade older indexes to the new compound files.
+
+- TextIndexer now outputs the XTF version number (1.6.1) instead of the perpetual "1.0".
+
+- Reduced memory usage of accent and plural mapping facilities.
+
+- Clarified error message when an exception is encountered during Saxon processing.
+
+- Minor documentation updates to reflect new features above, but a full documentation revision will have to wait until the 1.7 release.
+
+
+Changes in 1.6.0
+================
 
 - Fixed caching problem that caused sort/group data to be reloaded on each query, rather than cached between queries as was intended.
 
@@ -28,6 +64,7 @@ Changes in 1.6.0-beta1 (beta release)
 - Distribution now available as either a full distribution as before, or split into "core" and "example" pieces. The "core" piece is especially useful for existing users to upgrade the core while leaving all their stylesheets and configuration files intact.
 
 - Minor documentation corrections
+
 
 Changes in 1.5.1
 ================
