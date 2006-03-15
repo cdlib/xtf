@@ -42,7 +42,7 @@ POSSIBILITY OF SUCH DAMAGE.
   exclude-result-prefixes="xsl dc mets mods xlink parse">
   
   <!-- Templates used for parsing text queries -->               
-  <xsl:import href="../crossQuery/queryParser.xsl"/>
+  <xsl:import href="../crossQuery/queryParser/default/queryParser.xsl"/>
   
   <xsl:output method="xml"
     indent="yes"
