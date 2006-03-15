@@ -59,9 +59,7 @@ public class FacetTokenizer extends TokenStream
   /**
    * Construct a token stream to remove accents from the input tokens.
    * 
-   * @param input       Input stream of tokens to process
-   * @param accentMap   Map of accented characters to their un-accented
-   *                    counterparts.
+   * @param str   The string to tokenize
    */
   public FacetTokenizer( String str )
   {

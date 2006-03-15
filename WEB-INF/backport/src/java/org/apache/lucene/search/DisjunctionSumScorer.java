@@ -108,7 +108,7 @@ public class DisjunctionSumScorer extends Scorer {
     }
   }
 
-  /** A <code>PriorityQueue</code> that orders by {@link Scorer#doc()}. */
+  /** A <code>PriorityQueue</code> that orders by Scorer.doc(). */
   private class ScorerQueue extends PriorityQueue {
     ScorerQueue(int size) {
       initialize(size);

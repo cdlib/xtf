@@ -307,7 +307,6 @@ public class CrossQuery extends TextServlet
      * @param res          The HTTP response (used for step mode only)
      * @param route        Route to the query parser
      * @param attribs      Attributes to pass to the stylesheet.
-     * @param paramBlock   Tokenized versions of the input attributes
      * @return             A parsed query request, or null if before that step
      */
     protected QueryRequest runQueryParser( HttpServletRequest  req,
@@ -421,12 +420,9 @@ public class CrossQuery extends TextServlet
      * @param req           The original HTTP request
      * @param res           Where to send the HTML response
      * @param attribs       Parameters to pass to the stylesheet
-     * @param queryResult        Hits resulting from the query request
-     * @param displayStyle  Path of the resultFormatter stylesheet
-     * @param extraStuff    Additional XML to insert into the query
-     *                      result document. Typically includes <parameters>
-     *                      block and <query> block. If null, then a plain
-     *                      result is created without any stuff added in.
+     * @param queryRequest  Query request that produced the hits
+     * @param queryResult   Hits resulting from the query request
+     * @param startTime     Time (in milliseconds) request began
      */
     protected void formatHits( String              mainTagName,
                                HttpServletRequest  req,

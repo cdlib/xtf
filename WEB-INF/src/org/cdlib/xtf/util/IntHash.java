@@ -47,7 +47,7 @@ public class IntHash
      * of entries. The actual table is created to be the smallest prime
      * greater than size*2.
      * 
-     * @param size  Max # of entries
+     * @param maxSize  Max # of entries
      */
     public IntHash( int maxSize )
     {

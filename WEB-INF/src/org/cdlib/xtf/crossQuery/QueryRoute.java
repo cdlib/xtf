@@ -70,8 +70,8 @@ public class QueryRoute
   /**
    * Reads and parses the route output from a queryRouter stylesheet.
    *
-   * @param  path                Filesystem path to the config file.
-   * @throws DynaXMLException    If a read or parse error occurs.
+   * @param  input               The output from a queryRouter stylesheet
+   * @throws GeneralException    If a read or parse error occurs.
    */
   public static QueryRoute parse( NodeInfo input )
       throws GeneralException

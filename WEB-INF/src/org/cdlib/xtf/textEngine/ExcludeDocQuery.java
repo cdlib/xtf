@@ -39,7 +39,7 @@ extends Query {
    * Constructs a new query which applies a filter to the results of the original query.
    * Filter.bits() will be called every time this query is used in a search.
    * @param query  Query to be filtered, cannot be <code>null</code>.
-   * @param filter Filter to apply to query results, cannot be <code>null</code>.
+   * @param docToExclude The ID of the document to exclude from the results.
    */
   public ExcludeDocQuery (Query query, int docToExclude) {
     this.query = query;

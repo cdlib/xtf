@@ -901,7 +901,7 @@ public abstract class TextServlet extends HttpServlet
      * @param fmt formatter to add to
      * @param name Name of the URL parameter
      * @param val String value of the URL parameter
-     * @param tokenize true to tokenize, false to skip that step
+     * @param tokenizerMap tells which parameters to tokenize, and how
      */
     protected void addParam( XMLFormatter fmt, String name, String val,
                              HashMap tokenizerMap )

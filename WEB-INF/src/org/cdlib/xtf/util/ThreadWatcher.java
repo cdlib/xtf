@@ -90,7 +90,7 @@ public class ThreadWatcher
   
   /**
    * Notifies the watcher that the current thread has completed the
-   * operation begun after {@link #beginWatch(String)}.
+   * operation begun after {@link #beginWatch(String,long,long)}.
    */
   public static void endWatch()
   {

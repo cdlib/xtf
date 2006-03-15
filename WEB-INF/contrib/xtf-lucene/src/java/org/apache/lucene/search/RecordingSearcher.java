@@ -45,8 +45,8 @@ public class RecordingSearcher extends IndexSearcher {
 
   /** Lower-level search API which supports span collection.
    *
-   * <p>{@link SpanHitCollector#collect(int,float,FieldSpans)} is called for 
-   * every non-zero scoring document.
+   * <p>{@link SpanHitCollector#collect(int,float,FieldSpanSource)} is called 
+   * for every non-zero scoring document.
    */
   public void search(Query query, SpanHitCollector results) throws IOException {
     search(query, null, results);
@@ -54,8 +54,8 @@ public class RecordingSearcher extends IndexSearcher {
   
   /** Lower-level search API which supports span collection.
    *
-   * <p>{@link SpanHitCollector#collect(int,float,FieldSpans)} is called for 
-   * every non-zero scoring document which matches the filter.
+   * <p>{@link SpanHitCollector#collect(int,float,FieldSpanSource)} is called 
+   * for every non-zero scoring document which matches the filter.
    */
   public void search(Query query, Filter filter,
                      final SpanHitCollector results) throws IOException {

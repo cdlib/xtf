@@ -132,7 +132,7 @@ public class DocHitImpl extends DocHit
      * @param weight          The query weight that will be used to calculate
      *                        an explanation.
      * @param boostSet        The boost set used, or null if none
-     * @param boostSetExponent Exponent applied to the boost set factor
+     * @param boostParams     Other boost set parameters (e.g. exponent)
      */
     void finishWithExplain( SnippetMaker snippetMaker,
                             float        docScoreNorm,
