@@ -39,10 +39,10 @@
       <src path="${src3}"/>
     </javac>
   </target>
-	
+                
   <target name="tokenizer" description="compile the XTF tokenizer">
     <javacc target="${src1}/org/cdlib/xtf/textIndexer/tokenizer/XTFTokenizer.jj"
-  	        javacchome="${lib}"/>
+                        javacchome="${lib}"/>
   </target>
 
   <!-- ================================================== jar -->
@@ -119,6 +119,7 @@
         <include name="INSTALL"/>
 
         <include name="LICENSE*"/>
+        <include name="CHANGES"/>
 
         <include name="WebDocs/HTML/**/*"/>
 
