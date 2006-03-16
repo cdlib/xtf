@@ -452,6 +452,11 @@ public class DefaultQueryProcessor extends QueryProcessor
         final ArrayList list = new ArrayList();
         
         XtfQueryTraverser trav = new XtfQueryTraverser() {
+          public void traverseQuery( Query q ) {
+              // Skip queries boosted to nothing
+              if( q.getBoost() > 0.001f )
+                  super.traverseQuery( q );
+          }
           protected void traverse( TermQuery q ) {
               list.add( q.getTerm() );
           }
