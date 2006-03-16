@@ -370,4 +370,13 @@
     </moreLike>
   </xsl:template>
     
+<!-- ====================================================================== -->
+<!-- Spellcheck Template                                                    -->
+<!--                                                                        -->
+<!-- Specifies parameters for spellcheck of search terms.                   -->
+<!-- ====================================================================== -->
+
+  <xsl:template name="spellcheck">
+    <spellcheck suggestionsPerTerm="1"/>
+  </xsl:template>
 </xsl:stylesheet>

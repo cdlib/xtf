@@ -33,7 +33,8 @@
 -->
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-                              xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                              xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                              xmlns:cdl="http://cdlib.org">
   
   <xsl:import href="format-query.xsl"/>
   
@@ -1107,6 +1108,47 @@
         </xsl:for-each>
       </search>
     </xsl:result-document>
+  </xsl:template>
+
+  <!-- ====================================================================== -->
+  <!-- Generate Spelling Suggestion                                           -->
+  <!-- ====================================================================== -->
+
+  <xsl:template name="did-you-mean">
+    <xsl:param name="baseURL"/>
+    <xsl:param name="spelling"/>
+    
+    <xsl:variable name="newURL" select="cdl:replace-misspellings($baseURL, $spelling/term)"/>
+    <b>Did you mean to search for
+    <span class="term">
+      <a href="{$newURL}">
+        <xsl:apply-templates select="$spelling/term" mode="suggest"/>
+      </a>
+    </span>
+    <xsl:text>?</xsl:text> </b>
+  </xsl:template>
+  
+  <xsl:function name="cdl:replace-misspellings">
+    <xsl:param name="baseURL"/>
+    <xsl:param name="terms"/>
+    
+    <xsl:choose>
+      <xsl:when test="$terms">
+        <xsl:variable name="remainder" select="cdl:replace-misspellings($baseURL, $terms[position() > 1])"/>
+        <xsl:variable name="match" select="concat('(', $terms[1]/@field, '=[^&amp;]*)', $terms[1]/@term)"/>
+        <xsl:value-of select="replace($remainder, $match, concat('$1', $terms[1]/suggestion[1]/@term), 'i')"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$baseURL"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+  
+  <xsl:template match="term" mode="suggest">
+    <xsl:if test="position() > 1">
+      <xsl:text> </xsl:text>
+    </xsl:if>
+    <xsl:value-of select="suggestion[1]/@term"/>
   </xsl:template>
 
 </xsl:stylesheet>

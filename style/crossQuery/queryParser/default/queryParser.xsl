@@ -117,6 +117,7 @@
           <xsl:call-template name="moreLike"/>
         </xsl:when>
         <xsl:otherwise>
+          <xsl:call-template name="spellcheck"/>
           <xsl:apply-templates/>
         </xsl:otherwise>
       </xsl:choose>
