@@ -360,7 +360,8 @@ public class TextIndexer
         Trace.info( "Optimizing Index:" );
         Trace.tab();
         
-        File idxRootDir = new File( cfgInfo.indexInfo.indexPath );      
+        File idxRootDir = new File( Path.resolveRelOrAbs(
+                cfgInfo.xtfHomePath, cfgInfo.indexInfo.indexPath) );
         optimizer.processDir( idxRootDir );
         
         Trace.untab();
@@ -383,7 +384,8 @@ public class TextIndexer
         Trace.info( "Updating Spellcheck Dictionary:" );
         Trace.tab();
         
-        File idxRootDir = new File( cfgInfo.indexInfo.indexPath );      
+        File idxRootDir = new File( Path.resolveRelOrAbs(
+                cfgInfo.xtfHomePath, cfgInfo.indexInfo.indexPath) );
         dictMaker.processDir( idxRootDir );
         
         Trace.untab();
