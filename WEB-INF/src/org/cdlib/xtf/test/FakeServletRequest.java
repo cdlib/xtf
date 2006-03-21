@@ -200,12 +200,12 @@ public class FakeServletRequest implements HttpServletRequest
   }
   public HttpSession getSession()
   {
-    assert false;
     return null;
   }
   public HttpSession getSession( boolean create )
   {
-    assert false;
+    if( create )
+        throw new RuntimeException( "Cannot create session" );
     return null;
   }
   public Principal getUserPrincipal()
@@ -215,22 +215,18 @@ public class FakeServletRequest implements HttpServletRequest
   }
   public boolean isRequestedSessionIdFromCookie()
   {
-    assert false;
     return false;
   }
   public boolean isRequestedSessionIdFromUrl()
   {
-    assert false;
     return false;
   }
   public boolean isRequestedSessionIdFromURL()
   {
-    assert false;
     return false;
   }
   public boolean isRequestedSessionIdValid()
   {
-    assert false;
     return false;
   }
   public boolean isUserInRole( String role )
