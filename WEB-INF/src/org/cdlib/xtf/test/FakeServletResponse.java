@@ -84,23 +84,19 @@ public class FakeServletResponse implements HttpServletResponse
   }
   public String encodeRedirectUrl( String url )
   {
-    assert false;
-    return null;
+    return url;
   }
   public String encodeRedirectURL( String url )
   {
-    assert false;
-    return null;
+    return url;
   }
   public String encodeUrl( String url )
   {
-    assert false;
-    return null;
+    return url;
   }
   public String encodeURL( String url )
   {
-    assert false;
-    return null;
+    return url;
   }
   public void sendError( int sc, String msg )
     throws IOException
