@@ -42,8 +42,6 @@ import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.TreeBuilder;
 
-import org.apache.lucene.bigram.BigramSpanRangeQuery;
-import org.apache.lucene.bigram.BigramSpanWildcardQuery;
 import org.apache.lucene.chunk.SpanChunkedNotQuery;
 import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.index.Term;
@@ -501,7 +499,7 @@ public class QueryRequestParser
         if( name.equals("term") ) {
             Term term = parseTerm( parent, field, "term" );
             SpanQuery q = isWildcardTerm(term) ? 
-                new BigramSpanWildcardQuery( term, req.termLimit ) :
+                new XtfSpanWildcardQuery( term, req.termLimit ) :
                 new SpanTermQuery( term );
             q.setSpanRecording( maxSnippets );
             return q;
@@ -1064,7 +1062,7 @@ public class QueryRequestParser
         }
         
         // And we're done.
-        SpanQuery q = new BigramSpanRangeQuery( lower, upper, inclusive, req.termLimit );
+        SpanQuery q = new XtfSpanRangeQuery( lower, upper, inclusive, req.termLimit );
         q.setSpanRecording( maxSnippets );
         return q;
     } // parseRange()
@@ -1143,7 +1141,7 @@ public class QueryRequestParser
                 if( slop == 0 ) {
                     Term t = parseTerm( el, field, "term" );
                     if( isWildcardTerm(t) )
-                        q = new BigramSpanWildcardQuery(t, req.termLimit);
+                        q = new XtfSpanWildcardQuery(t, req.termLimit);
                     else
                         q = new SpanTermQuery(t);
                     q.setSpanRecording( maxSnippets );
