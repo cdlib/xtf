@@ -152,7 +152,19 @@
       <!-- Process the text query, if any -->
       <xsl:if test="count($textParam) &gt; 0">
         <xsl:apply-templates select="$textParam"/>
-      </xsl:if>     
+      </xsl:if>   <!-- Unary Not -->
+      <xsl:for-each select="param[contains(@name, '-exclude')]">
+        <xsl:variable name="field" select="replace(@name, '-exclude', '')"/>
+        <xsl:if test="not(//param[@name=$field])">
+          <not field="{$field}">
+            <xsl:apply-templates/>
+          </not>
+        </xsl:if>
+      </xsl:for-each>  
+      <!-- If there are no meta, text queries, or unary nots, output a dummy -->
+      <xsl:if test="count($metaParams) = 0 and count($textParam) = 0 and not(param[matches(@name, '.*-exclude')])">
+        <term field="text">$!@$$@!$</term>
+      </xsl:if>
     </and>
     
   </xsl:template>
