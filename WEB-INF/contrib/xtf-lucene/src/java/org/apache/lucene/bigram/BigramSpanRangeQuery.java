@@ -37,7 +37,7 @@ public class BigramSpanRangeQuery extends SpanRangeQuery {
    * a limit on the total number of terms matched.
    */
   public BigramSpanRangeQuery( Term lowerTerm, Term upperTerm, 
-                            boolean inclusive, int termLimit )
+                               boolean inclusive, int termLimit )
   {
     super( lowerTerm, upperTerm, inclusive, termLimit );
   }
@@ -62,4 +62,4 @@ public class BigramSpanRangeQuery extends SpanRangeQuery {
       // Others are okay.
       return false;
   }
-}
+} // class BigramSpanRangeQuery

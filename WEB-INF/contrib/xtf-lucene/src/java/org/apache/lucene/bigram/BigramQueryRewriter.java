@@ -87,7 +87,7 @@ public class BigramQueryRewriter extends QueryRewriter {
   public static boolean isBigram(Set stopWords, String str) {
     int pos = str.indexOf('~');
 
-    // A tilde tells us if it's an bigram.
+    // A tilde tells us if it's a bigram.
     if (pos < 0)
       return false;
 
@@ -97,7 +97,7 @@ public class BigramQueryRewriter extends QueryRewriter {
     String after = str.substring(pos + 1);
     assert stopWords.contains(before) || stopWords.contains(after);
 
-    // It's an bi-gram.
+    // It's a bi-gram.
     return true;
   } // isBigram()
 

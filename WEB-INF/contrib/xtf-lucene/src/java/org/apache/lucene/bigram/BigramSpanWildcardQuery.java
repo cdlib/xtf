@@ -57,4 +57,4 @@ public class BigramSpanWildcardQuery extends SpanWildcardQuery
       return false;
   }
 
-} // class XtfSpanWildcardQuery
+} // class BigramSpanWildcardQuery
