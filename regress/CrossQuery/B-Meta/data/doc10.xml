@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <title>Wow, that's weird</title>
+    <creator>My Happy Hamster</creator>
+    <identifier xtf:store="false">http://ark.cdlib.org/ark:/13030/18283</identifier>
+    <relation>http://www.orangecrush.com/</relation>
+    <rights xtf:index="no">Public</rights>
+    <foo>bar</foo>
+    <era xtf:meta="yes">Snoot 1920'fribble</era>
+</document>

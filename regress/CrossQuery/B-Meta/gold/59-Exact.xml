@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc10.xml" totalHits="0">
+      <meta>
+         <title>Wow, that's weird</title>
+         <creator>My Happy Hamster</creator>
+         <relation>http://www.orangecrush.com/</relation>
+         <rights>Public</rights>
+         <foo>bar</foo>
+         <era>
+            <snippet rank="1">Snoot <hit>
+                  <term>1920</term>
+               </hit>'fribble</snippet>
+         </era>
+      </meta>
+   </docHit>
+</crossQueryResult>

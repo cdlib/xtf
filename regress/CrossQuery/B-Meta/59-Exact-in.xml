@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Test interaction of bi-grams with end-of-field marker -->
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <range field="era" inclusive="yes">
+    <lower>1920</lower>
+  </range>
+</query>
