@@ -351,9 +351,9 @@
     
     <xsl:param name="title"/>
     
-    <!-- Normalize Case -->
+    <!-- Normalize Spaces & Case-->
     <xsl:variable name="lower-title">
-      <xsl:value-of select="translate($title, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+      <xsl:value-of select="translate(normalize-space($title), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
     </xsl:variable>
     
     <!-- Remove Punctuation -->
