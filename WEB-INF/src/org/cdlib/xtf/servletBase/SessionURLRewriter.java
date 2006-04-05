@@ -29,6 +29,8 @@ package org.cdlib.xtf.servletBase;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -44,6 +46,7 @@ import net.sf.saxon.trans.XPathException;
  */
 public class SessionURLRewriter extends ProxyReceiver 
 {
+  private Pattern             encodeURLPattern;
   private HttpServletRequest  httpRequest;
   private HttpServletResponse httpResponse;
   private NamePool            namePool;
@@ -55,12 +58,14 @@ public class SessionURLRewriter extends ProxyReceiver
    * get session info and to rewrite URLs.
    */
   SessionURLRewriter( Receiver            underlyingReceiver,
+                      Pattern             encodeURLPattern,
                       HttpServletRequest  httpRequest,
                       HttpServletResponse httpResponse )
   {
       setUnderlyingReceiver( underlyingReceiver );
-      this.httpRequest  = httpRequest;
-      this.httpResponse = httpResponse;
+      this.encodeURLPattern = encodeURLPattern;
+      this.httpRequest      = httpRequest;
+      this.httpResponse     = httpResponse;
   }
   
   /** 
@@ -110,9 +115,20 @@ public class SessionURLRewriter extends ProxyReceiver
         super.attribute( nameCode, typeCode, value, locationId, properties );
         return;
     }
+    
+    // If the URL is absolute and a pattern has been specified, only encode it
+    // if a pattern was specified and the URL matches the pattern.
+    //
+    String strVal = value.toString();
+    if( strVal.startsWith("http") &&
+        (encodeURLPattern == null || 
+        !encodeURLPattern.matcher(strVal).matches()) )
+    {
+        super.attribute( nameCode, typeCode, value, locationId, properties );
+        return;
+    }
 
     // See if the servlet container wants to map this URL to add a session ID.
-    String strVal = value.toString();
     String mapped = httpResponse.encodeURL( strVal );
     if( !mapped.equals(value) ) {
         super.attribute( nameCode, typeCode, mapped, locationId, properties );

@@ -30,6 +30,8 @@ package org.cdlib.xtf.servletBase;
  */
 
 import java.io.File;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -96,6 +98,12 @@ public abstract class TextConfig
     
     /** Whether session tracking is enabled. Default: false */
     public boolean trackSessions = false;
+    
+    /** 
+     * Which URLs to apply encoding to, if session tracking enabled and
+     * user doesn't allow cookies.
+     */
+    public Pattern sessionEncodeURLPattern = null;
     
     /** All the configuration attributes in the form of name/value pairs */
     public AttribList attribs = new AttribList();
@@ -242,6 +250,18 @@ public abstract class TextConfig
             
         else if( tagAttr.equalsIgnoreCase("trackSessions.track") ) {
             trackSessions = parseBoolean( tagAttr, strVal );
+            return true;
+        }
+        
+        else if( tagAttr.equalsIgnoreCase("trackSessions.encodeURLPattern") ) {
+            try {
+                sessionEncodeURLPattern = Pattern.compile( strVal );
+            }
+            catch( PatternSyntaxException e ) {
+                throw new GeneralException( "Config file property " +
+                    tagAttr + " must be a valid regular expression" );
+                
+            }
             return true;
         }
 
