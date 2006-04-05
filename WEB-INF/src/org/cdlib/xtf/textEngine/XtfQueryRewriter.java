@@ -119,7 +119,9 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
     Query rewrittenSub = rewriteQuery(mlt.getSubQuery());
     if (rewrittenSub == mlt.getSubQuery() && !forceRewrite(mlt))
         return mlt;
-    return copyBoost(mlt, new MoreLikeThisQuery(rewrittenSub));
+    MoreLikeThisQuery ret = (MoreLikeThisQuery) mlt.clone();
+    ret.setSubQuery(rewrittenSub);
+    return ret;
   }
   
 }

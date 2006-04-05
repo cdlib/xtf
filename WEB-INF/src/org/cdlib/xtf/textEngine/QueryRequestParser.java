@@ -31,8 +31,10 @@ package org.cdlib.xtf.textEngine;
 
 import java.io.File;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.xml.transform.Source;
@@ -827,29 +829,11 @@ public class QueryRequestParser
             req.boostSetParams.defaultBoost = parseFloatAttrib( el, attrName );
         }
         
-        else if( attrName.equalsIgnoreCase("normalizeScores") ) {
-            String yesno = parseStringAttrib( el, "normalizeScores" );
-            if( yesno.equals("yes") || yesno.equals("true") )
-                req.normalizeScores = true;
-            else if( yesno.equals("no") || yesno.equals("false") )
-                req.normalizeScores = false;
-            else
-                error( "'normalizeScores' attribute must have value " +
-                       "'yes', 'no', 'true', or 'false'" );
-            
-        }
+        else if( attrName.equalsIgnoreCase("normalizeScores") )
+            req.normalizeScores = parseBooleanAttrib( el, "normalizeScores" );
 
-        else if( attrName.equalsIgnoreCase("explainScores") ) {
-            String yesno = parseStringAttrib( el, "explainScores" );
-            if( yesno.equals("yes") || yesno.equals("true") )
-                req.explainScores = true;
-            else if( yesno.equals("no") || yesno.equals("false") )
-                req.explainScores = false;
-            else
-                error( "'explainScores' attribute must have value " +
-                       "'yes', 'no', 'true', or 'false'" );
-            
-        }
+        else if( attrName.equalsIgnoreCase("explainScores") )
+            req.explainScores = parseBooleanAttrib( el, "explainScores" );
 
         else if( attrName.equals("field") || attrName.equals("metaField") )
             ; // handled elsewhere
@@ -860,6 +844,10 @@ public class QueryRequestParser
         
         else if( attrName.equals("slop") &&
                  el.name().equals("near") )
+            ; // handled elsewhere
+        
+        else if( attrName.matches("^fieldsToScan$|^minWordLen$|^maxWordLen$|^minDocFreq$|^maxDocFreq$|^minTermFreq$|^termBoost$|^maxQueryTerms$") &&
+                 el.name().equals("moreLike") )
             ; // handled elsewhere
         
         else {
@@ -1010,13 +998,7 @@ public class QueryRequestParser
         throws QueryGenException
     {
         // Inclusive or exclusive?
-        boolean inclusive = false;
-        String yesno = parseStringAttrib( parent, "inclusive", "yes" );
-        if( yesno.equals("yes") || yesno.equals("true") )
-            inclusive = true;
-        else if( !yesno.equals("no") && !yesno.equals("false") )
-            error( "'inclusive' attribute for 'range' query must have value " +
-                   "'yes', 'no', 'true', or 'false'" );
+        boolean inclusive = parseBooleanAttrib(parent, "inclusive", true );
         
         // Check the children for the lower and upper bounds.
         Term lower = null;
@@ -1205,7 +1187,40 @@ public class QueryRequestParser
             error( "'moreLike' element requires a sub-query" );
         
         // Form up the result.
-        return new MoreLikeThisQuery( subQuery );
+        MoreLikeThisQuery ret = new MoreLikeThisQuery( subQuery );
+        
+        // Process any optional attributes.
+        for( int i = 0; i < parent.nAttrs(); i++ ) {
+            String attrName = parent.attrName( i );
+            if( attrName.equalsIgnoreCase("minWordLen") )
+                ret.setMinWordLen( parseIntAttrib(parent, attrName) );
+            else if( attrName.equalsIgnoreCase("maxWordLen") )
+                ret.setMaxWordLen( parseIntAttrib(parent, attrName) );
+            else if( attrName.equalsIgnoreCase("minDocFreq") )
+                ret.setMinDocFreq( parseIntAttrib(parent, attrName) );
+            else if( attrName.equalsIgnoreCase("maxDocFreq") )
+                ret.setMaxDocFreq( parseIntAttrib(parent, attrName) );
+            else if( attrName.equalsIgnoreCase("minTermFreq") )
+                ret.setMinTermFreq( parseIntAttrib(parent, attrName) );
+            else if( attrName.equalsIgnoreCase("termBoost") )
+                ret.setBoost( parseBooleanAttrib(parent, attrName) );
+            else if( attrName.equalsIgnoreCase("maxQueryTerms") )
+                ret.setMaxQueryTerms( parseIntAttrib(parent, attrName) );
+            else if( attrName.equalsIgnoreCase("fieldsToScan") ) {
+                String val = parseStringAttrib( parent, attrName );
+                StringTokenizer tok = new StringTokenizer( val, " \t\r\n,;|" );
+                ArrayList list = new ArrayList();
+                while( tok.hasMoreTokens() )
+                    list.add( tok.nextToken() );
+                if( list.size() > 0 )
+                    ret.setFieldNames( (String[]) list.toArray(new String[list.size()]) );
+            }
+            else
+                error( "Unrecognized attribute '" + attrName + "' on 'moreLike' element" );
+        }
+        
+        // All done.
+        return ret;
       
     } // parseMoreLike()
     
@@ -1495,6 +1510,71 @@ public class QueryRequestParser
             return 0;
         }
     } // parseFloatAttrib()
+    
+    
+    /**
+     * Locate the named attribute and retrieve its value as an boolean.
+     * If not found, an error exception is thrown.
+     * 
+     * @param el Element to search
+     * @param attribName Attribute to find
+     */
+    private boolean parseBooleanAttrib( EasyNode el, String attribName )
+        throws QueryGenException
+    {
+        return parseBooleanAttrib( el, attribName, false, false );
+    }
+    
+    /**
+     * Locate the named attribute and retrieve its value as an boolean.
+     * If not found, return a default value.
+     * 
+     * @param el EasyNode to search
+     * @param attribName Attribute to find
+     * @param defaultVal If not found and useDefault is true, return this 
+     *                   value.
+     */
+    private boolean parseBooleanAttrib( EasyNode el, 
+                                        String   attribName, 
+                                        boolean  defaultVal  )
+        throws QueryGenException
+    {
+        return parseBooleanAttrib( el, attribName, true, defaultVal );
+    }
+    
+    /**
+     * Locate the named attribute and retrieve its value as an boolean.
+     * Handles default processing if requested.
+     * 
+     * @param el EasyNode to search
+     * @param attribName Attribute to find
+     * @param useDefault true to supply a default value if none found,
+     *                   false to throw an exception if not found.
+     * @param defaultVal If not found and useDefault is true, return this 
+     *                   value.
+     */
+    private boolean parseBooleanAttrib( EasyNode el, String attribName, 
+                                        boolean useDefault, 
+                                        boolean defaultVal )
+        throws QueryGenException
+    {
+        String elName = el.name();
+        String str = parseStringAttrib( el, 
+                                        attribName,
+                                        useDefault,
+                                        null );
+        if( str == null && useDefault )
+            return defaultVal;
+        
+        if( str.matches("^yes$|^true$|^1$") )
+            return true;
+        else if( str.matches("^no$|^false$|^0$") )
+            return false;
+        
+        error( "'" + attribName + "' attribute of '" + elName + 
+               "' element is not a valid boolean (yes/no/true/false/1/0)" );
+        return false;
+    } // parseBooleanAttrib()
     
     
     /**
