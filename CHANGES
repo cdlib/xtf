@@ -1,3 +1,69 @@
+Changes in 1.7
+==============
+
+- Added new front end to crossQuery servlet. The new "query router" stylesheet allows the use of multiple query parsers. Those just starting out, or who only need one parser, can use the default queryRouter.xsl without change.
+
+- Added new "moreLike" query operator which uses a simple index-based algorithm to locate additional documents that resemble a specified document. This feature is considered experimental and subject to improvement/change.
+
+- XTF now allows stylesheets to track data on a per-user-session basis. A simple API is provided to get and set state data. The session identifier is tracked using cookies, or if the user has cookies disabled, though URL rewriting.
+
+- Default stylesheets now expose "Book Bag" and "More Like This" functionality. The former is based on the session state API, the latter on the new <moreLikeThis> query operator. These also demonstrate an AJAX style of programming, updating pages on the fly.
+
+- New "exact" query operator added. To match, the field must contain exactly the query phrase; no more, no less.
+
+- Made minor changes to the experimental "boost set" facility.
+
+- Fixed bug in phrase query if stop-words appeared at start or end of a meta-data field.
+
+- Fixed bug with where apostrophe and other combined words at start or end of a meta-data field would cause queries to not match.
+
+- Refactored Lucene integration. The result is more modular, which will help in upgrading to Lucene 1.9 and 2.0.
+
+- Config file parameters are now case insensitive. Also, boolean parameters all uniformly accept "true", "yes", "1" as synonyms, and "false", "no", and "0" as synonyms.
+
+- Added ability to display non-normalized scores (or raw) scores in crossQuery.
+
+- Added optional "score explanation" in crossQuery, to give a very detailed description of how each document's score was computed.
+
+- Made several changes and fixes to the experimental 'facet' feature.
+
+- Multiple index prefilters may now be specified for one document by the docSelector stylesheet. The prefilters will be run in a chain.
+
+- Added support for parsing MARC21 data files. The indexer will break them into records, convert them to MARCXML format, and pass each converted record to the prefilter(s). Very large files are supported, and the indexer will try to skip bad records and recover.
+
+- Fixed null pointer exception in dynaXML when an empty query was specified.
+
+- Servlets now allow ";" to separate URL parameters. This can be quite handy as opposed to "&", since the latter requires special escaping in stylesheets. Both are now supported interchangeably.
+
+- All references to "ngrams" have been changed to the more specific term "bigrams".
+
+- Improved efficiency of span collection in the Text Engine.
+
+- Vastly reduced memory usage of cached sorting arrays for indexes that contain only meta-data.
+
+- Improved determination of 'root.url'
+
+- crossQueryResult input to resultFormatter stylesheet now contains the original parsed URL parameters, and the query that resulted from the queryParser stylesheet. Both of these can be quite useful in result formatting.
+
+- Queries output from queryParser stylesheet may now optionally contain <resultData> elements. These are ignored by the Text Engine, but passed on to the result formatter stylesheet. They're a handy way for the query parser to pass data directly to the result formatter.
+
+- Meta-data fields can now be marked in index prefilter as xtf:store="no", which prevents them from showing up in query results. The field is still indexed, just not stored or displayed.
+
+- Similarly, the index prefilter can mark a field with xtf:index="no", causing it to not be indexed (and this not searchable) but still be stored and displayed.
+
+- Improved efficiency of textIndexer's culling phase. In particular, it no longer runs out of memory and crashes on indexes with millions of documents.
+
+- 'indexStats' tool is now much faster, and attempts to provide as much information early in the process as possible.
+
+- Added new 'indexDump' tool, which can dump selected meta-data fields from all documents in an index.
+
+- Fixed bug where indexer would occasionally crash when trying to create a lazy tree file without creating its directory first.
+
+- Fixed bug that caused XML namespace declarations to be dropped from the beginning of in lazy tree files.
+
+- textIndexer now tracks and displays the elapsed time of each indexing run.
+
+
 Changes in 1.6.1
 ================
 
