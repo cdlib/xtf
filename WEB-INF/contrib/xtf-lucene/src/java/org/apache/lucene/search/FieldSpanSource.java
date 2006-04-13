@@ -1,8 +1,5 @@
 package org.apache.lucene.search;
 
-import org.apache.lucene.search.spans.FieldSpans;
-import org.apache.lucene.search.spans.SpanRecordingScorer;
-
 /*
  * Copyright (c) 2005, Regents of the University of California
  * All rights reserved.
@@ -32,6 +29,18 @@ import org.apache.lucene.search.spans.SpanRecordingScorer;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.lucene.search.spans.FieldSpans;
+import org.apache.lucene.search.spans.Span;
+import org.apache.lucene.search.spans.SpanPosComparator;
+import org.apache.lucene.search.spans.SpanRecordingScorer;
+
 /**
  * This class, an instance of which is passed to a SpanHitCollector for each
  * hit, retrieves FieldSpans when requested. This is performed lazily so that
@@ -39,15 +48,37 @@ import org.apache.lucene.search.spans.SpanRecordingScorer;
  */
 public class FieldSpanSource 
 {
-  SpanRecordingScorer[] scorers;
+  String[] fields;
+  SpanRecordingScorer[][] scorersPerField;
+  ScoreOrder[] scoreOrder = new ScoreOrder[0];
   int curDoc = -1;
   
   /**
    * Package-private on purpose. Should only be created by RecordingSearcher.
    */
-  FieldSpanSource(SpanRecordingScorer[] scorers) {
-    this.scorers = scorers;
-  }
+  FieldSpanSource(SpanRecordingScorer[] scorers) 
+  {
+    // Make a list of scorers per field
+    HashMap map = new HashMap();
+    for (int i = 0; i < scorers.length; i++ ) {
+      String field = scorers[i].getField();
+      ArrayList list = (ArrayList) map.get(field);
+      if (list == null) {
+        list = new ArrayList();
+        map.put(field, list);
+      }
+      list.add(scorers[i]);
+    }
+    
+    // Convert the map to handy arrays.
+    fields = (String[]) map.keySet().toArray(new String[map.size()]);
+    scorersPerField = new SpanRecordingScorer[fields.length][];
+    for (int i = 0; i < fields.length; i++) {
+      ArrayList list = (ArrayList) map.get(fields[i]);
+      scorersPerField[i] = (SpanRecordingScorer[]) list.toArray(
+        new SpanRecordingScorer[list.size()]);
+    }
+  } // constructor
   
   /**
    * Retrieve the spans for the given document.
@@ -56,13 +87,204 @@ public class FieldSpanSource
    *            only get spans for the most recent document collected.
    * @return    Recorded spans for the document.
    */
-  public FieldSpans getSpans(int doc) {
+  public synchronized FieldSpans getSpans(int doc) {
     if (doc != curDoc)
-        throw new UnsupportedOperationException( "Foo" );
+      throw new UnsupportedOperationException( "FieldSpanSource can only retrieve spans for current document" );
     
-    FieldSpans fieldSpans = new FieldSpans();
-    for (int i=0; i<scorers.length; i++)
-      scorers[i].recordSpans(doc, fieldSpans);
-    return fieldSpans;
+    // Process the spans for each field
+    FieldSpans ret = new FieldSpans();
+    for (int i = 0; i < fields.length; i++) 
+      addSpans(doc, fields[i], scorersPerField[i], ret);
+    return ret;
   }
-}
+
+  /**
+   * For the given field and list of scorers, calculate (and deduplicate if
+   * necessary) the spans for that field.
+   * 
+   * @param doc       Document for which spans are being recorded
+   * @param field     The field being considered
+   * @param scorers   All scorers for that field
+   * @param out       Where to store the resulting spans.
+   */
+  private void addSpans(int doc,
+                        String field, 
+                        SpanRecordingScorer[] scorers, 
+                        FieldSpans out)
+  {
+    // Figure out how many spans total there are for this field. Also
+    // accumulate the set of terms.
+    //
+    int nToDedupe = 0;
+    int maxSpans = 0;
+    Set terms = null;
+    for (int i = 0; i < scorers.length; i++) 
+    {
+      // Skip scorers that didn't record for this doc.
+      if (scorers[i].getSpanDoc() != doc)
+        continue;
+    
+      // Count spans.
+      nToDedupe += scorers[i].getSpanCount();
+  
+      // Track the max # of spans to actually record (which may be less than
+      // the number of spans for the doc.)
+      //
+      if (maxSpans == 0)
+        maxSpans = scorers[i].getMaxSpans();
+      else {
+        assert maxSpans == scorers[i].getMaxSpans() : 
+          "inconsistent span recording specification";
+      }
+      
+      // Accumulate the set of terms matched by the queries
+      if (terms == null)
+        terms = scorers[i].getTerms();
+      else {
+        Set newTerms = new HashSet();
+        newTerms.addAll(terms);
+        newTerms.addAll(scorers[i].getTerms());
+        terms = newTerms;
+      }
+    }
+    
+    // No spans? No work to do.
+    if (nToDedupe == 0)
+      return;
+    
+    // Collect the raw spans together.
+    Span[] toDedupe = new Span[nToDedupe];
+    int start = 0;
+    for (int i = 0; i < scorers.length; i++) {
+      if (scorers[i].getSpanDoc() != doc)
+        continue;
+    
+      int count = scorers[i].getSpanCount();
+      System.arraycopy(scorers[i].getSpans(), 0, toDedupe, start, count);
+      start += count;
+    }
+    assert start == nToDedupe : "internal error: mis-counted spans";
+    
+    // Sort the spans in ascending order by start/end.
+    Arrays.sort(toDedupe, SpanPosComparator.theInstance);
+    
+    // Expand the score order array if we need to.
+    if (scoreOrder.length < nToDedupe) {
+      ScoreOrder[] newScoreOrder = new ScoreOrder[nToDedupe+5];
+      System.arraycopy(scoreOrder, 0, newScoreOrder, 0, scoreOrder.length);
+      for (int i=scoreOrder.length; i<newScoreOrder.length; i++)
+          newScoreOrder[i] = new ScoreOrder();
+      scoreOrder = newScoreOrder;
+    }
+    
+    // Record the links in start/end order.
+    for (int i=0; i<nToDedupe; i++) {
+      scoreOrder[i].span = toDedupe[i];
+      scoreOrder[i].posOrder = i;
+      scoreOrder[i].cancelled = false;
+      scoreOrder[i].prevInPosOrder = 
+          ((i-1) >= 0)        ? scoreOrder[i-1] : null;
+      scoreOrder[i].nextInPosOrder = 
+          ((i+1) < nToDedupe) ? scoreOrder[i+1] : null;
+      scoreOrder[i].nextDeduped = null;
+    }
+
+    // Now make a second sort, this time by descending score.
+    Arrays.sort(scoreOrder, 0, nToDedupe, theScoreComparator);
+
+    // De-duplicate the score array, starting with the high scores first.
+    int nDeduped = 0;
+    int totalDeduped = 0;
+    ScoreOrder firstDeduped = null;
+    ScoreOrder lastDeduped = null;
+    ScoreOrder o;
+    for (int i=0; i<nToDedupe; i++) 
+    {
+      // Skip entries that have already been cancelled.
+      if (scoreOrder[i].cancelled)
+        continue;
+
+      // We found an entry we want to keep. Link it into our list.
+      totalDeduped++;
+      if (nDeduped < maxSpans) {
+        if (firstDeduped == null)
+          firstDeduped = scoreOrder[i];
+        else
+          lastDeduped.nextDeduped = scoreOrder[i];
+        lastDeduped = scoreOrder[i];
+        nDeduped++;
+      }
+
+      // Cancel any overlapping entries before this one, stopping at
+      // one that doesn't overlap (all those behind it won't either).
+      //
+      final Span scoreSpan = scoreOrder[i].span;
+      o = scoreOrder[i].prevInPosOrder;
+      while (o != null && o.span.end > scoreSpan.start) {
+        o.cancelled = true;
+        assert o.posOrder == 0 ||
+               o.prevInPosOrder.posOrder == o.posOrder-1;
+        o = o.prevInPosOrder;
+      }
+
+      // Similarly, cancel overlapping entries after this one.
+      o = scoreOrder[i].nextInPosOrder; 
+      while (o != null && o.span.start < scoreSpan.end) {
+        o.cancelled = true;
+        assert o.posOrder == nToDedupe-1 ||
+               o.nextInPosOrder.posOrder == o.posOrder+1;
+        o = o.nextInPosOrder;
+      }
+    }
+
+    // Build the final result array.
+    Span[] outSpans = new Span[nDeduped];
+    int rank = 0;
+    float prevScore = Float.MAX_VALUE;
+    int i = 0;
+    for (o = firstDeduped; o != null; o = o.nextDeduped) {
+      assert !o.cancelled : "kept span was cancelled";
+      Span s = (Span) o.span.clone();
+      assert s.score <= prevScore : "incorrect dedupe list linking";
+      if (rank == nDeduped-1)
+        assert o == lastDeduped;
+      prevScore = s.score;
+      s.rank = rank++;
+      outSpans[i++] = s;
+    }
+    assert rank == nDeduped : "incorrect dedupe list linking";
+    
+    // Apply a final sort by position.
+    Arrays.sort(outSpans, SpanPosComparator.theInstance);
+    
+    // And output it.
+    out.recordSpans(field, totalDeduped, outSpans, terms);
+    
+  } // deduplicate()
+
+  /** Keeps track of the next and previous spans, in score order */
+  private class ScoreOrder {
+    Span       span;
+    int        posOrder;
+    boolean    cancelled;
+    ScoreOrder nextInPosOrder;
+    ScoreOrder prevInPosOrder;
+    ScoreOrder nextDeduped;
+  }
+
+  /** Used to sort spans by descending score, then by position */
+  private static class ScoreComparator implements Comparator {
+    public int compare(Object o1, Object o2) {
+      Span s1 = ((ScoreOrder)o1).span;
+      Span s2 = ((ScoreOrder)o2).span;
+      if (s1.score < s2.score) return  1;
+      if (s1.score > s2.score) return -1;
+      if (s1.start == s2.start)
+        return s2.end - s1.end; // If overlapping, sort longer spans first.
+      return s1.start - s2.start;
+    }
+  }
+
+  private static ScoreComparator theScoreComparator = new ScoreComparator();
+
+} // class FieldSpanSource

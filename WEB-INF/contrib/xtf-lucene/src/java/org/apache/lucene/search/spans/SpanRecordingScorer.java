@@ -17,10 +17,7 @@ package org.apache.lucene.search.spans;
  */
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -58,9 +55,6 @@ public class SpanRecordingScorer extends SpanScorer
   
   /** How many spans to de-duplicate */
   int nToDedupe;
-  
-  /** Array of recorded spans, in descending score order */
-  ScoreOrder[] scoreOrder;
   
   /** Set of all search terms */
   Set terms;
@@ -155,24 +149,34 @@ public class SpanRecordingScorer extends SpanScorer
       System.arraycopy(toDedupe, 0, newSpans2, 0, nSpans);
     toDedupe = newSpans2;
 
-    ScoreOrder[] newScore = new ScoreOrder[top];
-    if( scoreOrder != null )
-      System.arraycopy(scoreOrder, 0, newScore, 0, nSpans);
-    scoreOrder = newScore;
-
     for (int i=nSpans; i<top; i++) {
       posOrder[i] = new Span();
       toDedupe[i] = new Span();
-      scoreOrder[i] = new ScoreOrder();
     }
   }
+  
+  public int getSpanDoc() {
+    return scoredDoc;
+  }
 
-  public void recordSpans(int targetDoc, FieldSpans fieldSpans) {
-    if( scoredDoc == targetDoc ) {
-        ArrayList scoredSpans = deduplicate();
-        if( totalDeduped > 0 )
-            fieldSpans.recordSpans(field, totalDeduped, scoredSpans, terms);
-    }
+  public String getField() {
+    return field;
+  }
+  
+  public int getSpanCount() {
+    return nToDedupe;
+  }
+  
+  public Span[] getSpans() {
+    return toDedupe;
+  }
+  
+  public int getMaxSpans() {
+    return maxSpans;
+  }
+  
+  public Set getTerms() {
+    return terms;
   }
   
   public float score() throws IOException {
@@ -195,119 +199,5 @@ public class SpanRecordingScorer extends SpanScorer
     // Calculate the score as usual.
     return super.score();
   }
-
-  /**
-   * Takes the array of recorded spans and picks out the highest-ranking,
-   * non-overlapping spans. It does this by taking the top ranked span and 
-   * eliminating any that overlap from it, then repeating until all are
-   * chosen or eliminated.
-   */
-  private ArrayList deduplicate() {
-    // First, sort the spans in ascending order by start/end. This will make
-    // it easy to detect overlap later.
-    //
-    Arrays.sort(toDedupe, 0, nToDedupe, SpanPosComparator.theInstance);
-
-    // Record the links in start/end order.
-    for (int i=0; i<nToDedupe; i++) {
-      scoreOrder[i].span = toDedupe[i];
-      scoreOrder[i].posOrder = i;
-      scoreOrder[i].cancelled = false;
-      scoreOrder[i].prevInPosOrder = 
-          ((i-1) >= 0)     ? scoreOrder[i-1] : null;
-      scoreOrder[i].nextInPosOrder = 
-          ((i+1) < nToDedupe) ? scoreOrder[i+1] : null;
-      scoreOrder[i].nextDeduped = null;
-    }
-
-    // Now make a second sort, this time by descending score.
-    Arrays.sort(scoreOrder, 0, nToDedupe, theScoreComparator);
-
-    // De-duplicate the score array, starting with the high scores first.
-    int nDeduped = 0;
-    totalDeduped = 0;
-    ScoreOrder firstDeduped = null;
-    ScoreOrder lastDeduped = null;
-    ScoreOrder o;
-    for (int i=0; i<nToDedupe; i++) {
-      // Skip entries that have already been cancelled.
-      if (scoreOrder[i].cancelled)
-        continue;
-
-      // We found an entry we want to keep. Link it into our list.
-      totalDeduped++;
-      if (nDeduped < maxSpans) {
-        if (firstDeduped == null)
-          firstDeduped = scoreOrder[i];
-        else
-          lastDeduped.nextDeduped = scoreOrder[i];
-        lastDeduped = scoreOrder[i];
-        nDeduped++;
-      }
-
-      // Cancel any overlapping entries before this one, stopping at
-      // one that doesn't overlap (all those behind it won't either).
-      //
-      final Span scoreSpan = scoreOrder[i].span;
-      o = scoreOrder[i].prevInPosOrder;
-      while (o != null && o.span.end > scoreSpan.start) {
-        o.cancelled = true;
-        assert o.posOrder == 0 ||
-               o.prevInPosOrder.posOrder == o.posOrder-1;
-        o = o.prevInPosOrder;
-      }
-
-      // Similarly, cancel overlapping entries after this one.
-      o = scoreOrder[i].nextInPosOrder; 
-      while (o != null && o.span.start < scoreSpan.end) {
-        o.cancelled = true;
-        assert o.posOrder == nToDedupe-1 ||
-               o.nextInPosOrder.posOrder == o.posOrder+1;
-        o = o.nextInPosOrder;
-      }
-    }
-
-    // Build the final result array.
-    ArrayList list = new ArrayList(nDeduped);
-    int rank = 0;
-    float prevScore = Float.MAX_VALUE;
-    for (o = firstDeduped; o != null; o = o.nextDeduped) {
-      assert !o.cancelled : "kept span was cancelled";
-      Span s = (Span) o.span.clone();
-      assert s.score <= prevScore : "incorrect dedupe list linking";
-      if (rank == nDeduped-1)
-        assert o == lastDeduped;
-      prevScore = s.score;
-      s.rank = rank++;
-      list.add(s);
-    }
-    assert rank == nDeduped : "incorrect dedupe list linking";
-    return list;
-  }
-
-  /** Keeps track of the next and previous spans, in score order */
-  private class ScoreOrder {
-    Span       span;
-    int        posOrder;
-    boolean    cancelled;
-    ScoreOrder nextInPosOrder;
-    ScoreOrder prevInPosOrder;
-    ScoreOrder nextDeduped;
-  }
-
-  /** Used to sort spans by descending score, then by position */
-  private static class ScoreComparator implements Comparator {
-    public int compare(Object o1, Object o2) {
-      Span s1 = ((ScoreOrder)o1).span;
-      Span s2 = ((ScoreOrder)o2).span;
-      if (s1.score < s2.score) return  1;
-      if (s1.score > s2.score) return -1;
-      if (s1.start == s2.start)
-        return s2.end - s1.end; // If overlapping, sort longer spans first.
-      return s1.start - s2.start;
-    }
-  }
-
-  private static ScoreComparator theScoreComparator = new ScoreComparator();
 
 }

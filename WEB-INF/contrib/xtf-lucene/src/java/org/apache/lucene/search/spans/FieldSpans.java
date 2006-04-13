@@ -17,7 +17,6 @@ package org.apache.lucene.search.spans;
  */
 
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -39,7 +38,7 @@ public class FieldSpans
    * @param terms     set of all search terms on this field
    */
   public void recordSpans(String field, int spanTotal, 
-                          ArrayList spans, Set terms) 
+                          Span[] spans, Set terms) 
   {
     entries.put(field, new Entry(spanTotal, spans, terms)); 
   }
@@ -68,11 +67,14 @@ public class FieldSpans
   /** Retrieve the number of spans stored for a given field */
   public int getSpanCount(String field) {
     Entry ent = (Entry)entries.get(field);
-    return (ent == null) ? 0 : ent.spans.size();
+    return (ent == null) ? 0 : ent.spans.length;
   }
   
-  /** Retrieve the matching spans for a given field */
-  public ArrayList getSpans(String field) { 
+  /** 
+   * Retrieve the matching spans for a given field. They are always in
+   * increasing position order. 
+   */
+  public Span[] getSpans(String field) { 
     Entry ent = (Entry)entries.get(field);
     return (ent == null) ? null : ent.spans;
   }
@@ -91,10 +93,10 @@ public class FieldSpans
   /** Stores all the information for a field */
   private class Entry {
     int total;
-    ArrayList spans;
+    Span[] spans;
     Set terms;
     
-    Entry(int total, ArrayList spans, Set terms) {
+    Entry(int total, Span[] spans, Set terms) {
       this.total = total;
       this.spans = spans;
       this.terms = terms;

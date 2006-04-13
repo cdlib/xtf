@@ -18,12 +18,10 @@ package org.apache.lucene.mark;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.lucene.search.spans.FieldSpans;
 import org.apache.lucene.search.spans.Span;
-import org.apache.lucene.search.spans.SpanPosComparator;
 
 /**
  * Workhorse class that handles marking hits, context surrounding hits, and
@@ -32,7 +30,7 @@ import org.apache.lucene.search.spans.SpanPosComparator;
  * <p>Created: Dec 26, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: ContextMarker.java,v 1.3 2005-12-20 19:15:41 mhaye Exp $
+ * @version $Id: ContextMarker.java,v 1.4 2006-04-13 21:44:02 mhaye Exp $
  */
 public class ContextMarker {
   
@@ -159,41 +157,31 @@ public class ContextMarker {
       return;
     }
     
-    // Get the map of terms for the field.
+    // Get the map of terms for the field, and the spans. Note that the spans
+    // are already sorted by the FieldSpanSource in position order.
+    //
     Set terms = fieldSpans.getTerms(field);
+    Span[] posOrderSpans = fieldSpans.getSpans(field);
     
     // Optimization: if there are no terms to mark and no spans, we've got
     // nothing left to do.
     //
-    ArrayList origSpans = fieldSpans.getSpans(field);
     if ((terms == null || terms.isEmpty() || termMode == MARK_NO_TERMS) &&
-        (origSpans == null || origSpans.isEmpty()))
+        (posOrderSpans == null || posOrderSpans.length == 0))
     {
       collector.beginField(iter.getPos(WordIter.FIELD_START));
       collector.endField(iter.getPos(WordIter.FIELD_END));
       return;
     }
 
-    // Make a list of the spans sorted by position, so we can tick them off 
-    // as we roll along.
-    //
-    if (origSpans == null)
-        origSpans = new ArrayList(0);
-    ArrayList posOrderSpans = (ArrayList)(origSpans.clone());
-    Collections.sort(posOrderSpans, SpanPosComparator.theInstance);
-    
-    // At the moment, the highest span score is always at the start of the
-    // list. However, that might change in the future. Why risk that bug,
-    // when it's easy to do it the right way now.
-    //
+    // Figure out the highest score of any span.
     float maxScore = 0.0f;
-    Iterator spanIter;
-    for (spanIter = posOrderSpans.iterator(); spanIter.hasNext(); )
-      maxScore = Math.max(maxScore, ((Span)spanIter.next()).score);
+    for (int i = 0; i < posOrderSpans.length; i++)
+      maxScore = Math.max(maxScore, posOrderSpans[i].score);
     
     // Now normalize all the scores.
-    for (spanIter = posOrderSpans.iterator(); spanIter.hasNext(); )
-      ((Span)spanIter.next()).score /= maxScore;
+    for (int i = 0; i < posOrderSpans.length; i++)
+      posOrderSpans[i].score /= maxScore;
     
     // We need the big guns for context marking.
     ContextMarker marker = new ContextMarker(maxContext, 
@@ -221,13 +209,13 @@ public class ContextMarker {
    * @param maxContext      Target # of chars for context around hits 
    *                        (0 for none)
    */
-  public void mark(ArrayList posOrderSpans, int maxContext) {
+  public void mark(Span[] posOrderSpans, int maxContext) {
     
     // Create holders for start/end of context.
     MarkPos contextStart = null;
     MarkPos contextEnd = null;
-    if (maxContext > 0 && !posOrderSpans.isEmpty()) {
-      iter0.seekFirst(((Span) posOrderSpans.get(0)).start, true);
+    if (maxContext > 0 && posOrderSpans.length > 0) {
+      iter0.seekFirst(posOrderSpans[0].start, true);
       contextStart = iter0.getPos(WordIter.TERM_START);
       contextEnd = (MarkPos) contextStart.clone();
     }
@@ -236,10 +224,9 @@ public class ContextMarker {
     collector.beginField(iter0.getPos(WordIter.FIELD_START));
 
     // Process each span in turn.
-    Iterator posSpanIter = posOrderSpans.iterator();
-    Span posSpan = posSpanIter.hasNext() ? (Span) posSpanIter.next() : null;
-    while (posSpan != null) {
-      Span nextSpan = posSpanIter.hasNext() ? (Span) posSpanIter.next() : null;
+    for (int i = 0; i < posOrderSpans.length; i++) {
+      Span posSpan = posOrderSpans[i];
+      Span nextSpan = (i+1 < posOrderSpans.length) ? posOrderSpans[i+1] : null;
 
       // Find the start and end of the context surrounding the span (if
       // context is enabled.)
