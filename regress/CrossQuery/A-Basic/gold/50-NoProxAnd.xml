@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc1.xml" totalHits="8">
+      <meta>
+         <testMeta>"Some test data"</testMeta>
+      </meta>
+      <snippet rank="1">is a terrible thing to mind. This is <hit>
+            <term>the</term>
+         </hit> end. You just gotta love it! Cats don't</snippet>
+      <snippet rank="2">to go and what to do. The animal world is full of examples. <hit>
+            <term>This</term>
+         </hit> particular one</snippet>
+      <snippet rank="3">is missing from <hit>
+            <term>this</term>
+         </hit> document, but if you like you can use your imagination.</snippet>
+   </docHit>
+</crossQueryResult>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+  <meta indexPath="IndexDB">
+    <and useProximity="no">
+      <term field="subject">politics</term>
+      <and field="subject">
+        <term>african</term>
+        <term>studies</term>
+      </and>
+    </and>
+  </meta>
+</query>
