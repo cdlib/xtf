@@ -537,10 +537,18 @@ public class QueryRequestParser
             return makeProxQuery( parent, slop, field, maxSnippets );
         }
         
-        // All other cases fall through to here: and, or. Use our special
-        // de-duplicating span logic. Get all the sub-queries (including nots).
-        // As we go along, group them by field, and maintain a list of the
-        // unique field names in the order the fields were encountered.
+        // All other cases fall through to here: and, or. Generally we try
+        // to convert these to span queries when possible. However, this
+        // behavior can be turned off by setting the "useProximity" attribute
+        // to false.
+        //
+        boolean useProximity = 
+            parseBooleanAttrib( parent, "useProximity", true );
+        
+        // Use our special de-duplicating span logic. Get all the sub-queries 
+        // (including nots). As we go along, group them by field, and maintain 
+        // a list of the unique field names in the order the fields 
+        // were encountered.
         //
         HashMap      subMap  = new HashMap();
         Vector       fields  = new Vector();
@@ -568,7 +576,7 @@ public class QueryRequestParser
             if( q == null )
                 continue;
             
-            if( q instanceof SpanQuery ) {
+            if( useProximity && q instanceof SpanQuery ) {
                 String queryField = ((SpanQuery)q).getField();
                 QueryEntry ent = (QueryEntry) subMap.get( queryField );
                 if( ent == null ) {
@@ -583,7 +591,7 @@ public class QueryRequestParser
                     ent.queries.add( q );
             }
             else {
-                bq.add( q, isNot ? false : require, isNot );
+                bq.add( deChunk(q), isNot ? false : require, isNot );
             }
         }
 
@@ -658,7 +666,7 @@ public class QueryRequestParser
         // an AND query inside another AND query.
         //
         return simplifyBooleanQuery( bq );
-        
+
     } // parseQuery2() 
         
         
@@ -846,6 +854,10 @@ public class QueryRequestParser
                  el.name().equals("near") )
             ; // handled elsewhere
         
+        else if( attrName.equalsIgnoreCase("useProximity") &&
+                 el.name().matches("^(and|or)$") )
+            ; // handled elsewhere
+        
         else if( attrName.matches("^fieldsToScan$|^minWordLen$|^maxWordLen$|^minDocFreq$|^maxDocFreq$|^minTermFreq$|^termBoost$|^maxQueryTerms$") &&
                  el.name().equals("moreLike") )
             ; // handled elsewhere
@@ -880,8 +892,12 @@ public class QueryRequestParser
             error( "'sectionType' element requires exactly " +
                    "one child element" );
         
-        return (SpanQuery) parseQuery( sectionType.child(0), 
-                                       "sectionType", maxSnippets );
+        Query ret = parseQuery( sectionType.child(0), 
+                                "sectionType", maxSnippets );
+        if( !(ret instanceof SpanQuery) )
+            error( "'sectionType' sub-query must use proximity" );
+        
+        return (SpanQuery) ret;
     } // parseSectionType()
 
     
