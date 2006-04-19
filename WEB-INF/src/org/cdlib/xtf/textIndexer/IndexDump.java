@@ -163,8 +163,8 @@ public class IndexDump
               if( startArg == args.length || args[startArg].startsWith("-") )
                   showUsage = true;
               else {
-                  if( args[startArg].equals("text") ) {
-                      Trace.error( "Error: the 'text' field cannot be dumped" );
+                  if( args[startArg].equals("text") && !termFreqMode ) {
+                      Trace.error( "Error: contents of the 'text' field cannot be dumped" );
                       System.exit( 1 );
                   }
                   fieldNames.add( args[startArg] );
