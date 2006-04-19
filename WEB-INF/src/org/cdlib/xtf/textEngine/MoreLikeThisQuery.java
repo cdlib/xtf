@@ -277,20 +277,27 @@ public class MoreLikeThisQuery extends Query
    */
   private Query createQuery(PriorityQueue q) 
   {
+    // Pop everything from the queue.
+    QueryWord[] queryWords = new QueryWord[q.size()];
+    for( int i = q.size()-1; i >= 0; i-- )
+        queryWords[i] = (QueryWord) q.pop();
+    
     BooleanQuery query = new BooleanQuery();
     QueryWord qw;
-    int qterms = 0;
-    float bestScore = 0;
+    
+    // At the moment, there's no need to scale by the best score. It simply
+    // clouds the query explanation. It doesn't affect the scores, since
+    // Lucene applies a query normalization factor anyway.
+    //
+    //float bestScore = (queryWords.length > 0) ? queryWords[0].score : 0.0f;
 
-    while( ((qw = (QueryWord)q.pop()) != null) ) 
+    for( int i = 0; i < queryWords.length; i++ )
     {
+        qw = queryWords[i];
         TermQuery tq = new TermQuery( qw.term );
 
-        if( boost ) {
-            if( qterms == 0 ) 
-                bestScore = qw.score;
-            tq.setBoost( qw.score / bestScore );
-        }
+        if( boost )
+            tq.setBoost( qw.score /* / bestScore */ );
         
         try {
             query.add( tq, false, false );
@@ -298,8 +305,6 @@ public class MoreLikeThisQuery extends Query
         catch (BooleanQuery.TooManyClauses ignore) {
             break;
         }
-        
-        qterms++;
     }
 
     return query;
@@ -516,7 +521,7 @@ public class MoreLikeThisQuery extends Query
     protected boolean lessThan(Object a, Object b) {
         QueryWord aa = (QueryWord) a;
         QueryWord bb = (QueryWord) b;
-        return aa.score > bb.score;
+        return aa.score < bb.score;
     }
   }
 
