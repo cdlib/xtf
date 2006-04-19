@@ -38,6 +38,8 @@ import java.util.Vector;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.cdlib.xtf.textEngine.Constants;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
@@ -67,8 +69,9 @@ public class IndexDump
       IndexerConfig     cfgInfo          = new IndexerConfig();
       XMLConfigParser   cfgParser        = new XMLConfigParser();
       
-      int     startArg  = 0;
-      boolean showUsage = false;
+      int     startArg     = 0;
+      boolean showUsage    = false;
+      boolean termFreqMode = false;
       
       // Make sure the XTF_HOME environment variable is specified.
       cfgInfo.xtfHomePath = System.getProperty( "xtf.home" );
@@ -143,6 +146,14 @@ public class IndexDump
               
           } // else( args.length >= 4 )
           
+          // Is term frequency mode enabled?
+          if( startArg < args.length &&
+              args[startArg].equalsIgnoreCase("-termFreq") )
+          {
+              startArg++;
+              termFreqMode = true;
+          }
+          
           // Find all the field names that should be dumped.
           Vector fieldNames = new Vector();
           while( startArg < args.length &&
@@ -163,13 +174,16 @@ public class IndexDump
           if( fieldNames.isEmpty() )
               showUsage = true;
           
+          String[] fieldNameArray = (String[]) fieldNames.toArray( new String[fieldNames.size()] );
+          
           // If the config file was read successfully, we can begin processing.
           if( showUsage ) {
               
               // Do so...
               Trace.error( "  usage: " );
               Trace.tab();
-              Trace.error( "indexDump {-config <configfile>}? "  +
+              Trace.error( "indexDump {-config <configfile>} "  +
+                           "{-termFreq} " +
                            "-index <indexname> " + 
                            "-field fieldName1 {-field fieldName2}*... \n\n" );
               Trace.untab();
@@ -178,10 +192,26 @@ public class IndexDump
               System.exit( 1 );
               
           } // if( showUsage )    
-           
+             
+          // Try to open the index for reading. If we fail and throw, skip the 
+          // index.
+          //
+          IndexInfo idxInfo = cfgInfo.indexInfo;
+          String idxPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, 
+                                                idxInfo.indexPath);
+          File   idxFile = new File( idxPath );
+          IndexReader indexReader = IndexReader.open( idxPath );
+    
           // Go for it.
-          dumpFields( cfgInfo, fieldNames, out );
+          if( termFreqMode )
+              dumpTermFreqs( indexReader, fieldNameArray, out );
+          else
+              dumpFields( indexReader, fieldNameArray, out );
         
+          // Close the index reader, and make sure all output is displayed.
+          indexReader.close();
+          out.flush();
+          
       } // for(;;)
       
     } // try
@@ -211,25 +241,13 @@ public class IndexDump
   
   //////////////////////////////////////////////////////////////////////////////
   
-  private static void dumpFields( IndexerConfig cfgInfo, 
-                                  Vector        fieldVec,
-                                  Writer        out )
+  private static void dumpFields( IndexReader indexReader, 
+                                  String[]    fields,
+                                  Writer      out )
   
     throws IOException
   
   {
-    IndexInfo idxInfo = cfgInfo.indexInfo;
-    
-    String[] fields = (String[]) fieldVec.toArray( new String[fieldVec.size()] );
-    
-    // Try to open the index for reading. If we fail and throw, skip the 
-    // index.
-    //
-    String idxPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, 
-                                          idxInfo.indexPath);
-    File   idxFile = new File( idxPath );
-    IndexReader indexReader = IndexReader.open( idxPath );
-
     // Iterate every document.
     Field[] empty = new Field[0];
     int maxDoc = indexReader.maxDoc();
@@ -265,14 +283,64 @@ public class IndexDump
         }
     }
     
-    // Close the term enumeration and reader.
-    indexReader.close();
-    indexReader = null;
-    
-    // Make sure all the output is displayed.
-    out.flush();
-    
   } // dumpFields()
+
+  
+  //////////////////////////////////////////////////////////////////////////////
+  
+  private static void dumpTermFreqs( IndexReader indexReader, 
+                                     String[]    fields,
+                                     Writer      out )
+  
+    throws IOException
+  
+  {
+    // Iterate every field.
+    for( int i = 0; i < fields.length; i++ )
+    {
+        // Iterate all the terms for this field.
+        TermEnum terms = indexReader.terms( new Term(fields[i], "") );
+        while( terms.next() ) {
+            Term t = terms.term();
+            if( !t.field().equals(fields[i]) )
+                break;
+            
+            // Skip bi-grams
+            String text = t.text();
+            if( text.indexOf("~") >= 0 )
+                continue;
+            
+            // Skip empty terms (there shouldn't be any though) 
+            if( text.length() == 0 )
+                continue;
+            
+            // Skip special start/end of field marks (normal terms will also
+            // be present, without the marks.) Also skip element and attribute
+            // markers.
+            //
+            char c = text.charAt(0);
+            if( c == Constants.FIELD_START_MARKER ||
+                c == Constants.ELEMENT_MARKER ||
+                c == Constants.ATTRIBUTE_MARKER )
+            {
+                continue;
+            }
+            
+            c = text.charAt( text.length() - 1 );
+            if( c == Constants.FIELD_END_MARKER ||
+                c == Constants.ELEMENT_MARKER ||
+                c == Constants.ATTRIBUTE_MARKER )
+            {
+                continue;
+            }
+            
+            // Okay, we have a live one. Output it.
+            int freq = terms.docFreq();
+            out.write( fields[i] + "|" + freq + "|" + t.text() + "\n" );
+        } // while
+    } // for i
+    
+  } // dumpTermFreqs()
 
   
   //////////////////////////////////////////////////////////////////////////////
