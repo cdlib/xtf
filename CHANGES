@@ -1,146 +1,265 @@
-Changes in 1.7
+Changes in 1.7 
 ==============
 
-- Added new front end to crossQuery servlet. The new "query router" stylesheet allows the use of multiple query parsers. Those just starting out, or who only need one parser, can use the default queryRouter.xsl without change.
+- Change log now contains item numbers from the SourceForge trackers
+  ("Feature Requests" or "Bugs") which can be referenced for more
+  detailed information.
 
-- Added new "moreLike" query operator which uses a simple index-based algorithm to locate additional documents that resemble a specified document. This feature is considered experimental and subject to improvement/change.
+- Added new front end to crossQuery servlet. The new "query router"
+  stylesheet allows the use of multiple query parsers. Those just
+  starting out, or who only need one parser, can use the default
+  queryRouter.xsl without change. [Feature Req 1470967]
 
-- XTF now allows stylesheets to track data on a per-user-session basis. A simple API is provided to get and set state data. The session identifier is tracked using cookies, or if the user has cookies disabled, though URL rewriting.
+- Added new "moreLike" query operator which uses a simple index-based
+  algorithm to locate additional documents that resemble a specified
+  document. This feature is considered experimental and subject to
+  improvement/change. [Feature Req 1470968]
 
-- Default stylesheets now expose "Book Bag" and "More Like This" functionality. The former is based on the session state API, the latter on the new <moreLikeThis> query operator. These also demonstrate an AJAX style of programming, updating pages on the fly.
+- XTF now allows stylesheets to track data on a per-user-session
+  basis. A simple API is provided to get and set state data. The
+  session identifier is tracked using cookies, or if the user has
+  cookies disabled, though URL rewriting. [Feature Req 1470973]
 
-- New "exact" query operator added. To match, the field must contain exactly the query phrase; no more, no less.
+- Default stylesheets now expose "Book Bag" and "More Like This"
+  functionality. The former is based on the session state API, the
+  latter on the new <moreLikeThis> query operator. These also
+  demonstrate an AJAX style of programming, updating pages on the fly.
+  [Feature Req 1470975]
+
+- New "exact" query operator added. To match, the field must contain
+  exactly the query phrase; no more, no less. [Feature Req 1120263]
 
 - Made minor changes to the experimental "boost set" facility.
 
-- Fixed bug in phrase query if stop-words appeared at start or end of a meta-data field.
+- Fixed bug in phrase query if stop-words appeared at start or end of
+  a meta-data field. [Bug 1470978]
 
-- Fixed bug with where apostrophe and other combined words at start or end of a meta-data field would cause queries to not match.
+- Fixed bug with where apostrophe and other combined words at start or
+  end of a meta-data field would cause queries to not match. [Bug
+  1437031]
+  
+- Fixed bug causing boost values to have no effect on an <or> query.
+  [Bug 1471061]
 
-- Refactored Lucene integration. The result is more modular, which will help in upgrading to Lucene 1.9 and 2.0.
+- Refactored Lucene integration. The result is more modular, which
+  will help in upgrading to Lucene 1.9 and 2.0. Back-ported selected
+  classes to improve span processing on indexes with millions of
+  records. [Feature Req 1470982]
 
-- Config file parameters are now case insensitive. Also, boolean parameters all uniformly accept "true", "yes", "1" as synonyms, and "false", "no", and "0" as synonyms.
+- Config file parameters are now case insensitive. Also, boolean
+  parameters all uniformly accept "true", "yes", "1" as synonyms, and
+  "false", "no", and "0" as synonyms. [Feature Req 1471004]
 
-- Added ability to display non-normalized scores (or raw) scores in crossQuery.
+- Added ability to display non-normalized scores (or raw) scores in
+  crossQuery. [Feature Req 1471009]
 
-- Added optional "score explanation" in crossQuery, to give a very detailed description of how each document's score was computed.
+- Added optional "score explanation" in crossQuery, to give a very
+  detailed description of how each document's score was computed.
+  [Feature Req 1471015]
 
 - Made several changes and fixes to the experimental 'facet' feature.
 
-- Multiple index prefilters may now be specified for one document by the docSelector stylesheet. The prefilters will be run in a chain.
+- Multiple index prefilters may now be specified for one document by
+  the docSelector stylesheet. The prefilters will be run in a chain.
+  [Feature Req 1471018]
 
-- Added support for parsing MARC21 data files. The indexer will break them into records, convert them to MARCXML format, and pass each converted record to the prefilter(s). Very large files are supported, and the indexer will try to skip bad records and recover.
+- Added support for parsing MARC21 data files. The indexer will break
+  them into records, convert them to MARCXML format, and pass each
+  converted record to the prefilter(s). Very large files are
+  supported, and the indexer will try to skip bad records and recover.
+  [Feature Req 1471020]
 
-- Fixed null pointer exception in dynaXML when an empty query was specified.
+- Fixed null pointer exception in dynaXML when an empty query was
+  specified. [Bug 1471022]
 
-- Servlets now allow ";" to separate URL parameters. This can be quite handy as opposed to "&", since the latter requires special escaping in stylesheets. Both are now supported interchangeably.
-
-- All references to "ngrams" have been changed to the more specific term "bigrams".
+- Servlets now allow ";" to separate URL parameters. This can be quite
+  handy as opposed to "&", since the latter requires special escaping
+  in stylesheets. Both are now supported interchangeably. [Feature Req
+  1471023]
+  
+- All references to "ngrams" have been changed to the more specific
+  term "bigrams".
 
 - Improved efficiency of span collection in the Text Engine.
 
-- Vastly reduced memory usage of cached sorting arrays for indexes that contain only meta-data.
+- Vastly reduced memory usage of cached sorting arrays for indexes
+  that contain only meta-data.
 
-- Improved determination of 'root.url'
+- All servlets now pass a "servlet.dir" parameter to stylesheets. This
+  is the home directory of the XTF installation, and can be used by
+  stylesheets to locate data files or for other purposes. [Feature Req
+  1397346]
 
-- crossQueryResult input to resultFormatter stylesheet now contains the original parsed URL parameters, and the query that resulted from the queryParser stylesheet. Both of these can be quite useful in result formatting.
+- crossQueryResult input to resultFormatter stylesheet now contains
+  the original parsed URL parameters, and the query that resulted from
+  the queryParser stylesheet. Both of these can be quite useful in
+  result formatting. [Feature Req 1471062]
 
-- Queries output from queryParser stylesheet may now optionally contain <resultData> elements. These are ignored by the Text Engine, but passed on to the result formatter stylesheet. They're a handy way for the query parser to pass data directly to the result formatter.
+- Queries output from queryParser stylesheet may now optionally
+  contain <resultData> elements. These are ignored by the Text Engine,
+  but passed on to the result formatter stylesheet. They're a handy
+  way for the query parser to pass data directly to the result
+  formatter. [Feature Req 1471063]
 
-- Meta-data fields can now be marked in index prefilter as xtf:store="no", which prevents them from showing up in query results. The field is still indexed, just not stored or displayed.
+- Meta-data fields can now be marked in index prefilter as
+  xtf:store="no", which prevents them from showing up in query
+  results. The field is still indexed, just not stored or displayed.
+  [Feature Req 1471065]
 
-- Similarly, the index prefilter can mark a field with xtf:index="no", causing it to not be indexed (and this not searchable) but still be stored and displayed.
+- Similarly, the index prefilter can mark a field with xtf:index="no",
+  causing it to not be indexed (and this not searchable) but still be
+  stored and displayed. [Feature Req 1471065]
 
-- Improved efficiency of textIndexer's culling phase. In particular, it no longer runs out of memory and crashes on indexes with millions of documents.
+- Improved efficiency of textIndexer's culling phase. In particular,
+  it no longer runs out of memory and crashes on indexes with millions
+  of documents. [Bug 1471067]
 
-- 'indexStats' tool is now much faster, and attempts to provide as much information early in the process as possible.
+- 'indexStats' tool is now much faster, and attempts to provide as
+  much information early in the process as possible. Also, doesn't
+  crash on large indexes. [Feature Req 1291547]
 
-- Added new 'indexDump' tool, which can dump selected meta-data fields from all documents in an index.
+- Added new 'indexDump' tool, which can dump selected meta-data fields
+  from all documents in an index. [Feature Req 1471070]
 
-- Fixed bug where indexer would occasionally crash when trying to create a lazy tree file without creating its directory first.
+- Fixed bug where indexer would occasionally crash when trying to
+  create a lazy tree file without creating its directory first.
+  [Bug 1471071]
 
-- Fixed bug that caused XML namespace declarations to be dropped from the beginning of in lazy tree files.
+- Fixed bug that caused XML namespace declarations to be dropped from
+  the beginning of in lazy tree files. [Bug 1397341]
 
-- textIndexer now tracks and displays the elapsed time of each indexing run.
+- textIndexer now tracks and displays the elapsed time of each
+  indexing run. [Feature Req 1471072]
 
-
-Changes in 1.6.1
+Changes in 1.6.1 
 ================
 
-- New "debug step" mode added, which can be very handy both to understand crossQuery and to debug stylesheet problems. This is enabled by adding "&debugStep=1" to the crossQuery URL. This also works in the experimental SRU servlet.
+- New "debug step" mode added, which can be very handy both to
+  understand crossQuery and to debug stylesheet problems. This is
+  enabled by adding "&debugStep=1" to the crossQuery URL. This also
+  works in the experimental SRU servlet. [Feature Req 1292474]
 
-- Added optional ability to turn on a "runaway" timer, that will report and optionally kill off requests that exceed specified time limits. This can help in tracking down intermittent server slowdowns. This is configured in conf/crossQuery.conf and conf/dynaXML.conf.
+- Added optional ability to turn on a "runaway" timer, that will
+  report and optionally kill off requests that exceed specified time
+  limits. This can help in tracking down intermittent server
+  slowdowns. This is configured in conf/crossQuery.conf and
+  conf/dynaXML.conf.
 
-- Added optional cutoff size for latency reporting. After a request has exceeded this amount of data, the servlet will report the latency immediately. When the request finally finishes, the final latency is also reported. This is configured in conf/crossQuery.conf and conf/dynaXML.conf.
+- Added optional cutoff size for latency reporting. After a request
+  has exceeded this amount of data, the servlet will report the
+  latency immediately. When the request finally finishes, the final
+  latency is also reported. This is configured in conf/crossQuery.conf
+  and conf/dynaXML.conf.
 
-- Minor improvements to paging behavior in crossQuery resultFormatterCommon.xsl.
+- Minor improvements to paging behavior in crossQuery
+  resultFormatterCommon.xsl.
 
 - Fixed "Modify Query" link in crossQuery default/resultFormatter.xsl.
 
-- Fixed bug that caused the Content-Type of "raw" mode output from dynaXML to be "text/html" instead of the proper "text/xml".
+- Fixed bug that caused the Content-Type of "raw" mode output from
+  dynaXML to be "text/html" instead of the proper "text/xml".
+  [Bug 1397342]
 
 - Fixed a potential thread synchronization issue in lazy file access.
 
-- Changed timestamp output to be more compatible with Resin and Tomcat.
+- Changed timestamp output to be more compatible with Resin and
+  Tomcat.
 
 - Fixed thread contention issue with query rewriting.
 
 - Fixed memory leak with performing searches in dynaXML.
 
-- Fixed handling of '&quot;' and '&amp;' characters in meta-data fields during indexing (was throwing an exception instead of passing these through.)
+- Fixed handling of '&quot;' and '&amp;' characters in meta-data
+  fields during indexing (was throwing an exception instead of passing
+  these through.)
 
-- Switched indexer to using Lucene's "compound files" mode. This results in indexes that have many fewer files, and thus avoids problems with running out of filesystem handles. The indexes are compatible, and the indexer will silently upgrade older indexes to the new compound files.
+- Switched indexer to using Lucene's "compound files" mode. This
+  results in indexes that have many fewer files, and thus avoids
+  problems with running out of filesystem handles. The indexes are
+  compatible, and the indexer will silently upgrade older indexes to
+  the new compound files.
 
-- TextIndexer now outputs the XTF version number (1.6.1) instead of the perpetual "1.0".
+- TextIndexer now outputs the XTF version number (1.6.1) instead of
+  the perpetual "1.0".
 
 - Reduced memory usage of accent and plural mapping facilities.
 
-- Clarified error message when an exception is encountered during Saxon processing.
+- Clarified error message when an exception is encountered during
+  Saxon processing.
 
-- Minor documentation updates to reflect new features above, but a full documentation revision will have to wait until the 1.7 release.
+- Minor documentation updates to reflect new features above, but a
+  full documentation revision will have to wait until the 1.7 release.
 
-
-Changes in 1.6.0
+Changes in 1.6.0 
 ================
 
-- Fixed caching problem that caused sort/group data to be reloaded on each query, rather than cached between queries as was intended.
+- Fixed caching problem that caused sort/group data to be reloaded on
+  each query, rather than cached between queries as was intended.
+  [Bug 1285170]
 
-- Fixed static variable problem that was causing the SRU and crossQuery servlets to conflict with each other.
+- Fixed static variable problem that was causing the SRU and
+  crossQuery servlets to conflict with each other.
 
-- Fixed multi-threading bug: when many simultaneous crossQuery threads tried to access the same index, they would sometimes corrupt each others' span results.
+- Fixed multi-threading bug: when many simultaneous crossQuery threads
+  tried to access the same index, they would sometimes corrupt each
+  others' span results.
 
-- Fixed bug: for apps that use the QueryProcessor Java API, the hit count and score normalization were not being reset from one use to the next. This bug did not affect crossQuery or dynaXML, which make a new QueryProcessor for every request.
+- Fixed bug: for apps that use the QueryProcessor Java API, the hit
+  count and score normalization were not being reset from one use to
+  the next. This bug did not affect crossQuery or dynaXML, which make
+  a new QueryProcessor for every request.
 
 - Fixed to avoid marking terms specified in a <not> query.
 
-- Fixed a bug causing the indexer to crash when tokenizing certain fields ending in "."
+- Fixed a bug causing the indexer to crash when tokenizing certain
+  fields ending in "."
 
-- Fixed 'textIndexer' and 'indexStats' scripts to work properly under Microsoft Windows.
+- Fixed 'textIndexer' and 'indexStats' scripts to work properly under
+  Microsoft Windows.
 
-- Fixed a bug in handling of '&', '<', and '>' in source documents: they were being double-escaped. For instance, '&' would become '&amp;amp' instead of '&amp;'.
+- Fixed a bug in handling of '&', '<', and '>' in source documents:
+  they were being double-escaped. For instance, '&' would become
+  '&amp;amp' instead of '&amp;'.
 
-- Fixed a bug in handling of the XSLT 'previous::*' axis. The axis would operate incorrectly on lazy trees, essentially acting just like 'previous-sibling::*'.
+- Fixed a bug in handling of the XSLT 'previous::*' axis. The axis
+  would operate incorrectly on lazy trees, essentially acting just
+  like 'previous-sibling::*'.
 
 - The SRU servlet was completely broken, but is now working again.
 
-- Sample stylesheets now provide an option to reverse the order of sort-by-year.
+- Sample stylesheets now provide an option to reverse the order of
+  sort-by-year.
 
-- Added a new feature (as yet undocumented) that allows stylesheets to call out to external command-line tools. Robustly handles XML input and output, and allows a timeout specification. See regress/CrossQuery/K-External for examples of how to use this facility.
+- Added a new feature (as yet undocumented) that allows stylesheets to
+  call out to external command-line tools. Robustly handles XML input
+  and output, and allows a timeout specification. See
+  regress/CrossQuery/K-External for examples of how to use this
+  facility.
 
-- Distribution now available as either a full distribution as before, or split into "core" and "example" pieces. The "core" piece is especially useful for existing users to upgrade the core while leaving all their stylesheets and configuration files intact.
+- Distribution now available as either a full distribution as before,
+  or split into "core" and "example" pieces. The "core" piece is
+  especially useful for existing users to upgrade the core while
+  leaving all their stylesheets and configuration files intact.
 
-- Minor documentation corrections
+- Minor documentation corrections.
 
-
-Changes in 1.5.1
+Changes in 1.5.1 
 ================
 
-- Now works again under Java 1.4 (was using Integer.valueOf(int), which is only present in Java 1.5) 
+- Now works again under Java 1.4 (was using Integer.valueOf(int),
+  which is only present in Java 1.5)
 
-- Corrected problem where dynaXML wouldn't run unless an index was present (tried to create lazy file in a directory that didn't exist yet.) 
+- Corrected problem where dynaXML wouldn't run unless an index was
+  present (tried to create lazy file in a directory that didn't exist
+  yet.)
 
-- Fixed textIndexer and indexStats scripts to allow spaces in the XTF_HOME path, and to properly switch between ":" classpath separation on Unix and ";" on Windows. 
+- Fixed textIndexer and indexStats scripts to allow spaces in the
+  XTF_HOME path, and to properly switch between ":" classpath
+  separation on Unix and ";" on Windows.
 
-- crossQuery servlet now passes the time (in seconds) it took to parse and process the query to the resultFormatter stylesheet. Documetation reflects this. 
+- crossQuery servlet now passes the time (in seconds) it took to parse
+  and process the query to the resultFormatter stylesheet.
+  Documetation reflects this. [Feature Req 1250702]
 
-- Installation procedures corrected and simplified. Please see new documentation for more details.
+- Installation procedures corrected and simplified. Please see new
+  documentation for more details.
