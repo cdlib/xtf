@@ -413,7 +413,7 @@ public class GroupCounts
     int start = startDoc[group];
     int max   = maxDocs[group];
     
-    int nHits = Math.min( nFound - start, max  );
+    int nHits = Math.max(0, Math.min(nFound - start, max) );
     resultGroup.docHits = new DocHit[nHits];
     
     resultGroup.totalDocs = count[group];
