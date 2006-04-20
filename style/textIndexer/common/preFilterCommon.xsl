@@ -339,6 +339,10 @@
         <xsl:value-of select="string(.)"/>
         <xsl:text> </xsl:text>
       </xsl:for-each>
+      <xsl:for-each select="date">
+        <xsl:value-of select="string(.)"/>
+        <xsl:text> </xsl:text>
+      </xsl:for-each>
     </newKeyword>  
   </xsl:template>
 
