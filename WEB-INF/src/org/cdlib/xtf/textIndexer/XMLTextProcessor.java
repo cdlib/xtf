@@ -1874,14 +1874,7 @@ public class XMLTextProcessor extends DefaultHandler
   
   {
 
-      // Increment the tag ID (count) for the new node we encountered, and
-      // reset the accumulated word count for this node.
-      //
-      incrementNode();
-      
-      // Build the lazy tree along the way.
-      if( lazyHandler != null )
-          lazyHandler.processingInstruction( target, data );
+      // Filter out processing instructions.
 
   } // processingInstruction()
   
