@@ -35,12 +35,15 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Vector;
 
+import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.cdlib.xtf.textEngine.Constants;
+import org.cdlib.xtf.textEngine.XtfSearcher;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
@@ -199,12 +202,13 @@ public class IndexDump
           IndexInfo idxInfo = cfgInfo.indexInfo;
           String idxPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath, 
                                                 idxInfo.indexPath);
-          File   idxFile = new File( idxPath );
-          IndexReader indexReader = IndexReader.open( idxPath );
+          XtfSearcher searcher = new XtfSearcher( idxPath, 30 );
+          IndexReader indexReader = searcher.indexReader();
+          DocNumMap docNumMap = searcher.docNumMap();
     
           // Go for it.
           if( termFreqMode )
-              dumpTermFreqs( indexReader, fieldNameArray, out );
+              dumpTermFreqs( indexReader, docNumMap, fieldNameArray, out );
           else
               dumpFields( indexReader, fieldNameArray, out );
         
@@ -288,13 +292,16 @@ public class IndexDump
   
   //////////////////////////////////////////////////////////////////////////////
   
-  private static void dumpTermFreqs( IndexReader indexReader, 
+  private static void dumpTermFreqs( IndexReader indexReader,
+                                     DocNumMap   docNumMap,
                                      String[]    fields,
                                      Writer      out )
   
     throws IOException
   
   {
+    TermDocs docs = indexReader.termDocs();
+    
     // Iterate every field.
     for( int i = 0; i < fields.length; i++ )
     {
@@ -334,9 +341,27 @@ public class IndexDump
                 continue;
             }
             
-            // Okay, we have a live one. Output it.
-            int freq = terms.docFreq();
-            out.write( fields[i] + "|" + freq + "|" + t.text() + "\n" );
+            // Okay, we have a live one. Accumulate the total occurrences of 
+            // the term in all documents. For the benefit of the 'text' field,
+            // accumulate chunk counts into the main document.
+            //
+            int prevMainDoc = -1;
+            int docFreq = 0;
+            docs.seek( terms );
+            int termFreq = 0;
+            while( docs.next() ) {
+                int mainDoc = docs.doc();
+                if( t.field().equals("text") )
+                    mainDoc = docNumMap.getDocNum( docs.doc() );
+                if( mainDoc != prevMainDoc ) {
+                    ++docFreq;
+                    prevMainDoc = mainDoc;
+                }
+                termFreq += docs.freq();
+            }
+            
+            // Output the results.
+            out.write( fields[i] + "|" + docFreq + "|" + termFreq + "|" + t.text() + "\n" );
         } // while
     } // for i
     
