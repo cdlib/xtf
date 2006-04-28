@@ -258,8 +258,14 @@ public class MoreLikeThisQuery extends Query
         maxDocFreq = Math.max( 5, nDocs / 20 );
     }
     
+    // Add facet fields, if any. For now, identify them by name.
+    XTFTextAnalyzer analyzer = new XTFTextAnalyzer( null, pluralMap, accentMap );
+    for( int i = 0; i < fields.length; i++ ) {
+        if( fields[i].indexOf("facet") >= 0 )
+            analyzer.addFacetField( fields[i] );
+    }
+    
     // Make the "more like this" query
-    Analyzer analyzer = new XTFTextAnalyzer( null, pluralMap, accentMap );
     Query rawQuery = createQuery( retrieveTerms(reader, targetDoc, analyzer) );
     
     // Exclude the original document in the result set.
@@ -423,7 +429,7 @@ public class MoreLikeThisQuery extends Query
             continue;
         
         // increment frequency
-        Term term = new Term( field, word );
+        Term term = new Term( field, word.toLowerCase() );
         Int cnt = (Int) termFreqMap.get(term);
         if (cnt == null)
             termFreqMap.put(term, new Int());
