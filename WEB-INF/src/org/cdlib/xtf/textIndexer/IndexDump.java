@@ -186,8 +186,8 @@ public class IndexDump
               Trace.error( "  usage: " );
               Trace.tab();
               Trace.error( "indexDump {-config <configfile>} "  +
-                           "{-termFreq} " +
                            "-index <indexname> " + 
+                           "{-termFreq} " +
                            "-field fieldName1 {-field fieldName2}*... \n\n" );
               Trace.untab();
               
