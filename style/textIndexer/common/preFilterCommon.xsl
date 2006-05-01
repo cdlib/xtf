@@ -67,66 +67,15 @@
 
   <!-- generate facet fields -->
   <xsl:template match="*" mode="facet"> 
-    <xsl:variable name="name">
-      <xsl:choose>
-        <!-- To disambiguate types -->
-        <xsl:when test="name() = 'type' and position() = 1">
-          <xsl:value-of select="'facet-type-tab'"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="concat('facet-',name())"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <xsl:variable name="value">
-      <xsl:choose>
-        <xsl:when test="name() = 'type' and position() = 1">
-          <xsl:choose>
-            <xsl:when test="matches(.,'mixed','i')">
-              <xsl:value-of select="'mixed'"/>
-            </xsl:when>
-            <xsl:when test="matches(.,'image|cartographic','i')">
-              <xsl:value-of select="'image'"/>
-            </xsl:when>
-            <xsl:when test="matches(.,'text','i')">
-              <xsl:value-of select="'text'"/>
-            </xsl:when>
-            <xsl:when test="matches(.,'website','i')">
-              <xsl:value-of select="'website'"/>
-            </xsl:when>
-            <!--<xsl:when test="matches(.,'archival collection','i')">
-              <xsl:value-of select="'finding aid'"/>
-            </xsl:when>-->
-            <xsl:otherwise>
-              <xsl:value-of select="'OTHER'"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="replace(string(.), '&quot;', '')"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <xsl:choose>
-      <xsl:when test="$value = 'mixed'">
-        <facet-type-tab xtf:meta="true" xtf:tokenize="no">image</facet-type-tab>
-        <facet-type-tab xtf:meta="true" xtf:tokenize="no">text</facet-type-tab>
-      </xsl:when>
-      <xsl:when test="not($value = 'OTHER')">
-        <xsl:element name="{$name}">
-          <xsl:attribute name="xtf:meta" select="'true'"/>
-          <xsl:attribute name="xtf:tokenize" select="'no'"/>
-          <xsl:choose>
-            <xsl:when test="normalize-space() = ''">
-              <xsl:value-of select="'1 EMPTY'"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="$value"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:element>
-      </xsl:when>
-    </xsl:choose>
+    
+    <xsl:variable name="name" select="concat('facet-',name())"/>
+    <xsl:variable name="value" select="replace(string(.), '&quot;', '')"/>
+    
+    <xsl:element name="{$name}">
+      <xsl:attribute name="xtf:meta" select="'true'"/>
+      <xsl:attribute name="xtf:tokenize" select="'no'"/>
+      <xsl:value-of select="$value"/>
+    </xsl:element>
 
   </xsl:template>
 
@@ -232,123 +181,10 @@
       <xsl:value-of select="expand:date($date)"/>
     </facet-date>
   </xsl:template>
-  
-  <xsl:function name="expand:date">
-    <xsl:param name="date"/>
-    
-    <xsl:variable name="year" select="replace($date, '[0-9]+/[0-9]+/([0-9]+)', '$1')"/>
-    
-    <xsl:variable name="month">
-      <xsl:choose>
-        <xsl:when test="matches($date,'^[0-9]/[0-9]+/[0-9]+')">
-          <xsl:value-of select="0"/>
-          <xsl:value-of select="replace($date, '^([0-9])/[0-9]+/[0-9]+', '$1')"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="replace($date, '([0-9]+)/[0-9]+/[0-9]+', '$1')"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>  
-    
-    <xsl:variable name="day">
-      <xsl:choose>
-        <xsl:when test="matches($date,'[0-9]+/[0-9]/[0-9]+')">
-          <xsl:value-of select="0"/>
-          <xsl:value-of select="replace($date, '[0-9]+/([0-9])/[0-9]+', '$1')"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="replace($date, '[0-9]+/([0-9]+)/[0-9]+', '$1')"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    
-    <xsl:value-of select="concat($year, '::', $month, '::', $day)"/>
-    
-  </xsl:function>
-  
-  <!-- missing elements? -->
-  <xsl:template name="metaMissing">
-    <xsl:if test="not(title)">
-      <facet-title xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-title>
-      <title xtf:meta="true">1 MISSING TITLE</title>
-    </xsl:if>
-    <xsl:if test="not(creator)">
-      <facet-creator xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-creator>
-    </xsl:if>
-    <xsl:if test="not(subject)">
-      <facet-subject xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-subject>
-    </xsl:if>
-    <xsl:if test="not(description)">
-      <facet-description xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-description>
-    </xsl:if>
-    <xsl:if test="not(publisher)">
-      <facet-publisher xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-publisher>
-    </xsl:if>
-    <xsl:if test="not(contributor)">
-      <facet-contributor xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-contributor>
-    </xsl:if>
-    <xsl:if test="not(date)">
-      <facet-date xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-date>
-    </xsl:if>
-    <xsl:if test="not(type)">
-      <facet-type xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-type>
-    </xsl:if>
-    <xsl:if test="not(format)">
-      <facet-format xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-format>
-    </xsl:if>
-    <xsl:if test="not(identifier)">
-      <facet-identifier xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-identifier>
-    </xsl:if>
-    <xsl:if test="not(source)">
-      <facet-source xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-source>
-    </xsl:if>
-    <xsl:if test="not(language)">
-      <facet-language xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-language>
-    </xsl:if>
-    <xsl:if test="not(relation)">
-      <facet-relation xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-relation>
-    </xsl:if>
-    <xsl:if test="not(coverage)">
-      <facet-coverage xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-coverage>
-    </xsl:if>
-    <xsl:if test="not(rights)">
-      <facet-rights xtf:meta="true" xtf:tokenize="no">1 MISSING</facet-rights>
-    </xsl:if>
-  </xsl:template>    
-  
-  <xsl:template name="newKeyword">
-    <!-- Had to name newKeyword because of other forms of keyword -->
-    <newKeyword xtf:meta="true" xtf:store="no">
-      <xsl:for-each select="title">
-        <xsl:value-of select="string(.)"/>
-        <xsl:text> </xsl:text>
-      </xsl:for-each>
-      <xsl:for-each select="creator">
-        <xsl:value-of select="string(.)"/>
-        <xsl:text> </xsl:text>
-      </xsl:for-each>
-      <xsl:for-each select="subject">
-        <xsl:value-of select="string(.)"/>
-        <xsl:text> </xsl:text>
-      </xsl:for-each>
-      <xsl:for-each select="description">
-        <xsl:value-of select="string(.)"/>
-        <xsl:text> </xsl:text>
-      </xsl:for-each>
-      <xsl:for-each select="publisher">
-        <xsl:value-of select="string(.)"/>
-        <xsl:text> </xsl:text>
-      </xsl:for-each>
-      <xsl:for-each select="date">
-        <xsl:value-of select="string(.)"/>
-        <xsl:text> </xsl:text>
-      </xsl:for-each>
-    </newKeyword>  
-  </xsl:template>
 
 <!-- ====================================================================== -->
-<!-- Functions                                                                                                                                             -->
-<!-- ====================================================================== -->
+<!-- Functions                                                              -->
+<!-- ====================================================================== -->  
   
   <!-- Function to parse normalized titles out of dc:title -->  
   <xsl:function name="parse:title">
@@ -366,7 +202,6 @@
     </xsl:variable>
     
     <!-- Remove Leading Articles -->
-    <!-- KVH: Eventually this should handle French, German, and Spanish articles as well -->
     <xsl:choose>
       <xsl:when test="matches($parse-title, '^a ')">
         <xsl:value-of select="replace($parse-title, '^a (.+)', '$1')"/>
@@ -385,7 +220,6 @@
   </xsl:function>  
   
   <!-- Function to parse last names out of various dc:creator formats -->  
-  
   <xsl:function name="parse:name">
     
     <xsl:param name="creator"/>
@@ -426,7 +260,6 @@
   </xsl:function>
 
   <!-- Function to parse years out of various date formats -->  
-
   <xsl:function name="parse:year">
     <xsl:param name="date"/>
     <xsl:param name="pos"/>
@@ -547,7 +380,6 @@
   </xsl:function>
 
   <!-- Function to parse year ranges -->
-  
   <xsl:function name="parse:output-range">
     <xsl:param name="year1-in"/>
     <xsl:param name="year2-in"/>
@@ -573,6 +405,40 @@
       </xsl:otherwise>
       
     </xsl:choose>
+    
+  </xsl:function>
+  
+  <!-- function to expand date strings -->
+  <xsl:function name="expand:date">
+    <xsl:param name="date"/>
+    
+    <xsl:variable name="year" select="replace($date, '[0-9]+/[0-9]+/([0-9]+)', '$1')"/>
+    
+    <xsl:variable name="month">
+      <xsl:choose>
+        <xsl:when test="matches($date,'^[0-9]/[0-9]+/[0-9]+')">
+          <xsl:value-of select="0"/>
+          <xsl:value-of select="replace($date, '^([0-9])/[0-9]+/[0-9]+', '$1')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="replace($date, '([0-9]+)/[0-9]+/[0-9]+', '$1')"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>  
+    
+    <xsl:variable name="day">
+      <xsl:choose>
+        <xsl:when test="matches($date,'[0-9]+/[0-9]/[0-9]+')">
+          <xsl:value-of select="0"/>
+          <xsl:value-of select="replace($date, '[0-9]+/([0-9])/[0-9]+', '$1')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="replace($date, '[0-9]+/([0-9]+)/[0-9]+', '$1')"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    
+    <xsl:value-of select="concat($year, '::', $month, '::', $day)"/>
     
   </xsl:function>
   

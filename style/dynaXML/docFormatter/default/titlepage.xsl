@@ -29,12 +29,14 @@
 -->
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  
+  <xsl:variable name="uniqueKey" select="replace(replace($docId,'^.+/',''), '\.xml$', '')"/>
 
 <xsl:template match="titlePage">
 <table width="100%" cellpadding="5" cellspacing="5">
   <tr>
     <td width="200" align="center">
-      <img src="{$figure.path}{$docId}_cover.jpg" alt="cover"/>
+      <img src="{$figure.path}{$uniqueKey}_cover.jpg" alt="cover"/>
     </td>
     <td>
       <xsl:apply-templates select="/TEI.2/text/front/titlePage/*" mode="titlepage"/>

@@ -56,8 +56,8 @@
     <route>
     
       <!-- If you want to implement more than one query parser, replace the
-           the line below with an <xsl:choose> based on some URL parameter.
-      -->
+        the line below with an <xsl:choose> based on some URL parameter. -->
+      
       <queryParser path="style/crossQuery/queryParser/default/queryParser.xsl"/>
       
     </route>

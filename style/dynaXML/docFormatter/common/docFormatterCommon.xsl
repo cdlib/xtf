@@ -49,8 +49,8 @@
   <xsl:param name="dynaxmlPath" select="if (matches($servlet.path, 'org.cdlib.xtf.crossQuery.CrossQuery')) then 'org.cdlib.xtf.dynaXML.DynaXML' else 'view'"/>
 
   <xsl:param name="docId"/>
-
-  <xsl:param name="subDir" select="substring($docId, 9, 2)"/>
+  
+  <xsl:param name="docPath" select="replace($docId, '[A-Za-z0-9]+\.xml$', '')"/>
 
   <!-- If an external 'source' document was specified, include it in the
        query string of links we generate. -->
@@ -65,9 +65,9 @@
 
   <xsl:param name="doc.path"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$query.string"/></xsl:param>
 
-  <xsl:param name="figure.path" select="concat($xtfURL, 'data/', $subDir, '/', $docId, '/figures/')"/>
+  <xsl:param name="figure.path" select="concat($xtfURL, 'data/', $docPath, '/figures/')"/>
 
-  <xsl:param name="pdf.path" select="concat($xtfURL, 'data/', $subDir, '/', $docId, '/pdfs/')"/>
+  <xsl:param name="pdf.path" select="concat($xtfURL, 'data/', $docPath, '/pdfs/')"/>
 
   <xsl:param name="doc.view" select="'0'"/>
 
@@ -121,32 +121,9 @@
   </xsl:param>  
     
   <xsl:param name="hit.rank" select="'0'"/>
-  
-  <!-- METS -->
-  
-  <xsl:param name="sourceDir" select="concat('data/', $subDir, '/', $docId, '/')"/>
-  <xsl:param name="METS" select="document(concat('../../../../', $sourceDir, $docId, '.mets.xml'))"/>  
-  
-  <!-- Brand Parameter -->
-  
-  <!-- Checking the METS for brand is really just a placeholder -->
-  <!-- They haven't been encoded with the appropriate behaviorSec yet -->
-  <xsl:variable name="brandMechURL" select="$METS//mets:behavior[@BTYPE='brand']/mets:mechanism/@*[local-name()='href']"/>
-  <xsl:variable name="brandMech" select="document($brandMechURL)"/>
-  
-  <xsl:variable name="brandName">
-    <xsl:choose>
-      <xsl:when test="$brandMech//brand">
-        <xsl:value-of select="$brandMech//brand/@name"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="'default'"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-  
+ 
   <!-- This is populated by whatever value is used in the URL -->
-  <xsl:param name="brand" select="$brandName"/>
+  <xsl:param name="brand" select="'default'"/>
   
   <!-- Retrieve Branding Nodes -->
   <xsl:variable name="brand.file">

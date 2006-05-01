@@ -110,12 +110,13 @@
     <xsl:variable name="metspath" select="concat($base, '.mets.xml')"/>
     <xtf:meta>
       <xsl:apply-templates select="document($dcpath)" mode="inmeta"/>
-      <xsl:apply-templates select="document($metspath)" mode="inmeta"/>
     </xtf:meta>
   </xsl:template>
   
   <!-- Process DC -->
   <xsl:template match="dc" mode="inmeta">
+    
+    <!-- metadata fields -->
     <xsl:for-each select="*">
       <xsl:element name="{name()}">
         <xsl:attribute name="xtf:meta" select="'true'"/>
@@ -124,6 +125,7 @@
       </xsl:element>
     </xsl:for-each>
     
+    <!-- create sort fields -->
     <xsl:apply-templates select="title" mode="sort"/>    
     <xsl:apply-templates select="creator" mode="sort"/>
     <xsl:apply-templates select="date" mode="sort"/>
@@ -145,26 +147,6 @@
     <xsl:apply-templates select="coverage" mode="facet"/>
     <xsl:apply-templates select="rights" mode="facet"/>
     
-    <xsl:call-template name="metaMissing"/>
-    <xsl:call-template name="newKeyword"/>
-    
-  </xsl:template>
-  
-  <xsl:template match="xsubject|ntitle|lastmod" mode="inmeta">
-    <xsl:element name="{name()}">
-      <xsl:attribute name="xtf:index" select="'no'"/>
-      <xsl:value-of select="string()"/>
-    </xsl:element>    
-  </xsl:template>
-  
-  <!-- Process METS -->
-  <xsl:template match="mets:mets" mode="inmeta">
-    <xsl:variable name="profile" select="substring(@PROFILE, string-length(@PROFILE)-9)"/>
-    <profile>
-      <xsl:attribute name="xtf:meta" select="'true'"/>
-      <xsl:attribute name="xtf:tokenize" select="'no'"/>      
-      <xsl:value-of select="$profile"/>
-    </profile>
   </xsl:template>
 
   <!-- generate sort-title -->
@@ -201,7 +183,6 @@
     <xsl:variable name="pos" select="number(position())"/>
     
     <xsl:copy-of select="parse:year($date, $pos)"/>
-    
   </xsl:template>
 
 </xsl:stylesheet>

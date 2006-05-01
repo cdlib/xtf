@@ -73,13 +73,6 @@ POSSIBILITY OF SUCH DAMAGE.
   <xsl:param name="sectionType" select="'0'"/>
   
   <!-- ====================================================================== -->
-  <!-- Variables                                                              -->
-  <!-- ====================================================================== -->
-  
-  <xsl:variable name="subDir" select="substring($docId, 9, 2)"/>
-  <xsl:variable name="sourceDir" select="concat('data/', $subDir, '/', $docId, '/')"/>
-  
-  <!-- ====================================================================== -->
   <!-- Root Template                                                          -->
   <!-- ====================================================================== -->
   
@@ -99,7 +92,7 @@ POSSIBILITY OF SUCH DAMAGE.
     parsed and fed into the display stylesheet.
     -->
     
-    <source path="{concat($sourceDir, $docId, '.xml')}"/>
+    <source path="{concat('data/',$docId)}"/>
     
     <!-- ==================================================================
     The optional "brand" tag specifies a filesystem path (relative to the
