@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc1.xml" totalHits="7">
+      <meta>
+         <testMeta>"Some test data"</testMeta>
+      </meta>
+      <snippet rank="1">like <hit>
+            <term>you</term> 
+            <term>can</term>
+         </hit> use your imagination. Never lose your imagination. A loss</snippet>
+      <snippet rank="2">terrible thing to mind. This is the end. <hit>
+            <term>You</term>
+         </hit> just gotta love it! Cats don't care</snippet>
+      <snippet rank="3">say <hit>
+            <term>can</term>
+         </hit> and will</snippet>
+      <snippet rank="4">full of examples. This particular one is missing from this document, but if <hit>
+            <term>you</term>
+         </hit>
+      </snippet>
+      <snippet rank="5">This is a test of the emergency broadcasting system. Anything <hit>
+            <term>you</term>
+         </hit>
+      </snippet>
+      <snippet rank="6">be used against <hit>
+            <term>you</term>
+         </hit> in a court of law. If this had been a real emergency <term>you</term>
+      </snippet>
+   </docHit>
+</crossQueryResult>

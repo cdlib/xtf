@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <or>
+    <orNear field="subject" slop="5">
+      <or>
+        <term>africa</term>
+        <term>african</term>
+      </or>
+      <term>politics</term>
+    </orNear>
+    <orNear field="description" slop="10">
+      <or>
+        <term>africa</term>
+        <term>african</term>
+      </or>
+      <term>politics</term>
+    </orNear>
+  </or>
+</query>
