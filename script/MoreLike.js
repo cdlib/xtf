@@ -20,22 +20,24 @@ addTextParam = function( ark, name, url )
 addFieldsParam = function( ark, url )
 {
   var fields = "";
+  var boosts = "";
   for( var i = 1; ; i++ ) {
       var element = document.getElementById( ark + "-field-" + i );
       if( element == null )
           break;
       if( element.value == "0" || element.value == "0.0" )
           continue;
-      if( i > 1 )
+      if( fields != "" ) {
           fields += ",";
+          boosts += ",";
+      }
       fields += element.name;
-      if( element.value != "1" && element.value != "1.0" )
-          fields += "^" + element.value;
+      boosts += element.value;
   }
   if( i == 1 )
       return url;
   else
-      return url + "&fieldsToScan=" + fields;   
+      return url + "&moreLikeFields=" + fields + "&moreLikeBoosts=" + boosts;
 }
     
 // Asynchronously fetch more docs "like this".
