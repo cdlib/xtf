@@ -38,6 +38,7 @@ import org.apache.lucene.chunk.SpanChunkedNotQuery;
 import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanOrNearQuery;
 import org.apache.lucene.search.spans.SpanRangeQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
 import org.cdlib.xtf.util.CharMap;
@@ -73,6 +74,7 @@ public class SlopFixupRewriter extends XtfQueryRewriter
   
   public boolean forceRewrite( Query q ) {
     return (q instanceof SpanNearQuery) ||
+           (q instanceof SpanOrNearQuery) ||
            (q instanceof SpanChunkedNotQuery) ||
            (q instanceof SpanDechunkingQuery) ||
            (q instanceof SpanWildcardQuery) ||
@@ -95,6 +97,26 @@ public class SlopFixupRewriter extends XtfQueryRewriter
     
     // Okay, rewrite and reset the slop.
     SpanNearQuery newQ = (SpanNearQuery) super.rewrite( nq );
+    assert newQ != nq;
+    newQ.setSlop( targetSlop );
+    return newQ;
+  }
+  
+  public Query rewrite( SpanOrNearQuery nq ) 
+  {
+    // For text queries, set the max to the chunk overlap size. For
+    // meta-data fields, set it to the bump between multiple values
+    // for the same field, *minus one* to prevent matches across 
+    // the boundary.
+    //
+    boolean isText = nq.getField().equals("text");
+    int maxSlop = isText ? docNumMap.getChunkOverlap() : (1000000-1);
+    int targetSlop = Math.min(nq.getSlop(), maxSlop);
+    if( targetSlop == nq.getSlop() )
+        return super.rewrite( nq );
+    
+    // Okay, rewrite and reset the slop.
+    SpanOrNearQuery newQ = (SpanOrNearQuery) super.rewrite( nq );
     assert newQ != nq;
     newQ.setSlop( targetSlop );
     return newQ;

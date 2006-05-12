@@ -25,6 +25,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanNotNearQuery;
 import org.apache.lucene.search.spans.SpanNotQuery;
+import org.apache.lucene.search.spans.SpanOrNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanRangeQuery;
@@ -49,6 +50,8 @@ public abstract class QueryTraverser {
       traverse((BooleanQuery) q);
     else if (q instanceof SpanNearQuery)
       traverse((SpanNearQuery) q);
+    else if (q instanceof SpanOrNearQuery)
+      traverse((SpanOrNearQuery) q);
     else if (q instanceof SpanOrQuery)
       traverse((SpanOrQuery) q);
     else if (q instanceof SpanChunkedNotQuery)
@@ -88,6 +91,17 @@ public abstract class QueryTraverser {
    * @param nq  The query to traverse
    */
   protected void traverse(SpanNearQuery nq) {
+    SpanQuery[] clauses = nq.getClauses();
+    for (int i = 0; i < clauses.length; i++)
+      traverseQuery(clauses[i]);
+  } // traverse()
+
+  /**
+   * Traverse a span OR-NEAR query.
+   * 
+   * @param nq  The query to traverse
+   */
+  protected void traverse(SpanOrNearQuery nq) {
     SpanQuery[] clauses = nq.getClauses();
     for (int i = 0; i < clauses.length; i++)
       traverseQuery(clauses[i]);
