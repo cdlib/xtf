@@ -27,6 +27,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanNotNearQuery;
 import org.apache.lucene.search.spans.SpanNotQuery;
+import org.apache.lucene.search.spans.SpanOrNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanRangeQuery;
@@ -54,6 +55,8 @@ public abstract class QueryRewriter {
       return rewrite((SpanNearQuery) q);
     if (q instanceof SpanOrQuery)
       return rewrite((SpanOrQuery) q);
+    if (q instanceof SpanOrNearQuery)
+      return rewrite((SpanOrNearQuery) q);
     if (q instanceof SpanChunkedNotQuery)
       return rewrite((SpanChunkedNotQuery) q);
     if (q instanceof SpanNotQuery)
@@ -123,8 +126,11 @@ public abstract class QueryRewriter {
         return null;
     
     // If we ended up with a single clause, return just that.
-    if (newClauses.size() == 1 && !force)
-      return combineBoost(bq, (Query) newClauses.elementAt(0));
+    if (newClauses.size() == 1 && !force) {
+      BooleanClause clause = (BooleanClause) newClauses.elementAt( 0 );
+      if( !clause.prohibited )
+          return combineBoost(bq, clause.query );
+    }
 
     // Otherwise, we need to construct a new BooleanQuery.
     bq = (BooleanQuery) copyBoost(bq, new BooleanQuery());
@@ -182,7 +188,58 @@ public abstract class QueryRewriter {
     // Construct a new 'near' query joining all the rewritten clauses.
     SpanQuery[] newArray = new SpanQuery[newClauses.size()];
     return copyBoost(nq, new SpanNearQuery((SpanQuery[]) newClauses
-        .toArray(newArray), nq.getSlop(), false));
+        .toArray(newArray), nq.getSlop(), nq.isInOrder()));
+
+  } // rewrite()
+
+  /**
+   * Rewrite a span OR-NEAR query.
+   * 
+   * @param nq  The query to rewrite
+   * @return    Rewritten version, or 'nq' unchanged if no changed needed.
+   */
+  protected Query rewrite(SpanOrNearQuery nq) {
+    // Rewrite each clause and make a vector of the new ones.
+    SpanQuery[] clauses = nq.getClauses();
+    Vector newClauses = new Vector();
+    boolean anyChanges = false;
+
+    for (int i = 0; i < clauses.length; i++) {
+      // Rewrite this clause, and record any difference.
+      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
+      if (clause != clauses[i])
+        anyChanges = true;
+
+      // If rewriting resulted in removing the query, toss it.
+      if (clause == null)
+        continue;
+
+      // Add it to the vector
+      newClauses.add(clause);
+    } // for i
+
+    // If no changes, just return the original query.
+    boolean force = forceRewrite(nq);
+    if (!anyChanges && !force)
+      return nq;
+
+    // If we end up with no clauses, let the caller know.
+    if (newClauses.isEmpty())
+      return null;
+
+    // If we end up with a single clause, return just that.
+    if (newClauses.size() == 1 && !force) {
+
+      // Since we're getting rid of the parent, pass on its boost to the
+      // child.
+      //
+      return combineBoost(nq, (Query) newClauses.elementAt(0));
+    }
+
+    // Construct a new 'near' query joining all the rewritten clauses.
+    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
+    return copyBoost(nq, new SpanOrNearQuery((SpanQuery[]) newClauses
+        .toArray(newArray), nq.getSlop(), nq.penalizeOutOfOrder()));
 
   } // rewrite()
 
