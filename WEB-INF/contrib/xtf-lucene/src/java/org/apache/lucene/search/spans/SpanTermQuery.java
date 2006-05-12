@@ -62,10 +62,17 @@ public class SpanTermQuery extends SpanQuery {
   }
 
   public String toString(String field) {
-    if (term.field().equals(field))
-      return term.text();
-    else
-      return term.toString();
+    StringBuffer buffer = new StringBuffer();
+    if (!term.field().equals(field)) {
+      buffer.append(term.field());
+      buffer.append(":");
+    }
+    buffer.append(term.text());
+    if (getBoost() != 1.0f) {
+      buffer.append("^");
+      buffer.append(Float.toString(getBoost()));
+    }
+    return buffer.toString();
   }
 
   public Spans getSpans(final IndexReader reader, final Searcher searcher) 
