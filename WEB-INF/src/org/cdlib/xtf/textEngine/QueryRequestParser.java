@@ -54,6 +54,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanNotNearQuery;
+import org.apache.lucene.search.spans.SpanOrNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
@@ -410,12 +411,12 @@ public class QueryRequestParser
         String name = parent.name();
         if( !name.matches(
                 "^query$|^term$|^all$|^range$|^phrase$|^exact$|^near$" +
-                "|^and$|^or$|^not$" +
+                "|^and$|^or$|^not$|^orNear$|" +
                 "|^moreLike$" +               // experimental
                 "|^combine$|^meta$|^text$") ) // old stuff, for compatability
         {
             error( "Expected: 'query', 'term', 'all', 'range', 'phrase', " +
-                   "'exact', 'near', 'and', 'or', 'not', or 'moreLike'; " +
+                   "'exact', 'near', 'orNear', 'and', 'or', 'not', or 'moreLike'; " +
                    "found '" + name + "'" );
         }
         
@@ -521,14 +522,16 @@ public class QueryRequestParser
         // For text queries, 'all', 'phrase', 'exact', and 'near' can be viewed
         // as phrase queries with different slop values.
         //
-        // 'all' means essentially infinite slop (limited to the actual
+        // 'all'    means essentially infinite slop (limited to the actual
         //          chunk overlap at runtime.)
         // 'phrase' means zero slop
-        // 'exact' means -1 slop (meaning use a SpanExactQuery)
-        // 'near' allows specifying the slop (again limited to the actual
+        // 'exact'  means -1 slop (meaning use a SpanExactQuery)
+        // 'near'   allows specifying the slop (again limited to the actual
         //          chunk overlap at runtime.)
+        // 'orNear' is a special case which also allows specifying slop, but
+        //          activates a different query.
         //
-        if( name.matches("^all$|^phrase$|^exact$|^near$") )
+        if( name.matches("^all$|^phrase$|^exact$|^near$|^orNear$") )
         {   
             int slop = name.equals("all") ? 999999999 :
                        name.equals("phrase") ? 0 :
@@ -544,6 +547,8 @@ public class QueryRequestParser
         //
         boolean useProximity = 
             parseBooleanAttrib( parent, "useProximity", true );
+        if( !useProximity && !name.equals("and") )
+            error( "The 'useProximity' attribute is only applicable to 'and' queries" );
         
         // Use our special de-duplicating span logic. Get all the sub-queries 
         // (including nots). As we go along, group them by field, and maintain 
@@ -851,14 +856,14 @@ public class QueryRequestParser
             ; // handled elsewhere
         
         else if( attrName.equals("slop") &&
-                 el.name().equals("near") )
+                 el.name().matches("^near$|^orNear$") )
             ; // handled elsewhere
         
         else if( attrName.equalsIgnoreCase("useProximity") &&
                  el.name().matches("^(and|or)$") )
             ; // handled elsewhere
         
-        else if( attrName.matches("^fieldsToScan$|^minWordLen$|^maxWordLen$|^minDocFreq$|^maxDocFreq$|^minTermFreq$|^termBoost$|^maxQueryTerms$") &&
+        else if( attrName.matches("^fields$|^boosts$|^minWordLen$|^maxWordLen$|^minDocFreq$|^maxDocFreq$|^minTermFreq$|^termBoost$|^maxQueryTerms$") &&
                  el.name().equals("moreLike") )
             ; // handled elsewhere
         
@@ -951,6 +956,14 @@ public class QueryRequestParser
         SpanQuery q;
         if( subQueries.length == 1 )
             q = subQueries[0];
+        else if( name.equals("orNear") ) {
+            // We can't know the actual slop until the query is run against
+            // an index (the slop will be equal to max proximity). So set
+            // it to a big value for now, and it will be clamped later
+            // when the query is run.
+            //
+            q = new SpanOrNearQuery( subQueries, 999999999, true );
+        }
         else if( !name.equals("or") ) {
             // We can't know the actual slop until the query is run against
             // an index (the slop will be equal to max proximity). So set
@@ -1167,6 +1180,10 @@ public class QueryRequestParser
         else if( terms.size() == 1 )
             q = (SpanQuery) terms.elementAt( 0 );
         
+        // Handle orNear queries specially.
+        else if( parent.name().equals("orNear") )
+            q = new SpanOrNearQuery( termQueries, slop, true );
+        
         // Make a 'near' query out of it. Zero slop implies in-order.
         else
             q = new SpanNearQuery( termQueries, slop, slop == 0 );
@@ -1222,25 +1239,85 @@ public class QueryRequestParser
                 ret.setBoost( parseBooleanAttrib(parent, attrName) );
             else if( attrName.equalsIgnoreCase("maxQueryTerms") )
                 ret.setMaxQueryTerms( parseIntAttrib(parent, attrName) );
-            else if( attrName.equalsIgnoreCase("fieldsToScan") ) {
-                String val = parseStringAttrib( parent, attrName );
-                StringTokenizer tok = new StringTokenizer( val, " \t\r\n,;|" );
-                ArrayList list = new ArrayList();
-                while( tok.hasMoreTokens() )
-                    list.add( tok.nextToken() );
-                if( list.size() > 0 )
-                    ret.setFieldNames( (String[]) list.toArray(new String[list.size()]) );
-            }
+            else if( attrName.equalsIgnoreCase("fields") )
+                ret.setFieldNames( parseFieldNames(parent, attrName) );
+            else if( attrName.equalsIgnoreCase("boosts") )
+                ret.setFieldBoosts( parseFieldBoosts(parent, attrName) );
             else
                 error( "Unrecognized attribute '" + attrName + "' on 'moreLike' element" );
         }
+        
+        // Make sure at least one field was specified.
+        String[] fields = ret.getFieldNames();
+        if( fields == null || fields.length == 0 )
+            error( "At least one field name must be specified in 'fields' attribute on 'moreLike' query" );
+        
+        // Make sure that, if boosts were specified, there are the same number.
+        float[] boosts = ret.getFieldBoosts();
+        if( boosts != null && boosts.length != fields.length )
+            error( "Must specify same number of boosts as fields in 'boosts' attribute on 'moreLike' query" );
         
         // All done.
         return ret;
       
     } // parseMoreLike()
     
+
+    /**
+     * Parse a list of field names. They can be separated by spaces, tabs,
+     * commas, semicolons, or pipe symbols.
+     * 
+     * @param parent      Node to look at
+     * @param attrName    Attribute to get the list from
+     * @return            Array of field names, or null if none.
+     */
+    private String[] parseFieldNames( EasyNode parent, String attrName )
+    {
+        String val = parseStringAttrib( parent, attrName );
+        StringTokenizer tok = new StringTokenizer( val, " \t\r\n,;|" );
+        ArrayList list = new ArrayList();
+        while( tok.hasMoreTokens() )
+            list.add( tok.nextToken() );
+        if( list.size() > 0 )
+            return (String[]) list.toArray(new String[list.size()]);
+        else
+            return null;
+    } // parseFieldNames()
     
+    
+    /**
+     * Parse a list of field boosts. They can be separated by spaces, tabs,
+     * commas, semicolons, or pipe symbols.
+     * 
+     * @param parent      Node to look at
+     * @param attrName    Attribute to get the list from
+     * @return            Array of field boosts, or null if none.
+     */
+    private float[] parseFieldBoosts( EasyNode parent, String attrName )
+    {
+        String val = parseStringAttrib( parent, attrName );
+        StringTokenizer tok = new StringTokenizer( val, " \t\r\n,;|" );
+        ArrayList list = new ArrayList();
+        while( tok.hasMoreTokens() ) {
+            String strVal = tok.nextToken();
+            try {
+                list.add( new Float(strVal) );
+            }
+            catch( NumberFormatException e ) {
+                error( "Each value for 'boosts' must be a valid floating-point number" );
+            }
+        }
+        if( list.size() > 0 ) {
+            float[] array = new float[ list.size() ];
+            for( int j = 0; j < list.size(); j++ )
+                array[j] = ((Float)list.get(j)).floatValue();
+            return array;
+        }
+        else
+            return null;
+    } // parseFieldBoosts()
+    
+
     /**
      * Parses a 'term' element. If not so marked, an exception is thrown.
      * 
@@ -1643,9 +1720,15 @@ public class QueryRequestParser
         String elName = el.name();
         String str = el.attrValue( attribName );
 
-        if( str == null || str.length() == 0 ) {
+        if( str == null ) {
             if( !useDefault )
                 error( "'" + elName + "' element must specify '" + 
+                       attribName + "' attribute" );
+            return defaultVal;
+        }
+        else if( str.length() == 0 ) {
+            if( !useDefault )
+                error( "'" + elName + "' element specified empty '" + 
                        attribName + "' attribute" );
             return defaultVal;
         }

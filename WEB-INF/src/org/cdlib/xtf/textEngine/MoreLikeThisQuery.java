@@ -19,7 +19,6 @@ package org.cdlib.xtf.textEngine;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,6 +41,9 @@ import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Similarity;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.Weight;
+import org.apache.lucene.search.spans.SpanOrNearQuery;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.PriorityQueue;
 import org.cdlib.xtf.textIndexer.XTFTextAnalyzer;
 import org.cdlib.xtf.util.CharMap;
@@ -75,7 +77,10 @@ public class MoreLikeThisQuery extends Query
   private boolean boost = true;
 
   /** Field name(s) we'll analyze. */
-  private String[] fields = null;
+  private String[] fieldNames = null;
+  
+  /** Boost value per field. */
+  private float[] fieldBoosts = null;
   
   /** Boost values for the fields */
   private Map boostMap = new HashMap();
@@ -144,28 +149,23 @@ public class MoreLikeThisQuery extends Query
   /** Field name(s) we'll analyze. */
   public void setFieldNames(String[] fieldNames) 
   {
-    // Parse out field boosts, and get rid of fields with zero boost.
-    boostMap = new HashMap( fieldNames.length );
-    ArrayList fieldList = new ArrayList( fieldNames.length );
-    
-    for( int i = 0; i < fieldNames.length; i++ ) {
-        String field = fieldNames[i];
-        int caretPos = field.indexOf('^');
-        if( caretPos < 0 )
-            fieldList.add( field );
-        else {
-            String name  = field.substring(0, caretPos);
-            float  boost = Float.parseFloat( field.substring(caretPos+1) );
-            if( boost == 0.0f )
-                continue;
-            
-            fieldList.add( name );
-            if( boost != 1.0f )
-                boostMap.put( name, new Float(boost) );
-        }
-    }
-    
-    this.fields = (String[]) fieldList.toArray( new String[fieldList.size()] );
+    this.fieldNames = fieldNames;
+  }
+  
+  public String[] getFieldNames()
+  {
+    return fieldNames;
+  }
+
+  /** Boost value per field */
+  public void setFieldBoosts(float[] fieldBoosts)
+  {
+    this.fieldBoosts = fieldBoosts;
+  }
+  
+  public float[] getFieldBoosts()
+  {
+    return fieldBoosts;
   }
   
   /**
@@ -212,6 +212,13 @@ public class MoreLikeThisQuery extends Query
    */
   public Query rewrite( IndexReader reader ) throws IOException 
   {
+    // If field boosts were specified, make sure there are the same number of
+    // boosts as there are fields.
+    //
+    if( fieldBoosts != null && fieldBoosts.length != fieldNames.length )
+        throw new RuntimeException( "Error: different number of boosts than fields specified to MoreLikeThisQuery" );
+    
+    
     // Determine the target document.
     IndexSearcher searcher = new IndexSearcher( reader );
     targetDoc = -1;
@@ -227,46 +234,41 @@ public class MoreLikeThisQuery extends Query
     // If none, make a query that will definitely return nothing at all.
     if( targetDoc < 0 )
         return new TermQuery( new Term("fribbleSnarf", "!*@&#(*&") );
-    
-    // gather list of valid fields from lucene
-    String[] fields = this.fields;
-    if( fields == null ) 
+
+    // Eliminate fields with zero boost. Along the way, make a boost map so we
+    // have fast access to the boost per field.
+    //
+    String[] fields = this.fieldNames;
+    if( fieldBoosts != null )
     {
-        Collection fieldColl = reader.getFieldNames( true );
-        ArrayList fieldList = new ArrayList( fieldColl.size() );
-        for( Iterator iter = fieldColl.iterator(); iter.hasNext(); ) {
-            String field = (String) iter.next();
-            if( !field.equals("chunkCount") &&
-                !field.equals("docInfo") &&
-                !field.equals("fileDate") &&
-                !field.equals("indexInfo") && 
-                !field.equals("key") && 
-                !field.equals("recordNum") &&
-                !field.equals("text") &&
-                !field.startsWith("sort-") &&
-                !field.startsWith("facet-") )
-            {
-                fieldList.add( field );
+        ArrayList filteredFields = new ArrayList();
+        for( int i = 0; i < fieldNames.length; i++ ) {
+            if( fieldBoosts[i] > 0.0f ) {
+                filteredFields.add( fieldNames[i] );
+                boostMap.put( fieldNames[i], new Float(fieldBoosts[i]) );
             }
         }
-        fields = (String[]) fieldList.toArray(new String[fieldList.size()]);
+        fields = (String[]) filteredFields.toArray( new String[filteredFields.size()] );
     }
-
-    // If we've been asked to calculate the max document frequence, do it now.
+      
+    // If we've been asked to calculate the max document frequency, do it now.
     if( maxDocFreq < 0 ) {
         int nDocs = reader.docFreq(new Term("docInfo", "1"));
         maxDocFreq = Math.max( 5, nDocs / 20 );
     }
     
-    // Add facet fields, if any. For now, identify them by name.
+    // Add facet fields, if any. For now, spot them by name.
     XTFTextAnalyzer analyzer = new XTFTextAnalyzer( null, pluralMap, accentMap );
     for( int i = 0; i < fields.length; i++ ) {
         if( fields[i].indexOf("facet") >= 0 )
             analyzer.addFacetField( fields[i] );
     }
+
+    // Determine which terms are "best" for querying.
+    PriorityQueue bestTerms = retrieveTerms( reader, targetDoc, analyzer );
     
-    // Make the "more like this" query
-    Query rawQuery = createQuery( retrieveTerms(reader, targetDoc, analyzer) );
+    // Make the "more like this" query from those terms.
+    Query rawQuery = createQuery( reader, bestTerms );
     
     // Exclude the original document in the result set.
     Query ret = new MoreLikeWrapper( this, rawQuery );
@@ -281,7 +283,8 @@ public class MoreLikeThisQuery extends Query
   /**
    * Create the More like query from a PriorityQueue
    */
-  private Query createQuery(PriorityQueue q) 
+  private Query createQuery( IndexReader indexReader, PriorityQueue q )
+    throws IOException
   {
     // Pop everything from the queue.
     QueryWord[] queryWords = new QueryWord[q.size()];
@@ -289,7 +292,6 @@ public class MoreLikeThisQuery extends Query
         queryWords[i] = (QueryWord) q.pop();
     
     BooleanQuery query = new BooleanQuery();
-    QueryWord qw;
     
     // At the moment, there's no need to scale by the best score. It simply
     // clouds the query explanation. It doesn't affect the scores, since
@@ -297,22 +299,48 @@ public class MoreLikeThisQuery extends Query
     //
     //float bestScore = (queryWords.length > 0) ? queryWords[0].score : 0.0f;
 
-    for( int i = 0; i < queryWords.length; i++ )
+    for( int i = 0; i < fieldNames.length; i++ ) 
     {
-        qw = queryWords[i];
-        TermQuery tq = new TermQuery( qw.term );
-
-        if( boost )
-            tq.setBoost( qw.score /* / bestScore */ );
+        ArrayList fieldClauses = new ArrayList();
         
-        try {
-            query.add( tq, false, false );
-        }
-        catch (BooleanQuery.TooManyClauses ignore) {
-            break;
-        }
-    }
+        for( int j = 0; j < queryWords.length; j++ ) 
+        {
+            QueryWord qw = queryWords[j];
+            Term term = new Term( fieldNames[i], qw.word );
+            
+            // Skip words not present in this field.
+            int docFreq = indexReader.docFreq( term );
+            if( docFreq == 0 )
+                continue;
+            
+            // Add it to the query.
+            SpanTermQuery tq = new SpanTermQuery(term);
+            if( boost )
+                tq.setBoost( qw.score );
+            fieldClauses.add( tq );
+        } // for j
+        
+        // If no terms for this field, skip it.
+        if( fieldClauses.isEmpty() )
+            continue;
+        
+        SpanQuery[] clauses = (SpanQuery[]) 
+            fieldClauses.toArray(new SpanQuery[fieldClauses.size()]);
+        
+        // Now make a special Or-Near query out of the clauses.
+        SpanOrNearQuery fieldQuery = new SpanOrNearQuery(
+            clauses, 10, false );
+        
+        // Boost if necessary.
+        if( fieldBoosts != null )
+            fieldQuery.setBoost( fieldBoosts[i] );
+        
+        // And add to the main query.
+        query.add( fieldQuery, false, false );
+        
+    } // for i
 
+    // All done.
     return query;
     
   } // createQuery()
@@ -329,6 +357,35 @@ public class MoreLikeThisQuery extends Query
     // Will order words by score
     int queueSize = Math.min( words.size(), maxQueryTerms );
     QueryWordQueue queue = new QueryWordQueue( queueSize );
+    
+    // For reference in score calculations, get the total # of docs in index
+    int numDocs = indexReader.numDocs();
+
+    // For each term...
+    Iterator it = words.keySet().iterator();
+    while (it.hasNext()) 
+    { 
+        String word  = (String) it.next();
+        float  score = ((Flt)words.get(word)).x;
+        
+        // Okay, add an entry to the queue.
+        queue.insert( new QueryWord(word, score) );
+    }
+    
+    return queue;
+    
+  } // createQueue()
+
+  /**
+   * Condense the same term in multiple fields into a single term with a
+   * total score.
+   *
+   * @param words a map of words keyed on the word(String) with Int objects as the values.
+   */
+  private Map condenseTerms( IndexReader indexReader, Map words ) 
+      throws IOException 
+  {
+    HashMap termScoreMap = new HashMap();
     
     // For reference in score calculations, get the total # of docs in index
     int numDocs = indexReader.numDocs();
@@ -366,13 +423,17 @@ public class MoreLikeThisQuery extends Query
         if( found != null )
             score *= found.floatValue();
         
-        // Okay, add an entry to the queue.
-        queue.insert( new QueryWord(term, score) );
+        // Add the score to our map.
+        String word = term.text();
+        if( !termScoreMap.containsKey(word) )
+            termScoreMap.put( word, new Flt() );
+        Flt cnt = (Flt) termScoreMap.get( word );
+        cnt.x += score;
     }
     
-    return queue;
+    return termScoreMap;
     
-  } // createQueue()
+  } // condenseTerms()
 
   /**
    * Find words for a more-like-this query former.
@@ -384,12 +445,13 @@ public class MoreLikeThisQuery extends Query
                                        Analyzer    analyzer ) 
     throws IOException 
   {
+    // Gather term frequencies for all fields.
     Map termFreqMap = new HashMap();
     Document d = indexReader.document( docNum );
     
-    for( int i = 0; i < fields.length; i++ ) 
+    for( int i = 0; i < fieldNames.length; i++ ) 
     {
-        String fieldName = fields[i];
+        String fieldName = fieldNames[i];
         String text[] = d.getValues( fieldName );
         if( text == null )
             continue;
@@ -402,7 +464,11 @@ public class MoreLikeThisQuery extends Query
         } // for j
     } // for i
 
-    return createQueue( indexReader, termFreqMap );
+    // Combine like terms from each field and calculate a score for each.
+    Map termScoreMap = condenseTerms( indexReader, termFreqMap );
+    
+    // Finally, make a queue by score.
+    return createQueue( indexReader, termScoreMap );
   }
   
   /**
@@ -491,6 +557,13 @@ public class MoreLikeThisQuery extends Query
   }
   
   /**
+   * Used for scores and to avoid renewing Floats.
+   */
+  private static class Flt { 
+    public float x;
+  }
+  
+  /**
    * Used to keep track of which fields to scan, and how to boost them.
    */
   private static class FieldSpec 
@@ -506,11 +579,11 @@ public class MoreLikeThisQuery extends Query
   
   private static class QueryWord
   {
-    public Term  term;
-    public float score;
+    public String word;
+    public float  score;
     
-    public QueryWord( Term term, float score ) {
-      this.term  = term;
+    public QueryWord( String word, float score ) {
+      this.word  = word;
       this.score = score;
     }
   }
