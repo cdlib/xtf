@@ -39,6 +39,7 @@ import java.util.Properties;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -435,6 +436,13 @@ public class CrossQuery extends TextServlet
     {
         // Locate the display stylesheet.
         Templates displaySheet = stylesheetCache.find( queryRequest.displayStyle );
+
+        // Figure out the output mime type
+        Properties details = displaySheet.getOutputProperties();
+        String mime = details.getProperty( OutputKeys.MEDIA_TYPE );
+        if( mime == null )
+            mime = "text/html"; // Take a guess.
+        res.setContentType(mime);
 
         // Make a transformer for this specific query.
         Transformer trans = displaySheet.newTransformer();
