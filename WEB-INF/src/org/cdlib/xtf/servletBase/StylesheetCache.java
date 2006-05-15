@@ -137,6 +137,12 @@ public class StylesheetCache extends GeneratingCache
             if( !(factory.getErrorListener() instanceof XTFSaxonErrorListener) )
                 factory.setErrorListener( new XTFSaxonErrorListener() );
             
+            // Avoid loading external DTDs if possible. This not only speeds
+            // things up, but allows our service to work without depending on
+            // external servers being up and running at every moment.
+            //
+            factory.setAttribute( FeatureKeys.SOURCE_PARSER_CLASS, DTDSuppressingXMLReader.class.getName() );
+            
             if( enableProfiling ) {
                 ProfilingListener profilingListener = new ProfilingListener();
                 factory.setAttribute(
