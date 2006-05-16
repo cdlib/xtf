@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <and field="text" maxSnippets="100" contextChars="80" termMode="all">
+    <!-- Make sure not works within a 'near' query as well -->
+    <near slop="20">
+      <term>you</term>
+      <not>
+        <term>love</term>
+      </not>
+    </near>
+  </and>
+</query>
