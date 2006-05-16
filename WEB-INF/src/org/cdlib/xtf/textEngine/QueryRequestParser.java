@@ -1139,13 +1139,13 @@ public class QueryRequestParser
             if( !el.isElement() )
                 continue;
             if( el.name().equals("not") ) {
-                if( slop <= 0 )
+                if( parent.name().matches("^phrase$|^exact$") )
                     error( "'not' clauses aren't supported in phrase/exact queries" );
                 
                 // Make sure to avoid adding the 'not' terms to the term map,
                 // since it would be silly to hilight them.
                 //
-                notVec.add( parseQuery(el, field, maxSnippets) );
+                notVec.add( parseQuery2(el, "not", field, maxSnippets) );
             }
             else {
                 SpanQuery q;
@@ -1188,11 +1188,11 @@ public class QueryRequestParser
         else
             q = new SpanNearQuery( termQueries, slop, slop == 0 );
 
-        // All done.
+        // Set up the span recording, and add in any nots present.
         q.setSpanRecording( maxSnippets );
-        return q;
+        return processSpanNots( q, notVec, maxSnippets );
         
-    } // makeTextAllQuery()
+    } // makeProxQuery()
     
     /**
      * Parses a "more like this" query.
