@@ -3276,6 +3276,9 @@ public class XMLTextProcessor extends DefaultHandler
         if( attName.equalsIgnoreCase("sectionType") )
             sectionTypeStr = atts.getValue(i);
         
+        else if( attName.equalsIgnoreCase("sectionTypeAdd") )
+            sectionTypeStr += " " + atts.getValue(i);
+        
         // If the current attribute is the section bump, get it.    
         else if( attName.equalsIgnoreCase("sectionBump") ) {
             valueStr    = atts.getValue(i);
