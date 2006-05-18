@@ -124,5 +124,19 @@
 
         X X X X X X X X X X X X X X X X X X X X
 
+    <!-- Data for testing sectionTypeAdd processing -->
+    
+        <section xtf:sectionType="51">
+            j1 jx j2
+          <section xtf:sectionTypeAdd="b">
+              j3 jx j4
+            <section xtf:sectionTypeAdd="c">
+                j5 jx j6
+            </section>
+          </section>
+        </section>
+        
+        X X X X X X X X X X X X X X X X X X X X
+        
   </all>
 </document>
