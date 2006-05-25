@@ -44,7 +44,7 @@
 
   <xsl:param name="formula.id" select="'0'"/>
   
-  <xsl:param name="doc.title" select="/TEI.2/text/front/titlePage//titlePart[@type='main']"/>
+  <xsl:param name="doc.title" select="replace(/TEI.2/text/front/titlePage//titlePart[@type='main'], ',$', '')"/>
 
   <xsl:param name="doc.subtitle" select="/TEI.2/text/front/titlePage//titlePart[@type='subtitle']"/>
 
