@@ -260,10 +260,10 @@
 
   <xsl:template name="hidden.query">
     <xsl:param name="queryString"/>
-    <xsl:variable name ="before" select="substring-before($queryString, '&amp;')"/>
+    <xsl:variable name ="before" select="if(contains($queryString, '&amp;')) then substring-before($queryString, '&amp;') else $queryString"/>
     <xsl:variable name ="after" select="substring-after($queryString, '&amp;')"/>
     <xsl:variable name="name" select="substring-before($before, '=')"/>
-    <xsl:variable name="value" select="substring-after($before, '=')"/>
+    <xsl:variable name="value" select="replace(substring-after($before, '='), '\+', ' ')"/>
     <input type="hidden" name="{$name}" value="{$value}"/>
     <xsl:if test="$after != ''">
       <xsl:call-template name="hidden.query">
