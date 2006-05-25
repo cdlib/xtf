@@ -84,6 +84,9 @@
             <xsl:when test="$sort='year'">
               <xsl:value-of select="'sort-year,sort-title,sort-creator,sort-publisher'"/>
             </xsl:when>              
+            <xsl:when test="$sort='reverse-year'">
+              <xsl:value-of select="'-sort-year,sort-title,sort-creator,sort-publisher'"/>
+            </xsl:when>              
             <xsl:when test="$sort='creator'">
               <xsl:value-of select="'sort-creator,sort-year,sort-title'"/>
             </xsl:when>
