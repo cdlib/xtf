@@ -365,7 +365,7 @@
   
   <xsl:template name="moreLike">
     <xsl:variable name="identifier" select="string(//param[@name='identifier']/@value)"/>
-    <moreLike>
+    <moreLike fields="title,subject">
       <term field="identifier"><xsl:value-of select="$identifier"/></term>
     </moreLike>
   </xsl:template>
