@@ -355,7 +355,7 @@
                       <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
                     </a>
                   </td>
-                  <td nowrap="nowrap">&#160;<a class="topnav" href="http://xtf.sourceforge.net" target="{$target}">Home</a></td>
+                  <td nowrap="nowrap">&#160;<a class="topnav" href="search" target="{$target}">Home</a></td>
                   <td width="10" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td>
 
                   <td width="15" nowrap="nowrap">
@@ -684,10 +684,10 @@
             <xsl:value-of select="key('div-id', $chunk.id)/following-sibling::div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/parent::front/following-sibling::body/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/parent::front/following-sibling::body/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/parent::front/following-sibling::body/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/parent::body/following-sibling::back/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/parent::body/following-sibling::back/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/parent::body/following-sibling::back/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:otherwise>0</xsl:otherwise>
         </xsl:choose>
@@ -701,10 +701,10 @@
             <xsl:value-of select="key('div-id', $chunk.id)/parent::div1/following-sibling::div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:otherwise>0</xsl:otherwise>
         </xsl:choose>
@@ -721,10 +721,10 @@
             <xsl:value-of select="key('div-id', $chunk.id)/ancestor::div1/following-sibling::div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:otherwise>0</xsl:otherwise>
         </xsl:choose>
@@ -744,10 +744,10 @@
             <xsl:value-of select="key('div-id', $chunk.id)/ancestor::div1/following-sibling::div1[head][@id][1]/@id"/>            
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:otherwise>0</xsl:otherwise>
         </xsl:choose>
@@ -770,10 +770,10 @@
             <xsl:value-of select="key('div-id', $chunk.id)/ancestor::div1/following-sibling::div1[head][@id][1]/@id"/>            
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:otherwise>0</xsl:otherwise>
         </xsl:choose>
@@ -799,10 +799,10 @@
             <xsl:value-of select="key('div-id', $chunk.id)/ancestor::div1/following-sibling::div1[head][@id][1]/@id"/>            
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:otherwise>0</xsl:otherwise>
         </xsl:choose>
@@ -831,10 +831,10 @@
             <xsl:value-of select="key('div-id', $chunk.id)/ancestor::div1/following-sibling::div1[head][@id][1]/@id"/>            
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::front/following-sibling::body/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:when test="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]">
-            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id]/@id"/>
+            <xsl:value-of select="key('div-id', $chunk.id)/ancestor::body/following-sibling::back/div1[head][@id][1]/@id"/>
           </xsl:when>
           <xsl:otherwise>0</xsl:otherwise>
         </xsl:choose>
