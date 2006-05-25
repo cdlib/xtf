@@ -141,7 +141,7 @@
           </xsl:analyze-string>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="concat($queryString, 'smode=simple-modify')"/>
+          <xsl:value-of select="concat($queryString, '&amp;smode=simple-modify')"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -215,7 +215,7 @@
               <td align="left" valign="bottom">
                 <xsl:call-template name="sort.options"/>
                 <xsl:call-template name="hidden.query">
-                  <xsl:with-param name="queryString" select="$queryString"/>
+                  <xsl:with-param name="queryString" select="replace($queryString, 'sort=[^&amp;]+&amp;', '')"/>
                 </xsl:call-template>
                 <input type="submit" value="Go!"/>
               </td>
@@ -528,7 +528,7 @@
     <tr>
       <td align="right" width="4%">
         <xsl:choose>
-          <xsl:when test="$sort != 'title' and $sort != 'creator' and $sort != 'year'">
+          <xsl:when test="$sort = ''">
             <span class="heading"><xsl:value-of select="@rank"/></span>
           </xsl:when>
           <xsl:otherwise>
@@ -620,7 +620,7 @@
         <xsl:text>&#160;</xsl:text>
       </td>
     </tr>
-    <xsl:if test="(snippet) and ($sort != 'title' and $sort != 'creator' and $sort != 'year')">
+    <xsl:if test="(snippet) and ($sort = '')">
       <tr>
         <td align="right">
           <xsl:text>&#160;</xsl:text>
@@ -629,7 +629,7 @@
           <span class="heading">Matches:&#160;&#160;</span>
         </td>
         <td align="left">
-          <xsl:apply-templates select="snippet"/>
+          <xsl:apply-templates select="snippet" mode="text"/>
         </td>
         <td align="right">
           <xsl:text>&#160;</xsl:text>
@@ -731,29 +731,21 @@
   </xsl:template>
     
   <!-- ====================================================================== -->
-  <!-- Snippet Template                                                       -->
+  <!-- Snippet Template (for snippets in the full text)                       -->
   <!-- ====================================================================== -->
 
-  <xsl:template match="snippet">
+  <xsl:template match="snippet" mode="text">
     <xsl:text>...</xsl:text>
-    <xsl:apply-templates/>
+    <xsl:apply-templates mode="text"/>
     <xsl:text>...</xsl:text>
     <br/>
   </xsl:template>
     
   <!-- ====================================================================== -->
-  <!-- Hit Template                                                           -->
-  <!-- ====================================================================== -->
-  
-  <xsl:template match="hit">
-    <xsl:apply-templates/>
-  </xsl:template>
-    
-  <!-- ====================================================================== -->
-  <!-- Term Template                                                          -->
+  <!-- Term Template (for snippets in the full text)                          -->
   <!-- ====================================================================== -->
  
-  <xsl:template match="term">
+  <xsl:template match="term" mode="text">
     <xsl:variable name="path" select="ancestor::docHit/@path"/>
     <xsl:variable name="collection" select="string(meta/collection)"/>
     <xsl:variable name="hit.rank"><xsl:value-of select="ancestor::snippet/@rank"/></xsl:variable>
@@ -780,6 +772,22 @@
    
   </xsl:template>
 
+  <!-- ====================================================================== -->
+  <!-- Term Template (for snippets in meta-data fields)                       -->
+  <!-- ====================================================================== -->
+  
+  <xsl:template match="term">
+    <xsl:choose>
+      <xsl:when test="ancestor::query"/>
+      <xsl:otherwise>
+        <span class="term">
+          <xsl:apply-templates/>
+        </span>
+      </xsl:otherwise>
+    </xsl:choose> 
+    
+  </xsl:template>
+  
   <!-- ====================================================================== -->
   <!-- Explanation Template                                                   -->
   <!-- ====================================================================== -->
