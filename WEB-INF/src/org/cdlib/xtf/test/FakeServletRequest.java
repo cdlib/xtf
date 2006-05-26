@@ -58,16 +58,24 @@ public class FakeServletRequest implements HttpServletRequest
   private String     url;
   private AttribList params = new AttribList();
   
-  public FakeServletRequest( String url ) {
+  public FakeServletRequest( String url ) 
+  {
     url = url.replaceAll( "&amp;", "&" );
     this.url = url;
+
     StringTokenizer tok1 = new StringTokenizer( url, "?&" );
-    tok1.nextToken();
+    if( tok1.hasMoreTokens() )
+        tok1.nextToken();
+
     while( tok1.hasMoreTokens() ) {
         StringTokenizer tok2 = new StringTokenizer( tok1.nextToken(), "=" );
-        String name  = tok2.nextToken();
-        String value = (tok2.hasMoreTokens()) ? tok2.nextToken() : "";
-        params.put( name, decodeHtml(value) );
+        if( tok2.hasMoreTokens() ) {
+            String name  = tok2.nextToken();
+            if( tok2.hasMoreTokens() ) {
+                String value = (tok2.hasMoreTokens()) ? tok2.nextToken() : "";
+                params.put( name, decodeHtml(value) );
+            }
+        }
     }
   }
   
