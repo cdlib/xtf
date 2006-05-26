@@ -2,6 +2,6 @@
  
 /* Applies only to the top navigation bar that appears in the frames view */
 
-@import url("http://texts.cdlib.org/styles/escholarship-editions.css");
+@import url("base.css");
 
 span.topnav {font-size: 75%;}

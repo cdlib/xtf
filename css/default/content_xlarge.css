@@ -1,6 +1,6 @@
 /* dynaXML CONTENT stylesheet */
 
-@import url("/styles/escholarship-editions.css");
+@import url("base.css");
 
 span.topnav {font-size: 75%;}
 
