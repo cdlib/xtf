@@ -99,29 +99,31 @@
     <li> <b><a href="#Introduction">Introduction</a></b> </li>
     <br>
     <br>
-    <li> <b><a href="#QuickStart">Quick Start</a></b> 
+    <li> <b><a href="#QuickStart">Quick Start (First Time)</a></b> 
       <ul class="NoBullets">
         <li><a href="#QuickInstallRunTime">Install Run-Time Environment</a></li>
         <li><a href="#QuickInstallXTF">Install the XTF Package</a></li>
-        <li><a href="#QuickInstallDynaXML">Verify that the dynaXML Servlet is 
-          Correctly Installed </a></li>
+        <li><a href="#QuickInstallDynaXML">Verify that the Servlets are Correctly 
+          Installed </a></li>
         <li><a href="#QuickInstallSamples">Install the Sample Document Library</a></li>
-        <li><a href="#QuickVerifyDocRet">Verify that Document Retrieval Works</a></li>
+        <li><a href="#QuickVerifyDocRet">Verify that Document Retrieval (dynaXML 
+          Servlet) Works</a></li>
         <li><a href="#QuickIndex">Index the Sample Document Library</a></li>
         <li><a href="#QuickVerifyCrossQuery">Verify that Document Searching (crossQuery 
           Servlet) Works</a></li>
       </ul>
     </li>
     <br>
+    <li> <b><a href="#Upgrading">Upgrading a Prior Installation</a></b> <br></li>
+    <br>
     <li> <b><a href="#RunTImeInstall">Run-Time Environment Installation/Configuration</a></b> 
       <ul class="NoBullets">
         <li><a href="#RunTimeJava">Java</a></li>
         <li><a href="#RunTimeServlet">Servlet Container</a></li>
-        <li><a href="#RunTimeSaxon">Saxon (optional)</a></li>
-        <li><a href="#RunTimeLucene">Lucene (optional)</a></li>
+        <li><a href="#IncludedLibraries">Included Libraries (no installation required)</a></li>
       </ul>
+      <br>
     </li>
-    <br>
     <li> <b><a href="#XTFInstall">XTF Installation/Configuration</a></b> 
       <ul class="NoBullets">
         <li><a href="#XTFTextIndexer">Configuring the textIndexer Tool</a></li>
@@ -192,7 +194,7 @@
     various stand-alone and combined configurations of the two servlets. </div>
   <br>
   <!-- section summary --> 
-  <p class="Heading1">Quick Start<a name="QuickStart"></a></p>
+  <p class="Heading1">Quick Start (First Time)<a name="QuickStart"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
   This section provides simplified instructions for installing and configuring 
   an XTF system. By using the pre-created document library, configuration files, 
@@ -210,8 +212,6 @@
       <li> A Java servlet container of your choice (e.g., <a href="http://jakarta.apache.org/tomcat/">Apache 
         Tomcat</a> , <a href="http://caucho.com/download/">Caucho Resin</a>, etc.) 
       </li>
-      <li> <i>Saxon and Lucene</i> which are included in the XTF distribution 
-        and don't need any additional installation steps. </li>
     </ul>
     If you need help installing these run-time tools, follow the steps outlined 
     in the <a href="#RunTimeInstall">Run-Time Environment Installation/Configuration</a> 
@@ -244,35 +244,35 @@
     <div align="left">For more details, see the <a href="#XTFInstall">XTF Installation/Configuration</a> 
       section below. </div>
 
-    <p class="Heading2">Verify that the dynaXML Servlet is Correctly Installed<a name="QuickInstallDynaXML"></a></p>
+    <p class="Heading2">Verify that the Servlets are Correctly Installed<a name="QuickInstallDynaXML"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    To verify that the dynaXML servlet is running,, bring up your web browser 
-    and enter the following URL: <br>
+    To verify that the servlets are running,, bring up your web browser and enter 
+    the following URL: <br>
     <br>
-    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view</span> 
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/search</span> 
     </div>
-    <p> Doing so should bring up an error page like this:</p>
-    <p align="center"><img src="Art/DocNotFound.jpg" width="354" height="359"> 
-    </p>
-    <p align="left">Receiving a <b>Document Not Found </b>error indicates that 
-      the dynaXML servlet is running, but that it cannot find any documents (which 
-      makes sense, since we haven't installed the <b>Sample Document Library</b> 
-      yet.) Accessing this URL also causes the servlet container to unpack the 
-      web archive file, creating an <span class="Code">xtf</span> sub-directory 
-      below the container's <span class="Code">webapps</span> directory, which 
-      in turn automatically installs the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> 
+    <p> Doing so should bring up an XTF query page like this:</p>
+    <div align="center"><img src="Art/SearchPage.gif"> <br>
+Figure 2: Default query page
+    </div>
+    <p align="left">Receiving this page indicates that the <i><b>crossQuery</b></i> 
+      servlet is running. Accessing this URL also causes the servlet container 
+      to unpack the web archive file, creating an <span class="Code">xtf</span> 
+      sub-directory below the container's <span class="Code">webapps</span> directory, 
+      which in turn automatically installs the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> 
       servlets, the <b><i>textIndexer</i></b> tool, and a sample configuration 
-      that allows you to work with the default Sample Document Library. </p>
-    <p align="left">If you get any other type of error, including <b>File Not 
-      Found</b> or<b> Page Not Found</b>, then the dynaXML servlet is not properly 
+      that allows you to work with the default Sample Document Library. Note that 
+      you can't run a query, since we haven't installed and indexed the <b>Sample 
+      Document Library</b> yet.</p>
+    <p align="left">If you get any type of error instead, including <b>File Not 
+      Found</b> or<b> Page Not Found</b>, then <i><b>XTF </b></i>is not properly 
       installed, and you should go back and double-check that you have correctly 
       performed the steps described in the previous section.</p>
     
     <p class="Heading2">Install the Sample Document Library<a name="QuickInstallSamples"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    Once the dynaXML servlet is up and running, its time to install the sample 
-    document library. To do so, perform the following steps:
-    
+    Once the crossQuery servlet is up and running, its time to install the sample 
+    document library. To do so, perform the following steps: 
     <div class="IndentL"> 
       <ul>
         <li> Download the <b>sample</b> package (<span class="Code">xtf-sample.zip</span>) 
@@ -290,7 +290,7 @@
           </span>servlet-container-directory</span>/webapps/xtf </span>directory 
           so that the sample source documents are located where the default XTF 
           configuration expects to see them. You should now have the following 
-          directory present (among others):<span class="Code"> data/mm/ft958009mm</span>. 
+          directory present (among others):<span class="Code"> <span class="MacroCode">servlet-container-directory</span>/webapps/xtf/data/mm/ft958009mm</span>. 
           This directory contains the document we will attempt to display.</li>
       </ul>
   </div>
@@ -302,14 +302,14 @@
     document retrieval works. To do so, bring up your web browser and enter the 
     following URL: <br>
     <br>
-    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm&amp;doc.view=frames</span> 
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=mm/ft958009mm/ft958009mm.xml</span> 
     </div>
     <br>
     Doing so should bring up the cover for the book <i><b>The Opening of the Apartheid 
     Mind</b></i>, looking something like this: <br>
     <br>
-    <div align="center"> <img src="Art/Book.jpg"> <br>
-      Figure 2: Result of Document Retrieval with <i><b>dynaXML</b></i> </div>
+    <div align="center"> <img src="Art/ViewPage.gif"> <br>
+      Figure 3: Result of Document Retrieval with <i><b>dynaXML</b></i> </div>
     <br>
     <br>
     To play with the sample setup, simply follow the steps outlined in the following 
@@ -325,10 +325,10 @@
       index the document library. To do this, follow the steps below. </p>
     <p><i><span class="GreyList">Note: </span></i><span class="GreyList">this 
       procedure depends on a Unix-type shell and a Perl command interpreter. If 
-      you are attempting to run XTF on Windows, you'll need an environment such 
+      you are attempting to run XTF on Windows, you may need an environment such 
       as <b>cygwin</b> that includes these things. Alternately, you could create 
-      a driver script that does the same work, namely forming a classpath that 
-      includes all the .jar files in<span class="Code"> WEB-INF/lib</span>.</span></p>
+      a driver script that does the same work. See the section Running on Windows, 
+      below.</span></p>
     <ol class="OrderedList">
       <li>From the command prompt, set the<span class="Code"> XTF_HOME </span>environment 
         variable to the directory where the XTF package is installed. This environment 
@@ -340,9 +340,8 @@
         <br>
         <div class="Note"> (<u>Note</u>: To avoid having to repeatedly set and 
           export the<span class="Code"> XTF_HOME </span> environment variable, 
-          you may wish to add these statements to your<span class="Code"> .bashrc 
-          </span>file.)
-        </div>
+          you may wish to add this statement to your<span class="Code"> .bashrc 
+          </span>or<span class="Code"> .bash_login </span>file.) </div>
 <br>
       </li>
       <li>Using the<span class="Code"> XTF_HOME </span>environment variable, switch 
@@ -375,15 +374,15 @@
     <br>
     Doing so should bring up a page where you can enter information to search 
     for, like this: 
-    <p align="center"> <img src="Art/SearchPage.jpg"> <br>
-      Figure 3: Basic Search (<b><i>crossQuery</i></b>)Web-Page </p>
+    <p align="center"> <img src="Art/SearchPage.gif"> <br>
+      Figure 4: Basic Search (<b><i>crossQuery</i></b>)Web-Page </p>
     <br>
     Entering the word <b><i>apartheid</i></b> in the <b><i>Full Text</i></b> field 
     and pressing the <img src="Art/SubmitButton.gif" align="absmiddle"> button 
     should yield a list of matching documents that looks something like this: 
     <br>
-    <p align="center"> <img src="Art/SearchResult.jpg"> <br>
-      Figure 4: Basic Search Result Web-Page </p>
+    <p align="center"> <img src="Art/SearchResult.gif"> <br>
+      Figure 5: Basic Search Result Web-Page </p>
     Note that the first document listed is the book entitled<i><b> The Opening 
     of the Apartheid Mind</b></i>, which we selected manually in our initial test 
     of the document retrieval (<b><i>dynaXML</i></b>) servlet. Clicking on the 
@@ -392,25 +391,86 @@
     page for the book being shown. In contrast, clicking on the word <b><i>apartheid</i></b> 
     in the search result blurbs will take you to the actual place in the book 
     where the word <b><i>apartheid</i></b> appears. </div>
-</div>  <!-- QuickStart --> 
-
-  <p class="Heading1"> Run-Time Environment Installation/Configuration<a name="RunTimeInstall"></a></p>
+</div>  
+<!-- QuickStart --> 
+<p class="Heading2"> Running on Windows<a name="QuickIndex"></a></p>
+<!-------------------------------------------------------------------------------------------------------------> 
+<p>The base XTF distribution works well on a number of Unix variants, including 
+  Solaris and Linux. XTF also works under Windows, but there are some special 
+  considerations.</p>
+<p>To get the textIndexer script to work as shipped in the XTF distribution, you 
+  need a Unix-like command interpreter. We have found that cygwin works well for 
+  this, and that once installed (be sure to include Perl), the normal instructions 
+  for configuring and running XTF work fine.</p>
+<p>Another option is to create a batch file to do indexing. The instructions below 
+  were contributed by Seth Cherney. Note that his instructions use Resin; substitute 
+  the appropriate path to your servlet container. Feedback and/or improvements 
+  on these instructions is always appreciated.</p>
+<ol>
+  <li> Get perl at activestate.com. </li>
+  <li> Rename the <span class="Code">textindexer</span> file in the Bin folder 
+    to <span class="Code">textindexer.pl</span>. </li>
+  <li> Paste the following into a text editor and save as <span class="Code">indexer.bat</span> 
+    in the same folder: <span class="Code">textIndexer.pl -index default</span> 
+  </li>
+  <li> Paste following into a new file named <span class="Code">XTFJava.bat</span>. 
+    You may need to edit for your setup path (this is the safe way for registering 
+    a classpath, it is not global - google set java classpath). All text is on 
+    one line without any returns: <br>
+    <span class="Code">java -classpath C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\cql-java.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\log4j-1.2.9.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\PDFBox-0.6.7a.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\saxonb-8.3.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\Tidy.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\xtf.jar</span> 
+  </li>
+  <li> Open control panel - system - advanced - environmental variables, and add 
+    the <span class="Code">XTF_HOME</span> variable (and JAVA_HOME if necessary). 
+  </li>
+  <li> Copy the sample data files as directed by XTF user guide. </li>
+  <li> Run <span class="Code">XTFjava.bat</span>, then run <span class="Code">indexer.bat</span>. 
+  </li>
+</ol>
+<p class="Heading1">Upgrading a Prior XTF Installation<a name="Upgrading"></a></p>
+<div class="BaseStyle"><!---------------------------------------------------------------------------------------------------------------> 
+  <p>If you have previously installed XTF and want to retain your existing stylesheets 
+    and configuration files, this section provides instructions for upgrading 
+    to a new release of XTF. </p>
+  <p>Upgrading usually consists of these steps:</p>
+    
+  <ul class="OrderedList">
+    <li>Shut down the servlet container.<br>
+      <br>
+    </li>
+    <li>Make a backup of your existing XTF directory, in case something goes wrong 
+      during the upgrade.<br>
+      <br>
+    </li>
+    <li>Download the latest XTF-Core package (<span class="Code">xtf-core-1.<span class="MacroCode">x</span>.<span class="MacroCode">x</span>.zip</span>) 
+      from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>. The 
+      core package contains the Java source code and libraries for XTF, but omits 
+      stylesheets and configuration files.<br>
+      <br>
+    </li>
+    <li>Unxip the contents of the package into your XTF directory.<br>
+      <br>
+    </li>
+    <li><i>Optional: </i>Review changes to the default stylesheets and apply them 
+      to your own. You can do this by downloading <span class="Code">xtf-example-1.<span class="MacroCode">x</span>.<span class="MacroCode">x</span>.zip</span> 
+      and diffing the stylesheets and config files against the previous version 
+      or against your current files.<br>
+      <span class="Code"><br>
+      </span></li>
+    <li>Restart the servlet container and test to ensure that <i><b>XTF</b></i> 
+      is operating correctly. </li>
+  </ul>
+</div>
+<p class="Heading1">Run-Time Environment Installation/Configuration<a name="RunTimeInstall"></a></p>
   <!---------------------------------------------------------------------------------------------------------------> 
   Successfully running the XTF tools and servlets depends on the prior installation 
   and configuration of a minimum run-time environment. This environment consists 
   of the <b>Java</b> run-time environment and a servlet container to run the <i><b>dynaXML</b></i> 
   and <i><b>crossQuery</b></i> servlets. <br>
   <br>
-  The <b><i>XTF</i></b> distribution also includes two libraries, Saxon and Lucene, 
-  needed for proper operation. Generally no configuration will be required for 
-  these, unless other servlets are to be run in the same servlet container that 
-  require different versions of Saxon and/or Lucene. Saxon is an XML file parser 
-  for Java, and Lucene is an indexing database system.<br>
-  <br>
-  The installation and configuration of each of these run-time environment components 
-  is discussed in turn in the following sub-sections. Once these items are installed 
-  and configured, the XTF system may be installed and run. 
-  <div class="IndentL"> 
+The installation and configuration of each of these run-time environment components 
+is discussed in turn in the following sub-sections. Once these items are installed 
+and configured, the XTF system may be installed and run. 
+<div class="IndentL"> 
     <p class="Heading2">Java<a name="RunTimeJava"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
     Since the <b><i>dynaXML</i></b> and <b><i>crossQuery</i></b><i> </i>servlets 
@@ -425,59 +485,38 @@
     the J2SE. <br>
     <p class="Heading2">Servlet Container<a name="RunTimeServlet"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
-    For the <b><i>dynaXML</i></b> and <b><i>crossQuery</i></b> servlets to be 
+    
+  <p>For the <b><i>dynaXML</i></b> and <b><i>crossQuery</i></b> servlets to be 
     accessible on-line, they must be run under a <b>Servlet Container</b> application. 
     At thtis time, the XTF system is known to work with the <a href="http://jakarta.apache.org/tomcat/">Apache 
     Tomcat</a> and <a href="http://caucho.com/download/">Caucho Resin</a> servlet 
     containers. Please download one or the other of these servlet containers, 
     and follow the accompanying instructions on how to install and configure the 
-    selected container. 
-    <p class="Heading2">Saxon <i>(optional)</i><a name="RunTimeSaxon"></a></p>
-    <!-------------------------------------------------------------------------------------------------------------> 
-    <i><b>Note</b></i>: The proper version of Saxon is included with the XTF distribution 
-    package, so you generally will not need extra installation unless XTF will 
-    run in the same servlet container with tools that need a different version 
-    of Saxon.<br>
-    <br>
-    The source text documents that are indexed and queried by the XTF system are 
-    <b>XML</b> based documents. Consequently, the <b><i>dynaXML</i></b>, <b><i>crossQuery</i></b>, 
+    selected container. </p>
+  <p class="Red">Note: it has been reported that Tomcat version 4.1.27 is not 
+    compatible with XTF. If you are running this version or a version similar 
+    to it, it is recommended that you upgrade to Tomcat 5.x.</p>
+  <p class="Heading2">Included Libraries<i></i> (no installation required)<a name="IncludedLibraries"></a></p>
+    
+  <!-------------------------------------------------------------------------------------------------------------> 
+  <p>The <b><i>XTF</i></b> distribution also includes two libraries, Saxon and 
+    Lucene, needed for proper operation. Generally no configuration will be required 
+    for these, unless other servlets are to be run in the same servlet container 
+    that require different versions of Saxon and/or Lucene. Saxon is an XSLT engine 
+    for Java, and Lucene is an indexing database system. The code in <i><b>XTF</b></i> 
+    is customized to work very closely with both of these libraries, so it is 
+    not currently possible to use a different version than included with the distribution.</p>
+  <p>The source text documents that are indexed and queried by the XTF system 
+    are <b>XML</b> based documents. Consequently, the <b><i>dynaXML</i></b>, <b><i>crossQuery</i></b>, 
     and <b><i>textIndexer</i></b> programs use Michael Kay's <b>Saxon Library</b> 
-    for Java to parse the structure of the source documents and extract the relevant 
-    text for indexing. The Saxon Library can be downloaded from <a href="http://saxon.sourceforge.net/">SourceForge.net</a>. 
-    Currenly, only version 8.0 of the Saxon Library is supported, since past updates 
-    to the library have been incompatible with previous versions, and there is 
-    no guarantee that future versions will be backwards compatible either. <br>
-    <br>
-    For the most part, installing Saxon consists of simply placing the <span class="Code">.jar</span> 
-    file in your class path. However, as with the Java J2SE, the Saxon Library 
-    is a third party package whose installation and configuration may change in 
-    future releases. So please refer to the documentation that accompanies Saxon 
-    for any additional steps required to install and configure the library. <br>
-    <p class="Heading2">Lucene <i>(optional)</i><a name="RunTimeLucene"></a></p>
-    <!-------------------------------------------------------------------------------------------------------------> 
-    <i><b>Note</b></i>: The proper version of Lucene is included with the XTF 
-    distribution package, so you generally will not need extra installation unless 
-    XTF will run in the same servlet container with tools that need a different 
-    version of Lucene.<br>
-    <br>
-    The <i><b>textIndexer</b></i> tool uses a library called <b>Lucene </b>to 
+    for Java to parse the structure of the source documents and run stylesheets 
+    to transform them in various ways.</p>
+  <p>The <i><b>textIndexer</b></i> tool uses a library called <b>Lucene </b>to 
     construct a search index of the XML source text documents in an XTF system. 
     The <b><i>crossQuery</i></b> servlet then uses the resulting index to locate 
-    matching documents based on user generated queries. If you intend to provide 
-    document search capabilities for your library using the <b><i>crossQuery</i></b> 
-    servlet, you will need to download the Lucene Library from <a href="http://jakarta.apache.org/lucene/">jakarta.apache.org</a>), 
-    As with Saxon, newer versions of Lucene have typically been incompatible with 
-    earlier versions, and it is reasonable to expect that future versions will 
-    incompatible as well. Consequently, only version 1.4 of the Lucene Library 
-    is supported by the XTF system at this time. <br>
-    <br>
-    For the most part, installing Lucene consists of simply placing the <span class="Code">.jar</span> 
-    file in your class path. However, as with the Java J2SE and the Saxon Library, 
-    Lucene is a third party package whose installation and configuration may change 
-    in future releases. Please refer to the documentation that accompanies Lucene 
-    for any additional steps required to install and configure the library.<br>
-    <br>
-  </div>
+    matching documents based on user generated queries. <br>
+  </p>
+</div>
   <!-- Run-Time Install/Config --> 
   <p class="Heading1"> XTF Installation/Configuration<a name="XTFInstall"></a> 
   </p>
@@ -509,9 +548,9 @@
     <br>
   </li>
   <li> Start up the servlet container, and browse to a URL referencing an XTF 
-    servlet, such as dynaXML:<br>
+    servlet, such as crossQuery:<br>
     <br>
-    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm</span> 
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/search</span> 
     </div>
     <br>
     Accessing this URL should cause the servlet container to unpack the web archive 
@@ -536,8 +575,7 @@
     <br>
     <div class="Note"> (<u>Note</u>: To avoid having to repeatedly set and export 
       the<span class="Code"> XTF_HOME </span> environment variable, you may wish 
-      to add these statements to your<span class="Code"> .bashrc </span>file.) 
-    </div>
+      to add this statement to your<span class="Code"> .bashrc </span>file.) </div>
     <br>
   </li>
   <li> Using this new environment variable, switch to the<span class="Code"> XTF 
@@ -566,11 +604,11 @@
   </li>
 </ol>
 At this point, the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, 
-and the <b><i>textIndexer</i></b> tool will be installed and ready to use. Also 
-installed are a sample document library and a sample configuration that you can 
-use to index, search for, and retrieve documents from the sample library. To play 
-with the sample setup, simply follow the steps outlined in the <a href="#QuickIndex">last 
-two sections</a> of the <b>Quick Start</b> guide above. Alternately, to customize 
+and the <b><i>textIndexer</i></b> tool are installed and ready to use. Also installed 
+are a sample document library and a sample configuration that you can use to index, 
+search for, and retrieve documents from the sample library. To play with the sample 
+setup, simply follow the steps outlined in the <a href="#QuickIndex">last two 
+sections</a> of the <b>Quick Start</b> guide above. Alternately, to customize 
 the sample installation to better suit your needs, see the three remaining <b>XTF 
 Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>. 
 <br>
@@ -582,13 +620,13 @@ Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>.
   used by the <b><i>crossQuery</i></b> servlet to search for documents based on 
   user queries. The organization of the <b><i>textIndexer</i></b> tool can be 
   illustrated as follows: 
-  <p align="center"> <img src="../Common_Art/textIndexer.gif"> <br>
-    Figure 5: The <b><i>textIndexer</i></b> Tool </p>
+  <p align="center"> <img src="../Common_Art/textIndexerDataFlow.gif"> <br>
+    Figure 6: Data Flow in the <b><i>textIndexer</i></b> Tool </p>
   <div class="IndentL"> <b><u>Running the textIndexer</u></b><br>
     <!-----------------------------------------------------------------------------------------------------------> 
     Running the text indexer from the command line is accomplished by switching 
-    to the bin subdirectory just below the main XTF directory, and typing the 
-    following command: <br>
+    to the bin subdirectory just below the main XTF directory, and using the following 
+    command: <br>
     <br>
     <div class="Sample"> <span class="Code"> $ textIndexer {-config <span class="MacroCode">config-file-path</span>} 
       {-clean | <b>-incremental</b>} {<b>-optimize</b> | -nooptimize} {-trace 
@@ -711,15 +749,14 @@ Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>.
     A simple example of command line parameters for a text indexer run might look 
     like this: <br>
     <br>
-    <div class="Sample"> <span class="Code">$ textIndexer -config conf/myTextIndexer.conf 
-      -clean -index default</span> </div>
+    <div class="Sample"> <span class="Code">$ textIndexer -clean -index default</span> 
+    </div>
     <br>
-    This example assumes that the config file is called<span class="Code"> myTextIndexer.conf</span>, 
-    and that it is located in the<span class="Code"> XTF_HOME/conf </span>subdirectory 
-    under the main XTF directory. It also assumes that the config file contains 
-    an entry for an index called <b>default</b>, and that the user wants the index 
-    to be rebuilt from scratch and then optimized (because of the presence of 
-    the <span
+    This example uses the default config file,<span class="Code"> textIndexer.conf</span>, 
+    located in the<span class="Code"> XTF_HOME/conf </span>subdirectory. It assumes 
+    that the config file contains an entry for an index called <b>default</b>, 
+    and that the user wants the index to be rebuilt from scratch and then optimized 
+    (because of the presence of the <span
           class="Code">-clean</span> argument, and the absence of the <span class="Code">-nooptimize</span> 
     argument.) <br>
     <br>
@@ -728,10 +765,10 @@ Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>.
     may be used as a set one or more times to update multiple indexes. For example: 
     <br>
     <br>
-    <pre class="Sample"><b>TextIndexer -config conf/textIndexer.conf
+    <pre class="Sample"><b>TextIndexer -config conf/myTextIndexer.conf
             -clean -index default
             -incremental -nooptimize -index abstracts</b></pre>
-    In this example, the <code>textIndexer.conf</code>, file defines two indexes 
+    In this example, the <code>myTextIndexer.conf</code> file defines two indexes 
     called <b>default</b> and <b>abstracts</b>, with the <b>default </b>index 
     created from scratch and optimized at the end, while the <b>abstracts</b> 
     index is updated incrementally and not optimized. <br>
@@ -741,10 +778,9 @@ Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>.
     <br>
     As noted above, first command line argument passed to the <b><i>textIndexer</i></b> 
     tool is the name of a configuration file. This file contains the name of one 
-    or more indexes and their associated parameters. The format of the file is 
-    as follows: 
-    <pre class="Sample"><b>
-&lt;?xml version="1.0" encoding="utf-8"?&gt;
+    or more indexes and their associated parameters. The format of the configuration 
+    files is as follows: 
+    <pre class="Sample"><b>&lt;?xml version="1.0" encoding="utf-8"?&gt;
 
 &lt;textIndexer-config&gt;
 
@@ -763,12 +799,11 @@ Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>.
     &lt;/index&gt;
 
 &lt;/textIndexer-config&gt;</b></pre>
-    <p align="center"> Listing 1: textIndexer Configuration File Format </p>
-    As the listing shows, the <b><i>textIndexer</i></b> configuration file is 
-    an XML file containing a configuration type tag (the tag <span class="Code">&lt;textIndexer-config/&gt</span>), 
-    followed by one or more index definition blocks. For each index block in the 
-    file, the following attributes are defined: <br>
-    <br>
+    <p> As the listing shows, the <b><i>textIndexer</i></b> configuration file 
+      is an XML file containing a configuration type tag (the tag <span class="Code">&lt;textIndexer-config/&gt</span>), 
+      followed by one or more index definition blocks. For each index block in 
+      the file, the following attributes are defined: <br>
+    </p>
     <div class="GreyList"> <span class="Code">&lt;index name="<span class="MacroCode">NameOfIndex</span>"/&gt;</span><br>
       <div class="IndentLR"> This attribute specifies a name for an index definition 
         block. The name may be any combination of digits and/or letters and the 
@@ -1056,9 +1091,10 @@ Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>.
       <br>
       <br>
       <b><u>Generating Index Summary Reports</u></b> <br>
-      There may be times when you want more information about an index that <i><b>textIndexer</b></i> 
-      has created, and the <i><b>indexStats</b></i> tool can be used to do this. 
-      The indexStats tool is a command-line tool that is invoked as follows:<br>
+      There may be times when you want more information about an index created 
+      by the <i><b>textIndexer</b></i>, and the <i><b>indexStats</b></i> tool 
+      can be used to do this. The indexStats tool is a command-line tool that 
+      is invoked as follows:<br>
     </p>
     <div class="Sample"> <span class="Code"> $ indexStats {-config <span class="MacroCode">config-file-path</span>} 
       -index <span class="MacroCode">index-name</span> </span> </div>
@@ -1066,55 +1102,57 @@ Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>.
       </span> argument is an optional argument that identifies an index configuration 
       file to use. If none is specified, the default <span class="MacroCode">XTF_HOME</span><span class="Code">/conf/textIndexer.conf 
       </span> file is used.<span class="Code"> The -index <span class="MacroCode">index-name</span></span> 
-      argument, is required, and identifies the index for which to generate summary 
+      argument is required, and identifies the index for which to generate summary 
       information.</p>
-    <p>For the sample Document Library provided, the command line to generate 
+    <p>For the sample document library provided, the command line to generate 
       a summary report would be:</p>
     <div class="Sample"> <span class="Code"> $ indexStats -index default </span> 
     </div>
     <p>The output generated by the indexStats for the sample index would look 
       something like this:</p>
     <pre class="Sample">
-
-IndexStats v1.0
+IndexStats v1.1
 
 Index: "default"
   
   Configuration Info...
     Chunk Size = 200, Overlap = 20
-    Index Path = C:/UCOP/xtf-sf/index/
-    Data Path  = C:/UCOP/xtf-sf/data/
-    Stop Words = a an and are as at be but by for if in into is it no not 
-                 of on or s such t that the their then there these they 
-                 this to was will with
+    Index Path = C:/UCOP/Tomcat/webapps/xtf/index/
+    Data Path  = C:/UCOP/Tomcat/webapps/xtf/data/
+    Stop Words = a an and are as at be but by for if in into is it no not of 
+      on or s such t that the their then there these they this to was will with
   
   Statistics...
-    Total Documents     = 23
-    Avg Chunks Per Doc  = 1321
-    Lucene Index Size   = 33.34 Mb
-    Persistent Doc Size = 24.03 Mb
-    Total Index Size    = 57.38 Mb
+    Total Documents (Records)  = 15
+    Total Chunks               = 16537
+    Avg Chunks Per Doc/Rec     = 1,033.6
+    Total Number of Src Files  = 15
+    Avg Docs/Recs Per File     = 1
+    Size of Lucene Index       = 25.31 Mb
+    Size of Source Files       = 17.81 Mb
+    Size of Lazy Trees         = 14.17 Mb
+    Total Index Size           = 39.48 Mb  (Lucene + Lazy)
+    
 Done.
-&nbsp;
 </pre>
-    <p>In this report, the<span class="Code"> <b>Avg Chunks Per Doc</b> </span>entry 
+    <p>In this report, the<span class="Code"> <b>Avg Chunks Per Doc/Rec</b> </span>entry 
       reports the average number of <i><b>chunks</b></i> that a document was sub-divided 
-      into when it was added into the index. Th<b><span class="Code">e Persistent 
-      Doc Size </span></b>entry indicates how large the current <i><b>Lazy Tree</b></i> 
+      into when it was added into the index. The<b><span class="Code"> Size of 
+      Lazy Trees </span></b>entry indicates how large the current <i><b>Lazy Tree</b></i> 
       is for the index, and identifies how much space is currently being used 
       to maintain information to speed access to documents retrieved from the 
       index. To learn more about document chunks and lazy tree functionality, 
-      see the <a href="../XTF_Programming_Guide/XTFProgGuide.html">XTF Programming 
-      Guide</a><!-- textIndexer Install/Config Subs --> </p>
+      see the <a href="../XTF_Under_Hood/XTFUnderHood.html">XTF Under the 
+      Hood Guide</a><!-- textIndexer Install/Config Subs --> </p>
   </div>
   <p class="Heading2">Configuring the dynaXML Servlet<a name="XTFDynaXML"></a></p>
   <!-------------------------------------------------------------------------------------------------------------> 
   The <i><b>dynaXML</b></i> servlet is responsible for taking a request for a 
-  document, authenticating the user, and presenting the document as a web page. 
-  The organization of the <b><i>dynaXML</i></b> servlet can be illustrated as 
-  follows: 
-  <p align="center"> <img src="../Common_Art/dynaXML.gif"><br>
-    Figure 5: The <b><i>dynaXML</i></b> Servlet </p>
+  document, converting it to XML if necessary, optionally authenticating the user, 
+  and finally presenting the document as a web page. The organization of the <b><i>dynaXML</i></b> 
+  servlet can be illustrated as follows: 
+  <p align="center"> <img src="../Common_Art/dynaXMLDataFlow.gif"><br>
+    Figure 7: Data Flow in the <b><i>dynaXML</i></b> Servlet </p>
   The <b><i>dynaXML</i></b> servlet is configured by modifying one or more of 
   the the following files: 
   <ul class="UnorderedList3">
@@ -1458,8 +1496,8 @@ Done.
   search criteria. The resulting matches are then displayed in an HTML web page 
   for the user to browse. The organization of the <b><i>crossQuery</i></b> servlet 
   can be illustrated as follows: 
-  <p align="center"> <img src="../Common_Art/crossQuery.gif"><br>
-    Figure 6: The <b><i>crossQuery</i></b> Servlet </p>
+  <p align="center"> <img src="../Common_Art/crossQueryDataFlow.gif"><br>
+    Figure 8: Data Flow in the <b><i>crossQuery</i></b> Servlet </p>
   The <b><i>crossQuery</i></b> servlet is configured by modifying one or more 
   of the the following files: 
   <ul class="UnorderedList3">
