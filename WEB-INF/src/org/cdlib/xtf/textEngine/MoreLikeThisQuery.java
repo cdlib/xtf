@@ -65,7 +65,7 @@ public class MoreLikeThisQuery extends Query
   private CharMap accentMap;
   
   /** Ignore words less freqent that this. */
-  private int minTermFreq = 2;
+  private int minTermFreq = 1;
 
   /** Ignore words which do not occur in at least this many docs. */
   private int minDocFreq = 2;
