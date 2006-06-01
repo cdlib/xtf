@@ -185,28 +185,32 @@
   added to, or removed from the document library. If we would isolate and zoom 
   in on the <b><i>textIndexer</i></b> portion of the <a href="#SummaryDiagram">XTF 
   Overview Diagram</a> shown above, we'd see something like this: <br>
-  <p align="center"> <img src="../Common_Art/textIndexer.gif"><br>
-    Figure 2: Internal organization of the <b><i>textIndexer</i></b> Tool </p>
-  What the diagram shows, is that the <b><i>textIndexer</i></b> uses its <b>Document 
-  Selector</b> stylesheet to select which files in the document library need to 
-  be indexed. For non-XML document files, the text to index is extracted and converted 
-  to XML. This base XML is then processed by the <b>Document Pre-Filter</b> stylesheet 
-  to add additional meta-data and/or sectioning information to the text. The resulting 
-  filtered XML is then passed on to the actual <b><i>Text Indexer Engine</i></b>, 
-  which breaks the text up into smaller overlapping chunks and then adds them 
-  to a Lucene based word index. The index can then be used by the <b><i>crossQuery</i></b> 
-  servlet to quickly locate files in the document library containing any text 
-  requested by the user. Optionally, the <b><i>dynaXML</i></b> servlet can also 
-  use the index to highlight in context any matches in the original XML documents 
-  when they are viewed. <br>
-  <br>
-  The <span class="Code">textIndexer.conf</span> file, the <b>Document Selector</b> 
-  stylesheet, and the <b>Pre-filter</b> stylesheet together define how the <b><i>textIndexer</i></b> 
-  performs the document indexing process. A complete discussion of the <span class="Code">textIndexer.conf</span> 
-  file appears in the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF 
-  Deployment Guide</a>, and so will not be discussed in any great depth here. 
-  The inner workings of the <b>Document Selector</b> and <b>Pre-Filter</b> stylesheets 
-  however, are the subject of the following subsections. 
+  <p align="center"> <img src="../Common_Art/textIndexerDataFlow.gif"><br>
+    Figure 2: Data Flow within the <b><i>textIndexer</i></b> Tool </p>
+  <p>What the diagram shows, is that the <b><i>textIndexer</i></b> uses a <b>Document 
+    Selector</b> stylesheet to select which files in the document library need 
+    to be indexed. For non-XML document files, the text to index is extracted 
+    and converted to XML. This base XML is then processed by the <b>Document Pre-Filter</b> 
+    stylesheet to add additional meta-data and/or sectioning information to the 
+    text. The resulting filtered XML is then passed on to the actual <b><i>Text 
+    Indexer Engine</i></b>, which breaks the text up into smaller overlapping 
+    chunks and then adds them to a Lucene based word index. The index can then 
+    be used by the <b><i>crossQuery</i></b> servlet to quickly locate files in 
+    the document library containing any text requested by the user. Optionally, 
+    the <b><i>dynaXML</i></b> servlet can also use the index to highlight in context 
+    any matches in the original XML documents when they are viewed. </p>
+  <p>The <b><i>textIndexer</i></b> is capable of handling many documents, of various 
+    types, that are filtered in different ways. Here is a diagram showing how 
+    the decisions are made.</p>
+  <p align="center"> <img src="../Common_Art/textIndexerDecisionTree.gif"><br>
+    Figure 3: Decision Tree of the <b><i>textIndexer</i></b> Tool </p>
+  <p> The <span class="Code">textIndexer.conf</span> file, the <b>Document Selector</b> 
+    stylesheet, and the <b>Pre-filter</b> stylesheet together define how the <b><i>textIndexer</i></b> 
+    performs the document indexing process. A complete discussion of the <span class="Code">textIndexer.conf</span> 
+    file appears in the <a href="../XTF_Deployment_Guide/XTFDeployGuide.html">XTF 
+    Deployment Guide</a>, and so will not be discussed in any great depth here. 
+    The inner workings of the <b>Document Selector</b> and <b>Pre-Filter</b> stylesheets 
+    however, are the subject of the following subsections. </p>
   <div class="IndentL"> 
     <p class="Heading2">Document Selector Programming<a name="textIndexer_DocSelector_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
@@ -675,30 +679,50 @@
   users to search the document library for particular words or phrases. If we 
   look more closely at the <b><i>crossQuery</i></b> portion of the <a href="#SummaryDiagram">XTF 
   Overview Diagram</a>, we'll see something like this: <br>
-  <p align="center"> <img src="../Common_Art/crossQuery.gif"><br>
-    Figure 3: Internal organization of the <b><i>crossQuery</i></b> Servlet </p>
+  <p align="center"> <img src="../Common_Art/crossQueryDataFlow.gif"><br>
+    Figure 4: Data Flow in the <b><i>crossQuery</i></b> Servlet </p>
   Once again, the basic flow of information in this diagram is left to right. 
   A document search begins with a the user specifying some text to search for 
   on a web page. The query is assembled into a URL of the form: <br>
   <br>
   <div class="Sample"> <span class="Code"> http://<span class="MacroCode">yourserver</span>:8080/xtf/search?text=<span class="MacroCode">TextToFind</span> 
     </span> </div>
-  <br>
-  This query URL is then passed on to the <i><b>crossQuery</b></i> servlet for 
-  processing. The first thing the servlet does is translate the query URL into 
-  an XML query that the <b><i>crossQuery</i></b> search engine can actually understand. 
-  This translation is accomplished by the XSLT based <b>Query Parser</b> (<span class="Code">queryParser.xsl</span>.) 
-  <br>
-  <br>
-  The <b><i>crossQuery</i></b> search engine then uses the XML query to look for 
-  occurrences of the specified text in the document index. Any matches that are 
-  found in the index are assembled into a list of XML tags, and passed on to <b>Result 
-  Formatter</b> stylesheet (<span class="Code">resultFormatter.xsl</span>.) The 
-  <b>Result Formatter</b> stylesheet then converts the list of matches into HTML 
-  for review by the user. <br>
-  <br>
-  The remaining two subsections describe in detail how to write <b>Query Parser</b> 
-  and <b>Result Formatter</b> XSLT code to carry out the necessary translations. 
+  <p><br>
+    This query URL is then passed on to the <i><b>crossQuery</b></i> servlet for 
+    processing. The first thing the servlet does is translate the query URL into 
+    an XML query that the <b><i>crossQuery</i></b> search engine can actually 
+    understand. This translation is accomplished by the XSLT based <b>Query Parser</b> 
+    (<span class="Code">queryParser.xsl</span>.) <br>
+    <br>
+    The <b><i>crossQuery</i></b> search engine then uses the XML query to look 
+    for occurrences of the specified text in the document index. Any matches that 
+    are found in the index are assembled into a list of XML tags, and passed on 
+    to <b>Result Formatter</b> stylesheet (<span class="Code">resultFormatter.xsl</span>.) 
+    The <b>Result Formatter</b> stylesheet then converts the list of matches into 
+    HTML for review by the user.</p>
+  <p>Thus, <i><b>XTF</b></i> allows you to configure, through stylesheets, exactly 
+    how queries will be interpreted and how the results will be formatted. For 
+    advanced users, there is one more level of configurability: you can actually 
+    implement several independent query interfaces, each with their own <b>Query 
+    Parser</b>. How does the <i><b>crossQuery</b></i> servlet decide which parser 
+    to run? By calling another stylesheet you can optionally configure, the <b>Query 
+    Router</b>. <span class="Red">Note that routing is an advanced feature, and 
+    most first-time XTF implementors should stick with the default router and 
+    focus on the <b>Query Parser</b>.</span> </p>
+  <p>Here's a diagram showing the path of decision making in <i><b>crossQuery</b></i>.<br>
+  </p>
+  <p align="center"> <img src="../Common_Art/crossQueryDecisionTree.gif"><br>
+    Figure 5: Decision Tree of the <b><i>crossQuery</i></b> Servlet </p>
+  <p>A great way to get a hands-on feel for how <i><b>crossQuery</b></i> works 
+    is to use the built-in &quot;Debug Step&quot; mode. Simply add <span class="Code">&amp;debugStep=1</span> 
+    to any search URL. The generated web page will let you step through the entire 
+    process, with detailed explanations and real data. The first step looks like 
+    this:</p>
+  <p align="center"> <img src="Art/SearchDebugStep.gif"><br>
+    Figure 6: Using <b><i>crossQuery</i></b>'s Debug Step Mode</p>
+  <p>The remaining two subsections describe in detail how to write <b>Query Parser</b> 
+    and <b>Result Formatter</b> XSLT code to carry out the necessary translations. 
+  </p>
   <div class="IndentL"> 
     <p class="Heading2">Query Parser Programming<a name="crossQuery_QueryParser_Prog"></a></p>
     <!-------------------------------------------------------------------------------------------------------------> 
@@ -1162,8 +1186,8 @@
     If we look more closely at the dynaXML portion of the <a href="#SummaryDiagram">XTF 
     Overview Diagram</a>, we see something like this: <br>
   </p>
-  <p align="center"> <img src="../Common_Art/dynaXML.gif"><br>
-    Figure 4: Internal organization of the <b><i>dynaXML </i></b> Servlet </p>
+  <p align="center"> <img src="../Common_Art/dynaXMLDataFlow.gif"><br>
+    Figure 7: Data Flow in the <b><i>dynaXML </i></b> Servlet </p>
   <p>Data flow in this diagram is from left to right. First, the user specifies 
     a document to view by sending a URL that looks like this (in its simplest 
     form):<br>
@@ -1176,17 +1200,23 @@
     will be used for formatting the result page. Also, if a search query is included 
     in the URL, the parser transforms the query into structured XML that the <b>Text 
     Engine </b>can understand.</p>
-  <p>The parser also specifies authentication to perform, allowing the system 
-    to secure access to sensitive or protected documents. The user authentication 
-    engine checks the user's credentials using the specified authentication method. 
-  </p>
+  <p>Optionally, the parser can also specify authentication to perform, allowing 
+    the system to secure access to sensitive or protected documents. XTF's user 
+    authentication engine checks the user's credentials using the specified authentication 
+    method. </p>
   <p>Next, the servlet fetches the source XML document. If a search query was 
     specified, it uses the <b>Text Engine</b> to search for occurrences of the 
     specified text, and then inserts hit tags and snippets in their proper context 
     within the original document. </p>
   <p>Finally, the (possibly marked up) document is passed to the <b>Document Formatter</b> 
     stylesheet, which creates the final HTML page to display in the user's browser.</p>
-  <p>The following sections cover the basics of programming stylesheets to drive 
+  <p>Thus, XTF allows you to configure, again through the use of stylesheets, 
+    where documents will be stored, how they can be queried, and precisely how 
+    they will be displayed to the user. How are all these decisions made? This 
+    diagram should clarify the chain of logic:</p>
+  <p align="center"> <img src="../Common_Art/dynaXMLDecisionTree.gif"><br>
+    Figure 8: Decision Tree of the <b><i>dynaXML </i></b> Servlet </p>
+<p>The following sections cover the basics of programming stylesheets to drive 
     <i><b>dynaXML</b></i>.</p>
   <div class="IndentL"> 
     <p class="Heading2">Document Request Parser Programming<a name="dynaXML_DocReqParser_Prog"></a></p>
@@ -1226,7 +1256,7 @@
       with the XTF distribution.) If the user clicks on that title, <i> <b>dynaXML</b></i> 
       is then invoked with a URL like this: </p>
       
-    <pre class="Sample"><b> http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm&amp;query=apartheid</b></pre>
+    <pre class="Sample"><b> http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=mm/ft958009mm/ft958009mm.xml&amp;query=apartheid</b></pre>
     Notice that the first part of the URL (everything before the <b>?</b> symbol) 
     invokes the <b><i>dynaXML</i></b> servlet, and second part of the URL (everything 
     after the <b>?</b> symbol) defines which document to display and a text query 
@@ -1234,7 +1264,7 @@
     <br>
     <table width="90%" cellpadding="0" cellspacing="12">
       <tr> 
-        <td width="213" align="right" valign="baseline" class="Code">docId=ft958009mm</td>
+        <td width="213" align="right" valign="baseline" class="Code">docId=mm/ft958009mm/ft958009mm.xml</td>
         <td width="246" valign="baseline"><span class="BaseStyle">The identifier 
           of the document to view.</span></td>
       </tr>
@@ -1317,8 +1347,8 @@
     </p>
     <pre class="Sample"><b>&lt;parameters&gt;
 
-  &lt;param name="docId" value="ft958009mm"&gt;
-     &lt;token value="ft958009mm" isWord="yes"/&gt;
+  &lt;param name="docId" value="mm/ft958009mm/ft958009mm.xml"&gt;
+     &lt;token value="mm/ft958009mm/ft958009mm.xml" isWord="yes"/&gt;
   &lt;/param&gt;
 
   &lt;param name="query" value="apartheid"&gt;
@@ -1363,7 +1393,7 @@
       you're interested in learning more about Lazy Trees, see <a href="../XTF_Under_Hood/XTFUnderHood.html#LazyFiles">XTF 
       Under the Hood</a>.</p>
     <pre class="Sample"><b>&lt;query indexPath="index" termLimit="1000" workLimit="500000">
-   &lt;and field="text" maxSnippets="-1" maxContext="80">
+   &lt;and field="text" maxSnippets="all" maxContext="80">
       &lt;term>apartheid&lt;/term>
    &lt;/and>
 &lt;/query></b></pre>
@@ -1374,11 +1404,11 @@
       &lt;xsl:import&gt; </span>to incorporate <span class="Code">queryParser.xsl</span>, 
       and uses its templates to do the work of parsing and formatting the text 
       query.</p>
-    <p>One curious thing to see here is <span class="Code">maxSnippets=&quot;-1&quot;</span>. 
-      In this case,<span class="Code"> -1 </span>is a special value, telling the 
-      <b>Text Engine</b> to gather <i>all</i> of the snippets/hits for the given 
-      document. If you only wanted the ten best scoring hits, you could specify 
-      <span class="Code">maxSnippets=&quot;10&quot; </span>instead.</p>
+    <p>One curious thing to see here is <span class="Code">maxSnippets=&quot;all&quot;</span>. 
+      In this case,<span class="Code"> all </span>is a special value, telling 
+      the <b>Text Engine</b> to gather <i>all</i> of the snippets/hits for the 
+      given document. If you only wanted the ten best scoring hits, you could 
+      specify <span class="Code">maxSnippets=&quot;10&quot; </span>instead.</p>
     <pre class="Sample"><b>&lt;auth access="allow" type="all"/></b></pre>
     <p>The final tag produced by the <b>Document Request Parser</b> is the<span class="Code"> 
       &lt;auth&gt; </span>tag, which specifies authentication to perform. The 
