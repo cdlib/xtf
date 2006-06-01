@@ -146,7 +146,7 @@
   <html>
     <head>
       <title><xsl:value-of select="$reason"/></title>
-      <link type="text/css" rel="stylesheet" href="http://texts.cdlib.org/dynaxml/css/eschol/content.css"/>
+      <link type="text/css" rel="stylesheet" href="css/default/content.css"/>
     </head>
 
     <body>
