@@ -251,20 +251,20 @@
     <br>
     <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/search</span> 
     </div>
-    <p> Doing so should bring up an XTF query page like this:</p>
-    <div align="center"><img src="Art/SearchPage.gif"> <br>
-Figure 2: Default query page
-    </div>
+    <p> Doing so should bring up an error page exactly like this:</p>
+    <div align="center"><img src="Art/SearchQueryGenErr.gif"> <br>
+      Figure 2: QueryGen Error Page (expected at this point)</div>
     <p align="left">Receiving this page indicates that the <i><b>crossQuery</b></i> 
-      servlet is running. Accessing this URL also causes the servlet container 
-      to unpack the web archive file, creating an <span class="Code">xtf</span> 
-      sub-directory below the container's <span class="Code">webapps</span> directory, 
-      which in turn automatically installs the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> 
+      servlet is running; it's okay at this point that it can't access the index. 
+      Simply accessing this URL causes the servlet container to unpack the web 
+      archive file, creating an <span class="Code">xtf</span> sub-directory below 
+      the container's <span class="Code">webapps</span> directory, which in turn 
+      automatically installs the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> 
       servlets, the <b><i>textIndexer</i></b> tool, and a sample configuration 
-      that allows you to work with the default Sample Document Library. Note that 
-      you can't run a query, since we haven't installed and indexed the <b>Sample 
-      Document Library</b> yet.</p>
-    <p align="left">If you get any type of error instead, including <b>File Not 
+      that allows you to work with the default Sample Document Library. The reason 
+      we get an error is that we haven't installed and indexed the <b>Sample Document 
+      Library</b> yet.</p>
+    <p align="left">If you get any other type of error, including <b>File Not 
       Found</b> or<b> Page Not Found</b>, then <i><b>XTF </b></i>is not properly 
       installed, and you should go back and double-check that you have correctly 
       performed the steps described in the previous section.</p>
