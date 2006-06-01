@@ -514,7 +514,12 @@ public class DynaXML extends TextServlet
             if( forceLazy )
                 throw new InvalidDocumentException();
             
-            // Can't find a lazy store... just read the original source file.
+            // Can't find a lazy store... does the original source file exist?
+            File srcFile = new File( docInfo.source);
+            if( !srcFile.isFile() || !srcFile.canRead() )
+                throw new InvalidDocumentException();
+            
+            // Okay, read the original source file.
             XMLReader xmlReader = IndexUtil.createXMLReader();
             InputSource inSrc = docLocator.getInputSource( 
                                    docInfo.source, docInfo.removeDoctypeDecl );

@@ -111,14 +111,17 @@ public class DefaultDocLocator implements DocLocator
             return null;
         if( sourcePath.startsWith("https:") )
             return null;
-
-        File lazyFile = null;
+        
+        // If it's a directory, something went wrong. No lazy file for sure.
+        File sourceFile = new File( sourcePath );
+        if( !sourceFile.isFile() )
+            return null;
             
         // Figure out where the lazy file is (or should be.)
-        lazyFile = IndexUtil.calcLazyPath( 
-                          new File(servlet.getRealPath("")),
-                          new File(indexConfigPath), indexName,
-                          new File(sourcePath), false );
+        File lazyFile = IndexUtil.calcLazyPath( 
+                              new File(servlet.getRealPath("")),
+                              new File(indexConfigPath), indexName,
+                              new File(sourcePath), false );
         
         // If we can't read it, try to build it instead.
         if( !lazyFile.canRead() )
