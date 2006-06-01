@@ -10,11 +10,20 @@ Changes in 1.7
   starting out, or who only need one parser, can use the default
   queryRouter.xsl without change. [Feature Req 1470967]
 
-- Added new "moreLike" query operator which uses a simple index-based
-  algorithm to locate additional documents that resemble a specified
-  document. This feature is considered experimental and subject to
-  improvement/change. [Feature Req 1470968]
+- textIndexer now allows "deep" section type indexing. A new attribute
+  "sectionTypeAdd" can be inserted by the prefilter stylesheet. This
+  causes the text in that section to inherit its parent's sectionType
+  and add the specified text. This allows simple processing of
+  hierarchical sections without complex prefilter code. 
+  [Feature Req 1491315]
 
+- Many users have expressed confusion over the way document IDs were
+  handled in dynaXML, and observed that much CDL-centric code is
+  present in the default stylesheets. These have been refactored,
+  and document IDs are now simply the path from the data directory
+  to each document, instead of a strict 10-character code.
+  [Feature Req 1499142]
+  
 - XTF now allows stylesheets to track data on a per-user-session
   basis. A simple API is provided to get and set state data. The
   session identifier is tracked using cookies, or if the user has
@@ -28,6 +37,11 @@ Changes in 1.7
 
 - New "exact" query operator added. To match, the field must contain
   exactly the query phrase; no more, no less. [Feature Req 1120263]
+
+- Added new "moreLike" query operator which uses a simple index-based
+  algorithm to locate additional documents that resemble a specified
+  document. This feature is considered experimental and subject to
+  improvement/change. [Feature Req 1470968]
 
 - Made minor changes to the experimental "boost set" facility.
 
@@ -130,6 +144,21 @@ Changes in 1.7
 
 - textIndexer now tracks and displays the elapsed time of each
   indexing run. [Feature Req 1471072]
+  
+- crossQuery wasn't paying attention to the MIME type specified by
+  Result Formatter stylesheet output specification. Now the default is
+  (text/html) is only used if none specified. [Bug 1499137]
+  
+- Fixed assertion failure when a <not> clause appeared within a
+  <near> query. [Bug 1489230]
+  
+- Fixed a bug in the internal simplification of boolean queries that
+  caused an assertion failure when searching for "the". [Bug 1482066]
+  
+- Fixed bug in dynaXML that gave an unenlightening error message if
+  the source file specified by the docReqParser is actually a
+  directory. [Bug 1499148]
+  
 
 Changes in 1.6.1 
 ================
