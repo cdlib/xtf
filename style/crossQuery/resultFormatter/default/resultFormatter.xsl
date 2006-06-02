@@ -734,10 +734,17 @@
   <!-- Snippet Template (for snippets in the full text)                       -->
   <!-- ====================================================================== -->
 
-  <xsl:template match="snippet" mode="text">
-    <xsl:text>...</xsl:text>
-    <xsl:apply-templates mode="text"/>
-    <xsl:text>...</xsl:text>
+  <xsl:template match="snippet">
+    <xsl:choose>
+      <xsl:when test="ancestor::*">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>...xxx</xsl:text>
+        <xsl:apply-templates/>
+        <xsl:text>...</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
     <br/>
   </xsl:template>
     
