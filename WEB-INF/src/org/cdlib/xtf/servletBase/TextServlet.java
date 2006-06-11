@@ -66,6 +66,7 @@ import net.sf.saxon.value.StringValue;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.limit.ExcessiveWorkException;
+import org.cdlib.xtf.saxonExt.sql.SQLConnect;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.QueryProcessor;
@@ -379,6 +380,12 @@ public abstract class TextServlet extends HttpServlet
             if( trackRunaway )
                 ThreadWatcher.endWatch();
             
+            // If any SQL connections were made while processing this 
+            // request, close them now.
+            //
+            SQLConnect.closeThreadConnections();
+            
+            // Report latency if requested
             if( config.reportLatency ) {
                 long latency = System.currentTimeMillis() - reqStartTime;
                 boolean alreadyPrinted = (cutoffStream != null && 
