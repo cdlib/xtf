@@ -23,6 +23,8 @@ import javax.xml.transform.TransformerConfigurationException;
 
 public class SQLColumn extends XSLGeneralVariable {
 
+    protected boolean isExpression = false;
+
     /**
     * Determine whether this node is an instruction.
     * @return false - it is not an instruction
@@ -47,8 +49,9 @@ public class SQLColumn extends XSLGeneralVariable {
 
         AttributeCollection atts = getAttributeList();
 
-        String selectAtt = null;
         String nameAtt = null;
+        String selectAtt = null;
+        String expressionAtt = null;
 
         for (int a=0; a<atts.getLength(); a++) {
             String localName = atts.getLocalName(a);
@@ -56,6 +59,8 @@ public class SQLColumn extends XSLGeneralVariable {
                 nameAtt = atts.getValue(a).trim();
             } else if (localName.equals("select")) {
                 selectAtt = atts.getValue(a);
+            } else if (localName.equals("is-expression")) {
+                expressionAtt = atts.getValue(a);
             } else {
                 checkUnknownAttribute(atts.getNameCode(a));
             }
@@ -70,12 +75,18 @@ public class SQLColumn extends XSLGeneralVariable {
         if (selectAtt!=null) {
             select = makeExpression(selectAtt);
         }
+        
+        if (expressionAtt!=null) {
+            isExpression = expressionAtt.matches("^true$|^yes$|^1$");
+        }
 
     }
 
 
     public void validate() throws TransformerConfigurationException {
-        if (!(getParent() instanceof SQLInsert)) {
+        if (!(getParent() instanceof SQLInsert) &&
+            !(getParent() instanceof SQLUpdate)) 
+        {
             compileError("parent node must be sql:insert");
         }
         select = typeCheck("select", select);
@@ -92,7 +103,7 @@ public class SQLColumn extends XSLGeneralVariable {
     }
 
     public Expression compile(Executable exec) throws TransformerConfigurationException {
-        ColumnInstruction inst = new ColumnInstruction(getColumnName());
+        ColumnInstruction inst = new ColumnInstruction(getColumnName(), isExpression);
         initializeInstruction(exec, inst);
         return inst;
     }
@@ -104,10 +115,16 @@ public class SQLColumn extends XSLGeneralVariable {
     protected static class ColumnInstruction extends GeneralVariable {
 
         String name;
+        boolean isExpression;
         
-        public ColumnInstruction(String name) { this.name = name; }
+        public ColumnInstruction(String name, boolean isExpression) { 
+            this.name = name;
+            this.isExpression = isExpression;
+        }
         
         public String getColumnName() { return name; }
+        
+        public boolean isExpression() { return isExpression; }
 
         public InstructionInfo getInstructionInfo() {
             InstructionDetails details = (InstructionDetails)super.getInstructionInfo();

@@ -48,39 +48,7 @@ public class SQLInsert extends ExtensionInstruction {
 
     public Expression compile(Executable exec) throws TransformerConfigurationException {
 
-        // Collect names of columns to be added
-
-        StringBuffer statement = new StringBuffer(120);
-        statement.append("INSERT INTO " + table + " (");
-
-        AxisIterator kids = iterateAxis(Axis.CHILD);
-        NodeInfo child;
-        int cols = 0;
-        while (true) {
-            child = (NodeInfo)kids.next();
-            if (child == null) {
-                break;
-            }
-            if (child instanceof SQLColumn) {
-                if (cols++ > 0)    statement.append(',');
-                String colname = ((SQLColumn)child).getColumnName();
-                statement.append(colname);
-            }
-        }
-        statement.append(") VALUES (");
-
-        // Add "?" marks for the variable parameters
-
-        for(int i=0; i<cols; i++) {
-            if (i!=0) {
-                statement.append(',');
-            }
-            statement.append('?');
-        };
-
-        statement.append(')');
-
-        return new InsertInstruction(connection, statement.toString(), getColumnInstructions(exec));
+        return new InsertInstruction(connection, table, getColumnInstructions(exec));
     }
 
     public List getColumnInstructions(Executable exec) throws TransformerConfigurationException {
@@ -106,14 +74,15 @@ public class SQLInsert extends ExtensionInstruction {
         public static final int CONNECTION = 0;
         public static final int FIRST_COLUMN = 1;
         String statement;
+        String table;
 
-        public InsertInstruction(Expression connection, String statement, List columnInstructions) {
+        public InsertInstruction(Expression connection, String table, List columnInstructions) {
             Expression[] sub = new Expression[columnInstructions.size() + 1];
             sub[CONNECTION] = connection;
             for (int i=0; i<columnInstructions.size(); i++) {
                 sub[i+FIRST_COLUMN] = (Expression)columnInstructions.get(i);
             }
-            this.statement = statement;
+            this.table = table;
             setArguments(sub);
         }
 
@@ -132,6 +101,45 @@ public class SQLInsert extends ExtensionInstruction {
 
         public Item evaluateItem(XPathContext context) throws XPathException {
 
+            // Collect names of columns to be added
+    
+            StringBuffer statement = new StringBuffer(120);
+            statement.append("INSERT INTO " + table + " (");
+    
+            for (int c=FIRST_COLUMN; c<arguments.length; c++) {
+                if (c > FIRST_COLUMN) statement.append(',');
+                SQLColumn.ColumnInstruction colInst = 
+                    (SQLColumn.ColumnInstruction)arguments[c]; 
+                String colname = colInst.getColumnName();
+                statement.append(colname);
+            }
+            
+            statement.append(") VALUES (");
+    
+            // Add "?" marks for the variable parameters
+    
+            for (int c=FIRST_COLUMN; c<arguments.length; c++) {
+                if (c > FIRST_COLUMN) statement.append(',');
+                SQLColumn.ColumnInstruction colInst = 
+                    (SQLColumn.ColumnInstruction)arguments[c];
+                
+                if (colInst.isExpression()) {
+                    String val = colInst.getSelectValue(context).toString();
+                    
+                    // Strip leading/trailing quotes from the expression.
+                    if ((val.startsWith("\"") && val.endsWith("\"")) || 
+                        (val.startsWith("'")  && val.endsWith("'")))
+                    {
+                        val = val.substring(1, val.length()-1);
+                    }
+                    statement.append(val);
+                }
+                else
+                    statement.append("?");
+            }
+    
+            statement.append(')');
+            
             // Prepare the SQL statement (only do this once)
 
             Item conn = arguments[CONNECTION].evaluateItem(context);
@@ -142,7 +150,7 @@ public class SQLInsert extends ExtensionInstruction {
             PreparedStatement ps = null;
 
             try {
-                  ps=connection.prepareStatement(statement);
+                  ps=connection.prepareStatement(statement.toString());
 
                 // Add the actual column values to be inserted
 

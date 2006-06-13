@@ -11,7 +11,6 @@ import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.style.ExtensionInstruction;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
-import net.sf.saxon.value.IntegerValue;
 import net.sf.saxon.value.ObjectValue;
 
 import javax.xml.transform.TransformerConfigurationException;
@@ -56,7 +55,7 @@ public class SQLUpdate extends ExtensionInstruction {
     public Expression compile(Executable exec) throws TransformerConfigurationException {
         return new UpdateInstruction(connection, table, where, getColumnInstructions(exec));
     }
-
+    
     public List getColumnInstructions(Executable exec) throws TransformerConfigurationException {
         List list = new ArrayList(10);
 
@@ -119,10 +118,24 @@ public class SQLUpdate extends ExtensionInstruction {
             
             for (int c=FIRST_COLUMN; c<arguments.length; c++) {
                 if (c > FIRST_COLUMN) statement.append(',');
-                String colname = ((SQLColumn.ColumnInstruction)
-                    arguments[c]).getColumnName();
+                SQLColumn.ColumnInstruction colInst = 
+                    (SQLColumn.ColumnInstruction)arguments[c]; 
+                String colname = colInst.getColumnName();
                 statement.append(colname);
-                statement.append("=?");
+                
+                if (colInst.isExpression()) {
+                    String val = colInst.getSelectValue(context).toString();
+                    
+                    // Strip leading/trailing quotes from the expression.
+                    if ((val.startsWith("\"") && val.endsWith("\"")) || 
+                        (val.startsWith("'")  && val.endsWith("'")))
+                    {
+                        val = val.substring(1, val.length()-1);
+                    }
+                    statement.append("=" + val);
+                }
+                else
+                    statement.append("=?");
             }
             
             statement.append(" WHERE " + dbWhere);
@@ -142,10 +155,13 @@ public class SQLUpdate extends ExtensionInstruction {
                 // Add the actual column values to be inserted
                 int i = 1;
                 for (int c=FIRST_COLUMN; c<arguments.length; c++) {
-                    AtomicValue v = (AtomicValue)((SQLColumn.ColumnInstruction)arguments[c]).getSelectValue(context);
+                    SQLColumn.ColumnInstruction colInst = (SQLColumn.ColumnInstruction)arguments[c];
+                    if (colInst.isExpression())
+                        continue;
 
                     // TODO: the values are all strings. There is no way of adding to a numeric column
-                    String val = v.getStringValue();
+                    String val = ((AtomicValue)colInst.getSelectValue(context)).
+                                  getStringValue();
 
                     // another hack: setString() doesn't seem to like single-character string values
                     if (val.length()==1) val += " ";
@@ -167,8 +183,8 @@ public class SQLUpdate extends ExtensionInstruction {
                }
             }
 
-            // Return the number of rows that were updated.
-            return new IntegerValue(nUpdated);
+            // Return nothing, so that it's unnecessary to re-route the result.
+            return null;
         }
 
     }

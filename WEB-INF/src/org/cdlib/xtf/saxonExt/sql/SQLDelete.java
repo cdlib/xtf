@@ -7,7 +7,6 @@ import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.style.ExtensionInstruction;
 import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.value.IntegerValue;
 import net.sf.saxon.value.ObjectValue;
 
 import javax.xml.transform.TransformerConfigurationException;
@@ -111,8 +110,8 @@ public class SQLDelete extends ExtensionInstruction {
                }
             }
 
-            // Return the number of rows that were deleted.
-            return new IntegerValue(nDeleted);
+            // Return nothing, so that it's not necessary to re-route the result.
+            return null;
         }
 
     }
