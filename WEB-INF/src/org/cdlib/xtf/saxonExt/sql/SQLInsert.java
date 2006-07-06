@@ -26,6 +26,7 @@ public class SQLInsert extends ExtensionInstruction {
 
     Expression connection;
     String table;
+    boolean ignoreDuplicate = false;
 
     public void prepareAttributes() throws TransformerConfigurationException {
 
@@ -39,6 +40,10 @@ public class SQLInsert extends ExtensionInstruction {
         } else {
             connection = makeExpression(connectAtt);
         }
+        String ignoreAtt = getAttributeList().getValue("", "ignoreDuplicate");
+        if (ignoreAtt.matches("^true$|^yes$|^1$")) {
+            ignoreDuplicate = true;
+        }
     }
 
     public void validate() throws TransformerConfigurationException {
@@ -48,7 +53,8 @@ public class SQLInsert extends ExtensionInstruction {
 
     public Expression compile(Executable exec) throws TransformerConfigurationException {
 
-        return new InsertInstruction(connection, table, getColumnInstructions(exec));
+        return new InsertInstruction(connection, table, 
+            getColumnInstructions(exec), ignoreDuplicate);
     }
 
     public List getColumnInstructions(Executable exec) throws TransformerConfigurationException {
@@ -73,10 +79,11 @@ public class SQLInsert extends ExtensionInstruction {
 
         public static final int CONNECTION = 0;
         public static final int FIRST_COLUMN = 1;
-        String statement;
         String table;
+        boolean ignoreDuplicate;
 
-        public InsertInstruction(Expression connection, String table, List columnInstructions) {
+        public InsertInstruction(Expression connection, String table, 
+                                 List columnInstructions, boolean ignoreDuplicate) {
             Expression[] sub = new Expression[columnInstructions.size() + 1];
             sub[CONNECTION] = connection;
             for (int i=0; i<columnInstructions.size(); i++) {
@@ -84,6 +91,7 @@ public class SQLInsert extends ExtensionInstruction {
             }
             this.table = table;
             setArguments(sub);
+            this.ignoreDuplicate = ignoreDuplicate;
         }
 
         /**
@@ -104,7 +112,10 @@ public class SQLInsert extends ExtensionInstruction {
             // Collect names of columns to be added
     
             StringBuffer statement = new StringBuffer(120);
-            statement.append("INSERT INTO " + table + " (");
+            statement.append("INSERT ");
+            if (ignoreDuplicate)
+                statement.append("IGNORE ");
+            statement.append("INTO " + table + " (");
     
             for (int c=FIRST_COLUMN; c<arguments.length; c++) {
                 if (c > FIRST_COLUMN) statement.append(',');
@@ -123,7 +134,7 @@ public class SQLInsert extends ExtensionInstruction {
                 SQLColumn.ColumnInstruction colInst = 
                     (SQLColumn.ColumnInstruction)arguments[c];
                 
-                if (colInst.isExpression()) {
+                if (colInst.evalSql()) {
                     String val = colInst.getSelectValue(context).toString();
                     
                     // Strip leading/trailing quotes from the expression.

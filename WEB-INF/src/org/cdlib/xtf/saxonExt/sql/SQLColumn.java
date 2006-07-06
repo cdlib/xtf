@@ -23,7 +23,7 @@ import javax.xml.transform.TransformerConfigurationException;
 
 public class SQLColumn extends XSLGeneralVariable {
 
-    protected boolean isExpression = false;
+    protected boolean evalSql = false;
 
     /**
     * Determine whether this node is an instruction.
@@ -51,7 +51,7 @@ public class SQLColumn extends XSLGeneralVariable {
 
         String nameAtt = null;
         String selectAtt = null;
-        String expressionAtt = null;
+        String evalAtt = null;
 
         for (int a=0; a<atts.getLength(); a++) {
             String localName = atts.getLocalName(a);
@@ -59,8 +59,8 @@ public class SQLColumn extends XSLGeneralVariable {
                 nameAtt = atts.getValue(a).trim();
             } else if (localName.equals("select")) {
                 selectAtt = atts.getValue(a);
-            } else if (localName.equals("is-expression")) {
-                expressionAtt = atts.getValue(a);
+            } else if (localName.equals("eval")) {
+                evalAtt = atts.getValue(a);
             } else {
                 checkUnknownAttribute(atts.getNameCode(a));
             }
@@ -76,8 +76,8 @@ public class SQLColumn extends XSLGeneralVariable {
             select = makeExpression(selectAtt);
         }
         
-        if (expressionAtt!=null) {
-            isExpression = expressionAtt.matches("^true$|^yes$|^1$");
+        if (evalAtt!=null) {
+            evalSql = evalAtt.matches("^true$|^yes$|^1$");
         }
 
     }
@@ -103,7 +103,7 @@ public class SQLColumn extends XSLGeneralVariable {
     }
 
     public Expression compile(Executable exec) throws TransformerConfigurationException {
-        ColumnInstruction inst = new ColumnInstruction(getColumnName(), isExpression);
+        ColumnInstruction inst = new ColumnInstruction(getColumnName(), evalSql);
         initializeInstruction(exec, inst);
         return inst;
     }
@@ -115,16 +115,16 @@ public class SQLColumn extends XSLGeneralVariable {
     protected static class ColumnInstruction extends GeneralVariable {
 
         String name;
-        boolean isExpression;
+        boolean evalSql;
         
-        public ColumnInstruction(String name, boolean isExpression) { 
+        public ColumnInstruction(String name, boolean evalSql) { 
             this.name = name;
-            this.isExpression = isExpression;
+            this.evalSql = evalSql;
         }
         
         public String getColumnName() { return name; }
         
-        public boolean isExpression() { return isExpression; }
+        public boolean evalSql() { return evalSql; }
 
         public InstructionInfo getInstructionInfo() {
             InstructionDetails details = (InstructionDetails)super.getInstructionInfo();

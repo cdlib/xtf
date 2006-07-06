@@ -123,7 +123,7 @@ public class SQLUpdate extends ExtensionInstruction {
                 String colname = colInst.getColumnName();
                 statement.append(colname);
                 
-                if (colInst.isExpression()) {
+                if (colInst.evalSql()) {
                     String val = colInst.getSelectValue(context).toString();
                     
                     // Strip leading/trailing quotes from the expression.
@@ -156,7 +156,7 @@ public class SQLUpdate extends ExtensionInstruction {
                 int i = 1;
                 for (int c=FIRST_COLUMN; c<arguments.length; c++) {
                     SQLColumn.ColumnInstruction colInst = (SQLColumn.ColumnInstruction)arguments[c];
-                    if (colInst.isExpression())
+                    if (colInst.evalSql())
                         continue;
 
                     // TODO: the values are all strings. There is no way of adding to a numeric column
