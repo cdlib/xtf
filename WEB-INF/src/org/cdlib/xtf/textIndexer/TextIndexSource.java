@@ -84,7 +84,7 @@ public class TextIndexSource extends XMLIndexSource
     }
     
     String str = normalize( buf.toString() );
-    str = "<doc>" + str + "</doc>";
+    str = "<doc><text-data>" + str + "</text-data></doc>";
     
     // And make an InputSource with a proper system ID
     InputSource finalSrc = new InputSource( new StringReader(str) );
