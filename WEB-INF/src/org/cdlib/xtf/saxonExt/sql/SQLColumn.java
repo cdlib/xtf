@@ -61,6 +61,8 @@ public class SQLColumn extends XSLGeneralVariable {
                 selectAtt = atts.getValue(a);
             } else if (localName.equals("eval")) {
                 evalAtt = atts.getValue(a);
+            } else if (localName.equals("is-expression")) { // backward compat
+                evalAtt = atts.getValue(a);
             } else {
                 checkUnknownAttribute(atts.getNameCode(a));
             }

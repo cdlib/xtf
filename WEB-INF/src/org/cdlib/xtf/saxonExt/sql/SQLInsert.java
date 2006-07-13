@@ -41,7 +41,7 @@ public class SQLInsert extends ExtensionInstruction {
             connection = makeExpression(connectAtt);
         }
         String ignoreAtt = getAttributeList().getValue("", "ignoreDuplicate");
-        if (ignoreAtt.matches("^true$|^yes$|^1$")) {
+        if (ignoreAtt != null && ignoreAtt.matches("^true$|^yes$|^1$")) {
             ignoreDuplicate = true;
         }
     }
