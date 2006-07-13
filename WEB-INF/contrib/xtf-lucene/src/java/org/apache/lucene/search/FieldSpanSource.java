@@ -168,6 +168,13 @@ public class FieldSpanSource
     // Sort the spans in ascending order by start/end.
     Arrays.sort(toDedupe, SpanPosComparator.theInstance);
     
+    // For reference during overlap checks, determine the length of the
+    // longest span.
+    //
+    int longestSpan = 0;
+    for(int i = 0; i<nToDedupe; i++)
+      longestSpan = Math.max( longestSpan, toDedupe[i].end - toDedupe[i].start );
+    
     // Expand the score order array if we need to.
     if (scoreOrder.length < nToDedupe) {
       ScoreOrder[] newScoreOrder = new ScoreOrder[nToDedupe+5];
@@ -191,7 +198,7 @@ public class FieldSpanSource
 
     // Now make a second sort, this time by descending score.
     Arrays.sort(scoreOrder, 0, nToDedupe, theScoreComparator);
-
+    
     // De-duplicate the score array, starting with the high scores first.
     int nDeduped = 0;
     int totalDeduped = 0;
@@ -216,18 +223,30 @@ public class FieldSpanSource
       }
 
       // Cancel any overlapping entries before this one, stopping at
-      // one that doesn't overlap (all those behind it won't either).
+      // one that can't overlap because it's beyond the length of the
+      // longest span. 
+      //
+      // You might ask, "why not just stop when you hit the first 
+      // non-overlapping span?" Good question grasshopper. The answer
+      // is that, since the spans are sorted by ascending start,
+      // there may be a big span further back that overlaps, and we
+      // have no way of knowing.
       //
       final Span scoreSpan = scoreOrder[i].span;
       o = scoreOrder[i].prevInPosOrder;
-      while (o != null && o.span.end > scoreSpan.start) {
-        o.cancelled = true;
+      while (o != null && (o.span.start + longestSpan) > scoreSpan.start ) {
+        assert o.span.start <= scoreSpan.start;
+        if (o.span.end > scoreSpan.start)
+          o.cancelled = true;
         assert o.posOrder == 0 ||
                o.prevInPosOrder.posOrder == o.posOrder-1;
         o = o.prevInPosOrder;
       }
 
-      // Similarly, cancel overlapping entries after this one.
+      // Cancel overlapping entries after this one. Since the spans
+      // are sorted by ascending start pos, we can stop at the first
+      // non-overlapping span.
+      //
       o = scoreOrder[i].nextInPosOrder; 
       while (o != null && o.span.start < scoreSpan.end) {
         o.cancelled = true;
