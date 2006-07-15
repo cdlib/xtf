@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.chunk.SpanChunkedNotQuery;
@@ -57,11 +59,13 @@ import org.apache.lucene.search.spans.SpanNotQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spell.SpellReader;
 import org.apache.lucene.util.PriorityQueue;
+import org.cdlib.xtf.textEngine.facet.DynamicGroupData;
 import org.cdlib.xtf.textEngine.facet.FacetSpec;
 import org.cdlib.xtf.textEngine.facet.GroupCounts;
 import org.cdlib.xtf.textEngine.facet.GroupData;
 import org.cdlib.xtf.textEngine.facet.ResultFacet;
 import org.cdlib.xtf.textEngine.facet.ResultGroup;
+import org.cdlib.xtf.textEngine.facet.StaticGroupData;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.WordMap;
@@ -241,13 +245,6 @@ public class DefaultQueryProcessor extends QueryProcessor
         if( finalQuery != req.query )
             Trace.debug( "Rewritten query: " + finalQuery.toString() );
 
-        // If grouping was specified by the query, read in all the group data.
-        // Note that the GroupData class holds its own cache so we don't have
-        // to read data for a given field more than once.
-        //
-        final GroupCounts[] groupCounts = (req.facetSpecs == null) ? null :
-                                          prepGroups( req );
-        
         // While processing the query, we want to lazily generate DocHits,
         // and only generate a DocHit once even if it's added to multiple
         // groups.
@@ -267,26 +264,24 @@ public class DefaultQueryProcessor extends QueryProcessor
         //
         RecordingSearcher searcher = new RecordingSearcher( limReader );
         
+        // If grouping was specified by the query, read in all the group data.
+        // Note that the GroupData class holds its own cache so we don't have
+        // to read data for a given field more than once.
+        //
+        final GroupCounts[] groupCounts = (req.facetSpecs == null) ? null :
+                    prepGroups( req, boostSet, searcher, finalQuery );
+        
         // Now for the big show... go get the hits!
         searcher.search( finalQuery, null, new SpanHitCollector() {
             public void collect( int doc, float score, FieldSpanSource spanSource ) 
             {
-                // Ignore deleted entries.
+                // Apply a boost (if there's a boost set)
+                score = applyBoost( doc, score, boostSet, req );
+
+                // Ignore deleted entries, and entries boosted down to zero.
                 if( score <= 0.0f )
                     return;
                 
-                // If we're boosting, apply that factor.
-                if( boostSet != null ) {
-                    float boost = boostSet.getBoost( doc, req.boostSetParams.defaultBoost );
-                    if( req.boostSetParams.exponent != 1.0f )
-                        boost = (float) Math.pow(boost, req.boostSetParams.exponent);
-                    score *= boost;
-                    
-                    // Ignore entries boosted down to zero.
-                    if( score <= 0.0f )
-                        return;
-                }
-
                 // Bump the count of documents hit, and update the max score.
                 nDocsHit++;
                 if( score > maxDocScore )
@@ -492,24 +487,114 @@ public class DefaultQueryProcessor extends QueryProcessor
      * Create the GroupCounts objects for the given query request. Also handles
      * creating the proper hit queue for each one.
      * 
-     * @param req Query request containing group specs
+     * @param req       query request containing group specs
+     * @param query     query to use to form dynamic groups
+     * @param searcher  searcher for dynamic groups
+     * @param boostSet  boost set for dynamic groups
      */
-    private GroupCounts[] prepGroups( QueryRequest req )
+    private GroupCounts[] prepGroups( final QueryRequest req, 
+                                      final BoostSet boostSet, 
+                                      RecordingSearcher searcher, 
+                                      Query query )
       throws IOException
     {
-        GroupCounts[] groupCounts = new GroupCounts[req.facetSpecs.length];
+        GroupData[] groupData = new GroupData[req.facetSpecs.length];
+        Vector dynamicGroupVec = new Vector();
         
+        // First get data for each group
         for( int i = 0; i < req.facetSpecs.length; i++ ) {
             FacetSpec spec = req.facetSpecs[i];
-            GroupData data = GroupData.getCachedData( indexReader, spec.field );
-            HitQueueMakerImpl maker = new HitQueueMakerImpl( 
-                indexReader, spec.sortDocsBy, isSparse );
-            groupCounts[i] = new GroupCounts( data, spec, maker );
+            if( spec.field.startsWith("java:") ) {
+                groupData[i] = createDynamicGroup( indexReader, spec.field );
+                dynamicGroupVec.add( groupData[i] );
+            }
+            else
+                groupData[i] = StaticGroupData.getCachedData( indexReader, spec.field );
         }
         
+        // If there are dynamic groups, pre-scan the query and hand them the
+        // documents and scores.
+        //
+        if( !dynamicGroupVec.isEmpty() ) {
+            final DynamicGroupData[] dynGroups = (DynamicGroupData[])
+                dynamicGroupVec.toArray( new DynamicGroupData[dynamicGroupVec.size()] );
+            searcher.search( query, null, new SpanHitCollector() {
+                public void collect( int doc, float score, FieldSpanSource spanSource ) 
+                {
+                    // Apply a boost (if there's a boost set)
+                    score = applyBoost( doc, score, boostSet, req );
+                    
+                    // If document isn't deleted, collect it.
+                    if( score > 0.0f ) {
+                        for( int i = 0; i < dynGroups.length; i++ )
+                            dynGroups[i].collect(  doc, score );
+                    }
+                } // collect()
+            } );
+            
+            // Finish off the dynamic group data.
+            for( int i = 0; i < dynGroups.length; i++ )
+                dynGroups[i].finish();
+        } // if
+
+        // Now make a GroupCount object around each data object.
+        GroupCounts[] groupCounts = new GroupCounts[req.facetSpecs.length];
+        for( int i = 0; i < req.facetSpecs.length; i++ ) {
+          FacetSpec spec = req.facetSpecs[i];
+          HitQueueMakerImpl maker = new HitQueueMakerImpl( 
+              indexReader, spec.sortDocsBy, isSparse );
+          groupCounts[i] = new GroupCounts( groupData[i], spec, maker );
+      }
+      
+        // All done.
         return groupCounts;
         
     } // prepGroups()
+
+    /**
+     * Create a dynamic group based on a field specification.
+     * 
+     * @param indexReader   Where to get the data from
+     * @param field         Special field name starting with "java:"
+     * @return              Dynamic group data
+     * @throws IOException 
+     */
+    private GroupData createDynamicGroup( IndexReader indexReader, String field ) 
+        throws IOException
+    {
+        // Parse out the class name and parameters
+        Pattern pat = Pattern.compile( "java:([\\w.]+)\\((.*)\\)" );
+        Matcher matcher = pat.matcher( field );
+        if( !matcher.matches() )
+            throw new RuntimeException( "Unrecognized dynamic facet field '" + field + "'" );
+        
+        String className = matcher.group( 1 );
+        String params    = matcher.group( 2 );
+        
+        // Create an instance of the given class.
+        DynamicGroupData dynData = null;
+        try {
+            Class c = Class.forName( className );
+            dynData = (DynamicGroupData) c.newInstance();
+        } 
+        catch (ClassNotFoundException e) {
+            throw new RuntimeException( "Dynamic facet class '" + className + "' not found" );
+        } 
+        catch (InstantiationException e) {
+            throw new RuntimeException( "Cannot instantiate dynamic facet class '" + className + "'", e );
+        } 
+        catch (IllegalAccessException e) {
+            throw new RuntimeException( "Cannot instantiate dynamic facet class '" + className + "'", e );
+        } 
+        catch( ClassCastException e ) {
+            throw new RuntimeException( "Class '" + className + "' must be derived from DynamicGroupData" );
+        }
+
+        // Initialize the new instance, and we're done.
+        dynData.init( indexReader, params );
+        return dynData;
+        
+    } // createDynamicGroup()
 
     /**
      * Process group counts into final results. This includes forming the
@@ -580,6 +665,24 @@ public class DefaultQueryProcessor extends QueryProcessor
     } // resetCache()
     
     
+    /**
+     * If a boost set was specified, boost the given document's score according to the
+     * set.
+     */
+    private float applyBoost(int doc, float score, 
+                             BoostSet boostSet, QueryRequest req)
+    {
+        // If we're boosting, apply that factor.
+        if( score > 0 && boostSet != null ) {
+            float boost = boostSet.getBoost( doc, req.boostSetParams.defaultBoost );
+            if( req.boostSetParams.exponent != 1.0f )
+                boost = (float) Math.pow(boost, req.boostSetParams.exponent);
+            score *= boost;
+        }
+        
+        return score;
+    }
+
     /**
      * Creates either a standard score-sorting hit queue, or a field-sorting
      * hit queue, depending on whether the query is to be sorted.
