@@ -42,7 +42,7 @@ import java.util.Hashtable;
  */
 public class TagArray 
 {
-  private int      BLOCK_SIZE = 1024;
+  private int      BLOCK_SIZE = 1024*1024;
   
   private byte[][] blocks = { new byte[BLOCK_SIZE] };
   private short    nBlocks = 1;
@@ -68,7 +68,7 @@ public class TagArray
   {
     Integer lookup = (Integer) typeTable.get( t );
     if( lookup == null ) {
-        assert nTypes < 127 : "Too many types allocated - expand tagType to short";
+        assert nTypes < 127 : "Too many types allocated - change tagType from byte to short";
         lookup = new Integer( nTypes );
         typeTable.put( t, lookup );
         nTypes++;
@@ -90,7 +90,8 @@ public class TagArray
     // Do we have room in the current block? If not, make a new one.
     char[] srcChars = s.toCharArray();
     int length = srcChars.length;
-    assert (length & 0x7fff) == length; // Make sure it fits in a short.
+    assert (length & 0x7fff) == length : "String too long"; // Make sure it fits in a short.
+    assert length <= BLOCK_SIZE : "String too long"; // Make sure it fits in a block.
     ensureCapacity( length );
     
     // Allocate an identifier for the tag
@@ -119,6 +120,63 @@ public class TagArray
     curBlockUsed += length;
     return tagId;
   } // add()
+  
+  /**
+   * Retrieve a count of how many tags have been added.
+   */
+  public int size() { return nTags; }
+  
+  /**
+   * Get the string value of the given tag
+   */
+  public String getString( int tag )
+  {
+    assert tag >= 0 && tag < nTags : "Tag ID out of range";
+    int length = tagLength[tag];
+    char[] chars = new char[length];
+    byte[] block = blocks[tagBlock[tag]];
+    int offset = tagOffset[tag];
+    for( int i = 0; i < length; i++ )
+        chars[i] = (char)block[offset+i];
+    return new String( chars );
+  }
+  
+  /**
+   * Get the type associated with a given tag.
+   */
+  public int getType( int tag )
+  {
+    assert tag >= 0 && tag < nTags : "Tag ID out of range";
+    return tagType[tag];
+  }
+  
+  /**
+   * Retrieve the next tag in order, if its type is the same as the given one,
+   * or -1 if there is no such tag.
+   */
+  public int next( int tag )
+  {
+    assert tag >= 0 && tag < nTags : "Tag ID out of range";
+    if( tag+1 >= nTags )
+        return -1;
+    if( tagType[tag+1] != tagType[tag] )
+        return -1;
+    return tag+1;
+  }
+  
+  /**
+   * Retrieve the previous tag in order, if its type is the same as the given one,
+   * or -1 if there is no such tag.
+   */
+  public int prev( int tag )
+  {
+    assert tag >= 0 && tag < nTags : "Tag ID out of range";
+    if( tag-1 < 0 )
+        return -1;
+    if( tagType[tag-1] != tagType[tag] )
+        return -1;
+    return tag-1;
+  }
   
   /**
    * Allocate a new string identifier, expanding the arrays if necessary.
@@ -180,6 +238,45 @@ public class TagArray
     assert nBlocks < 32767 : "Too many blocks - expand BLOCK_SIZE in code";
     curBlock = blocks[nBlocks] = new byte[BLOCK_SIZE];
     nBlocks++;
+    curBlockUsed = 0;
   } // newBlock()
+  
+  /**
+   * Basic regression test
+   */
+  public static final Tester tester = new Tester("TagArray") {
+      protected void testImpl() {
+          TagArray array = new TagArray();
+          
+          int type1 = array.findType( "type 1" );
+          int tag1 = array.add( "hello", type1 );
+          
+          int type1b = array.findType( "type 1" );
+          int tag2 = array.add( "foobar", type1b );
+          
+          int type2 = array.findType( "type 2" );
+          int tag3 = array.add( "bramble", type2 );
+          
+          assert type1b == type1;
+          assert type2 != type1;
+          assert array.getString(tag1).equals( "hello" );
+          assert array.getType(tag1) == type1;
+
+          assert array.getString(tag2).equals("foobar");
+          assert array.getType(tag2) == type1;
+          
+          assert array.getString(tag3).equals("bramble");
+          assert array.getType(tag3) == type2;
+          
+          assert array.prev(tag1) < 0;
+          assert array.next(tag1) == tag2;
+          
+          assert array.prev(tag2) == tag1;
+          assert array.next(tag2) < 0;
+          
+          assert array.prev(tag3) < 0;
+          assert array.next(tag3) < 0;
+      } // testImpl()
+  };
   
 }; // class BStringArray
