@@ -200,12 +200,6 @@ public class IdxTreeCuller
         
         } while (termEnum.next());
 
-        // Close the term enumeration and reader.
-        termEnum.close();
-        termEnum = null;
-        indexReader.close();
-        indexReader = null;
-        
         // Now if the number of documents encounted equals the number
         // of documents deleted, there's a good chance the index is 
         // empty and we can delete the whole index directory.
@@ -227,6 +221,12 @@ public class IdxTreeCuller
                 indexDeleted = true;
             }
         } // if( docCount == cullCount )
+        
+        // Close the term enumeration and reader.
+        termEnum.close();
+        termEnum = null;
+        indexReader.close();
+        indexReader = null;
         
         // The current index isn't empty, but if we deleted a
         // document from it, say so.
