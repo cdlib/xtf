@@ -70,9 +70,11 @@ import org.cdlib.xtf.util.DiskHashWriter;
 import org.cdlib.xtf.util.FastIntCache;
 import org.cdlib.xtf.util.FastStringCache;
 import org.cdlib.xtf.util.IntHash;
+import org.cdlib.xtf.util.IntMultiMap;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.StructuredStore;
+import org.cdlib.xtf.util.TagArray;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
@@ -127,6 +129,8 @@ public class RegressTest
         TagFilter.tester.test();
         FastIntCache.tester.test();
         FastStringCache.tester.test();
+        TagArray.tester.test();
+        IntMultiMap.tester.test();
         
         // Go for it.
         RegressTest test = new RegressTest();
