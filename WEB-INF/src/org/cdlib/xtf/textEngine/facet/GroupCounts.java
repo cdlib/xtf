@@ -372,39 +372,12 @@ public class GroupCounts
     } // for i
   } // sortByCount()
   
-  /**
-   * Locates the highest level in the hierarchy at which there are differences.
-   * 
-   * @return  ID of the best group (might be zero, meaning the root.)
-   */
-  private int findBestParent( int parent )
-  {
-    // See if there are differences at this level.
-    int nonzeroKid = -1;
-    for( int kid = data.child(parent); kid >= 0; kid = data.sibling(kid) )
-    {
-        if( count[kid] > 0 ) {
-            if( nonzeroKid >= 0 )
-                return parent;
-            nonzeroKid = kid;
-        }
-    } // for kid
-    
-    // Nope. If one kid had counts, drill down into that kid.
-    if( nonzeroKid >= 0 )
-        return findBestParent( nonzeroKid );
-    else
-        return -1;
-    
-  } // findBestParent()
-  
   /** Construct the array of doc hits for the hit group. */
   private void buildDocHits( int group, ResultGroup resultGroup )
   {
     PriorityQueue queue = hitQueue[group];
     int nFound = queue.size();
     DocHitImpl[] hitArray = new DocHitImpl[nFound];
-    float maxDocScore = 0.0f;
     for( int i = 0; i < nFound; i++ ) {
         int index = nFound - i - 1;
         hitArray[index] = (DocHitImpl) queue.pop();
