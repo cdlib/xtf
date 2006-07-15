@@ -39,17 +39,16 @@ import java.util.Arrays;
  * 
  * @author Martin Haye
  */
-public class IntMultiMap 
-{
-  private static final int BLOCK_SIZE = 1024;
+public class IntMultiMap
+{  
+  private int[]   keyLinks;
   
-  private short[] keyBlocks;
-  private short[] keyOffsets;
-  
-  private Block[] blocks   = { new Block() };
+  private static final int BLOCK_SIZE = 32760;
+  private Block[] blocks = { new Block() };
   private short   curBlockNum = 0;
+  private Block   curBlock = blocks[0];
   private short   curBlockTop = 0;
-  
+
   /**
    * Initialize the mapping table.
    * 
@@ -57,134 +56,116 @@ public class IntMultiMap
    *                passed to {@link #add(int, int)}. Note that the mapping 
    *                cannot be expanded.
    */
-  public IntMultiMap( int maxKey )
-  {
-    keyBlocks  = new short[maxKey];
-    Arrays.fill( keyBlocks, (short) -1 );
-
-    keyOffsets = new short[maxKey];
-    Arrays.fill( keyOffsets, (short) -1 );
+  public IntMultiMap(int maxKey) {
+    keyLinks = new int[maxKey];
+    Arrays.fill(keyLinks, (short) -1);
   } // constructor
-  
+
   /**
    * Add a new association between a key and a value. Note that each key is
    * allowed to have multiple values associated with it.
    */
-  public void add( int key, int value )
+  public void add(int key, int value)
   {
     // Is there room in the current block? If not, make a new one.
-    if( curBlockTop == BLOCK_SIZE ) 
-    {  
-        // Resize the array of blocks if necessary
-        ++curBlockNum;
-        if( curBlockNum == blocks.length ) {
-            Block[] oldBlocks = blocks;
-            blocks = new Block[blocks.length * 2];
-            if( blocks.length >= 32767 )
-                throw new RuntimeException( "Too many blocks - switch from short to int");
-            System.arraycopy(oldBlocks, 0, blocks, 0, oldBlocks.length);
-        }
+    if (curBlockTop == BLOCK_SIZE) 
+    {
+      ++curBlockNum;
+      if ((curBlockNum & 0x8000) != 0)
+        throw new RuntimeException("Too many blocks - increase block size");
+      
+      // Resize the array of blocks if necessary
+      if (curBlockNum == blocks.length) {
+        Block[] oldBlocks = blocks;
+        blocks = new Block[blocks.length * 2];
+        System.arraycopy(oldBlocks, 0, blocks, 0, oldBlocks.length);
+      }
+
+      // Allocate the new block.
+      curBlock = blocks[curBlockNum] = new Block();
+      curBlockTop = 0;
     }
-    
+
     // Link in the new entry.
-    Block block = blocks[curBlockNum];
-    block.blockLinks[curBlockTop]  = keyBlocks[key];
-    block.offsetLinks[curBlockTop] = keyOffsets[key];
-    block.values[curBlockTop] = value;
-    keyBlocks[key] = curBlockNum;
-    keyOffsets[key] = curBlockTop;
+    curBlock.links[curBlockTop] = keyLinks[key];
+    curBlock.values[curBlockTop] = value;
+    keyLinks[key] = (((int) curBlockNum) << 16) | curBlockTop;
     ++curBlockTop;
   } // add()
   
   /**
-   * Create a new iterator. Note that it can (and should) be re-used, thus 
-   * avoiding many object allocations. Also note that this iterator is
-   * inextricably linked to this particular map, and will fail mysteriously
-   * if used with another map.
-   * 
-   * @return    A new, uninitialized, iterator.
+   * For iteration: get the first position for the given key, or -1 if it has none.
    */
-  public Iterator createIterator()
-  {
-    return new Iterator();
+  public final int firstPos( int key ) {
+    return keyLinks[key];
   }
   
   /**
-   * Iterate all the values for the given key.
-   * 
-   * @param key         Key to get values for
-   * @param iterator    Iterator to initialize
-   * @return            The same iterator, for easy chaining purposes.
+   * For iteration: get the next position after the given pos, or -1 if we're at
+   * the end of the chain.
    */
-  public Iterator iterateValues( int key, Iterator iterator )
-  {
-    iterator.init( key );
-    return iterator;
+  public final int nextPos( int prevPos ) {
+    return blocks[(int)prevPos >> 16].links[(int)prevPos & 0x7FFF];
   }
-  
+
+  /**
+   * Retrieve the value for a given link.
+   */
+  public final int getValue( int pos ) {
+    return blocks[(int)pos >> 16].values[(int)pos & 0x7FFF];
+  }
+
   /**
    * Keeps track of a block of values, with links to the following values. 
    */
   private class Block
   {
-    int[]   values      = new int[BLOCK_SIZE];
-    short[] blockLinks  = new short[BLOCK_SIZE]; 
-    short[] offsetLinks = new short[BLOCK_SIZE];
+    int[] values = new int[BLOCK_SIZE];
+    int[] links = new int[BLOCK_SIZE];
+
+    Block() {
+      Arrays.fill(values, Integer.MIN_VALUE);
+      Arrays.fill(links, -1);
+    }
   } // class Block
-  
+
   /**
-   * Uses to iterate the values for a given key. Can be re-initialized to avoid
-   * creating a new iterator for each key.
+   * Basic regression test
    */
-  private class Iterator
-  {
-    private int[] values      = new int[1];
-    private int   nValues     = 0;
-    private int   curValueNum = -1;
-    
-    private Iterator() { }
-    
-    private void init( int key )
+  public static final Tester tester = new Tester("IntMultiMap") {
+    protected void testImpl()
     {
-      // Fetch all the values for the key
-      short blockNum = keyBlocks[key];
-      short offset   = keyOffsets[key];
-      nValues = 0;
-      while( blockNum >= 0 ) 
-      {
-          if( nValues == values.length ) {
-              int[] oldValues = values;
-              values = new int[values.length * 2];
-              System.arraycopy( oldValues, 0, values, 0, oldValues.length );
-          }
-          
-          Block block     = blocks[blockNum];
-          values[nValues] = block.values[offset];
-          blockNum        = block.blockLinks[offset];
-          offset          = block.offsetLinks[offset];
-          ++nValues;
-      }
-      
-      // For efficiency, the values as they come out of the linked list are
-      // in the reverse order they were added. We start with the last one
-      // and go backward, so the client gets them in the order they expect.
-      //
-      curValueNum = nValues-1;
-    }
-    
-    /**
-     * @return  true iff there another value for the current key.
-     */
-    public final boolean hasNext() {
-      return curValueNum >= 0;
-    }
-    
-    /**
-     * @return  the next value for the current key
-     */
-    public final int next() {
-      return values[curValueNum--];
-    }
-  } // class LinkIterator
-  
+      IntMultiMap map = new IntMultiMap(10);
+
+      map.add(1, 10);
+      map.add(1, 11);
+
+      map.add(2, 20);
+      map.add(2, 21);
+      map.add(2, 22);
+
+      int pos;
+      pos = map.firstPos(1);
+      assert pos >= 0;
+      assert map.getValue(pos) == 11;
+      pos = map.nextPos(pos);
+      assert pos >= 0;
+      assert map.getValue(pos) == 10;
+      pos = map.nextPos(pos);
+      assert pos < 0;
+
+      pos = map.firstPos(2);
+      assert pos >= 0;
+      assert map.getValue(pos) == 22;
+      pos = map.nextPos(pos);
+      assert pos >= 0;
+      assert map.getValue(pos) == 21;
+      pos = map.nextPos(pos);
+      assert pos >= 0;
+      assert map.getValue(pos) == 20;
+      pos = map.nextPos(pos);
+      assert pos < 0;
+    } // testImpl()
+  };
+
 } // class OneToManyInt
