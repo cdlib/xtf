@@ -21,7 +21,7 @@ import java.io.IOException;
 
 /** A Scorer for queries with a required subscorer and an excluding (prohibited) subscorer.
  * <br>
- * This <code>Scorer</code> implements {@link Scorer#skipTo(int)},
+ * This <code>Scorer</code> implements Scorer.skipTo(int),
  * and it uses the skipTo() on the given scorers.
  */
 public class ReqExclScorer extends Scorer {

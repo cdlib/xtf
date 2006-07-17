@@ -23,7 +23,7 @@ import java.io.IOException;
 import org.apache.lucene.util.PriorityQueue;
 
 /** A Scorer for OR like queries, counterpart of Lucene's <code>ConjunctionScorer</code>.
- * This Scorer implements {@link Scorer#skipTo(int)} and uses skipTo() on the given Scorers. 
+ * This Scorer implements Scorer.skipTo(int) and uses skipTo() on the given Scorers. 
  */
 public class DisjunctionSumScorer extends Scorer {
   /** The number of subscorers. */ 

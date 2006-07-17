@@ -22,7 +22,7 @@ import java.util.Vector;
 import org.apache.lucene.index.IndexReader;
 
 /** A Query that matches documents matching boolean combinations of other
-  * queries, e.g. {@link TermQuery}s, {@link PhraseQuery}s or other
+  * queries, e.g. TermQuerys, PhraseQuerys or other
   * BooleanQuerys.
   * 
   * Adapted from unfinished Lucene 1.9 code. Should be removed entirely when
@@ -56,10 +56,10 @@ public class BooleanQuery extends Query {
    * so this parameter indirectly controls the maximum buffer requirements for
    * query search.
    * <p>When this parameter becomes a bottleneck for a Query one can use a
-   * Filter. For example instead of a {@link RangeQuery} one can use a
-   * {@link RangeFilter}.
+   * Filter. For example instead of a RangeQuery one can use a
+   * RangeFilter.
    * <p>Normally the buffers are allocated by the JVM. When using for example
-   * {@link org.apache.lucene.store.MMapDirectory} the buffering is left to
+   * org.apache.lucene.store.MMapDirectory the buffering is left to
    * the operating system.
    */
   public static void setMaxClauseCount(int maxClauseCount) {

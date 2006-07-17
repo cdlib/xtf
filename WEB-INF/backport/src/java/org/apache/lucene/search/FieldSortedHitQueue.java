@@ -33,7 +33,6 @@ import java.text.Collator;
  *
  * @author  Tim Jones (Nacimiento Software)
  * @since   lucene 1.4
- * @see FieldCache
  */
 public class FieldSortedHitQueue
 extends PriorityQueue {

@@ -20,7 +20,7 @@ import java.io.IOException;
 /** A Scorer for queries with a required part and an optional part.
  * Delays skipTo() on the optional part until a score() is needed.
  * <br>
- * This <code>Scorer</code> implements {@link Scorer#skipTo(int)}.
+ * This <code>Scorer</code> implements Scorer.skipTo(int).
  */
 public class ReqOptSumScorer extends Scorer {
   /** The scorers passed from the constructor.
