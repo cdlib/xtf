@@ -48,7 +48,7 @@ import javax.xml.transform.TransformerConfigurationException;
 
 
 /** 
- * Represents an <arg> element below a <run> instruction.
+ * Represents an &lt;arg> element below a &lt;run> instruction.
  * 
  * @author Martin Haye
  */

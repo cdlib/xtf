@@ -58,7 +58,7 @@ import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
 
 /** 
- * Represents an <input> element below a <run> instruction.
+ * Represents an &lt;input> element below a &lt;run> instruction.
  * 
  * @author Martin Haye
  */

@@ -104,8 +104,8 @@ public class QueryResult
      * @param mainTagName Name of the top-level tag to generate (e.g.
      *                    "crossQueryResult", etc.)
      * @param extraStuff  Additional XML to insert into the query
-     *                    result document. Typically includes <parameters>
-     *                    block and <query> block.
+     *                    result document. Typically includes &lt;parameters>
+     *                    block and &lt;query> block.
      * @return            XML Source containing all the hits and snippets.
      */
     public Source hitsToSource( String mainTagName, 
@@ -123,8 +123,8 @@ public class QueryResult
      * @param mainTagName Name of the top-level tag to generate (e.g.
      *                    "crossQueryResult", etc.)
      * @param extraStuff  Additional XML to insert into the query
-     *                    result document. Typically includes <parameters>
-     *                    block and <query> block.
+     *                    result document. Typically includes &lt;parameters>
+     *                    block and &lt;query> block.
      * @return            XML string containing all the hits and snippets.
      */
     public String hitsToString( String mainTagName, 
