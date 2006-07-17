@@ -106,7 +106,6 @@ extends PriorityQueue {
    * by a MultiSearcher with other search hits.
    * @param  doc  The FieldDoc to store sort values into.
    * @return  The same FieldDoc passed in.
-   * @see Searchable#search(Query,Filter,int,Sort)
    */
   FieldDoc fillFields (final FieldDoc doc) {
     final int n = comparators.length;

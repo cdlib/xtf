@@ -258,7 +258,7 @@ class BooleanScorer2 extends Scorer {
 
   /** Scores and collects all matching documents.
    * @param hc The collector to which all matching documents are passed through
-   * {@link HitCollector#collect(int, float)}.
+   * HitCollector.collect(int, float).
    * <br>When this method is used the {@link #explain(int)} method should not be used.
    */
   public void score(HitCollector hc) throws IOException {
@@ -274,7 +274,7 @@ class BooleanScorer2 extends Scorer {
    * <br>Note that {@link #next()} must be called once before this method is
    * called for the first time.
    * @param hc The collector to which all matching documents are passed through
-   * {@link HitCollector#collect(int, float)}.
+   * HitCollector.collect(int, float).
    * @param max Do not score documents past this.
    * @return true if more matching documents may remain.
    */
