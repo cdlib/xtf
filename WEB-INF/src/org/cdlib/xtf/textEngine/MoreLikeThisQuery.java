@@ -475,9 +475,9 @@ public class MoreLikeThisQuery extends Query
    * Adds term frequencies found by tokenizing text from reader into the Map 
    * words.
    * 
-   * @param r a source of text to be tokenized
+   * @param tokens a source of tokens
+   * @param field Specifies the field being tokenized
    * @param termFreqMap a Map of terms and their frequencies
-   * @param fieldName Used by analyzer for any special per-field analysis
    */
   private void addTermFrequencies( TokenStream tokens, String field, Map termFreqMap )
     throws IOException
