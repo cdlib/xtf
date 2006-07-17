@@ -181,7 +181,6 @@ public class FRBRGroupData extends DynamicGroupData
    * 
    * @param mainDoc           main document being matched
    * @param mainTitle     main doc's title tag
-   * @param mainTitleStr  string version of main title
    * @param compTitle     title tag to compare
    * @return              true if title iteration should continue.
    */
