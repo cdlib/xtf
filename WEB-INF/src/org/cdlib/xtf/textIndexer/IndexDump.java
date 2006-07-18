@@ -246,7 +246,7 @@ public class IndexDump
   //////////////////////////////////////////////////////////////////////////////
   
   private static void dumpFields( IndexReader indexReader, 
-                                  String[]    fields,
+                                  String[]    fieldNames,
                                   Writer      out )
   
     throws IOException
@@ -266,14 +266,20 @@ public class IndexDump
         Document doc = indexReader.document( i );
         Vector toPrint = new Vector();
         boolean gotAny = false;
-        for( int j = 0; j < fields.length; j++ ) {
-            Field got = doc.getField( fields[j] );
-            if( got == null ) {
+        for( int j = 0; j < fieldNames.length; j++ ) {
+            Field[] got = doc.getFields( fieldNames[j] );
+            if( got == null || got.length == 0 ) {
                 toPrint.add( "" );
                 continue;
             }
             
-            toPrint.add( stripValue(got.stringValue()) );
+            StringBuffer buf = new StringBuffer();
+            for( int k = 0; k < got.length; k++ ) {
+                if( k > 0 )
+                    buf.append( ";" );
+                buf.append( stripValue(got[k].stringValue()) );
+            }
+            toPrint.add( buf.toString() );
             gotAny = true;
         }
         
