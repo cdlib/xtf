@@ -338,7 +338,8 @@ public class SpellWriter {
     // Close the writer, open the reader.
     closeIndexWriter();
     try {
-        indexReader = IndexReader.open( indexDir );
+        if( IndexReader.indexExists(indexDir) )
+            indexReader = IndexReader.open( indexDir );
     } catch (IOException e) { }
   } // openIndexReader()
 
