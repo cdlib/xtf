@@ -399,7 +399,7 @@ public class SpellReader
     
     // If not enough terms, turn off frequency boosting.
     if( nTerms < 500 )
-        res[0] = res[1] = res[2] = res[3] = res[4] = res[5] = Integer.MAX_VALUE;
+        res[0] = res[1] = res[2] = res[3] = res[4] = Integer.MAX_VALUE;
     else
     {
         // Sort the frequencies, and pick out the levels of interest to us.
