@@ -1486,7 +1486,7 @@ public class XMLTextProcessor extends DefaultHandler
   // called at element start
 
   {
-    
+
     // Process any characters accumulated for the previous node, writing them
     // out as chunks to the index if needed.
     // 
@@ -1552,8 +1552,8 @@ public class XMLTextProcessor extends DefaultHandler
                 tokenize = false;
         }
         
-        // See if there is a "tokenize" attribute set for this node. If not,
-        // default to true.
+        // See if there is a "facet" attribute set for this node. If not,
+        // default to false.
         //
         boolean isFacet = false;
         tokIdx = atts.getIndex( xtfUri, "facet" );
@@ -1561,6 +1561,17 @@ public class XMLTextProcessor extends DefaultHandler
             String tokStr = atts.getValue( tokIdx );
             if( tokStr != null && (tokStr.equals("yes") || tokStr.equals("true")) )
                 isFacet = true;
+        }
+        
+        // See if there is a "spell" attribute set for this node. If not,
+        // default to true.
+        //
+        boolean spell = true;
+        tokIdx = atts.getIndex( xtfUri, "spell" );
+        if( tokIdx >= 0 ) {
+            String tokStr = atts.getValue( tokIdx );
+            if( tokStr != null && (tokStr.equals("no") || tokStr.equals("false")) )
+                spell = false;
         }
         
         // See if there is a "wordBoost" attribute for this node. If not, 
@@ -1577,7 +1588,7 @@ public class XMLTextProcessor extends DefaultHandler
         
         // Allocate a place to store the contents of the meta-data field.
         metaField = 
-            new MetaField( localName, store, index, tokenize, isFacet, boost );
+            new MetaField( localName, store, index, tokenize, isFacet, spell, boost );
         assert metaBuf.length() == 0 : "Should have cleared meta-buf";
         
         // If there are non-XTF attributes on the node, record them.
@@ -1607,6 +1618,7 @@ public class XMLTextProcessor extends DefaultHandler
         // Get the current section type and word boost.
         String prevSectionType = section.sectionType();
         float  prevWordBoost   = section.wordBoost();
+        int    prevSpellFlag   = section.spellFlag();
         
         // Process the node specific attributes such as section type,
         // section bump, word bump, word boost, and so on.
@@ -1615,10 +1627,11 @@ public class XMLTextProcessor extends DefaultHandler
         
         // If the section type changed, we need to start a new chunk.
         if( section.sectionType() != prevSectionType ||
-            section.wordBoost()   != prevWordBoost ) {          
+            section.wordBoost()   != prevWordBoost   ||
+            section.spellFlag()   != prevSpellFlag ) {          
             
             // Clear out any remaining accumulated text.
-            forceNewChunk( prevSectionType, prevWordBoost );
+            forceNewChunk( prevSectionType, prevWordBoost, prevSpellFlag );
             
             // Diagnostic info.
             Trace.tab();
@@ -1837,6 +1850,7 @@ public class XMLTextProcessor extends DefaultHandler
     //
     String prevSectionType = section.sectionType();
     float  prevWordBoost   = section.wordBoost();
+    int    prevSpellFlag   = section.spellFlag();
       
     // Decrease the section stack depth as needed, possibly pulling
     // the entire section entry off the stack.
@@ -1845,10 +1859,11 @@ public class XMLTextProcessor extends DefaultHandler
     
     // If the section type changed, force new text to start in a new chunk. 
     if( section.sectionType() != prevSectionType || 
-        section.wordBoost()   != prevWordBoost ) {
+        section.wordBoost()   != prevWordBoost ||
+        section.spellFlag()   != prevSpellFlag ) {
       
         // Output any remaining accumulated text.
-        forceNewChunk( prevSectionType, prevWordBoost );
+        forceNewChunk( prevSectionType, prevWordBoost, prevSpellFlag );
 
         // Diagnostic info.
         Trace.tab();
@@ -1923,7 +1938,8 @@ public class XMLTextProcessor extends DefaultHandler
   {
     
     // Index the remaining accumulated chunk (if any).
-    indexText( section.sectionType(), section.wordBoost() );
+    indexText( section.sectionType(), section.wordBoost(), 
+               section.spellFlag() );
     
     // Save the document "header" info.
     saveDocInfo();
@@ -2222,7 +2238,8 @@ public class XMLTextProcessor extends DefaultHandler
                 trimAccumText( false );
                 
                 // Index the accumulated text.
-                indexText( section.sectionType(), section.wordBoost() );
+                indexText( section.sectionType(), section.wordBoost(), 
+                           section.spellFlag() );
                                 
                 // Advance the punctuation start point for the next word to
                 // the beginning of the word itself, since we already 
@@ -2308,13 +2325,18 @@ public class XMLTextProcessor extends DefaultHandler
    *                       accumulated chunk.
    * 
    *  @param  wordBoost    The word boost to apply to the previously 
-   *                       accumulated chunk. <br><br>
+   *                       accumulated chunk. 
+   *                       
+   *  @param  spellFlag    Whether to add words to the spellcheck
+   *                       dictionary. <br><br>
    * 
    *  @.notes
    *    This method writes out any accumulated text and resets the chunk
    *    tracking information to the start of a new chunk.
    */
-  private void forceNewChunk( String sectionType, float wordBoost )
+  private void forceNewChunk( String sectionType, 
+                              float  wordBoost,
+                              int    spellFlag )
   
   {
     
@@ -2322,7 +2344,7 @@ public class XMLTextProcessor extends DefaultHandler
     // now.
     if( nextChunkStartIdx > 0 ) 
     {
-        indexText( sectionType, wordBoost );
+        indexText( sectionType, wordBoost, spellFlag );
       
         // Make the next chunk current.
         chunkStartNode  = nextChunkStartNode;
@@ -2345,7 +2367,7 @@ public class XMLTextProcessor extends DefaultHandler
     }
     
     // Index whatever is left in the accumulated text buffer.
-    indexText( sectionType, wordBoost );
+    indexText( sectionType, wordBoost, spellFlag );
 
     // Since we're forcing a new chunk, advance the next chunk past
     // the one we just wrote.
@@ -2841,7 +2863,8 @@ public class XMLTextProcessor extends DefaultHandler
    *  the active index. <br><br>
    * 
    *  @param  sectionType  The section type name for this chunk of text.
-   *  @param  wordBoost    The word boost value for this chunk of text. <br><br>
+   *  @param  wordBoost    The word boost value for this chunk of text.
+   *  @param  spellFlag    Whether to add words to spelling dictionary. <br><br>
    * 
    *  @.notes
    *    This method peforms the final step of adding a chunk of assembled text
@@ -2854,7 +2877,7 @@ public class XMLTextProcessor extends DefaultHandler
    *    the XML node in which the chunk begins, the word offset of the chunk, 
    *    and the "blurbified" text for the chunk. <br><br>   
    */
-  private void indexText( String sectionType, float wordBoost )
+  private void indexText( String sectionType, float wordBoost, int spellFlag )
   
   {
    
@@ -2923,6 +2946,12 @@ public class XMLTextProcessor extends DefaultHandler
     
     // Set the boost value for the text.
     textField.setBoost( wordBoost );
+    
+    // Establish whether to add words to the spellcheck dictionary.
+    XTFTextAnalyzer analyzer = (XTFTextAnalyzer) indexWriter.getAnalyzer();
+    analyzer.clearMisspelledFields();
+    if( spellFlag == SectionInfo.noSpell )
+        analyzer.addMisspelledField( "text" );
     
     // Finally, add the text in the chunk to the index as a stored, indexed,
     // tokenized field.
@@ -3259,6 +3288,7 @@ public class XMLTextProcessor extends DefaultHandler
     float  wordBoost      = section.wordBoost();
     int    sentenceBump   = section.sentenceBump();
     int    indexFlag      = SectionInfo.parentIndex;
+    int    spellFlag      = SectionInfo.parentSpell;
     int    sectionBump    = 0;    
     
     // Process each of the specified node attributes, outputting warnings
@@ -3325,10 +3355,10 @@ public class XMLTextProcessor extends DefaultHandler
             // Determine the default "index" flag value from the parent
             // section.
             //
-            boolean defaultIndexFlag = (indexFlag == SectionInfo.index ) ?
+            boolean defaultIndexFlag = (section.indexFlag() == SectionInfo.index) ?
                                         true : false;
               
-            // Get the value of the "no index" attribute.
+            // Get the value of the "index" attribute.
             valueStr = atts.getValue(i);
               
             // Build the final index flag based on the attribute and default
@@ -3352,7 +3382,8 @@ public class XMLTextProcessor extends DefaultHandler
             if( trueOrFalse( valueStr, false ) ) {
        
                 // Clear out any partially accumulated chunks.         
-                forceNewChunk( section.sectionType(), section.wordBoost() );
+                forceNewChunk( section.sectionType(), section.wordBoost(),
+                               section.spellFlag() );
         
                 // Reset the chunk position to the node we're in now.
                 chunkStartNode  = -1;
@@ -3376,7 +3407,8 @@ public class XMLTextProcessor extends DefaultHandler
             if( wordBoost != newBoost ) {
          
                 // Clear out any partially accumulated chunks.         
-                forceNewChunk( section.sectionType(), section.wordBoost() );
+                forceNewChunk( section.sectionType(), section.wordBoost(),
+                               section.spellFlag() );
           
                 // Reset the chunk position to the node we're in now.
                 chunkStartNode  = -1;
@@ -3392,6 +3424,42 @@ public class XMLTextProcessor extends DefaultHandler
               
         } // else if( atts.getQName(i).equalsIgnoreCase("xtfProximityBreak") )
           
+        // If the current attribute is the spell flag...
+        else if( attName.equalsIgnoreCase("spell") ) {
+      
+            // Determine the default spell flag value from the parent
+            // section.
+            //
+            boolean defaultSpellFlag = (section.spellFlag() == SectionInfo.spell) ?
+                                        true : false;
+              
+            // Get the value of the "misspelled" attribute.
+            valueStr = atts.getValue(i);
+              
+            // Build the final spell flag based on the attribute and default
+            // values passed.
+            //
+            spellFlag = trueOrFalse( valueStr, defaultSpellFlag )
+                        ? SectionInfo.spell : SectionInfo.noSpell;
+                              
+            // If the spell flag changed...
+            if( spellFlag != section.spellFlag() ) {
+         
+                // Clear out any partially accumulated chunks.         
+                forceNewChunk( section.sectionType(), section.wordBoost(),
+                               section.spellFlag() );
+          
+                // Reset the chunk position to the node we're in now.
+                chunkStartNode  = -1;
+                chunkWordOffset = -1;
+        
+                Trace.tab();
+                Trace.debug( "Spell: " + spellFlag );
+                Trace.untab();
+            }
+              
+        } // else if( atts.getQName(i).equalsIgnoreCase("xtfIndex") )
+        
         // If we got to this point, and we've encountered an unrecognized 
         // xtf:xxxx attribute, display a warning message (if enabled for 
         // output.)
@@ -3414,7 +3482,8 @@ public class XMLTextProcessor extends DefaultHandler
                   sectionTypeStr, 
                   sectionBump, 
                   wordBoost, 
-                  sentenceBump );
+                  sentenceBump,
+                  spellFlag );
 
   } // private ProcessNodeAttributes()
 
@@ -3518,6 +3587,12 @@ public class XMLTextProcessor extends DefaultHandler
                 metaField.tokenize = true;
                 analyzer.addFacetField( metaField.name );
             }
+            
+            // If it's marked as misspelled, inform the analyzer so it doesn't
+            // add the field data to the spelling correction dictionary.
+            //
+            if( !metaField.spell && metaField.index )
+                analyzer.addMisspelledField( metaField.name );
             
             // Add it to the document. Store, index, and/or tokenize as
             // specified by the field.
@@ -3812,6 +3887,7 @@ public class XMLTextProcessor extends DefaultHandler
     public boolean index;
     public boolean tokenize;
     public boolean isFacet;
+    public boolean spell;
     public float   wordBoost;
     
     public MetaField( String  name, 
@@ -3819,6 +3895,7 @@ public class XMLTextProcessor extends DefaultHandler
                       boolean index,
                       boolean tokenize,
                       boolean isFacet,
+                      boolean spell,
                       float   wordBoost ) 
     {
       this.name      = name;
@@ -3826,6 +3903,7 @@ public class XMLTextProcessor extends DefaultHandler
       this.index     = index;
       this.tokenize  = tokenize;
       this.isFacet   = isFacet;
+      this.spell     = spell;
       this.wordBoost = wordBoost;
     }
 

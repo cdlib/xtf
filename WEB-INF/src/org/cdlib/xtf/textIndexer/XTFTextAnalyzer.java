@@ -148,10 +148,15 @@ public class XTFTextAnalyzer extends Analyzer {
   private String srcText;
   
   /** 
-   * List of fields that marked as "facets" and thus get special 
-   * tokenization 
+   * List of fields marked as "facets" and thus get special tokenization 
    */
   private HashSet facetFields = new HashSet();
+  
+  /** 
+   * List of fields that marked as possibly misspelled, and thus don't get
+   * added to the spelling correction dictionary. 
+   */
+  private HashSet misspelledFields = new HashSet();
   
   /** If building a spelling correction dictionary, this is the writer */
   private SpellWriter spellWriter = null;
@@ -224,6 +229,28 @@ public class XTFTextAnalyzer extends Analyzer {
   
 
   /**
+   * Clears the list of fields marked as misspelled. Misspelled fields are not
+   * added to the spelling correction dictionary.
+   */
+  public void clearMisspelledFields()
+  {
+    misspelledFields.clear();
+  }
+  
+
+  /**
+   * Mark a field as a "misspelled field", that won't be added to the spelling
+   * correction dictionary.
+   * 
+   * @param fieldName   Name of the field to consider a misspelled field.
+   */
+  public void addMisspelledField( String fieldName )
+  {
+    misspelledFields.add( fieldName );
+  }
+  
+
+  /**
    * Sets a writer to receive tokenized words just before they are indexed.
    * Use this to build a spelling correction dictionary at index time.
    * 
@@ -288,7 +315,7 @@ public class XTFTextAnalyzer extends Analyzer {
     result = new LowerCaseFilter( result );
     
     // If adding to a spelling dictionary, put an adder in the chain.
-    if( spellWriter != null )
+    if( spellWriter != null && !misspelledFields.contains(fieldName) )
         result = new SpellWritingFilter( result, spellWriter );
     
     // If a plural map was specified, fold plural and singular words together.

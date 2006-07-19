@@ -193,6 +193,57 @@ public class SectionInfo
    */
   public final static int defaultDepth = 0;  
   
+  /** Spell/No-Spell Flag Value: Use parent section spell/no-spell state.
+   *  <br><br>
+   * 
+   *  @.notes 
+   *  This spell flag value is never actually stored in the spell flag attribute 
+   *  for a <code>SectionInfo</code> instance. It is only passed as an argument 
+   *  to the
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int,int) explicit section push}
+   *  method defined by the {@link org.cdlib.xtf.textIndexer.SectionInfoStack}
+   *  class. That method in turn uses the parent section's spell flag value,
+   *  which will be either
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfo#spell spell} or 
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfo#noSpell noSpell}. 
+   *  <br><br> 
+   */
+  public final static int parentSpell = -1;
+
+  /** No-Spell Flag Value: Do not add words from the current section to the
+   *  spelling correction dictionary.
+   *  <br><br>
+   * 
+   *  This value is used for the 
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfo#spellFlag spellFlag} field 
+   *  to indicate that words from the current section should not be added to
+   *  the spelling correction dictionary.
+   *  <br><br>
+   */
+  public final static int noSpell = 0;
+
+  /** Spell Flag Value: Add words from the current section to the
+   *  spelling correction dictionary.
+   *  <br><br>
+   * 
+   *  This value is used for the 
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfo#spellFlag spellFlag} field 
+   *  to indicate that words from the current section should be added to the
+   *  spelling correction dictionary.
+   *  <br><br>
+   */
+  public final static int spell = 1;
+
+  /** Default state for Spell/No-Spell Flag. Value = spell.
+   *  <br><br>
+   * 
+   *  This is the default value applied to the 
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfo#spellFlag spellFlag} 
+   *  field whenever a <code>SectionInfo</code> class is constructed.
+   *  <br><br>
+   */
+  public final static int defaultSpellFlag = spell;
+  
   /** Depth count for a section. <br><br>
    * 
    *  This field is used to count the depth of a section when more than one 
@@ -273,6 +324,29 @@ public class SectionInfo
    *.  
    */
   public int sentenceBump;
+    
+  /** Spell flag for a section. <br><br>
+   * 
+   *  This field indicates whether words from the associated section should be
+   *  added to the spelling correction dictionary or not.
+   *  There are three valid values for this flag: 
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfo#parentSpell parentSpell},
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfo#noSpell noSpell},
+   *  and {@link org.cdlib.xtf.textIndexer.SectionInfo#spell spell}. 
+   * 
+   *  @.notes 
+   *  The value {@link org.cdlib.xtf.textIndexer.SectionInfo#parentSpell parentSpell}
+   *  is never actually stored in the spell flag attribute for a 
+   *  <code>SectionInfo</code> instance. It is only passed as an argument to the
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int) explicit section push}
+   *  method defined by the {@link org.cdlib.xtf.textIndexer.SectionInfoStack}
+   *  class. That method in turn uses the parent section's spell flag value,
+   *  which will be either
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfo#spell spell} or 
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfo#spell noSpell}. 
+   *  <br><br> 
+   */
+  public int spellFlag;  
   
   
   //////////////////////////////////////////////////////////////////////////////
@@ -304,6 +378,7 @@ public class SectionInfo
     this.prevSectionBump = 0;
     this.wordBoost       = defaultWordBoost;
     this.sentenceBump    = defaultSentenceBump;
+    this.spellFlag       = defaultSpellFlag;
   
   } // SectionInfo()
   
@@ -321,7 +396,8 @@ public class SectionInfo
       String sectionType,
       int    sectionBump,
       float  wordBoost,
-      int    sentenceBump
+      int    sentenceBump,
+      int    spellFlag
   )
   
   {
@@ -332,6 +408,7 @@ public class SectionInfo
     this.sectionBump     = sectionBump;
     this.wordBoost       = wordBoost;
     this.sentenceBump    = sentenceBump;
+    this.spellFlag       = spellFlag;
 
   } // sectionBump()
 

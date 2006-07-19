@@ -86,7 +86,7 @@ public class SectionInfoStack
    *  @param indexFlag     A flag indicating whether or not the current section
    *                       should be indexed. Valid values are 
    *                       {@link org.cdlib.xtf.textIndexer#parentIndex parentIndex},   
-   *                       {@link org.cdlib.xtf.textIndexer#parentIndex parentIndex},   
+   *                       {@link org.cdlib.xtf.textIndexer#index index},   
    *                       {@link org.cdlib.xtf.textIndexer#noIndex noIndex}.
    *                       <br><br>
    *   
@@ -125,6 +125,14 @@ public class SectionInfoStack
    *                       completely avoid proximity matches across sentence
    *                       boundaries.) <br><br>
    * 
+   *  @param spellFlag     A flag indicating whether or not words in the current
+   *                       section should be added to the spelling correction
+   *                       dictionary. Valid values are 
+   *                       {@link org.cdlib.xtf.textIndexer#parentSpell parentSpell},   
+   *                       {@link org.cdlib.xtf.textIndexer#spell spell},   
+   *                       {@link org.cdlib.xtf.textIndexer#noSpell noSpell}.
+   *                       <br><br>
+   *   
    *  @.notes 
    *       This method compares the passed attributes to the section currently
    *       at the top of the stack (if any.) If the attributes are identical,
@@ -143,7 +151,8 @@ public class SectionInfoStack
       String  sectionType,
       int     sectionBump,
       float   wordBoost,
-      int     sentenceBump
+      int     sentenceBump,
+      int     spellFlag
   )
   
   {
@@ -158,6 +167,9 @@ public class SectionInfoStack
         // And we were asked to inherit the parent's index flag, do so.
         if( indexFlag == SectionInfo.parentIndex ) indexFlag = info.indexFlag;
         
+        // If we were asked to inherit the parent's spell flag, do so.
+        if( spellFlag == SectionInfo.parentSpell ) spellFlag = info.spellFlag;
+        
         // If no section name was specified, inherit the parent's section name.
         if( sectionType == "" ) sectionType = info.sectionType;
 
@@ -169,7 +181,8 @@ public class SectionInfoStack
                             sectionType, 
                             sectionBump, 
                             wordBoost, 
-                            sentenceBump ) )  {
+                            sentenceBump,
+                            spellFlag ) )  {
             push();
             return;
         }
@@ -193,8 +206,12 @@ public class SectionInfoStack
     // If there was no previous section info on the stack, and we were asked
     // to inherit the parent's index flag, turn on indexing by default.
     //
-    else if( indexFlag == SectionInfo.parentIndex ) 
-        indexFlag = SectionInfo.index;
+    if( indexFlag == SectionInfo.parentIndex ) 
+        indexFlag = SectionInfo.defaultIndexFlag;
+    
+    // Likewise with the spell flag.
+    if( spellFlag == SectionInfo.parentSpell ) 
+        spellFlag = SectionInfo.defaultSpellFlag;
     
     // At this point, we need to push new section info on the stack, either
     // because there's nothing on the stack, or because the specified section
@@ -205,7 +222,8 @@ public class SectionInfoStack
                                      sectionType,
                                      prevSectionBump + sectionBump,
                                      wordBoost,
-                                     sentenceBump ) );
+                                     sentenceBump,
+                                     spellFlag ) );
     
   } // public push( indexFlag, ... )
 
@@ -336,7 +354,8 @@ public class SectionInfoStack
       String  sectionType,
       int     sectionBump,
       float   wordBoost,
-      int     sentenceBump
+      int     sentenceBump,
+      int     spellFlag
   )
   
   {
@@ -349,11 +368,14 @@ public class SectionInfoStack
     // If the caller wants to use the parent's index flag, get it.
     if( indexFlag == SectionInfo.parentIndex ) indexFlag = info.indexFlag;
     
+    // If the caller wants to use the parent's spell flag, get it.
+    if( spellFlag == SectionInfo.parentSpell ) spellFlag = info.spellFlag;
+    
     // If no explicit section bump was specified, inherit the parent's bump.
     if( sectionBump == 0 ) 
         sectionBump = info.sectionBump;
     
-    // Now this part looks a bit weird... If the specified bump was an exlicit
+    // Now this part looks a bit weird... If the specified bump was an explicit
     // value, set it to some crazy value for the following comparison.  Why? 
     // To ensure that section bump values for parent and child nodes with 
     // no intervening text are considered different (because nested explicit 
@@ -369,7 +391,8 @@ public class SectionInfoStack
         sectionType  != info.sectionType ||
         sectionBump  != info.sectionBump ||
         wordBoost    != info.wordBoost   ||
-        sentenceBump != info.sentenceBump )
+        sentenceBump != info.sentenceBump ||
+        spellFlag    != info.spellFlag )
         return true;
     
     // Otherwise, indicate that the values are the same.    
@@ -433,6 +456,43 @@ public class SectionInfoStack
     return top().indexFlag;
   
   } // indexFlag()
+  
+
+  //////////////////////////////////////////////////////////////////////////////
+  
+  /** Return the spell flag for the top section on the nesting stack. <br><br>
+   * 
+   *  @return  Returns {@link org.cdlib.xtf.textIndexer.SectionInfo#spell spell}
+   *           or
+   *           {@link org.cdlib.xtf.textIndexer.SectionInfo#noSpell noSpell}.
+   *           <br><br>
+   * 
+   *  @.notes  
+   * 
+   *  This function will never return
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfo#parentSpell parentSpell}.
+   *  That value is only used as an argument when calling the 
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int) explicit section-push}
+   *  operator to force the new section to adopt it's parents spell
+   *  flag.<br><br>
+   * 
+   *  For a complete explanation of the <code>spellFlag</code> attribute, see
+   *  the {@link org.cdlib.xtf.textIndexer.SectionInfo#spellFlag spellFlag}
+   *  field in the {@link org.cdlib.xtf.textIndexer.SectionInfo} class. <br><br>
+   */
+  
+  public int spellFlag()
+  
+  {
+
+    // If the stack is empty, return the default spelling flag.
+    //
+    if( isEmpty() ) return SectionInfo.defaultSpellFlag;   
+    
+    // Otherwise return the actual spell flag for the top entry.
+    return top().spellFlag;
+  
+  } // spellFlag()
   
 
   //////////////////////////////////////////////////////////////////////////////
