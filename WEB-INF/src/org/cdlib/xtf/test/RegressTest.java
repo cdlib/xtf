@@ -441,6 +441,8 @@ public class RegressTest
         String str = XMLWriter.toString(hitDoc);
         str = str.replaceAll( " score=\"\\d+\"", "" );
         str = str.replaceAll( " path=\"all:", " file=\"" );
+        str = str.replaceAll( "(<suggestion.*) freq=\"[0-9]+\"", "$1" );
+        str = str.replaceAll( "(<suggestion.*) score=\"[0-9.]+\"", "$1" );
         
         // Now we're ready to write the file.
         PrintWriter out = new PrintWriter( new OutputStreamWriter(
