@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  
+  <!-- Test basic spelling correction, on meta-data and on full text. -->
+  <spellcheck suggestionsPerTerm="1" fields="#all"/>
+  <and>
+    <term field="title">arfica</term>
+    <term field="subject">arfican</term>
+    <term field="text">coventional</term>
+  </and>
+  
+</query>

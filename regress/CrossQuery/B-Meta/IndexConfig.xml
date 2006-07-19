@@ -9,6 +9,7 @@
        <chunk size="40" overlap="20"/>
        <stopwords list="fribble snoot smarmy"/>
        <pluralmap path="pluralMap.txt"/>
+       <spellCheck createDict="yes"/>
   </index>
 
 </textIndexer-config>
