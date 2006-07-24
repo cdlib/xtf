@@ -29,6 +29,7 @@ package org.cdlib.xtf.textIndexer;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.pdfbox.pdmodel.PDDocument;
@@ -60,7 +61,7 @@ public class PDFToString {
   static Logger logger = Logger.getRootLogger();
   
   /** PDFBox text stripper. Created once to save time. */
-  static PDFTextStripper stripper = new PDFTextStripper();
+  static PDFTextStripper stripper;
   
 
   //////////////////////////////////////////////////////////////////////////////
@@ -75,7 +76,7 @@ public class PDFToString {
    *      PDF file. If an error occurred, this method returns <code>null</code>.
    * 
    */
-  static String convert( InputStream PDFInputStream )
+  static String convert( InputStream PDFInputStream ) throws IOException
 
   {
     String xmlStr = null;
@@ -94,6 +95,10 @@ public class PDFToString {
         // Flag that the logger is configured.
         mustConfigureLogger = false;    
     }
+    
+    // Make a stripper if we haven't already.
+    if( stripper == null )
+        stripper = new PDFTextStripper();
     
     XMLFormatter formatter = new XMLFormatter();
     
@@ -120,7 +125,7 @@ public class PDFToString {
             formatter.blankLineAfterTag( false );
             
             // Determine how many pages there are in the PDF file.   
-            int pageCount = pdfDoc.getPageCount();
+            int pageCount = pdfDoc.getNumberOfPages();
             
             // Create an all-enclosing document tag summarizing 
             // the original document name and the number of pages.
@@ -141,6 +146,9 @@ public class PDFToString {
 
                 // Get the text for this page.
                 String pdfText = stripper.getText( pdfDoc );
+                
+                // Escape and normalize characters.
+                pdfText = XMLIndexSource.normalize( pdfText );
                 
                 // Tack the text onto the XML output, nicely formatted
                 // into lines of 128 characters or less.

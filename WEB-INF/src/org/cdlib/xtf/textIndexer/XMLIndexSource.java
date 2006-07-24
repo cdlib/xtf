@@ -44,6 +44,8 @@ import org.cdlib.xtf.util.StructuredStore;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import sun.text.Normalizer;
+
 /**
  * Supplies a single file containing a single record to the 
  * {@link XMLTextProcessor}.
@@ -219,6 +221,83 @@ public class XMLIndexSource extends IndexSource
     return finalSrc;
     
   } // filterInput()
-  
+
+  /**
+   * Prepare a string for inclusion in an XML document. Unicode strings are
+   * normalized to their canonical equivalents, a few characters are 
+   * escaped as entities, and invalid characters are removed.
+   * 
+   * @param s   string to normalize
+   * @return    possibly changed version of the string
+   */
+  public static String normalize(String s)
+  {
+    char[] ch = s.toCharArray();
+      
+    // Scan for suspicious characters that might need Unicode 
+    // normalization.
+    //
+    boolean needNormalize = false;
+    int     needEscape    = 0;
+    for( int i = 0; i < ch.length; i++ ) {
+        if( (ch[i] & ~0x7f) != 0 )
+            needNormalize = true;
+        
+        if( ch[i] == '&' || ch[i] == '<' )
+            ++needEscape;
+        else if( ch[i] < '\u0020' &&
+            (ch[i] != '\t' && ch[i] != '\n' && ch[i] != '\r') )
+        {
+            ++needEscape;
+        }
+        else if( ch[i] >= '\uD800' && ch[i] <= '\uDFFF' )
+            ++needEscape;
+        else if( ch[i] >= '\uFFFE' && ch[i] <= '\uFFFF' )
+            ++needEscape;
+    }
+    
+    if( needNormalize ) {
+        String s2 = Normalizer.normalize( s, Normalizer.COMPOSE, 0 );
+        if( !s.equals(s2) ) {
+            s = s2;
+            ch = s2.toCharArray();
+        }
+    }
+    
+    if( needEscape > 0 ) {
+        int maxSpace = ch.length + (needEscape*5);
+        char[] newCh = new char[maxSpace];
+        int dp = 0;
+        for( int sp = 0; sp < ch.length; sp++ ) {
+            if( ch[sp] == '&' ) {
+                newCh[dp++] = '&';
+                newCh[dp++] = 'a';
+                newCh[dp++] = 'm';
+                newCh[dp++] = 'p';
+                newCh[dp++] = ';';
+            }
+            else if( ch[sp] == '<' ) {
+                newCh[dp++] = '&';
+                newCh[dp++] = 'l';
+                newCh[dp++] = 't';
+                newCh[dp++] = ';';
+            }
+            else if( ch[sp] < '\u0020' &&
+                (ch[sp] != '\t' && ch[sp] != '\n' && ch[sp] != '\r') )
+            {
+                ; // delete invalid character
+            }
+            else if( ch[sp] >= '\uD800' && ch[sp] <= '\uDFFF' )
+                ; // delete invalid character
+            else if( ch[sp] >= '\uFFFE' && ch[sp] <= '\uFFFF' )
+                ; // delete invalid character
+            else
+                newCh[dp++] = ch[sp];
+        }
+        s = new String( newCh, 0, dp );
+    }
+    
+    return s;
+  } // normalize()
   
 } // class SimpleSrcTextInfo
