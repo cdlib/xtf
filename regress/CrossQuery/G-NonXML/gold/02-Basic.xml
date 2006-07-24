@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="2" startDoc="1" endDoc="2">
-   <docHit rank="1" file="doc4.pdf" totalHits="7">
-      <snippet rank="1">Best Practices for <hit>
+   <docHit rank="1" file="doc4.pdf" totalHits="13">
+      <snippet rank="1">out the hidden complexities of <hit>
+            <term>image</term> 
+            <term>capture</term>
+         </hit> and project planning, without ever</snippet>
+      <snippet rank="2">Best Practices for <hit>
             <term>Image</term> 
             <term>Capture</term>
-         </hit> 1 Version 1.0 February 2001 M a i n t a i n e d</snippet>
-      <snippet rank="2">o f t h i s d o c u m e n t . Because <hit>
+         </hit> 1 Version 1.0 February 2001 Maintained by the</snippet>
+      <snippet rank="3">at the end of this document. Because <hit>
             <term>image</term> 
             <term>capture</term>
          </hit> capabilities are changing so</snippet>
-      <snippet rank="3">eated as the direct result of <hit>
-            <term>image</term> 
-            <term>capture</term>
-         </hit>. The digital master should represent</snippet>
    </docHit>
    <docHit rank="2" file="doc2.htm" totalHits="1">
       <snippet rank="1">Type in your search using <hit>
