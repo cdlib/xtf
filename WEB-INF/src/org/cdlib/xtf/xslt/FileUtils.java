@@ -63,6 +63,9 @@ public class FileUtils {
         context.getOrigin().getInstructionInfo().getSystemId();
     stylesheetPath = stylesheetPath.replaceFirst( "^file:", "" );
     File stylesheetDir  = new File(stylesheetPath).getParentFile();
+    
+    filePath = filePath.replaceFirst( "^file:", "" );
+    
     String resolved = Path.resolveRelOrAbs( stylesheetDir, filePath );
     boolean result = new File(resolved).canRead();
     return result;
