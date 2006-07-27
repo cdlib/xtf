@@ -359,7 +359,7 @@ public class IndexMerge
     boolean anyToDo = false;
     for( int i = 1; i < dirInfos.length; i++ ) {
         String sourceDir = dirInfos[i].path;
-        File sourceFile = new File( sourceDir + "SpellDict/newWords.dat" );
+        File sourceFile = new File( sourceDir + "spellDict/newWords.dat" );
         if( !sourceFile.isFile() && sourceFile.canRead() )
             continue;
         anyToDo = true;
@@ -373,7 +373,7 @@ public class IndexMerge
     // Append each input file.
     for( int i = 1; i < dirInfos.length; i++ ) {
         String sourceDir = dirInfos[i].path;
-        File sourceFile = new File( sourceDir + "SpellDict/newWords.dat" );
+        File sourceFile = new File( sourceDir + "spellDict/newWords.dat" );
         if( !sourceFile.isFile() && sourceFile.canRead() )
             continue;
 
