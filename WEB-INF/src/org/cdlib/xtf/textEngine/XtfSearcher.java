@@ -190,7 +190,7 @@ public class XtfSearcher
         
         // If there's a spelling correction dictionary, attach to it.
         File spellDir = new File( indexPath, "spellDict" );
-        if( spellDir.isDirectory() ) {
+        if( spellDir.isDirectory() && IndexReader.indexExists(spellDir) ) {
             FSDirectory dir = FSDirectory.getDirectory(spellDir, false);
             spellReader = new SpellReader( dir );
         }
