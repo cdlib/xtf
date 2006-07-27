@@ -396,6 +396,10 @@ public class IndexMerge
                 targetWriter.writeUTF( word );
             }
             catch (EOFException e) { eof = true; }
+            catch (IOException e) { 
+                Trace.warning( "Warning: Exception encountered (may be due to unfinished index): " + e );
+                eof = true; 
+            }
         }
         
         sourceReader.close();
