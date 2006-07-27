@@ -101,7 +101,7 @@ public class IndexMerge
       // Parse the command-line arguments.
       Vector mergePaths = new Vector();
       HashSet pathSet = new HashSet();
-      for(;;) {
+      while( !showUsage && startArg < args.length ) {
         
           // The minimum set of arguments consists of the name of an index
           // to read and an output index. That requires four arguments; if
