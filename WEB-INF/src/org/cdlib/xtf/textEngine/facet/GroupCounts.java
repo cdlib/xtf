@@ -478,14 +478,23 @@ public class GroupCounts
     int first = data.child(parent);
     int p, q;
     
-    // If no children or only one child, we have nothing to do.
-    if (first < 0 || data.sibling(first) < 0)
+    // If no children, we have nothing to do.
+    if (first < 0 )
         return;
     
+    // If only one child, our work is simple.
+    if( data.sibling(first) < 0 ) {
+        sortedChild[parent] = first;
+        sortedSibling[first] = -1;
+        return;
+    }
+    
     // Initialize the links.
+    int nChildrenBefore = 0;
     for (p = first; p >= 0; p = q) {
         q = data.sibling(p);
         sortedSibling[p] = q;
+        ++nChildrenBefore;
     }
     
     // Merge lists of size 1, 2, 4, 8, 16, ...
@@ -558,12 +567,16 @@ public class GroupCounts
     sortedChild[parent] = first;
     
     // Verify the sort, and sort all the descendants of the children.
+    int nChildrenAfter = 0;
     for (p = first; p >= 0; p = sortedSibling[p])
     {
         if (sortedSibling[p] >= 0)
             assert compare(p, sortedSibling[p], sortKind) <= 0 : "error in merge sort";
         sortChildren(p, sortKind);
+        ++nChildrenAfter;
     } // for
+    
+    assert nChildrenAfter == nChildrenBefore;
   } // sortChildren()
   
   /*
