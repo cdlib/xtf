@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="5" startDoc="0" endDoc="0">
+   <facet field="dynamicFRBR" totalGroups="3" totalDocs="5">
+      <group value="group-1" rank="1" totalSubGroups="0" totalDocs="2" startDoc="1" endDoc="2">
+         <docHit rank="1" file="doc1.xml" totalHits="0">
+            <meta>
+               <title>Hamlet</title>
+               <author>Shakespeare, William</author>
+               <date>1597</date>
+               <id>shak001</id>
+            </meta>
+         </docHit>
+         <docHit rank="2" file="doc2.xml" totalHits="0">
+            <meta>
+               <title>Hamlet</title>
+               <author>Shakespeare, William</author>
+               <date>1597</date>
+               <id>shak002</id>
+            </meta>
+         </docHit>
+      </group>
+      <group value="group-2" rank="2" totalSubGroups="0" totalDocs="2" startDoc="1" endDoc="2">
+         <docHit rank="1" file="doc3.xml" totalHits="0">
+            <meta>
+               <title>Opening of the Apartheid Mind</title>
+               <author>Moodley, Kogila</author>
+               <author>Adam, Heribert</author>
+               <date>1993</date>
+               <id>apar001</id>
+            </meta>
+         </docHit>
+         <docHit rank="2" file="doc4.xml" totalHits="0">
+            <meta>
+               <title>Opening of the Apartheid Mind: Options for the New South Africa</title>
+               <author>Adam, Heribert</author>
+               <date>1993</date>
+               <id>apar002</id>
+            </meta>
+         </docHit>
+      </group>
+      <group value="group-3" rank="3" totalSubGroups="0" totalDocs="1" startDoc="1" endDoc="1">
+         <docHit rank="1" file="doc5.xml" totalHits="0">
+            <meta>
+               <title>One Stands Apart</title>
+               <author>Singleton, Mary</author>
+               <date>1980</date>
+               <id>ones001</id>
+            </meta>
+         </docHit>
+      </group>
+   </facet>
+</crossQueryResult>
