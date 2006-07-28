@@ -42,7 +42,7 @@ import java.util.Hashtable;
  */
 public class TagArray 
 {
-  private int      BLOCK_SIZE = 1024*1024;
+  private int      BLOCK_SIZE = (1024*1024) - 32;
   
   private byte[][] blocks = { new byte[BLOCK_SIZE] };
   private short    nBlocks = 1;
@@ -176,6 +176,21 @@ public class TagArray
     if( tagType[tag-1] != tagType[tag] )
         return -1;
     return tag-1;
+  }
+
+  /**
+   * Calculate the size in bytes of the major structures of the tag array.
+   * 
+   * @return    Approximate size in bytes
+   */
+  public int byteSize()
+  {
+    return (blocks.length * 8) +
+           (nBlocks * BLOCK_SIZE) +
+           (tagType.length * 1) +
+           (tagBlock.length * 2) +
+           (tagOffset.length * 4) +
+           (tagLength.length * 2);
   }
   
   /**

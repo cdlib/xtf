@@ -50,6 +50,17 @@ public class IntMultiMap
   private short   curBlockTop = 0;
 
   /**
+   * Calculate the size in bytes of the major structures of the map.
+   * 
+   * @return    Approximate size in bytes
+   */
+  public int byteSize()
+  {
+    return (blocks.length * 8) +
+           ((curBlockNum+1) * BLOCK_SIZE * 8);
+  }
+  
+  /**
    * Initialize the mapping table.
    * 
    * @param maxKey  One larger than the largest key value that will ever be 
