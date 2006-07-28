@@ -772,6 +772,10 @@ public class DefaultQueryProcessor extends QueryProcessor
         return doc;
       }
       
+      public final float getScore() {
+        return score;
+      }
+      
       public final boolean insertInto( PriorityQueue queue ) {
         boolean justMade = false;
         if( docHit == null ) {

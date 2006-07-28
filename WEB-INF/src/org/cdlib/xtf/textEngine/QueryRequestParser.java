@@ -293,7 +293,7 @@ public class QueryRequestParser
             if( el.attrName(i).equalsIgnoreCase("field") )
                 fs.field = el.attrValue( i );
             else if( el.attrName(i).equalsIgnoreCase("sortGroupsBy") ) {
-                if( el.attrValue(i).matches("^totalDocs$|^value$") )
+                if( el.attrValue(i).matches("^totalDocs$|^value$|^maxDocScore$") )
                     fs.sortGroupsBy = el.attrValue( i );
                 else {
                     error( "Expected 'totalDocs' or 'value' for '" +
