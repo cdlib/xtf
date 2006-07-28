@@ -50,6 +50,7 @@ public class GroupCounts
   private boolean         prepMode = false;
   
   private int[]           count;
+  private float[]         score;
   private int[]           mark;
   private int[]           selection;
   private int[]           startDoc;
@@ -60,6 +61,10 @@ public class GroupCounts
   private int[]           sortedSibling;
   
   private int             curMark = 1000;
+  
+  private static final int SORT_BY_VALUE         = 0;
+  private static final int SORT_BY_TOTAL_DOCS    = 1;
+  private static final int SORT_BY_MAX_DOC_SCORE = 2;
   
   /** Construct an object with all counts at zero */
   public GroupCounts( GroupData     groupData, 
@@ -72,40 +77,54 @@ public class GroupCounts
     this.hitQueueMaker = hitQueueMaker;
     
     // Allocate our arrays of counts and such
-    count     = new int[data.nGroups()];
+    if( !data.isDynamic() ) {
+        count = new int[data.nGroups()];
+        score = new float[data.nGroups()];
+    }
     mark      = new int[data.nGroups()];
     selection = new int[data.nGroups()];
     startDoc  = new int[data.nGroups()];
     maxDocs   = new int[data.nGroups()];
     hitQueue  = new PriorityQueue[data.nGroups()];
     
-    // Gather conservative data about which groups to gather DocHits for.
-    prep();
+    // For dynamic data, we can perform the final sort and selection
+    // right now, since the group counts and scores are known.
+    //
+    if( data.isDynamic() ) 
+        sortAndSelect();
+
+    // For static data, make a conservative selection.
+    else 
+        conservativePrep();
+    
   } // constructor
   
   /** Gather data about which groups to gather DocHits for. */
-  private void prep()
+  private void conservativePrep()
   {
     // Enter prep mode so that when selectGroup() and collectHits() are called,
     // they'll know what to do.
     //
     try {
         prepMode = true;
-
-        // Now, do a conservative selection of the groups, and record which
-        // ones might need DocHits recorded.
-        //
+    
+        // Tell the selector to talk to us.
         GroupSelector sel = spec.groupSelector;
-        sel.setCounts( this );
-        
-        // Tell the selector to be conservative in choosing which groups
-        // to selet.
-        //
-        sel.reset( true );
-        
-        // Now ask it to select everyting (start it out with the root)
-        sel.process( 0 );
-        sel.flush();
+        synchronized( sel ) 
+        {
+            // Tell the selector to talk to us.
+            sel.setCounts( this );
+            
+            //
+            // Tell the selector to be conservative in choosing which groups
+            // to select.
+            //
+            sel.reset( true );
+            
+            // Now ask it to select everything (start it out with the root)
+            sel.process( 0 );
+            sel.flush();
+        }
     }
     finally 
     {
@@ -148,8 +167,14 @@ public class GroupCounts
   
   /** Called by GroupSelector to find out if it should include a given group */
   public final boolean shouldInclude( int group ) {
-    if( !prepMode && !spec.includeEmptyGroups && count[group] == 0 )
-        return false;
+    if( !spec.includeEmptyGroups ) {
+        if( data.isDynamic() ) {
+            if( data.nDocHits(group) == 0 )
+                return false;
+        }
+        else if( !prepMode && count[group] == 0 )
+            return false;
+    }
     return true;
   }
   
@@ -189,7 +214,16 @@ public class GroupCounts
   
   /** Find out the number of doc hits for the given group */
   public final int nDocHits( int group ) {
+    if( data.isDynamic() )
+        return data.nDocHits(group);
     return count[group];
+  }
+  
+  /** Find out the score of the given group */
+  public final float score( int group ) {
+    if( data.isDynamic() )
+        return data.score(group);
+    return score[group];
   }
   
   /** Add a document hit to the counts */
@@ -202,6 +236,7 @@ public class GroupCounts
 
     // Process each group this document is in.
     int doc = docHitMaker.getDocNum();
+    float docScore = docHitMaker.getScore();
     for( link = data.firstLink(doc); link >= 0; link = data.nextLink(link) )
     {
         // Bump the count for the group and each ancestor (up to the root)
@@ -216,7 +251,10 @@ public class GroupCounts
             // Bump the count, and mark this group so we don't do it for this
             // doc again.
             //
-            count[group]++;
+            if( !data.isDynamic() ) {
+                count[group]++;
+                score[group] = Math.max(score[group], docScore);
+            }
             mark[group] = curMark;
             
             // If we're not recording hits for this group, we're done.
@@ -247,33 +285,44 @@ public class GroupCounts
     ResultFacet resultFacet = new ResultFacet();
     resultFacet.field = data.field();
     
-    // Clear the startDoc/maxDocs arrays so we can rebuild them knowing now
-    // exactly which groups need docs (we had to be conservative up front.)
+    // For dynamic facets, the groups have already been sorted and selected.
+    // For static facets, we don't know until this point what the counts and
+    // such are, so we couldn't make the final selection.
     //
-    Arrays.fill( startDoc, 0 );
-    Arrays.fill( maxDocs,  0 );
-    
-    // The groups are by default sorted by name. Sort by count if necessary.
-    if( spec.sortGroupsBy.equals("value") )
-        ;
-    else if( spec.sortGroupsBy.equals("totalDocs") )
-        sortByCount();
-    else {
-        throw new RuntimeException( "Unknown option for sortGroupsBy: " +
-            spec.sortGroupsBy );
-    }
-    
-    // Now select the proper groups.
-    GroupSelector sel = spec.groupSelector;
-    sel.reset( false );
-    sel.process( 0 );
-    sel.flush();
+    if( !data.isDynamic() )
+        sortAndSelect();
     
     // Recursively build the result set.
     resultFacet.rootGroup = buildResultGroup( 0 );
     
     // All done.
     return resultFacet;
+  }
+
+  /**
+   * Called during the prep phase for dynamic groups, and in the result
+   * building phase for static groups. Sorts the groups based on the
+   * facet spec, and performs the final (non-conservative) selection.
+   */
+  private void sortAndSelect()
+  {
+    // Clear the startDoc/maxDocs arrays so we can rebuild them knowing now
+    // exactly which groups need docs (we had to be conservative up front.)
+    //
+    Arrays.fill( startDoc, 0 );
+    Arrays.fill( maxDocs,  0 );
+    
+    // Sort the groups (if necessary)
+    sortGroups();
+    
+    // Now select the proper groups.
+    GroupSelector sel = spec.groupSelector;
+    synchronized( sel ) {
+        sel.setCounts( this );
+        sel.reset( false ); // not conservative, since all is sorted now.
+        sel.process( 0 );
+        sel.flush();
+    }
   }
   
   public ResultGroup buildResultGroup( int parent )
@@ -286,7 +335,7 @@ public class GroupCounts
         result.value = data.name( parent );
     
     // Record the total number of doc hits for the parent group
-    result.totalDocs = count[parent];
+    result.totalDocs = nDocHits(parent);
     
     // Count the child groups
     int nSelected = 0;
@@ -315,7 +364,7 @@ public class GroupCounts
     }
     assert n == nSelected : "miscount";
     
-    // If dochits were requested for this group, grab them.
+    // If DocHits were requested for this group, grab them.
     if( maxDocs[parent] != 0 && hitQueue[parent] != null )
         buildDocHits( parent, result );
 
@@ -324,53 +373,36 @@ public class GroupCounts
     
   } // getGroups()
   
-  /** Re-sort the hierarchy by descending count, and store the new 
+  /** Re-sort the hierarchy according to the facet spec, and store the new 
    *  child/sibling relationships.
    */
-  private void sortByCount()
+  private void sortGroups()
   {
-    final long mask = (1L << 20) - 1;
+    // Figure out what kind of sort was requested.
+    int sortKind;
+    if( spec.sortGroupsBy.equals("value") )
+        sortKind = SORT_BY_VALUE;
+    else if( spec.sortGroupsBy.equals("totalDocs") )
+        sortKind = SORT_BY_TOTAL_DOCS;
+    else if( spec.sortGroupsBy.equals("maxDocScore"))
+        sortKind = SORT_BY_MAX_DOC_SCORE;
+    else
+        throw new RuntimeException( "Unknown option for sortGroupsBy: " + spec.sortGroupsBy );
     
-    // The code below depends on bit shifting, and we allocate 20 bits at most.
-    if( (data.nGroups() >> 20) != 0 )
-        throw new RuntimeException( "Too many groups (more than 20 bits req)" );
+    // For static data, the groups are already sorted by name.
+    if( !data.isDynamic() && sortKind == SORT_BY_VALUE )
+        return;
     
-    // Build an easy-to-sort array of the child groups and their counts.
-    long[] array = new long[data.nGroups()];
-    for( int i = 0; i < data.nGroups(); i++ ) {
-        long x = 0;
-        x |= ((long)data.parent(i))    << 40;
-        x |= ((long)(count[i] ^ mask)) << 20;
-        x |= i;
-        array[i] = x;
-    }
-    
-    // Sort by parent, then by descending count, then by ascending name.
-    Arrays.sort( array );
-    
-    // Allocate and clear arrays to hold the sorted child and sibling numbers.
+    // Allocate storage for sorted child/sibling links
     sortedChild   = new int[data.nGroups()];
     sortedSibling = new int[data.nGroups()];
     Arrays.fill( sortedChild,   -1 );
     Arrays.fill( sortedSibling, -1 );
     
-    // Process each sibling group.
-    int prevParent = -1;
-    int prevGroup  = -1;
-    for( int i = 1; i < data.nGroups(); i++ ) { // skip root
-        long val = array[i];
-        int parent = (int) (val >> 40L);
-        int group  = (int) (val & mask);
-        
-        if( parent != prevParent )
-            sortedChild[parent] = group;
-        else
-            sortedSibling[prevGroup] = group;
-        
-        prevGroup = group;
-        prevParent = parent;
-    } // for i
-  } // sortByCount()
+    // Okay, do a recursive merge sort, starting at the root.
+    sortChildren( 0, sortKind );
+    
+  } // sortGroups()
   
   /** Construct the array of doc hits for the hit group. */
   private void buildDocHits( int group, ResultGroup resultGroup )
@@ -389,7 +421,7 @@ public class GroupCounts
     int nHits = Math.max(0, Math.min(nFound - start, max) );
     resultGroup.docHits = new DocHit[nHits];
     
-    resultGroup.totalDocs = count[group];
+    resultGroup.totalDocs = nDocHits(group);
     resultGroup.startDoc  = start;
     resultGroup.endDoc    = start + nHits;
 
@@ -404,7 +436,178 @@ public class GroupCounts
   
   public static interface DocHitMaker {
     int     getDocNum();
+    float   getScore();
     boolean insertInto( PriorityQueue queue );
+  }
+  
+  /*
+   * The following code is adapted from a super-cool linked list mergesort
+   * algorithm by Simon Tatham. The code appears to be unrestricted, and
+   * was obtained from this URL on 7/25/2006:
+   * 
+   * http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
+   * 
+   * Following is the original rights statement.
+   * 
+   * This file is copyright 2001 Simon Tatham.
+   * 
+   * Permission is hereby granted, free of charge, to any person
+   * obtaining a copy of this software and associated documentation
+   * files (the "Software"), to deal in the Software without
+   * restriction, including without limitation the rights to use,
+   * copy, modify, merge, publish, distribute, sublicense, and/or
+   * sell copies of the Software, and to permit persons to whom the
+   * Software is furnished to do so, subject to the following
+   * conditions:
+   * 
+   * The above copyright notice and this permission notice shall be
+   * included in all copies or substantial portions of the Software.
+   * 
+   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+   * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   * NONINFRINGEMENT.  IN NO EVENT SHALL SIMON TATHAM BE LIABLE FOR
+   * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+   * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+   * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   * SOFTWARE.
+   */
+
+  private void sortChildren(int parent, int sortKind)
+  {
+    int first = data.child(parent);
+    int p, q;
+    
+    // If no children or only one child, we have nothing to do.
+    if (first < 0 || data.sibling(first) < 0)
+        return;
+    
+    // Initialize the links.
+    for (p = first; p >= 0; p = q) {
+        q = data.sibling(p);
+        sortedSibling[p] = q;
+    }
+    
+    // Merge lists of size 1, 2, 4, 8, 16, ...
+    int insize = 1;
+    while (true) 
+    {
+        p = first;
+        first = -1;
+        int tail = -1;
+        
+        int nmerges = 0;  /* count number of merges we do in this pass */
+
+        while (p >= 0) {
+            nmerges++;  /* there exists a merge to be done */
+            /* step `insize' places along from p */
+            q = p;
+            int psize = 0;
+            for (int i = 0; i < insize; i++) {
+                psize++;
+                q = sortedSibling[q];
+                if (q < 0) 
+                    break;
+            }
+
+            /* if q hasn't fallen off end, we have two lists to merge */
+            int qsize = insize;
+
+            /* now we have two lists; merge them */
+            while (psize > 0 || (qsize > 0 && q >= 0)) {
+
+                /* decide whether next element of merge comes from p or q */
+                int e;
+                if (psize == 0) {
+                    /* p is empty; e must come from q. */
+                    e = q; q = sortedSibling[q]; qsize--;
+                } else if (qsize == 0 || q < 0) {
+                    /* q is empty; e must come from p. */
+                    e = p; p = sortedSibling[p]; psize--;
+                } else if (compare(p, q, sortKind) <= 0) {
+                    /* First element of p is lower (or same);
+                     * e must come from p. */
+                    e = p; p = sortedSibling[p]; psize--;
+                } else {
+                    /* First element of q is lower; e must come from q. */
+                    e = q; q = sortedSibling[q]; qsize--;
+                }
+
+                /* add the next element to the merged list */
+                if (tail >= 0)
+                    sortedSibling[tail] = e;
+                else
+                    first = e;
+                tail = e;
+            }
+
+            /* now p has stepped `insize' places along, and q has too */
+            p = q;
+        }
+        sortedSibling[tail] = -1;
+
+        /* If we have done only one merge, we're finished. */
+        if (nmerges <= 1)   /* allow for nmerges==0, the empty list case */
+            break;
+        
+        /* Otherwise repeat, merging lists twice the size */
+        insize *= 2;
+    }
+    
+    // Record the first child.
+    sortedChild[parent] = first;
+    
+    // Verify the sort, and sort all the descendants of the children.
+    for (p = first; p >= 0; p = sortedSibling[p])
+    {
+        if (sortedSibling[p] >= 0)
+            assert compare(p, sortedSibling[p], sortKind) <= 0 : "error in merge sort";
+        sortChildren(p, sortKind);
+    } // for
+  } // sortChildren()
+  
+  /*
+   * End of adapted code.
+   */
+  
+  /**
+   * Compare two groups for sorting purposes.
+   */
+  private int compare( int g1, int g2, int sortKind )
+  {
+    int x;
+    switch( sortKind ) {
+        case SORT_BY_VALUE:
+            if( (x = data.compare(g1, g2))                 != 0 ) return x;
+            if( (x = -compare(score(g1), score(g2)))       != 0 ) return x;
+            if( (x = -compare(nDocHits(g1), nDocHits(g2))) != 0 ) return x;
+            return 0;
+            
+        case SORT_BY_TOTAL_DOCS:
+            if( (x = -compare(nDocHits(g1), nDocHits(g2))) != 0 ) return x;
+            if( (x = data.compare(g1, g2))                 != 0 ) return x;
+            if( (x = -compare(score(g1), score(g2)))       != 0 ) return x;
+            return 0;
+          
+        case SORT_BY_MAX_DOC_SCORE:
+            if( (x = -compare(score(g1), score(g2)))       != 0 ) return x;
+            if( (x = data.compare(g1, g2))                 != 0 ) return x;
+            if( (x = -compare(nDocHits(g1), nDocHits(g2))) != 0 ) return x;
+            return 0;
+            
+        default:
+            return 0;
+    }
+  } // compare()
+  
+  /** Compare two ints for sorting purposes */
+  private static int compare( int x, int y ) {
+      return (x < y) ? -1 : ((x > y) ? 1 : 0);
+  }
+
+  /** Compare two floats for sorting purposes */
+  private static int compare( float x, float y ) {
+      return (x < y) ? -1 : ((x > y) ? 1 : 0);
   }
   
 } // class GroupCounts

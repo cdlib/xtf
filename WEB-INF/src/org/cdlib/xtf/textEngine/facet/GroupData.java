@@ -79,6 +79,9 @@ public abstract class GroupData
   /** Locate a group by name and return its index, or -1 if not found */
   public abstract int findGroup( String name );
   
+  /** Compare two groups for sort order */
+  public abstract int compare( int group1, int group2 );
+  
   /** Output the groups to the info trace stream */
   public void debugGroups( int parent )
   {
@@ -90,5 +93,14 @@ public abstract class GroupData
     }
     Trace.untab();
   }
-
+  
+  /** Whether the data is dynamic and thus has counts and scores available */
+  public boolean isDynamic() { return false; }
+  
+  /** Only called for dynamic data: get score of a group */
+  public float score( int groupId ) { throw new UnsupportedOperationException(); }
+  
+  /** Only called for dynamic data: get count of docs in a group */
+  public int nDocHits( int groupId ) { throw new UnsupportedOperationException(); }
+  
 } // GroupData

@@ -438,6 +438,11 @@ public class StaticGroupData extends GroupData
     return groupSiblings[groupId]; 
   }
   
+  /** Compare two groups for sort order */
+  public final int compare( int group1, int group2 ) {
+    return (group1 < group2) ? -1 : ((group1 > group2) ? 1 : 0);
+  }
+  
   /** Locate a group by name and return its index, or -1 if not found */
   public final int findGroup( String name ) {
     name = name.intern();

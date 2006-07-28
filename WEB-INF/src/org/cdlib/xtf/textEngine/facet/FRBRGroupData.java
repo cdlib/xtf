@@ -35,7 +35,7 @@ import java.util.StringTokenizer;
 import org.apache.lucene.index.IndexReader;
 import org.cdlib.xtf.util.FloatList;
 import org.cdlib.xtf.util.IntList;
-import org.cdlib.xtf.util.IntMultiMap;
+import org.cdlib.xtf.util.Trace;
 
 /**
  * Implements a dynamic mapping from document to a FRBR-style title/author key.
@@ -61,12 +61,15 @@ public class FRBRGroupData extends DynamicGroupData
 
   /** Mapping of documents to groups */
   private IntList docGroups;
+  
+  /** Count of number of documents in each group */
+  private IntList groupDocCounts;
+  
+  /** Score of each group */
+  private FloatList groupScores;
 
   /** Number of groups created so far */
   private int nGroups = 1; // group 0 is always the root
-
-  /** Mapping of groups to documents */
-  private IntMultiMap groupDocs;
 
   /**
    * Read in the FRBR data for the a delimited list of fields.
@@ -76,7 +79,7 @@ public class FRBRGroupData extends DynamicGroupData
     // Record the input
     this.params = params;
 
-    // Break the string of params into a list of fields.
+    // Break the string of parameters into a list of fields.
     StringTokenizer t = new StringTokenizer(params, " \t,;|");
     String[] fields = new String[t.countTokens()];
     for (int i = 0; i < fields.length; i++)
@@ -102,6 +105,9 @@ public class FRBRGroupData extends DynamicGroupData
    */
   public void finish()
   {
+    Trace.debug("Building FRBR groups for " + docs.size() + " docs...");
+    Trace.tab();
+    
     // Save space in the document and score lists.
     docs.compact();
     docScores.compact();
@@ -119,18 +125,26 @@ public class FRBRGroupData extends DynamicGroupData
       
       // Go looking...
       findGroup(doc);
-    } // for i
-    
-    // Form the group -> doc mapping
-    groupDocs = new IntMultiMap(nGroups);
-    for (int i = 0; i < docs.size(); i++ ) {
-      int doc = docs.get(i);
-      int group = docGroups.get(doc);
-      assert group >= 0 : "group should have been assigned";
-      groupDocs.add(group, doc);
     }
     
-    debugGroups(0);
+    Trace.debug(nGroups + " groups. Inverting map...");
+    
+    // Form the count and score lists.
+    groupDocCounts = new IntList(nGroups);
+    groupScores = new FloatList(nGroups);
+    for (int i = 0; i < docs.size(); i++ ) {
+      int doc = docs.get(i);
+      float score = docScores.get(i);
+      int group = docGroups.get(doc);
+      assert group >= 0 : "group should have been assigned";
+      groupDocCounts.set(group, groupDocCounts.get(group) + 1);
+      groupScores.set(group, Math.max(groupScores.get(group), score));
+      groupScores.set(0, Math.max(groupScores.get(0), score));
+    }
+    groupDocCounts.set(0, docs.size());
+    
+    Trace.debug("Done.");
+    Trace.untab();
     
   } // finish()
 
@@ -153,7 +167,7 @@ public class FRBRGroupData extends DynamicGroupData
       int mainTitle = data.docTags.getValue(pos);
       if (data.tags.getType(mainTitle) != FRBRData.TYPE_TITLE)
         continue;
-
+      
       // Scan forward looking for matching titles. Do compare the main title,
       // since other documents may match that title exactly.
       //
@@ -223,7 +237,7 @@ public class FRBRGroupData extends DynamicGroupData
       // Okay, we got a live one. Put it in the same group as the main doc.
       int group = docGroups.get(mainDoc);
       docGroups.set(compDoc, group);
-    } // for pos
+    }
     
     // Continue title iteration, since the title matched (even if no docs 
     // matched).
@@ -377,7 +391,7 @@ public class FRBRGroupData extends DynamicGroupData
    * Get the field name (synthetic in our case)
    */
   public String field() {
-    return "FRBR(" + params + ")";
+    return "dynamicFRBR";
   }
 
   // inherit JavaDoc
@@ -395,7 +409,7 @@ public class FRBRGroupData extends DynamicGroupData
 
   // inherit JavaDoc
   public int child(int groupId) {
-    return (groupId == 0) ? 1 : -1;
+    return (groupId == 0 && nGroups > 1) ? 1 : -1;
   }
 
   // inherit JavaDoc
@@ -433,4 +447,24 @@ public class FRBRGroupData extends DynamicGroupData
     return nGroups;
   }
 
+  // inherit JavaDoc
+  public boolean isDynamic() {
+    return true;
+  }
+
+  // inherit JavaDoc
+  public int nDocHits(int groupId) {
+    return groupDocCounts.get(groupId);
+  }
+
+  // inherit JavaDoc
+  public float score(int groupId) {
+    return groupScores.get(groupId);
+  }
+  
+  // inherit JavaDoc
+  public final int compare( int group1, int group2 ) {
+    return (group1 < group2) ? -1 : ((group1 > group2) ? 1 : 0);
+  }
+  
 } // class FRBRGroupData
