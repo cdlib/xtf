@@ -47,8 +47,10 @@ public abstract class PriorityQueue {
     Object[] oldHeap = heap;
     int newSize = Math.max(maxSize+10, maxSize*3/2);
     initialize(newSize);
-    for(int i=0; i<oldSize; i++)
-      put(oldHeap[i]);
+    for(int i=0; i<oldSize; i++) {
+      if (oldHeap[i] != null)
+        put(oldHeap[i]);
+    }
   }
 
   /**
