@@ -39,6 +39,7 @@ import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.index.TermPositions;
 import org.cdlib.xtf.util.IntMultiMap;
 import org.cdlib.xtf.util.TagArray;
+import org.cdlib.xtf.util.Trace;
 
 /**
  * Keeps a large in-memory table of the title, author, and other info for each
@@ -102,6 +103,9 @@ public class FRBRData
    */
   private FRBRData(IndexReader reader, String[] fields) throws IOException
   {
+    Trace.debug("Loading FRBR data...");
+    Trace.tab();
+    
     // First, allocate the tag array and all our types
     tags = new TagArray();
 
@@ -124,22 +128,34 @@ public class FRBRData
       int type = calcType(field);
 
       // Read all the data, and add it to the map.
-      readField(reader, field, type);
+      Trace.debug("Reading FRBR field " + field + "...");
+      int prevTagSize = tags.byteSize();
+      int nTagsAdded = readField(reader, field, type);
+      Trace.debug("..." + nTagsAdded + " tags; " + 
+                  (tags.byteSize() - prevTagSize) + " bytes.");
     } // for each field
 
     // Now construct the inverse mapping, from tag to document.
+    Trace.debug("Inverting FRBR map...");
     tagDocs = new IntMultiMap(tags.size());
     for (int doc = 0; doc < maxDoc; doc++) {
       for (int link = docTags.firstPos(doc); link >= 0; link = docTags.nextPos(link))
         tagDocs.add(docTags.getValue(link), doc);
     }
+    
+    Trace.debug("Done. Size = " + tags.byteSize() + " tags, " + 
+                tagDocs.byteSize() + " map = " + 
+                (tags.byteSize() + tagDocs.byteSize()) + " total.");
+    Trace.untab();
   } // constructor
 
   /**
    * Read all the term->document mappings from a given field, and add them to
    * the tag array, and docTags mapping.
+   * 
+   * @return number of tags added
    */
-  private void readField(IndexReader reader, String field, int type)
+  private int readField(IndexReader reader, String field, int type)
       throws IOException
   {
     TermPositions termPositions = reader.termPositions();
@@ -149,6 +165,7 @@ public class FRBRData
       if (termEnum.term() == null)
         throw new IOException("no terms in field " + field);
 
+      int nTagsAdded = 0;
       do {
         Term term = termEnum.term();
         if (!term.field().equals(field))
@@ -156,12 +173,14 @@ public class FRBRData
 
         // Add a tag for this term.
         int tag = tags.add(term.text(), type);
+        ++nTagsAdded;
 
         // Now process each document which contains this term.
         termPositions.seek(termEnum);
         while (termPositions.next())
           docTags.add(termPositions.doc(), tag);
       } while (termEnum.next());
+      return nTagsAdded;
     }
     finally {
       termPositions.close();
