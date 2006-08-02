@@ -56,6 +56,12 @@ public class FloatList
           data = ArrayUtil.resize( data, size );
   }
   
+  public final float[] toArray() {
+      float[] ret = new float[size];
+      System.arraycopy( data, 0, ret, 0, size );
+      return ret;
+  }
+  
   public final boolean isEmpty() { return size == 0; }
   
   public final void clear() { size = 0; }

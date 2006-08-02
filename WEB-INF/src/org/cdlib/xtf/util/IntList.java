@@ -56,6 +56,12 @@ public class IntList
           data = ArrayUtil.resize( data, size );
   }
   
+  public final int[] toArray() {
+      int[] ret = new int[size];
+      System.arraycopy( data, 0, ret, 0, size );
+      return ret;
+  }
+
   public final boolean isEmpty() { return size == 0; }
   
   public final void clear() { size = 0; }
