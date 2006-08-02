@@ -296,7 +296,7 @@ public class QueryRequestParser
                 if( el.attrValue(i).matches("^totalDocs$|^value$|^maxDocScore$") )
                     fs.sortGroupsBy = el.attrValue( i );
                 else {
-                    error( "Expected 'totalDocs' or 'value' for '" +
+                    error( "Expected 'totalDocs', 'maxDocScore', or 'value' for '" +
                            el.attrName(i) + "' attribute, but found '" +
                            el.attrValue(i) + "' (on '" + el.name() + 
                            " element)" );
