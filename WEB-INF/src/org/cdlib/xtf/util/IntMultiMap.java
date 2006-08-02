@@ -33,7 +33,7 @@ import java.util.Arrays;
 
 /**
  * This class efficiently implements a "one to many" relationship between
- * integer keys and multiple integer values. The maximum number of keys
+ * integer keys and multiple integer values. The maximum key ID
  * is fixed at construction time, but the number of values can grow
  * insanely large, without large penalties for resizing arrays, etc.
  * 
