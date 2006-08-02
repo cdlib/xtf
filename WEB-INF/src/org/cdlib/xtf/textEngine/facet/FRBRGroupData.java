@@ -334,6 +334,10 @@ public class FRBRGroupData extends DynamicGroupData
     if (tag1 == tag2)
       return 100;
     
+    // For now, fail on not equal.
+    return 0;
+    
+    /*
     // Don't do prefix scanning on short titles.
     String str1 = data.tags.getString(tag1);
     String str2 = data.tags.getString(tag2);
@@ -346,6 +350,7 @@ public class FRBRGroupData extends DynamicGroupData
     
     // All other cases: fail for now at least.
     return 0;
+    */
   } // scoreTitleMatch
 
   /**
@@ -357,6 +362,10 @@ public class FRBRGroupData extends DynamicGroupData
     if (tag1 == tag2)
       return 100;
     
+    // For now, fail on not equal.
+    return 0;
+    
+    /*
     // Don't do prefix scanning on short titles.
     String str1 = data.tags.getString(tag1);
     String str2 = data.tags.getString(tag2);
@@ -369,6 +378,7 @@ public class FRBRGroupData extends DynamicGroupData
     
     // All other cases: fail for now at least.
     return 0;
+    */
   } // scoreAuthorMatch
 
   /**
@@ -380,6 +390,10 @@ public class FRBRGroupData extends DynamicGroupData
     if (tag1 == tag2)
       return 50;
     
+    // For now, fail on not equal.
+    return 0;
+    
+    /*
     // Parse the years
     String str1 = data.tags.getString(tag1);
     String str2 = data.tags.getString(tag2);
@@ -400,6 +414,7 @@ public class FRBRGroupData extends DynamicGroupData
     
     // All other cases: fail for now at least.
     return 0;
+    */
   } // scoreDateMatch
 
   /**
