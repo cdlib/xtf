@@ -52,10 +52,12 @@ public class FRBRData
   /** Cached data. If the reader goes away, our cache will too. */
   private static WeakHashMap cache = new WeakHashMap();
 
+  public static final int FIRST_TYPE  = 1;
   public static final int TYPE_TITLE  = 1;
   public static final int TYPE_AUTHOR = 2;
   public static final int TYPE_DATE   = 3;
   public static final int TYPE_ID     = 4;
+  public static final int LAST_TYPE   = 4;
 
   public final TagArray    tags;
   public final IntMultiMap docTags;

@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
 import org.apache.lucene.index.IndexReader;
 import org.cdlib.xtf.util.FloatList;
 import org.cdlib.xtf.util.IntList;
+import org.cdlib.xtf.util.StringList;
 import org.cdlib.xtf.util.Trace;
 
 /**
@@ -50,7 +51,7 @@ public class FRBRGroupData extends DynamicGroupData
   /** Tag/doc data for the specified fields */
   private FRBRData data;
 
-  /** ID of matching documents */
+  /** IDs of matching documents */
   private IntList docs = new IntList();
   
   /** Highest doc ID encountered */
@@ -62,7 +63,10 @@ public class FRBRGroupData extends DynamicGroupData
   /** Mapping of documents to groups */
   private IntList docGroups;
   
-  /** Count of number of documents in each group */
+  /** First document in each group (for sorting purposes) */
+  private IntList groupDocs;
+  
+  /** Number of documents in each group */
   private IntList groupDocCounts;
   
   /** Score of each group */
@@ -70,6 +74,9 @@ public class FRBRGroupData extends DynamicGroupData
 
   /** Number of groups created so far */
   private int nGroups = 1; // group 0 is always the root
+  
+  /** Primary field to sort by */
+  private int primarySort = FRBRData.TYPE_TITLE;
 
   /**
    * Read in the FRBR data for the a delimited list of fields.
@@ -78,15 +85,30 @@ public class FRBRGroupData extends DynamicGroupData
   {
     // Record the input
     this.params = params;
-
+    
     // Break the string of parameters into a list of fields.
     StringTokenizer t = new StringTokenizer(params, " \t,;|");
-    String[] fields = new String[t.countTokens()];
-    for (int i = 0; i < fields.length; i++)
-      fields[i] = t.nextToken();
+    StringList fields = new StringList(t.countTokens());
+    while (t.hasMoreTokens()) {
+      String tok = t.nextToken();
+      if (tok.startsWith("[")) {
+        if (tok.equals("[sort=title]"))
+          primarySort = FRBRData.TYPE_TITLE;
+        else if (tok.equals("[sort=author]"))
+          primarySort = FRBRData.TYPE_AUTHOR;
+        else if (tok.equals("[sort=date]"))
+          primarySort = FRBRData.TYPE_DATE;
+        else if (tok.equals("[sort=id]"))
+          primarySort = FRBRData.TYPE_ID;
+        else
+          throw new RuntimeException( "Unknown control marker: " + tok );
+      }
+      else
+        fields.add(tok);
+    }
 
     // And fetch the doc/tag data for those fields.
-    data = FRBRData.getCachedTags(indexReader, fields);
+    data = FRBRData.getCachedTags(indexReader, fields.toArray());
   }
 
   /**
@@ -130,6 +152,7 @@ public class FRBRGroupData extends DynamicGroupData
     Trace.debug(nGroups + " groups. Inverting map...");
     
     // Form the count and score lists.
+    groupDocs = new IntList(nGroups);
     groupDocCounts = new IntList(nGroups);
     groupScores = new FloatList(nGroups);
     for (int i = 0; i < docs.size(); i++ ) {
@@ -137,7 +160,12 @@ public class FRBRGroupData extends DynamicGroupData
       float score = docScores.get(i);
       int group = docGroups.get(doc);
       assert group >= 0 : "group should have been assigned";
+
+      if (groupDocs.get(group) == 0)
+        groupDocs.set(group, doc);
+      
       groupDocCounts.set(group, groupDocCounts.get(group) + 1);
+      
       groupScores.set(group, Math.max(groupScores.get(group), score));
       groupScores.set(0, Math.max(groupScores.get(0), score));
     }
@@ -463,8 +491,58 @@ public class FRBRGroupData extends DynamicGroupData
   }
   
   // inherit JavaDoc
-  public final int compare( int group1, int group2 ) {
-    return (group1 < group2) ? -1 : ((group1 > group2) ? 1 : 0);
+  public final int compare(int group1, int group2) 
+  {
+    // Are they exactly equal?
+    if (group1 == group2)
+      return 0;
+    
+    // Get the first document in each group.
+    int doc1 = groupDocs.get(group1);
+    int doc2 = groupDocs.get(group2);
+    
+    // First, compare the primary field.
+    int x;
+    if ((x=compareField(primarySort, doc1, doc2)) != 0) 
+      return x;
+    
+    // Now compare the secondary fields, in order.
+    for (int t = FRBRData.FIRST_TYPE; t <= FRBRData.LAST_TYPE; ++t) {
+      if (t != primarySort && (x=compareField(t, doc1, doc2)) != 0) 
+        return x;
+    }
+    
+    // No differences found.
+    return 0;
   }
+  
+  /** Compare a particular field of two groups */
+  private int compareField(int type, int doc1, int doc2) 
+  {
+    // Locate this field in the first doc.
+    int tag1 = 0;
+    for (int pos = data.docTags.firstPos(doc1); pos >= 0 && tag1 == 0; pos = data.docTags.nextPos(pos)) {
+      int tag = data.docTags.getValue(pos);
+      if (data.tags.getType(tag) == type)
+        tag1 = tag;
+    }
+
+    // ... and locate it in the second doc.
+    int tag2 = 0;
+    for (int pos = data.docTags.firstPos(doc2); pos >= 0 && tag2 == 0; pos = data.docTags.nextPos(pos)) {
+      int tag = data.docTags.getValue(pos);
+      if (data.tags.getType(tag) == type)
+        tag2 = tag;
+    }
+    
+    // Make sure docs that don't have an entry sort at the end, not the beginning.
+    if (tag1 == 0)
+      tag1 = Integer.MAX_VALUE;
+    if (tag2 == 0)
+      tag2 = Integer.MAX_VALUE;
+    
+    // Now a simple numerical comparison on the tags will do.
+    return (tag1 < tag2) ? -1 : ((tag1 > tag2) ? 1 : 0);
+  } // compareField
   
 } // class FRBRGroupData
