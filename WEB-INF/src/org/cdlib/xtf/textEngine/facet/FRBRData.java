@@ -195,13 +195,13 @@ public class FRBRData
    */
   private int calcType(String field) throws IOException
   {
-    if (field.contains("title"))
+    if (field.indexOf("title") >= 0)
       return TYPE_TITLE;
-    else if (field.contains("author") || field.contains("creator"))
+    else if (field.indexOf("author") >= 0 || field.indexOf("creator") >= 0)
       return TYPE_AUTHOR;
-    else if (field.contains("date") || field.contains("year"))
+    else if (field.indexOf("date") >= 0 || field.indexOf("year") >= 0)
       return TYPE_DATE;
-    else if (field.contains("id") || field.contains("ID"))
+    else if (field.indexOf("id") >= 0 || field.indexOf("ID") >= 0)
       return TYPE_ID;
     else
       throw new IOException("Unable to identify field type: '" + field + "'");
