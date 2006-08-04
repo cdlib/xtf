@@ -8,6 +8,7 @@
        <docSelector path="../Common/docSelector.xsl"/>
        <chunk size="40" overlap="20"/>
        <stopwords list="fribble snoot smarmy"/>
+       <whitespace strip="yes"/>
   </index>
 
 </textIndexer-config>
