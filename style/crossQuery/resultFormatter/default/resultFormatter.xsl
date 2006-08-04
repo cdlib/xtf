@@ -543,7 +543,12 @@
         <span class="heading">Author:&#160;&#160;</span>
       </td>
       <td align="left">
-        <xsl:apply-templates select="meta/creator[1]"/>
+        <xsl:choose>
+          <xsl:when test="meta/creator">
+            <xsl:apply-templates select="meta/creator[1]"/>
+          </xsl:when>
+          <xsl:otherwise>none</xsl:otherwise>
+        </xsl:choose>
       </td>
       <td align="right" width="4%">
         <xsl:text>&#160;</xsl:text>
@@ -562,11 +567,30 @@
       <td align="left">
         <a>
           <xsl:attribute name="href">
-            <xsl:call-template name="dynaxml.url">
-              <xsl:with-param name="path" select="$path"/>
-            </xsl:call-template>
+            <xsl:choose>
+              <xsl:when test="starts-with(meta/display-kind, 'dynaXML/')">
+                <xsl:call-template name="dynaxml.url">
+                  <xsl:with-param name="path" select="$path"/>
+                </xsl:call-template>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:call-template name="rawDisplay.url">
+                  <xsl:with-param name="path" select="$path"/>
+                </xsl:call-template>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:attribute>
-          <xsl:apply-templates select="meta/title[1]"/>
+          <xsl:choose>
+            <xsl:when test="meta/title">
+              <xsl:apply-templates select="meta/title[1]"/>
+            </xsl:when>
+            <xsl:otherwise>none</xsl:otherwise>
+          </xsl:choose>
+          <xsl:if test="not(starts-with(meta/display-kind, 'dynaXML/'))">
+            <xsl:text> [</xsl:text>
+            <xsl:value-of select="meta/display-kind"/>
+            <xsl:text>]</xsl:text>
+          </xsl:if>
         </a>
       </td>
       <td align="center">
@@ -578,20 +602,22 @@
         </span>
       </td>
     </tr>
-    <tr>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-      <td align="right">
-        <span class="heading">Collection:&#160;&#160;</span>
-      </td>
-      <td align="left">
-        <xsl:apply-templates select="meta/relation[1]"/>
-      </td>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-    </tr>
+    <xsl:if test="meta/relation">
+      <tr>
+        <td align="right">
+          <xsl:text>&#160;</xsl:text>
+        </td>
+        <td align="right">
+          <span class="heading">Collection:&#160;&#160;</span>
+        </td>
+        <td align="left">
+          <xsl:apply-templates select="meta/relation[1]"/>
+        </td>
+        <td align="right">
+          <xsl:text>&#160;</xsl:text>
+        </td>
+      </tr>
+    </xsl:if>
     <tr>
       <td align="right">
         <xsl:text>&#160;</xsl:text>
@@ -606,21 +632,23 @@
         <xsl:text>&#160;</xsl:text>
       </td>
     </tr>
-    <tr>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-      <td align="right">
-        <span class="heading">Subjects:&#160;&#160;</span>
-      </td>
-      <td align="left">
-        <xsl:apply-templates select="meta/subject"/>
-      </td>
-      <td align="right">
-        <xsl:text>&#160;</xsl:text>
-      </td>
-    </tr>
-    <xsl:if test="(snippet) and ($sort = '')">
+    <xsl:if test="meta/subject">
+      <tr>
+        <td align="right">
+          <xsl:text>&#160;</xsl:text>
+        </td>
+        <td align="right">
+          <span class="heading">Subjects:&#160;&#160;</span>
+        </td>
+        <td align="left">
+          <xsl:apply-templates select="meta/subject"/>
+        </td>
+        <td align="right">
+          <xsl:text>&#160;</xsl:text>
+        </td>
+      </tr>
+    </xsl:if>
+    <xsl:if test="snippet">
       <tr>
         <td align="right">
           <xsl:text>&#160;</xsl:text>
@@ -754,6 +782,7 @@
  
   <xsl:template match="term" mode="text">
     <xsl:variable name="path" select="ancestor::docHit/@path"/>
+    <xsl:variable name="display-kind" select="ancestor::docHit/meta/display-kind"/>
     <xsl:variable name="collection" select="string(meta/collection)"/>
     <xsl:variable name="hit.rank"><xsl:value-of select="ancestor::snippet/@rank"/></xsl:variable>
     <xsl:variable name="snippet.link">    
@@ -765,7 +794,7 @@
     
     <xsl:choose>
       <xsl:when test="ancestor::query"/>
-      <xsl:when test="not(ancestor::snippet)">
+      <xsl:when test="not(ancestor::snippet) or not(starts-with($display-kind, 'dynaXML/'))">
         <span class="term">
           <xsl:apply-templates/>
         </span>
@@ -830,9 +859,18 @@
     
     <a>
       <xsl:attribute name="href">
-        <xsl:call-template name="dynaxml.url">
-          <xsl:with-param name="path" select="$path"/>
-        </xsl:call-template>
+        <xsl:choose>
+          <xsl:when test="starts-with(meta/display-kind, 'dynaXML/')">
+            <xsl:call-template name="dynaxml.url">
+              <xsl:with-param name="path" select="$path"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="rawDisplay.url">
+              <xsl:with-param name="path" select="$path"/>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:attribute>
       <xsl:apply-templates select="meta/title[1]"/>
     </a>
