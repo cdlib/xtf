@@ -84,7 +84,19 @@ POSSIBILITY OF SUCH DAMAGE.
     into an HTML page
     -->
     
-    <style path="style/dynaXML/docFormatter/default/docFormatter.xsl"/>
+    <style>
+      <xsl:choose>
+        <xsl:when test="contains($docId, 'tei/') or contains($docId, '.tei')">
+          <xsl:attribute name="path">style/dynaXML/docFormatter/tei/teiDocFormatter.xsl</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="contains($docId, 'ead/') or contains($docId, '.ead')">
+          <xsl:attribute name="path">style/dynaXML/docFormatter/ead/eadDocFormatter.xsl</xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:attribute name="path">style/dynaXML/docFormatter/default/docFormatter.xsl</xsl:attribute>
+        </xsl:otherwise>
+      </xsl:choose>      
+    </style>
     
     <!-- ==================================================================
     The "source" tag specifies a filesystem path (relative to the servlet
