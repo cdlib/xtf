@@ -131,6 +131,13 @@ public class IndexInfo
   /** Whether to create a spellcheck dictionary for this index */
   public boolean createSpellcheckDict = false;
   
+  /** 
+   * Whether to strip whitespace between elements in lazy tree files. Not 
+   * strictly safe for all XML documents, but it can make lazy trees 
+   * somewhat smaller and faster.
+   */
+  public boolean stripWhitespace = false;
+  
   /** Text chunk attribute array. Currently this array consists of two entries:
    *  <br><br>
    * 

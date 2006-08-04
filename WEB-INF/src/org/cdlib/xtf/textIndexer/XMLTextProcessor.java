@@ -2059,9 +2059,11 @@ public class XMLTextProcessor extends DefaultHandler
     charBufPos = 0;
 
     // If the entire buffer is whitespace (or empty), we can safely strip it.
-    int i;
-    for( i = 0; i < length; i++ )
-        if( !Character.isWhitespace(charBuf[i]) ) break;
+    int i = 0;
+    if( indexInfo.stripWhitespace ) {
+        for( i = 0; i < length; i++ )
+            if( !Character.isWhitespace(charBuf[i]) ) break;
+    }
     if( i == length ) return;
 
     // Build this part of the lazy tree, and increment the node number in

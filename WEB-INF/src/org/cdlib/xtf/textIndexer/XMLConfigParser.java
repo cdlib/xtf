@@ -482,6 +482,23 @@ public class XMLConfigParser extends DefaultHandler
         return;
     }
     
+    // If the current tag tells us to strip whitespace...
+    if( qName.equalsIgnoreCase("whitespace") ) {
+
+      // Validate the attribute.
+      String val = atts.getValue( "strip" );
+      if( "yes".equals(val) || "true".equals(val) )
+          configInfo.indexInfo.stripWhitespace = true;
+      else if( "no".equals(val) || "false".equals(val) )
+          configInfo.indexInfo.stripWhitespace = false;
+      else {
+          Trace.error( "Unrecognized value for 'strip' attribute of " +
+              "config option: '" + qName + "'" );
+          System.exit( 1 );
+      }
+      return;
+  }
+    
     Trace.error( "Unknown config option: '" + qName + "'" );
     System.exit( 1 );
                        
