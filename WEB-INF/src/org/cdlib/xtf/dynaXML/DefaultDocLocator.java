@@ -124,9 +124,17 @@ public class DefaultDocLocator implements DocLocator
                               new File(sourcePath), false );
         
         // If we can't read it, try to build it instead.
-        if( !lazyFile.canRead() )
+        if( !lazyFile.canRead() ) {
+            boolean stripWhitespace = false;
+            try {
+                stripWhitespace = IndexUtil.getIndexInfo(
+                    new File(indexConfigPath), indexName).stripWhitespace;
+            }
+            catch( Exception e ) { }
+            
             buildLazyStore( lazyFile, sourcePath, preFilter,
-                            removeDoctypeDecl );
+                            removeDoctypeDecl, stripWhitespace );
+        }
         
         // Cool. Open the lazy file.
         return StructuredFile.open( lazyFile );
@@ -180,11 +188,14 @@ public class DefaultDocLocator implements DocLocator
      * @param preFilter     A prefilter stylesheet (or null for no pre-filtering.)
      * @param removeDoctypeDecl true to remove DOCTYPE declarations from the
      *                          XML document
+     * @param stripWhitespace If set, whitespace will be removed between elements
+     *                        in the lazy file.
      */
     private void buildLazyStore( File lazyFile, 
                                  String sourcePath,
                                  Templates preFilter,
-                                 boolean removeDoctypeDecl )
+                                 boolean removeDoctypeDecl,
+                                 boolean stripWhitespace )
         throws IOException
     {
         // The directory the lazy file is to be stored in might not exist yet.
@@ -221,7 +232,7 @@ public class DefaultDocLocator implements DocLocator
         inSrc.setSystemId( new File(sourcePath).toURL().toString() );
         
         // Make a DefaultHandler that will pass events to the lazy receiver.
-        LazyPassthru passthru = new LazyPassthru( lazyHandler );
+        LazyPassthru passthru = new LazyPassthru( lazyHandler, stripWhitespace );
         
         // Apply a prefilter if one was specified.
         if( preFilter == null ) {
@@ -257,10 +268,13 @@ public class DefaultDocLocator implements DocLocator
     {
       private StringBuffer   charBuf = new StringBuffer();
       private ContentHandler lazyHandler;
+      private boolean        stripWhitespace;
       
-      public LazyPassthru( ContentHandler lazyHandler ) 
+      public LazyPassthru( ContentHandler lazyHandler,
+                           boolean        stripWhitespace ) 
       {
           this.lazyHandler = lazyHandler;
+          this.stripWhitespace = stripWhitespace;
       }
       
       public void startDocument() throws SAXException {
@@ -298,9 +312,11 @@ public class DefaultDocLocator implements DocLocator
           // If the entire buffer is whitespace (or empty), we can safely 
           // strip it.
           //
-          int i;
-          for( i = 0; i < charBuf.length(); i++ )
-              if( !Character.isWhitespace(charBuf.charAt(i)) ) break;
+          int i = 0;
+          if (stripWhitespace) {
+              for( i = 0; i < charBuf.length(); i++ )
+                  if( !Character.isWhitespace(charBuf.charAt(i)) ) break;
+          }
           if( i < charBuf.length() )
               lazyHandler.characters( charBuf.toString().toCharArray(),
                                       0, charBuf.length() );
