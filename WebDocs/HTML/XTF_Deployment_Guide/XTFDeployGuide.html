@@ -290,7 +290,7 @@
           </span>servlet-container-directory</span>/webapps/xtf </span>directory 
           so that the sample source documents are located where the default XTF 
           configuration expects to see them. You should now have the following 
-          directory present (among others):<span class="Code"> <span class="MacroCode">servlet-container-directory</span>/webapps/xtf/data/mm/ft958009mm</span>. 
+          directory present (among others):<span class="Code"> <span class="MacroCode">servlet-container-directory</span>/webapps/xtf/data/tei/ft958009mm</span>. 
           This directory contains the document we will attempt to display.</li>
       </ul>
   </div>
@@ -302,7 +302,7 @@
     document retrieval works. To do so, bring up your web browser and enter the 
     following URL: <br>
     <br>
-    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=mm/ft958009mm/ft958009mm.xml</span> 
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=tei/ft958009mm/ft958009mm.xml</span> 
     </div>
     <br>
     Doing so should bring up the cover for the book <i><b>The Opening of the Apartheid 
@@ -323,12 +323,12 @@
     <!-------------------------------------------------------------------------------------------------------------> 
     <p>Before you can verify that basic document searching works, you need to 
       index the document library. To do this, follow the steps below. </p>
-    <p><i><span class="GreyList">Note: </span></i><span class="GreyList">this 
+    <p class="GreyList"><i>Note: </i>this 
       procedure depends on a Unix-type shell and a Perl command interpreter. If 
       you are attempting to run XTF on Windows, you may need an environment such 
       as <b>cygwin</b> that includes these things. Alternately, you could create 
       a driver script that does the same work. See the section Running on Windows, 
-      below.</span></p>
+      below.</p>
     <ol class="OrderedList">
       <li>From the command prompt, set the<span class="Code"> XTF_HOME </span>environment 
         variable to the directory where the XTF package is installed. This environment 
@@ -526,12 +526,12 @@ and configured, the XTF system may be installed and run.
   as described in the <a href="#RunTimeInstall">previous section</a>. Once the 
   run-time environment is up and running, do the following steps to install the 
   XTF Package.</p>
-<p><i><span class="GreyList">Note: </span></i><span class="GreyList">this procedure 
+<p class="GreyList"><i>Note: </i>this procedure 
   depends on a Unix-type shell and a Perl command interpreter. If you are attempting 
   to run XTF on Windows, you'll need an environment such as <b>cygwin</b> that 
   includes these things. Alternately, you could create a driver script that does 
   the same work, namely forming a classpath that includes all the .jar files in<span class="Code"> 
-  WEB-INF/lib</span>.</span><br>
+  WEB-INF/lib</span>.<br>
 </p>
 <ol class="OrderedList">
   <li> Shut down your servlet container, to keep it from prematurely trying to 
@@ -600,7 +600,7 @@ and configured, the XTF system may be installed and run.
     <br>
     This will place the Sample Document Library where the default XTF configuration 
     expects to see it. You should now have the following directory present (among 
-    others):<span class="Code"> data/mm/ft958009mm</span>.<br>
+    others):<span class="Code"> data/tei/ft958009mm</span>.<br>
   </li>
 </ol>
 At this point, the <b><i>crossQuery</i></b> and <b><i>dynaXML</i></b> servlets, 
@@ -1756,7 +1756,7 @@ Done.
     might look as follows: <br>
     <br>
     
-  <pre class="Sample"><b><span class="Code">&lt;a href="http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=ft958009mm&amp;doc.view=frames"&gt;
+  <pre class="Sample"><b><span class="Code">&lt;a href="http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=tei/ft958009mm/ft958009mm.xml&amp;doc.view=frames"&gt;
     The Opening of the Apartheid Mind
 &lt;/a&gt</span></b></pre>
     <br>
