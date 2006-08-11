@@ -1,50 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="5" startDoc="0" endDoc="0">
-   <facet field="dynamicFRBR" totalGroups="3" totalDocs="5">
-      <group value="group-1" rank="1" totalSubGroups="0" totalDocs="2" startDoc="1" endDoc="2">
-         <docHit rank="1" file="doc1.xml" totalHits="0">
-            <meta>
-               <title>Hamlet</title>
-               <author>Shakespeare, William</author>
-               <date>1597</date>
-               <id>shak001</id>
-            </meta>
-         </docHit>
-         <docHit rank="2" file="doc2.xml" totalHits="0">
-            <meta>
-               <title>Hamlet</title>
-               <author>Shakespeare, William</author>
-               <date>1597</date>
-               <id>shak002</id>
-            </meta>
-         </docHit>
-      </group>
-      <group value="group-2" rank="2" totalSubGroups="0" totalDocs="2" startDoc="1" endDoc="2">
+<crossQueryResult totalDocs="9" startDoc="0" endDoc="0">
+   <facet field="dynamicFRBR" totalGroups="5" totalDocs="9">
+      <group value="group-2" rank="1" totalSubGroups="0" totalDocs="4" startDoc="1" endDoc="4">
          <docHit rank="1" file="doc3.xml" totalHits="0">
             <meta>
-               <title>Opening of the Apartheid Mind</title>
-               <author>Moodley, Kogila</author>
-               <author>Adam, Heribert</author>
+               <title>Opening of the Apartheid Mind [245]</title>
+               <author>Moodley, Kogila [100]</author>
+               <author>Adam, Heribert [100]</author>
+               <author>Kruft [102]</author>
                <date>1993</date>
-               <id>apar001</id>
+               <id>apar001 (OAC)</id>
             </meta>
          </docHit>
          <docHit rank="2" file="doc4.xml" totalHits="0">
             <meta>
-               <title>Opening of the Apartheid Mind: Options for the New South Africa</title>
-               <author>Adam, Heribert</author>
+               <title>Opening of the Apartheid Mind: Options for the New South Africa [245]</title>
+               <author>Adam, Heribert [100]</author>
                <date>1993</date>
-               <id>apar002</id>
+               <id>apar002 (OAC)</id>
+            </meta>
+         </docHit>
+         <docHit rank="3" file="doc6.xml" totalHits="0">
+            <meta>
+               <title>Opening of the Apartheid Mind [245]</title>
+               <title>Options for the New South Africa [245]</title>
+               <title>kruft [240]</title>
+               <author>Heribert Adam and Kogila Moodley[100]</author>
+               <date>1993</date>
+               <id>apar002 (OAC)</id>
+            </meta>
+         </docHit>
+         <docHit rank="4" file="doc7.xml" totalHits="0">
+            <meta>
+               <title>Opening of the Apartheid Mind: A different book [245]</title>
+               <author>Heribert Adam and Kogila Moodley[100]</author>
+               <date>1993</date>
+               <id>apar003 (OAC)</id>
+            </meta>
+         </docHit>
+      </group>
+      <group value="group-1" rank="2" totalSubGroups="0" totalDocs="2" startDoc="1" endDoc="2">
+         <docHit rank="1" file="doc1.xml" totalHits="0">
+            <meta>
+               <title>Hamlet [245]</title>
+               <author>Shakespeare, William [100]</author>
+               <date>1597</date>
+               <id>shak001 (OAC)</id>
+            </meta>
+         </docHit>
+         <docHit rank="2" file="doc2.xml" totalHits="0">
+            <meta>
+               <title>Hamlet [245]</title>
+               <author>Shakespeare, William [100]</author>
+               <date>1597</date>
+               <id>shak002 (OAC)</id>
             </meta>
          </docHit>
       </group>
       <group value="group-3" rank="3" totalSubGroups="0" totalDocs="1" startDoc="1" endDoc="1">
          <docHit rank="1" file="doc5.xml" totalHits="0">
             <meta>
-               <title>One Stands Apart</title>
-               <author>Singleton, Mary</author>
+               <title>One Stands Apart [245]</title>
+               <author>Singleton, Mary [100]</author>
                <date>1980</date>
-               <id>ones001</id>
+               <id>ones001 (OAC)</id>
+            </meta>
+         </docHit>
+      </group>
+      <group value="group-5" rank="4" totalSubGroups="0" totalDocs="1" startDoc="1" endDoc="1">
+         <docHit rank="1" file="doc9.xml" totalHits="0">
+            <meta>
+               <title>mao tse-tung [245]</title>
+               <author>ting shih-yu [100]</author>
+               <author>., [100]</author>
+               <date>1990</date>
+               <id>117996542 (GLAD) [901]</id>
+               <id>24426059 (OCLC) [35]</id>
+            </meta>
+         </docHit>
+      </group>
+      <group value="group-4" rank="5" totalSubGroups="0" totalDocs="1" startDoc="1" endDoc="1">
+         <docHit rank="1" file="doc8.xml" totalHits="0">
+            <meta>
+               <title>mao tse-tung: a critical biography [245]</title>
+               <author>uhalley stephen [100]</author>
+               <date>1975</date>
+               <id>00980366 (OCLC) [35]</id>
+               <id>167817576 (GLAD) [901]</id>
             </meta>
          </docHit>
       </group>

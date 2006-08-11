@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <document xmlns:xtf="http://cdlib.org/xtf">
-    <title xtf:tokenize="no" xtf:meta="yes">Hamlet</title>
-    <author xtf:tokenize="no" xtf:meta="yes">Shakespeare, William</author>
+    <title xtf:tokenize="no" xtf:meta="yes">Hamlet [245]</title>
+    <author xtf:tokenize="no" xtf:meta="yes">Shakespeare, William [100]</author>
     <date xtf:tokenize="no" xtf:meta="yes">1597</date>
-    <id xtf:tokenize="no" xtf:meta="yes">shak002</id>
+    <id xtf:tokenize="no" xtf:meta="yes">shak002 (OAC)</id>
 </document>

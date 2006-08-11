@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <document xmlns:xtf="http://cdlib.org/xtf">
-    <title xtf:tokenize="no" xtf:meta="yes">Opening of the Apartheid Mind</title>
-    <author xtf:tokenize="no" xtf:meta="yes">Moodley, Kogila</author>
-    <author xtf:tokenize="no" xtf:meta="yes">Adam, Heribert</author>
+    <title xtf:tokenize="no" xtf:meta="yes">Opening of the Apartheid Mind [245]</title>
+    <author xtf:tokenize="no" xtf:meta="yes">Moodley, Kogila [100]</author>
+    <author xtf:tokenize="no" xtf:meta="yes">Adam, Heribert [100]</author>
+    <author xtf:tokenize="no" xtf:meta="yes">Kruft [102]</author>
     <date xtf:tokenize="no" xtf:meta="yes">1993</date>
-    <id xtf:tokenize="no" xtf:meta="yes">apar001</id>
+    <id xtf:tokenize="no" xtf:meta="yes">apar001 (OAC)</id>
 </document>
