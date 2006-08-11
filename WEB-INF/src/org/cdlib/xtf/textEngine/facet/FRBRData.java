@@ -30,6 +30,7 @@ package org.cdlib.xtf.textEngine.facet;
  */
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
@@ -105,6 +106,7 @@ public class FRBRData
    */
   private FRBRData(IndexReader reader, String[] fields) throws IOException
   {
+    long startTime = System.currentTimeMillis();
     Trace.debug("Loading FRBR data...");
     Trace.tab();
     
@@ -131,7 +133,7 @@ public class FRBRData
 
       // Read all the data, and add it to the map.
       Trace.debug("Reading FRBR field " + field + "...");
-      int prevTagSize = tags.byteSize();
+      long prevTagSize = tags.byteSize();
       int nTagsAdded = readField(reader, field, type);
       Trace.debug("..." + nTagsAdded + " tags; " + 
                   (tags.byteSize() - prevTagSize) + " bytes.");
@@ -145,9 +147,15 @@ public class FRBRData
         tagDocs.add(docTags.getValue(link), doc);
     }
     
+    // Reverse the order of the docTags map so that iterations come out right.
+    docTags.reverseOrder();
+    
+    // Display some statistics.
     Trace.debug("Done. Size = " + tags.byteSize() + " tags, " + 
                 tagDocs.byteSize() + " map = " + 
                 (tags.byteSize() + tagDocs.byteSize()) + " total.");
+    Trace.debug("Time: " + DecimalFormat.getInstance().format(
+        (System.currentTimeMillis() - startTime) / 1000.0f) + " sec");
     Trace.untab();
   } // constructor
 
@@ -172,15 +180,22 @@ public class FRBRData
         Term term = termEnum.term();
         if (!term.field().equals(field))
           break;
-
+        
         // Add a tag for this term.
-        int tag = tags.add(term.text(), type);
-        ++nTagsAdded;
+        int tag = addTag(term.text(), type);
+        
+        // Reject data we don't care about.
+        if (tag < 0)
+          continue;
+        else
+          ++nTagsAdded;
 
         // Now process each document which contains this term.
         termPositions.seek(termEnum);
-        while (termPositions.next())
-          docTags.add(termPositions.doc(), tag);
+        while (termPositions.next()) {
+          int doc = termPositions.doc();
+          docTags.add(doc, tag);
+        }
       } while (termEnum.next());
       return nTagsAdded;
     }
@@ -189,6 +204,65 @@ public class FRBRData
       termEnum.close();
     }
   } // readField()
+
+  /**
+   * Add a tag for the given term and type.
+   * 
+   * @param term    Term to parse and add
+   * @param type    Type to add the tag under
+   */
+  private int addTag(String term, int type)
+  {
+    // First, strip off the sub-type, if any
+    term = term.trim();
+    int subType = 0;
+    if (term.endsWith("]")) {
+      int start = term.lastIndexOf('[');
+      if (start >= 0) {
+        try {
+          String sub = term.substring(start+1, term.length()-1);
+          subType = Integer.parseInt(sub);
+        }
+        catch (NumberFormatException e) { }
+        term = term.substring(0, start).trim();
+      }
+    }
+    
+    // Now perform special subType processing depending on main type
+    switch (type) {
+      case TYPE_TITLE:
+        if (subType == 0)
+          subType = 245;
+        else if (subType != 245)
+          return -1;
+        break;
+        
+      case TYPE_AUTHOR:
+        if (subType == 0)
+          subType = 100;
+        else if (subType != 100 && subType != 700)
+          return -1;
+        break;
+        
+      case TYPE_ID:
+        if (subType == 0)
+          subType = 35;
+        else if (subType != 35 && subType != 900 && subType != 901)
+          return -1;
+        
+        // If there isn't any substance to this identifier, skip it.
+        if (term.indexOf('(') < 6)
+          return -1;
+        
+        break;
+        
+      case TYPE_DATE:
+        break;   
+    }
+    
+    // Ready to add the tag.
+    return tags.add(term, type, subType);
+  } // addTag()
 
   /**
    * Calculate the type of a given field, based on the field name.
