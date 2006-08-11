@@ -54,10 +54,10 @@ public class IntMultiMap
    * 
    * @return    Approximate size in bytes
    */
-  public int byteSize()
+  public long byteSize()
   {
     return (blocks.length * 8) +
-           ((curBlockNum+1) * BLOCK_SIZE * 8);
+           ((curBlockNum+1) * (long)BLOCK_SIZE * 8);
   }
   
   /**
@@ -69,7 +69,7 @@ public class IntMultiMap
    */
   public IntMultiMap(int maxKey) {
     keyLinks = new int[maxKey];
-    Arrays.fill(keyLinks, (short) -1);
+    Arrays.fill(keyLinks, -1);
   } // constructor
 
   /**
@@ -103,6 +103,43 @@ public class IntMultiMap
     keyLinks[key] = (((int) curBlockNum) << 16) | curBlockTop;
     ++curBlockTop;
   } // add()
+  
+  /**
+   * Reverse the order of all links. This can be helpful, since for speed reasons
+   * the normal order of iteration is reversed.
+   */
+  public void reverseOrder()
+  {
+    IntList links = new IntList();
+    int pos;
+    
+    // Process each key.
+    for( int key = 0; key < keyLinks.length; key++ ) {
+      
+        // Gather all the links for this key
+        links.clear();
+        pos = keyLinks[key];
+        if( pos < 0 )
+            continue;
+        
+        while( pos >= 0 ) {
+            links.add( pos );
+            pos = blocks[(int)pos >> 16].links[(int)pos & 0x7FFF];
+        }
+        
+        // And reverse their order.
+        pos = links.get( links.size() - 1 );
+        keyLinks[key] = pos;
+        for( int i = links.size() - 2; i >= 0; i-- ) {
+            int nextPos = links.get(i);
+            blocks[(int)pos >> 16].links[(int)pos & 0x7FFF] = nextPos;
+            pos = nextPos;
+        } // for
+        
+        // Null out the last link.
+        blocks[(int)pos >> 16].links[(int)pos & 0x7FFF] = -1;
+    } // for
+  } // reverseOrder()
   
   /**
    * For iteration: get the first position for the given key, or -1 if it has none.
@@ -149,17 +186,20 @@ public class IntMultiMap
       IntMultiMap map = new IntMultiMap(10);
 
       map.add(1, 10);
-      map.add(1, 11);
 
       map.add(2, 20);
       map.add(2, 21);
-      map.add(2, 22);
 
+      map.add(3, 30);
+      map.add(3, 31);
+      map.add(3, 32);
+      
       int pos;
+
+      pos = map.firstPos(0);
+      assert pos < 0;
+
       pos = map.firstPos(1);
-      assert pos >= 0;
-      assert map.getValue(pos) == 11;
-      pos = map.nextPos(pos);
       assert pos >= 0;
       assert map.getValue(pos) == 10;
       pos = map.nextPos(pos);
@@ -167,15 +207,57 @@ public class IntMultiMap
 
       pos = map.firstPos(2);
       assert pos >= 0;
-      assert map.getValue(pos) == 22;
-      pos = map.nextPos(pos);
-      assert pos >= 0;
       assert map.getValue(pos) == 21;
       pos = map.nextPos(pos);
       assert pos >= 0;
       assert map.getValue(pos) == 20;
       pos = map.nextPos(pos);
       assert pos < 0;
+
+      pos = map.firstPos(3);
+      assert pos >= 0;
+      assert map.getValue(pos) == 32;
+      pos = map.nextPos(pos);
+      assert pos >= 0;
+      assert map.getValue(pos) == 31;
+      pos = map.nextPos(pos);
+      assert pos >= 0;
+      assert map.getValue(pos) == 30;
+      pos = map.nextPos(pos);
+      assert pos < 0;
+      
+      map.reverseOrder();
+
+      pos = map.firstPos(0);
+      assert pos < 0;
+
+      pos = map.firstPos(1);
+      assert pos >= 0;
+      assert map.getValue(pos) == 10;
+      pos = map.nextPos(pos);
+      assert pos < 0;
+
+      pos = map.firstPos(2);
+      assert pos >= 0;
+      assert map.getValue(pos) == 20;
+      pos = map.nextPos(pos);
+      assert pos >= 0;
+      assert map.getValue(pos) == 21;
+      pos = map.nextPos(pos);
+      assert pos < 0;
+
+      pos = map.firstPos(3);
+      assert pos >= 0;
+      assert map.getValue(pos) == 30;
+      pos = map.nextPos(pos);
+      assert pos >= 0;
+      assert map.getValue(pos) == 31;
+      pos = map.nextPos(pos);
+      assert pos >= 0;
+      assert map.getValue(pos) == 32;
+      pos = map.nextPos(pos);
+      assert pos < 0;
+      
     } // testImpl()
   };
 
