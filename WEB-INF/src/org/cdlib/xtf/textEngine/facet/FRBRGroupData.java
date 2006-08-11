@@ -294,8 +294,6 @@ public class FRBRGroupData extends DynamicGroupData
     int dateScore = 0;
     int idScore = 0;
     
-    Trace.setOutputLevel(Trace.debug);
-
     int p1 = data.docTags.firstPos(doc1);
     int tag1  = (p1 >= 0) ? data.docTags.getValue(p1) : -1;
     int type1 = (p1 >= 0) ? data.tags.getType(tag1) : 99;
