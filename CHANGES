@@ -1,3 +1,62 @@
+Changes in 1.8-beta 
+===================
+
+- Many users have requested EAD support in XTF out-of-the-box. 
+  While XTF has always been capable of handling these, the 
+  default stylesheets were very TEI-centric. This release contains 
+  brand new stylesheets that support TEI, EAD, PDF, HTML, and Text.
+  Flexible meta-data handling will use *.dc files if present. If 
+  not present, will look inside TEI and EAD documents. Also, the
+  confusing reliance on *.mets files has been completely removed.
+  [Feature 1534843]
+
+- Disabled non-standard whitespace stripping while building lazy
+  tree files. Previously, XTF stripped whitespace between elements,
+  which caused differing results from the same stylesheets run
+  through Saxon from the command-line. If absolutely necessary,
+  there is an undocumented index config flag to turn stripping back
+  on: <whitespace strip="yes"/> [Bug 1534845]
+
+- Upgraded PDFBox to most recent version (0.7.2) which offers
+  greater speed and stability, and better results.
+
+- Fixed FileUtils.exists() function called by some stylesheets to
+  automatically handle a "file:" prefix if present. [Bug 1527960]
+
+- Fixed PDF filter in indexer to automatically escape XML characters
+  such as '<', and to strip out invalid characters. [Bug 1527958]
+
+- Same fix for text files. [Bug 1523481]
+
+- Certain unusual queries caused an assertion in FieldSpanSource:
+  "kept span was cancelled". Fixed. [Bug 1523479]
+
+- Fixed problem that kept JavaDocs from building. [Bug 1534856]
+
+- XTF now avoids loading external DTDs for documents pulled in
+  through the Saxon document() function. This helps speed the
+  processing, and reduces external dependencies. [Feature 1487684]
+
+- Fixed bug that caused indexer to crash if resulting index is
+  empty (e.g. if no docs found). [Bug 1534860]
+
+- Fixed bug: indexDump would only output first of multiple
+  un-tokenized values for a field. [Bug 1534861]
+
+- Experimental support for spelling correction has been added.
+  Documentation to follow.
+
+- Experimental new query operator added: <orNear>, which is like
+  a standard OR query except that it will take proximity into
+  account when multiple terms are present in one document.
+
+- Improvements to the experimental "more like this" query. It
+  may be getting close to prime-time.
+
+- The XTF icon has been changed to be more descriptive, less
+  confusing, and arguably less fun. "XTF Man" is gone.
+
+
 Changes in 1.7 
 ==============
 
