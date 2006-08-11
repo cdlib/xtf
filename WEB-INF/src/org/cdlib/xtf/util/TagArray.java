@@ -49,10 +49,11 @@ public class TagArray
   private byte[]   curBlock = blocks[0];
   private int      curBlockUsed = 0;
   
-  private byte[]   tagType   = { 0 };
-  private short[]  tagBlock  = { 0 };
-  private int[]    tagOffset = { 0 };
-  private short[]  tagLength = { 0 };
+  private byte[]   tagType    = { 0 };
+  private short[]  tagSubType = { 0 };
+  private short[]  tagBlock   = { 0 };
+  private int[]    tagOffset  = { 0 };
+  private short[]  tagLength  = { 0 };
   private int      nTags = 1;
   
   private Hashtable typeTable = new Hashtable();
@@ -77,18 +78,30 @@ public class TagArray
     return lookup.intValue();
   } // findType()
   
+  /**
+   * Add a tag to the array
+   * 
+   * @param str     The string to add
+   * @param type    The type ID of the new tag (from {@link #findType(String)})
+   * @return        The new Tag's identifier
+   */
+  public final int add( String str, int type )
+  {
+    return add( str, type, 0 );
+  }
   
   /**
    * Add a tag to the array
    * 
-   * @param s   The string to add
-   * @param t   The type ID of the new tag (from {@link #findType(String)})
-   * @return    The new Tag's identifier
+   * @param str     The string to add
+   * @param type    The type ID of the new tag (from {@link #findType(String)})
+   * @param subType The sub-type of the new tag (or 0 for none)
+   * @return        The new Tag's identifier
    */
-  public int add( String s, int t )
+  public int add( String str, int type, int subType )
   {
     // Do we have room in the current block? If not, make a new one.
-    char[] srcChars = s.toCharArray();
+    char[] srcChars = str.toCharArray();
     int length = srcChars.length;
     assert (length & 0x7fff) == length : "String too long"; // Make sure it fits in a short.
     assert length <= BLOCK_SIZE : "String too long"; // Make sure it fits in a block.
@@ -97,12 +110,23 @@ public class TagArray
     // Allocate an identifier for the tag
     int tagId = allocateID();
 
-    // Record the type, block, offset, and length of the tag.
-    assert t >= 0 && t < nTypes : "Invalid tag type";
-    tagType  [tagId] = (byte) t;
-    tagBlock [tagId] = (short) (nBlocks - 1);
-    tagLength[tagId] = (short) length;
-    tagOffset[tagId] = curBlockUsed;
+    // Record the type, block, offset, and length of the tag. If sub-type is
+    // specified, record that too.
+    //
+    assert type >= 0 && type < nTypes : "Invalid tag type";
+    tagType   [tagId] = (byte) type;
+    if( subType != 0 ) {
+        if( tagSubType.length <= tagId ) {
+            short[] newSubType = new short[tagType.length];
+            System.arraycopy(tagSubType, 0, newSubType, 0, tagSubType.length);
+            tagSubType = newSubType;
+        }
+        assert ((subType & 0xffff) == subType) : "change subType array from short to int";
+        tagSubType[tagId] = (short) subType;
+    }
+    tagBlock  [tagId] = (short) (nBlocks - 1);
+    tagLength [tagId] = (short) length;
+    tagOffset [tagId] = curBlockUsed;
     
     // Convert the string to a byte array. For now, do it fast and dirty, e.g.
     // for chars > 127, retain the bottom 7 bits and set the 8th bit.
@@ -129,16 +153,33 @@ public class TagArray
   /**
    * Get the string value of the given tag
    */
-  public String getString( int tag )
+  public String getString( int tag ) {
+    return getChars(tag).toString();
+  }
+  
+  /**
+   * Get the characters that make up a given tag. Allocates a new place to
+   * hold the value, but simply points to the data rather than copying it.
+   */
+  public final TagChars getChars( int tag ) {
+    return getChars( tag, new TagChars() );
+  }
+
+  /**
+   * Get the characters that make up a given tag, with no object allocation
+   * at all.
+   * 
+   * @param tag     The tag to get the value of
+   * @param chars   Where to store the pointer
+   * @return        The same value of 'chars', for handy chaining
+   */
+  public TagChars getChars( int tag, TagChars chars )
   {
     assert tag >= 0 && tag < nTags : "Tag ID out of range";
-    int length = tagLength[tag];
-    char[] chars = new char[length];
-    byte[] block = blocks[tagBlock[tag]];
-    int offset = tagOffset[tag];
-    for( int i = 0; i < length; i++ )
-        chars[i] = (char)block[offset+i];
-    return new String( chars );
+    chars.length = tagLength[tag];
+    chars.block  = blocks[tagBlock[tag]];
+    chars.offset = tagOffset[tag];
+    return chars;
   }
   
   /**
@@ -148,6 +189,17 @@ public class TagArray
   {
     assert tag >= 0 && tag < nTags : "Tag ID out of range";
     return tagType[tag];
+  }
+  
+  /**
+   * Get the sub-type associated with a given tag (zero if none)
+   */
+  public short getSubType( int tag )
+  {
+    assert tag >= 0 && tag < nTags : "Tag ID out of range";
+    if( tag >= tagSubType.length )
+      return 0;
+    return tagSubType[tag];
   }
   
   /**
@@ -183,10 +235,10 @@ public class TagArray
    * 
    * @return    Approximate size in bytes
    */
-  public int byteSize()
+  public long byteSize()
   {
     return (blocks.length * 8) +
-           (nBlocks * BLOCK_SIZE) +
+           (nBlocks * (long)BLOCK_SIZE) +
            (tagType.length * 1) +
            (tagBlock.length * 2) +
            (tagOffset.length * 4) +
@@ -255,7 +307,7 @@ public class TagArray
     nBlocks++;
     curBlockUsed = 0;
   } // newBlock()
-  
+
   /**
    * Basic regression test
    */
