@@ -48,6 +48,18 @@ public class ArrayUtil
       return resize( in, in.length * 3 / 2 );
   }
   
+  // Functions for long arrays
+  
+  public static long[] resize( long[] in, int newSize ) {
+      long[] out = new long[newSize];
+      System.arraycopy( in, 0, out, 0, Math.min(in.length, newSize) );
+      return out;
+  }
+  
+  public static long[] expand( long[] in ) {
+      return resize( in, in.length * 3 / 2 );
+  }
+  
   // Functions for float arrays
   
   public static float[] resize( float[] in, int newSize ) {
