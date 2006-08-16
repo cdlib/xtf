@@ -71,6 +71,8 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
         return rewrite((SpanExactQuery)q);
     else if( q instanceof MoreLikeThisQuery )
         return rewrite((MoreLikeThisQuery)q);
+    else if( q instanceof NumericRangeQuery )
+      return rewrite((NumericRangeQuery)q);
     return super.rewriteQuery(q);
   }
   
@@ -157,6 +159,13 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
     if (rewrittenSub == mlt.getSubQuery() && !forceRewrite(mlt))
         return mlt;
     return copyBoost(mlt, new MoreLikeThisQuery(rewrittenSub));
+  }
+  
+  /** Rewrite a numeric range query */
+  protected Query rewrite(NumericRangeQuery nrq) {
+    if (!forceRewrite(nrq))
+        return nrq;
+    return (NumericRangeQuery) nrq.clone();
   }
   
   /**

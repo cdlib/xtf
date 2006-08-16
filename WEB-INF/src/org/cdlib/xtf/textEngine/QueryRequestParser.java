@@ -851,7 +851,7 @@ public class QueryRequestParser
         else if( attrName.equals("field") || attrName.equals("metaField") )
             ; // handled elsewhere
         
-        else if( attrName.equals("inclusive") &&
+        else if( (attrName.equals("inclusive") || attrName.equals("numeric")) &&
                  el.name().equals("range") )
             ; // handled elsewhere
         
@@ -1028,6 +1028,7 @@ public class QueryRequestParser
     {
         // Inclusive or exclusive?
         boolean inclusive = parseBooleanAttrib(parent, "inclusive", true );
+        boolean numeric   = parseBooleanAttrib(parent, "numeric",   false );
         
         // Check the children for the lower and upper bounds.
         Term lower = null;
@@ -1062,20 +1063,30 @@ public class QueryRequestParser
         if( lower == null && upper == null )
             error( "'range' element must have 'lower' and/or 'upper' child element(s)" );
         
-        // If no upper specified, we're in danger of accidentally matching the
-        // XTF special tokens. So be sure to exclude the whole area that marker
-        // characters are in.
-        //
-        if( upper == null ) {
-            char[] tmp = new char[1];
-            tmp[0] = Constants.MARKER_BASE;
-            upper = new Term( lower.field(), new String(tmp) );
-        }
-        
         // And we're done.
-        SpanQuery q = new XtfSpanRangeQuery( lower, upper, inclusive, req.termLimit );
-        q.setSpanRecording( maxSnippets );
-        return q;
+        if( numeric ) {
+          return new NumericRangeQuery( field, 
+              (lower == null) ? null : lower.text(), 
+              (upper == null) ? null : upper.text(), 
+              inclusive, inclusive );
+        }
+        else 
+        {
+            // If no upper specified, we're in danger of accidentally matching the
+            // XTF special tokens. So be sure to exclude the whole area that marker
+            // characters are in.
+            //
+            if( upper == null ) {
+                char[] tmp = new char[1];
+                tmp[0] = Constants.MARKER_BASE;
+                upper = new Term( lower.field(), new String(tmp) );
+            }
+        
+            // Now make the query.
+            SpanQuery q = new XtfSpanRangeQuery( lower, upper, inclusive, req.termLimit );
+            q.setSpanRecording( maxSnippets );
+            return q;
+        }
     } // parseRange()
 
     /**

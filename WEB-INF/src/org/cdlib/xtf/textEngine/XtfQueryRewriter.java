@@ -43,6 +43,8 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
       return rewrite((SpanExactQuery)q);
     else if (q instanceof MoreLikeThisQuery)
       return rewrite((MoreLikeThisQuery)q);
+    else if (q instanceof NumericRangeQuery)
+      return rewrite((NumericRangeQuery)q);
     else
       return super.rewriteQuery(q);
   } // rewriteQuery()
@@ -122,6 +124,13 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
     MoreLikeThisQuery ret = (MoreLikeThisQuery) mlt.clone();
     ret.setSubQuery(rewrittenSub);
     return ret;
+  }
+  
+  /** Rewrite a numeric range query */
+  protected Query rewrite(NumericRangeQuery nrq) {
+    if (!forceRewrite(nrq))
+        return nrq;
+    return (NumericRangeQuery) nrq.clone();
   }
   
 }
