@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+ <meta indexPath="IndexDB">
+    <and>
+      <term field="rights" maxSnippets="0">Public</term>
+      <range field="date" numeric="true" inclusive="yes">
+        <upper>19930628</upper>
+      </range>
+    </and>
+  </meta>
+</query>
