@@ -48,6 +48,8 @@
   <xsl:param name="crossqueryPath" select="if (matches($servlet.path, 'org.cdlib.xtf.dynaXML.DynaXML')) then 'org.cdlib.xtf.crossQuery.CrossQuery' else 'search'"/>
   <xsl:param name="dynaxmlPath" select="if (matches($servlet.path, 'org.cdlib.xtf.crossQuery.CrossQuery')) then 'org.cdlib.xtf.dynaXML.DynaXML' else 'view'"/>
 
+  <xsl:variable name="systemId" select="saxon:systemId()" xmlns:saxon="http://saxon.sf.net/"/>
+  
   <xsl:param name="docId"/>
   
   <xsl:param name="docPath" select="replace($docId, '[A-Za-z0-9]+\.xml$', '')"/>
@@ -65,9 +67,20 @@
 
   <xsl:param name="doc.path"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$query.string"/></xsl:param>
 
-  <xsl:param name="figure.path" select="concat($xtfURL, 'data/', $docPath, '/figures/')"/>
+  <xsl:param name="doc.dir">
+    <xsl:choose>
+      <xsl:when test="starts-with($systemId, 'http://')">
+        <xsl:value-of select="replace($systemId, '/[^/]*$', '')"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="concat($xtfURL, 'data/', $docPath)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:param>
+  
+  <xsl:param name="figure.path" select="concat($doc.dir, '/figures/')"/>
 
-  <xsl:param name="pdf.path" select="concat($xtfURL, 'data/', $docPath, '/pdfs/')"/>
+  <xsl:param name="pdf.path" select="concat($doc.dir, '/pdfs/')"/>
 
   <xsl:param name="doc.view" select="'0'"/>
 
