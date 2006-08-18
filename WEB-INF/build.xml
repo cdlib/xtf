@@ -118,6 +118,8 @@
         <include name="profiles/**/public*"/>
         <include name="profiles/**/default*"/>
 
+        <include name="script/**/*"/>
+
         <include name="style/**/*"/>
 
         <include name="INSTALL"/>
