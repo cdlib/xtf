@@ -85,7 +85,11 @@
     <!-- Make a zip file of all the source code -->
     <zip zipfile="build-tmp/WEB-INF/src.zip">
       <fileset dir="." includes="src/**/*.java"/>
+      <fileset dir="." includes="src/**/*.xml"/>
+      <fileset dir="." includes="src/**/*.jj"/>
       <fileset dir="." includes="src/**/*.html"/>
+      <fileset dir="." includes="backport/**/*.java"/>
+      <fileset dir="." includes="contrib/**/*.java"/>
     </zip>
 
     <!-- Zip up the JavaDocs -->
@@ -102,6 +106,7 @@
         <exclude name="**/.*"/>
         <exclude name="**/.*/**/*"/>
         <exclude name="**/CVS/**/*"/>
+        <exclude name="**/.DS_Store"/>
         <exclude name="style/crossQuery/complexQueryParser.xsl"/>
 
         <include name="bin/textIndexer"/>
@@ -167,6 +172,7 @@
         <include name="css/**/*"/>
         <include name="icons/**/*"/>
         <include name="profiles/**/*"/>
+        <include name="script/**/*"/>
         <include name="style/**/*"/>
       </fileset>
     </zip>
