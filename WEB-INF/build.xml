@@ -79,6 +79,7 @@
         <exclude name="regress/**/IndexDB/**/*"/>
         <exclude name="regress/**/*-test.xml"/>
         <include name="bin/regressTest"/>
+        <include name="WEB-INF/lib/servlet.jar"/>
       </fileset>
     </zip>
 
@@ -90,6 +91,7 @@
       <fileset dir="." includes="src/**/*.html"/>
       <fileset dir="." includes="backport/**/*.java"/>
       <fileset dir="." includes="contrib/**/*.java"/>
+      <fileset dir="." includes="lib/lucene-*.jar"/>
     </zip>
 
     <!-- Zip up the JavaDocs -->
@@ -111,6 +113,7 @@
 
         <include name="bin/textIndexer"/>
         <include name="bin/indexStats"/>
+        <include name="bin/indexDump"/>
 
         <include name="brand/default.xml"/>
 
@@ -138,7 +141,7 @@
         <include name="WEB-INF/web.xml"/>
         <include name="WEB-INF/lib/*.jar"/>
         <exclude name="WEB-INF/lib/servlet.jar"/>
-        <exclude name="WEB-INF/lib/lucene-*.jar"/>
+        <exclude name="WEB-INF/lib/lucene-*.jar"/> <!-- Included in xtf.jar -->
 
       </fileset>
     </copy>
