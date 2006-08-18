@@ -1,3 +1,16 @@
+Changes in 1.8
+==============
+
+- The default dynaXML docFormatterCommon.xsl stylesheet was not
+  properly computing the path for figure references if the doc
+  source is external (e.g. specified by source=http://xxx in 
+  the URL).
+
+- The sample "book bag" and "more like this" features were broken,
+  due to missing script files in the distribution. Also, a few
+  source files needed to rebuild the internal JavaCC parsers in
+  XTF were missing. [Bug 1542866]
+
 Changes in 1.8-beta 
 ===================
 
