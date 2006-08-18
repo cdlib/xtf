@@ -47,6 +47,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 
 import net.sf.saxon.Filter;
 
+import org.cdlib.xtf.saxonExt.sql.SQLConnect;
 import org.cdlib.xtf.textIndexer.CrimsonBugWorkaround;
 import org.cdlib.xtf.textIndexer.IndexInfo;
 import org.cdlib.xtf.textIndexer.IndexerConfig;
@@ -500,6 +501,11 @@ public class IndexUtil
     Transformer transformer = stf.newTransformer();
     SAXSource transformSource = new SAXSource( lastInChain, xmlSource );
     transformer.transform( transformSource, ultimateResult );
+    
+    // If any SQL connections were opened during the transformation, close
+    // them now.
+    //
+    SQLConnect.closeThreadConnections();
     
   } // applyPreFilter()
 
