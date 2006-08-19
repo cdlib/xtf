@@ -100,6 +100,10 @@ public class TagArray
    */
   public int add( String str, int type, int subType )
   {
+    // If the string is empty, return a zero tag.
+    if( str.length() == 0 )
+        return 0;
+    
     // Do we have room in the current block? If not, make a new one.
     char[] srcChars = str.toCharArray();
     int length = srcChars.length;
