@@ -40,6 +40,8 @@ public abstract class XtfQueryTraverser extends QueryTraverser {
       traverse((SpanExactQuery)q);
     else if (q instanceof MoreLikeThisQuery)
       traverse((MoreLikeThisQuery)q);
+    else if (q instanceof NumericRangeQuery)
+      traverse((NumericRangeQuery)q);
     else
       super.traverseQuery(q);
   } // traverseQuery()
@@ -61,5 +63,10 @@ public abstract class XtfQueryTraverser extends QueryTraverser {
   protected void traverse(MoreLikeThisQuery mlt) {
     traverseQuery(mlt.getSubQuery());
   }
+  
+  /** Traverse a numeric range query query */
+  protected void traverse(NumericRangeQuery nrq) {
+  }
+  
   
 }

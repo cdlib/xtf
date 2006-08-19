@@ -182,11 +182,11 @@ public class NumericFieldData
     return values.get(index);
   }
   
-  public final int nextIndexAfterDoc(int docId)
+  public final int findDocIndex(int docId)
   {
     int idx = docs.binarySearch(docId);
     if (idx >= 0)
-      return idx + 1;
+      return idx;
     else
       return -idx - 1; // from -ins - 1
   }

@@ -198,7 +198,7 @@ public class NumericRangeQuery extends Query {
     }
 
     public boolean skipTo(int target) throws IOException {
-      dataPos = Math.max(dataPos, data.nextIndexAfterDoc(target) - 1);
+      dataPos = Math.max(dataPos, data.findDocIndex(target) - 1);
       return next();
     }
 
