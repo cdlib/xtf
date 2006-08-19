@@ -79,6 +79,9 @@ public class FRBRGroupData extends DynamicGroupData
 
   /** Primary field to sort by */
   private int primarySort = FRBRData.TYPE_TITLE;
+  
+  /** Whether primary sort is in reverse order */
+  private boolean reversePrimarySort = false;
 
   /**
    * Read in the FRBR data for the a delimited list of fields.
@@ -100,6 +103,10 @@ public class FRBRGroupData extends DynamicGroupData
           primarySort = FRBRData.TYPE_AUTHOR;
         else if (tok.equals("[sort=date]"))
           primarySort = FRBRData.TYPE_DATE;
+        else if (tok.equals("[sort=-date]")) {
+          primarySort = FRBRData.TYPE_DATE;
+          reversePrimarySort = true;
+        }
         else if (tok.equals("[sort=id]"))
           primarySort = FRBRData.TYPE_ID;
         else
@@ -941,21 +948,36 @@ public class FRBRGroupData extends DynamicGroupData
 
     // First, compare the primary field.
     int x;
-    if ((x=compareField(primarySort, doc1, doc2)) != 0) 
+    if ((x=compareField(primarySort, doc1, doc2, reversePrimarySort)) != 0) 
       return x;
 
     // Now compare the secondary fields, in order.
     for (int t = FRBRData.FIRST_TYPE; t <= FRBRData.LAST_TYPE; ++t) {
-      if (t != primarySort && (x=compareField(t, doc1, doc2)) != 0) 
+      if (t != primarySort && (x=compareField(t, doc1, doc2, false)) != 0) 
         return x;
     }
 
     // No differences found.
     return 0;
   }
+  
+  /** Find the title of a document */
+  private String docTitle(int doc)
+  {
+    for (int pos = data.docTags.firstPos(doc); pos >= 0; pos = data.docTags.nextPos(pos))
+    {
+      int tag     = data.docTags.getValue(pos);
+      int type    = data.tags.getType(tag);
+      if (type != FRBRData.TYPE_TITLE)
+        continue;
+      return data.tags.getString(tag);
+    }
+    
+    return "";
+  }
 
   /** Compare a particular field of two groups */
-  private int compareField(int type, int doc1, int doc2) 
+  private int compareField(int type, int doc1, int doc2, boolean reverse) 
   {
     // Locate this field in the first doc.
     int tag1 = 0;
@@ -975,12 +997,15 @@ public class FRBRGroupData extends DynamicGroupData
 
     // Make sure docs that don't have an entry sort at the end, not the beginning.
     if (tag1 == 0)
-      tag1 = Integer.MAX_VALUE;
+      tag1 = reverse ? Integer.MIN_VALUE : Integer.MAX_VALUE;
     if (tag2 == 0)
-      tag2 = Integer.MAX_VALUE;
+      tag2 = reverse ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 
     // Now a simple numerical comparison on the tags will do.
-    return (tag1 < tag2) ? -1 : ((tag1 > tag2) ? 1 : 0);
+    if (reverse)
+      return (tag1 < tag2) ? +1 : ((tag1 > tag2) ? -1 : 0);
+    else
+      return (tag1 < tag2) ? -1 : ((tag1 > tag2) ? +1 : 0);
   } // compareField
 
 } // class FRBRGroupData
