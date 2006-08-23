@@ -45,6 +45,8 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
       return rewrite((MoreLikeThisQuery)q);
     else if (q instanceof NumericRangeQuery)
       return rewrite((NumericRangeQuery)q);
+    else if (q instanceof MultiFieldAndQuery)
+      return rewrite((MultiFieldAndQuery)q);
     else
       return super.rewriteQuery(q);
   } // rewriteQuery()
@@ -131,6 +133,45 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
     if (!forceRewrite(nrq))
         return nrq;
     return (NumericRangeQuery) nrq.clone();
+  }
+
+  /** Rewrite a multi-field AND query */
+  protected Query rewrite(MultiFieldAndQuery q) 
+  {
+    // Rewrite each clause.
+    SpanQuery[] clauses = q.getClauses();
+    Vector newClauses = new Vector();
+    boolean anyChanges = false;
+
+    for (int i = 0; i < clauses.length; i++) {
+      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
+      if (clause != clauses[i])
+        anyChanges = true;
+      
+      // If the clause ended up null, skip it.
+      if (clause == null)
+        continue;
+
+      // Retain everything else.
+      newClauses.add(clause);
+    } // for i
+
+    // If no changes, just return the original query.
+    boolean force = forceRewrite(q);
+    if (!anyChanges && !force)
+      return q;
+
+    // If no clauses, let the caller know they can delete this query.
+    if (newClauses.isEmpty())
+      return null;
+
+    // Construct a new query joining all the rewritten clauses.
+    SpanQuery[] newArray = (SpanQuery[])
+        newClauses.toArray( new SpanQuery[newClauses.size()] );
+    return copyBoost(q, new MultiFieldAndQuery(q.getFields(), 
+                                               newArray, 
+                                               q.getSlop(),
+                                               q.getSpanRecording()));
   }
   
 }

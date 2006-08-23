@@ -66,6 +66,7 @@ import org.cdlib.xtf.textEngine.facet.SelectorParser;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.StringList;
 import org.cdlib.xtf.util.Trace;
 
 /**
@@ -412,11 +413,12 @@ public class QueryRequestParser
         if( !name.matches(
                 "^query$|^term$|^all$|^range$|^phrase$|^exact$|^near$" +
                 "|^and$|^or$|^not$|^orNear$|" +
-                "|^moreLike$" +               // experimental
+                "|^moreLike$|^keyword$|" +    // experimental
                 "|^combine$|^meta$|^text$") ) // old stuff, for compatability
         {
             error( "Expected: 'query', 'term', 'all', 'range', 'phrase', " +
-                   "'exact', 'near', 'orNear', 'and', 'or', 'not', or 'moreLike'; " +
+                   "'exact', 'near', 'orNear', 'and', 'or', 'not', " +
+                   "'moreLike', or 'keyword'; " +
                    "found '" + name + "'" );
         }
         
@@ -518,6 +520,10 @@ public class QueryRequestParser
         // Handle 'moreLike' queries separately.
         if( name.equals("moreLike") )
             return parseMoreLike( parent, field, maxSnippets );
+        
+        // Keyword queries are a bit tricky, and therefore handled separately.
+        if( name.equals("keyword") )
+            return parseKeywordQuery( parent, field, maxSnippets );
 
         // For text queries, 'all', 'phrase', 'exact', and 'near' can be viewed
         // as phrase queries with different slop values.
@@ -675,6 +681,60 @@ public class QueryRequestParser
     } // parseQuery2() 
         
         
+    /**
+     * Parse a 'keyword' query, known internally as a multi-field AND.
+     */
+    private Query parseKeywordQuery( EasyNode parent, String field, int maxSnippets )
+    {
+      // First, check that no regular 'field' has been specified.
+      if( field != null )
+          error( "'keyword' query requires 'fields' attribute, not 'field'" );
+      
+      // Make sure 'fields' is present.
+      String fieldsStr = parseStringAttrib( parent, "fields" );
+      
+      // Parse that into an array of fields.
+      StringList list = new StringList();
+      StringTokenizer st = new StringTokenizer( fieldsStr, ";,| \t" );
+      while( st.hasMoreTokens() )
+          list.add( st.nextToken() );
+      
+      // There must be at least two fields specified.
+      if( list.size() < 2 )
+          error( "'keyword' query requires at least two fields to be specified" );
+      
+      // Make sure slop has been specified.
+      int slop = parseIntAttrib( parent, "slop" );
+      
+      // Now parse all the sub-queries.
+      ArrayList queryList = new ArrayList();
+      for( int i = 0; i < parent.nChildren(); i++ ) {
+          EasyNode el = parent.child( i );
+          if( !el.isElement() )
+              continue;
+          else if( el.name().equalsIgnoreCase("resultData") )
+              continue; // ignore, handled by client's resultFormatter.xsl
+
+          Query q = parseQuery(el, fieldsStr, maxSnippets);
+          if( q == null )
+              continue;
+          
+          if( !(q instanceof SpanQuery) )
+              error( "Internal error: sub-queries of 'keyword' must be span queries" );
+          
+          queryList.add( q );
+      }
+      
+      // Form the final query.
+      SpanQuery[] subQueries = (SpanQuery[])
+          queryList.toArray( new SpanQuery[queryList.size()] );
+      MultiFieldAndQuery ret = new MultiFieldAndQuery( 
+          list.toArray(), subQueries, slop, maxSnippets );
+      return ret;
+      
+    } // parseKeywordQuery()
+
+
     /**
      * Simplify a BooleanQuery that contains other BooleanQuery/ies with the
      * same type of clauses. If there's any boosting involved, don't do
@@ -851,12 +911,15 @@ public class QueryRequestParser
         else if( attrName.equals("field") || attrName.equals("metaField") )
             ; // handled elsewhere
         
+        else if( attrName.equals("fields") && el.name().equals("keyword") )
+          ; // handled elsewhere
+      
         else if( (attrName.equals("inclusive") || attrName.equals("numeric")) &&
                  el.name().equals("range") )
             ; // handled elsewhere
         
         else if( attrName.equals("slop") &&
-                 el.name().matches("^near$|^orNear$") )
+                 el.name().matches("^near$|^orNear$|^keyword$") )
             ; // handled elsewhere
         
         else if( attrName.equalsIgnoreCase("useProximity") &&
