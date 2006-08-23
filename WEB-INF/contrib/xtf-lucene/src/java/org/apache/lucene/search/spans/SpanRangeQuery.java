@@ -188,6 +188,9 @@ public class SpanRangeQuery extends SpanQuery {
 
   /** Returns <code>true</code> if the range query is inclusive */
   public boolean isInclusive() { return inclusive; }
+  
+  /** Returns the term limit, if any, for this range query */
+  public int getTermLimit() { return termLimit; }
 
   public String toString(String field)
   {
