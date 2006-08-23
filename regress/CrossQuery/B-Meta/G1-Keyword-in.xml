@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+ <meta indexPath="IndexDB">
+    <keyword fields="title,creator,subject" slop="10" maxSnippets="3">
+      <term>apartheid</term>
+      <term>heribert</term>
+      <term>politics</term>
+    </keyword>
+  </meta>
+</query>
