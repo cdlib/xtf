@@ -144,150 +144,51 @@ public abstract class QueryRewriter {
   /**
    * Rewrite a span NEAR query.
    * 
-   * @param nq  The query to rewrite
-   * @return    Rewritten version, or 'nq' unchanged if no changed needed.
+   * @param q  The query to rewrite
+   * @return    Rewritten version, or 'q' unchanged if no changed needed.
    */
-  protected Query rewrite(SpanNearQuery nq) {
-    // Rewrite each clause and make a vector of the new ones.
-    SpanQuery[] clauses = nq.getClauses();
-    Vector newClauses = new Vector();
-    boolean anyChanges = false;
-
-    for (int i = 0; i < clauses.length; i++) {
-      // Rewrite this clause, and record any difference.
-      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
-      if (clause != clauses[i])
-        anyChanges = true;
-
-      // If rewriting resulted in removing the query, toss it.
-      if (clause == null)
-        continue;
-
-      // Add it to the vector
-      newClauses.add(clause);
-    } // for i
-
-    // If no changes, just return the original query.
-    boolean force = forceRewrite(nq);
-    if (!anyChanges && !force)
-      return nq;
-
-    // If we end up with no clauses, let the caller know.
-    if (newClauses.isEmpty())
-      return null;
-
-    // If we end up with a single clause, return just that.
-    if (newClauses.size() == 1 && !force) {
-
-      // Since we're getting rid of the parent, pass on its boost to the
-      // child.
-      //
-      return combineBoost(nq, (Query) newClauses.elementAt(0));
-    }
-
-    // Construct a new 'near' query joining all the rewritten clauses.
-    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
-    return copyBoost(nq, new SpanNearQuery((SpanQuery[]) newClauses
-        .toArray(newArray), nq.getSlop(), nq.isInOrder()));
-
+  protected Query rewrite(final SpanNearQuery q) 
+  {
+    // Rewrite each clause. Allow single clauses to be promoted.
+    return rewriteClauses(q, q.getClauses(), true, new SpanClauseJoiner() {
+      public SpanQuery join(SpanQuery[] clauses) {
+        return new SpanNearQuery(clauses, q.getSlop(), q.isInOrder());
+      }
+    });
   } // rewrite()
 
   /**
    * Rewrite a span OR-NEAR query.
    * 
-   * @param nq  The query to rewrite
+   * @param q  The query to rewrite
    * @return    Rewritten version, or 'nq' unchanged if no changed needed.
    */
-  protected Query rewrite(SpanOrNearQuery nq) {
-    // Rewrite each clause and make a vector of the new ones.
-    SpanQuery[] clauses = nq.getClauses();
-    Vector newClauses = new Vector();
-    boolean anyChanges = false;
-
-    for (int i = 0; i < clauses.length; i++) {
-      // Rewrite this clause, and record any difference.
-      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
-      if (clause != clauses[i])
-        anyChanges = true;
-
-      // If rewriting resulted in removing the query, toss it.
-      if (clause == null)
-        continue;
-
-      // Add it to the vector
-      newClauses.add(clause);
-    } // for i
-
-    // If no changes, just return the original query.
-    boolean force = forceRewrite(nq);
-    if (!anyChanges && !force)
-      return nq;
-
-    // If we end up with no clauses, let the caller know.
-    if (newClauses.isEmpty())
-      return null;
-
-    // If we end up with a single clause, return just that.
-    if (newClauses.size() == 1 && !force) {
-
-      // Since we're getting rid of the parent, pass on its boost to the
-      // child.
-      //
-      return combineBoost(nq, (Query) newClauses.elementAt(0));
-    }
-
-    // Construct a new 'near' query joining all the rewritten clauses.
-    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
-    return copyBoost(nq, new SpanOrNearQuery((SpanQuery[]) newClauses
-        .toArray(newArray), nq.getSlop(), nq.penalizeOutOfOrder()));
-
+  protected Query rewrite(final SpanOrNearQuery q) 
+  {
+    // Rewrite each clause. Allow single clauses to be promoted.
+    return rewriteClauses(q, q.getClauses(), true, new SpanClauseJoiner() {
+      public SpanQuery join(SpanQuery[] clauses) {
+        return new SpanOrNearQuery(clauses, 
+                                   q.getSlop(), 
+                                   q.penalizeOutOfOrder());
+      }
+    });
   } // rewrite()
 
   /**
    * Rewrite a span-based OR query.
    * 
-   * @param oq  The query to rewrite
+   * @param q  The query to rewrite
    * @return    Rewritten version, or 'oq' unchanged if no changed needed.
    */
-  protected Query rewrite(SpanOrQuery oq) {
-    // Rewrite each clause.
-    SpanQuery[] clauses = oq.getClauses();
-    Vector newClauses = new Vector();
-    boolean anyChanges = false;
-
-    for (int i = 0; i < clauses.length; i++) {
-      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
-      if (clause != clauses[i])
-        anyChanges = true;
-      
-      // If the clause ended up null, skip it.
-      if (clause == null)
-        continue;
-
-      // Retain everything else.
-      newClauses.add(clause);
-    } // for i
-
-    // If no changes, just return the original query.
-    boolean force = forceRewrite(oq);
-    if (!anyChanges && !force)
-      return oq;
-
-    // If no clauses, let the caller know they can delete this query.
-    if (newClauses.isEmpty())
-      return null;
-
-    // If we have only one clause, return just that. Pass on the parent's
-    // boost to the only child.
-    //
-    if (newClauses.size() == 1 && !force)
-      return combineBoost(oq, (Query) newClauses.elementAt(0));
-
-    // Construct a new 'or' query joining all the rewritten clauses.
-    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
-    return copyBoost(oq, new SpanOrQuery((SpanQuery[]) newClauses
-        .toArray(newArray)));
-
+  protected Query rewrite(final SpanOrQuery q) 
+  {
+    // Rewrite each clause. Allow single clauses to be promoted.
+    return rewriteClauses(q, q.getClauses(), true, new SpanClauseJoiner() {
+      public SpanQuery join(SpanQuery[] clauses) {
+        return new SpanOrQuery(clauses);
+      }
+    });
   } // rewrite()
 
   /**
@@ -369,7 +270,8 @@ public abstract class QueryRewriter {
    * @param nq  The query to rewrite
    * @return    Rewritten version, or 'nq' unchanged if no changed needed.
    */
-  protected Query rewrite(SpanDechunkingQuery nq) {
+  protected Query rewrite(SpanDechunkingQuery nq) 
+  {
     // Rewrite the sub-queries
     SpanQuery sub = (SpanQuery) rewriteQuery(nq.getWrapped());
 
@@ -490,5 +392,71 @@ public abstract class QueryRewriter {
     }
     return newQuery;
   } // copyBoost()
+
+  /**
+   * Utility function that takes care of rewriting a series of span query
+   * clauses.
+   * 
+   * @param oldQuery    Query being rewritten
+   * @param oldClauses  Clauses to rewrite
+   * @param promoteSingle true to allow single-clause result to be returned,
+   *                    false to force wrapping.
+   * @param joiner      Handles joining new clauses into wrapper query
+   * @return            New rewritten query, or 'oldQuery' if no changes.
+   */
+  protected Query rewriteClauses(Query            oldQuery,
+                                 SpanQuery[]      oldClauses,
+                                 boolean          promoteSingle, 
+                                 SpanClauseJoiner joiner)
+  {
+    Vector newClauses = new Vector();
+    boolean anyChanges = false;
+  
+    for (int i = 0; i < oldClauses.length; i++) {
+      SpanQuery clause = (SpanQuery) rewriteQuery(oldClauses[i]);
+      if (clause != oldClauses[i])
+        anyChanges = true;
+      
+      // If the clause ended up null, skip it.
+      if (clause == null)
+        continue;
+  
+      // Retain everything else.
+      newClauses.add(clause);
+    } // for i
+  
+    // If no changes, just return the original clauses.
+    boolean force = forceRewrite(oldQuery);
+    if (!anyChanges && !force)
+      return oldQuery;
+    
+    // If we ended up with zero clauses, let the caller know they can delete
+    // the query.
+    //
+    if (newClauses.isEmpty())
+      return null;
+    
+    // If only one clause (and we're allowed to shunt), just return the single
+    // clause instead of a wrapping query.
+    //
+    if (newClauses.size() == 1) {
+
+      // Since we're getting rid of the parent, pass on its boost to the
+      // child.
+      //
+      return combineBoost(oldQuery, (SpanQuery)newClauses.get(0));
+    }
+
+    // Construct a new query joining all the rewritten clauses.
+    SpanQuery[] newArray = (SpanQuery[]) 
+        newClauses.toArray(new SpanQuery[newClauses.size()]);
+    Query newQuery = joiner.join(newArray);
+    return copyBoost(oldQuery, newQuery);
+  }
+  
+  /** Utility class that joins clauses into an Or query, And query, etc. */
+  public interface SpanClauseJoiner {
+    public SpanQuery join(SpanQuery[] clauses);
+  }
 
 }

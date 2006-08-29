@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.lucene.chunk.SpanChunkedNotQuery;
+import org.apache.lucene.chunk.SpanDechunkingQuery;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -29,6 +30,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryRewriter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanOrNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
@@ -103,7 +105,7 @@ public class BigramQueryRewriter extends QueryRewriter {
 
   /**
    * Rewrite a BooleanQuery. Prohibited or allowed (not required) clauses
-   * that are single stop words will be removed. Required clauses will
+   * that are single stop words will be removed. Required clauses will not
    * have bi-gramming applied.
    * 
    * @param bq  The query to rewrite
@@ -186,109 +188,148 @@ public class BigramQueryRewriter extends QueryRewriter {
    * Rewrite a span NEAR query. Stop words will be bi-grammed into adjacent
    * terms.
    * 
-   * @param nq  The query to rewrite
-   * @return    Rewritten version, or 'nq' unchanged if no changed needed.
+   * @param q  The query to rewrite
+   * @return   Rewritten version, or 'q' unchanged if no changed needed.
    */
-  protected Query rewrite(SpanNearQuery nq) {
-    // Rewrite each clause and make a vector of the new ones.
-    SpanQuery[] clauses = nq.getClauses();
-    Vector newClauses = new Vector();
-    boolean anyChanges = false;
+  protected Query rewrite(final SpanNearQuery q) 
+  {
+    // Rewrite each clause. Allow single clauses to be promoted, and
+    // do perform bi-gramming.
+    //
+    return rewriteClauses(q, q.getClauses(), true, 
+        true, q.getSlop(), 
+        new SpanClauseJoiner() {
+          public SpanQuery join(SpanQuery[] clauses) {
+            return new SpanNearQuery(clauses, q.getSlop(), false);
+          }
+        });
+  } // rewrite()
 
-    for (int i = 0; i < clauses.length; i++) {
-      // Rewrite this clause, and record any difference.
-      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
-      if (clause != clauses[i])
-        anyChanges = true;
-
-      // If rewriting resulted in removing the query, toss it.
-      if (clause == null)
-        continue;
-
-      // Add it to the vector
-      newClauses.add(clause);
-    } // for i
-
-    // Bi-gram the rewritten clauses.
-    anyChanges |= bigramQueries(newClauses, nq.getSlop());
-
-    // If no changes, just return the original query.
-    if (!anyChanges)
-      return nq;
-
-    // If we end up with no clauses, let the caller know.
-    if (newClauses.isEmpty())
-      return null;
-
-    // If we end up with a single clause, return just that.
-    if (newClauses.size() == 1) {
-
-      // Since we're getting rid of the parent, pass on its boost to the
-      // child.
-      //
-      return combineBoost(nq, (Query) newClauses.elementAt(0));
-    }
-
-    // Construct a new 'near' query joining all the rewritten clauses.
-    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
-    return copyBoost(nq, new SpanNearQuery((SpanQuery[]) newClauses
-        .toArray(newArray), nq.getSlop(), false));
-
+  /**
+   * Rewrite a span OR-NEAR query. Stop words will be bi-grammed into adjacent
+   * terms.
+   * 
+   * @param q  The query to rewrite
+   * @return   Rewritten version, or 'q' unchanged if no changed needed.
+   */
+  protected Query rewrite(final SpanOrNearQuery q) 
+  {
+    // Rewrite each clause. Allow single clauses to be promoted, and
+    // do perform bi-gramming.
+    //
+    return rewriteClauses(q, q.getClauses(), true, 
+        true, q.getSlop(), 
+        new SpanClauseJoiner() {
+          public SpanQuery join(SpanQuery[] clauses) {
+            return new SpanOrNearQuery(clauses, q.getSlop(), false);
+          }
+        });
   } // rewrite()
 
   /**
    * Rewrite a span-based OR query. The procedure in this case is simple:
    * remove all stop words, with no bi-gramming performed.
    * 
-   * @param oq  The query to rewrite
-   * @return    Rewritten version, or 'oq' unchanged if no changed needed.
+   * @param q  The query to rewrite
+   * @return   Rewritten version, or 'q' unchanged if no changed needed.
    */
-  protected Query rewrite(SpanOrQuery oq) {
-    // Rewrite each clause. Along the way, recognize and bi-gram sequences of
-    // terms.
+  protected Query rewrite(final SpanOrQuery q) 
+  {
+    // Rewrite each clause. Allow single clauses to be promoted, and
+    // avoid bi-gramming.
     //
-    SpanQuery[] clauses = oq.getClauses();
-    Vector newClauses = new Vector();
+    return rewriteClauses(q, q.getClauses(), true, false, 0, new SpanClauseJoiner() {
+      public SpanQuery join(SpanQuery[] clauses) {
+        return new SpanOrQuery(clauses);
+      }
+    });
+  } // rewrite()
+  
+  /**
+   * Utility function that takes care of rewriting a series of span query
+   * clauses.
+   * 
+   * @param oldQuery    Query being rewritten
+   * @param oldClauses  Clauses to rewrite
+   * @param shuntSingle true to allow single-clause result to be returned,
+   *                    false to force wrapping.
+   * @param bigram      true to bigram stop-words, false to simply remove them
+   * @param slop        if bigramming, 0 for phrase, non-zero for near
+   * @param joiner      Handles joining new clauses into wrapper query
+   * @return            New rewritten query, or 'oldQuery' if no changes.
+   */
+  protected Query rewriteClauses(Query            oldQuery,
+                                 SpanQuery[]      oldClauses,
+                                 boolean          shuntSingle, 
+                                 boolean          bigram,
+                                 int              slop,
+                                 SpanClauseJoiner joiner)
+  {
+    Vector newClauseVec = new Vector();
     boolean anyChanges = false;
-
-    for (int i = 0; i < clauses.length; i++) {
-      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
-      if (clause != clauses[i])
+  
+    for (int i = 0; i < oldClauses.length; i++) {
+      SpanQuery clause = (SpanQuery) rewriteQuery(oldClauses[i]);
+      if (clause != oldClauses[i])
         anyChanges = true;
+      
+      // If the clause ended up null, skip it.
       if (clause == null)
         continue;
-
-      // Skip stop-words.
-      if (stopSet.contains(extractTermText(clause))) {
+  
+      // Skip stop-words if we're not bigramming.
+      if (!bigram && stopSet.contains(extractTermText(clause))) {
         removedTerms.add(extractTermText(clause));
         anyChanges = true;
         continue;
       }
 
       // Retain everything else.
-      newClauses.add(clause);
+      newClauseVec.add(clause);
     } // for i
-
-    // If no changes, just return the original query.
-    if (!anyChanges)
-      return oq;
-
-    // If no clauses, let the caller know they can delete this query.
-    if (newClauses.isEmpty())
-      return null;
-
-    // If we have only one clause, return just that. Pass on the parent's
-    // boost to the only child.
+    
+    SpanQuery[] newClauses = (SpanQuery[]) 
+      newClauseVec.toArray(new SpanQuery[newClauseVec.size()]);
+    
+    // Apply bi-gramming to the rewritten clauses if requested.
+    boolean alreadyJoined = false;
+    if (bigram) {
+      SpanQuery[] bigrammedClauses = bigramQueries(newClauses, slop, joiner);
+      if (bigrammedClauses != newClauses) {
+        assert bigrammedClauses.length == 1 : 
+          "bigramQueries should result in one clause if any bigramming performed";
+        newClauses = bigrammedClauses;
+        anyChanges = true;
+        alreadyJoined = true;
+      }
+    }
+  
+    // If no changes, just return the original clauses.
+    boolean force = forceRewrite(oldQuery);
+    if (!anyChanges && !force)
+      return oldQuery;
+    
+    // If we ended up with zero clauses, let the caller know they can delete
+    // the query.
     //
-    if (newClauses.size() == 1)
-      return combineBoost(oq, (Query) newClauses.elementAt(0));
+    if (newClauses.length == 0)
+      return null;
+    
+    // If only one clause (and we're allowed to shunt), just return the single
+    // clause instead of a wrapping query.
+    //
+    if (newClauses.length == 1 && (alreadyJoined || (shuntSingle && !force))) {
 
-    // Construct a new 'or' query joining all the rewritten clauses.
-    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
-    return copyBoost(oq, new SpanOrQuery((SpanQuery[]) newClauses
-        .toArray(newArray)));
+      // Since we're getting rid of the parent, pass on its boost to the
+      // child.
+      //
+      return combineBoost(oldQuery, newClauses[0]);
+    }
 
-  } // rewrite()
+    // Construct a new query joining all the rewritten clauses.
+    Query newQuery = joiner.join(newClauses);
+    return copyBoost(oldQuery, newQuery);
+  }
   
   /**
    * Removes stop words from a set of consecutive queries by combining
@@ -296,27 +337,25 @@ public class BigramQueryRewriter extends QueryRewriter {
    * 
    * @param queryVec    Vector of queries to work on
    * @param slop        zero for exact matching, non-zero for 'near' matching.
-   * @return            true if any modification was made to the vector
+   * @param joiner      used to join the resulting bi-grammed clauses
+   * @return            original list, or a new query containing bi-grams
    */
-  protected boolean bigramQueries(Vector queryVec, int slop) {
-    assert queryVec.size() > 0 : "cannot bigram empty list";
-
-    // Get a handy array of the queries.
-    int nQueries = queryVec.size();
-    Query[] queries = new Query[nQueries];
-    for (int i = 0; i < nQueries; i++)
-      queries[i] = (Query) queryVec.elementAt(i);
+  protected SpanQuery[] bigramQueries(SpanQuery[] clauses, 
+                                      int slop,
+                                      SpanClauseJoiner joiner) 
+  {
+    assert clauses.length > 0 : "cannot bigram empty list";
 
     // Extract the term text from each query.
-    String[] terms = new String[nQueries];
-    for (int i = 0; i < nQueries; i++)
-      terms[i] = extractTermText(queries[i]);
+    String[] terms = new String[clauses.length];
+    for (int i = 0; i < clauses.length; i++)
+      terms[i] = extractTermText(clauses[i]);
 
     // If there's only one query, and it's not a stop word, the we have 
     // nothing to do.
     //
-    if (nQueries == 1 && !stopSet.contains(terms[0]))
-      return false;
+    if (clauses.length == 1 && !stopSet.contains(terms[0]))
+      return clauses;
 
     // Find out if none of the queries are stop words (so we can take the easy
     // way out). 
@@ -329,7 +368,7 @@ public class BigramQueryRewriter extends QueryRewriter {
     int nStopWords = 0;
     int consecStopWords = 0;
     int maxConsecStopWords = 0;
-    for (int i = 0; i < nQueries; i++) {
+    for (int i = 0; i < clauses.length; i++) {
       if (!stopSet.contains(terms[i])) {
         consecStopWords = 0;
         continue;
@@ -343,17 +382,15 @@ public class BigramQueryRewriter extends QueryRewriter {
 
     // No stop words? Nothing to do.
     if (nStopWords == 0)
-      return false;
+      return clauses;
 
     // If the query is entirely stop words, it's not going to produce
     // anything useful. Just clear the query list and let the caller know 
     // we have made a change.
     //
-    if (nStopWords == nQueries) {
-      queryVec.clear();
-      return true;
-    }
-
+    if (nStopWords == clauses.length)
+      return new SpanQuery[0];
+    
     // At this point, we know the query has at least one stop word and
     // at least one real word.
     //
@@ -362,16 +399,16 @@ public class BigramQueryRewriter extends QueryRewriter {
     //    (2) Near search with max 2 consecutive stop words
     //    (3) Near search with 3 or more consecutive stop words.
     //
-    queryVec.clear();
 
     // Case (1): Phrase search
     //
+    SpanQuery ret;
     if (slop == 0)
-      queryVec.add(bigramTermsExact(queries, terms, slop));
+      ret = bigramTermsExact(clauses, terms, joiner);
 
     // Case (2): Near search with max 2 consecutive stop words
     else if (maxConsecStopWords <= 2)
-      queryVec.add(bigramTermsInexact(queries, terms, slop));
+      ret = bigramTermsInexact(clauses, terms, joiner);
 
     // Case (3): Near search with 3 or more consecutive stop words
     else {
@@ -380,14 +417,16 @@ public class BigramQueryRewriter extends QueryRewriter {
       // and let the best match win. Give boost priority to the exact one.
       //
       SpanQuery[] both = new SpanQuery[2];
-      both[0] = bigramTermsExact(queries, terms, slop);
-      both[1] = bigramTermsInexact(queries, terms, slop);
+      both[0] = bigramTermsExact(clauses, terms, joiner);
+      both[1] = bigramTermsInexact(clauses, terms, joiner);
       reduceBoost(both[1]);
-      queryVec.add(new SpanOrQuery(both));
+      ret = new SpanOrQuery(both);
     }
 
     // We definitely made changes
-    return true;
+    SpanQuery[] retArray = new SpanQuery[1];
+    retArray[0] = ret;
+    return retArray;
   } // bigramQueries()
 
   /**
@@ -405,11 +444,14 @@ public class BigramQueryRewriter extends QueryRewriter {
    * 
    * @param queries Original queries in the sequence
    * @param terms   Corresponding term text of each query
-   * @param slop    Sloppiness for the resulting query
+   * @param joiner  Used to join the resulting bi-grammed clauses
    * 
    * @return        A new query possibly containing bi-grams
    */
-  protected SpanQuery bigramTermsInexact(Query[] queries, String[] terms, int slop) {
+  protected SpanQuery bigramTermsInexact(Query[] queries, 
+                                         String[] terms, 
+                                         SpanClauseJoiner joiner) 
+  {
     SpanQuery[] clauses = new SpanQuery[terms.length * 2];
     int nClauses = 0;
 
@@ -486,7 +528,7 @@ public class BigramQueryRewriter extends QueryRewriter {
     // Otherwise, join them all together in a "near" query.
     SpanQuery[] resized = new SpanQuery[nClauses];
     System.arraycopy(clauses, 0, resized, 0, nClauses);
-    return new SpanNearQuery(resized, slop, false);
+    return joiner.join(resized);
   } // bigramTermsInexact()
 
   /**
@@ -535,10 +577,14 @@ public class BigramQueryRewriter extends QueryRewriter {
    * @param queries Original queries in the sequence
    * @param terms   Corresponding term text of each query
    * @param slop    Sloppiness for the resulting query
+   * @param joiner  Used to join the resulting bi-grammed clauses
    * 
    * @return        A new query possibly containing bi-grams
    */
-  protected SpanQuery bigramTermsExact(Query[] queries, String[] terms, int slop) {
+  protected SpanQuery bigramTermsExact(Query[] queries, 
+      String[] terms, 
+      SpanClauseJoiner joiner) 
+{
     Vector newQueries = new Vector(queries.length * 2);
 
     // Process each term in turn, looking at its relation to the next term.
@@ -597,7 +643,7 @@ public class BigramQueryRewriter extends QueryRewriter {
     newQueries.toArray(newArray);
 
     // And finally, make the "near" query that will join them all.
-    return new SpanNearQuery(newArray, slop, false);
+    return joiner.join(newArray);
   } // bigramTermsExact()
 
   /**
@@ -761,6 +807,8 @@ public class BigramQueryRewriter extends QueryRewriter {
       return ((TermQuery) obj).getTerm();
     if (obj instanceof SpanTermQuery)
       return ((SpanTermQuery) obj).getTerm();
+    if (obj instanceof SpanDechunkingQuery)
+      return extractTerm(((SpanDechunkingQuery)obj).getWrapped());
     return null;
   } // extractTerm()
 
