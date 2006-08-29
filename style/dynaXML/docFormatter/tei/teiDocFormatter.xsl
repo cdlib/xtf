@@ -127,16 +127,16 @@
       <frameset rows="80,*" border="2" framespacing="2" frameborder="1">
         <frame scrolling="no" title="Navigation Bar">
           <xsl:attribute name="name">bbar</xsl:attribute>
-          <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$bbar.href"/></xsl:attribute>
+          <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$bbar.href"/></xsl:attribute>
         </frame>
         <frameset cols="35%,65%" border="2" framespacing="2" frameborder="1">
           <frame title="Table of Contents">
             <xsl:attribute name="name">toc</xsl:attribute>
-            <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$toc.href"/></xsl:attribute>
+            <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$toc.href"/></xsl:attribute>
           </frame>
           <frame title="Content">
             <xsl:attribute name="name">content</xsl:attribute>
-            <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/></xsl:attribute>
+            <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$content.href"/></xsl:attribute>
           </frame>
         </frameset>
       </frameset>
@@ -351,7 +351,7 @@
                 <tr align="left" valign="middle">
                   <td width="8" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="8"/></td>
                   <td width="15" nowrap="nowrap">
-                    <a href="http://xtf.sourceforge.net" target="{$target}">
+                    <a href="search" target="{$target}">
                       <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
                     </a>
                   </td>
