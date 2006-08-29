@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc9.xml" totalHits="0">
+      <meta>
+         <title>Orange and Blue: Colors That Don't Work Together</title>
+         <creator>
+            <snippet rank="1">Jeffy <hit>
+                  <term>Color</term> 
+                  <term>Wheel</term>
+               </hit>
+            </snippet>
+         </creator>
+         <subject>
+            <snippet rank="1">
+               <hit>
+                  <term>Fribble</term> 
+                  <term>Color</term> 
+                  <term>Wheel</term>
+               </hit> Smarmy</snippet>
+         </subject>
+         <type>text</type>
+         <relation>http://www.orangecrush.com/</relation>
+         <rights>Public</rights>
+         <foo>bar</foo>
+      </meta>
+   </docHit>
+</crossQueryResult>

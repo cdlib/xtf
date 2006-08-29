@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10">
+ <meta indexPath="IndexDB">
+   <or fields="title,creator,subject,text" slop="10" maxSnippets="3">
+     <term>fribble</term>
+     <term>color</term>
+     <term>apartheid</term>
+   </or>
+  </meta>
+</query>

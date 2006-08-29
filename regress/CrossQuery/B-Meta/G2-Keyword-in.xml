@@ -2,12 +2,12 @@
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="10">
  <meta indexPath="IndexDB">
-    <keyword fields="title,creator,subject" slop="10" maxSnippets="3">
+    <and fields="title,creator,subject" slop="10" maxSnippets="3">
       <term>apartheid</term>
       <phrase>
         <term>african</term>
         <term>history</term>
       </phrase>
-    </keyword>
+    </and>
   </meta>
 </query>
