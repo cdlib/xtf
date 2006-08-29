@@ -686,59 +686,59 @@ public class QueryRequestParser
      */
     private Query parseMultiFieldQuery( EasyNode parent, String field, int maxSnippets )
     {
-      // At the moment, only <and> and <or> are allowed to have multiple fields.
-      String name = parent.name();
-      if( !name.matches("^(and|or)$") )
-          error( "multiple fields only supported for 'and' or 'or' queries" );
-      
-      // First, check that no regular 'field' has been specified.
-      if( field != null )
-          error( "multi-field query requires 'fields' attribute, not 'field'" );
-      
-      // Make sure 'fields' is present.
-      String fieldsStr = parseStringAttrib( parent, "fields" );
-      
-      // Parse that into an array of fields.
-      StringList fields = new StringList();
-      StringTokenizer st = new StringTokenizer( fieldsStr, ";,| \t" );
-      while( st.hasMoreTokens() )
-          fields.add( st.nextToken() );
-      
-      // Make sure slop has been specified
-      int slop = parseIntAttrib( parent, "slop" );
-      
-      // Optionally, the user can specify separate maxSnippets for text vs.
-      // meta-data.
-      //
-      int maxMetaSnippets = parseIntAttrib( parent, "maxMetaSnippets", maxSnippets );
-      int maxTextSnippets = parseIntAttrib( parent, "maxTextSnippets", maxSnippets );
-      
-      // Now parse all the sub-queries.
-      ArrayList queryList = new ArrayList();
-      for( int i = 0; i < parent.nChildren(); i++ ) {
-          EasyNode el = parent.child( i );
-          if( !el.isElement() )
-              continue;
-          else if( el.name().equalsIgnoreCase("resultData") )
-              continue; // ignore, handled by client's resultFormatter.xsl
-
-          Query q = parseQuery(el, fieldsStr, maxSnippets);
-          if( q == null )
-              continue;
-          
-          if( !(q instanceof SpanQuery) )
-              error( "Internal error: sub-queries of 'keyword' must be span queries" );
-          
-          queryList.add( q );
-      }
-      
-      // Form the final query.
-      SpanQuery[] subQueries = (SpanQuery[])
-          queryList.toArray( new SpanQuery[queryList.size()] );
-      return createMultiFieldQuery( parent, fields.toArray(), 
-                                    subQueries, slop, 
-                                    maxMetaSnippets, maxTextSnippets );
-      
+        // At the moment, only <and> and <or> are allowed to have multiple fields.
+        String name = parent.name();
+        if( !name.matches("^(and|or)$") )
+            error( "multiple fields only supported for 'and' or 'or' queries" );
+        
+        // First, check that no regular 'field' has been specified.
+        if( field != null )
+            error( "multi-field query requires 'fields' attribute, not 'field'" );
+        
+        // Make sure 'fields' is present.
+        String fieldsStr = parseStringAttrib( parent, "fields" );
+        
+        // Parse that into an array of fields.
+        StringList fields = new StringList();
+        StringTokenizer st = new StringTokenizer( fieldsStr, ";,| \t" );
+        while( st.hasMoreTokens() )
+            fields.add( st.nextToken() );
+        
+        // Make sure slop has been specified
+        int slop = parseIntAttrib( parent, "slop" );
+        
+        // Optionally, the user can specify separate maxSnippets for text vs.
+        // meta-data.
+        //
+        int maxMetaSnippets = parseIntAttrib( parent, "maxMetaSnippets", maxSnippets );
+        int maxTextSnippets = parseIntAttrib( parent, "maxTextSnippets", maxSnippets );
+        
+        // Now parse all the sub-queries.
+        ArrayList queryList = new ArrayList();
+        for( int i = 0; i < parent.nChildren(); i++ ) {
+            EasyNode el = parent.child( i );
+            if( !el.isElement() )
+                continue;
+            else if( el.name().equalsIgnoreCase("resultData") )
+                continue; // ignore, handled by client's resultFormatter.xsl
+  
+            Query q = parseQuery( el, fieldsStr, maxSnippets );
+            if( q == null )
+                continue;
+            
+            if( !(q instanceof SpanQuery) )
+                error( "Internal error: sub-queries of 'keyword' must be span queries" );
+            
+            queryList.add( q );
+        }
+        
+        // Form the final query.
+        SpanQuery[] subQueries = (SpanQuery[])
+            queryList.toArray( new SpanQuery[queryList.size()] );
+        return createMultiFieldQuery( parent, fields.toArray(), 
+                                      subQueries, slop, 
+                                      maxMetaSnippets, maxTextSnippets );
+        
     } // parseMultiFieldQuery()
 
     /**
@@ -767,18 +767,21 @@ public class QueryRequestParser
             //   ..
             // )
             //
-            for (int i = 0; i < spanQueries.length; i++) {
-              BooleanQuery termOrQuery = new BooleanQuery();
-              for (int j = 0; j < fields.length; j++) {
-                Query tq = refielder.refield(spanQueries[i], fields[j]);
-                termOrQuery.add(deChunk(tq), false, false);
-              }
-              
-              // Make sure these don't contribute to the overall score, but each
-              // term must match in at least one field.
-              //
-              termOrQuery.setBoost(0.0f);
-              mainQuery.add(termOrQuery, true, false);
+            for( int i = 0; i < spanQueries.length; i++ ) {
+                BooleanQuery termOrQuery = new BooleanQuery();
+                for( int j = 0; j < fields.length; j++ ) {
+                    Query tq = refielder.refield( spanQueries[i], fields[j] );
+                    tq = deChunk( tq );
+                    if( tq instanceof SpanQuery )
+                        ((SpanQuery)tq).setSpanRecording( 0 );
+                    termOrQuery.add( tq, false, false );
+                }
+                
+                // Make sure these don't contribute to the overall score, but each
+                // term must match in at least one field.
+                //
+                termOrQuery.setBoost( 0.0f );
+                mainQuery.add( termOrQuery, true, false );
             }
         }
         
@@ -791,16 +794,16 @@ public class QueryRequestParser
         //   ..
         // )
         //
-        for (int i = 0; i < fields.length; i++) {
-          SpanQuery[] termQueries = new SpanQuery[spanQueries.length];
-          for (int j = 0; j < spanQueries.length; j++)
-             termQueries[j] = (SpanQuery) refielder.refield(spanQueries[j], fields[i]);
-          SpanQuery fieldOrQuery = (SpanQuery) deChunk(
-              new SpanOrNearQuery(termQueries, slop, true));
-          int maxSnippets = (fields[i].equals("text")) ? 
-                            maxTextSnippets : maxMetaSnippets;
-          fieldOrQuery.setSpanRecording(maxSnippets);
-          mainQuery.add(fieldOrQuery, false, false);
+        for( int i = 0; i < fields.length; i++ ) {
+            SpanQuery[] termQueries = new SpanQuery[spanQueries.length];
+            for( int j = 0; j < spanQueries.length; j++ )
+                termQueries[j] = (SpanQuery) refielder.refield( spanQueries[j], fields[i] );
+            SpanQuery fieldOrQuery = (SpanQuery) deChunk(
+                new SpanOrNearQuery(termQueries, slop, true) );
+            int maxSnippets = (fields[i].equals("text")) ? 
+                              maxTextSnippets : maxMetaSnippets;
+            fieldOrQuery.setSpanRecording( maxSnippets );
+            mainQuery.add( fieldOrQuery, false, false );
         }
         
         // All done.
