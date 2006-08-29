@@ -112,9 +112,8 @@
   
   <!-- Generate sort-year (if range, only use first year) -->
   <xsl:template match="date" mode="sort">
-    <xsl:variable name="string-years" select="parse:year(string(.))"/>
     <sort-year xtf:meta="true" xtf:tokenize="no">
-      <xsl:value-of select="replace($string-years, '.*([0-9]{4}).*', '$1')"/>
+      <xsl:value-of select="parse:year(string(.))[1]"/>
     </sort-year>
   </xsl:template>
   
