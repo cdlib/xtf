@@ -16,7 +16,6 @@ package org.cdlib.xtf.textEngine;
  * limitations under the License.
  */
 
-import java.util.Vector;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryRewriter;
@@ -45,8 +44,6 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
       return rewrite((MoreLikeThisQuery)q);
     else if (q instanceof NumericRangeQuery)
       return rewrite((NumericRangeQuery)q);
-    else if (q instanceof MultiFieldAndQuery)
-      return rewrite((MultiFieldAndQuery)q);
     else
       return super.rewriteQuery(q);
   } // rewriteQuery()
@@ -77,45 +74,16 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
   } // rewrite()
 
   /** Rewrite an exact query. The base class rewrites each of the sub-clauses. */
-  protected Query rewrite(SpanExactQuery eq) {
-    // Rewrite each clause.
-    SpanQuery[] clauses = eq.getClauses();
-    Vector newClauses = new Vector();
-    boolean anyChanges = false;
-
-    for (int i = 0; i < clauses.length; i++) {
-      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
-      if (clause != clauses[i])
-        anyChanges = true;
-      
-      // If the clause ended up null, skip it.
-      if (clause == null)
-        continue;
-
-      // Retain everything else.
-      newClauses.add(clause);
-    } // for i
-
-    // If no changes, just return the original query.
-    boolean force = forceRewrite(eq);
-    if (!anyChanges && !force)
-      return eq;
-
-    // If no clauses, let the caller know they can delete this query.
-    if (newClauses.isEmpty())
-      return null;
-
-    // If we have only one clause, return just that. Pass on the parent's
-    // boost to the only child.
+  protected Query rewrite(final SpanExactQuery q) 
+  {
+    // Rewrite each clause. Do not allow single clauses to be promoted, as that
+    // would get rid of the 'exactness' requirement.
     //
-    if (newClauses.size() == 1 && !force)
-      return combineBoost(eq, (Query) newClauses.elementAt(0));
-
-    // Construct a new 'exact' query joining all the rewritten clauses.
-    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
-    return copyBoost(eq, new SpanExactQuery((SpanQuery[]) newClauses
-        .toArray(newArray)));
-
+    return rewriteClauses(q, q.getClauses(), false, new SpanClauseJoiner() {
+      public SpanQuery join(SpanQuery[] clauses) {
+        return new SpanExactQuery(clauses);
+      }
+    });
   }
   
   /** Rewrite a "more like this" query */
@@ -135,43 +103,4 @@ public abstract class XtfQueryRewriter extends QueryRewriter {
     return (NumericRangeQuery) nrq.clone();
   }
 
-  /** Rewrite a multi-field AND query */
-  protected Query rewrite(MultiFieldAndQuery q) 
-  {
-    // Rewrite each clause.
-    SpanQuery[] clauses = q.getClauses();
-    Vector newClauses = new Vector();
-    boolean anyChanges = false;
-
-    for (int i = 0; i < clauses.length; i++) {
-      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
-      if (clause != clauses[i])
-        anyChanges = true;
-      
-      // If the clause ended up null, skip it.
-      if (clause == null)
-        continue;
-
-      // Retain everything else.
-      newClauses.add(clause);
-    } // for i
-
-    // If no changes, just return the original query.
-    boolean force = forceRewrite(q);
-    if (!anyChanges && !force)
-      return q;
-
-    // If no clauses, let the caller know they can delete this query.
-    if (newClauses.isEmpty())
-      return null;
-
-    // Construct a new query joining all the rewritten clauses.
-    SpanQuery[] newArray = (SpanQuery[])
-        newClauses.toArray( new SpanQuery[newClauses.size()] );
-    return copyBoost(q, new MultiFieldAndQuery(q.getFields(), 
-                                               newArray, 
-                                               q.getSlop(),
-                                               q.getSpanRecording()));
-  }
-  
-}
+} // class XtfQueryRewriter

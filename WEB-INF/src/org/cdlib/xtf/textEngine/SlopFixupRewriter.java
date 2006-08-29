@@ -49,7 +49,7 @@ import org.cdlib.xtf.util.WordMap;
  * the chunk overlap size. That way, we'll get consistent results and
  * the user won't be able to tell where the chunk boundaries are.
  * 
- * Also attaches a 
+ * Also attaches a DocNumMap to each SpanDechunkingQuery.
  * 
  * @author Martin Haye
  */

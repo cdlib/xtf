@@ -73,8 +73,6 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
         return rewrite((MoreLikeThisQuery)q);
     else if( q instanceof NumericRangeQuery )
       return rewrite((NumericRangeQuery)q);
-    else if( q instanceof MultiFieldAndQuery )
-      return rewrite((MultiFieldAndQuery)q);
     return super.rewriteQuery(q);
   }
   
@@ -106,99 +104,21 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
    * Rewrite a span EXACT query. Stop words will be bi-grammed into adjacent
    * terms.
    * 
-   * @param eq  The query to rewrite
-   * @return    Rewritten version, or 'eq' unchanged if no changed needed.
-   */
-  protected Query rewrite(SpanExactQuery eq) {
-    // Rewrite each clause and make a vector of the new ones.
-    SpanQuery[] clauses = eq.getClauses();
-    Vector newClauses = new Vector();
-    boolean anyChanges = false;
-
-    for (int i = 0; i < clauses.length; i++) {
-      // Rewrite this clause, and record any difference.
-      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
-      if (clause != clauses[i])
-        anyChanges = true;
-
-      // If rewriting resulted in removing the query, toss it.
-      if (clause == null)
-        continue;
-
-      // Add it to the vector
-      newClauses.add(clause);
-    } // for i
-
-    // Bi-gram the rewritten clauses.
-    anyChanges |= bigramQueries(newClauses, 0);
-
-    // If no changes, just return the original query.
-    if (!anyChanges)
-      return eq;
-
-    // If we end up with no clauses, let the caller know.
-    if (newClauses.isEmpty())
-      return null;
-
-    // If we end up with a single clause, return just that.
-    if (newClauses.size() == 1) {
-
-      // Since we're getting rid of the parent, pass on its boost to the
-      // child.
-      //
-      return combineBoost(eq, (Query) newClauses.elementAt(0));
-    }
-
-    // Construct a new 'exact' query joining all the rewritten clauses.
-    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
-    return copyBoost(eq, 
-        new SpanExactQuery((SpanQuery[]) newClauses.toArray(newArray)));
-  } // rewrite()
-
-  /**
-   * Rewrite a span EXACT query. Stop words will be bi-grammed into adjacent
-   * terms.
-   * 
    * @param q  The query to rewrite
-   * @return    Rewritten version, or 'q' unchanged if no changed needed.
+   * @return   Rewritten version, or 'q' unchanged if no changed needed.
    */
-  protected Query rewrite(MultiFieldAndQuery q) {
-    // Rewrite each clause and make a vector of the new ones.
-    SpanQuery[] clauses = q.getClauses();
-    Vector newClauses = new Vector();
-    boolean anyChanges = false;
-
-    for (int i = 0; i < clauses.length; i++) {
-      // Rewrite this clause, and record any difference.
-      SpanQuery clause = (SpanQuery) rewriteQuery(clauses[i]);
-      if (clause != clauses[i])
-        anyChanges = true;
-
-      // If rewriting resulted in removing the query, toss it.
-      if (clause == null)
-        continue;
-
-      // Add it to the vector
-      newClauses.add(clause);
-    } // for i
-
-    // Bi-gram the rewritten clauses.
-    anyChanges |= bigramQueries(newClauses, 0);
-
-    // If no changes, just return the original query.
-    if (!anyChanges)
-      return q;
-
-    // If we end up with no clauses, let the caller know.
-    if (newClauses.isEmpty())
-      return null;
-
-    // Construct a new query joining all the rewritten clauses.
-    SpanQuery[] newArray = new SpanQuery[newClauses.size()];
-    return copyBoost(q, new MultiFieldAndQuery(q.getFields(), 
-                                  (SpanQuery[]) newClauses.toArray(newArray),
-                                  q.getSlop(),
-                                  q.getSpanRecording()));
+  protected Query rewrite(SpanExactQuery q) 
+  {
+    // Rewrite each clause. Allow single clauses to be promoted, and
+    // do perform bi-gramming.
+    //
+    return rewriteClauses(q, q.getClauses(), true, 
+        true, 0, 
+        new SpanClauseJoiner() {
+          public SpanQuery join(SpanQuery[] clauses) {
+            return new SpanExactQuery(clauses);
+          }
+        });
   } // rewrite()
 
   /** Rewrite a "more like this" query */

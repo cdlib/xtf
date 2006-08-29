@@ -294,7 +294,7 @@ public class QueryRequestParser
             if( el.attrName(i).equalsIgnoreCase("field") )
                 fs.field = el.attrValue( i );
             else if( el.attrName(i).equalsIgnoreCase("sortGroupsBy") ) {
-                if( el.attrValue(i).matches("^totalDocs$|^value$|^maxDocScore$") )
+                if( el.attrValue(i).matches("^(totalDocs|value|maxDocScore)$") )
                     fs.sortGroupsBy = el.attrValue( i );
                 else {
                     error( "Expected 'totalDocs', 'maxDocScore', or 'value' for '" +
@@ -306,9 +306,9 @@ public class QueryRequestParser
             else if( el.attrName(i).equalsIgnoreCase("sortDocsBy") )
                 fs.sortDocsBy = el.attrValue( i );
             else if( el.attrName(i).equalsIgnoreCase("includeEmptyGroups") ) {
-                if( el.attrValue(i).matches("^true$|^yes$") )
+                if( el.attrValue(i).matches("^(true|yes)$") )
                     fs.includeEmptyGroups = true;
-                else if( el.attrValue(i).matches("^false$|^no$") )
+                else if( el.attrValue(i).matches("^(false|no)$") )
                     fs.includeEmptyGroups = false;
                 else {
                     error( "Expected 'yes', 'no', 'true', or 'false' for '" +
@@ -410,15 +410,15 @@ public class QueryRequestParser
        throws QueryGenException
     {
         String name = parent.name();
-        if( !name.matches(
-                "^query$|^term$|^all$|^range$|^phrase$|^exact$|^near$" +
-                "|^and$|^or$|^not$|^orNear$|" +
-                "|^moreLike$|^keyword$|" +    // experimental
-                "|^combine$|^meta$|^text$") ) // old stuff, for compatability
+        if( !name.matches("^(" +
+                "query|term|all|range|phrase|exact|near" +
+                "|and|or|not|orNear" +
+                "|moreLike" +             // experimental
+                "|combine|meta|text)$") ) // old stuff, for compatability
         {
             error( "Expected: 'query', 'term', 'all', 'range', 'phrase', " +
                    "'exact', 'near', 'orNear', 'and', 'or', 'not', " +
-                   "'moreLike', or 'keyword'; " +
+                   "or 'moreLike'; " +
                    "found '" + name + "'" );
         }
         
@@ -521,9 +521,9 @@ public class QueryRequestParser
         if( name.equals("moreLike") )
             return parseMoreLike( parent, field, maxSnippets );
         
-        // Keyword queries are a bit tricky, and therefore handled separately.
-        if( name.equals("keyword") )
-            return parseKeywordQuery( parent, field, maxSnippets );
+        // Multi-field queries are a bit tricky, and therefore handled separately.
+        if( parent.hasAttr("fields") )
+            return parseMultiFieldQuery( parent, field, maxSnippets );
 
         // For text queries, 'all', 'phrase', 'exact', and 'near' can be viewed
         // as phrase queries with different slop values.
@@ -537,7 +537,7 @@ public class QueryRequestParser
         // 'orNear' is a special case which also allows specifying slop, but
         //          activates a different query.
         //
-        if( name.matches("^all$|^phrase$|^exact$|^near$|^orNear$") )
+        if( name.matches("^(all|phrase|exact|near|orNear)$") )
         {   
             int slop = name.equals("all") ? 999999999 :
                        name.equals("phrase") ? 0 :
@@ -684,26 +684,27 @@ public class QueryRequestParser
     /**
      * Parse a 'keyword' query, known internally as a multi-field AND.
      */
-    private Query parseKeywordQuery( EasyNode parent, String field, int maxSnippets )
+    private Query parseMultiFieldQuery( EasyNode parent, String field, int maxSnippets )
     {
+      // At the moment, only <and> and <or> are allowed to have multiple fields.
+      String name = parent.name();
+      if( !name.matches("^(and|or)$") )
+          error( "multiple fields only supported for 'and' or 'or' queries" );
+      
       // First, check that no regular 'field' has been specified.
       if( field != null )
-          error( "'keyword' query requires 'fields' attribute, not 'field'" );
+          error( "multi-field query requires 'fields' attribute, not 'field'" );
       
       // Make sure 'fields' is present.
       String fieldsStr = parseStringAttrib( parent, "fields" );
       
       // Parse that into an array of fields.
-      StringList list = new StringList();
+      StringList fields = new StringList();
       StringTokenizer st = new StringTokenizer( fieldsStr, ";,| \t" );
       while( st.hasMoreTokens() )
-          list.add( st.nextToken() );
+          fields.add( st.nextToken() );
       
-      // There must be at least two fields specified.
-      if( list.size() < 2 )
-          error( "'keyword' query requires at least two fields to be specified" );
-      
-      // Make sure slop has been specified.
+      // Make sure slop has been specified
       int slop = parseIntAttrib( parent, "slop" );
       
       // Now parse all the sub-queries.
@@ -728,12 +729,74 @@ public class QueryRequestParser
       // Form the final query.
       SpanQuery[] subQueries = (SpanQuery[])
           queryList.toArray( new SpanQuery[queryList.size()] );
-      MultiFieldAndQuery ret = new MultiFieldAndQuery( 
-          list.toArray(), subQueries, slop, maxSnippets );
-      return ret;
+      return createMultiFieldQuery( parent, fields.toArray(), 
+                                 subQueries, slop, maxSnippets );
       
-    } // parseKeywordQuery()
+    } // parseMultiFieldQuery()
 
+    /**
+     * Does the work of creating the guts of a keyword query.
+     */
+    private Query createMultiFieldQuery( EasyNode    parent, 
+                                         String[]    fields, 
+                                         SpanQuery[] spanQueries, 
+                                         int         slop,
+                                         int         maxSnippets )
+    {
+        BooleanQuery mainQuery = new BooleanQuery();
+      
+        // We'll be changing the field names a lot.
+        RefieldingQueryRewriter refielder = new RefieldingQueryRewriter();
+        
+        // If it's an AND (as opposed to OR)...
+        if( parent.name().equals("and") )
+        {
+            // Form a clause for each term, across all fields. This implements:
+            //
+            // And(
+            //   term1 in field1 or field2 or field3...
+            //   term2 in field1 or field2 or field3...
+            //   ..
+            // )
+            //
+            for (int i = 0; i < spanQueries.length; i++) {
+              BooleanQuery termOrQuery = new BooleanQuery();
+              for (int j = 0; j < fields.length; j++) {
+                Query tq = refielder.refield(spanQueries[i], fields[j]);
+                termOrQuery.add(deChunk(tq), false, false);
+              }
+              
+              // Make sure these don't contribute to the overall score, but each
+              // term must match in at least one field.
+              //
+              termOrQuery.setBoost(0.0f);
+              mainQuery.add(termOrQuery, true, false);
+            }
+        }
+        
+        // For highlighting and scoring computations, make a clause for
+        // each field, searching for all terms if present. This implements:
+        //
+        // Or(
+        //   OrNear(field1: term1,term2,...)
+        //   OrNear(field2: term1,term2,...)
+        //   ..
+        // )
+        //
+        for (int i = 0; i < fields.length; i++) {
+          SpanQuery[] termQueries = new SpanQuery[spanQueries.length];
+          for (int j = 0; j < spanQueries.length; j++)
+             termQueries[j] = (SpanQuery) refielder.refield(spanQueries[j], fields[i]);
+          SpanQuery fieldOrQuery = (SpanQuery) deChunk(
+              new SpanOrNearQuery(termQueries, slop, true));
+          fieldOrQuery.setSpanRecording(maxSnippets);
+          mainQuery.add(fieldOrQuery, false, false);
+        }
+        
+        // All done.
+        return simplifyBooleanQuery( mainQuery );
+        
+    } // createMultiFieldQuery()
 
     /**
      * Simplify a BooleanQuery that contains other BooleanQuery/ies with the
@@ -911,7 +974,7 @@ public class QueryRequestParser
         else if( attrName.equals("field") || attrName.equals("metaField") )
             ; // handled elsewhere
         
-        else if( attrName.equals("fields") && el.name().equals("keyword") )
+        else if( attrName.equals("fields") && el.name().matches("^(and|or)$") )
           ; // handled elsewhere
       
         else if( (attrName.equals("inclusive") || attrName.equals("numeric")) &&
@@ -919,14 +982,14 @@ public class QueryRequestParser
             ; // handled elsewhere
         
         else if( attrName.equals("slop") &&
-                 el.name().matches("^near$|^orNear$|^keyword$") )
+                 el.name().matches("^(near|orNear|and|or)$") )
             ; // handled elsewhere
         
         else if( attrName.equalsIgnoreCase("useProximity") &&
                  el.name().matches("^(and|or)$") )
             ; // handled elsewhere
         
-        else if( attrName.matches("^fields$|^boosts$|^minWordLen$|^maxWordLen$|^minDocFreq$|^maxDocFreq$|^minTermFreq$|^termBoost$|^maxQueryTerms$") &&
+        else if( attrName.matches("^(fields|boosts|minWordLen|maxWordLen|minDocFreq|maxDocFreq|minTermFreq|termBoost|maxQueryTerms)$") &&
                  el.name().equals("moreLike") )
             ; // handled elsewhere
         
@@ -1049,7 +1112,7 @@ public class QueryRequestParser
      * Ensures that the given query, if it is a span query on the "text"
      * field, is wrapped by a de-chunking query.
      */
-    private Query deChunk( Query q )
+    public static Query deChunk( Query q )
     {
         // We only need to de-chunk span queries, not other queries.
         if( !(q instanceof SpanQuery) )
@@ -1213,7 +1276,7 @@ public class QueryRequestParser
             if( !el.isElement() )
                 continue;
             if( el.name().equals("not") ) {
-                if( parent.name().matches("^phrase$|^exact$") )
+                if( parent.name().matches("^(phrase|exact)$") )
                     error( "'not' clauses aren't supported in phrase/exact queries" );
                 
                 // Make sure to avoid adding the 'not' terms to the term map,
@@ -1733,9 +1796,9 @@ public class QueryRequestParser
         if( str == null && useDefault )
             return defaultVal;
         
-        if( str.matches("^yes$|^true$|^1$") )
+        if( str.matches("^(yes|true|1)$") )
             return true;
-        else if( str.matches("^no$|^false$|^0$") )
+        else if( str.matches("^(no|false|0)$") )
             return false;
         
         error( "'" + attribName + "' attribute of '" + elName + 

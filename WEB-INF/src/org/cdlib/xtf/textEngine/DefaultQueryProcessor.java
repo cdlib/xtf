@@ -233,7 +233,8 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         // Fix up all the "infinite" slop entries to be actually limited to
         // the chunk overlap size. That way, we'll get consistent results and
-        // the user won't be able to tell where the chunk boundaries are.
+        // the user won't be able to tell where the chunk boundaries are. 
+        // Also, attach the docNumMap to every SpanDechunkingQuery.
         //
         final Query finalQuery = 
             new SlopFixupRewriter(docNumMap, stopSet, pluralMap, accentMap).
