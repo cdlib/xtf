@@ -130,6 +130,7 @@ public class SpanExactQuery extends SpanQuery
             SpanTermQuery oldClause = (SpanTermQuery) clauses[i];
             String        oldTerm   = oldClause.getTerm().text();
             String        field     = oldClause.getTerm().field();
+            int           length    = oldClause.getTermLength();
 
             // Handy things we'll need later
             SpanQuery detachedStartQuery = new SpanTermQuery( 
@@ -202,7 +203,7 @@ public class SpanExactQuery extends SpanQuery
                         newTerm = newTerm + Constants.FIELD_END_MARKER;
                     
                     SpanQuery newClause = new SpanTermQuery(
-                        new Term(field, newTerm) );
+                        new Term(field, newTerm), length );
                     newClause.setBoost( oldClause.getBoost() );
                     phraseClauses.add( newClause );
                     
