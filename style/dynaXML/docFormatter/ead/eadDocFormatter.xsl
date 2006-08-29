@@ -1564,8 +1564,11 @@ to work with EAD 2002.-->
   <xsl:function name="xtf:make-id">
     <xsl:param name="node"/>
     <xsl:choose>
+      <xsl:when test="$node/@id">
+        <xsl:value-of select="$node/@id"/>
+      </xsl:when>
       <xsl:when test="$node">
-        <xsl:value-of select="concat(xtf:make-id($node/parent::*), '.', count($node/preceding-sibling::*))"/>
+        <xsl:value-of select="concat(xtf:make-id($node/parent::*), '.', count($node/preceding-sibling::*) + 1)"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>node</xsl:text>
