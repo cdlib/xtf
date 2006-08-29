@@ -707,6 +707,12 @@ public class QueryRequestParser
       // Make sure slop has been specified
       int slop = parseIntAttrib( parent, "slop" );
       
+      // Optionally, the user can specify separate maxSnippets for text vs.
+      // meta-data.
+      //
+      int maxMetaSnippets = parseIntAttrib( parent, "maxMetaSnippets", maxSnippets );
+      int maxTextSnippets = parseIntAttrib( parent, "maxTextSnippets", maxSnippets );
+      
       // Now parse all the sub-queries.
       ArrayList queryList = new ArrayList();
       for( int i = 0; i < parent.nChildren(); i++ ) {
@@ -730,7 +736,8 @@ public class QueryRequestParser
       SpanQuery[] subQueries = (SpanQuery[])
           queryList.toArray( new SpanQuery[queryList.size()] );
       return createMultiFieldQuery( parent, fields.toArray(), 
-                                 subQueries, slop, maxSnippets );
+                                    subQueries, slop, 
+                                    maxMetaSnippets, maxTextSnippets );
       
     } // parseMultiFieldQuery()
 
@@ -741,7 +748,8 @@ public class QueryRequestParser
                                          String[]    fields, 
                                          SpanQuery[] spanQueries, 
                                          int         slop,
-                                         int         maxSnippets )
+                                         int         maxMetaSnippets,
+                                         int         maxTextSnippets )
     {
         BooleanQuery mainQuery = new BooleanQuery();
       
@@ -789,6 +797,8 @@ public class QueryRequestParser
              termQueries[j] = (SpanQuery) refielder.refield(spanQueries[j], fields[i]);
           SpanQuery fieldOrQuery = (SpanQuery) deChunk(
               new SpanOrNearQuery(termQueries, slop, true));
+          int maxSnippets = (fields[i].equals("text")) ? 
+                            maxTextSnippets : maxMetaSnippets;
           fieldOrQuery.setSpanRecording(maxSnippets);
           mainQuery.add(fieldOrQuery, false, false);
         }
@@ -982,9 +992,19 @@ public class QueryRequestParser
             ; // handled elsewhere
         
         else if( attrName.equals("slop") &&
-                 el.name().matches("^(near|orNear|and|or)$") )
+                 el.name().matches("^(near|orNear)$") )
             ; // handled elsewhere
         
+        else if( attrName.equals("slop") &&
+                 el.name().matches("^(and|or)$") &&
+                 el.hasAttr("fields"))
+           ; // handled elsewhere
+        
+        else if( attrName.matches("^(maxTextSnippets|maxMetaSnippets)$") &&
+                 el.name().matches("^(and|or)$") &&
+                 el.hasAttr("fields"))
+           ; // handled elsewhere
+   
         else if( attrName.equalsIgnoreCase("useProximity") &&
                  el.name().matches("^(and|or)$") )
             ; // handled elsewhere
