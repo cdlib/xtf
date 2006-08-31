@@ -120,7 +120,7 @@
           <!-- Skip document-less METS and DC files -->
           <xsl:when test="ends-with(@fileName, '.mets.xml') or ends-with(@fileName, '.dc.xml')"/>
           
-          <!-- Look for TEI XML files -->
+          <!-- Look for TEI XML file -->
           <xsl:when test="contains($dirPath, '/tei') or contains(fileName, '.tei')">
             <indexFile fileName="{@fileName}"
                        preFilter="style/textIndexer/tei/teiPreFilter.xsl"
