@@ -514,7 +514,7 @@ to work with EAD 2002.-->
           </span>
         </td>
         <td width="15" align="center">
-          <img src="http://localhost:8080/xtf-1.8/icons/default/i_colpse.gif" border="0" alt="collapse section"/>
+          <img src="{$icon.path}i_colpse.gif" border="0"/>
         </td>
         <td align="left" valign="top" width="700">
           <nobr>
