@@ -47,6 +47,7 @@ class OrNearSpans implements Spans {
   private int   matchDist;             // Slop for current match
   private float matchTotalScore;       // Sum of scores for current match
   private int   matchEndCell;          // Last cell # in current match
+  private int   matchNumCells;         // Number of matching cells
   
   private class SpansCell
   {
@@ -148,6 +149,7 @@ class OrNearSpans implements Spans {
     
     // Init scoring parameters.
     matchEndCell = 0;
+    matchNumCells = 0;
     matchTotalScore = ((SpansCell)cells.get(0)).score(); 
     matchDist = 0;
     return true;
@@ -181,6 +183,7 @@ class OrNearSpans implements Spans {
     
     // Init scoring parameters.
     matchEndCell = 0;
+    matchNumCells = 0;
     matchTotalScore = ((SpansCell)cells.get(0)).score(); 
     matchDist = 0;
     
@@ -191,32 +194,48 @@ class OrNearSpans implements Spans {
   // Attempt to extend the match by one more cell.
   private boolean nextCell()
   {
-    // If we run out of cells, we can't extend.
-    if( (matchEndCell+1) == cells.size() )
-        return false;
-    
-    // Okay, let's get the cells in question.
     SpansCell prevCell = (SpansCell)cells.get(matchEndCell);
-    SpansCell curCell  = (SpansCell)cells.get(matchEndCell+1);
     
-    // If they're in different docs, they can't be connected.
-    if( curCell.doc() != prevCell.doc() )
-        return false;
-    
-    // Add up the edit distance (accounting for out-of-order if requested).
-    if( penalizeOutOfOrder && curCell.index < prevCell.index+1 )
-        matchDist += curCell.end() - prevCell.start();
-    else
-        matchDist += curCell.start() - prevCell.end();
-    
-    // If we're beyond the maximum allowable slop, stop here.
-    if( matchDist > slop )
-        return false;
-    
-    // Cool. This looks like the place to be.
-    matchTotalScore += curCell.score();
-    ++matchEndCell;
-    return true;
+    while( true )
+    {
+      // If we run out of cells, we can't extend.
+      if( (matchEndCell+1) == cells.size() )
+          return false;
+      
+      // Okay, get the next cell.
+      SpansCell curCell  = (SpansCell)cells.get(matchEndCell+1);
+      
+      // If the cells are in different docs, they can't be connected.
+      if( curCell.doc() != prevCell.doc() )
+          return false;
+      
+      // If the cells overlap, skip the new one.
+      if( curCell.start() < prevCell.end() ) {
+          ++matchEndCell;
+          continue;
+      }
+      
+      // Add up the edit distance (accounting for out-of-order if requested).
+      assert curCell.compareTo(prevCell) >= 0;
+      int curDist;
+      if( penalizeOutOfOrder && curCell.index < prevCell.index+1 )
+          curDist = curCell.end() - prevCell.start();
+      else
+          curDist = curCell.start() - prevCell.end();
+      if( curDist < 0 )
+          curDist = -curDist;
+      matchDist += curDist;
+      
+      // If we're beyond the maximum allowable slop, stop here.
+      if( matchDist > slop )
+          return false;
+      
+      // Cool. This looks like the place to be.
+      matchTotalScore += curCell.score();
+      ++matchEndCell;
+      ++matchNumCells;
+      return true;
+    }
     
   } // nextCell()
   
@@ -255,7 +274,7 @@ class OrNearSpans implements Spans {
     // scores are equal) that matches with more terms will always score
     // higher than those with fewer terms.
     //
-    float coordFactor = (float)(matchEndCell+1) / (nClauses+1);
+    float coordFactor = (float)(matchNumCells+1) / (nClauses+1);
 
     // But a bit of the score comes from the edit distance involved in this
     // match.
@@ -282,10 +301,14 @@ class OrNearSpans implements Spans {
     else {
         float totalScore = 0.0f;
         totalExpl = new Explanation( 0, "totalMatchScore, sum of:" );
+        SpansCell prevCell = null;
         for( int i = 0; i <= matchEndCell; i++ ) {
           SpansCell cell = (SpansCell)cells.get(i);
+          if( prevCell != null && cell.start() < prevCell.end() )
+              continue;
           totalScore += cell.score();
           totalExpl.addDetail( cell.spans.explain() );
+          prevCell = cell;
         }
         totalExpl.setValue( totalScore );
     }
@@ -305,8 +328,8 @@ class OrNearSpans implements Spans {
     
     // Explain the coordination factor
     Explanation coordExpl = new Explanation(
-        (float)(matchEndCell+1) / (nClauses+1),
-        "coordFactor(" + (matchEndCell+1) + "/" + (nClauses+1) + ")" );
+        (float)(matchNumCells+1) / (nClauses+1),
+        "coordFactor(" + (matchNumCells+1) + "/" + (nClauses+1) + ")" );
     
     // Explain the combined factors.
     Explanation combinedFactorsExpl = new Explanation(
