@@ -130,12 +130,7 @@ public class FieldSpanSource
       // Track the max # of spans to actually record (which may be less than
       // the number of spans for the doc.)
       //
-      if (maxSpans == 0)
-        maxSpans = scorers[i].getMaxSpans();
-      else {
-        assert maxSpans == scorers[i].getMaxSpans() : 
-          "inconsistent span recording specification";
-      }
+      maxSpans = Math.max(maxSpans, scorers[i].getMaxSpans());
       
       // Accumulate the set of terms matched by the queries
       if (terms == null)
