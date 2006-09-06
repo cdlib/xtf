@@ -31,8 +31,6 @@ package org.cdlib.xtf.textEngine;
 
 import java.util.Set;
 
-import org.apache.lucene.bigram.BigramSpanRangeQuery;
-import org.apache.lucene.bigram.BigramSpanWildcardQuery;
 import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.chunk.SpanChunkedNotQuery;
 import org.apache.lucene.chunk.SpanDechunkingQuery;
@@ -142,16 +140,16 @@ public class SlopFixupRewriter extends XtfQueryRewriter
   }  
   
   public Query rewrite( SpanWildcardQuery q ) {
-    assert q instanceof BigramSpanWildcardQuery;
-    BigramSpanWildcardQuery newq = (BigramSpanWildcardQuery) super.rewrite( q );
+    assert q instanceof XtfSpanWildcardQuery;
+    XtfSpanWildcardQuery newq = (XtfSpanWildcardQuery) super.rewrite( q );
     assert newq != q;
     newq.setStopWords( stopSet );
     return newq;
   }  
   
   public Query rewrite( SpanRangeQuery q ) {
-      assert q instanceof BigramSpanRangeQuery;
-      BigramSpanRangeQuery newq = (BigramSpanRangeQuery) super.rewrite( q );
+      assert q instanceof XtfSpanRangeQuery;
+      XtfSpanRangeQuery newq = (XtfSpanRangeQuery) super.rewrite( q );
       assert newq != q;
       newq.setStopWords( stopSet );
       return newq;

@@ -74,15 +74,17 @@ public class RefieldingQueryRewriter extends XtfQueryRewriter
 
   // inherit JavaDoc
   protected Query rewrite(SpanWildcardQuery q) {
-    return new SpanWildcardQuery(rewriteTerm(q.getTerm()), q.getTermLimit());
+    assert q instanceof XtfSpanWildcardQuery;
+    return new XtfSpanWildcardQuery(rewriteTerm(q.getTerm()), q.getTermLimit());
   }
 
   // inherit JavaDoc
   protected Query rewrite(SpanRangeQuery q) {
-    return new SpanRangeQuery(rewriteTerm(q.getLowerTerm()),
-                              rewriteTerm(q.getUpperTerm()),
-                              q.isInclusive(),
-                              q.getTermLimit());
+    assert q instanceof XtfSpanRangeQuery;
+    return new XtfSpanRangeQuery(rewriteTerm(q.getLowerTerm()),
+                                 rewriteTerm(q.getUpperTerm()),
+                                 q.isInclusive(),
+                                 q.getTermLimit());
   }
 
   // inherit JavaDoc
