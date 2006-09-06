@@ -163,11 +163,16 @@ public abstract class TextConfig
                     String strVal  = el.attrValue( j );
 
                     // See if we recognize the property (if so, handle it).
-                    if( !handleProperty(tagName + "." + attrName, strVal) ) {
-                        throw new GeneralException( "Config file property " +
-                            tagName + "." + attrName + " not recognized" );
+                    if( !handleProperty(tagName + "." + attrName, strVal) ) 
+                    {
+                        // It is perfectly acceptable (and often necessary) for
+                        // the user to define pass-through tags. Somehow this got
+                        // forgotten in the onslaught of new features. So, if we
+                        // don't recognize the tag, just pass it by.
+                        //
+                      
+                        ; // do nothing
                     }
-        
 
                     // Also put this tag in the attribute list so it can be
                     // passed to the stylesheets.
