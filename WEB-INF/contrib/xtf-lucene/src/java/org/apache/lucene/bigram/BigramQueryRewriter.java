@@ -169,7 +169,7 @@ public class BigramQueryRewriter extends QueryRewriter {
       return combineBoost(bq, (Query) required.elementAt(0));
 
     // Otherwise, we need to construct a new one.
-    bq = (BooleanQuery) copyBoost(bq, new BooleanQuery());
+    bq = (BooleanQuery) copyBoost(bq, new BooleanQuery(bq.isCoordDisabled()));
 
     for (Iterator iter = required.iterator(); iter.hasNext();)
       bq.add((Query) iter.next(), true, false);

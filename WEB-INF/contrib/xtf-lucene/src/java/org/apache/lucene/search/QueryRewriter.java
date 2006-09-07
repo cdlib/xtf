@@ -133,7 +133,7 @@ public abstract class QueryRewriter {
     }
 
     // Otherwise, we need to construct a new BooleanQuery.
-    bq = (BooleanQuery) copyBoost(bq, new BooleanQuery());
+    bq = (BooleanQuery) copyBoost(bq, new BooleanQuery(bq.isCoordDisabled()));
     for (int i=0; i<newClauses.size(); i++)
         bq.add((BooleanClause)newClauses.elementAt(i));
 
