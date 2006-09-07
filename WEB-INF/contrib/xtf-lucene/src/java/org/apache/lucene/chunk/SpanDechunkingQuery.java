@@ -24,6 +24,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Similarity;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 
@@ -101,12 +102,14 @@ public class SpanDechunkingQuery extends SpanQuery {
     // Record some parameters for handy access.
     final int chunkSize = docNumMap.getChunkSize();
     final int chunkBump = chunkSize - docNumMap.getChunkOverlap();
+    final Similarity similarity = wrapped.getSimilarity(searcher);
     
     return new Spans() {
       private Spans spans = wrapped.getSpans(reader, searcher);
       private int firstChunk = -1;
       private int lastChunk = -1;
       private int mainDoc = -1;
+      private float lengthNorm = 0.0f;
       private int chunkOffset;
 
       public boolean next() throws IOException {
@@ -126,6 +129,8 @@ public class SpanDechunkingQuery extends SpanQuery {
           mainDoc = docNumMap.getDocNum(chunk);
           firstChunk = docNumMap.getFirstChunk(mainDoc);
           lastChunk = docNumMap.getLastChunk(mainDoc);
+          lengthNorm = similarity.lengthNorm(wrapped.getField(),
+                                             (lastChunk + 1) - firstChunk);
         }
         
         // Now calculate an appropriate offset for the current chunk.
@@ -158,26 +163,31 @@ public class SpanDechunkingQuery extends SpanQuery {
         return end + chunkOffset;
       }
 
-      public float score() { return spans.score() * getBoost(); }
+      public float score() { 
+        return spans.score() * lengthNorm * getBoost(); 
+      }
       
       public String toString() {
         return "spans(" + SpanDechunkingQuery.this.toString() + ")";
       }
 
       public Explanation explain() throws IOException {
-        if (getBoost() == 1.0f)
-          return spans.explain();
-        
         Explanation result = new Explanation(0, 
-            "weight("+toString()+"), product of:" );
+          "weight("+toString()+"), product of:" );
         
         Explanation boostExpl = new Explanation(getBoost(), "boost");
-        result.addDetail(boostExpl);
+        if (boostExpl.getValue() != 1.0f)
+          result.addDetail(boostExpl);
+        
+        Explanation lengthExpl = new Explanation(lengthNorm, "lengthNorm");
+        result.addDetail(lengthExpl);
         
         Explanation inclExpl = spans.explain(); 
         result.addDetail(inclExpl);
         
-        result.setValue(boostExpl.getValue() * inclExpl.getValue());
+        result.setValue(boostExpl.getValue() * 
+                        lengthExpl.getValue() *
+                        inclExpl.getValue());
         return result;
       }
     };
