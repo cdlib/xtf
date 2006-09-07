@@ -291,7 +291,7 @@ public class MoreLikeThisQuery extends Query
     for( int i = q.size()-1; i >= 0; i-- )
         queryWords[i] = (QueryWord) q.pop();
     
-    BooleanQuery query = new BooleanQuery();
+    BooleanQuery query = new BooleanQuery(true /*disable coord*/);
     
     // At the moment, there's no need to scale by the best score. It simply
     // clouds the query explanation. It doesn't affect the scores, since
