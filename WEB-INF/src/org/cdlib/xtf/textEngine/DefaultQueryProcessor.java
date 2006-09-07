@@ -352,7 +352,8 @@ public class DefaultQueryProcessor extends QueryProcessor
             result.facets = new ResultFacet[groupCounts.length];
             for( int i = 0; i < groupCounts.length; i++ ) {
                 result.facets[i] = groupCounts[i].getResult();
-                finishGroup( result.facets[i].rootGroup, snippetMaker );
+                finishGroup( result.facets[i].rootGroup, snippetMaker,
+                             req, weight, boostSet );
             } // for if
         }
 
@@ -598,55 +599,41 @@ public class DefaultQueryProcessor extends QueryProcessor
     } // createDynamicGroup()
 
     /**
-     * Process group counts into final results. This includes forming the
-     * groups, and finishing each DocHit with a snippetMaker (and normalizing
-     * scores within that group.)
-     * 
-     * @param req           Query request containing the group specs
-     * @param result        Where to stuff the resulting groups
-     * @param groupCounts   Group counts to use
-     * @param snippetMaker  Used to make snippets for any DocHits inside the
-     *                      groups.
-     */
-    private void finishGroups( QueryRequest  req, 
-                               QueryResult   result, 
-                               GroupCounts[] groupCounts,
-                               SnippetMaker  snippetMaker )
-    {
-        result.facets = new ResultFacet[groupCounts.length];
-        for( int i = 0; i < groupCounts.length; i++ )
-        {
-            result.facets[i] = groupCounts[i].getResult();
-            
-            // Scan each group for DocHits, and finish all we find.
-            finishGroup( result.facets[i].rootGroup, snippetMaker );
-        } // for if
-        
-    } // finishGroups()
-    
-    /**
      * Finishes DocHits within a single group (also processes all its
      * descendant groups.)
      * 
      * @param group         Group to finish
      * @param snippetMaker  Used to make snippets for any DocHits inside the
      *                      group.
+     * @param req           Determines whether to finish with 'explain' or not 
+     * @param weight        Used for score explanations
+     * @param boostSet      Used for score explanations
      */
-    private void finishGroup( ResultGroup group,
-                              SnippetMaker  snippetMaker )
+    private void finishGroup( ResultGroup  group,
+                              SnippetMaker snippetMaker, 
+                              QueryRequest req, 
+                              Weight       weight, 
+                              BoostSet     boostSet )
+      throws IOException
     {
       // Finish DocHits for this group
       if( group.docHits != null ) {
           for( int k = 0; k < group.docHits.length; k++ ) {
               DocHitImpl hit = (DocHitImpl) group.docHits[k];
-              hit.finish( snippetMaker, docScoreNorm );
+              if( req.explainScores ) {
+                  hit.finishWithExplain( 
+                      snippetMaker, docScoreNorm, weight,
+                      boostSet, req.boostSetParams );
+              }
+              else
+                  hit.finish( snippetMaker, docScoreNorm );
           } // for k
       }
       
       // Now finish all the descendants.
       if( group.subGroups != null ) {
           for( int j = 0; j < group.subGroups.length; j++ ) 
-              finishGroup( group.subGroups[j], snippetMaker );
+              finishGroup( group.subGroups[j], snippetMaker, req, weight, boostSet );
       }
         
     } // finishGroup()
