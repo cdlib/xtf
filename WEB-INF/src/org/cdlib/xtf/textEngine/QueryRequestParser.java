@@ -751,7 +751,7 @@ public class QueryRequestParser
                                          int         maxMetaSnippets,
                                          int         maxTextSnippets )
     {
-        BooleanQuery mainQuery = new BooleanQuery();
+        BooleanQuery mainQuery = new BooleanQuery(true /* disable coord */);
       
         // We'll be changing the field names a lot.
         RefieldingQueryRewriter refielder = new RefieldingQueryRewriter();
