@@ -64,6 +64,7 @@ import org.cdlib.xtf.textEngine.facet.MarkSelector;
 import org.cdlib.xtf.textEngine.facet.RootSelector;
 import org.cdlib.xtf.textEngine.facet.SelectorParser;
 import org.cdlib.xtf.util.EasyNode;
+import org.cdlib.xtf.util.FloatList;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StringList;
@@ -713,6 +714,14 @@ public class QueryRequestParser
         int maxMetaSnippets = parseIntAttrib( parent, "maxMetaSnippets", maxSnippets );
         int maxTextSnippets = parseIntAttrib( parent, "maxTextSnippets", maxSnippets );
         
+        // Also, the user can specify a boost factor per field
+        float[] boosts = null;
+        if( parent.hasAttr("boosts") ) {
+            boosts = parseFieldBoosts( parent, "boosts" );
+            if( boosts != null && boosts.length > fields.size() )
+                error( "'boosts' attribute may not contain more values than 'fields'" );
+        }
+        
         // Now parse all the sub-queries.
         ArrayList queryList = new ArrayList();
         for( int i = 0; i < parent.nChildren(); i++ ) {
@@ -735,7 +744,7 @@ public class QueryRequestParser
         // Form the final query.
         SpanQuery[] subQueries = (SpanQuery[])
             queryList.toArray( new SpanQuery[queryList.size()] );
-        return createMultiFieldQuery( parent, fields.toArray(), 
+        return createMultiFieldQuery( parent, fields.toArray(), boosts, 
                                       subQueries, slop, 
                                       maxMetaSnippets, maxTextSnippets );
         
@@ -746,6 +755,7 @@ public class QueryRequestParser
      */
     private Query createMultiFieldQuery( EasyNode    parent, 
                                          String[]    fields, 
+                                         float[]     boosts, 
                                          SpanQuery[] spanQueries, 
                                          int         slop,
                                          int         maxMetaSnippets,
@@ -803,6 +813,8 @@ public class QueryRequestParser
             int maxSnippets = (fields[i].equals("text")) ? 
                               maxTextSnippets : maxMetaSnippets;
             fieldOrQuery.setSpanRecording( maxSnippets );
+            if( boosts != null && i < boosts.length )
+                fieldOrQuery.setBoost( boosts[i] );
             mainQuery.add( fieldOrQuery, false, false );
         }
         
@@ -998,7 +1010,7 @@ public class QueryRequestParser
                  el.name().matches("^(near|orNear)$") )
             ; // handled elsewhere
         
-        else if( attrName.equals("slop") &&
+        else if( attrName.matches("^(slop|boosts)$") &&
                  el.name().matches("^(and|or)$") &&
                  el.hasAttr("fields"))
            ; // handled elsewhere
@@ -1457,22 +1469,18 @@ public class QueryRequestParser
     {
         String val = parseStringAttrib( parent, attrName );
         StringTokenizer tok = new StringTokenizer( val, " \t\r\n,;|" );
-        ArrayList list = new ArrayList();
+        FloatList list = new FloatList();
         while( tok.hasMoreTokens() ) {
             String strVal = tok.nextToken();
             try {
-                list.add( new Float(strVal) );
+                list.add( Float.parseFloat(strVal) );
             }
             catch( NumberFormatException e ) {
                 error( "Each value for 'boosts' must be a valid floating-point number" );
             }
         }
-        if( list.size() > 0 ) {
-            float[] array = new float[ list.size() ];
-            for( int j = 0; j < list.size(); j++ )
-                array[j] = ((Float)list.get(j)).floatValue();
-            return array;
-        }
+        if( list.size() > 0 )
+            return list.toArray();
         else
             return null;
     } // parseFieldBoosts()
