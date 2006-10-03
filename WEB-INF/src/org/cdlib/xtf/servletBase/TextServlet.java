@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -467,6 +468,10 @@ public abstract class TextServlet extends HttpServlet
         if( url.indexOf("jsessionid") >= 0 )
             url = url.replaceAll( "[&;]jsessionid=[a-zA-Z0-9]+", "");
         
+        // Translate escaping and UTF coding if necessary
+        url = decodeURL( url );
+        url = convertUTF8inURL( url );
+        
         // All done.
         return url;
     } // getRequestURL()
@@ -538,6 +543,10 @@ public abstract class TextServlet extends HttpServlet
             uri = req.getRequestURI();
         if( uri.indexOf('?') >= 0 )
             uri = uri.substring(0, uri.indexOf('?') );
+        
+        // Translate funky UTF-8 coding in URLs
+        uri = decodeURL( uri );
+        uri = convertUTF8inURL( uri );
         
         trans.setParameter( "servlet.URL", new StringValue(uri) );
         trans.setParameter( "servlet.path", new StringValue(uri) ); // old
@@ -780,10 +789,31 @@ public abstract class TextServlet extends HttpServlet
     
 
     /**
+     * Certain methods of HttpServletRequest do not decode escaped
+     * characters in the URL. This method decodes them, and also
+     * translates UTF-8 byte sequences into normal characters.
+     */
+    public static String decodeURL( String value )
+    {
+      // Decode any escaped characters in the URL.
+      try {
+          return URLDecoder.decode( value, "utf-8" );
+      }
+      catch (UnsupportedEncodingException e) {
+          throw new RuntimeException( e );
+      }
+    } // decodeURL()
+      
+    /**
      * Although not completely standardized yet, most modern browsers
      * encode Unicode characters above U+007F to UTF8 in the URL. This
      * method looks for probably UTF8 encodings and converts them back
      * to normal Unicode characters.
+     * 
+     * One might ask why this is necessary... doesn't URLDecoder handle
+     * it? Well, some servlet containers seem to partially decode
+     * URLs; they decode the escapes, but then they don't do the
+     * UTF-8 conversion.
      * 
      * @param value   value to convert
      * @return        equivalent value with UTF8 decoded to Unicode
