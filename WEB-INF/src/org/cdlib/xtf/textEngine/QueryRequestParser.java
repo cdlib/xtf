@@ -1319,6 +1319,8 @@ public class QueryRequestParser
                 //
                 notVec.add( parseQuery2(el, "not", field, maxSnippets) );
             }
+            else if( el.name().equals("sectionType") )
+                continue; // handled elsewhere
             else {
                 SpanQuery q;
                 if( slop == 0 ) {
