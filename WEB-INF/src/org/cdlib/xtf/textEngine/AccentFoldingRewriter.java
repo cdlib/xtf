@@ -87,13 +87,15 @@ public class AccentFoldingRewriter extends XtfQueryRewriter
    * @return   Rewritten version, or 'q' unchanged if no changed needed.
    */
   protected Query rewrite( SpanWildcardQuery q ) {
+    assert q instanceof XtfSpanWildcardQuery;
+    
     Term t = q.getTerm();
     String mapped = accentMap.mapWord( t.text() );
     if( mapped == null )
         return q;
     
     Term newTerm = new Term( t.field(), mapped );
-    return copyBoost( q, new SpanWildcardQuery(newTerm, q.getTermLimit()) ); 
+    return copyBoost( q, new XtfSpanWildcardQuery(newTerm, q.getTermLimit()) ); 
   }
   
 } // class AccentFoldingRewriter
