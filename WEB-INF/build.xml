@@ -135,7 +135,7 @@
         <include name="LICENSE*"/>
         <include name="CHANGES"/>
 
-        <include name="WebDocs/HTML/**/*"/>
+        <include name="docs/**/*"/>
 
         <include name="WEB-INF/build.xml"/>
         <include name="WEB-INF/web.xml"/>
@@ -162,7 +162,7 @@
         <include name="WEB-INF/**/*"/>
         <include name="INSTALL"/>
         <include name="LICENSE*"/>
-        <include name="WebDocs/HTML/**/*"/>
+        <include name="docs/**/*"/>
       </fileset>
     </zip>
 
