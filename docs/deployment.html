@@ -1,0 +1,1938 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="EN">
+  
+<head>
+  <title>XTF Deployment Guide</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link rel="stylesheet" href="library/xtfDocStyle.css" type="text/css" />
+</head>
+
+<body bgcolor="#FFFFFF" text="#101010" >
+
+<div class="BaseStyle"> 
+  <p class="DocTitle" align="center">XTF Deployment Guide</p>
+  <p class="Heading1">Table of Contents</p>
+  <!-- - - - - - - - - - - - - - --> 
+  <ul class="NoBullets">
+    <li> <b><a href="#Introduction">Introduction</a></b>    <br/>
+      <br/>
+    </li>
+    <li> <b><a href="#QuickStart">Quick Start (First Time)</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#QuickInstallRunTime">Install Run-Time Environment</a></li>
+        <li><a href="#QuickInstallXTF">Install the XTF Package</a></li>
+        <li><a href="#QuickInstallDynaXML">Verify that the Servlets are Correctly 
+          Installed </a></li>
+        <li><a href="#QuickInstallSamples">Install the Sample Document Library</a></li>
+        <li><a href="#QuickVerifyDocRet">Verify that Document Retrieval (dynaXML 
+          Servlet) Works</a></li>
+        <li><a href="#QuickIndex">Index the Sample Document Library</a></li>
+        <li><a href="#QuickVerifyCrossQuery">Verify that Document Searching (crossQuery 
+          Servlet) Works</a></li>
+      </ul>
+      <br/>
+    </li>
+    <li> <b><a href="#Upgrading">Upgrading a Prior Installation</a></b> <br/>    <br/>
+    </li>
+    <li> <b><a href="#RunTImeInstall">Run-Time Environment Installation/Configuration</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#RunTimeJava">Java</a></li>
+        <li><a href="#RunTimeServlet">Servlet Container</a></li>
+        <li><a href="#IncludedLibraries">Included Libraries (no installation required)</a></li>
+      </ul>
+      <br/>
+    </li>
+    <li> <b><a href="#XTFInstall">XTF Installation/Configuration</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#XTFInstall">Installing XTF</a></li>
+        <li><a href="#XTFBaseDir">The XTF base directory (XTF_HOME)</a></li>
+        <li><a href="#XTFTextIndexer">Configuring the textIndexer Tool</a></li>
+        <li><a href="#XTFDynaXML">Configuring the dynaXML Servlet</a></li>
+        <li><a href="#XTFCrossQuery">Configuring the crossQuery Servlet</a></li>
+      </ul>
+      <br/>
+    </li>
+    <li> <b><a href="#UsageExamples">Usage Examples</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#UsageDynaXML">Stand-Alone dynaXML System</a></li>
+        <li><a href="#UsageCrossQuery">Stand-Alone crossQuery System</a></li>
+        <li><a href="#UsageCombined">Combined crossQuery and dynaXML System</a></li>
+      </ul>
+      <br/>
+    </li>
+    <li> <b><a href="#UserAuthentication">User Authentication (Optional)</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#AuthIPList">IP List Authentication</a></li>
+        <li><a href="#AuthLDAP">LDAP Authentication</a></li>
+        <li><a href="#AuthExternal">External Authentication</a></li>
+      </ul>
+    </li>
+  </ul>
+  <br/>
+  <p class="Heading1">Introduction<a name="Introduction"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  This guide describes the installation and configuration of the E<b>X</b>tensible 
+  <b>T</b>ext <b>F</b>ramework (<span class="Keyword">XTF</span>). <br/>
+  <br/>
+  The XTF system consists of Java Servlets and tools that permit users to perform 
+  Web-based searching and retrieval of electronic documents. Its basic organization 
+  can be illustrated as follows: 
+  <p align="center"> <img src="art/SummaryDiagram.gif" alt="Summary Diagram"/><br/>
+    Figure 1: Extensible Text Framework (XTF) Overview </p>
+  In this diagram, the basic flow of information is left to right. Document retrieval 
+  begins with a Web-based user search query. The <span class="Keyword">crossQuery</span> servlet 
+  checks the query against an index of available documents, and produces a list 
+  of matching documents for display in a web browser. Selecting a document from 
+  the search results page invokes the <span class="Keyword">dynaXML</span> servlet, which retrieves 
+  and formats the actual document for display in a web browser. The <span class="Keyword">textIndexer</span> 
+  tool shown at the bottom is used to update the document search index whenever 
+  documents in the library are added, removed, or updated. <br/>
+  <br/>
+  This guide describes the steps that must be taken to deploy a working XTF system. 
+  These steps include installing and configuring the <span class="Keyword">crossQuery</span> 
+  and <span class="Keyword">dynaXML</span> servlets, the <span class="Keyword">textIndexer</span> tool, and 
+  the run-time environment that they depend on. The guide has three distinct sections: 
+  <br/>
+  <br/>
+  <div class="IndentL"> <!-- section summary --> <a href="#QuickStart">Quick Start</a> 
+    <br/>
+    This section describes how to get a sample XTF system up and running with 
+    minimal effort. The sample system uses a pre-selected document library and 
+    component configurations for the sake of illustration. It can be modified 
+    if desired to create a fully customized system. <br/>
+    <br/>
+    <a href="#RunTimeInstall">Installation/Configuration Sections</a> <br/>
+    These sections provide detailed descriptions of how to install and configure 
+    each component in the system and the run-time environment that it depends 
+    on. The sections are arranged so that later sections build on earlier ones. 
+    Consequently, following the instructions in these sections in the order they 
+    appear will produce a fully customized XTF installation. <br/>
+    <br/>
+    <a href="#UsageExamples">Usage Examples</a> <br/>
+    Since the <span class="Keyword">crossQuery</span> and <span class="Keyword">dynaXML</span> servlets can 
+    be used together or separately, this final section illustrates examples of 
+    various stand-alone and combined configurations of the two servlets. </div>
+  <br/>
+  <!-- section summary --> 
+  <p class="Heading1">Quick Start (First Time)<a name="QuickStart"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  This section provides simplified instructions for installing and configuring 
+  an XTF system. By using the pre-created document library, configuration files, 
+  and file system tree, this section yields a running XTF system with minimal 
+  effort. Be sure to go through the sub-sections in the order they appear, as 
+  each new section builds on the previous ones. <br/>
+  <div class="IndentL"> 
+    <p class="Heading2"> Install Run-Time Environment<a name="QuickInstallRunTime"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    The XTF servlets and tools depend upon a run-time environment consisting of 
+    the following: 
+    <ul class="UnorderedList">
+      <li> Sun Microsystems Java 2 Platform Standard Edition (J2SE) (via <a href="http://java.sun.com/j2se/">Sun 
+        Microsystems</a>), version 1.4.0 or higher. </li>
+      <li> A Java servlet container of your choice (e.g., <a href="http://jakarta.apache.org/tomcat/">Apache 
+        Tomcat</a> , <a href="http://caucho.com/download/">Caucho Resin</a>, etc.) 
+      </li>
+    </ul>
+    If you need help installing these run-time tools, follow the steps outlined 
+    in the <a href="#RunTimeInstall">Run-Time Environment Installation/Configuration</a> 
+    section below. <br/>
+    <p class="Heading2"> Install the XTF Package<a name="QuickInstallXTF"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    Installing the XTF Package usually consists of these simple steps: 
+    <ul class="OrderedList">
+      <li>Shut down the servlet container.<br/>
+        <br/>
+      </li>
+      <li>Download the latest XTF package (<span class="Code">xtf.war</span>) 
+        from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>.<br/>
+        <br/>
+      </li>
+      <li>Place the XTF web-archive file inside the <span class="Code">webapps</span> 
+        directory of the servlet container you have chosen (such as Resin or Tomcat.)<br/>
+        <br/>
+      </li>
+      <li><i>Very important: </i>rename the file to<span class="Code"> xtf.war</span>, 
+        so that the servlet container will unpack it to the<span class="Code"> 
+        xtf </span>subdirectory instead of<span class="Code"> xtf-1.<span class="MacroCode">x</span>.<span class="MacroCode">x</span></span>.<br/>
+        <span class="Code"><br/>
+        </span></li>
+      <li>Restart the servlet container, and browse to a URL referencing one of 
+        <span class="Keyword">XTF</span> servlets (such as the one below). The servlet container 
+        should unpack the archive for you, creating an <span class="Code">xtf</span> 
+        sub-directory within <span class="Code">webapps</span>. </li>
+    </ul>
+    <div align="left">For more details, see the <a href="#XTFInstall">XTF Installation/Configuration</a> 
+      section below. </div>
+
+    <p class="Heading2">Verify that the Servlets are Correctly Installed<a name="QuickInstallDynaXML"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    To verify that the servlets are running,, bring up your web browser and enter 
+    the following URL: <br/>
+    <br/>
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/search</span> 
+    </div>
+    <p> Doing so should bring up an error page exactly like this:</p>
+    <div align="center"><img src="Art/SearchQueryGenErr.gif" alt="QueryGen Error Page"/> <br/>
+      Figure 2: QueryGen Error Page (expected at this point)</div>
+    <p align="left">Receiving this page indicates that the <span class="Keyword">crossQuery</span> 
+      servlet is running; it's okay at this point that it can't access the index. 
+      Simply accessing this URL causes the servlet container to unpack the web 
+      archive file, creating an <span class="Code">xtf</span> sub-directory below 
+      the container's <span class="Code">webapps</span> directory, which in turn 
+      automatically installs the <span class="Keyword">crossQuery</span> and <span class="Keyword">dynaXML</span> 
+      servlets, the <span class="Keyword">textIndexer</span> tool, and a sample configuration 
+      that allows you to work with the default Sample Document Library. The reason 
+      we get an error is that we haven't installed and indexed the <b>Sample Document 
+      Library</b> yet.</p>
+    <p align="left">If you get any other type of error, including <b>File Not 
+      Found</b> or<b> Page Not Found</b>, then <span class="Keyword">XTF </span>is not properly 
+      installed, and you should go back and double-check that you have correctly 
+      performed the steps described in the previous section.</p>
+    
+    <p class="Heading2">Install the Sample Document Library<a name="QuickInstallSamples"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    Once the crossQuery servlet is up and running, its time to install the sample 
+    document library. To do so, perform the following steps: 
+    <div class="IndentL"> 
+      <ul>
+        <li> Download the <b>sample</b> package (<span class="Code">xtf-sample.zip</span>) 
+          from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>. 
+          <br/>
+          <br/>
+        </li>
+        <li> Switch to the<span class="Code"> <span class="MacroCode">servlet-container-directory</span>/webapps/xtf 
+          </span>directory and extract the Sample Document Library using your 
+          favorite ZIP file utility. <br/>
+          <br/>
+        </li>
+        <li> Move or copy the<span class="Code"> sample/data </span>sub-directory 
+          up to the<span class="Code"><span class="MacroCode"><span class="Code"> 
+          </span>servlet-container-directory</span>/webapps/xtf </span>directory 
+          so that the sample source documents are located where the default XTF 
+          configuration expects to see them. You should now have the following 
+          directory present (among others):<span class="Code"> <span class="MacroCode">servlet-container-directory</span>/webapps/xtf/data/tei/ft958009mm</span>. 
+          This directory contains the document we will attempt to display.</li>
+      </ul>
+  </div>
+
+    <p class="Heading2"> Verify that Document Retrieval Works<a name="QuickVerifyDocRet"></a> 
+    </p>
+    <!-- - - - - - - - - - - - - - --> 
+    Once the Sample Document Library has been installed, you can verify that basic 
+    document retrieval works. To do so, bring up your web browser and enter the 
+    following URL: <br/>
+    <br/>
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=tei/ft958009mm/ft958009mm.xml</span> 
+    </div>
+    <br/>
+    Doing so should bring up the cover for the book <i><b>The Opening of the Apartheid 
+    Mind</b></i>, looking something like this: <br/>
+    <br/>
+    <div align="center"> <img src="Art/ViewPage.gif" alt="View Page"/> <br/>
+      Figure 3: Result of Document Retrieval with <span class="Keyword">dynaXML</span> </div>
+    <br/>
+    <br/>
+    To play with the sample setup, simply follow the steps outlined in the following 
+    subsections of this <b>Quick Start</b> guide. Alternately, to customize the 
+    sample installation to better suit your needs, see the <b>XTF Installation/Configuration 
+    </b>subsections entitled <a href="#XTFTextIndexer">Configuring the <span class="Keyword">textIndexer</span> 
+    Tool</a>, <a href="#XTFDynaXML">Configuring the dynaXML Servlet</a>, and <a href="#XTFCrossQuery">Configuring 
+    the crossQuery Servlet</a>. <br/>
+
+    <p class="Heading2"> Index the Sample Document Library<a name="QuickIndex"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    <p>Before you can verify that basic document searching works, you need to 
+      index the document library. To do this, follow the steps below. </p>
+    <p class="GreyList"><i>Note: </i>this 
+      procedure depends on a Unix-type shell and a Perl command interpreter. If 
+      you are attempting to run XTF on Windows, you may need an environment such 
+      as <b>cygwin</b> that includes these things. Alternately, you could create 
+      a driver script that does the same work. See the section Running on Windows, 
+      below.</p>
+    <ol class="OrderedList">
+      <li>From the command prompt, set the<span class="Code"> XTF_HOME </span>environment 
+        variable to the directory where the XTF package is installed. This environment 
+        variable is used by the <span class="Keyword">textIndexer</span> (and other tools) to 
+        locate various XTF components. For example, from a BASH shell: <br/>
+        <br/>
+        <div class="Sample"> <span class="Code"> $ export XTF_HOME=<span class="MacroCode"> 
+          servlet-container-directory</span>/webapps/xtf </span> </div>
+        <br/>
+        <div class="Note"> (<u>Note</u>: To avoid having to repeatedly set and 
+          export the<span class="Code"> XTF_HOME </span> environment variable, 
+          you may wish to add this statement to your<span class="Code"> .bashrc 
+          </span>or<span class="Code"> .bash_login </span>file.) </div>
+<br/>
+      </li>
+      <li>Using the<span class="Code"> XTF_HOME </span>environment variable, switch 
+        to the<span class="Code"> bin </span> sub-directory under the XTF installation 
+        directory: <br/>
+        <br/>
+        <div class="Sample"> <span class="Code">$ cd &quot;$XTF_HOME/bin&quot;</span> 
+        </div>
+        <br/>
+      </li>
+      <li> Once in the<span class="Code"> bin </span>sub-directory, make the <span class="Code">textIndexer</span> 
+        script runnable, then run it: <br/>
+        <br/>
+        <div class="Sample"> <span class="Code">$ chmod +x textIndexer</span><br/>
+          <span class="Code">$ ./textIndexer -index default</span> </div>
+      </li>
+    </ol>
+    When the <span class="Keyword">textIndexer</span> script completes, the document library 
+    will be indexed, and the <span class="Keyword">crossQuery</span> servlet can be tested. <br/>
+
+    <p class="Heading2"> Verify that Document Searching (crossQuery Servlet) Works 
+      <a name="QuickVerifyCrossQuery"></a> </p>
+    <!-- - - - - - - - - - - - - - --> 
+    Once the document library has been indexed, you can verify that basic document 
+    searching works. To do this, bring up your web browser and enter the following 
+    URL: <br/>
+    <br/>
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/search</span> 
+    </div>
+    <br/>
+    Doing so should bring up a page where you can enter information to search 
+    for, like this: 
+    <p align="center"> <img src="Art/SearchPage.gif" alt="Search Page"/> <br/>
+      Figure 4: Basic Search (<span class="Keyword">crossQuery</span>)Web-Page </p>
+    <br/>
+    Entering the word <span class="Keyword">apartheid</span> in the <span class="Keyword">Full Text</span> field 
+    and pressing the <img src="Art/SubmitButton.gif" align="middle" alt="Submit"/> button 
+    should yield a list of matching documents that looks something like this: 
+    <br/>
+    <p align="center"> <img src="Art/SearchResult.gif" alt="Search Result"/> <br/>
+      Figure 5: Basic Search Result Web-Page </p>
+    Note that the first document listed is the book entitled<i><b> The Opening 
+    of the Apartheid Mind</b></i>, which we selected manually in our initial test 
+    of the document retrieval (<span class="Keyword">dynaXML</span>) servlet. Clicking on the 
+    book title effectively passes a URL to the <span class="Keyword">dynaXML</span> servlet that 
+    looks like the one we entered manually before, and will result in the cover 
+    page for the book being shown. In contrast, clicking on the word <span class="Keyword">apartheid</span> 
+    in the search result blurbs will take you to the actual place in the book 
+    where the word <span class="Keyword">apartheid</span> appears. </div>
+</div>  
+<!-- QuickStart --> 
+<p class="Heading2"> Running on Windows<a name="QuickIndex"></a></p>
+<!-- - - - - - - - - - - - - - --> 
+<p>The base XTF distribution works well on a number of Unix variants, including 
+  Solaris and Linux. XTF also works under Windows, but there are some special 
+  considerations.</p>
+<p>To get the textIndexer script to work as shipped in the XTF distribution, you 
+  need a Unix-like command interpreter. We have found that cygwin works well for 
+  this, and that once installed (be sure to include Perl), the normal instructions 
+  for configuring and running XTF work fine.</p>
+<p>Another option is to create a batch file to do indexing. The instructions below 
+  were contributed by Seth Cherney. Note that his instructions use Resin; substitute 
+  the appropriate path to your servlet container. Feedback and/or improvements 
+  on these instructions is always appreciated.</p>
+<ol>
+  <li> Get perl at activestate.com. </li>
+  <li> Rename the <span class="Code">textindexer</span> file in the Bin folder 
+    to <span class="Code">textindexer.pl</span>. </li>
+  <li> Paste the following into a text editor and save as <span class="Code">indexer.bat</span> 
+    in the same folder: <span class="Code">textIndexer.pl -index default</span> 
+  </li>
+  <li> Paste following into a new file named <span class="Code">XTFJava.bat</span>. 
+    You may need to edit for your setup path (this is the safe way for registering 
+    a classpath, it is not global - google set java classpath). All text is on 
+    one line without any returns: <br/>
+    <span class="Code">java -classpath C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\cql-java.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\log4j-1.2.9.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\PDFBox-0.6.7a.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\saxonb-8.3.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\Tidy.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\xtf.jar</span> 
+  </li>
+  <li> Open control panel - system - advanced - environmental variables, and add 
+    the <span class="Code">XTF_HOME</span> variable (and JAVA_HOME if necessary). 
+  </li>
+  <li> Copy the sample data files as directed by XTF user guide. </li>
+  <li> Run <span class="Code">XTFjava.bat</span>, then run <span class="Code">indexer.bat</span>. 
+  </li>
+</ol>
+<p class="Heading1">Upgrading a Prior XTF Installation<a name="Upgrading"></a></p>
+<div class="BaseStyle"><!-- - - - - - - - - - - - - - --> 
+  <p>If you have previously installed XTF and want to retain your existing stylesheets 
+    and configuration files, this section provides instructions for upgrading 
+    to a new release of XTF. </p>
+  <p>Upgrading usually consists of these steps:</p>
+    
+  <ul class="OrderedList">
+    <li>Shut down the servlet container.<br/>
+      <br/>
+    </li>
+    <li>Make a backup of your existing XTF directory, in case something goes wrong 
+      during the upgrade.<br/>
+      <br/>
+    </li>
+    <li>Download the latest XTF-Core package (<span class="Code">xtf-core-1.<span class="MacroCode">x</span>.<span class="MacroCode">x</span>.zip</span>) 
+      from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>. The 
+      core package contains the Java source code and libraries for XTF, but omits 
+      stylesheets and configuration files.<br/>
+      <br/>
+    </li>
+    <li>Unxip the contents of the package into your XTF directory.<br/>
+      <br/>
+    </li>
+    <li><i>Optional: </i>Review changes to the default stylesheets and apply them 
+      to your own. You can do this by downloading <span class="Code">xtf-example-1.<span class="MacroCode">x</span>.<span class="MacroCode">x</span>.zip</span> 
+      and diffing the stylesheets and config files against the previous version 
+      or against your current files.<br/>
+      <span class="Code"><br/>
+      </span></li>
+    <li>Restart the servlet container and test to ensure that <span class="Keyword">XTF</span> 
+      is operating correctly. </li>
+  </ul>
+</div>
+<p class="Heading1">Run-Time Environment Installation/Configuration<a name="RunTimeInstall"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  Successfully running the XTF tools and servlets depends on the prior installation 
+  and configuration of a minimum run-time environment. This environment consists 
+  of the <b>Java</b> run-time environment and a servlet container to run the <span class="Keyword">dynaXML</span> 
+  and <span class="Keyword">crossQuery</span> servlets. <br/>
+  <br/>
+The installation and configuration of each of these run-time environment components 
+is discussed in turn in the following sub-sections. Once these items are installed 
+and configured, the XTF system may be installed and run. 
+<div class="IndentL"> 
+    <p class="Heading2">Java<a name="RunTimeJava"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    Since the <span class="Keyword">dynaXML</span> and <span class="Keyword">crossQuery</span><i> </i>servlets 
+    and <span class="Keyword">textIndexer</span> too are Java programs, you need to install the 
+    Sun Microsystems <b>Java 2 Platform Standard Edition (J2SE) </b>, version 
+    1.4.0 or higher. The J2SE run-time can be downloaded directly from Sun via 
+    <a href="http://java.sun.com/j2se/">this page</a>. <br/>
+    <br/>
+    Since the J2SE package is a separate package maintained by Sun Microsystems, 
+    it's installation and configuration is beyond the scope of this document. 
+    Please refer to Sun's own installation and configuration instructions for 
+    the J2SE. <br/>
+    <p class="Heading2">Servlet Container<a name="RunTimeServlet"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    
+  <p>For the <span class="Keyword">dynaXML</span> and <span class="Keyword">crossQuery</span> servlets to be 
+    accessible on-line, they must be run under a <b>Servlet Container</b> application. 
+    At thtis time, the XTF system is known to work with the <a href="http://jakarta.apache.org/tomcat/">Apache 
+    Tomcat</a> and <a href="http://caucho.com/download/">Caucho Resin</a> servlet 
+    containers. Please download one or the other of these servlet containers, 
+    and follow the accompanying instructions on how to install and configure the 
+    selected container. </p>
+  <p class="Red">Note: it has been reported that Tomcat version 4.1.27 is not 
+    compatible with XTF. If you are running this version or a version similar 
+    to it, it is recommended that you upgrade to Tomcat 5.x.</p>
+  <p class="Heading2">Included Libraries<i></i> (no installation required)<a name="IncludedLibraries"></a></p>
+    
+  <!-- - - - - - - - - - - - - - --> 
+  <p>The <span class="Keyword">XTF</span> distribution also includes two libraries, Saxon and 
+    Lucene, needed for proper operation. Generally no configuration will be required 
+    for these, unless other servlets are to be run in the same servlet container 
+    that require different versions of Saxon and/or Lucene. Saxon is an XSLT engine 
+    for Java, and Lucene is an indexing database system. The code in <span class="Keyword">XTF</span> 
+    is customized to work very closely with both of these libraries, so it is 
+    not currently possible to use a different version than included with the distribution.</p>
+  <p>The source text documents that are indexed and queried by the XTF system 
+    are <b>XML</b> based documents. Consequently, the <span class="Keyword">dynaXML</span>, <span class="Keyword">crossQuery</span>, 
+    and <span class="Keyword">textIndexer</span> programs use Michael Kay's <b>Saxon Library</b> 
+    for Java to parse the structure of the source documents and run stylesheets 
+    to transform them in various ways.</p>
+  <p>The <span class="Keyword">textIndexer</span> tool uses a library called <b>Lucene </b>to 
+    construct a search index of the XML source text documents in an XTF system. 
+    The <span class="Keyword">crossQuery</span> servlet then uses the resulting index to locate 
+    matching documents based on user generated queries. <br/>
+  </p>
+</div>
+  <!-- Run-Time Install/Config --> 
+  <p class="Heading1"> XTF Installation/Configuration<a name="XTFInstall"></a> 
+  </p>
+  
+<!-- - - - - - - - - - - - - - --> 
+<div class="IndentL"> 
+  <p class="Heading2">Installing XTF</p>
+  <br/>
+  <p>Prior to installing the XTF package, install and configure the Run-Time Environment 
+  as described in the <a href="#RunTimeInstall">previous section</a>. Once the 
+  run-time environment is up and running, do the following steps to install the 
+  XTF Package.</p>
+  <p class="GreyList"><i>Note: </i>this procedure 
+    depends on a Unix-type shell and a Perl command interpreter. If you are attempting 
+    to run XTF on Windows, you'll need an environment such as <b>cygwin</b> that 
+    includes these things. Alternately, you could create a driver script that does 
+    the same work, namely forming a classpath that includes all the .jar files in<span class="Code"> 
+    WEB-INF/lib</span>.<br/>
+  </p>
+  <ol class="OrderedList">
+    <li> Shut down your servlet container, to keep it from prematurely trying to 
+      unpack <span class="Keyword">XTF</span>.<br/>
+      <br/>
+    </li>
+    <li> Download the California Digital Library XTF web-archive file (via <a href="http://sourceforge.net/projects/xtf">SourceForge</a>) 
+      and place it in your servlet container's webapps directory.<br/>
+      <br/>
+    </li>
+    <li><i>Very important: </i>rename the downloaded file to<span class="Code"> 
+      xtf.war </span>(so that the servlet container will unpack it to the<span class="Code"> 
+      xtf </span>subdirectory instead of<span class="Code"> xtf-1.<span class="MacroCode">x</span>.<span class="MacroCode">x</span></span>).<br/>
+      <br/>
+    </li>
+    <li> Start up the servlet container, and browse to a URL referencing an XTF 
+      servlet, such as crossQuery:<br/>
+      <br/>
+      <div class="Sample"> <span class="Code">http://<span class="MacroCode">yourserver</span>:8080/xtf/search</span> 
+      </div>
+      <br/>
+      Accessing this URL should cause the servlet container to unpack the web archive 
+      file, creating an <span class="Code">xtf</span> sub-directory below the container's 
+      <span class="Code">webapps</span> directory. This automatically installs the 
+      <span class="Keyword">crossQuery</span> and <span class="Keyword">dynaXML</span> servlets, the <span class="Keyword">textIndexer</span> 
+      tool, and a default configuration that allows you to work with the Sample 
+      Document Library.<br/>
+      <br/>
+    </li>
+    <li>Download the <b>sample</b> package (<span class="Code">xtf-sample.zip</span>) 
+      from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>.<br/>
+      <br/>
+    </li>
+    <li>From the command prompt, set the<span class="Code"> XTF_HOME </span>environment 
+      variable to the directory where the XTF package is installed. This environment 
+      variable is used by the <span class="Keyword">textIndexer</span> (and other tools) to locate 
+      various XTF components. For example, from a BASH shell: <br/>
+      <br/>
+      <div class="Sample"> <span class="Code"> $ export XTF_HOME=<span class="MacroCode"> 
+        servlet-container-directory</span>/webapps/xtf </span> </div>
+      <br/>
+      <div class="Note"> (<u>Note</u>: To avoid having to repeatedly set and export 
+        the<span class="Code"> XTF_HOME </span> environment variable, you may wish 
+        to add this statement to your<span class="Code"> .bashrc </span>file.) </div>
+      <br/>
+    </li>
+    <li> Using this new environment variable, switch to the<span class="Code"> XTF 
+      </span>installation directory: <br/>
+      <br/>
+      <div class="Sample"> <span class="Code">$ cd &quot;$XTF_HOME&quot;</span></div>
+      <br/>
+    </li>
+    <li>Extract the Sample Document Library using your favorite ZIP file utility. 
+      For example, using <span class="Code">unzip</span> tool under LINUX, you would 
+      type: <br/>
+      <br/>
+      <div class="Sample"> <span class="Code">$ unzip sample.zip</span></div>
+      <br/>
+      Doing so will create a new sub-directory called <span class="Code">sample.<br/>
+      <br/>
+      </span></li>
+    <li>Move the<span class="Code"> sample/data </span>sub-directory up to the<span class="Code"> 
+      XTF_HOME </span>directory, like so:<br/>
+      <br/>
+      <div class="Sample"><span class="Code">$ mv ./sample/data ./data</span></div>
+      <br/>
+      This will place the Sample Document Library where the default XTF configuration 
+      expects to see it. You should now have the following directory present (among 
+      others):<span class="Code"> data/tei/ft958009mm</span>.<br/>
+    </li>
+  </ol>
+  At this point, the <span class="Keyword">crossQuery</span> and <span class="Keyword">dynaXML</span> servlets, 
+  and the <span class="Keyword">textIndexer</span> tool are installed and ready to use. Also installed 
+  are a sample document library and a sample configuration that you can use to index, 
+  search for, and retrieve documents from the sample library. To play with the sample 
+  setup, simply follow the steps outlined in the <a href="#QuickIndex">last two 
+  sections</a> of the <b>Quick Start</b> guide above. Alternately, to customize 
+  the sample installation to better suit your needs, see the three remaining <b>XTF 
+  Installation/Configuration </b>subsections below<a href="#XTFCrossQuery"></a>. 
+  <br/>
+</div>
+    
+<div class="IndentL"> 
+  <p class="Heading2">The XTF Base Directory (XTF_HOME)<a name="XTFBaseDir"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  <p>The XTF base directory is critical to understanding where resources are located
+    in your XTF installation.
+    In general, the base directory is the top level of the XTF installation, and
+    contains important sub-directories such as <span class="Code">conf</span>, 
+    <span class="Code">style</span>, and
+    <span class="Code">WEB-INF</span>. Every component of XTF needs to locate this
+    base directory to enable it to find configuration files, stylesheets, and
+    data files. The servlets (<span class="Keyword">crossQuery</span> and 
+    <span class="Keyword">dynaXML</span>) obtain it from the servlet container,
+    while the command-line tools (such as <span class="Keyword">textIndexer</span>)
+    use the <span class="Code">XTF_HOME</span> environment variable.
+  </p>
+  
+  <p>
+    In the case of the servlets, the container (typically <b>Tomcat</b> or <b>Resin</b>)
+    provides the base directory, and it's usually: 
+    <span class="MacroCode">servlet-directory</span><span class="Code">/webapps/xtf/</span>.
+    This can be overridden in the servlet configuration by specifying a
+    <span class="Code">base-dir</span> configuration parameter; how to do this depends
+    on the particular servlet container.
+  </p>
+
+  <p>
+    The command-line tools such as <span class="Keyword">textIndexer</span> cannot rely
+    on the servlet container, and instead require that you specify the base directory
+    by setting the <span class="Code">XTF_HOME</span> environment variable. This should
+    point to the same directory as above, but should be absolute. An example would
+    be: <span class="Code">/Applications/Tomcat/webapps/xtf</span>. If the command-line
+    programs such as <span class="Keyword">textIndexer</span> complain about missing
+    class files, the most likely explanation is that <span class="Code">XTF_HOME</span>
+    has not been set correctly.
+  </p>
+</div>
+  
+<div class="IndentL"> 
+  <p class="Heading2">Configuring the textIndexer Tool<a name="XTFTextIndexer"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  The <span class="Keyword">textIndexer</span> tool is a command line tool that indexes the XML, 
+  PDF, and HTML documents in an XTF document library. The index it creates is 
+  used by the <span class="Keyword">crossQuery</span> servlet to search for documents based on 
+  user queries. The organization of the <span class="Keyword">textIndexer</span> tool can be 
+  illustrated as follows: 
+  <p align="center"> <img src="art/textIndexerDataFlow.gif" alt="textIndexer Data Flow"/> <br/>
+    Figure 6: Data Flow in the <span class="Keyword">textIndexer</span> Tool </p>
+  <div class="IndentL"> <b><u>Running the textIndexer</u></b><br/>
+    <!-- - - - - - - - - - - - - - --> 
+    Running the text indexer from the command line is accomplished by switching 
+    to the bin subdirectory just below the main XTF directory, and using the following 
+    command. <span class="Note">Note: make sure you've set the <span class="Code">XTF_HOME</span> environment variable correctly first
+    (see above).</span><br/>
+    <br/>
+    <div class="Sample"> <span class="Code"> $ textIndexer {-config <span class="MacroCode">config-file-path</span>} 
+      {-clean | <b>-incremental</b>} {<b>-optimize</b> | -nooptimize} {-trace 
+      <span class="MacroCode">trace-level</span>} {-dir <span class="MacroCode">subdirectory</span>} 
+      {-buildlazy | -nobuildlazy} -index <span class="MacroCode">index-name</span> 
+      </span> </div>
+    <p> <i>Note:</i> this invokes a script that relies on a Perl command interpreter. 
+      If you are attempting to run XTF on Windows, you'll need an environment 
+      such as <b>cygwin</b> that includes Perl. Alternately, you could create 
+      a driver script that does the same work, namely forming a classpath that 
+      includes all the .jar files in<span class="Code"> WEB-INF/lib</span>.</p>
+    <p>Only the last argument, the <span class="Code">-index <span class="MacroCode">index-name</span></span> 
+      argument, is required. The remaining arguments (shown in braces) are optional 
+      arguments. Note that the order of the arguments is important, since each 
+      occurence of <span class="Code">-index <span class="MacroCode">index-name</span></span> 
+      causes the specified index to be updated using the previously set argument 
+      values. The arguments pased to the <span class="Keyword">textIndexer</span> have the following 
+      meanings: <br/>
+      <br/>
+    </p>
+    <div class="GreyList"> <span class="Code">-config <span class="MacroCode">config-file-path</span></span><br/>
+      This argument is an optional argument that identifies an XML configuration 
+      file to use when indexing. If this argument is omitted, the <span class="Keyword">textIndexer</span> 
+      will use the <span class="Code">textIndexer.conf</span> file found in the 
+      <span class="Code">XTF_HOME/conf</span> directory. If used, this argument 
+      must be the first argument passed to the text indexer. For a complete description 
+      of the contents of the configuration file, see the following section. </div>
+    <div class="GreyList"> <span class="Code">-clean | <b>-incremental</b></span><br/>
+      This argument is an optional argument that can be set to either <span class="Code">-clean</span> 
+      or <span class="Code">-incremental</span>. This flag tells the text indexer 
+      whether the document indexes should be rebuilt from scratch (<span class="Code">-clean</span>) 
+      or should be updated incrementally (<span class="Code">-incremental</span>). 
+      If this argument is not specified, the default behavior is to incrementally 
+      update the index. </div>
+    <div class="GreyList"> <span class="Code"><b>-optimize</b> | -nooptimize</span> 
+      <br/>
+      This argument is an optional argument that specifies whether or not the 
+      indexer should optimize the indexes after they are built. Optimization improves 
+      query speed, but can take a very long time to complete if an index is large. 
+      If this argument is not specified, the default behavior is to optimize indexes 
+      after they are updated. </div>
+    <div class="GreyList"> <span class="Code">-trace <span class="MacroCode">trace-level</span></span> 
+      <br/>
+      This argument is an optional argument that sets the level of output displayed 
+      by the <span class="Keyword">textIndexer</span>. The possible output levels are defined 
+      as follows: <br/>
+      <br/>
+      <table cellspacing="12">
+        <tr> 
+          <td width="16%" align="right" valign="top" class="Code">errors</td>
+          <td><span class="BaseStyle">Only error messages are displayed.</span></td>
+        </tr>
+        <tr> 
+          <td width="16%" align="right" valign="top" class="Code">warnings</td>
+          <td><span class="BaseStyle">Both error and warning messages are displayed.</span></td>
+        </tr>
+        <tr> 
+          <td width="16%" align="right" valign="top" class="Code">info</td>
+          <td><span class="BaseStyle">Error, warning, and informational messages 
+            are displayed</span></td>
+        </tr>
+        <tr> 
+          <td width="16%" align="right" valign="top" class="Code">debug</td>
+          <td> <span class="BaseStyle"> Low level debug output is displayed in 
+            addition to error, warning, and informational messages. </span> </td>
+        </tr>
+      </table>
+      <br/>
+      If this argument is not specified, the <span class="Keyword">textIndexer</span> defaults 
+      to displaying informational (<span class="Code">info</span>) level messages. 
+    </div>
+    <div class="GreyList"> <span class="Code">-dir <span class="MacroCode">subdirectory</span></span> 
+      <br/>
+      This argument is an optional argument, and identifies a sub-directory of 
+      an index tree to reindex. The primary purpose of this argument is to allow 
+      only portions of an index to be updated to save time. When specified, the 
+      value of this argument should be path to the sub-directory relative to the 
+      base directory set for the index specified in the <span class="Code">-index 
+      <span class="MacroCode">index-name</span></span> argument that immediately 
+      follows. </div>
+    <div class="GreyList"> <span class="Code"><b>-buildlazy</b> | -nobuildlazy</span> 
+      <br/>
+      This argument is an optional argument that if not specified defaults to 
+      <span class="Code">-buildlazy</span>. The<span class="Code"> -buildlazy</span>, 
+      argument tells the <span class="Keyword">textIndexer</span> to pre-build <span class="Keyword">lazy tree</span> 
+      files. Lazy tree files speed the retrieval of documents by the <span class="Keyword">dynaXML</span> 
+      servlet, and also allow resulting matches within documents to be highlighted 
+      in context. Pre-building lazy tree files at index time ensures the fastest 
+      possible retrieval time for any document in the library, but at the expense 
+      of longer indexing times and additional hard-disk space usage. To avoid 
+      pre-building lazy tree files for all documents in a library, pass
+      the<span class="Code"> -nobuildlazy </span> flag instead. Doing so will cause the 
+      <span class="Keyword">dynaXML</span> servlet to build lazy tree files for documents only when
+      the documents are requested. While this approach conserves hard-disk space, it 
+      comes at the expense of longer processing times when dynaXML retrieves a document
+      for which it has not yet built lazy tree information.<br/>
+      <br/>
+      <table width="95%" border="0" cellspacing="4" cellpadding="0" align="center">
+        <tr> 
+          <td width="1" valign="baseline"> 
+            <div align="right"><span class="Red">WARNING</span>:</div>
+          </td>
+          <td width="1" valign="baseline">&nbsp;</td>
+          <td valign="baseline">If the<span class="Code"> -nobuildlazy 
+            </span> flag is used, the<span class="Code"> docSelctor.xsl </span> 
+            stylesheet used by the <span class="Keyword">textIndexer</span> and the<span class="Code"> 
+            docReqParser.xsl </span>stylesheet used by the <span class="Keyword">dynaXML</span> 
+            servlet must both specify the same pre-filter, lest chaos will ensue.</td>
+        </tr>
+      </table> 
+    </div>
+    <div class="GreyList"> <span class="Code">-index <span class="MacroCode">index-name</span></span> 
+      <br/>
+      This argument is a required argument that identifies the name of the index 
+      to be created/updated. The name must be one of the index names contained 
+      in the configuration file specified as the first argument. Note that this 
+      argument also starts the (re)indexing process for the given index using 
+      the values set by the arguments that preceed it. </div>
+    <br/>
+    A simple example of command line parameters for a text indexer run might look 
+    like this: <br/>
+    <br/>
+    <div class="Sample"> <span class="Code">$ textIndexer -clean -index default</span> 
+    </div>
+    <br/>
+    This example uses the default config file,<span class="Code"> textIndexer.conf</span>, 
+    located in the<span class="Code"> XTF_HOME/conf </span>subdirectory. It assumes 
+    that the config file contains an entry for an index called <b>default</b>, 
+    and that the user wants the index to be rebuilt from scratch and then optimized 
+    (because of the presence of the <span
+          class="Code">-clean</span> argument, and the absence of the <span class="Code">-nooptimize</span> 
+    argument.) <br/>
+    <br/>
+    As is mentioned above, the <span class="Code">-config <span class="MacroCode">config-file-path</span></span> 
+    argument (if used) must be specified first. After that, all the arguments 
+    may be used as a set one or more times to update multiple indexes. For example: 
+    <br/>
+    <br/>
+    <pre class="Sample"><b>TextIndexer -config conf/myTextIndexer.conf
+            -clean -index default
+            -incremental -nooptimize -index abstracts</b></pre>
+    In this example, the <code>myTextIndexer.conf</code> file defines two indexes 
+    called <b>default</b> and <b>abstracts</b>, with the <b>default </b>index 
+    created from scratch and optimized at the end, while the <b>abstracts</b> 
+    index is updated incrementally and not optimized. <br/>
+    <br/>
+    <br/>
+    <b><u>The textIndexer Configuration File</u></b><a name="textIndexer_Config_File"></a> 
+    <br/>
+    As noted above, first command line argument passed to the <span class="Keyword">textIndexer</span> 
+    tool is the name of a configuration file. This file contains the name of one 
+    or more indexes and their associated parameters. The format of the configuration 
+    files is as follows: 
+    <pre class="Sample"><b>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+
+&lt;textIndexer-config&gt;
+
+    &lt;index name="<span class="MacroCode">NameOfIndex</span>"/&gt;
+        &lt;src path="<span class="MacroCode">LocationOfSourceDocuments</span>"/&gt;
+        &lt;db path="<span class="MacroCode">LocationOfIndexDatabase</span>"/&gt;
+        &lt;chunk size="<span class="MacroCode">TextChunkSize</span> overlap="<span class="MacroCode">TextChunkOverlap</span>"/&gt;
+        &lt;stopwords path="<span class="MacroCode">LocationOfStopWordFile</span>"/&gt;
+        &lt;docselector path="<span class="MacroCode">LocationOfDocSelector</span>"/&gt;
+        &lt;pluralmap path="<span class="MacroCode">LocationOfPluralMapFile</span>"/&gt;
+        &lt;accentmap path="<span class="MacroCode">LocationOfAccentMapFile</span>"/&gt;
+    &lt;/index&gt;
+        …
+    &lt;index name="<span class="MacroCode">NameOfIndexN</span>"/&gt;
+        …
+    &lt;/index&gt;
+
+&lt;/textIndexer-config&gt;</b></pre>
+    <p> As the listing shows, the <span class="Keyword">textIndexer</span> configuration file 
+      is an XML file containing a configuration type tag (the tag <span class="Code">&lt;textIndexer-config/&gt;</span>), 
+      followed by one or more index definition blocks. For each index block in 
+      the file, the following attributes are defined: <br/>
+    </p>
+    <div class="GreyList"> <span class="Code">&lt;index name="<span class="MacroCode">NameOfIndex</span>"/&gt;</span><br/>
+      <div class="IndentLR"> This attribute specifies a name for an index definition 
+        block. The name may be any combination of digits and/or letters and the 
+        underscore (<b>_</b>) character. Punctuation and other symbols are not 
+        permitted, and neither is the use of the <span class="Keyword">space</span> character. 
+        Also, the index name may only be used for one index block in any given 
+        configuration (if it appears more than once, the first occurence is used, 
+        and the remaining ones are ignored.) This index name is the name passed 
+        on the command line to the <span class="Keyword">textIndexer</span> to identify which 
+        indexes need to be processed. </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;src path="<span class="MacroCode">LocationOfSourceDocuments</span>"/&gt;</span><br/>
+      <div class="IndentLR"> This attribute specifies the file-system path where 
+        the documents to be indexed are located. The path specified for an index 
+        must be a valid path for the operating system on which the tool is being 
+        run (e.g., Windows, Mac, Linux, etc.) If a relative path is used, it is 
+        considered to be relative to the base XTF installation directory (i.e., 
+        <span class="Code">XTF_HOME</span>.) </div>
+    </div>
+    <div class="GreyList"> <span class="Code">&lt;db path="<span class="MacroCode">LocationOfIndexDatabase</span>"&gt;</span><br/>
+      <div class="IndentLR"> This attribute specifies the file-system path where 
+        the database for the named index should be located. If the path does not 
+        exist or there are no databases files located there, the <span class="Keyword">textIndexer</span> 
+        will automatically create the necessary directories and database files. 
+        As with the source path, if a relative path is used, it is considered 
+        to be relative to the base XTF installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;chunk size="<span class="MacroCode">TextChunkSize</span>" 
+      overlap="<span class="MacroCode">TextChunkOverlap</span>"/&gt; </span><br/>
+      <br/>
+      <div class="IndentLR"> <span class="Code">size="<span class="MacroCode">TextChunkSize</span>"</span><br/>
+        This <span class="Keyword">textIndexer</span> tool splits source documents into smaller 
+        chunks of text when adding the document to its index. Doing so makes poximity 
+        searches and the display of their resulting summary "blurbs" faster by 
+        limiting how much of the source document must be read into memory. This 
+        attribute defines (as a number of words) how large the chunk size should 
+        be.<br/>
+        <br/>
+        Note that if the selected chunk size is too large, then time will be wasted 
+        reading too much text from disk. Inversely, if the chunk size is too small, 
+        too much time will be spent assembling the summary "blurb" from its component 
+        chunks. As a guideline, a chunk size of about 200 words was found through 
+        experimentation to give good overall performance with "blurbs" of 80 characters 
+        (about 15 words) in length. <br/>
+        <br/>
+        <div class="Note"> (<u>Note</u>: The chunk size specified for this attribute 
+          should be equal to or more than two words. If it is not, the <span class="Keyword">textIndexer</span> 
+          will force it to be two.) <br/>
+        </div>
+        <br/>
+        <span class="Code">overlap="<span class="MacroCode">TextChunkOverlap</span>"</span> 
+        <br/>
+        As noted above, the <span class="Keyword">textIndexer</span> tool splits source documents 
+        into smaller chunks of text when adding the document to its index. By 
+        overlapping adjacent chunks of text in the index, proximity searches can 
+        still be performed, even though the source document doesn't appear in 
+        the index in one contiguous piece. This attribute defines (as a number 
+        of words) how large the chunk overlap should be.<br/>
+        <br/>
+        It should be mentioned that the selected chunk overlap effectively defines 
+        the maximum distance (in words) that can exist between two words in a 
+        document and still produce a search match. Consequently if you have a 
+        chunk overlap of five words, the maximum distance between two words that 
+        will result in a proximity match is five words. As a guideline, a chunk 
+        overlap of about 20 words for a chunk size of 200 words gives fairly good 
+        results.<br/>
+        <br/>
+        <div class="Note"> (<u>Note</u>: The chunk overlap specified for this 
+          attribute should be equal to or less than half the chunk size. If it 
+          is not, the <span class="Keyword">textIndexer</span> will force it to be half.) </div>
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> </span> </div>
+    <div class="GreyList"> <span class="Code"> &lt;docselector path="<span class="MacroCode">LocationOfDocSelector</span>"&gt; 
+      </span><br/>
+      <div class="IndentLR"> 
+        <p>This tag identifies the location of an XSLT stylesheet that describes 
+          which source documents should be indexed, what pre-filter (if any) should 
+          be used on the selected documents, and what display formatter should 
+          be used to display the document when it is retrieved by the user. The 
+          path specified for the document selector must be a valid path and file 
+          name for the operating system on which the tool is being run (e.g., 
+          Windows, Mac, Linux, etc.) If a relative path is used, it is considered 
+          to be relative to the base XTF installation directory (i.e., <span class="Code">XTF_HOME</span>.)<br/>
+        </p>
+        <div class="Note"> (<u>Note</u>: The document selector must be specified 
+          for an index. If it is not, an error is generated, and no document indexing 
+          will be performed<b><i></i></b>.) </div>
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code">&lt;stopwords path="<span class="MacroCode">StopWordFileLocation</span>"&gt;</span><br/>
+      <div class="IndentL"> <i>or</i> </div>
+      <span class="Code">&lt;stopwords list="<span class="MacroCode">StopWordList</span>"&gt;</span><br/>
+      <br/>
+      <div class="IndentLR"> 
+        <p>The first variant of this attribute specifies the path to a file containing 
+          a list of words that the <span class="Keyword">textIndexer</span> should not add to 
+          the index. As with other paths, if a relative path is used, it is considered 
+          to be relative to the base XTF installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
+          The second variant simply accepts the list of stop words as a string, 
+          with stop words separated from each other by spaces (i.e., "a an and 
+          the".)<br/>
+          <br/>
+          Eliminating stop-words from an index improves search speed for an index. 
+          This is because the search doesn't need to sift through all the occurences 
+          of the stop-words in the document library. Consequently, adding words 
+          like <span class="Keyword">a</span>, <i> <b>an</b></i>, <span class="Keyword">the</span>, <span class="Keyword">and</span>, 
+          etc. to the stop-word list, which occur frequently in documents but 
+          are relatively uninteresting to search for, can speed up the search 
+          for more interesting words enormously. The one caveat is that searches 
+          for any single stop-word by itself will yield<b> no matches</b>, so 
+          it is important to pick stop-words that people aren't usually interested 
+          in finding. Note however that due to an internal process called <i>n-gramming</i>, 
+          stop words will still be found as part of larger phrases, like <b>of</b> 
+          in <b>Man of War</b>, or <b>the</b> in <b>The Terminator</b>.</p>
+        <p>Finally, if a stop-word file is used, the file itself may be stored 
+          in GZIP compressed format (and correspondingly labeled with a <span class="Keyword">.gz</span> 
+          extension) if desired. </p>
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;pluralmap path="<span class="MacroCode">LocationOfPluralMapFile</span>"&gt; 
+      </span><br/>
+      <div class="IndentLR"> 
+        <p>This tag identifies the location of a file containing a list of plural 
+          words and their corresponding singular forms that should be considered 
+          the same by the <span class="Keyword">textIndexer</span>. This file is primarily used 
+          to improve search results by finding plural forms of words when only 
+          the singular form has been specified (or vice versa.) </p>
+        <p>Since the it was designed to be language independent, the <span class="Keyword">textIndexer</span> 
+          relies on this file to supply all plural information used during indexing, 
+          including simple plurals (i.e, words ending in <span class="Keyword">s</span> or <span class="Keyword">es</span>.) 
+          Consequently, if this file is not specified or if a plural mapping is 
+          not found in the file, the singular and plural forms of a word <i class="Red"> 
+          <b>will not both be matched in a search.</b></i> </p>
+        <p>The contents of the file should consist of the plural form of a word 
+          followed by the 'pipe' character ( | ) and then by the singular form 
+          of the word. Like this:</p>
+        <div class="IndentLR"> <span class="Code">mice | mouse</span> </div>
+        <p>There should be only one plural to singular mapping per line in the 
+          file (although multiple plural mappings may exist for a singular form), 
+          and no white-space should be present within a definition line. </p>
+        <p>The path specified for the document selector must be a valid path and 
+          file name for the operating system on which the tool is being run (e.g., 
+          Windows, Mac, Linux, etc.) If a relative path is used, it is considered 
+          to be relative to the base XTF installation directory (i.e., <span class="Code">XTF_HOME</span>. 
+        </p>
+        <p>Finally, the file itself may be stored in GZIP compressed format (and 
+          correspondingly labeled with a <span class="Keyword">.gz</span> extension) if desired.</p>
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;accentmap path="<span class="MacroCode">LocationOfAccentMapFile</span>"&gt; 
+      </span><br/>
+      <div class="IndentLR"> 
+        <p>This tag identifies the location of a file containing a list of accented 
+          characters and their corresponding un-accented forms that should be 
+          considered the same by the <span class="Keyword">textIndexer</span>. This file is primarily 
+          used to map accented characters to un-accented ones so that searches 
+          can still be performed on words with characters not implemented on localized 
+          keyboards. </p>
+        <p>Since the it was designed to be language independent, the <span class="Keyword">textIndexer</span> 
+          relies on this file to supply all accent mapping information used during 
+          indexing. Consequently, if this file is not specified or if an accent 
+          mapping is not found in the file, the accented and un-accented forms 
+          of a letter <i class="Red"> <b>will not both be matched in a search.</b></i> 
+        </p>
+        <p>The contents of the file should consist of the <i>16-bit Unicode value</i> 
+          for an accented form of a letter followed by the 'pipe' character (&nbsp;|&nbsp;) 
+          and then by the <i>16-bit Unicode value</i> for the un-accented form 
+          of the letter. Optionally, you can also add a comment at the end of 
+          the line, where a comment starts with a semicolon. Like so:</p>
+        <div class="IndentLR"> 
+          <p class="Code">00C8 | 0045 ; Latin Capital Letter E With Grave | Latin 
+            Capital Letter E<br/>
+            00C9 | 0045 ; Latin Capital Letter E With Acute | Latin Capital Letter 
+            E<br/>
+            00CA | 0045 ; Latin Capital Letter E With Circumflex | Latin Capital 
+            Letter E<br/>
+            00CB | 0045 ; Latin Capital Letter E With Diaeresis | Latin Capital 
+            Letter E </p>
+          </div>
+        <p>There should be only one accented to unaccented mapping per line in 
+          the file (although multiple accent mappings may exist for an un-accented 
+          form), and no white-space should be present within a definition line. 
+        </p>
+        <p>The path specified for the document selector must be a valid path and 
+          file name for the operating system on which the tool is being run (e.g., 
+          Windows, Mac, Linux, etc.) If a relative path is used, it is considered 
+          to be relative to the base XTF installation directory (i.e., <span class="Code">XTF_HOME</span>.)<br/>
+        </p>
+        <p>Finally, the file itself may be stored in GZIP compressed format (and 
+          correspondingly labeled with a <span class="Keyword">.gz</span> extension) if desired. 
+        </p>
+        <p><span class="Note">Note: Currently, only single letter mappings are 
+          supported. A future version of the XTF system will allow multiple letter 
+          mappings like the German mapping of <b><i>&ouml;</i></b> to <span class="Keyword">oe</span></span>.</p>
+        </div>
+    </div>
+    <br/>
+    An example of a working <span class="Keyword">textIndexer</span> configuration file is the 
+    sample<span class="Code"> textIndexer.conf </span>file found in the<span class="Code"> 
+    conf </span>subdirectory immediately below the base XTF install directory. 
+    At the time of this writing it looked like this: 
+    <pre class="Sample"><b>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+
+&lt;textIndexer-config&gt;
+
+    &lt;index name=&quot;default&quot;/&gt;
+        &lt;src path=&quot;./data&quot;/&gt;
+        &lt;db path=&quot;./index&quot;/&gt;
+        &lt;chunk size="200 overlap="20"/&gt;
+        &lt;docselector path="./style/textIndexer/docSelector.xsl"/&gt;
+        &lt;stopwords list="a an and are as at be but by for if in into is it no not of on or s such t that the their then there these they this to was will with"/&gt;
+        &lt;pluralmap path="./conf/pluralFolding/pluralMap.txt.gz"/&gt;
+        &lt;accentmap path="./conf/accentFolding/accentMap.txt"/&gt;
+    &lt;/index&gt;
+
+&lt;/textIndexer-config&gt;</b></pre>
+    <p>In this example, we see that the index name is <span class="Code">default</span>, 
+      that the source and index paths are <span class="Code">../data </span>and 
+      <span class="Code"> ../index </span> respectively, (relative to the directory 
+      in which the <span class="Keyword">textIndexer</span> configuration file resides), the 
+      chunk size and overlap are the recommended sizes of 200 and 20 <span class="Code"> 
+      </span>words, a list of stop-words is active for the index, and the example 
+      document selector has been specified.<br/>
+      <br/>
+      <br/>
+      <b><u>The XSLT Document Selector</u></b> <br/>
+      As the previously mentioned, the <span class="Keyword">TextIndexer</span> uses an XSLT 
+      based <i> <b>document selector</b></i> to identify which documents in the 
+      source tree should be indexed. Using an XSLT stylesheet allows arbitrary 
+      selection criteria to determine which source files to index, and which ones 
+      to ignore. </p>
+    <p>The example document selector provided with the default XTF installation 
+      will index any document files whose names end in <span class="Code">.HTML</span>, 
+      <span class="Code">.PDF</span>, or <span class="Code">.XML</span>. You can 
+      use this example as the basis for defining your own document selection logic 
+      if you wish. However, writing and maintaining the XSLT document selector 
+      is beyond the scope of this deployment guide, and will not be discussed 
+      here. Please refer to the <a href="programming.html#textIndexer_DocSelector_Prog">Document 
+      Selector Programming</a> section of the <a href="programming.html">XTF 
+      Programming Guide</a> for more information about writing your own document 
+      selector.<br/>
+      <br/>
+    </p>
+    <p> <b><u>The XSLT Document Pre-Filter</u></b> <br/>
+      The <span class="Keyword">TextIndexer</span> can make use of an XSLT based document pre-filter 
+      to restructure the source document just prior to indexing without changing 
+      the stored source document. Normally this feature is used to insert or mark 
+      meta-data for a document, or to insert additional sectioning attributes 
+      before indexing is performed. <br/>
+      <br/>
+      Once a pre-filter has been defined, it is used on any source documents identified 
+      by the <span class="Keyword">document selector</span> stylesheet for an index. The default 
+      sample pre-filter is called <span class="Code">preFilter.xsl</span>, and 
+      is located in the <span class="Code">style/textIndexer/default</span> sub-directory 
+      immediately below the base XTF installation directory (i.e.,<span class="Code"> 
+      XTF_HOME </span>). <br/>
+      <br/>
+      Because writing and maintaining the XSLT pre-filter is beyond the scope 
+      of this depolyment guide, its format will not be discussed here. Please 
+      refer to the <a href="programming.html">XTF Programming 
+      Guide</a> for more information about document pre-filters. <br/>
+      <br/>
+      <br/>
+      <b><u>Adding/Deleting/Updating Source Documents</u></b> <br/>
+      When new source documents are added to the document library or when existing 
+      documents are updated or deleted, the <span class="Keyword">textIndexer</span> tool must 
+      be used to update the index. Fortunately, nothing special needs to be done 
+      to inform the <span class="Keyword">textIndexer</span> about which documents have been 
+      updated, added, or deleted. The program automatically detects the changes, 
+      and takes the appropriate action. It even has enough smarts to avoid reindexing 
+      documents that have not changed since the last time the index was generated. 
+      <br/>
+      <br/>
+      Updating the index can occur any time after a document has been added, deleted 
+      or changed. You might wish to run the <span class="Keyword">textIndexer</span> tool manually 
+      or as part of a script whenever a change to the document library is made. 
+      Alternately, you could schedule a daily or weekly <span class="Code">cron</span> 
+      job that made any accumulated changes to the document library and then reindexed 
+      afterwards. Regardless of the method selected, it is best to reindex as 
+      soon as possible after the document library is updated so as to minimize 
+      the chance of a user performing a search with an index that doesn't match 
+      the actual document set. <br/>
+      <br/>
+      <br/>
+      <b><u>Generating Index Summary Reports</u></b> <br/>
+      There may be times when you want more information about an index created 
+      by the <span class="Keyword">textIndexer</span>, and the <span class="Keyword">indexStats</span> tool 
+      can be used to do this. The indexStats tool is a command-line tool that 
+      is invoked as follows:<br/>
+    </p>
+    <div class="Sample"> <span class="Code"> $ indexStats {-config <span class="MacroCode">config-file-path</span>} 
+      -index <span class="MacroCode">index-name</span> </span> </div>
+    <p> The <span class="Code">-config <span class="MacroCode">config-file-path</span> 
+      </span> argument is an optional argument that identifies an index configuration 
+      file to use. If none is specified, the default <span class="MacroCode">XTF_HOME</span><span class="Code">/conf/textIndexer.conf 
+      </span> file is used.<span class="Code"> The -index <span class="MacroCode">index-name</span></span> 
+      argument is required, and identifies the index for which to generate summary 
+      information.</p>
+    <p>For the sample document library provided, the command line to generate 
+      a summary report would be:</p>
+    <div class="Sample"> <span class="Code"> $ indexStats -index default </span> 
+    </div>
+    <p>The output generated by the indexStats for the sample index would look 
+      something like this:</p>
+    <pre class="Sample">
+IndexStats v1.1
+
+Index: "default"
+  
+  Configuration Info...
+    Chunk Size = 200, Overlap = 20
+    Index Path = C:/UCOP/Tomcat/webapps/xtf/index/
+    Data Path  = C:/UCOP/Tomcat/webapps/xtf/data/
+    Stop Words = a an and are as at be but by for if in into is it no not of 
+      on or s such t that the their then there these they this to was will with
+  
+  Statistics...
+    Total Documents (Records)  = 15
+    Total Chunks               = 16537
+    Avg Chunks Per Doc/Rec     = 1,033.6
+    Total Number of Src Files  = 15
+    Avg Docs/Recs Per File     = 1
+    Size of Lucene Index       = 25.31 Mb
+    Size of Source Files       = 17.81 Mb
+    Size of Lazy Trees         = 14.17 Mb
+    Total Index Size           = 39.48 Mb  (Lucene + Lazy)
+    
+Done.
+</pre>
+    <p>In this report, the<span class="Code"> <b>Avg Chunks Per Doc/Rec</b> </span>entry 
+      reports the average number of <span class="Keyword">chunks</span> that a document was sub-divided 
+      into when it was added into the index. The<b><span class="Code"> Size of 
+      Lazy Trees </span></b>entry indicates how large the current <span class="Keyword">Lazy Tree</span> 
+      is for the index, and identifies how much space is currently being used 
+      to maintain information to speed access to documents retrieved from the 
+      index. To learn more about document chunks and lazy tree functionality, 
+      see the <a href="underHood.html">XTF Under the 
+      Hood Guide</a><!-- textIndexer Install/Config Subs --> </p>
+  </div>
+  <p class="Heading2">Configuring the dynaXML Servlet<a name="XTFDynaXML"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  The <span class="Keyword">dynaXML</span> servlet is responsible for taking a request for a 
+  document, converting it to XML if necessary, optionally authenticating the user, 
+  and finally presenting the document as a web page. The organization of the <span class="Keyword">dynaXML</span> 
+  servlet can be illustrated as follows: 
+  <p align="center"> <img src="art/dynaXMLDataFlow.gif" alt="dynaXML Data Flow"/><br/>
+    Figure 7: Data Flow in the <span class="Keyword">dynaXML</span> Servlet </p>
+  The <span class="Keyword">dynaXML</span> servlet is configured by modifying one or more of 
+  the the following files: 
+  <ul class="UnorderedList">
+    <li>The <span class="Code">dynaXML.conf</span> Configuration File</li>
+    <li>The <span class="Code">docReqParser.xsl</span> Document Request Parser</li>
+    <li>The <span class="Code">errorGen.xsl</span> Error Page Generator</li>
+    <li> One or more Document Formatter stylesheets</li>
+  </ul>
+  Each of these files is discussed in turn in the following subsections. <br/>
+  <br/>
+  <br/>
+  <div class="IndentL"> <b><u>The dynaXML.conf Configuration File</u></b> <br/>
+    The <span class="Code">dynaXML.conf</span> configuration file is used by the 
+    <span class="Keyword">dynaXML</span> servlet to locate its <b>Document Request Parser</b> 
+    and <b>Error Page Generator</b> XSLT templates. It is also used to adjust 
+    the behavior of the the servlet itself. Each tag and its associated attributes 
+    are discussed here, and a sample <span class="Code">dynaXML.conf</span> can 
+    be found in the <span class="Code">conf</span> subdirectory below the servlet 
+    base directory (i.e., the <span class="Code">XTF_HOME</span> directory.) 
+    <pre class="Sample"><b>&lt;?xml version="1.0" encoding="utf-8"?>&lt;dynaXML-config&gt;
+
+    &lt;logging level="<span class="MacroCode">LoggingLevel</span>"/&gt;
+
+    &lt;reverseProxy IP="<span class="MacroCode">ddd.ddd.ddd.ddd</span>" marker="<span class="MacroCode">MarkerString</span>"/&gt;
+
+    &lt;docReqParser path="<span class="MacroCode">LocationOfRequestParser</span>" params="<span class="MacroCode">ParamsToPass</span>"/&gt;
+    &lt;errorGen path="<span class="MacroCode">LocationOfErrorPageGenerator</span>"/&gt;
+
+    &lt;stylesheetCache size="<span class="MacroCode">Entries</span>" expire="<span class="MacroCode">Seconds</span>"/&gt;
+    &lt;reqParserCache size="<span class="MacroCode">Entries</span>" expire="<span class="MacroCode">Seconds</span>"/&gt;
+    &lt;ipListCache size="<span class="MacroCode">Entries</span>" expire="<span class="MacroCode">Seconds</span>"/&gt;
+    &lt;authCache size="<span class="MacroCode">Entries</span>" expire="<span class="MacroCode">Seconds</span>"/&gt;
+    &lt;loginCache size="<span class="MacroCode">Entries</span>" expire="<span class="MacroCode">Seconds</span>"/&gt;
+
+    &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt;
+    &lt;reportlatency report="<span class="MacroCode">YesOrNo</span>" {cutoffSize="<span class="MacroCode">NumBytes</span>"}/&gt;
+    &lt;stylesheetProfiling profile="<span class="MacroCode">YesOrNo</span>"/&gt;
+    &lt;runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} {killTime="<span class="MacroCode">Seconds</span>"}/&gt;
+    &lt;trackSessions track="<span class="MacroCode">YesOrNo</span>"/&gt;
+ 
+    &lt;!-- Your tags go here --&gt;
+
+&lt;/dynaXML-config&gt;</b></pre>
+    <br/>
+    These tags and attributes have the following meanings: <br/>
+    <br/>
+    <div class="GreyList"> <span class="Code"> &lt;logging level="<span class="MacroCode">LoggingLevel</span>"/&gt;</span> 
+      <div class="IndentLR"> This tag is an optional tag that sets the level of 
+        logging output by the <span class="Keyword">dynaXML</span> servlet. The possible output 
+        levels are defined as follows:<br/>
+        <br/>
+        <table cellpadding="0" cellspacing="8">
+          <tr> 
+            <td width="54" align="right" valign="top" class="Code">errors</td>
+            <td width="521"><span class="BaseStyle">Only error messages are displayed.</span></td>
+          </tr>
+          <tr> 
+            <td width="54" align="right" valign="top" class="Code">warnings</td>
+            <td width="521"><span class="BaseStyle">Both error and warning messages 
+              are displayed.</span></td>
+          </tr>
+          <tr> 
+            <td width="54" align="right" valign="top" class="Code">info</td>
+            <td width="521"><span class="BaseStyle">Error, warning, and informational 
+              messages are displayed</span></td>
+          </tr>
+          <tr> 
+            <td width="54" align="right" valign="top" class="Code">debug</td>
+            <td width="521"> <span class="BaseStyle"> Low level debug output is 
+              displayed in addition to error, warning, and informational messages. 
+              </span> </td>
+          </tr>
+        </table>
+        <br/>
+        If this argument is not specified, the <span class="Keyword">dynaXML</span> servlet defaults 
+        to displaying informational (<span class="Code">info</span>) level messages. 
+      </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code"> &lt;reverseProxy IP="<span class="MacroCode">ddd.ddd.ddd.ddd</span>" 
+      marker="<span class="MacroCode">MarkerString</span>"/&gt; </span> <br/>
+      <div class="IndentLR"> 
+        <div class="Red"> This tag is required if IP-based authentication uses 
+          a reverse proxy server. Using this tag tells <span class="Keyword">dynaXML</span> servlet 
+          that the incoming IP address belongs to the reverse proxy server, and 
+          that the actual requestor's IP address must be read from the <span class="Code">X-Forwarded-For</span> 
+          marker in the HTTP Request Header. </div>
+        <br/>
+        <span class="Code">reverseProxy IP="<span class="MacroCode">ddd.ddd.ddd.ddd</span>"</span> 
+        <br/>
+        Set this attribute to the IP address for the reverse proxy server. <br/>
+        <br/>
+        <span class="Code">marker="<span class="MacroCode">MarkerString</span>"</span> 
+        <i>(optional)</i><br/>
+        Use this attribute if you wish to tell the <span class="Keyword">dynaXML</span> servlet 
+        to use a forwarding marker other than the default <span class="Code">X-Forwarded-For</span> 
+        marker. </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code"> &lt;docReqParser path="<span class="MacroCode">LocationOfDocReqestParser</span>" 
+      params="<span class="MacroCode">DocReqParserParams</span>"/&gt;<br/>
+      </span><br/>
+      <div class="IndentLR"> <span class="Code">params="<span class="MacroCode">LocationOfDocReqestParser</span>"</span> 
+        <br/>
+        This attribute specifies the name and path to the XSLT template used by 
+        the <span class="Keyword">dynaXML</span> servlet to convert incoming document request 
+        URLs to the internal XML format actually used by the servlet. The path 
+        is interpreted relative to the servlet's base (i.e., the directory assigned 
+        to <span class="Code">XTF_HOME</span>. ) <br/>
+        <br/>
+        <span class="Code">params="<span class="MacroCode">DocReqParserParams</span>"</span> 
+        <br/>
+        Names of URL parameters that should be passed to the <span class="Keyword">docRequestParser</span>. 
+        Each parameter will be passed in tokenized and untokenized form, just 
+        like parameters to <span class="Keyword">crossQuery</span>'s <span class="Keyword">queryParser</span>. 
+        <br/>
+        <br/>
+        For a more detailed description, see the comments in the sample <span class="Code">docReqParser.xsl</span> 
+        file. <br/>
+        <br/>
+        <div class="Note"> (<u>Note</u>: To ensure cache efficiency, the number 
+          of parameters passed should be kept to the minimum. </div>
+      </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code"> &lt;errorGen path="<span class="MacroCode">LocationOfErrorPageGenerator</span>"/&gt; 
+      </span><br/>
+      <div class="IndentLR"> When an error occurs (either user authentication 
+        or an internal error), the XSLT template specified by this configuration 
+        tag is used to produce a nicely formatted error page for the requestor. 
+        The path is interpreted relative to the servlet's base (i.e., the directory 
+        assigned to <span class="Code">XTF_HOME</span>. ) <br/>
+        <br/>
+        For a more detailed description, see the comments in the sample <span class="Code">errorGen.xsl</span> 
+        files. </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code"> &lt;stylesheetCache size="<span class="MacroCode">Entries</span>" 
+      expire="<span class="MacroCode">Seconds</span>"/&gt; </span><br/>
+      <span class="Code"> &lt;reqParserCache size="<span class="MacroCode">Entries</span>" 
+      expire="<span class="MacroCode">Seconds</span>"/&gt; </span><br/>
+      <span class="Code"> &lt;ipListCache size="<span class="MacroCode">Entries</span>" 
+      expire="<span class="MacroCode">Seconds</span>"/&gt; </span><br/>
+      <span class="Code"> &lt;authCache size="<span class="MacroCode">Entries</span>" 
+      expire="<span class="MacroCode">Seconds</span>"/&gt; </span><br/>
+      <br/>
+      <div class="IndentLR"> These tags (if specified) override the defaults number 
+        of entries and the expiration time (in seconds) for the various caches 
+        maintained by the servlet. Usually, these values need not be changed. 
+        The five distinct caches used by the <span class="Keyword">dynaXML</span> servlet are 
+        as follows:<br/>
+        <br/>
+        <table cellpadding="0" cellspacing="10" width="100%">
+          <tr> 
+            <td width="137" align="right" valign="top" class="Code">styleSheetCache</td>
+            <td width="722"> <span class="BaseStyle"> Compiled versions of stylesheets 
+              (request parser, doc formatter, etc.) </span> </td>
+          </tr>
+          <tr> 
+            <td width="137" align="right" valign="top" class="Code">reqParserCache</td>
+            <td width="722"> <span class="BaseStyle"> Parsed requests for specific 
+              URLs, to avoid running the request parser stylesheet over and over. 
+              </span> </td>
+          </tr>
+          <tr> 
+            <td width="137" align="right" valign="top" class="Code">ipListCache</td>
+            <td width="722"> <span class="BaseStyle"> Compiled versions of IP 
+              lists (used only for IP-address based authentication.) </span> </td>
+          </tr>
+          <tr> 
+            <td width="137" align="right" valign="top" class="Code" height="13">authCache</td>
+            <td width="722" height="13"> <span class="BaseStyle"> Session IDs 
+              of successful authentication attempts (LDAP or external.) When expired, 
+              the user will be forced to log in again. </span> </td>
+          </tr>
+          <tr> 
+            <td width="137" align="right" valign="top" class="Code">loginCache</td>
+            <td width="722"> <span class="BaseStyle"> Security info for external 
+              logins, to verify authentication when user returns from the external 
+              page. If it expires while user is logging in, they will be forced 
+              to try again. </span> </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+<br/>
+    <div class="GreyList"> <span class="Code"> &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt; 
+      </span><br/>
+      <div class="IndentLR"> Whenever consulting one of its internal caches, the 
+        <span class="Keyword">dynaXML</span> servlet can optionally check if the source file(s) 
+        have been changed and if so ignore the cache entry and reload the file(s). 
+        This hurts performance slightly, but makes testing and development much 
+        easier. <br/>
+        <br/>
+        Set this to<b class="Code"> no </b> for a production system where every 
+        last little bit of speed is critical. Otherwise, set it to <b class="Code">yes</b>. 
+      </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code"> &lt;<b>reportlatency report="<span class="MacroCode">YesOrNo</span>" 
+      {cutoffSize="<span class="MacroCode">NumBytes</span>"}/</b>&gt; </span><br/>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet will report the latency of each request, 
+          that is, how long each request took to process and deliver to the client. 
+          When<span class="Code"> report </span>is set to<span class="Code"> yes</span>, 
+          the servlet will record and log how many milliseconds were spent processing 
+          each request (regardless of whether the request succeeded or produced 
+          an error page.) This information can be useful for accumulating statistical 
+          data, or to target optimization efforts on those requests that took 
+          longest to serve. Set it to "no" if you want to avoid logging and don't 
+          need the information. </p>
+        <p>Depending on the data you're looking for, you might want to exclude 
+          latency of large requests (e.g. a whole book). To do this, set the<span class="Code"> 
+          cutoffSize </span>attribute to a number of bytes; when any request has 
+          output that much data, the servlet will report the latency immediately, 
+          labeled "Latency (cutoff)". When the request finally completes, the 
+          total latency will be reported with the label "Latency (final)". Leaving 
+          out the<span class="Code"> cutoffSize </span>attribute, or setting it 
+          to zero, disables cutoff reporting. </p>
+        <p>Latency reporting has very little impact on system performance, so 
+          is safe to enable in production environments.</p>
+        <p><span class="Red">Note:</span> The reports are logged at the "info" 
+          level, so if the<span class="Code"> &lt;logging&gt; </span>level above 
+          is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, nothing will appear.</p> 
+      </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code"> &lt;<b>stylesheetProfiling profile="<span class="MacroCode">YesOrNo</span>"</b>/&gt; 
+      </span><br/>
+      <div class="IndentLR"> 
+        <p>Controls whether a profile is generated for each document request. 
+          A profile identifies the stylesheet and line number of each XSLT command 
+          that was executed for the query, and a relative count that identifes 
+          roughly how long it took to execute that command. Within the profile, 
+          the executed commands are ordered such that the most used commands appear 
+          first, and the least used commands appear last. This provides clues 
+          as to where the stylesheet is spending its time and thus could possibly 
+          be optimized. When enabled, profiles are written to the dynaXML servlet's 
+          activity log. <br/>
+          <br/>
+          Set this to<b class="Code"> no </b> for general use, since collecting 
+          the profile information can be time-consuming. </p>
+        <p><span class="Red">Note:</span> The profile information is logged at 
+          the "info" level, so if the<span class="Code"> &lt;logging&gt; </span>level 
+          above is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, nothing will appear. 
+        </p>
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;<b>runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} 
+      {killTime="<span class="MacroCode">Seconds</span>"}/</b>&gt; </span><br/>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet tracks, reports, and optionally kills 
+          potential "runaway" requests. The<span class="Code"> normalTime </span>attribute 
+          specifies the maximum amount of time, in seconds, that requests are 
+          generally expected to take. Any requests that exceed this time will 
+          be logged (with a call stack trace on Java 5.0 and above.) If set to 
+          zero or not specified, no logging of potential runaway requests will 
+          be performed. </p>
+        <p>The<span class="Code"> killTime </span>attribute specifies the time 
+          after which a request is truly considered runaway and should be killed. 
+          After this time is exceeded a flag is set, and many of the major processing 
+          loops in XTF will check the flag and kill off the request. However, 
+          some parts (deeply buried in third-party libraries) do not check this 
+          flag and thus the request might not be successfully killed. If set to 
+          zero, threads will never be killed before they complete.</p>
+        <p>Runaway timing can introduce significant overhead, and should be enabled 
+          only if one is experiencing problems that might be due to runaway requests. 
+          Set these to zero for general use.</p>
+        <p><span class="Red">Note:</span> Runaway reports are logged at the "info" 
+          level, so if the<span class="Code"> &lt;logging&gt; </span>level above 
+          is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, nothing will appear. </p>
+      </div>
+    </div>
+    <br/>
+    <div class="GreyList"> <span class="Code"> &lt;<b>trackSessions track=&quot;<span class="MacroCode">YesOrNo</span>"</b>/&gt; 
+      </span><br/>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet associates a session with each request. 
+          If enabled, a session will be created the first time a given user connects 
+          to the servlet. The session is assigned a unique identifier which is 
+          passed through on subsequent page views either through a cookie or by 
+          encoding the session identifier in the URL.</p>
+        <p>The main purpose of sessions is to store long-lasting or large data 
+          items that would be inconvenient to pass as URL parameters. The data 
+          can be stored and retrieved using XSL extension functions available 
+          in XTF. See <a href="programming.html#Common_Session_State">Tracking 
+          Session State</a> in the XTF Programmer's Guide for details.</p>
+        <p>Generally, this should only be enabled if you plan to store and use 
+          session data. </p>
+        </div>
+    </div>
+    <br/>
+    <b><u>The docReqParser.xsl Request Parser</u></b> <br/>
+    The <span class="Code">docReqParser.xsl</span> template describes how the 
+    <span class="Keyword">dynaXML</span> servlet should translate external document request URLs 
+    into internal XML based document requests. As part of the translation, the 
+    template can also optionally request authentication of the user that made 
+    the document request. A sample <span class="Code"> docReqParser.xsl </span>is 
+    provided in the<span class="Code"> conf </span>subdirectory below the<span class="Code"> 
+    XTF_HOME</span> base directory under which the XTF system was installed. A 
+    full discussion of the internal workings of <span class="Code">docReqParser.xsl</span> 
+    is beyond the scope of this document. Please refer to the <a href="programming.html">XTF 
+    Programming Guide</a> for further details. <br/>
+    <br/>
+    <br/>
+    <b><u>The errorGen.xsl Error Page Generator</u></b> <br/>
+    The <span class="Code">errorGen.xsl</span> template describes how the <span class="Keyword">dynaXML</span> 
+    servlet should generate an HTML page whenever there is an error that needs 
+    to be reported back to the user. A sample<span class="Code"> errorGen.xsl 
+    </span>is provided in the<span class="Code"> style/dynaXML </span>subdirectory 
+    below the <span class="Code"> XTF_HOME</span> base directory under which the 
+    XTF system was installed. A full discussion of the internal workings of<span class="Code"> 
+    errorGen.xsl </span>is beyond the scope of this document. Please refer to 
+    the <a href="programming.html">XTF Programming Guide</a> 
+    for further details. <br/>
+    <br/>
+    <br/>
+    <b><u>The dynaXML Document Formatters</u></b> <br/>
+    Any number of templates can exist to describe how the <span class="Keyword">dynaXML</span> 
+    servlet should translate the XML file for a document in the library into HTML 
+    that can be displayed in the user's browser. Which document formatter to use 
+    is determined by a tag in the <span class="Code">docReqParser.xsl</span> template. 
+    Sample document formatters are provided in the<span class="Code"> ./style/dynaXML/docFormatter/eschol 
+    and ./style/dynaXML/docFormatter/oac </span>subdirectories below the <span class="Code"> 
+    XTF_HOME </span>base directory under which the XTF system was installed. In 
+    both sub-directories, the document formatters are <span class="Code">dynaxml.xsl</span>, 
+    but implement different output formatting schemes. A full discussion of the 
+    internal workings of the document formatter templates is beyond the scope 
+    of this document. Please refer to the <a href="programming.html">XTF 
+    Programming Guide</a> for further details.<br/>
+    <br/>
+    <br/>
+    <b><u>Running the dynaXML Servlet</u></b> <br/>
+    Assuming that the servlet container you are using has been configured to invoke 
+    it, running the <span class="Keyword">dynaXML</span> servlet consists of simply issuing a 
+    valid document request URL. A sample request was illustrated in the Quick 
+    Start section entitled <a href="#QuickInstallDynaXML">Verify that Document 
+    Retrieval (dynaXML Servlet) Works</a> above. </div>
+  <!-- dynaXML Install/Config Subs --> 
+  <p class="Heading2">Configuring the crossQuery Servlet<a name="XTFCrossQuery"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  The <span class="Keyword">crossQuery</span> servlet is responsible for taking a user search 
+  query and locating all files in the document library that match the specified 
+  search criteria. The resulting matches are then displayed in an HTML web page 
+  for the user to browse. The organization of the <span class="Keyword">crossQuery</span> servlet 
+  can be illustrated as follows: 
+  <p align="center"> <img src="art/crossQueryDataFlow.gif" alt="crossQuery Data Flow"/><br/>
+    Figure 8: Data Flow in the <span class="Keyword">crossQuery</span> Servlet </p>
+  The <span class="Keyword">crossQuery</span> servlet is configured by modifying one or more 
+  of the the following files: 
+  <ul class="UnorderedList">
+    <li>The <span class="Code">crossQuery.conf</span> Configuration File</li>
+    <li>The <span class="Code">queryGen.xsl</span> Request Parser</li>
+    <li>The <span class="Code">errorGen.xsl</span> Error Page Generator</li>
+    <li> One or more Document Formatter stylesheets</li>
+  </ul>
+  Each of these stylesheet templates is discussed in turn in the following subsections. 
+  <br/>
+  <br/>
+  <br/>
+  <div class="IndentL"> <b><u>The crossQuery.conf Configuration File</u></b> <br/>
+    The <span class="Code">crossQuery.conf</span> configuration file is used by 
+    the <span class="Keyword">crossQuery</span> servlet to locate its <b>Query Generator</b> 
+    and <b>Error Page Generator</b> XSLT templates. It is also used to adjust 
+    the behavior of the the servlet itself. Each tag and its associated attributes 
+    are discussed here, and a sample <span class="Code">crossQuery.conf</span> 
+    can be found in the <span class="Code">conf</span> subdirectory below the 
+    servlet base directory (i.e., the <span class="Code">XTF_HOME</span> directory.) 
+    <pre class="Sample"><b>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+
+&lt;crossQuery-config&gt;
+
+    &lt;logging level="<span class="MacroCode">LoggingLevel</span>"/&gt;
+
+    &lt;queryParser path="<span class="MacroCode">LocationOfQueryParser</span>"/&gt;
+    &lt;errorGen path="<span class="MacroCode">LocationOfErrorPageGenerator</span>"/&gt;
+
+    &lt;stylesheetCache size="<span class="MacroCode">Entries</span>" expire="<span class="MacroCode">Seconds</span>"/&gt;
+    &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt;
+    &lt;reportlatency enable="<span class="MacroCode">YesOrNo</span>" {cutoffSize="<span class="MacroCode">NumBytes</span>"}/&gt;
+    &lt;runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} {killTime="<span class="MacroCode">Seconds</span>"}/&gt;
+
+    &lt;!-- Your tags go here --&gt;
+
+&lt;/crossQuery-config&gt;</b></pre>
+    <br/>
+    These tags and attributes have the following meanings: <br/>
+    <br/>
+    <div class="GreyList"> <span class="Code">&lt;logging level="<span class="MacroCode">LoggingLevel</span>"/&gt;</span><br/>
+      <div class="IndentLR"> This tag is an optional tag that sets the level of 
+        logging output by the <span class="Keyword">crossQuery</span> servlet. The possible output 
+        levels are defined as follows:<br/>
+        <br/>
+        <table>
+          <tr> 
+            <td width="16%" align="right" valign="top" class="Code">errors</td>
+            <td width="10">&nbsp;</td>
+            <td><span class="BaseStyle">Only error messages are displayed.</span></td>
+          </tr>
+          <tr> 
+            <td width="16%" align="right" valign="top" class="Code">warnings</td>
+            <td width="10">&nbsp;</td>
+            <td><span class="BaseStyle">Both error and warning messages are displayed.</span></td>
+          </tr>
+          <tr> 
+            <td width="16%" align="right" valign="top" class="Code">info</td>
+            <td width="10">&nbsp;</td>
+            <td><span class="BaseStyle">Error, warning, and informational messages 
+              are displayed</span></td>
+          </tr>
+          <tr> 
+            <td width="16%" align="right" valign="top" class="Code">debug</td>
+            <td width="10">&nbsp;</td>
+            <td> <span class="BaseStyle"> Low level debug output is displayed 
+              in addition to error, warning, and informational messages. </span> 
+            </td>
+          </tr>
+        </table>
+        <br/>
+        If this argument is not specified, the <span class="Keyword">crossQuery</span> servlet 
+        defaults to displaying informational (<span class="Code">info</span>) 
+        level messages. </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code">&lt;queryParser path="<span class="MacroCode">LocationOfQueryParser</span>"/&gt;</span> 
+      <div class="IndentLR"> This tag specifies the name and path to the XSLT 
+        template used by the <span class="Keyword">crossQuery</span> servlet to convert incoming 
+        search query URLs to the internal XML search query format actually used 
+        by the servlet. The path is interpreted relative to the servlet's base 
+        (i.e., the directory assigned to <span class="Code">XTF_HOME</span>. ) 
+        <br/>
+        <br/>
+        For a more detailed description, see the comments in the sample <span class="Code">queryParser.xsl</span> 
+        file. <br/>
+      </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;errorGen path="<span class="MacroCode">LocationOfErrorPageGenerator</span>"/&gt; 
+      </span><br/>
+      <div class="IndentLR"> When an error occurs (either authentication or an 
+        internal error), the XSLT template specified by this configuration tag 
+        is used to produce a nicely formatted error page for the requestor. The 
+        path is interpreted relative to the servlet's base (i.e., the directory 
+        assigned to <span class="Code">XTF_HOME</span>. ) <br/>
+        <br/>
+        For a more detailed description, see the comments in the sample <span class="Code">errorGen.xsl</span> 
+        file. </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code"> &lt;stylesheetCache size="<span class="MacroCode">Entries</span>" 
+      expire="<span class="MacroCode">Seconds</span>"/&gt; </span><br/>
+      <div class="IndentLR"> This tag (if specified) overrides the defaults number 
+        of entries and the expiration time (in seconds) for the <b>styleSheetCache</b>, 
+        which maintains compiled versions of the XSLT templates used by the <span class="Keyword">crossQuery</span> 
+        servlet. Usually, these attributes need not be changed. </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code"> &lt;dependencyChecking check="<span class="MacroCode">YesOrNo</span>"/&gt; 
+      </span><br/>
+      <div class="IndentLR"> Whenever consulting one of its internal caches, the 
+        <span class="Keyword">crossQuery</span> servlet can optionally check if the source file(s) 
+        have been changed and if so ignore the cache entry and reload the file(s). 
+        This hurts performance slightly, but makes testing and development much 
+        easier. <br/>
+        <br/>
+        Set this to "no" for a production system where every last little bit of 
+        speed is critical. Otherwise, set it to "yes". </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code"> &lt;<b>reportlatency report="<span class="MacroCode">YesOrNo</span>" 
+      {cutoffSize="<span class="MacroCode">NumBytes</span>"}</b>&gt; </span><br/>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet will report the latency of each request, 
+          that is, how long each request took to process and deliver to the client. 
+          When<span class="Code"> report </span>is set to<span class="Code"> yes</span>, 
+          the servlet will record and log how many milliseconds were spent processing 
+          each request (regardless of whether the request succeeded or produced 
+          an error page.) This information can be useful for accumulating statistical 
+          data, or to target optimization efforts on those requests that took 
+          longest to serve. Set it to "no" if you want to avoid logging and don't 
+          need the information. </p>
+        <p>Depending on the data you're looking for, you might want to exclude 
+          latency of large requests (e.g. a whole book). To do this, set the<span class="Code"> 
+          cutoffSize </span>attribute to a number of bytes; when any request has 
+          output that much data, the servlet will report the latency immediately, 
+          labeled "Latency (cutoff)". When the request finally completes, the 
+          total latency will be reported with the label "Latency (final)". Leaving 
+          out the<span class="Code"> cutoffSize </span>attribute, or setting it 
+          to zero, disables cutoff reporting. </p>
+        <p>Latency reporting has very little impact on system performance, so 
+          is safe to enable in production environments.</p>
+        <p><span class="Red">Note:</span> The reports are logged at the "info" 
+          level, so if the<span class="Code"> &lt;logging&gt; </span>level above 
+          is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, nothing will appear. </p>
+      </div>
+    </div><br/>
+    <div class="GreyList"> <span class="Code"> &lt;<b>runawaytimer {normalTime="<span class="MacroCode">Seconds</span>"} 
+      {killTime="<span class="MacroCode">Seconds</span>"}</b>&gt; </span><br/>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet tracks, reports, and optionally kills 
+          potential "runaway" requests. The<span class="Code"> normalTime </span>attribute 
+          specifies the maximum amount of time, in seconds, that requests are 
+          generally expected to take. Any requests that exceed this time will 
+          be logged (with a call stack trace on Java 5.0 and above.) If set to 
+          zero or not specified, no logging of potential runaway requests will 
+          be performed. </p>
+        <p>The<span class="Code"> killTime </span>attribute specifies the time 
+          after which a request is truly considered runaway and should be killed. 
+          After this time is exceeded a flag is set, and many of the major processing 
+          loops in XTF will check the flag and kill off the request. However, 
+          some parts (deeply buried in third-party libraries) do not check this 
+          flag and thus the request might not be successfully killed. If set to 
+          zero, threads will never be killed before they complete.</p>
+        <p>Runaway timing can introduce significant overhead, and should be enabled 
+          only if one is experiencing problems that might be due to runaway requests. 
+          Set these to zero for general use.</p>
+        <p><span class="Red">Note:</span> Runaway reports are logged at the "info" 
+          level, so if the<span class="Code"> &lt;logging&gt; </span>level above 
+          is set to <span class="Code">warnings</span>, <span class="Code">errors</span>, 
+          or <span class="Code">silent</span>, nothing will appear. </p>
+      </div>
+    </div>
+    <br/>
+    <div class="GreyList"> <span class="Code"> &lt;<b>trackSessions track=&quot;<span class="MacroCode">YesOrNo</span>"</b>&gt; 
+      </span><br/>
+      <div class="IndentLR"> 
+        <p>Controls whether the servlet associates a session with each request. 
+          If enabled, a session will be created the first time a given user connects 
+          to the servlet. The session is assigned a unique identifier which is 
+          passed through on subsequent page views either through a cookie or by 
+          encoding the session identifier in the URL.</p>
+        <p>The main purpose of sessions is to store long-lasting or large data 
+          items that would be inconvenient to pass as URL parameters. The data 
+          can be stored and retrieved using XSL extension functions available 
+          in XTF. See <a href="programming.html#Common_Session_State">Tracking 
+          Session State</a> in the XTF Programmer's Guide for details.</p>
+        <p>Generally, this should only be enabled if you plan to store and use 
+          session data. </p>
+        </div>
+    </div>
+    <br/>
+    <br/>
+    <b><u>The queryParser.xsl Query Parser</u></b> <br/>
+    The <span class="Code">queryParser.xsl</span> template describes how the <span class="Keyword">crossQuery</span> 
+    servlet should translate search query URLs into internal XML based search 
+    queries. A sample <span class="Code"> queryParser.xsl </span>is provided in 
+    the<span class="Code"> conf </span>subdirectory below the<span class="Code"> 
+    XTF_HOME</span> base directory under which the XTF system was installed. A 
+    full discussion of the internal workings of <span class="Code">queryParser.xsl</span> 
+    is beyond the scope of this document. Please refer to the <a href="programming.html">XTF 
+    Programming Guide</a> for further details. <br/>
+    <br/>
+    <br/>
+    <b><u>The errorGen.xsl Error Page Generator</u></b> <br/>
+    The <span class="Code">errorGen.xsl</span> template describes how the <span class="Keyword">crossQuery</span> 
+    servlet should generate an HTML page whenever there is an error that needs 
+    to be reported back to the user. A sample <span class="Code"> errorGen.xsl 
+    </span>is provided in the<span class="Code"> style/crossQuery </span> subdirectory 
+    below the<span class="Code"> XTF_HOME</span> base directory under which the 
+    XTF system was installed. A full discussion of the internal workings of<span class="Code"> 
+    errorGen.xsl </span>is beyond the scope of this document. Please refer to 
+    the <a href="programming.html">XTF Programming Guide</a> 
+    for further details. <br/>
+    <br/>
+    <br/>
+    <b><u>The Search Result Formatters</u></b> <br/>
+    Any number of templates can exist to describe how the <span class="Keyword">crossQuery</span> 
+    servlet should translate the XML search results into HTML that can be displayed 
+    in the user's browser. Which document formatter to use is determined by a 
+    tag in the<span class="Code"> queryParser.xsl </span>template. A sample search 
+    result formatter is provided in the <span class="Code"> style/crossQuery </span>subdirectory 
+    below the <span class="Code"> XTF_HOME </span> base directory under which 
+    the XTF system was installed. The formatter is called <span class="Code">resultFormatter.xsl 
+    </span>. A full discussion of the internal workings of the search result formatter 
+    templates is beyond the scope of this document. Please refer to the <a href="programming.html">XTF_Programming_Guide</a> 
+    for further details. <br/>
+    <br/>
+    <br/>
+    <b><u>Running the crossQuery Servlet</u></b> <br/>
+    As with the <span class="Keyword">dynaXML</span> servlet, once your servlet containiner has 
+    been configured to invoke it, running the <span class="Keyword">crossQuery</span> servlet 
+    consists of simply issuing a valid search query URL. </div>
+</div>
+  <!-- crossQuery Install/Config Subs --> 
+  <p class="Heading1">Usage Examples<a name="UsageExamples"></a> </p>
+  <!-- - - - - - - - - - - - - - --> 
+  The <span class="Keyword">crossQuery</span> and <span class="Keyword">dynaXML</span> servlets are independent 
+  servlets that can be used in a stand-alone or combined fashion. The following 
+  subsections provide sample stand-alone and combined configurations to help you 
+  create your own on-line document libraries. 
+  <div class="IndentL"> 
+    <p class="Heading2">Stand-Alone dynaXML System<a name="UsageDynaXML"></a> 
+    </p>
+    <!-- - - - - - - - - - - - - - --> 
+    Using the <span class="Keyword">dynaXML</span> servlet by itself without the <span class="Keyword">crossQuery</span> 
+    servlet would give a site the ability to read on-line documents without any 
+    search capabilities. This kind of arrangement may be useful if storage space 
+    is at a premium. Eliminating the search feature for a 2GB document set will 
+    save eliminate the need for an additional 4GB of storage required to maintain 
+    the document search index and its associated partial-file retrieval database. 
+    <br/>
+    <br/>
+    In a system where the indexing overhead is unacceptable, the site would simply 
+    provide one or more web pages with links for each document available in the 
+    on-line document library. The links on the web page would simply issue <span class="Keyword">dynaXML</span> 
+    style document request URLs when clicked. For example, using the sample document 
+    from the Quick Start guide, an HTML code snippet for retrieving the document 
+    might look as follows: <br/>
+    <br/>
+    
+  <pre class="Sample"><b><span class="Code">&lt;a href="http://<span class="MacroCode">yourserver</span>:8080/xtf/view?docId=tei/ft958009mm/ft958009mm.xml&amp;doc.view=frames"&gt;
+    The Opening of the Apartheid Mind
+&lt;/a&gt;</span></b></pre>
+    <br/>
+    Using this approach, a site could provide a few different kinds of web pages 
+    (e.g., organized alphabetically, by subject, by author, etc.), and achieve 
+    reasonably good access to documents without incurring the overhead of maintaining 
+    a full-text search index. <br/>
+    <br/>
+    <p class="Heading2">crossQuery Stand-Alone System<a name="UsageCrossQuery"></a> 
+    </p>
+    <!-- - - - - - - - - - - - - - --> 
+    Using the <span class="Keyword">crossQuery</span> servlet by itself without the <span class="Keyword">dynaXML</span> 
+    servlet would give a site the ability to search for on-line documents without 
+    the ability to read them. This kind of arrangement may be useful when creating 
+    a catalog for the purchase of on-line documents. The search engine would allow 
+    customers to search for relevant documents, and would show them text samples, 
+    but not the entire document. <br/>
+    <br/>
+    In a simple on-line catalog system, the site would simply provide a query 
+    page for entering the author, publisher, or title of the book, and would return 
+    results along with prices and purchase options. The query page would generate 
+    <span class="Keyword">crossQuery</span> style query URLs from the user input and pass them 
+    on to the <span class="Keyword">crossQuery</span> servlet for processing. The XSLT Search 
+    Result Formatter template would then be changed from the sample provided to 
+    simply report the pricing information along with a link for ordering. A slightly 
+    more advanced system would permit text searches, and would display matches 
+    in short blurbs like the sample along with book information and purchase links, 
+    but no links to bring up the document itself. <br/>
+    <br/>
+    Since this kind of a system requires the documents to be indexed, the <span class="Keyword">textIndexer</span> 
+    tool would need to be run once initially to create the index for the site, 
+    and then whenever documents are added to or removed from the site. 
+    <p class="Heading2">Combined crossQuery and dynaXML System<a name="UsageCombined"> 
+      </a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    Using the <span class="Keyword">crossQuery</span> servlet in conjunction with the <span class="Keyword">dynaXML</span> 
+    servlet would give a site the ability to both search for and read documents. 
+    In this case, the site would provide an initial query page which would generate 
+    <span class="Keyword">crossQuery</span> style query URLs. The results page produced yield 
+    <span class="Keyword">dynaXML</span> style document request URLs as links that when clicked 
+    would invoke the <span class="Keyword">dynaXML</span> servlet to bring up the selected document 
+    in a web page. <br/>
+    <br/>
+    The sample configuration and XSLT templates included with the XTF <span class="Code"> 
+    .jar </span>file implement this type of combined system, and are good starting 
+    points for creating a similar, more customized arrangement. In fact, a web 
+    site would only need to provide a link to an initial query page to make the 
+    sample system available to on-line users. <br/>
+    <br/>
+    Since this kind of a system requires the documents to be indexed, the <span class="Keyword">textIndexer</span> 
+    tool would need to be run once initially to create the index for the site, 
+    and then whenever documents are added to or removed from the site. </div>
+  <!-- Usage Examples --> 
+  <p class="Heading1">User Authentication (Optional)<a name="UserAuthentication"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  The <span class="Keyword">dynaXML</span> servlet can be configured to take advantage of user 
+  authentication to limit access to retrieved documents. The types of authentication 
+  available are IP List, LDAP, and External. An brief overview of each of these 
+  methods is provded in the following sections. 
+  <div class="IndentL"> 
+    <p class="Heading2">IP List Authentication<a name="AuthIPList"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    With this kind of authentication, the user's IP address is compared to a list 
+    of known IP addresses, and access permitted only if the user's IP address 
+    appears in the list. Installation of this kind of authentication simply consists 
+    of creating a text file whose contents are as follows: <br/>
+    <br/>
+    <div class="Sample"> <span class="Code"> ; Authorize a single address.<br/>
+      168.192.12.8 <br/>
+      <br/>
+      ; Authorize an address range.<br/>
+      123.89.122.5 - 123.89.122.73<br/>
+      <br/>
+      ; Authorize an address range using wildcards.<br/>
+      63.79.*.* <br/>
+      <br/>
+      ; Exclude an address from the previously authorized range.<br/>
+      exclude 63.79.123.42 <br/>
+      <br/>
+      ; Exclude an address sub-range from the previously authorized range.<br/>
+      exclude 63.79.124.* </span> </div>
+    <br/>
+    <br/>
+    In the this example, the first line authorizes a single IP address to access 
+    the document library through the <span class="Keyword">dynaXML</span> servlet. The second 
+    and third lines both authorize a range of IP addresses to access the document 
+    library, with the second example making use of the <b>*</b> wildcard character. 
+    The final two lines illustrate how to exclude a single address or an address 
+    range from a previously selected IP range (in this case, from the range specified 
+    by the 63.79.*.* line.) In all cases, lines that don't begin with an address 
+    or the word &quot;exclude&quot; are treated as comments, and blank lines are 
+    ignored. <br/>
+    <br/>
+    Once an &quot;Authorized IP List&quot; file has been created, the XSLT based 
+    <span class="Keyword">dynaXML</span><b> Request Parser</b> instructs the <span class="Keyword">dynaXML</span> 
+    servlet to authenticate users via IP List Authentication by inserting <span class="Code">&lt;auth&gt;</span> 
+    tags in its document retrieval requests. For more about modifying the <span class="Keyword">dynaXML</span><b> 
+    Request Parser</b> to generate IP List <span
+        class="Code">&lt;auth&gt;</span> tags, see the <a href="programming.html">XTF 
+    Programming Guide</a>. <br/>
+    <br/>
+    <div class="Note"> (<u>Note</u>: Note this is a relatively insecure method, 
+      as IP addresses can be spoofed fairly easily. Yet it's often sufficient 
+      and simple to implement.)<br/>
+    </div>
+    <br/>
+    <p class="Heading2">LDAP Authentication<a name="AuthLDAP"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    The <span class="Keyword">dynaXML</span> servlet can also consult an LDAP database to authenticate 
+    users. Using this method to authenticate users requires that a working LDAP 
+    database exists on your server, and a description of how create, configure 
+    and install one is well beyond the scope of this document. For further assistance, 
+    please refer to your LDAP server documentation, or ask your system administrator.<br/>
+    <br/>
+    As with <b>IP List Authentication</b> above, the<span class="Keyword">dynaXML</span><b> Request 
+    Parser</b> instructs the <span class="Keyword">dynaXML</span> servlet to authenticate users 
+    with LDAP by inserting <span class="Code">&lt;auth&gt;</span> tags in its 
+    document retrieval requests. For more about modifying the <span class="Keyword">dynaXML</span><b> 
+    Request Parser</b> to generate LDAP <span class="Code">&lt;auth&gt;</span> 
+    tags, see the <a href="programming.html">XTF Programming 
+    Guide</a>. <br/>
+    <br/>
+    <div class="Note"> (<u>Note</u>: <span class="Keyword">dynaXML</span> will use the HTTP &quot;basic&quot; 
+      protocol to obtain a user name and password. This method is insecure in 
+      that the password is transmitted &quot;in the clear&quot; and thus can easily 
+      be snooped. If security is of paramount concern, use the <b>External Authentication</b> 
+      mechanism described in the next section.) </div>
+    <p class="Heading2">External Authentication<a name="AuthExternal"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    The final authentication mechanism uses an external web page to check the 
+    user's permission, and uses a special protocol to ensure security during the 
+    transaction. External authentication provides great flexibiltity, allowing 
+    form-based login, <span class="Code">.htpasswd</span> apache-style checking, 
+    Shibboleth, and any other method that uses a web page. <br/>
+    <br/>
+    To use External Authentication you must have an HTTP server capable of receiving 
+    a URL request for user verification. The URL sent to the server will have 
+    the form: <br/>
+    <br/>
+    <div class="Sample"> <span class="Code">http://<span class="MacroCode">your-server</span>/<span class="MacroCode">your-authentication-page</span>?returnto=<span class="MacroCode">returnpage</span>&amp;nonce=<span class="MacroCode">somestring</span></span> 
+    </div>
+    <br/>
+    where 
+    <table border="0" cellspacing="4">
+      <tr> 
+        <td width="16%" valign="top" align="right"> 
+          <div align="right"><span class="MacroCode"><b>returnpage</b></span></div>
+        </td>
+        <td width="4">&nbsp;</td>
+        <td> <span class="BaseStyle"> is the <span class="Keyword">dynaXML</span> output page 
+          to return to once authentication is accepted, and </span> </td>
+      </tr>
+      <tr> 
+        <td width="16%" valign="top" align="right"> 
+          <div align="right"><span class="MacroCode"><b>somestring</b></span></div>
+        </td>
+        <td width="4">&nbsp;</td>
+        <td> <span class="BaseStyle"> is a nonsense string generated as a unique 
+          ID specifically for this login attempt. </span> </td>
+      </tr>
+    </table>
+    <br/>
+    The web-page specified by <span class="MacroCode">your-authentication-page</span> 
+    is responsible for identifying and authenticating the user via a login script 
+    or some other method. Once your web-page has authenticated the user, it should 
+    redirect the user's web browser to the URL specified by the <span class="Code">returnto</span> 
+    parameter. The redirect URL should have the form: <br/>
+    <br/>
+    <div class="Sample"> <span class="Code"> <span class="MacroCode">returnpage</span>&amp;nonce=<span class="MacroCode">somestring</span>&amp;hash=<span class="MacroCode">hashvalue</span> 
+      </span> </div>
+    <br/>
+    where 
+    <table border="0" cellpadding="0" cellspacing="4">
+      <tr> 
+        <td width="16%" align="right" valign="top"> 
+          <div align="right"><span class="MacroCode"><b>returnpage</b></span></div>
+        </td>
+        <td width="4">&nbsp;</td>
+        <td> <span class="BaseStyle"> is the <span class="MacroCode">returnpage</span> 
+          received in the original external authentication URL, and </span> </td>
+      </tr>
+      <tr> 
+        <td width="16%" align="right" valign="top"> 
+          <div align="right"><span class="MacroCode"><b>hashvalue</b></span></div>
+        </td>
+        <td width="4">&nbsp;</td>
+        <td> <span class="BaseStyle"> <span class="MacroCode"></span> is a hex-encoded 
+          MD5 hash of the string <span class="MacroCode"><b>somestring</b></span>:<span class="MacroCode"><b>key</b></span>, 
+          with <span class="MacroCode"><b>key</b></span> being a secret key string 
+          known by both the external login page and the <span class="Keyword">dynaXML</span> 
+          servlet. </span> </td>
+      </tr>
+    </table>
+    <br/>
+    Use of the <span class="MacroCode"><b>somestring</b></span> string makes each 
+    attempt unique and defends against replay attacks. Hashing the nonsense string 
+    with the secret key ensures that the secret key cannot be practically guessed 
+    by an outsider. <br/>
+    <br/>
+    Like the previous two authentication methods, the <span class="Keyword">dynaXML</span><b> 
+    Request Parser</b> instructs the <span class="Keyword">dynaXML</span> servlet to authenticate 
+    users via External Authentication by inserting <span class="Code">&lt;auth&gt;</span> 
+    tags in its document retrieval requests. For more about modifying the <span class="Keyword">dynaXML</span><b> 
+    Request Parser</b> to generate External <span class="Code">&lt;auth&gt;</span> 
+    tags, see the <a href="programming.html">XTF Programming 
+    Guide</a>. </div>
+  <!-- Authentication --> 
+<!-- BaseStyle -->
+
+  </body>
+
+</html>
