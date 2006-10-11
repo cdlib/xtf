@@ -27,6 +27,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         <li><a href="#DebugMessage">Using <span class="Code">&lt;xsl:message></span></a></li>
         <li><a href="#DebugLogging">Turning on "debug" log mode</a></li>
         <li><a href="#DebugSaxonCmd">Running Saxon from the Command-Line</a></li>
+        <li><a href="#DebugSmallSets">Index Subsets of Data</a></li>
       </ul>
       <br/>
     </li>
@@ -44,17 +45,17 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
   This document is devoted to tips and tricks to help you get results quickly
   with <span class="Keyword">XTF</span>. These range from debugging strategies,
-  setting up various visual tools to work with XTF, and ways to save time.
+  to using XTF with various graphical development tools.
   
   <p class="Heading1">Debugging XTF Stylesheets<a name="Debugging"></a></p>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <p>
     Since <span class="Keyword">XTF</span> involves a fair amount of customization
-    in XSLT, stylesheet bugs are bound to arise frequently. This section covers
+    in XSLT, you're likely to create stylesheet bugs as you develop. This section covers
     ways to efficiently track down the source of a problem. In particular, we
     focus here on debugging strategies that can be used in almost any XTF
     installation, without external tools. However, it should be noted that
-    integrated development environments such as &lt;oXygen/> and Eclipse can
+    integrated development environments such as <b>&lt;oXygen/></b> and <b>Eclipse</b> can
     often provide more powerful debugging tools; setting up these environments
     to work with XTF is covered in a separate section on 
     <a href="#ExternalTools">External Tools</a> later in this document.
@@ -82,7 +83,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       Currently, <span class="Keyword">dynaXML</span> doesn't support a debug step
       mode, mainly because doubling the number of frames in the already frame-heavy
       display mode would be quite clumsy. However, this might be added to
-      <span class="Keyword">dynaXML</span> at some point in the future. However,
+      <span class="Keyword">dynaXML</span> at some point in the future. Still,
       the data flow in <span class="Keyword">dynaXML</span> is much the same as
       in <span class="Keyword">crossQuery</span>, so learning one will help you
       to understand the other.
@@ -102,10 +103,10 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       This mode is activated by simply adding <span class="Code">&amp;raw=1</span> to
       an XTF URL in your browser. Instead of calling the formatter stylesheet,
       the full XML will be sent directly to your browser window. Be warned 
-      that depending on size of the request (number of documents in 
+      that depending on size of the request (number of hits requested in 
       <span class="Keyword">crossQuery</span> or size of document in
       <span class="Keyword">dynaXML</span>) it may be quite large, and thus
-      the browser may take some time to process all the data before displaying it.
+      your web browser may take some time to process all the data before displaying it.
     </p>
   </div>
   
@@ -358,6 +359,28 @@ $</pre>
     </table>
   </div>
   
+  <div class="IndentL"> 
+    <p class="Heading2">Index Subsets of Data<a name="DebugSmallSets"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p>
+      When debugging <b>Document Prefilter</b> stylesheets for use with the
+      <span class="Code">textIndexer</span>, it can be very time-consuming to
+      re-index your entire document collection every time you make a small
+      change. You can achieve a much faster edit-run-fix cycle if you index
+      only small subsets of your data.
+    </p>
+    <p>
+      There are at least two ways to index small sets. First is to simply set up a
+      separate data directory and a new index configuration.
+    </p>
+    <p>
+      However, an often overlooked method is to use your original index
+      configuration and data directory, but specify a single sub-directory
+      of your data to index. Here's a sample command doing just that:
+    </p>
+    <p class="Sample"><span class="Code">$ textIndexer -dir tei/ft958009mm -index default</span></p>
+  </div>
+  
   <p class="Heading1">Setting up External Tools<a name="ExternalTools"></a></p>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <p>
@@ -540,6 +563,28 @@ BUILD SUCCESSFUL</pre>
   <div class="IndentL"> 
     <p class="Heading2">Using Eclipse with XTF<a name="SetupEclipse"></a></p>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <p>
+      Eclipse is a free Integrated Development Environment (IDE) for Java, and provides
+      such a wealth of coding and debugging help that all XTF development was done
+      using it. If you are interested in stepping through XTF code, adding features,
+      or integrating XTF into a larger Java project, Eclipse is an excellent choice
+      to help you on your way.
+      Eclipse is available for just about any computer platform, and you can
+      download it here: <a href="http://www.eclipse.org/">http://www.eclipse.org/</a>.
+      In particular, you want the "Eclipse SDK".
+    </p>
+    <p>
+      Once you've installed Eclipse, there are a few tricks to getting the XTF
+      servlets to run under it. You'll still need a servlet container just as
+      Resin or Tomcat. The instructions below assume you're using Tomcat.
+      It should be noted that this isn't the only way to run XTF within
+      Eclipse. An entirely different method used successfully by an XTF
+      user is documented here: 
+      <a href="http://drc-dev.ohiolink.edu/wiki/EclipseXTFHowTo">http://drc-dev.ohiolink.edu/wiki/EclipseXTFHowTo</a>
+    </p>
+    <p>
+      <b>Instructions for creating an XTF project in Eclipse</b>
+    </p>
     <ol>
       <li>
         Create a new Java project, by selecting <b>File -> New -> Project...</b>, and selecting 
@@ -585,7 +630,10 @@ BUILD SUCCESSFUL</pre>
     <p>
       Now that your XTF project is in Eclipse and the XTF code is built, you can browse the
       source code, make changes, rebuild, and run it in the debugger. A few additional steps
-      are needed to run XTF under Tomcat in the debugger:
+      are needed to run XTF under Tomcat in the debugger.
+    </p>
+    <p>
+      <b>Instructions for debugging XTF servlets within Eclipse</b>
     </p>
     <ol>
       <li>
