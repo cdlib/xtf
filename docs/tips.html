@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="EN">
+
+<head>
+  <title>XTF Tips and Tricks</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+  <link rel="stylesheet" href="library/xtfDocStyle.css" type="text/css" />
+</head>
+
+<body bgcolor="#FFFFFF" text="#101010" >
+
+<div class="BaseStyle"> 
+  <p class="DocTitle" align="center">XTF Tips and Tricks</p>
+  <p class="Heading1">Table of Contents</p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - -->
+  <ul class="NoBullets">
+    <li> <b><a href="#Introduction">Introduction</a></b> <br/><br/></li>
+    <li> <b><a href="#Debugging">Debugging XTF Stylesheets</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#DebugStep">Debug Step Mode</a></li>
+        <li><a href="#DebugRaw">Using "Raw" Mode</a></li>
+        <li><a href="#DebugOneFrame">One Frame at a Time</a></li>
+        <li><a href="#DebugMessage">Using <span class="Code">&lt;xsl:message></span></a></li>
+        <li><a href="#DebugLogging">Turning on "debug" log mode</a></li>
+        <li><a href="#DebugSaxonCmd">Running Saxon from the Command-Line</a></li>
+      </ul>
+      <br/>
+    </li>
+    <li> <b><a href="#ExternalTools">Setting up External Tools</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#SetupOxygen">Using &lt;oXygen/> with XTF</a></li>
+        <li><a href="#SetupSourceCode">Building XTF from the Source Code</a></li>
+        <li><a href="#SetupEclipse">Using Eclipse with XTF</a></li>
+        <li><a href="#SetupLuke">Using Luke with XTF</a></li>
+      </ul>
+      <br/>
+    </li>
+  </ul>
+  <p class="Heading1">Introduction<a name="Introduction"></a></p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+  This document is devoted to tips and tricks to help you get results quickly
+  with <span class="Keyword">XTF</span>. These range from debugging strategies,
+  setting up various visual tools to work with XTF, and ways to save time.
+  
+  <p class="Heading1">Debugging XTF Stylesheets<a name="Debugging"></a></p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <p>
+    Since <span class="Keyword">XTF</span> involves a fair amount of customization
+    in XSLT, stylesheet bugs are bound to arise frequently. This section covers
+    ways to efficiently track down the source of a problem. In particular, we
+    focus here on debugging strategies that can be used in almost any XTF
+    installation, without external tools. However, it should be noted that
+    integrated development environments such as &lt;oXygen/> and Eclipse can
+    often provide more powerful debugging tools; setting up these environments
+    to work with XTF is covered in a separate section on 
+    <a href="#ExternalTools">External Tools</a> later in this document.
+  </p>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Debug Step Mode<a name="DebugStep"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p>
+      A great way to get a hands-on feel for how <span class="Keyword">crossQuery</span> works 
+      is to use the built-in &quot;Debug Step&quot; mode. 
+      Simply add <span class="Code">&amp;debugStep=1</span> 
+      to any search URL. The generated web page will let you step through the entire 
+      process, with detailed explanations and real data. The first step looks like 
+      this:
+    </p>
+    <p align="center"> <img src="Art/SearchDebugStep.gif" alt="Search Debug Step"/></p>
+    <p>
+      Clicking on the links allows you step through the process, and
+      to see the input and output of each stage in the
+      <span class="Keyword">crossQuery</span> data flow, from the initial parameters
+      to the query parser to the result formatter.
+    </p>
+    <p>
+      Currently, <span class="Keyword">dynaXML</span> doesn't support a debug step
+      mode, mainly because doubling the number of frames in the already frame-heavy
+      display mode would be quite clumsy. However, this might be added to
+      <span class="Keyword">dynaXML</span> at some point in the future. However,
+      the data flow in <span class="Keyword">dynaXML</span> is much the same as
+      in <span class="Keyword">crossQuery</span>, so learning one will help you
+      to understand the other.
+    </p>
+  </div>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Using "Raw" Mode<a name="DebugRaw"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p>
+      Both <span class="Keyword">crossQuery</span> and <span class="Keyword">dynaXML</span>
+      support a special "raw" mode useful if you just want to know the exact
+      XML input that's being sent to the formatter (<b>Result Formatter</b> or
+      <b>Document Formatter</b>, respectively.)
+    </p>
+    <p>
+      This mode is activated by simply adding <span class="Code">&amp;raw=1</span> to
+      an XTF URL in your browser. Instead of calling the formatter stylesheet,
+      the full XML will be sent directly to your browser window. Be warned 
+      that depending on size of the request (number of documents in 
+      <span class="Keyword">crossQuery</span> or size of document in
+      <span class="Keyword">dynaXML</span>) it may be quite large, and thus
+      the browser may take some time to process all the data before displaying it.
+    </p>
+  </div>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">One Frame at a Time<a name="DebugOneFrame"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p>
+      Because <span class="Keyword">dynaXML</span> uses multiple frames
+      (table of contents, button bar, content) it can be difficult to isolate
+      problems using any of the methods below. That's because there are actually
+      four requests made by the browser to the servlet: first, to get the frame
+      set, and then three additional requests, one for each frame. To make
+      matters even more interesting, these latter three requests are processed
+      simultaneously &mdash; <span class="Red">in parallel</span>!
+    </p>
+    <p>
+      To simplify debugging, you can append a <span class="Code">doc.view</span>
+      parameter to the URL string to select the particular frame you're
+      trying to debug. For the default document formatter that comes with
+      XTF, here are the values you can add to the URL:
+    </p>
+    <div class="IndentL">
+      <table>
+        <tr>
+          <td><span class="Code">&amp;doc.view=toc</span></td>
+          <td>table of contents</td>
+        </tr>
+        <tr>
+          <td><span class="Code">&amp;doc.view=bbar</span></td>
+          <td>button bar</td>
+        </tr>
+        <tr>
+          <td><span class="Code">&amp;doc.view=content</span>&nbsp;</td>
+          <td>main content page</td>
+        </tr>
+      </table>
+    </div>
+    
+  </div>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Using <span class="Code">&lt;xsl:message></span><a name="DebugMessage"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p>
+      Often the behavior of an XSLT program can be mysterious, and you would
+      really like to find out which templates are firing, or what the value
+      of a variable is at a certain point. While IDEs (Integrated Development
+      Environments) such as Oxygen excel at answering this sort of question,
+      they do take time to set up and learn.
+    </p>
+    <p>
+      A simple, if crude, way to find out what's going on during stylesheet
+      processing is to use <span class="Code">&lt;xsl:message></span> to
+      print messages and/or variables when the stylesheet runs. Here's
+      some sample code:
+    </p>
+    <pre class="Sample">
+&lt;xsl:variable name="myVar">
+<span class="MacroCode">... complicated stuff here that isn't working ...</span>
+&lt;/xsl:variable>
+<span class="Code">&lt;xsl:message></span>
+The value of myVar is: <span class="Code">&lt;xsl:copy-of select="$myVar"/></span>
+<span class="Code">&lt;/xsl:message></span></pre>
+    <p>
+      The message, along with the value of <span class="Code">$myVar</span>, will
+      come out in the servlet container's log file. This varies by container, but
+      for Resin it's typically 
+      <span class="MacroCode">resin-dir</span><span class="Code">/log/stdout.log</span>, 
+      and for Tomcat it's typically 
+      <span class="MacroCode">tomcat-dir</span><span class="Code">/logs/catalina.out</span>.
+      From a UNIX-style command prompt, you can interactively see the output of
+      one of these files with a command like this:
+    </p>
+    <p class="Sample">
+      <span class="Code">tail -f <span class="MacroCode">tomcat-dir</span><span class="Code">/logs/catalina.out</span></span>
+    </p>
+  </div>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Turning on "debug" log mode<a name="DebugLogging"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p>
+      Another way to see the input and output of each stylesheet (and that works in
+      both <span class="Keyword">dynaXML</span> and <span class="Keyword">crossQuery</span>)
+      is to turn on debug logging in the servlet configuration. Edit the configuration
+      file for the servlet you're working with (e.g. <span class="Code">conf/dynaXML.conf</span>
+      or <span class="Code">conf/crossQuery.conf</span>), and look for this line:
+    </p>
+    <p class="Sample">
+      <span class="Code">&lt;logging level="info"/></span>
+    </p>
+    <p>
+      Change <span class="Code">info</span> to <span class="Code">debug</span>, and
+      then watch the output of your servlet container. This varies by container, but
+      for Resin it's typically
+      <span class="MacroCode">resin-dir</span><span class="Code">/log/stdout.log</span>, 
+      and for Tomcat it's typically 
+      <span class="MacroCode">tomcat-dir</span><span class="Code">/logs/catalina.out</span>.
+      The <span class="Keyword">XTF</span> servlet will output messages showing the input and
+      output of each stylesheet. Here is sample log output from a dynaXML request:
+    </p>
+    <pre class="Sample">
+2006-10-09:13:07:42 Log level: debug
+2006-10-09:13:07:42 Processing request: http://localhost:8080/xtf-sf/view?docId=tei/ft958009mm/ft958009mm.xml&amp;doc.view=content
+2006-10-09:13:07:43 StylesheetCache: Generated. Path=/Applications/Tomcat/webapps/xtf-sf/style/dynaXML/docReqParser.xsl
+2006-10-09:13:07:43 *** docReqParser input ***
+2006-10-09:13:07:43   &lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;parameters>
+  &lt;param name="docId" value="tei/ft958009mm/ft958009mm.xml">
+    &lt;token value="tei/ft958009mm/ft958009mm" isWord="yes"/>
+    &lt;token value="." isWord="no"/>
+    &lt;token value="xml" isWord="yes"/>
+  &lt;/param>
+&lt;/parameters>
+2006-10-09:13:07:43 *** docReqParser output ***
+2006-10-09:13:07:43   &lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;style path="style/dynaXML/docFormatter/tei/teiDocFormatter.xsl"/>
+&lt;source path="data/tei/ft958009mm/ft958009mm.xml"/>
+&lt;index configPath="conf/textIndexer.conf" name="default"/>
+&lt;auth access="allow" type="all"/>
+2006-10-09:13:07:43 Processing auth spec: access=allow type=all 
+2006-10-09:13:07:43 DocInfoCache: Generated. docId="tei/ft958009mm/ft958009mm.xml"
+2006-10-09:13:07:43 Checking IP "127.0.0.1" vs reverse proxy IP "null"
+2006-10-09:13:07:43 Auth allow all
+2006-10-09:13:07:44 StylesheetCache: Generated. Path=/Applications/Tomcat/webapps/xtf-sf/style/dynaXML/docFormatter/tei/teiDocFormatter.xsl
+2006-10-09:13:07:44 Latency: 1473 msec for request: http://localhost:8080/xtf-sf/view?docId=tei/ft958009mm/ft958009mm.xml&amp;doc.view=content</pre>
+    <p>
+      As you can see, there is more than just the stylesheet input and output; the servlet
+      includes debugging information on the various internal caches, the authentication
+      process, and how long the request took to process. These pieces of information can
+      be useful, though not as often. Also, observe that I added a parameter to debug
+      only the content frame (as recommended <a href="#DebugOneFrame">above</a>), 
+      to avoid mixing up all the frames simultaneously.
+    </p>
+  </div>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Running Saxon from the Command-Line<a name="DebugSaxonCmd"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p>
+      It is often useful, especially when writing formatters such as 
+      <span class="Keyword">dynaXML's</span> <b>Document Formatter</b>, to
+      avoid the hassle of switching between the stylesheet, browser, and
+      command-line. It is possible to use the
+      <b>Saxon</b> XSLT processor (used internally by XTF) directly from the
+      command-line. This gives you a convenient way to quickly see the
+      result of a stylesheet change.
+    </p>
+    <p>
+      Here is a sample of running Saxon from the command-line:
+    </p>
+    <pre class="Sample">
+$ java -jar $XTF_HOME/WEB-INF/lib/saxonb-8.3.jar data/tei/ft958009mm/ft958009mm.xml 
+style/dynaXML/docFormatter/tei/teiDocFormatter.xsl
+
+&lt;!DOCTYPE html
+PUBLIC "-//W3C//DTD HTML 4.0//EN">
+&lt;html xmlns:xtf="http://cdlib.org/xtf">
+  &lt;head>
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      
+      &lt;title>The Opening of the Apartheid Mind&lt;/title>
+  &lt;/head>
+  &lt;frameset rows="80,*" border="2" framespacing="2" frameborder="1">
+    &lt;frame scrolling="no" title="Navigation Bar" name="bbar" src="view?docId=&amp;doc.view=bbar&amp;
+        chunk.id=0&amp;toc.depth=1&amp;brand=default">
+      &lt;frameset cols="35%,65%" border="2" framespacing="2" frameborder="1">
+        &lt;frame title="Table of Contents" name="toc" src="view?docId=&amp;doc.view=toc&amp;chunk.id=0
+             &amp;toc.depth=1&amp;brand=default&amp;toc.id=0#X">
+          &lt;frame title="Content" name="content" src="view?docId=&amp;doc.view=content&amp;chunk.id=0
+             &amp;toc.depth=1&amp;brand=default&amp;anchor.id=0">
+      &lt;/frameset>
+  &lt;/frameset>
+  &lt;noframes>
+    &lt;h1>Sorry, your browser doesn't support frames...&lt;/h1>
+  &lt;/noframes>
+&lt;/html>
+$</pre>
+    <p>
+      If you redirect the XML output to a file, you won't get any results on your
+      screen... unless you have added <span class="Code">&lt;xsl:message></span> elements 
+      to your stylesheet as recommended <a href="#DebugMessage">above</a>. Combining
+      command-line Saxon with message output is a powerful and fairly efficient
+      debugging combination that
+      can be used to track down many problems.
+    </p>   
+    <p>
+      The example above is for a single stylesheet &mdash; a 
+      <span class="Keyword">dynaXML</span> document formatter &mdash; but of course
+      there are many other transformations in XTF. How do you obtain the proper
+      input documents for these? Consult the table below:
+    </p>
+    <table class="Sample" cellpadding="5">
+      <tr>
+        <td><u><b>Servlet</b></u></td>
+        <td><u><b>Stylesheet</b></u></td>
+        <td><u><b>How to get input data file</b></u></td>
+      </tr>
+      <tr>
+        <td>crossQuery</td>
+        <td>Query Router</td>
+        <td>Turn on <a href="#DebugStep">debug step mode</a>, grab step 1 file from
+          browser using <b>Save As...</b>
+        </td>
+      </tr>
+      <tr>
+        <td>crossQuery</td>
+        <td>Query Parser</td>
+        <td>Turn on <a href="#DebugStep">debug step mode</a>, grab step 2 file from
+          browser using <b>Save As...</b>
+        </td>
+      </tr>
+      <tr>
+        <td>crossQuery</td>
+        <td>Result Formatters</td>
+        <td>Turn on <a href="#DebugStep">debug step mode</a>, grab step 4 file from
+          browser using <b>Save As...</b>
+        </td>
+      </tr>
+      <tr>
+        <td>dynaXML</td>
+        <td>Document Request Parser</td>
+        <td>Turn on <a href="#DebugLogging">debug logging mode</a>, copy/paste docReqParser input
+          from log file.
+        </td>
+      </tr>
+      <tr>
+        <td>dynaXML</td>
+        <td>Document Formatters</td>
+        <td>Use <a href="#DebugRaw">raw mode</a>, then grab marked up input
+          from browser using <b>Save As...</b>
+        </td>
+      </tr>
+      <tr>
+        <td>textIndexer</td>
+        <td>Document Selector</td>
+        <td>Turn on <a href="#DebugLogging">debug logging mode</a>, grab docSelector input
+          from log file.
+        </td>
+      </tr>
+      <tr>
+        <td>textIndexer</td>
+        <td>Document Prefilter</td>
+        <td>Just use your unmodified XML source file. For non-XML sources,
+          create a small prefilter that dumps the XML input file that XTF
+          creates to the screen
+          using <a href="#DebugMessage">&lt;xsl:message></a>, then copy/paste that.
+        </td>
+      </tr>
+    </table>
+  </div>
+  
+  <p class="Heading1">Setting up External Tools<a name="ExternalTools"></a></p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <p>
+    There are hundreds of software packages for working on XML or Java, and we
+    have not tried even a small fraction of them. Still, if you're looking for
+    a place to start, this section covers a few tools we have found to be
+    very useful. Which one you choose depends on how you're using XTF. If you're
+    deploying XTF and debugging stylesheets, <a href="#SetupOxygen"><b>&lt;oXygen/></b></a> can be
+    invaluable, and is inexpensive for academic users. 
+    If you're modifying the Java code, or integrating it into a
+    larger Java framework, the <a href="#SetupEclipse"><b>Eclipse</b></a> 
+    IDE is free and powerful. And
+    if you're delving into the Lucene indexes created by XTF, 
+    <a href="#SetupLuke"><b>Luke</b></a>
+    is a free tool for examining and querying them.
+  </p>
+  <p>
+    Note that each of these tools is feature-rich and powerful; consequently this
+    guide cannot cover their full functionality. Rather, we concentrate
+    specifically on how they can be used to aid XTF development.
+  </p>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Using &lt;oXygen/> with XTF<a name="SetupOxygen"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <p>
+      &lt;oXygen/> is a powerful XML editor and XSLT debugger (in addition to many
+      other features.) In the context of <span class="Keyword">XTF</span>, it's
+      especially useful in creating and debugging stylesheets used for the various
+      transformations in the XTF data flow, such as request parsers and result
+      formatters.
+    </p>
+    <p>
+      Here are the steps to set up a new project in Oxygen. In this example, we
+      will be transforming a TEI document using a <span class="Code">dynaXML</span>
+      <b>Document Formatter</b> stylesheet.
+    </p>
+    <ol>
+      <li>
+        Create a new project in &lt;oXygen/>, and save it (select "Save Project As..."
+        from the Project menu.)
+        <br/><br/>
+      </li>
+      <li>
+        Right-click on the project in the Project pane, and select "Add Files".
+        Add the stylesheet you want to run; in our example, select
+        <span class="MacroCode">xtf-home</span><span class="Code">/style/dynaXML/docFormatter/tei/teiDocFormatter.xsl</span>
+        <br/><br/>
+      </li>
+      <li>
+        Open the formatter by double-clicking it in the Project pane.
+        Then click the "Configure Transformation Scenario" button, or select
+        Document -> XML Document -> Configure Transformation Scenario.
+        <br/><br/>
+      </li>
+      <li>
+        Click New to create a new Transformation Scenario, and give this scenario a name: "xtf-tei" for this example.
+        <p align="center">
+          <img src="art/oxygenScenario.gif" alt="Oxygen Scenario"/>
+        </p>
+        <br/>
+      </li>
+      <li>
+        In the XML URL box, select the XML file you want to transform. For this example, click the
+        little open button and select 
+        <span class="MacroCode">xtf-home</span><span class="Code">/data/tei/ft958009/ft958009.xml</span>
+        <br/><br/>
+      </li>
+      <li>
+        Select "Saxon8B" as the Transformer.
+        <br/><br/>
+      </li>
+      <li>
+        To validate XTF extension functions, click Extensions, and add the XTF jar file. In the
+        default XTF installation, this can be found here:
+        <span class="MacroCode">xtf-home</span><span class="Code">/WEB-INF/lib/xtf.jar</span>
+        <br/><br/>
+      </li>
+      <li>
+        The Transformation Scenario is complete. Click OK.
+        <br/><br/>
+      </li>
+      <li>
+        Now select the Debug Scenario button, or select Document -> XML Document -> Debug Scenario.
+        <br/><br/>
+      </li>
+      <li>
+        &lt;oXygen/> will now switch to Debug perspective. You can now set breakpoints
+        and examine variables as the stylesheet runs. If you need to get back to
+        Edit perspective, select Perspective -> Edit.
+        <br/><br/>
+      </li>
+      <li>
+        If you need to simulate URL parameters, simply edit the Transformation Scenario
+        you created above, and click the Parameters button to add one or more,
+        named exactly as they would be in a URL, and with normal (not URL encoded)
+        values.
+      </li>
+    </ol>
+    <p>
+      The example above is for a single stylesheet &mdash; a 
+      <span class="Keyword">dynaXML</span> document formatter &mdash; but of course
+      there are many other transformations in XTF. How do you obtain the proper
+      input documents for these? Consult the table in the section on
+      <a href="#DebugSaxonCmd">running Saxon from the command line</a>,
+      above.
+    </p>
+    <p>
+      This should get you started
+      using &lt;oXygen/> to boost your productivity with XTF. Of course we've
+      just scratched the surface, so if you have corrections
+      to this procedure, or suggestions for other tips, we'd love to hear from you.
+    </p>
+  </div>
+
+  <div class="IndentL"> 
+    <p class="Heading2">Building XTF from the Source Code<a name="SetupSourceCode"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <p>
+      There are many reasons you might wish to rebuild <span class="Keyword">XTF</span>
+      from the source code, instead of using the <span class="Code">xtf.jar</span>
+      provided with the distribution. You might wish to simply examine the source
+      code to help debug problem, or you might want to integrate XTF into a larger
+      Java Framework, or perhaps you want to modify or expand XTF.
+    </p>
+    <p>
+      The XTF distribution always comes with the complete source code (as all open-source
+      projects should.) It might not be immediately obvious though, because the
+      source code is compressed in the archive <span class="Code">src.zip</span>,
+      stored in the <span class="Code">WEB-INF</span> folder. So the first step is
+      to unzip the source. Use a graphical Zip tool, or from the command-line:
+    </p>
+    <pre class="Sample">
+$ cd $XTF_HOME/WEB-INF
+$ unzip src.zip</pre>
+    <p>
+      If you're going to use XTF in an IDE such as <a href="#SetupEclipse">Eclipse</a>,
+      you need go no further. However, to build XTF from the command-line, keep
+      reading.
+    </p>
+    <p>
+      Make sure you have the <b>ant</b> tool installed. This tool is used to
+      build Java projects. You can easily check if it's available from the
+      command-line like this:
+    </p>
+    <pre class="Sample">
+$ ant -version
+Apache Ant version 1.6.5 compiled on June 2 2005</pre>
+    <p>
+      If you get a complaint about "command not found", you'll need to 
+      obtain and install <b>ant</b>, but don't worry as it's free. You
+      can get it here: <a href="http://ant.apache.org/">http://ant.apache.org/</a>
+    </p>
+    <p>
+      Now you can build XTF. From the <span class="Code">WEB-INF</span> directory,
+      simply run <b>ant</b> like this:
+    </p>
+    <pre class="Sample">
+$ cd $XTF_HOME/WEB-INF
+$ ant
+Buildfile: build.xml
+
+init:
+[mkdir] Created dir: /Applications/Tomcat/webapps/xtf/WEB-INF/classes
+
+compile:
+[javac] Compiling 324 source files to /Applications/Tomcat/webapps/xtf/WEB-INF/classes
+
+BUILD SUCCESSFUL</pre>
+    <p>
+      There's no need to remove the <span class="Code">xtf.jar</span> file in
+      your installation; servlet containers and the XTF command-line scripts
+      will automatically prefer the <span class="Code">.class</span> files
+      you generated when compiling above to the contents of <span class="Code">xtf.jar</span>,
+      so you can confidently make changes to the XTF code, recompile, and see
+      the results immediately.
+    </p>
+  </div>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Using Eclipse with XTF<a name="SetupEclipse"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <ol>
+      <li>
+        Create a new Java project, by selecting <b>File -> New -> Project...</b>, and selecting 
+        <b>Java Project</b>.<br/><br/>
+      </li>
+      <li>
+        Select <b>Create project from existing source</b>, and select the directory of
+        your XTF installation (e.g. <span class="Code">/Applications/Tomcat/webapps/xtf</span>),
+        and give the project a name (e.g. <span class="Code">my_xtf</span>). Then click
+        <b>Next</b>.
+        <br/><br/>
+      </li>
+      <li>
+        <b>Eclipse</b> scans the directory and populates the <b>Source</b> and
+        <b>Libraries</b> tabs. However, we need to modify the Libraries to look
+        for the servlet container, so click that tab.
+        <br/><br/>
+      </li>
+      <li>
+        Remove <span class="Code">servlet.jar</span> and <span class="Code">xtf.jar</span>
+        from the list of Libraries. We don't want the former because we're going to
+        replace it with a library from Tomcat, and we don't want the latter because
+        we're building directly from the XTF source code.
+        <br/><br/>
+      </li>
+      <li>
+        Add the following two libraries:
+        <div class="Sample">
+          <span class="MacroCode">tomcat-dir</span><span class="Code">/bin/bootstrap.jar</span><br/>       
+          <span class="MacroCode">tomcat-dir</span><span class="Code">/common/lib/servlet-api.jar</span>          
+        </div>
+        You should end up with a list something like this:
+        <p align="center"><img src="art/eclipseLibraries.gif" alt="Eclipse Libraries"/></p>
+        <br/><br/>
+      </li>
+      <li>
+        Click <b>Finish</b>, then select <b>Project -> Build Project</b>. It should build
+        with no errors, though there may be warnings depending on your Eclipse version,
+        Java version, and Eclipse settings related to warnings. These warnings are okay.
+        <br/><br/>
+      </li>
+    </ol>
+    <p>
+      Now that your XTF project is in Eclipse and the XTF code is built, you can browse the
+      source code, make changes, rebuild, and run it in the debugger. A few additional steps
+      are needed to run XTF under Tomcat in the debugger:
+    </p>
+    <ol>
+      <li>
+        We need to create a new Debug Configuration in Eclipse. Select <b>Run -> Debug...</b>.
+        Then click on <b>Java Application</b> and hit the little "New" button up in
+        the corner.
+        <br/><br/>
+      </li>      
+      <li>
+        Now we need to work on the various tabs. First is the <b>Main</b> tab. Specify your
+        project name, then for <b>Main Class</b> select:
+        <div class="Sample">
+          <span class="Code">org.apache.catalina.startup.Bootstrap</span>
+        </div>
+        <br/>
+      </li>
+      <li>
+        Next select the <b>Arguments</b> tab. Under <b>Program Arguments</b> enter:
+        <div class="Sample">
+        <span class="Code">-outfile ./logs/catalina.out -errfile ./logs/catalina.err start</span><br/>
+        </div>        
+        and under <b>VM Arguments</b> enter:
+        <div class="Sample">
+          <span class="Code">-Djava.endorsed.dirs=./common/endorsed -ea -Xms50m -Xmx700m</span>
+        </div>
+        Finally, under <b>Working Directory</b>, enter the directory of your Tomcat installation (e.g. 
+        <span class="Code">/Applications/Tomcat</span>).
+        <br/><br/>
+      </li>
+      <li>
+        Hit the <b>Debug</b> button, and you're debugging!
+      </li>
+    </ol>
+    <p>
+      Of course this only covers the very basics of working with XTF in Eclipse, but
+      hopefully it will help you get started. Feedback on these instructions is
+      very welcome.
+    </p>
+  </div>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Using Luke with XTF<a name="SetupLuke"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <p>
+      If you are interested in exploring the contents of the Lucene indexes
+      that XTF creates and searches, Luke is a free graphical tool that you can
+      browse any Lucene index with, including indexes created by XTF. 
+      You can download Luke here:
+      <a href="http://www.getopt.org/luke/">http://www.getopt.org/luke/</a>.
+    </p>
+    <p>
+      Note that when using Luke you will be exposed to some of the internal
+      workings of XTF, such as document chunking, special fields, and
+      markers for field start and end. Depending on your point of view,
+      that's part of the fun of exploring the XTF indexes with Luke.
+    </p>
+  </div>
+  
+</div>  
+</body>
+</html>
