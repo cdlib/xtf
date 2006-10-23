@@ -1045,171 +1045,233 @@ to fill its bottomless gullet.</pre>
   <!-- IndentL --> 
   <p class="Heading1">Hit Scoring<a name="Scoring"></a></p>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
-  <b><i>XTF</i></b> uses and extends Lucene's built-in scoring mechanism to provide 
+  <p><b><i>XTF</i></b> uses and extends Lucene's built-in scoring mechanism to provide 
   a relevance score for each hit, and returning hits in ranked order (i.e. highest 
   score first.) This section describes briefly how the <b>Text Engine</b> determines 
-  the score for hits in the full text and hits on meta-data fields. 
+  the score for hits in the full text and hits on meta-data fields.
+  </p>
+  <p>
+    You can observe the scoring engine in action by enabling the 
+    <span class="Code">explainScores</span> attribute on the 
+    <span class="Code">&lt;query></span> element produced by your
+    <b>Query Parser</b> stylesheet. See the 
+    <a href="tagRef.html#crossQuery_QueryParser_Output_Query">Tag Reference</a> for more
+    information on how to enable this.
+  </p>
+  <p>
+    The following sections break down XTF's scoring calculation like this:
+    first we cover the common aspects shared by both meta-data and text
+    chunk scoring, then talk about the differences, and finally take a look
+    at how the final combined score for a document is computed.
+  </p>
   <div class="IndentL"> 
-    <p class="Heading2">Text Hit Scoring<a name="Scoring_Text"></a></p>
+    <p class="Heading2">Individual Hit Scoring<a name="Scoring_Hits"></a></p>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
-    Queries on the full text of a document are scored using <b><i>XTF</i></b>'s 
-    internal scoring method, because Lucene provides no way to score individual 
-    hits within a document. The structure of the scoring formula is fixed, but 
-    one can override the calculation of the various factors by providing a Java 
-    implementation of the <b>XTFSimilarity</b> interface. 
+    <p>
+      Whether a hit (another name for a single match) is in a meta-data field or 
+      within the full text of
+      a document, the scoring for that particular hit is the same. How
+      the scores are combined differs, and those differences are covered
+      in later sections.
+    </p>
+    <p>
+      For those intimately familiar with Lucene, it will be helpful to know that
+      <span class="Keyword">XTF</span> makes extensive use of Lucene's
+      "span" queries, to enable the exact identification of particular matches
+      within a large document. XTF's implementation of spans includes enhancements
+      that calculate the score of each span in addition to its "slop".
+    </p>
+    <p>
+      Queries on the contents of an <span class="Keyword">XTF</span> index
+      are scored using an enhanced version of Lucene's standard formula. 
+      The structure of the scoring formula is fixed, but 
+      one can override the calculation of the various factors by providing a Java 
+      implementation of the <b>Similarity</b> interface. 
+    </p>
     <div class="IndentL"> 
       <p class="Heading3">Plain English</p>
       <ul>
+        <li> If a term appears many times in a field or chunk of a document, 
+          the match will rank 
+          higher; if it only appears a few times, the match will rank lower. 
+        </li>
         <li> Rare terms are given more weight than common terms. </li>
-        <li> Any section of text in the document can be boosted at index time; 
+        <li> Any field or section of text in the document can be boosted at index time; 
           hits in boosted sections will rank higher. </li>
         <li> For <b>AND</b> and <b>NEAR</b> queries, more exact matches will rank 
           higher than sloppy matches. That is, a hit where the terms appear in 
           order without intervening words will rank higher than an out-of-order 
           match with many other words interspersed. </li>
-        <li> A high-ranking hit dampens (reduces the score) of nearby hits. The 
-          closer the nearby hit, the lower its score. </li>
-        <li> If a query has several terms, hits that match many of the terms will 
+        <li> Matches in short fields are ranked higher than those in long fields. 
+        </li>
+        <li> In an <b>OR</b> query, hits that match many of the terms will 
           rank higher than those that only match a few. </li>
       </ul>
-      A note on dampening: consider a query on a single term that has many hits 
-      in a document, many of them close together. Since it's a single term, all 
-      the hits will score equally, and so will be ranked in document order. Unfortunately, 
-      the effect is that the snippets for the highest ranked hits will overlap. 
-      By adding the dampening factor, a high scoring hit will dampen others around 
-      it; thus the highest ranking hits will seldom have overlapping snippets. 
+      A note on dampening: very old versions of XTF used "dampening" around
+      high-ranking hits to avoid overlapping snippets. However, more recent
+      versions automatically avoid overlapping hits regardless of their
+      scores, so dampening is no longer performed.
       <p class="Heading3">Mathematical Details</p>
       <br/>
-      For a given query <b>q</b>, the score for a match <b>m</b> in text chunk 
-      <b>c</b>, consisting of terms <b>t</b>, is calculated as follows: 
+      For a given query <b>q</b>, the score for a matching span <b>s</b> consisting of terms <b>t</b>, 
+      in field
+      (or text chunk) <b>f</b> of document <b>d</b>, is calculated as follows: 
       <div class="IndentL"> 
         <table cellpadding="0" cellspacing="0" border="0">
           <tr> 
-            <td valign="middle" align="right" rowspan="2">textScore(q,m) =<br/>
+            <td valign="middle" align="right" rowspan="2">spanScore(q,s) = 
+              sloppyFreq(s) * boost(f,d) * lengthNorm(f,d) * coord(q,s) * <br/>
             </td>
-            <td valign="middle" align="center"> <big><big><big><big><big>&Sigma;</big></big></big></big></big></td>
-            <td valign="middle"><small> idf(t) * boost(c) * sloppyFreq(m.slop) 
-              * coord(q,m) </small></td>
+            <td valign="middle" align="center"> <big><big><big><big>&Sigma;</big></big></big></big></td>
+            <td valign="middle"><small> idf(t) </small></td>
           </tr>
           <tr> 
-            <td valign="top" align="right"> <small>t in m</small> </td>
+            <td valign="top" align="right"> <small>t in s</small> </td>
           </tr>
         </table>
       </div>
       where 
       <ul>
-        <li> <b>idf(t)</b> is a factor based on the number of text chunks containing 
-          <b>t</b>. Terms that occur in fewer chunks are better indicators of 
-          topic, so <b>idf</b> is high when <b>t</b> appears in few chunks, and 
-          low when <b>t</b> appears in many chunks. Default implementation: log(number 
-          of chunks in index / number of chunks containing <b>t</b>) </li>
-        <li> <b>boost(c)</b> is the boost factor (if any) applied to the section 
-          of text containing <b>c</b>. </li>
-        <li> <b>sloppyFreq(m.slop)</b> is a factor that decreases as the sloppiness 
-          of the match increases. The effect is to favor more exact matches. Default 
-          implementation: 1 / (slop + 1) </li>
-        <li> <b>coord(q,d)</b> is a factor based on the fraction of all query 
-          terms that this field contains. Documents whose field contents match 
-          more terms in the query will be ranked higher. Default implementation: 
+        <li> <b>sloppyFreq(s)</b> is a factor that decreases as the 
+          <a href="#Documents_Proximity">sloppiness</a> 
+          of the matching span increases. The effect is to favor more exact matches. Default 
+          implementation: 1 / (slop + 1). In the special case of <b>OR</b> queries, or
+          <b>AND</b> queries where proximity has been disabled, slop
+          is ignored and 1.0 is used instead.</li>
+        <li> <b>boost(f,d)</b> is the boost factor (if any) applied to the field
+          (or section of text) containing the match.</li>
+        <li> <b>lengthNorm(f,d)</b> is a factor that decreases as the 
+          amount of text in the field or text chunk increases,
+          since matches in longer fields are generally less precise. Default implementation: 
+          square root of the number of terms in the field/chunk. </li>
+        <li> <b>coord(q,s)</b> is a factor based on the fraction of all query 
+          terms that are matched by the span. Spans with a higher ratio of matching
+          terms will be ranked higher.
+          Default implementation: 
           number of terms matched / number of terms in query. </li>
+        <li> <b>idf(t)</b> is a factor based on the number of documents or
+          text chunks containing 
+          <b>t</b>. Terms that occur in fewer documents/chunks are better indicators of 
+          topic, so <b>idf</b> is high when <b>t</b> appears seldom in the index, and 
+          low when <b>t</b> appears often in the index. Default implementation: log(number 
+          of docs/chunks in index / number of docs/chunks containing <b>t</b>) </li>
+      </ul>
+    </div>
+    <p class="Heading2">Text Hit Scoring<a name="Scoring_Text"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    The full text of a document might contain thousands of individual matching
+    spans, each of which will be scored according to the method above. How are
+    these scores combined into a single score for the text?
+    <div class="IndentL"> 
+      <p class="Heading3">Plain English</p>
+      <ul>
+        <li> Documents with more matches will score higher than those with few matches.</li>
+        <li> Matches in short texts are ranked higher than those in long texts. 
+        </li>
+      </ul>
+      <p class="Heading3">Mathematical Details</p>
+      <br/>
+      For a given query <b>q</b>, the score for all matching spans <b>s</b> in all
+      text chunks of document
+      <b>d</b> is calculated as follows: 
+      <div class="IndentL"> 
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tr> 
+            <td valign="middle" align="right" rowspan="2">textScore(q,d) = lengthNorm(d,text) *
+              tf( <br/>
+            </td>
+            <td valign="middle" align="center"> <big><big><big><big>&Sigma;</big></big></big></big></td>
+            <td valign="middle"><small> spanScore(q,s)</small></td>
+            <td valign="middle" align="right" rowspan="2"> &nbsp;) <br/></td>
+          </tr>
+          <tr> 
+            <td valign="top" align="right"> <small>s in d</small> </td>
+          </tr>
+        </table>
+      </div>
+      where 
+      <ul>
+        <li> <b>lengthNorm(d,text)</b> is a factor that decreases as the 
+          amount of text in the document increases, since matches 
+          in longer texts are generally less precise. Default implementation: 
+          square root of the number of chunks in the document. </li>
+        <li> <b>tf(...)</b> is a score factor that helps to equalize the scoring
+          between documents with many matches and those with few matches.
+          Default implementation: 
+          square root of the total score of the matches in <b>d</b>. </li>
       </ul>
     </div>
     <p class="Heading2">Meta-data Hit Scoring<a name="Scoring_Meta"></a></p>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
-    Queries on meta-data fields use Lucene's built-in scoring formula. While the 
-    structure of the formula is fixed, the method of computing each factor can 
-    be overridden if desired, by providing a Java implementation of Lucene's <b>XtfSimilarity</b> 
-    interface. 
+    The scores for multiple hits within a single meta-data field are
+    combined in a similar manner to text hits, above.
     <div class="IndentL"> 
       <p class="Heading3">Plain English</p>
       <ul>
-        <li> If a term appears many times in a document, the document will rank 
-          higher; if it only appears a few times, the document will rank lower. 
-        </li>
-        <li> Rare terms are given more weight than common terms. </li>
-        <li> Any document's fields can be boosted at index time; hits in boosted 
-          documents will rank higher. </li>
+        <li> Fields with more matches will score higher than those with few matches.</li>
         <li> Matches in short fields are ranked higher than those in long fields. 
         </li>
-        <li> If a query has several terms, hits that match many of the terms will 
-          rank higher than those that only match a few. </li>
       </ul>
       <p class="Heading3">Mathematical Details</p>
       <br/>
-      For a given query <b>q</b>, the score for a specific document <b>d</b> is 
-      calculated as the sum of scores for all the terms <b>t</b> (in all fields) 
-      in the query. Here's the full formula: 
+      For a given query <b>q</b>, the score for all matching spans <b>s</b> in field
+      <b>f</b> of document
+      <b>d</b> is calculated as follows: 
       <div class="IndentL"> 
         <table cellpadding="0" cellspacing="0" border="0">
           <tr> 
-            <td valign="middle" align="right" rowspan="2">metaScore(q,d) =<br/>
+            <td valign="middle" align="right" rowspan="2">metaScore(q,d,f) = lengthNorm(d,f) *
+              tf(<br/>
             </td>
-            <td valign="middle" align="center"> <big><big><big><big><big>&Sigma;</big></big></big></big></big></td>
-            <td valign="middle"><small> tf(t in d) * idf(t) * boost(t.field in 
-              d) * lengthNorm(t.field in d) * coord(q,d) </small></td>
+            <td valign="middle" align="center"> <big><big><big><big>&Sigma;</big></big></big></big></td>
+            <td valign="middle"><small> spanScore(q,s)</small></td>
+            <td valign="middle" align="right" rowspan="2"> &nbsp;) <br/></td>
           </tr>
           <tr> 
-            <td valign="top" align="right"> <small>t in q</small> </td>
+            <td valign="top" align="right"> <small>s in d.f</small> </td>
           </tr>
         </table>
       </div>
       where 
       <ul>
-        <li> <b>tf(t in d)</b> is a score factor based on the term's frequency 
-          in the document. Repeated terms usually indicate the topic of the field, 
-          so when the frequency is high, <b>tf</b> will be high. Default implementation: 
-          square root of the frequency of <b>t</b> in <b>d</b>. </li>
-        <li> <b>idf(t)</b> is a factor based on the number of documents containing 
-          <b>t</b> in the field. Terms that occur in fewer documents are better 
-          indicators of topic, so <b>idf</b> is high when <b>t</b> appears in 
-          few documents, and low when <b>t</b> appears in many documents. Default 
-          implementation: log(number of documents in index / number of docs containing 
-          <b>t</b>) </li>
-        <li> <b>boost(t.field in d)</b> is the boost factor (if any) applied to 
-          this field of the document. </li>
-        <li> <b>lengthNorm(t.field in d)</b> is a factor that decreases as the 
-          number of terms in the field of the document increases, since matches 
+        <li> <b>lengthNorm(d,f)</b> is a factor that decreases as the 
+          length of the field increases, since matches 
           in longer fields are generally less precise. Default implementation: 
           square root of the number of terms in the field. </li>
-        <li> <b>coord(q,d)</b> is a factor based on the fraction of all query 
-          terms that this field contains. Documents whose field contents match 
-          more terms in the query will be ranked higher. Default implementation: 
-          number of terms matched / number of terms in query. </li>
+        <li> <b>tf(...)</b> is a score factor that helps to equalize the scoring
+          between fields with many matches and those with few matches.
+          Default implementation: 
+          square root of the total score of the matches in <b>d.f</b>. </li>
       </ul>
     </div>
     <p class="Heading2">Combined Document Score<a name="Scoring_Documents"></a></p>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
     The final type of scoring <b><i>XTF</i></b> performs is to combine the scores 
-    of all text hits with a document with that document's meta-data score, to 
-    form the final score for that document. The structure of this computation 
+    of all text hits with a document with that document's meta-data scores, to 
+    form the final score for that document. Again, the structure of this computation 
     is fixed, but the calculations can be overridden by providing a Java implementation 
-    of the <b> XtfSimilarity</b> interface. 
+    of the <b> Similarity</b> interface. 
     <div class="IndentL"> 
       <p class="Heading3">Plain English</p>
       <ul>
         <li> A document's score is based on the sum of all the text hits within 
-          it, plus its meta-data score. </li>
-        <li> A factor is applied so that a document with a small number of high-scoring 
-          text hits will rank higher than one with a somewhat larger number of 
-          low- scoring text hits. </li>
+          it, plus its meta-data field scores. </li>
       </ul>
       <p class="Heading3">Mathematical Details</p>
       <br/>
-      For a given query <b>q</b> consisting of a meta-data query <b>qm</b> and 
-      a text query <b>qt</b>, the score for a specific document <b>d</b> containing 
-      matches <b>m</b> is as follows: 
+      For a given query <b>q</b> consisting of meta-data queries <b>qm<sub>f</sub></b> on fields <b>f</b>, and 
+      a text query <b>qt</b>, the score for a specific document <b>d</b> is as follows: 
       <div class="IndentL"> 
         <table cellpadding="0" cellspacing="0" border="0">
           <tr> 
-            <td valign="middle" align="right" rowspan="2"> docScore(q,d) = metaScore(qm,d) 
-              + sqrt(<br/>
+            <td valign="middle" align="right" rowspan="2"> docScore(q,d) = textScore(qt,d) +
+              <br/>
             </td>
-            <td valign="middle" align="center"> <big><big><big><big><big>&Sigma;</big></big></big></big></big></td>
-            <td valign="middle"><small> textScore(qt,m) </small></td>
-            <td valign="middle" align="right" rowspan="2">&nbsp;)</td>
+            <td valign="middle" align="center"> <big><big><big><big>&Sigma;</big></big></big></big></td>
+            <td valign="middle"><small> metaScore(qm<sub>f</sub>,d,f) </small></td>
           </tr>
           <tr> 
-            <td valign="top" align="right"> <small>m in qt</small> </td>
+            <td valign="top" align="right"> <small>f in d</small> </td>
           </tr>
         </table>
       </div>
