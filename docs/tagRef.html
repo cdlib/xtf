@@ -72,7 +72,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       </ul>
       <br/>
     </li>
-    <li class="ListItem"><b><font size="+1"><a href="#Common_Ref">Common crossQuery/dynaXML 
+    <li class="ListItem"><b><font size="+1"><a href="#Common_Ref">Common crossQ  uery/dynaXML 
       Stylesheet Reference</a></font></b><br/>
       <br/>
       <ul class="NoBullets">
@@ -1363,12 +1363,13 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
        <i>{</i>startDoc        = "<span class="MacroCode">FirstDocToReturn</span>"<i>}</i>
        <i>{</i>maxDocs         = "<span class="MacroCode">MaxDocsToReturn</span>"<i>}</i>
        <i>{</i>termLimit       = "<span class="MacroCode">MaxTermsToAllow</span>"<i>}</i>
-       {workLimit       = "<span class="MacroCode">MaxWorkToAllow</span>"<i>}</i>
+       <i>{</i>workLimit       = "<span class="MacroCode">MaxWorkToAllow</span>"<i>}</i>
        <i>{</i>maxContext      = "<span class="MacroCode">MaxContextChars</span>"<i>}</i>
-       <i>{</i>maxSnippets     = "<span class="MacroCode">SnippetsToOutput</span>"<i>}
-       {</i>termMode        = &quot;<span class="MacroCode">TermMarkMode</span>&quot;<i>}</i><i>
-       {</i>field           = &quot;<span class="MacroCode">FieldToSearch</span>&quot;<i>}</i><i></i>
-<i>       {</i>normalizeScores = &quot;<span class="MacroCode">TrueOrFalse</span>&quot;<i>}</i><i></i>&gt;
+       <i>{</i>maxSnippets     = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
+       <i>{</i>termMode        = &quot;<span class="MacroCode">TermMarkMode</span>&quot;<i>}</i>
+       <i>{</i>field           = &quot;<span class="MacroCode">FieldToSearch</span>&quot;<i>}</i>
+       <i>{</i>normalizeScores = &quot;<span class="MacroCode">TrueOrFalse</span>&quot;<i>}</i>
+       <i>{</i>explainScores   = &quot;<span class="MacroCode">TrueOrFalse</span>&quot;<i>}</i>&gt;
 
     <span class="MacroCode">QueryElement</span>
 
@@ -1401,7 +1402,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 </td>
                 <td valign="baseline"> 
                   
-              <p><span class="BaseStyle"> is an optional attribute specifying 
+              <span class="BaseStyle"> is an optional attribute specifying 
                 a list of meta fields by which to sort the results. The list should 
                 consist of a quoted string containing one or more meta-field names, 
                 separated by commas. If multiple meta-fields are specified, the 
@@ -1411,7 +1412,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 or a minus sign (<b class="Code">-</b>) to indicate whether the 
                 results for that field should be sorted in ascending or descending 
                 order. If no plus or minus sign is specified for a meta-field, 
-                then the results are sorted in ascending order by default.</span></p>
+                then the results are sorted in ascending order by default.</span><br/>
                   <p>If this attribute not specified, documents are by default 
                     sorted in order of decreasing score (so the most &quot;relevant&quot; 
                     documents are first.)</p>
@@ -1491,7 +1492,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <td align="right" valign="top" class="Code"> maxSnippets="<span class="MacroCode">SnippetsToOutput</span>" 
                 </td>
                 <td valign="baseline"> 
-                  <p><span class="BaseStyle">identifies the number of snippets 
+                  <span class="BaseStyle">identifies the number of snippets 
                     to pass on to the <b>Result Formatter</b> stylesheet for display. 
                     A snippet is defined as the matching text found in a document 
                     for a particular query, along with some additional text around 
@@ -1500,7 +1501,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     <br/>
                     <br/>
                     If not specified this attribute defaults to 3, meaning snippets 
-                    for the top three matches for a document are returned. </span></p>
+                    for the top three matches for a document are returned. </span><br/>
                   <p><span class="BaseStyle">Note that -1 is a special value. 
                     If<span class="Code"> maxSnippets </span>is set to -1, it 
                     requests that <i>all </i>snippets for a document be returned.</span></p>
@@ -1521,9 +1522,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code">termMode=&quot;<span class="MacroCode">TermMarkMode</span>&quot;</td>
                 <td valign="baseline"> 
-                  <p>is an optional parameter that specifies how terms should 
+                  is an optional parameter that specifies how terms should 
                     be marked in the search results. Valid values for this option 
-                    are:</p>
+                    are:<br/>
                   <table border="0" cellspacing="12" cellpadding="0" align="center">
                     <tr> 
                       <td align="right" class="Code" valign="baseline">&quot;none&quot;</td>
@@ -1559,11 +1560,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <td align="right" valign="top" class="Code"> field=&quot;<span class="MacroCode">FieldToSearch</span>&quot; 
                 </td>
                 <td valign="baseline"> 
-                  <p>is an optional parameter that identifies which field in the 
+                  is an optional parameter that identifies which field in the 
                     index to search. Normally, this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
-                    or <span class="Code">subject</span>.</p>
+                    or <span class="Code">subject</span>.<br/>
                   <p>Like with the <span class="Code">maxSnippets</span> attribute, 
                     the <span class="Code">field</span> attribute may also appear 
                     in tags within the <span class="Code">&lt;query...&gt;</span>. 
@@ -1586,7 +1587,39 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                   false</span>, the scores will be raw floating point numbers. 
                   The default,<span class="Code"> true </span>or<span class="Code"> 
                   yes</span>, will normalize scores to the range of 0..100, and 
-                  round them to whole numbers.</td>
+                  round them to whole numbers.<br/>
+                  <br/>
+                  In the default XTF stylesheets,
+                  one can simply add <span class="Code">&amp;normalizeScores=1</span> to the
+                  query URL, and the default <b>Query Parser</b> will set this
+                  attribute for you.
+                </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code">explainScores=&quot;<span class="MacroCode">TrueOrFalse</span>&quot;</td>
+                <td valign="baseline">is an optional parameter that causes XTF to
+                  output a structured, detailed explanation of how the score for
+                  each document was calculated. This means that each 
+                  <a href="#crossQuery_ResultFormatter_DocHit">Document Hit Tag</a>
+                  in the query result will contain an 
+                  <a href="#crossQuery_ResultFormatter_Explanation">Score Explanation Tag</a>, which
+                  in turn contains other 
+                  <a href="#crossQuery_ResultFormatter_Explanation">Score Explanation Tags</a> describing how
+                  the components of that score.<br/>
+                  <br/>
+                  In the default XTF stylesheets,
+                  one can simply add <span class="Code">&amp;explainScores=1</span> to the
+                  query URL, and the default <b>Query Parser</b> will set 
+                  this attribute for you.<br/>
+                  <br/>
+                  This is an advanced feature, as XTF's scoring is fairly complex and can
+                  be confusing to those just starting out. For an overview of how XTF
+                  scores document hits, see the Scoring section of the document
+                  <a href="underHood.html#Scoring">XTF Under the Hood</a>.<br/>
+                  <p class="Note">Note that if you enable this attribute, you should generally disable
+                  <span class="Code">normalizeScores</span> above, as the score explanations
+                    describe the non-normalized score for each document.</p>
+                </td>
               </tr>
             </table>
           </div>
@@ -1660,11 +1693,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <td align="right" valign="top" class="Code"> 
                   field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline"> <span class="BaseStyle"> </span> 
-                  <p>is an optional attribute that identifies which field in the 
+                  is an optional attribute that identifies which field in the 
                     index to search. Normally, this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
-                    or <span class="Code">subject</span>.</p>
+                    or <span class="Code">subject</span>.<br/>
                   <p>It should be mentioned that the field name specified by a 
                     <span class="Code">&lt;term...&gt;</span> tag<span class="Keyword"> must</span> 
                     match the field name set by any tags that contain it. Otherwise, 
@@ -1674,7 +1707,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
                 <td valign="baseline"> 
-                  <p><span class="BaseStyle">identifies the number of snippets 
+                  <span class="BaseStyle">identifies the number of snippets 
                     to pass on to the <b>Result Formatter</b> stylesheet for display. 
                     A snippet is defined as the matching text found in a document 
                     for a particular query, along with some additional text around 
@@ -1685,7 +1718,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     If not specified this attribute defaults to 3, meaning snippets 
                     for the top three matches for a document are returned. Also, 
                     this attribute can be set to -1, meaning all the snippets 
-                    for a document are returned. </span></p>
+                    for a document are returned. </span><br/>
                   <p>As with the <span class="Code">field</span> attribute, the 
                     <span class="Code">maxSnippets</span> specified by a &lt;<span class="Code">term...&gt;</span> 
                     tag<span class="Keyword"> must</span> match the value set by any tags that 
@@ -1695,11 +1728,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                 <td valign="baseline"> 
-                  <p>is an optional attribute that specifies a relevance boost 
+                  is an optional attribute that specifies a relevance boost 
                     multiplier for this term in the query. Boost values higher 
                     than 1.0 increase the relevance of a term, while boost values 
                     between 0.0 and 1.0 decrease the relevance of a term. Boost 
-                    values less than zero will generate an error.</p>
+                    values less than zero will generate an error.<br/>
                   </td>
               </tr>
             </table>
@@ -1753,11 +1786,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <td width="16%" align="right" valign="top" class="Code" height="224"> 
                   field="<span class="MacroCode">FieldName</span>"</td>
                 <td height="224" valign="baseline"> <span class="BaseStyle"> </span> 
-                  <p>is an optional attribute that identifies which field in the 
+                  is an optional attribute that identifies which field in the 
                     index to search. Normally, this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
-                    or <span class="Code">subject</span>.</p>
+                    or <span class="Code">subject</span>.<br/>
                   <p>It should be mentioned that the field name specified by a 
                     <span class="Code">&lt;phrase...&gt;</span> tag<span class="Keyword"> must</span> 
                     match the field name set by any tags that contain it. Otherwise, 
@@ -1778,7 +1811,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
                 <td valign="baseline"> 
-                  <p><span class="BaseStyle">identifies the number of snippets 
+                  <span class="BaseStyle">identifies the number of snippets 
                     to pass on to the <b>Result Formatter</b> stylesheet for display. 
                     A snippet is defined as the matching text found in a document 
                     for a particular query, along with some additional text around 
@@ -1789,7 +1822,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     If not specified this attribute defaults to 3, meaning snippets 
                     for the top three matches for a document are returned. Also, 
                     this attribute can be set to -1, meaning all the snippets 
-                    for a document are returned. </span></p>
+                    for a document are returned. </span><br/>
                   <p>As with the <span class="Code">field</span> attribute, any 
                     <span class="Code">maxSnippets</span> value set by the &lt;<span class="Code">phrase...&gt;</span> 
                     tag<span class="Keyword"> must</span> match the value set by any tags that 
@@ -1811,11 +1844,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                 <td valign="baseline"> 
-                  <p>is an optional attribute that specifies a relevance boost 
+                  is an optional attribute that specifies a relevance boost 
                     multiplier for this phrase in the query. Boost values higher 
                     than 1.0 increase the relevance of a phrase, while boost values 
                     between 0.0 and 1.0 decrease the relevance of a phrase. Boost 
-                    values less than zero will generate an error.</p>
+                    values less than zero will generate an error.<br/>
                   <p>Note that boost values multiply. That is, if tags within 
                     a <span class="Code">&lt;phrase...&gt;</span> tag have boost 
                     attributes, their individual boost values will be multiplied 
@@ -1876,10 +1909,10 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <td width="16%" align="right" valign="top" class="Code" height="224"> 
                   field="<span class="MacroCode">FieldName</span>"</td>
                 <td height="224" valign="baseline"> <span class="BaseStyle"> </span> 
-                  <p>is an optional attribute that identifies which field in the 
+                  is an optional attribute that identifies which field in the 
                     index to search. Normally, this attribute is set to the name 
                     of a meta field such as <span class="Code">author</span> or 
-                    <span class="Code">subject</span>. It may not be set to <span class="Code">text</span>.</p>
+                    <span class="Code">subject</span>. It may not be set to <span class="Code">text</span>.<br/>
                   <p>It should be mentioned that the field name specified by a 
                     <span class="Code">&lt;exact...&gt;</span> tag<span class="Keyword"> must</span> 
                     match the field name set by any tags that contain it. Otherwise, 
@@ -1900,7 +1933,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
                 <td valign="baseline"> 
-                  <p><span class="BaseStyle">identifies the number of snippets 
+                  <span class="BaseStyle">identifies the number of snippets 
                     to pass on to the <b>Result Formatter</b> stylesheet for display. 
                     A snippet is defined as the matching text found in a document 
                     for a particular query, along with some additional text around 
@@ -1911,7 +1944,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     If not specified this attribute defaults to 3, meaning snippets 
                     for the top three matches for a document are returned. Also, 
                     this attribute can be set to -1, meaning all the snippets 
-                    for a document are returned. </span></p>
+                    for a document are returned. </span><br/>
                   <p>As with the <span class="Code">field</span> attribute, any 
                     <span class="Code">maxSnippets</span> value set by the &lt;<span class="Code">exact...&gt;</span> 
                     tag<span class="Keyword"> must</span> match the value set by any tags that 
@@ -1933,11 +1966,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td width="16%" align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                 <td valign="baseline"> 
-                  <p>is an optional attribute that specifies a relevance boost 
+                  is an optional attribute that specifies a relevance boost 
                     multiplier for this phrase in the query. Boost values higher 
                     than 1.0 increase the relevance of a phrase, while boost values 
                     between 0.0 and 1.0 decrease the relevance of a phrase. Boost 
-                    values less than zero will generate an error.</p>
+                    values less than zero will generate an error.<br/>
                   <p>Note that boost values multiply. That is, if tags within 
                     an <span class="Code">&lt;exact...&gt;</span> tag have boost 
                     attributes, their individual boost values will be multiplied 
@@ -1986,9 +2019,10 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <br/>
           <div class="IndentLR"> 
             <pre class="Code">&lt;and <i>{</i>field       = "<span class="MacroCode">FieldName</span>"<i>}</i>
-     <i>{</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
-     <i>{</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
-
+     <i>{</i>maxSnippets  = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
+     <i>{</i>boost        = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
+     <i>{</i>useProximity = "<span class="MacroCode">YesOrNo</span>"<i>}</i>&gt;
+    
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
     <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
       …
@@ -2004,11 +2038,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <td align="right" valign="top" class="Code"> 
                   field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline"> <span class="BaseStyle"> </span> 
-                  <p>is an optional attribute that identifies which field in the 
+                  is an optional attribute that identifies which field in the 
                     index to search. Normally, this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
-                    or <span class="Code">subject</span>.</p>
+                    or <span class="Code">subject</span>.<br/>
                   <p>It should be mentioned that if the <span class="Code">field</span> 
                     attribute appears in any tags outside it, the field name in 
                     the <span class="Code">&lt;and...&gt;</span> tag <span class="Keyword">must</span> 
@@ -2025,7 +2059,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
                 <td valign="baseline"> 
-                  <p><span class="BaseStyle">identifies the number of snippets 
+                  <span class="BaseStyle">identifies the number of snippets 
                     to pass on to the <b>Result Formatter</b> stylesheet for display. 
                     A snippet is defined as the matching text found in a document 
                     for a particular query, along with some additional text around 
@@ -2036,7 +2070,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     If not specified this attribute defaults to 3, meaning snippets 
                     for the top three matches for a document are returned. Also, 
                     this attribute can be set to -1, meaning all the snippets 
-                    for a document are returned. </span></p>
+                    for a document are returned. </span><br/>
                   
               <p>As with the <span class="Code">field</span> attribute, if the 
                 <span class="Code">maxSnippets</span> attribute appears in any 
@@ -2056,16 +2090,36 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                 <td valign="baseline"> 
-                  <p>is an optional attribute that specifies a relevance boost 
+                  is an optional attribute that specifies a relevance boost 
                     multiplier for this clause in the query. Boost values higher 
                     than 1.0 increase the relevance of a clause, while boost values 
                     between 0.0 and 1.0 decrease the relevance of a clause. Boost 
-                    values less than zero will generate an error.</p>
+                    values less than zero will generate an error.<br/>
                   <p>Note that boost values multiply. That is, if tags within 
                     an <span class="Code">&lt;and...&gt;</span> tag have boost 
                     attributes, their individual boost values will be multiplied 
                     by the boost set for the containing <span class="Code">&lt;and...&gt;</span> 
                     tag.</p>
+                </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code"><i></i>useProxmity="<span class="MacroCode">YesOrNo</span>"<i></i></td>
+                <td> 
+                  is an optional attribute that specifies whether the AND query should
+                  take the proxmity of terms into account. Generally it's best to leave
+                  this on (the default) as it results in higher quality results for the
+                  user. However, turning it off can increase query processing speed, as
+                  the <span class="Keyword">Text Engine</span> will have less work to
+                  do to calculate which documents match the query.
+                  <br/>
+                  <p>If not specified, this attribute defaults to
+                  <span class="MacroCode">Yes</span>, that is, proximity will be
+                  taken into account.</p>
+                  <p>Note that if proxmity processing is turned off, individual text
+                    hits within document text and meta-data fields will <i>not</i> be
+                    highlighted, and scores for matching documents will be somewhat
+                    different.
+                  </p>
                 </td>
               </tr>
             </table>
@@ -2110,12 +2164,12 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code"> field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline"> <span class="BaseStyle"> </span> 
-                  <p>is an optional attribute that identifies which field 
+                  is an optional attribute that identifies which field 
                     in the index to search. Normally, this attribute is set 
                     to <span class="Code">text</span> to indicate that the 
                     main text of the document should be searched. It can also 
                     be set to the name of a meta field such as <span class="Code">author</span> 
-                    or <span class="Code">subject</span>.</p>
+                    or <span class="Code">subject</span>.<br/>
                   <p>It should be mentioned that if the <span class="Code">field</span> 
                     attribute appears in any tags outside it, the field name in 
                     the <span class="Code">&lt;or...&gt;</span> tag <span class="Keyword">must</span> 
@@ -2132,7 +2186,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
                 <td valign="baseline"> 
-                  <p><span class="BaseStyle">identifies the number of snippets 
+                  <span class="BaseStyle">identifies the number of snippets 
                     to pass on to the <b>Result Formatter</b> stylesheet for 
                     display. A snippet is defined as the matching text found 
                     in a document for a particular query, along with some 
@@ -2143,7 +2197,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     If not specified this attribute defaults to 3, meaning 
                     snippets for the top three matches for a document are 
                     returned. Also, this attribute can be set to -1, meaning 
-                    all the snippets for a document are returned. </span></p>
+                    all the snippets for a document are returned. </span><br/>
                   
               <p>As with the <span class="Code">field</span> attribute, if the 
                 <span class="Code">maxSnippets</span> attribute appears in any 
@@ -2164,11 +2218,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                  <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                  <td valign="baseline"> 
                       
-                  <p>is an optional attribute that specifies a relevance boost 
+                  is an optional attribute that specifies a relevance boost 
                     multiplier for this clause in the query. Boost values higher 
                     than 1.0 increase the relevance of a clause, while boost values 
                     between 0.0 and 1.0 decrease the relevance of a clause. Boost 
-                    values less than zero will generate an error.</p>
+                    values less than zero will generate an error.<br/>
                       
                   <p>Note that boost values multiply. That is, if tags within 
                     an <span class="Code">&lt;or...&gt;</span> tag have boost 
@@ -2217,12 +2271,12 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code"> field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline"> <span class="BaseStyle"> </span> 
-                  <p>is an optional attribute that identifies which field 
+                  is an optional attribute that identifies which field 
                     in the index to search. Normally, this attribute is set 
                     to <span class="Code">text</span> to indicate that the 
                     main text of the document should be searched. It can also 
                     be set to the name of a meta field such as <span class="Code">author</span> 
-                    or <span class="Code">subject</span>.</p>
+                    or <span class="Code">subject</span>.<br/>
                   <p>It should be mentioned that if the <span class="Code">field</span> 
                     attribute appears in any tags outside it, the field name in 
                     the <span class="Code">&lt;not...&gt;</span> tag <span class="Keyword">must</span> 
@@ -2239,7 +2293,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
                 <td valign="baseline"> 
-                  <p><span class="BaseStyle">identifies the number of snippets 
+                  <span class="BaseStyle">identifies the number of snippets 
                     to pass on to the <b>Result Formatter</b> stylesheet for 
                     display. A snippet is defined as the matching text found 
                     in a document for a particular query, along with some 
@@ -2250,7 +2304,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     If not specified this attribute defaults to 3, meaning 
                     snippets for the top three matches for a document are 
                     returned. Also, this attribute can be set to -1, meaning 
-                    all the snippets for a document are returned. </span></p>
+                    all the snippets for a document are returned. </span><br/>
                   
               <p>As with the <span class="Code">field</span> attribute, if the 
                 <span class="Code">maxSnippets</span> attribute appears in any 
@@ -2271,11 +2325,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                  <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                  <td valign="baseline"> 
                       
-                  <p>is an optional attribute that specifies a relevance boost 
+                  is an optional attribute that specifies a relevance boost 
                     multiplier for this clause in the query. Boost values higher 
                     than 1.0 increase the relevance of a clause, while boost values 
                     between 0.0 and 1.0 decrease the relevance of a clause. Boost 
-                    values less than zero will generate an error.</p>
+                    values less than zero will generate an error.<br/>
                       
                   <p>Note that boost values multiply. That is, if tags within 
                     an <span class="Code">&lt;not...&gt;</span> tag have boost 
@@ -2380,11 +2434,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code" height="248"> field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline" height="248"> <span class="BaseStyle"> </span> 
-                  <p>is an optional attribute that identifies which field in the 
+                  is an optional attribute that identifies which field in the 
                     index to search. Normally, this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
-                    or <span class="Code">subject</span>.</p>
+                    or <span class="Code">subject</span>.<br/>
                   <p>It should be mentioned that the field name specified by a 
                     <span class="Code">&lt;near...&gt;</span> tag<span class="Keyword"> must</span> 
                     match the field name set by any tags that contain it. Otherwise, 
@@ -2405,7 +2459,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
                 <td valign="baseline"> 
-                  <p><span class="BaseStyle">identifies the number of snippets 
+                  <span class="BaseStyle">identifies the number of snippets 
                     to pass on to the <b>Result Formatter</b> stylesheet for display. 
                     A snippet is defined as the matching text found in a document 
                     for a particular query, along with some additional text around 
@@ -2416,7 +2470,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     If not specified this attribute defaults to 3, meaning snippets 
                     for the top three matches for a document are returned. Also, 
                     this attribute can be set to -1, meaning all the snippets 
-                    for a document are returned. </span></p>
+                    for a document are returned. </span><br/>
                   
               <p>As with the <span class="Code">field</span> attribute, if the 
                 <span class="Code">maxSnippets</span> attribute appears in any 
@@ -2436,11 +2490,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                 <td valign="baseline"> 
-                  <p>is an optional attribute that specifies a relevance boost 
+                  is an optional attribute that specifies a relevance boost 
                     multiplier for this clause in the query. Boost values higher 
                     than 1.0 increase the relevance of a clause, while boost values 
                     between 0.0 and 1.0 decrease the relevance of a clause. Boost 
-                    values less than zero will generate an error.</p>
+                    values less than zero will generate an error.<br/>
                   <p>Note that boost values multiply. That is, if tags within 
                     an <span class="Code">&lt;near...&gt;</span> tag have boost 
                     attributes, their individual boost values will be multiplied 
@@ -2505,11 +2559,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code" height="94"> field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline" height="94"> <span class="BaseStyle"> </span> 
-                  <p>is an optional attribute that identifies which field in the 
+                  is an optional attribute that identifies which field in the 
                     index to search. Normally, this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
-                    or <span class="Code">subject</span>.</p>
+                    or <span class="Code">subject</span>.<br/>
                   <p>It should be mentioned that if the <span class="Code">field</span> 
                     attribute appears in any tags outside it, the field name in 
                     the <span class="Code">&lt;range...&gt;</span> tag <span class="Keyword">must</span> 
@@ -2525,7 +2579,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code" height="151">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
                 <td valign="baseline" height="151"> 
-                  <p><span class="BaseStyle">identifies the number of snippets 
+                  <span class="BaseStyle">identifies the number of snippets 
                     to pass on to the <b>Result Formatter</b> stylesheet for display. 
                     A snippet is defined as the matching text found in a document 
                     for a particular query, along with some additional text around 
@@ -2536,7 +2590,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                     If not specified this attribute defaults to 3, meaning snippets 
                     for the top three matches for a document are returned. Also, 
                     this attribute can be set to -1, meaning all the snippets 
-                    for a document are returned. </span></p>
+                    for a document are returned. </span><br/>
                   <p>As with the <span class="Code">field</span> attribute, if 
                     the <span class="Code">maxSnippets</span> attribute appears 
                     in any containing tags, the value set for it in the <span class="Code">&lt;range...&gt;</span> 
@@ -2552,11 +2606,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <tr> 
                 <td align="right" valign="top" class="Code" height="44"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
                 <td valign="baseline" height="44"> 
-                  <p>is an optional attribute that specifies a relevance boost 
+                  is an optional attribute that specifies a relevance boost 
                     multiplier for this clause in the query. Boost values higher 
                     than 1.0 increase the relevance of a clause, while boost values 
                     between 0.0 and 1.0 decrease the relevance of a clause. Boost 
-                    values less than zero will generate an error.</p>
+                    values less than zero will generate an error.<br/>
                   </td>
               </tr>
               <tr> 
@@ -2875,10 +2929,37 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 &lt;/term&gt;</pre>
         </div>
         A<span class="Code"> term </span>tag may or may not be inside a<span class="Code"> 
-    <a href="#crossQuery_ResultFormatter_Hit">hit</a> </span>tag, depending on 
-    whether the occurrence of the matched word is within the primary match for 
-    a snippet, or simply another occurrence within the context text. </div>
-</div>
+        <a href="#crossQuery_ResultFormatter_Hit">hit</a> </span>tag, depending on 
+        whether the occurrence of the matched word is within the primary match for 
+        a snippet, or simply another occurrence within the context text. 
+      </div>
+      <br/>
+      <div class="Sample"> <b><u>Score Explanation Tag<a name="crossQuery_ResultFormatter_Explanation"></a></u></b><br/>
+        <!-- - - - - - - - - - - - - - --> This tag 
+        contains an explanation of how the score used to rank a document hit
+        was calculated.
+        This tag has the form: 
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;explanation value="<span class="MacroCode">Score</span>" description="<span class="MacroCode">Description</span>"&gt;
+    &lt;explanation...>
+    &lt;explanation...>
+&lt;/explanation&gt;</pre>
+        </div>
+        where <span class="MacroCode">Score</span> is a floating-point number calculated
+        by XTF, and <span class="MacroCode">Description</span> is a brief, technical
+        description of how it was calculated. To further describe the score, there
+        may be one or more nested <span class="Code">&lt;explanation></span> elements
+        which break down the score's components, and they may have their own nested
+        explanations in turn.<br/>
+        <br/>
+        Score explanations are enabled by setting the 
+        <span class="Code">explainScores</span> attribute of the
+        <a href="#crossQuery_QueryParser_Output_Query">Query Tag</a>
+        produced by the <b>Query Parser</b> stylesheet. In the default XTF stylesheets,
+        one can simply add <span class="Code">&amp;explainScores=1</span> to the
+        query URL.
+      </div>
+    </div>
 <div class="IndentL">
 <p class="Heading2">
     Error Generator<a name="crossQuery_ErrorGen_Tags"></a></p>
@@ -3393,10 +3474,10 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             xtf: </td>
           <td width="10" height="40">&nbsp;</td>
           <td height="40"> 
-            <p><span class="BaseStyle"> is an XTF namespace prefix added to the 
+            <span class="BaseStyle"> is an XTF namespace prefix added to the 
               tag to differentiate it from tags that came came from the original 
               XML document.</span> The namespace URI for this prefix is: <span class="Code">http://cdlib.org/xtf 
-              </span></p>
+              </span><br/>
             </td>
         </tr>
         <tr> 
