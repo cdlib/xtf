@@ -24,7 +24,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         <li><a href="#DebugStep">Debug Step Mode</a></li>
         <li><a href="#DebugRaw">Using "Raw" Mode</a></li>
         <li><a href="#DebugOneFrame">One Frame at a Time</a></li>
-        <li><a href="#DebugMessage">Using <span class="Code">&lt;xsl:message></span></a></li>
+        <li><a href="#DebugMessage">Using &lt;xsl:message></a></li>
         <li><a href="#DebugLogging">Turning on "debug" log mode</a></li>
         <li><a href="#DebugSaxonCmd">Running Saxon from the Command-Line</a></li>
         <li><a href="#DebugSmallSets">Index Subsets of Data</a></li>
@@ -40,12 +40,20 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       </ul>
       <br/>
     </li>
+    <li> <b><a href="#Misc">Miscellaneous</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#MiscLargeCollections">Working with Large Collections</a></li>
+        <li><a href="#MiscAjax">AJAX-style XTF Programming</a></li>
+      </ul>
+      <br/>
+    </li>
   </ul>
   <p class="Heading1">Introduction<a name="Introduction"></a></p>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
   This document is devoted to tips and tricks to help you get results quickly
-  with <span class="Keyword">XTF</span>. These range from debugging strategies,
-  to using XTF with various graphical development tools.
+  with <span class="Keyword">XTF</span>. These include debugging strategies,
+  using XTF with various graphical development tools, and other miscellaneous
+  tips.
   
   <p class="Heading1">Debugging XTF Stylesheets<a name="Debugging"></a></p>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -689,6 +697,115 @@ BUILD SUCCESSFUL</pre>
       workings of XTF, such as document chunking, special fields, and
       markers for field start and end. Depending on your point of view,
       that's part of the fun of exploring the XTF indexes with Luke.
+    </p>
+  </div>
+  
+  <p class="Heading1">Miscellaneous<a name="Misc"></a></p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <p>
+    The following tips and tricks don't fit into the other major categories
+    of this document, so have been collected here.
+  </p>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Working with Large Collections<a name="MiscLargeCollections"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <p>
+      A frequently asked question regarding XTF is whether it can successfully scale
+      to handle very large collections. The answer is "yes", as was shown by a research
+      project undertaken by CDL and funded by a generous grant from the Andrew W. Mellon
+      Foundation: 
+      <a href="http://www.cdlib.org/inside/projects/melvyl_recommender/">The Melvyl Recommender Project</a>.
+      In this project, XTF was shown to work with about 10 million meta-data records, plus
+      over 18,000 full text objects. The total size of the textual part of the input
+      objects was almost 14 gigabytes. So yes, XTF can handle very large collections.
+    </p>
+    <p>
+      There are some hurdles to overcome when indexing and searching such large collections,
+      which are covered briefly below.
+    </p>
+    <ul>
+      <li>
+        Give the indexer plenty of RAM; for the large index above, we found that the
+        default maximum RAM limit of 1 gigabyte was insufficient, and we raised it to
+        4 gigabytes though 2 would have probably been sufficeint. Of course, make sure 
+        that the machine you use has plenty of RAM,
+        at least double that allocated for the indexer. Luckily, RAM is getting
+        cheaper and cheaper nowadays. Of course to handle this amount of RAM, be
+        sure the machine has a 64-bit processor, operating system, and Java runtime.
+        <br/>
+        <br/>
+        To change the amount of RAM allocated to the <span class="Keyword">textIndexer</span>,
+        edit the <span class="Code">bin/textIndexer</span> script, changing the
+        parameter on the last line from <span class="Code">-Xmx1000m</span> to something
+        like <span class="Code">-Xmx4000m</span>.<br/>
+        <br/>
+      </li>
+      <li>
+        Likewise, you'll need plenty of disk space. The final index may end up twice
+        the size of your data set, and during the index process the 
+        <span class="Keyword">textIndexer</span> needs plenty of temporary working
+        space. So plan to have about six times the size of your data set in free
+        hard drive space before starting the indexer.<br/>
+        <br/>
+      </li>
+      <li>
+        It took almost two days of CPU time to index the large collection above.
+        We have successfully experimented indexing subsets of the collection
+        on separate CPUs, and then merging the final index together. If you are
+        interested trying this, check out the <span class="Code">bin/indexMerge</span>
+        script.<br/>
+        <br/>
+      </li>
+      <li>
+        When running <span class="Keyword">crossQuery</span> on the resulting
+        index, make sure that the servlet container also has access to plenty of
+        RAM. You can do this by editing the Tomcat or Resin configuration files
+        or startup script (this varies by servlet container.)<br/>
+        <br/>
+      </li>
+      <li>
+        Be prepared for long initial wait times while <span class="Keyword">crossQuery</span>
+        loads tables from the index. This happens when the query specifies
+        any record sorting besides relevance, and also occurs when faceted browsing
+        is used. Generally, when we restart the servlet container we run through
+        a "warm up" routine that accesses each of these types of pages, because
+        the tables are cached in memory and subsequent access is very fast.
+      </li>
+    </ul>
+    <p>
+      Any additional observations you have with large collections, or additional
+      tips or tricks, would be welcome additions to this documentation.
+    </p>
+  </div>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">AJAX-style XTF Programming<a name="MiscAjax"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <p>
+      A new generation of interfaces is taking the web by storm, and the
+      technology behind them is AJAX &mdash; Asynchronous Java And XML.
+      There's a good reason that AJAX is so popular: it makes user interfaces
+      much more responsive and therefore useful. One might ask, can XTF
+      be used in conjunction with AJAX?
+    </p>
+    <p>
+      Of course it can. In the default stylesheets that come with XTF,
+      we provide one basic example: fetching similar documents. When the
+      user clicks on this link in a set of <span class="Keyword">crossQuery</span>
+      search results, a small piece of JavaScript asynchronously sends
+      a new query to the servlet, fetching documents similar to the one
+      of interest to the user. When the list comes back, it is inserted
+      directly into the original search results page. If you're interested in the
+      details of this interaction, we encourage you to explore the
+      source code, and if you have questions, post them to the XTF
+      Users discussion list.
+    </p>
+    <p>
+      One can think of many more ways to combine AJAX and XTF, including
+      book bag functionality, tagging, and improvements to faceted browse.
+      These are beyond the scope of this document, but we hope that
+      more XTF implementors will explore this area.
     </p>
   </div>
   
