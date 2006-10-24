@@ -72,7 +72,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       </ul>
       <br/>
     </li>
-    <li class="ListItem"><b><font size="+1"><a href="#Common_Ref">Common crossQ  uery/dynaXML 
+    <li class="ListItem"><b><font size="+1"><a href="#Common_Ref">Common crossQuery/dynaXML 
       Stylesheet Reference</a></font></b><br/>
       <br/>
       <ul class="NoBullets">
@@ -165,6 +165,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Snippet">&lt;snippet&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Hit">&lt;hit&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Term">&lt;term&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Explanation">&lt;explanation&gt;</a></span></font></li>
           </ul>
           <br/>
         </li>
@@ -2678,10 +2679,124 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag.</p>
+            <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag.
+          </p>
+        </div><br/>
+        
+        <div class="Sample">
+          <b><u>Facet Query Tag<a name="crossQuery_QueryParser_Output_Facet"></a></u></b><br/>
+          <!-- - - - - - - - - - - - - - --> 
+          This 
+          tag specifies a facet for which to count hits and form groups, and optionally 
+          to gather document hits. This tag has the form: <br/>
+          <br/>
+          <div class="IndentLR"> 
+            <pre class="Code">&lt;facet field               = "<span class="MacroCode">FieldName</span>"
+       <i>{</i>select             = "<span class="MacroCode">GroupsToSelect</span>"<i>}</i>
+       <i>{</i>sortGroupsBy       = "<span class="MacroCode">TotalDocsOrValue</span>"<i>}</i>
+       <i>{</i>sortDocsBy         = "<span class="MacroCode">ListOfMetaFields</span>"<i>}</i> 
+       <i>{</i>includeEmptyGroups = "<span class="MacroCode">YesOrNo</span>"<i>} /&gt;</i></pre>
           </div>
-        <!-- Range Tag --></div>
-      
+          where <br/>
+          <div class="IndentLR"> 
+            <table cellspacing="12" cellpadding="0">
+              <tr> 
+                <td align="right" valign="top" class="Code"> field="<span class="MacroCode">FieldName</span>"</td>
+                <td valign="baseline"> <span class="BaseStyle"> </span> 
+                  is a required attribute that identifies which meta-data field 
+                  in the index for which to count and build groups.
+                  <p>(Note: Meta tags to be used for faceted queries should also have 
+                    an xtf:tokenize=&quot;no&quot; attribute set, or sorting will 
+                    produce unpredictable results.)</p>
+                </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code">select="<span class="MacroCode">GroupsToSelect</span>"</td>
+                <td valign="baseline"> 
+                  is an optional attribute specifying a subset of groups to select 
+                  and return in the query result. For maximum flexibility, this 
+                  specification is made using a special language that resembles 
+                  XPath to some extent. It allows selecting groups by name or position 
+                  in the list, and supports various operations on hierarchical meta-data. 
+                  <p>Some examples:</p>
+                  <pre>   <b>*[1-5]
+       Politics#all
+       **[topChoices]
+       US::Berkeley#all|US::*
+       History#all|**[selected][page(size=5)] </b></pre>
+                  <p>For more information, refer to the <a href="programming.html#Facet_Group_Selection">Group Selection</a> 
+            section of the <b>XTF Programmer's Guide</b>. </p>
+                  <p>If this attribute is not specified, it defaults to: <span class="Code">*</span></p>
+                </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code">sortGroupsBy="<span class="MacroCode">TotalDocsOrValue</span>"</td>
+                <td valign="baseline"> 
+                  is an optional attribute telling XTF the order in which to sort 
+                  groups. If set to &quot;totalDocs&quot;, groups will be sorted 
+                  in decreasing order of the total number of documents per group. 
+                  If set to &quot;value&quot;, groups will be sorted in increasing 
+                  order by the value (i.e. name) of the facet group.
+                  <p>If this attribute is not specified, it defaults to &quot;totalDocs.&quot;</p>
+                </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code"> sortDocsBy="<span class="MacroCode">ListOfMetaFields</span>" 
+                </td>
+                <td valign="baseline"> 
+                  <span class="BaseStyle"> is an optional attribute specifying 
+                  a list of meta fields by which to sort the results. The list should 
+                  consist of a quoted string containing one or more meta-field names, 
+                  separated by commas. If multiple meta-fields are specified, the 
+                  results are sorted first by the leftmost meta-field, then sub-sorted 
+                  by subsequent fields to produce the final output. Optionally, 
+                  each meta-field name can be preceded by a plus sign (<b class="Code">+</b>) 
+                  or a minus sign (<b class="Code">-</b>) to indicate whether the 
+                  results for that field should be sorted in ascending or descending 
+                  order. If no plus or minus sign is specified for a meta-field, 
+                  then the results are sorted in ascending order by default.</span>
+                  <p>If this attribute is not specified, documents are by default 
+                    sorted in order of decreasing score (so the most &quot;relevant&quot; 
+                    documents are first.)</p>
+                  <p class="Note">(Note: Meta tags to be used for sorting should also 
+                    have an xtf:tokenize=&quot;no&quot; attribute set, or sorting 
+                    will produce unpredictable results.)</p>
+                </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code"><i></i>includeEmptyGroups="<span class="MacroCode">YesOrNo</span>"<i></i></td>
+                <td valign="baseline"> 
+                  is an optional attribute that specifies whether to include empty 
+                  groups in the results. If set to &quot;yes&quot;, empty groups 
+                  will be included. If set to &quot;no&quot; they will be excluded.
+                  <p>If this attribute is not specified, it defaults to &quot;no.&quot;</p>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <br/>
+          <p>
+            The <span class="Code">&lt;facet&gt;</span> tag enables counting and grouping 
+            for a single meta-data field. First, XTF scans the index and forms a table 
+            of all the possible values of that field. Then the query is performed 
+            as normal, as each document hit is encountered, XTF looks up that document's 
+            value in the table and increments the count for it. If enabled in the 
+            selection specification, a list of the document hits for each value is 
+            also accumulated.</p>
+          <p>After the counting is completed, XTF sorts them, removes empty groups 
+            if enabled, and then applies the group selection specification (from the<span class="Code"> 
+            select </span>attribute) to decide which groups to send to the <b>Result 
+            Formatter</b> stylesheet. For more information on the selection process, 
+            see the <a href="programming.html#Facet_Group_Selection">Group Selection</a> 
+            section of the <b>XTF Programmer's Guide</b>. The final selected groups
+            will appear within a <a href="#crossQuery_ResultFormatter_Facet">Facet Result</a>
+            tag in the results.</p>
+          <p>Note that only one facet query is allowed per meta-data field. Trying 
+            to specify more than one will result in an error message.
+          </p>
+      </div><br/>
+    </div>
+  
   <!-- Input/Output Tags indent --></div>
     <!-- queryParser Tags indent --> 
     <div class="IndentL"> 
@@ -2708,7 +2823,12 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 </span>
     <span class="MacroCode"><a href="#crossQuery_ResultFormatter_DocHit">DocumentHit</a></span>
     <span class="MacroCode"><a href="#crossQuery_ResultFormatter_DocHit">DocumentHit</a></span>
-        …
+     …
+
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Facet">FacetResult</a></span>  <span class="MacroCode">(if facets were queried)</span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Facet">FacetResult</a></span>
+     …
+            
 &lt;/crossQueryResult&gt;</pre>
         </div>
         where <br/>
@@ -2770,6 +2890,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 
     <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Snippet">Snippet</a></span>
     <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Snippet">Snippet</a></span>
+
+    <i>{</i><span class="MacroCode"><a href="#crossQuery_ResultFormatter_Explanation">ScoreExplanation</a></span><i>}</i>
       …
     
 &lt;/docHit&gt;</pre>
@@ -2935,7 +3057,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       </div>
       <br/>
       <div class="Sample"> <b><u>Score Explanation Tag<a name="crossQuery_ResultFormatter_Explanation"></a></u></b><br/>
-        <!-- - - - - - - - - - - - - - --> This tag 
+        <!-- - - - - - - - - - - - - - --> This optional tag 
         contains an explanation of how the score used to rank a document hit
         was calculated.
         This tag has the form: 
@@ -2958,8 +3080,157 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         produced by the <b>Query Parser</b> stylesheet. In the default XTF stylesheets,
         one can simply add <span class="Code">&amp;explainScores=1</span> to the
         query URL.
+      </div><br/>
+      
+      <!-- Facet Result Tag -->
+      <div class="Sample"><b><u>Facet Result Tag</u></b><a name="crossQuery_ResultFormatter_Facet"></a><br/>
+        This tag identifies and contains the results for counting/grouping on one 
+        facet (or meta-data field). One copy of this tag will be sent into the <b>Result 
+          Formatter</b> for each <a href="#crossQuery_QueryParser_Output_Facet">Facet Query Tag</a><b> </b>specified 
+        in the query. It will appear within a <a href="#crossQuery_ResultFormatter_CrossQRes">Query 
+          Result Tag</a> container. It has the form:<br/>
+        <br/>
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;facet field       = "<span class="MacroCode">FieldName</span>" 
+       totalGroups = &quot;<span class="MacroCode">NumberOfGroups</span>&quot; 
+       totalDocs   = &quot;<span class="MacroCode">NumberOfDocs</span>&quot;&gt;
+      
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Group">GroupResult</a></span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Group">GroupResult</a></span>
+    …
+            
+&lt;/facet&gt;</pre>
+        </div>
+        
+          where<br/>
+        <div class="IndentLR">
+          <br/>
+          <table cellpadding="0" cellspacing="12">
+            <tr> 
+              <td align="right" valign="top" class="Code"> field="<span class="MacroCode">FieldName</span>"</td>
+              <td valign="baseline"> <span class="BaseStyle"> </span> 
+                is the name of the meta-data field for which faceted data is 
+                being reported.
+              </td>
+            </tr>
+            <tr> 
+              <td width="218" align="right" valign="top" class="Code"> totalGroups="<span class="MacroCode">NumberOfGroups</span>" 
+              </td>
+              <td width="1132"> <span class="BaseStyle"> is the number of groups 
+                groups this facet contains (which may be more than are selected 
+                and returned as </span><span class="MacroCode">GroupResults</span>.) 
+                In the case of a hierarchical facet, this is actually a count of 
+                the top-level groups only.</td>
+            </tr>
+            <tr> 
+              <td width="218" align="right" valign="top" class="Code"> totalDocs="<span class="MacroCode">NumberOfDocs</span>" 
+              </td>
+              <td width="1132"> <span class="BaseStyle"> is the number of documents 
+                that had matches for the specified query <i>and</i> had a value 
+                for this facet.</span> </td>
+            </tr>
+          </table>
+        </div>
+        <p> If any groups matched the group selection in the Facet Query Tag, 
+            then one or more <a href="#crossQuery_ResultFormatter_Group">Group Result Tags</a> 
+            will appear as children of the Facet Result Tag. 
+        </p>
+      </div><br/>
+      
+      <div class="Sample"><b><u>Group Result Tag</u></b><a name="crossQuery_ResultFormatter_Group"></a><br/>
+        This tag identifies and contains the results for the count (and possibly 
+        document hits) for a single group within a facet. One copy of this tag will 
+        be sent into the <b>Result Formatter</b> for group selected by the <a href="#crossQuery_QueryParser_Output_Facet">Facet 
+          Query Tag</a><b> </b>specified in the query. The Group Result Tag<b> </b>will 
+        appear within a <a href="#crossQuery_ResultFormatter_Facet">Facet Result Tag</a> container, 
+        or in the case of a hierarchical facet, may appear inside another Group 
+        Result Tag. It has the form:<br/>
+        <br/>
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;group value          = "<span class="MacroCode">GroupValue</span>"
+       rank           = "<span class="MacroCode">GroupSortedRank</span>"
+       totalSubGroups = &quot;<span class="MacroCode">NumOfSubGroups</span>&quot;
+       totalDocs      = &quot;<span class="MacroCode">NumberOfDocs</span>&quot;
+       startDoc       = &quot;<span class="MacroCode">FirstDocNumber</span>&quot;
+       endDoc         = &quot;<span class="MacroCode">EndDocNumber</span>&quot;&gt;
+    
+    <span class="MacroCode">GroupResult</span>   <span class="MacroCode">(if facet is hierarchical)</span>
+    <span class="MacroCode">GroupResult</span>
+       …
+    
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_DocHit">DocumentHit</a></span>  <span class="MacroCode">(if document hits were requested)</span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_DocHit">DocumentHit</a></span>
+       …
+    
+&lt;/group&gt;</pre>
+        </div>
+        where
+        <div class="IndentLR">
+          <table cellpadding="0" cellspacing="12">
+            <tr> 
+              <td align="right" valign="top" class="Code"> value=&quot;<span class="MacroCode">GroupValue</span>"</td>
+              <td valign="baseline"> <span class="BaseStyle"> </span> 
+                is the specific facet value of the group being reported. One 
+                might also think of this as the &quot;name&quot; of the group.
+              </td>
+            </tr>
+            <tr> 
+              <td width="16%" align="right" valign="top" class="Code"> rank="<span class="MacroCode">GroupSortedRank</span>" 
+              </td>
+              <td> <span class="BaseStyle"> is the ordinal ranking of this group 
+                within the set of groups at this level, with 1 being the first in 
+                sort order. Note that this is an absolute ranking for the group 
+                with respect to the entire set, and not a page relative ranking. 
+                For more information about paging groups, see 
+                the <a href="programming.html#Facet_Group_Selection">Group Selection</a> 
+                section of the <b>XTF Programmer's Guide</b>. </span> </td>
+            </tr>
+            <tr> 
+              <td width="218" align="right" valign="top" class="Code"> totalSubGroups="<span class="MacroCode">NumOfSubGroups</span>" 
+              </td>
+              <td width="1132"> <span class="BaseStyle"> is, for a hierarchical 
+                facet, the number of </span>sub-groups this group contains, which 
+                may be more than were actually selected and returned. For a non-hierarchical 
+                facet, this will always be zero.</td>
+            </tr>
+            <tr> 
+              <td width="218" align="right" valign="top" class="Code"> totalDocs="<span class="MacroCode">NumberOfDocs</span>" 
+              </td>
+              <td width="1132"> <span class="BaseStyle"> is the number of documents 
+                that had matches for the specified main query <b><i>and</i></b> 
+                had <span class="MacroCode">GroupValue</span> </span>in the facet 
+                field.</td>
+            </tr>
+            <tr> 
+              <td width="218" align="right" valign="top" class="Code"> startDoc="<span class="MacroCode">FirstDocNumber</span>" 
+              </td>
+              <td width="1132"> <span class="BaseStyle"> is the sequential document 
+                number for the highest ranking document match reported for the current 
+                group. Note that this may not be the overall highest ranking document 
+                if a paged query was specified. See the <a href="programming.html#Facet_Group_Selection">Group Selection</a> 
+            section of the <b>XTF Programmer's Guide</b> for more details about paging documents. </span> 
+              </td>
+            </tr>
+            <tr> 
+              <td width="218" align="right" valign="top" class="Code"> endDoc="<span class="MacroCode">LastDocNumber</span>" 
+              </td>
+              <td width="1132"> <span class="BaseStyle"> is the sequential document 
+                number for the lowest ranking document match reported for the current 
+                group. Note that this may not be the overall lowest ranking document 
+                if a paged query was specified. See the <a href="programming.html#Facet_Group_Selection">Group Selection</a> 
+            section of the <b>XTF Programmer's Guide</b> for more details about paging documents.</span> 
+              </td>
+            </tr>
+          </table>
+        </div>
+        <p> If any groups matched the group selection in the Facet Query Tag, 
+            then one or more Group Result Tags will appear as children of the Facet 
+            Result Tag. If any document hits were selected, then one or more <a href="#crossQuery_ResultFormatter_DocHit">Document 
+              Hit Tags</a> will also be included.
+        </p>
       </div>
     </div>
+
 <div class="IndentL">
 <p class="Heading2">
     Error Generator<a name="crossQuery_ErrorGen_Tags"></a></p>
