@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="EN">
+
+<head>
+  <title>XTF Documentation</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+  <link rel="stylesheet" href="library/xtfDocStyle.css" type="text/css" />
+</head>
+
+<body bgcolor="#FFFFFF" text="#101010" >
+
+<div class="BaseStyle"> 
+  <p class="DocTitle" align="center">XTF Documentation</p>
+  <p class="Heading1">Table of Contents</p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - -->
+  <ul class="NoBullets">
+    <li> <b><a href="#Introduction">Introduction</a></b></li>
+    <li> <b><a href="#Guide">Guide to Documentation</a></b></li>
+    <li> <b><a href="#WhatsNew">What's New?</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#WhatsNew_1_8_1">Version 1.8.1</a></li>
+      </ul>
+    </li>
+  </ul>
+  <p class="Heading1">Introduction<a name="Introduction"></a></p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+  <p>
+    The CDL eXtensible Text Framework (XTF) is a flexible indexing and query tool that 
+    supports searching across collections of heterogeneous data and presents results 
+    in a highly configurable manner. The highlights of the XTF system are described in 
+    an <a href="http://www.cdlib.org/inside/instruct/extensible_1_06.pdf">online brochure</a> [PDF].
+    The California Digital Library (CDL) uses XTF as a building block for new services and has used it to 
+    replace a number of systems previously used for text searching (i.e., DLXS, Greenstone, DynaWeb).
+  </p>
+  <p>
+    This document is the main starting point for learning more about XTF. It describes
+    each of the major sub-documents that talk about the various aspects of XTF. Also,
+    you'll find a summary of newly added documentation in case you're a seasoned XTF
+    user interested in what's new.
+  </p>
+  
+  <p class="Heading1">Guide to Documentation<a name="Guide"></a></p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <p>
+    The documentation for XTF is divided into several different guides:
+  </p>
+  <ul>
+    <li><a href="deployment.html">Deployment Guide</a>: Complete setup and configuration information.</li>
+    <li><a href="programming.html">Programming Guide</a>: An in-depth technical overview of XTF, and instructions on how to program XTF stylesheets.</li>
+    <li><a href="tagRef.html">Tag Reference</a>: Complete information on XTF elements and attributes.</li>
+    <li><a href="tips.html">Tips &amp; Tricks</a>: Pointers on debugging XTF stylesheets, setting up external tools, and other useful items.</li>
+    <li><a href="underHood.html">Under the Hood</a>: Provides details about the actual operation of XTF and how it performs tasks.</li>
+    <li><a href="experimental.html">Experimental Features</a>: Provides some information on features being developed for XTF.</li>
+  </ul>
+  
+  <p class="Heading1">What's New?<a name="WhatsNew"></a></p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <p>
+  </p>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Version 1.8.1<a name="WhatsNew_1_8_1"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p>
+      The main goal of XTF 1.8.1 has been to update the documentation, attempting to cover
+      all features and enhancements made in the past year. Here's a summary of the new
+      documentation:
+    </p>
+    <ul>
+      <li>
+        An extensive <a href="tips.html">Tips &amp; Tricks</a> guide has been added, covering topics such as
+        various handy ways to debug stylesheets, setting up XTF to work in external tools
+        such as &lt;oXygen/> and Eclipse, and other helpful tips.
+        <br/><br/>
+      </li>
+      <li>
+        New <span class="Code">useProximity</span> attribute is available on
+        <a href="tagRef.html#crossQuery_QueryParser_Output_And"><span class="Code">&lt;and></span></a> queries.
+        <br/><br/>
+      </li>
+      <li>
+        Completely rewrote the <a href="underHood.html#Scoring">Hit Scoring</a> section in 
+        <a href="underHood.html">XTF Under the Hood</a> to reflect how XTF actually
+        scores and ranks document hits (which has changed dramatically from the old
+        versions that were previously documented.)
+        <br/><br/>
+      </li>
+      <li>
+        Documented the 
+        <a href="tagRef.html#crossQuery_QueryParser_Output_Query"><span class="Code">explainScores</span></a> 
+        attribute that enables comprehensive (if sometimes obscure) output of the 
+        <a href="tagRef.html#crossQuery_ResultFormatter_Explanation">exact components</a> used by
+        XTF to score a particular document hit.
+        <br/><br/>
+      </li>
+      <li>
+        Wrote up the experimental 
+        <a href="experimental.html#MoreLikeThis"><span class="Code">&lt;moreLike></span></a> 
+        query that searches for documents similar to a given one. 
+        <br/><br/>
+      </li>
+      <li>
+        Faceted browsing has graduated from experimental status into the permanent
+        documents. The main description can now be found in the 
+        <a href="programming.html#Faceted_Browsing">Faceted Browsing</a> section
+        of the <a href="programming.html">Programming Guide</a>.
+        <br/><br/>
+      </li>
+      <li>
+        Documentation has been restructured, simplifying filenames and adding this
+        main index page.
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+      <li>
+        <br/><br/>
+      </li>
+    </ul>
+  </div>
+  
+</div>  
+</body>
+</html>
