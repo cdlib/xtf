@@ -114,6 +114,7 @@
         <include name="bin/textIndexer"/>
         <include name="bin/indexStats"/>
         <include name="bin/indexDump"/>
+        <include name="bin/indexMerge"/>
 
         <include name="brand/default.xml"/>
 
