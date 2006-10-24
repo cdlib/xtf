@@ -1075,22 +1075,31 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <p class="Heading2">Faceted Browsing<a name="Faceted_Browsing"></a></p>
     <!-- - - - - - - - - - - - - - --> 
     <p><b><i>CrossQuery</i></b> provides a good general-purpose solution for searching 
-      a large collection of documents. However, until now it has not provided a convenient 
-      or useful way to <i>browse</i> such a collection. In other words, a user who 
-      isn't quite sure what subject they're looking for, or who wants to get an idea 
-      of what is offered by the collection, would have a difficult time using just 
-      queries.</p>
-    <p>There are many possible ways to build a browsing system. CDL has chosen to 
-      explore <i>faceted browsing</i>, a promising method of intuitively exploring 
+      a large collection of documents. However, we haven't up to this point covered
+      any convenient 
+      or useful way to <i>browse</i> such a collection. In other words, a user will
+      have a difficult time if they're not quite sure what subject they're looking for, 
+      or if they just want to get an idea of what is offered by the collection.</p>
+    <p>There are many possible ways to build a browsing system, but one very promising
+      avenue is called <i>faceted browsing</i>, a way of intuitively exploring 
       a collection that has rich meta-data. If one thinks of the collection as a bag 
       of jewels, each meta-data field is a &quot;facet&quot;, and items will have 
       various values for that facet. The user can choose to explore one or many facets 
       simultaneously.</p>
+    <p class="Note">
+      Note: Faceted browsing is an advanced and fairly complex
+      topic. Those new to XTF would be advised to skip this section for now,
+      and get a robust system working in XTF before attempting a faceted browse
+      system. Additionally, the feature is new enough that the default stylesheets
+      in XTF do not yet implement faceted browse, so there is no example code
+      you can work with; we plan to add this at some point in the future.
+    </p>
     <p>A good example of a faceted browse system was developed by Prof. Marti Hearst 
-      at UC Berkeley. The system is called Flamenco, and the <a href="http://bailando.sims.berkeley.edu/flamenco.html">web 
-        site</a> is quite informative and includes a good demonstration. For more information 
+      at UC Berkeley. The system is called Flamenco, and the 
+      <a href="http://bailando.sims.berkeley.edu/flamenco.html">Flamenco web 
+      site</a> is quite informative and includes a good demonstration. For more information 
       the reader is encouraged to play with and read about Flamenco.</p>
-    <p>XTF's experimental browse feature has been added to the <b><i>crossQuery</i></b> 
+    <p>XTF's faceted browse feature is built in to the <b><i>crossQuery</i></b> 
       servlet. One might ask whether it should have been a separate servlet altogether, 
       but there is a good reason to have search and browse in the same servlet: it 
       can be quite useful to combine the two activities. For instance, a user might 
@@ -1125,12 +1134,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         it for browsing? Simply program your prefilter to make two copies of the meta-data 
         field, one tokenized and one untokenized. Of course you should give them distinct 
         names so you can tell them apart later. For example, one might create a &quot;subject&quot; 
-        field (tokenized) and a &quot;group-subject&quot; field (untokenized) both 
+        field (tokenized) and a &quot;facet-subject&quot; field (untokenized) both 
         of which contain the same data. In this case, it's wise to make the non-tokenized 
         one <span class="Code">indexOnly</span>, to avoid storing the same data twice.</p>
       <p>See the <a href="#textIndexer_PreFilter_Prog">prefilter 
         programming</a> section of this guide for more information. 
-        <br/>
         <br/>
       </p>
     </div>
@@ -1157,7 +1165,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <br/>
         </li>
         <li>For purposes of facets, XTF counts only those documents matched by the 
-          main query. This, you can use a query to form arbitrary slices of a repository, 
+          main query. Thus, you can use a query to form arbitrary slices of a repository, 
           and the facet system will report information about each slice.<br/>
           <br/>
         </li>
