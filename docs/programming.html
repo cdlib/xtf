@@ -500,7 +500,16 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         has been recorded for a document, it can be searched by modifying the 
         <b><i>crossQuery</i></b> servlet's Query Parser Stylesheet to generate 
         meta search requests. Doing so is described in detail below in the <a href="#crossQuery_QueryParser_Prog">Query 
-        Parser Programming</a> section below.</p>
+        Parser Programming</a> section below.
+      </p>
+      <p>
+        <span class="Red">Note:</span> If you mark a section of text with the <span class="Code">xtf:meta</span>
+        attribute, it will <u>not</u> be included in the full text index of that
+        document (accessed by querying the <span class="Code">text</span> field).
+        If you want a given piece of text to appear in both the meta-data and
+        full-text indexes, make two copies of it, marking one with <span class="Code">xtf:meta</span>
+        and not marking the other.
+      </p>
       <p>Another way in which meta-data for a document can be used is as a query 
         <i><b> sort key</b></i>. Sort keys are used by the <i><b>crossQuery</b></i> 
         servlet to reorder how query matches are displayed for the user. To use 
