@@ -2,7 +2,7 @@
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="10">
  <meta indexPath="IndexDB">
-   <and fields="title,creator,subject,text" slop="10" maxSnippets="3">
+   <and fields="title,creator,subject,text" boosts="1.0 0.5 1.5 2.0" slop="10" maxSnippets="3">
      <term>fribble</term>
      <term>color</term>
      <term>wheel</term>
