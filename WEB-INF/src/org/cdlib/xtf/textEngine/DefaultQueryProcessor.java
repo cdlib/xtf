@@ -397,9 +397,9 @@ public class DefaultQueryProcessor extends QueryProcessor
         // Check the cutoffs. If the documents scored well, or there were
         // a lot of them, then suggestions aren't needed.
         //
-        if( maxDocScore > params.docScoreCutoff )
+        if( params.docScoreCutoff > 0 && maxDocScore > params.docScoreCutoff )
             return;
-        if( res.totalDocs > params.totalDocsCutoff )
+        if( params.totalDocsCutoff > 0 && res.totalDocs > params.totalDocsCutoff )
             return;
         
         // Make suggestions for each term
