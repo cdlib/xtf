@@ -151,7 +151,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Near">&lt;near&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Range">&lt;range&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_SectionType">&lt;sectionType&gt;</a></span></font></li>
-                <li><font size="-1"><span class="Code">&lt;resultData&gt;</span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Facet">&lt;facet&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code">&lt;resultData&gt;</span></font></li>
               </ul>
             </li>
           </ul>
@@ -166,6 +167,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Hit">&lt;hit&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Term">&lt;term&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Explanation">&lt;explanation&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Facet">&lt;facet&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Group">&lt;group&gt;</a></span></font></li>
           </ul>
           <br/>
         </li>
@@ -469,6 +472,15 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             the text of the element and any sub-elements will be searchable, but 
             the actual attributes and element tags themselves cannot be searched 
             for.</p>
+          <p>
+            <span class="Red">Note:</span> If you mark a section of text with the <span class="Code">xtf:meta</span>
+            attribute, it will <u>not</u> be included in the full text index of that
+            document (accessed by querying the <span class="Code">text</span> field).
+            If you want a given piece of text to appear in both the meta-data and
+            full-text indexes, make two copies of it, marking one with <span class="Code">xtf:meta</span>
+            and not marking the other.
+          </p>
+
         </div>
       </div>
       <br/>
@@ -1646,7 +1658,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
+          <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag.<br/>
           <br/>
           Note that the <b>Query Parser</b> stylesheet can issue a single top-level<span class="Code"> 
@@ -1867,7 +1880,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             </span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
+          <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br/>
             <br/>
             Note that text will only match a phrase query if all the terms in 
@@ -1989,7 +2003,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
+            <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br/>
             <br/>
             Note that text will only match a exact query if all the terms in the<span class="Code"> 
@@ -2133,7 +2148,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
+          <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. If 
           the field is "text", a <a href="#crossQuery_QueryParser_Output_SectionType">Section Type</a> sub-query 
           may optionally appear, restricting this query to particular sections 
@@ -2243,7 +2259,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
+          <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. If 
           the field is "text", a <a href="#crossQuery_QueryParser_Output_SectionType">Section Type</a> sub-query 
           may optionally appear, restricting this phrase query to particular sections 
@@ -2351,6 +2368,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>,<span class="Code"> 
             </span>or<span class="Code"> <a href="#crossQuery_QueryParser_Output_Range">range</a> 
             </span>tag.</p>
           <p>The<span class="Code"> not </span>tag is usually used to restrict 
@@ -2514,7 +2532,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
+            <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br/>
             <br/>
             It should also be noted that, when applied to the &quot;text&quot; 
@@ -2678,7 +2697,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>, or<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
+            <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag.
           </p>
         </div><br/>
@@ -2693,7 +2713,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <div class="IndentLR"> 
             <pre class="Code">&lt;facet field               = "<span class="MacroCode">FieldName</span>"
        <i>{</i>select             = "<span class="MacroCode">GroupsToSelect</span>"<i>}</i>
-       <i>{</i>sortGroupsBy       = "<span class="MacroCode">TotalDocsOrValue</span>"<i>}</i>
+       <i>{</i>sortGroupsBy       = "<span class="MacroCode">SortKind</span>"<i>}</i>
        <i>{</i>sortDocsBy         = "<span class="MacroCode">ListOfMetaFields</span>"<i>}</i> 
        <i>{</i>includeEmptyGroups = "<span class="MacroCode">YesOrNo</span>"<i>} /&gt;</i></pre>
           </div>
@@ -2737,6 +2757,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                   in decreasing order of the total number of documents per group. 
                   If set to &quot;value&quot;, groups will be sorted in increasing 
                   order by the value (i.e. name) of the facet group.
+                  If set to &quot;maxDocScore&quot;, groups will be sorted in
+                  decreasing order by their relevance score (relevance judged
+                  in relation to the main query.) 
                   <p>If this attribute is not specified, it defaults to &quot;totalDocs.&quot;</p>
                 </td>
               </tr>
@@ -2795,7 +2818,26 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             to specify more than one will result in an error message.
           </p>
       </div><br/>
-    </div>
+  
+      <div class="Sample">
+        <b><u>Result Data Tag<a name="crossQuery_QueryParser_Output_ResultData"></a></u></b><br/>
+        <!-- - - - - - - - - - - - - - --> 
+        This tag allows the <b>Query Parser</b> stylesheet to pass arbitrary data
+        on to the <b>Result Formatter</b> stylesheet. XTF will not attempt to
+        interpret the contents of the tag, but simply passes the tag and its
+        contents through unchanged into the <a href="#crossQuery_ResultFormatter_CrossQRes">Query Result Tag</a>.<br/>
+        <br/>
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;resultData>
+          
+    <span class="MacroCode">YourDataHere</span>
+        
+&lt;/resultData></pre>
+        </div>
+
+        XTF will pass the tag and its contents unchanged to the result formatter.
+    </div><br/>
+  </div>
   
   <!-- Input/Output Tags indent --></div>
     <!-- queryParser Tags indent --> 
