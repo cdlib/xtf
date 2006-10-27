@@ -394,12 +394,24 @@ public class DefaultQueryProcessor extends QueryProcessor
         //
         SpellcheckParams params = req.spellcheckParams;
         
+        // When checking the cutoffs, account for the possibility that
+        // the query might be faceted, in which case we want the document
+        // count of the biggest facet.
+        //
+        int totalDocs = res.totalDocs;
+        if( res.facets != null ) {
+            for( int i = 0; i < res.facets.length; i++ ) {
+                if( res.facets[i].rootGroup != null )
+                    totalDocs = Math.max( totalDocs, res.facets[i].rootGroup.totalDocs );
+            }
+        }
+        
         // Check the cutoffs. If the documents scored well, or there were
         // a lot of them, then suggestions aren't needed.
         //
         if( params.docScoreCutoff > 0 && maxDocScore > params.docScoreCutoff )
             return;
-        if( params.totalDocsCutoff > 0 && res.totalDocs > params.totalDocsCutoff )
+        if( params.totalDocsCutoff > 0 && totalDocs > params.totalDocsCutoff )
             return;
         
         // Make suggestions for each term
