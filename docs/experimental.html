@@ -741,7 +741,17 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       so for full details the reader is
       referred to Chapter 5 of the 
       <a href="http://www.cdlib.org/inside/projects/melvyl_recommender/">Melvyl Recommender Project</a>
-      <b>Full Text Extension Report</b>.
+      <b>Full Text Extension Report</b>. 
+    </p>
+    <p>
+      <span class="Red">Note:</span> The algorithm
+      involves loading sizable tables for title, author, date, and ID and caching these
+      tables in RAM. This has two major ramifications: first, the tables can take
+      some time to load the first time dynamic FRBR is accessed; second, make sure
+      to give the servlet container plenty of RAM, especially if the number of
+      records in the collection is very large. This can be adjusted by setting
+      <span class="Code">-Xmx</span> flag for the Java command that starts the
+      servlet container.
     </p>
   </div>
 
