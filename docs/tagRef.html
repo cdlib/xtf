@@ -118,10 +118,10 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         <li><a href="#Session_State">Session State</a><br/>
           <br/>
         </li>
+        <li><a href="#Exec">Calling Command-line Tools</a><br/>
+        </li>
         <li>Checking for File Existence<br/>
           <br/>
-        </li>
-        <li>Calling Out to External Programs<br/>
         </li>
       </ul>
       <br/>
@@ -1140,8 +1140,6 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   
     <br/>
     <p class="Heading2">Session State Function Reference<a name="Session_State"></a></p>
-      
-    
   <!-- - - - - - - - - - - - - - --> 
     <p>XTF is capable of tracking variables associated with a particular browsing 
       session. This section details the functions available to any <span class="Keyword">crossQuery</span> 
@@ -1325,7 +1323,123 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         cookies, URLs will have session IDs added to them. Note that if session 
         tracking is disabled, the URL will be returned unchanged. </p>
       </div>
+
+    <br/>
+    <p class="Heading2">Calling Command-line Tools<a name="Exec"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    <p>The built-in <span class="Code">exec</span> extension element can be used
+      in stylesheets to call external command-line tools. See the
+      <a href="programming.html#Common_Exec">Programming Guide</a> for a description and examples.<br/>
+    </p>
+    <div class="Sample"><b><u>External Command Extension Element<a name="Exec"></a></u></b><br/>
+      <!-- - - - - - - - - - - - - - --> 
+      This element can be used inside any XTF stylesheet to call a command-line program,
+      like this:<br/>
+      <br/>
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;exec:run command  = "<span class="MacroCode">CommandName</span>" 
+          <i>{</i>timeout = "<span class="MacroCode">Milliseconds</span>"<i>}</i>
+          xsl:extension-element-prefixes="exec">
+          
+  <i>{</i>&lt;exec:arg><span class="MacroCode">Argument1</span>&lt;/exec:arg><i>}</i>
+  <i>{</i>&lt;exec:arg><span class="MacroCode">Argument2</span>&lt;/exec:arg><i>}</i>
+      …
+          
+  <i>{</i>&lt;exec:input>
+    <span class="MacroCode">XmlOrString</span>
+   &lt;/exec:input><i>}</i>
+          
+&lt;/exec:run></pre>
+      </div>
+      <p>where <br/>
+      </p>
+      <div class="IndentLR"> 
+        <table cellspacing="12">
+          <tr> 
+            <td align="right" valign="top" class="Code">exec:</td>
+            <td><span class="BaseStyle">is a namespace prefix identifying this
+              particular Saxon extension.</span> The namespace URI for this 
+              prefix must be: <span class="Code"><b>java:/org.cdlib.xtf.saxonExt.Exec</b></span>.</td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code">command="<span class="MacroCode">CommandName</span>"
+            </td>
+            <td>specifies the command-line program to run.
+            In general, this should be an absolute path; if a relative path is
+            given, it will be resolved in an undefined manner.</td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code">timeout="<span class="MacroCode">Milliseconds</span>" 
+            </td>
+            <td>
+              is an optional attribute setting an upper limit, in milliseconds, on the amount of time
+              the external process will be given to finish its work. If this time
+              is exceeded, the process will be forcibly terminated, an a Java
+              exception will be thrown (which terminates stylesheet processing
+              immediately.) If this attribute is not specified, the process will
+              be allowed to run to completion no matter how long it takes.
+            </td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code">
+              &lt;exec:arg>
+            </td>
+            <td>
+              is an optional sub-element that can be used repeatedly to
+              specify command-line arguments to be passed to the program. Each
+              argument should be specified in its own <span class="Code">&lt;exec:arg></span>
+              element; in particular, pairs should usually be broken up. For
+              example, to perform the command <span class="Code">ls -al *</span>
+              one would specify two arguments, the first being <span class="Code">-al</span>
+              and the second being <span class="Code">*</span>.
+            </td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code">
+              &lt;exec:input>
+            </td>
+            <td>
+              is an optional sub-element that specifies the input to be
+              send to the external program (input will be sent to the
+              process <span class="Code">stdio</span> stream).
+              <p>
+                If the content of the <span class="Code">exec:input</span>
+                element is XML data (for instance, a variable holding one
+                or more elements) then the servlet will automatically
+                serialize the data into standard XML format, with UTF-8
+                character encoding. If the content is not XML, the string
+                will be sent to the tool verbatim.
+              </p>
+            </td>
+          </tr>
+        </table>
+        <p>
+          This extension element calls an external command-line tool. Internally,
+          this creates a new operating system process, and the servlet thread
+          waits for that process to complete.
+        </p>
+        <p>
+          If the <span class="Code">exec:input</span> element is specified,
+          the entire string of input text (converted from XML to text
+          if necessary) will be fed to the process' <span class="Code">stdin</span>
+          stream.
+        </p>
+        <p>
+          Output from the process' <span class="Code">stdout</span> stream will
+          be collected, and the servlet checks if the data begins with an
+          XML header. If so, the value of the <span class="Code">exec:run</span>
+          element will be actual XML elements from the data. Otherwise,
+          the value will be one long string, being an exact copy of the
+          output from the external tool.
+        </p>
+        <p>
+          If the process exits with a non-zero code (or the optional timeout
+          is exceeded) then XTF will throw a Java exception, which causes the
+          stylesheet execution to terminate immediately.
+        </p>
+      </div>
     </div>
+  </div>
   <!-- crossQuery Tag Reference --> <br/>
   <br/>
 </div>

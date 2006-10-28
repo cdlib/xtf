@@ -57,6 +57,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       <ul class="NoBullets">
         <li><a href="#Common_ErrorGen_Prog">Error Generator Programming</a></li>
         <li><a href="#Common_Session_State">Tracking Session State</a></li>
+        <li><a href="#Common_Exec">Calling Command-line Tools</a></li>
+        <li><a href="#Common_FileUtils">Checking File Existence and Length</a></li>
       </ul>
       <br/>
     </li>
@@ -1953,6 +1955,57 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       <p></p>
       <p>&nbsp;</p>
     </div>
+  
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+  <p class="Heading2">Calling Command-line Tools<a name="Common_Exec"></a></p>
+    <p>
+      It can be very handy to utilize external (even non-Java)
+      applications within your stylesheets. To facilitate this, XTF provides a
+      mechanism for your stylesheets to call any command-line program. The stylesheet
+      can send input and receive output in either plain text or XML.
+    </p>
+    <p>
+      This is accomplished using XTF's built-in XSL extension element. It can call any
+      command-line tool installed on the same machine one which the
+      servlet container is running. For example, 
+      here's some XSL code that will pause for 10 seconds on a UNIX machine:</p>
+    <pre class="Sample">&lt;xsl:stylesheet <span class="Red">xmlns:exec="java:/org.cdlib.xtf.saxonExt.Exec"</span><span class="MacroCode">...</span>&gt;<span class="MacroCode">
+...</span>
+  &lt;exec:run command="sleep" xsl:extension-element-prefixes="exec">
+    &lt;exec:arg>10&lt;/exec:arg>
+  &lt;/exec:run></pre>
+    <p>
+      Now let's look at a more complicated example, in which was pass in some XML data
+      to the UNIX <span class="Code">sed</span> tool. We ask it to perform a simple
+      text replacement and return the result, which was gather in XML form into an
+      XSLT variable.
+    </p>
+    <pre class="Sample">&lt;xsl:variable name="myText">
+  &lt;exec:run command="sed" xsl:extension-element-prefixes="exec">
+    &lt;exec:arg>s/floor/chimney/&lt;/exec:arg>
+    &lt;exec:input>
+      &lt;job>I work as a floor-sweep.&lt;/job>
+    &lt;/exec:input>
+  &lt;/exec:run>
+&lt;/xsl:variable></pre>
+    <p>
+      After this runs, the variable <span class="Code">myText</span> will contain
+      the XML element <span class="Code">&lt;job>I work as a chimney-sweep.&lt;/job></span>
+    </p>
+    <p>
+      XTF automatically determines if the data you pass to an external program
+      is XML and serializes it as text. If it's just a string, that string is
+      passed verbatim to the external program. Likewise, XTF parses the output from
+      the external program, and if the output looks like XML then XTF will
+      parse it as such; otherwise, the results will come back in the form of
+      a string. In this way, you have the flexibility to work with any command-line
+      tool whether or not it understands XML.
+    </p>
+    <p>
+      The <span class="Code">exec</span> element is also capable of killing the
+      external tool if it takes too long to finish. 
+      For details, see the <a href="tagRef.html#Exec">XTF Tag Reference</a> section.
+    </p>
   </div>
 
   <!-- Common --> 
