@@ -26,7 +26,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         <li><a href="#Documents_Tokenizing">Tokenizing</a></li>
         <li><a href="#Documents_Proximity">Proximity and "Slop"</a></li>
         <li><a href="#Documents_Chunking">Chunking</a></li>
-        <li><a href="#Documents_StopWords">Stop Words and N-grams</a></li>
+        <li><a href="#Documents_StopWords">Stop Words and Bi-grams</a></li>
       </ul>
       <br/>
     </li>
@@ -190,7 +190,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       discrete tokens, or "terms".<br/>
       <br/>
       <b><i>XTF</i></b>, as it is based on the Lucene search toolkit, uses an 
-      XTF specific derivitive of the Lucene standard tokenizer, which makes a 
+      XTF specific derivative of the Lucene standard tokenizer, which makes a 
       fair effort at identifying terms in the source text regardless of language. 
       For the most part, a single term consists of one or more of the following 
       characters:</p>
@@ -301,7 +301,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     </div>
     
     <br/>
-    After tokenizing, alll upper-case letters within tokens are converted to lower-case, 
+    After tokenizing, all upper-case letters within tokens are converted to lower-case, 
     which allows queries to be case-insensitive. Optional processing on tokens 
     can remove distinctions of plural vs. singular, and can remove diacritic accent 
     characters. </div>
@@ -326,7 +326,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   compared to this sentence in a document: "The <u>man went to war</u>." The potential 
   match will be on the words "man went to war". In this case, "man" is at position 
   1 in both, and thus contributes nothing to the slop. However, "war" is at position 
-  2 in the query but position 4 in the match; thus it constributes 2 to the slop, 
+  2 in the query but position 4 in the match; thus it contributes 2 to the slop, 
   making the total slop 2. Thus for this to be considered a match, the proximity 
   query would have to specify a slop of 2 or greater. This can be summarized in 
   a table:<br/>
@@ -508,20 +508,23 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   proximity, while minimizing processing time and disk space. One final note: 
   chunking is not performed on meta-data fields, as they are assumed to be relatively 
   small in size.<br/>
-  <p class="Heading2">Stop Words and N-grams<a name="Documents_StopWords"></a></p>
+  <p class="Heading2">Stop Words and Bi-grams<a name="Documents_StopWords"></a></p>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
   Recall that <b><i>XTF</i></b> builds an <i>inverted index</i> using Lucene. 
   For each term found in any document, the index stores a list of each occurrence 
   of that term.<br/>
   <br/>
-  Now consider a term like "the." It occurs so commonly in English-language texts 
-  that the list of all occurrences becomes very long and thus takes a long time 
+  Now consider a term like "the". It occurs so commonly in English-language texts 
+  that the list of all occurrences becomes very large and thus takes a long time 
   to process. Common words like "the" are called stop words; other examples are 
   "a", "an", "it", "and", "in", "is".<br/>
   <br/>
   A key observation is that these stop words, because they're so common, are uninteresting 
   to search for. One's initial tendency might be then to simply ignore them, and 
   this solution indeed speeds up searching.<br/>
+  <br/>
+  <b>XTF Definition: </b><i>stop word</i>, n. A very common word that is generally
+  uninteresting to search for.<br/>
   <br/>
   For instance, a search for "man in war" would be interpreted as "man war". Unfortunately, 
   this will turn up occurrences of "man of war" (a kind of jellyfish, and not 
@@ -530,26 +533,25 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   So the second key observation is that stop words are useful <i>in conjunction 
   with non-stop words</i>. While "in" is a very common word, the combination "man-in" 
   is much less common, and is thus much faster to search for. This leads us directly 
-  to the idea of n-grams, which <b><i>XTF</i></b> implements to get almost the 
+  to the idea of bi-grams, which <b><i>XTF</i></b> implements to get almost the 
   speed of eliminating stop words, but still providing good query results.<br/>
   <br/>
-  <b>XTF Definition: </b><i>N-gram</i>, n. A single term in the index, composed 
+  <b>XTF Definition: </b><i>bi-gram</i>, n. A single term in the index, composed 
   of a stop word and a non-stop word fused together.<br/>
   <br/>
   Consider the sentence "A friend in need is a friend indeed." Scanning for stop- 
   words and combining them with adjacent words, we get the following sequence 
-  of terms (regular terms are marked in <b>bold</b>, while n-grams are <u>underlined</u
+  of terms (regular terms are marked in <b>bold</b>, while bi-grams are <u>underlined</u
         >):<br/>
   <br/>
   <div class="Sample"> Index: <u>a-friend</u> &nbsp;<b>friend</b> &nbsp;<u>friend-in</u> 
     &nbsp;<u>in-need</u> &nbsp;<b>need</b> &nbsp;<u>need-is</u> &nbsp;<u>is-a</u> 
     &nbsp;<u>a-friend</u> &nbsp;<b>indeed</b> </div>
   <br/>
-  As you can see, the index is quite different with the n-grams. Consequently, 
+  As you can see, the index is quite different when bi-grams are added into it. Consequently, 
   a similar transformation must be performed when a query is made, essentially 
-  rewriting the query. For instance, a search for a <i>phrase</i> " <b>friend</b> 
-  in <b>need</b>" is re-written to search for the phrase "<u>friend-in</u> <u>in-need 
-  </u>".<br/>
+  rewriting the query. For instance, a search for a <i>phrase</i> "<b>friend</b> 
+  in <b>need</b>" is re-written to search for the phrase "<u>friend-in</u> <u>in-need</u>".<br/>
   <br/>
   More complex transformations are required for NEAR queries. For instance, consider 
   the proximity query: "<b>friend</b> NEAR <b>in</b> NEAR <b>need</b>". The engine 
@@ -560,7 +562,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   <div class="Sample"> Query: (<b>friend</b> OR <u>friend-in</u>) NEAR (<u>in-need</u> 
     OR <b>need</b>) </div>
   <br/>
-  In summary, transforming stop words into n-grams speeds up query processing, 
+  In summary, transforming stop words into bi-grams speeds up query processing, 
   while retaining the ability to include stop words in a query. <br/>
   <!-- IndentL --> 
   <p class="Heading1">Query Operations and What They Do<a name="QueryOps"></a></p>
@@ -628,7 +630,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   <b><i>XTF</i></b> implements a full complement of "boolean" operators used to 
   form complex queries: AND, OR, NEAR, PHRASE, RANGE, and NOT, and supports wildcard 
   search characters. This section covers the details of how these queries are 
-  interpreted within the very large documents <b><i>XTF</i></b> can deal in. <br/>
+  interpreted within the very large documents <b><i>XTF</i></b> can handle. <br/>
   <br/>
   <div class="IndentLR"> 
     <p class="Heading3">TERM and Wildcard Queries on Text<a name="QueryOps_Text_TERMWILD"></a></p>
@@ -636,7 +638,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
     <div class="IndentL"> A <b>TERM</b> query matches every occurrence of the 
       specified term in the document. Upper-case vs. lower-case distinctions are 
-      ignored. Additionally, the term may contain contain special wildcard characters:<br/>
+      ignored. Additionally, the term may contain special wildcard characters:<br/>
       <br/>
       <div class="IndentL"> 
       <table class="BaseStyle">
@@ -644,11 +646,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <td valign="top"><span class="Code">?</span> &nbsp;</td>
           <td valign="top">The question-mark character matches terms with any character at
             that position. For example, <span class="Code">lo?e</span> would match "love"
-              <i>or</i> "lose". </td>
+              <i>or</i> "lose", but <i>not</i> "loe". </td>
         </tr>
         <tr>
           <td valign="top"><span class="Code">*</span> &nbsp;</td>
-          <td valign="top">The question-mark character matches terms with any number
+          <td valign="top">The asterisk character matches terms with any number
             (including zero) characters at that position. For example, <span class="Code"
             >dog*</span> would match any of the following terms: "dog", "dogs", "doggie",
             "doggerel", etc. </td>
@@ -659,7 +661,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       Depending on the particular wildcard, hundreds or even thousands of terms 
       might match, so care should be taken when using these. To avoid allowing 
       such queries to occupy the engine for long periods of time, <b><i>XTF</i></b> 
-      allows queries to specify a limit on the maximum number of terms to match. 
+      allows queries to specify a limit on the maximum number of terms to match
+      (controlled by the 
+      <a href="tagRef.html#crossQuery_QueryParser_Output_Query"><span class="Code">workLimit</span></a> attribute.) 
       Queries that exceed the limit produce an error.<br/>
       <br/>
     </div>
@@ -711,7 +715,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <br/>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
     <div class="IndentL"> Each <b>NEAR</b> query requires a "slop" factor. In 
-      rough terms, this factor can be thought of as limiting the amount of sloppyness 
+      rough terms, this factor can be thought of as limiting the amount of sloppiness 
       when matching. A slop of zero indicates very tight control; in fact, a <b>NEAR</b> 
       query with zero slop is equivalent to a <b>PHRASE</b> query. A large slop 
       value indicates that terms may appear far apart, or out of order, or both. 
@@ -744,15 +748,16 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
   The following query operations can be applied to any meta-data field. Queries 
   are applied to meta-data and full text in like fashion, with a few exceptions: 
-  <b>AND</b> queries are not proximity-based, <b>NOT</b> clauses can eliminate 
-  whole documents, and a new operator, <b>RANGE</b>, is available. 
+  <b>AND</b> queries are not proximity-based in meta-data fields, <b>NOT</b> clauses 
+  on meta-data can eliminate 
+  whole documents, and a new operator, <b>RANGE</b>, is available on meta-data fields. 
   <div class="IndentLR"> 
     <p class="Heading3">TERM and Wildcard Queries on Meta-data<a name="QueryOps_Meta_TERMWILD"></a></p>
     <br/>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
     <div class="IndentL"> A <b>TERM</b> query matches every occurrence of the 
       specified term in the meta-data field. Upper-case vs. lower-case distinctions 
-      are ignored. Additionally, the term may contain contain special wildcard 
+      are ignored. Additionally, the term may contain special wildcard 
       characters:<br/>
       <br/>
       <div class="IndentL"> 
@@ -761,11 +766,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <td valign="top"><span class="Code">?</span> &nbsp;</td>
             <td valign="top">The question-mark character matches terms with any 
               character at that position. For example, <span class="Code">lo?e</span> 
-              would match "love" <i>or</i> "lose". </td>
+              would match "love" <i>or</i> "lose", but <i>not</i> "loe". </td>
           </tr>
           <tr>
             <td valign="top"><span class="Code">*</span> &nbsp;</td>
-            <td valign="top">The question-mark character matches terms with any 
+            <td valign="top">The asterisk character matches terms with any 
               number (including zero) characters at that position. For example, 
               <span class="Code">dog*</span> would match any of the following terms: 
               "dog", "dogs", "doggie", "doggerel", etc. </td>
@@ -776,7 +781,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       Depending on the particular wildcard, hundreds or even thousands of terms 
       might match, so care should be taken when using these. To avoid allowing 
       such queries to occupy the engine for long periods of time, <b><i>XTF</i></b> 
-      allows queries to specify a limit on the maximum number of terms to match. 
+      allows queries to specify a limit on the maximum number of terms to match
+      (controlled by the 
+      <a href="tagRef.html#crossQuery_QueryParser_Output_Query"><span class="Code">workLimit</span></a> attribute.) 
       Queries that exceed the limit produce an error.<br/>
       <br/>
     </div>
@@ -799,7 +806,19 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       all the days from 1895 to 1900 would match... potentially 2,190 of them. 
       And of course a range query from A to Z would match practically every term 
       in the index. Again, each query can specify a limit on the maximum number 
-      of terms to match, to avoid bogging down the engine. </div>
+      of terms to match, to avoid bogging down the engine. <br/>
+      <br/>
+      However, when searching numeric data (for example, file time and date stamps)
+      the above wildcard approach simply is not sufficient. To handle this, 
+      XTF provides a special <i>numeric</i> range searching capability. This is
+      specified as an attribute to the normal <span class="Code">&lt;range></span>
+      query operator, but it tells XTF that the data is numeric, and in a
+      rigid format (such as YYYY-MM-DD:HH-MM-SS; any rigid format is acceptable).
+      When the first such query is made, XTF loads a table of all the data values
+      and converts them to 64-bit integers. This table is then cached in memory,
+      and range queries on that field are processed very quickly, avoiding any
+      wildcard-like expansion.
+    </div>
     <p class="Heading3">AND Query on Meta-data<a name="QueryOps_Meta_AND"></a></p>
     <br/>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
@@ -837,7 +856,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <br/>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
     <div class="IndentL"> Each <b>NEAR</b> query requires a "slop" factor. In 
-      rough terms, this factor can be thought of as limiting the amount of sloppyness 
+      rough terms, this factor can be thought of as limiting the amount of sloppiness 
       when matching. A slop of zero indicates very tight control; in fact, a <b>NEAR</b> 
       query with zero slop is equivalent to a <b>PHRASE</b> query. A large slop 
       value indicates that terms (or sub-queries) may appear far apart, or out 
@@ -863,8 +882,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   <p class="Heading2">Stop Words in Queries<a name="QueryOps_StopWords"></a></p>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
   If a query contains one or more stop words, the query will be internally rewritten 
-  to work properly with the N-gram system. Recall from the section on <a href=
-        "#Documents_StopWords">Stop Words and N-grams</a> that using n-grams allows 
+  to work properly with the bi-gram system. Recall from the section on <a href=
+        "#Documents_StopWords">Stop Words and Bi-grams</a> that using bi-grams allows 
   <b><i> XTF</i></b> to support queries containing stop words while avoiding the 
   usual severe impact on performance that they might have.<br/>
   <br/>
@@ -881,7 +900,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       would be dismayed if a query on "man of war" returned matches on "man in 
       war". </li>
     <li> In <b>AND</b> and <b>NEAR</b> queries, stop words are joined with adjacent 
-      words to form n-grams. The resulting query will effectively prefer matches 
+      words to form bi-grams. The resulting query will effectively prefer matches 
       containing the stop words in the correct places, but will allow matches 
       where they don't appear. </li>
   </ul>
@@ -1380,7 +1399,7 @@ to fill its bottomless gullet.</pre>
       at index time (and in fact, this is the default behavior.) One caution: 
       if pre-building of lazy trees by the <b><i>textIndexer</i></b> is disabled, 
       be sure that <b>docSelector.xsl</b> and <b>docReqParser.xsl</b> both specify 
-      the same prefilter to use. Otherwise, <b><i>dynaXML</i></b> will build a 
+      the same pre-filter to use. Otherwise, <b><i>dynaXML</i></b> will build a 
       lazy tree that doesn't match the index, and strange random errors will occur 
       when highlighting search hits in the document.</p>
     <p></p>
