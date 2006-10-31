@@ -36,6 +36,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       </ul>
       <br/>
     </li>
+    <li> <b><a href="#RunningOnWindows">Running on Windows</a></b> <br/>    <br/>
+    </li>
     <li> <b><a href="#Upgrading">Upgrading a Prior Installation</a></b> <br/>    <br/>
     </li>
     <li> <b><a href="#RunTImeInstall">Run-Time Environment Installation/Configuration</a></b> 
@@ -251,7 +253,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       procedure depends on a Unix-type shell and a Perl command interpreter. If 
       you are attempting to run XTF on Windows, you may need an environment such 
       as <b>cygwin</b> that includes these things. Alternately, you could create 
-      a driver script that does the same work. See the section Running on Windows, 
+      a driver script that does the same work. See the section <a href="#RunningOnWindows">Running on Windows</a>, 
       below.</p>
     <ol class="OrderedList">
       <li>From the command prompt, set the<span class="Code"> XTF_HOME </span>environment 
@@ -317,7 +319,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     where the word <span class="Keyword">apartheid</span> appears. </div>
 </div>  
 <!-- QuickStart --> 
-<p class="Heading2"> Running on Windows<a name="QuickIndex"></a></p>
+<p class="Heading1"> Running on Windows<a name="RunningOnWindows"></a></p>
 <!-- - - - - - - - - - - - - - --> 
 <p>The base XTF distribution works well on a number of Unix variants, including 
   Solaris and Linux. XTF also works under Windows, but there are some special 
@@ -332,14 +334,14 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   on these instructions is always appreciated.</p>
 <ol>
   <li> Get perl at activestate.com. </li>
-  <li> Rename the <span class="Code">textindexer</span> file in the Bin folder 
-    to <span class="Code">textindexer.pl</span>. </li>
+  <li> Rename the <span class="Code">textIndexer</span> file in the Bin folder 
+    to <span class="Code">textIndexer.pl</span>. </li>
   <li> Paste the following into a text editor and save as <span class="Code">indexer.bat</span> 
     in the same folder: <span class="Code">textIndexer.pl -index default</span> 
   </li>
   <li> Paste following into a new file named <span class="Code">XTFJava.bat</span>. 
     You may need to edit for your setup path (this is the safe way for registering 
-    a classpath, it is not global - google set java classpath). All text is on 
+    a classpath, it is not global - Google set java classpath). All text is on 
     one line without any returns: <br/>
     <span class="Code">java -classpath C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\cql-java.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\log4j-1.2.9.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\PDFBox-0.6.7a.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\saxonb-8.3.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\Tidy.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\xtf.jar</span> 
   </li>
@@ -371,7 +373,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       stylesheets and configuration files.<br/>
       <br/>
     </li>
-    <li>Unxip the contents of the package into your XTF directory.<br/>
+    <li>Unzip the contents of the package into your XTF directory.<br/>
       <br/>
     </li>
     <li><i>Optional: </i>Review changes to the default stylesheets and apply them 
@@ -412,7 +414,7 @@ and configured, the XTF system may be installed and run.
     
   <p>For the <span class="Keyword">dynaXML</span> and <span class="Keyword">crossQuery</span> servlets to be 
     accessible on-line, they must be run under a <b>Servlet Container</b> application. 
-    At thtis time, the XTF system is known to work with the <a href="http://jakarta.apache.org/tomcat/">Apache 
+    At this time, the XTF system is known to work with the <a href="http://jakarta.apache.org/tomcat/">Apache 
     Tomcat</a> and <a href="http://caucho.com/download/">Caucho Resin</a> servlet 
     containers. Please download one or the other of these servlet containers, 
     and follow the accompanying instructions on how to install and configure the 
@@ -426,10 +428,9 @@ and configured, the XTF system may be installed and run.
   <p>The <span class="Keyword">XTF</span> distribution also includes two libraries, Saxon and 
     Lucene, needed for proper operation. Generally no configuration will be required 
     for these, unless other servlets are to be run in the same servlet container 
-    that require different versions of Saxon and/or Lucene. Saxon is an XSLT engine 
-    for Java, and Lucene is an indexing database system. The code in <span class="Keyword">XTF</span> 
+    that require different versions of Saxon and/or Lucene. The code in <span class="Keyword">XTF</span> 
     is customized to work very closely with both of these libraries, so it is 
-    not currently possible to use a different version than included with the distribution.</p>
+    not currently possible for XTF to use different versions than those included with the distribution.</p>
   <p>The source text documents that are indexed and queried by the XTF system 
     are <b>XML</b> based documents. Consequently, the <span class="Keyword">dynaXML</span>, <span class="Keyword">crossQuery</span>, 
     and <span class="Keyword">textIndexer</span> programs use Michael Kay's <b>Saxon Library</b> 
@@ -608,9 +609,9 @@ and configured, the XTF system may be installed and run.
     <p>Only the last argument, the <span class="Code">-index <span class="MacroCode">index-name</span></span> 
       argument, is required. The remaining arguments (shown in braces) are optional 
       arguments. Note that the order of the arguments is important, since each 
-      occurence of <span class="Code">-index <span class="MacroCode">index-name</span></span> 
+      occurrence of <span class="Code">-index <span class="MacroCode">index-name</span></span> 
       causes the specified index to be updated using the previously set argument 
-      values. The arguments pased to the <span class="Keyword">textIndexer</span> have the following 
+      values. The arguments passed to the <span class="Keyword">textIndexer</span> have the following 
       meanings: <br/>
       <br/>
     </p>
@@ -668,7 +669,7 @@ and configured, the XTF system may be installed and run.
     <div class="GreyList"> <span class="Code">-dir <span class="MacroCode">subdirectory</span></span> 
       <br/>
       This argument is an optional argument, and identifies a sub-directory of 
-      an index tree to reindex. The primary purpose of this argument is to allow 
+      an index tree to re-index. The primary purpose of this argument is to allow 
       only portions of an index to be updated to save time. When specified, the 
       value of this argument should be path to the sub-directory relative to the 
       base directory set for the index specified in the <span class="Code">-index 
@@ -711,7 +712,7 @@ and configured, the XTF system may be installed and run.
       to be created/updated. The name must be one of the index names contained 
       in the configuration file specified as the first argument. Note that this 
       argument also starts the (re)indexing process for the given index using 
-      the values set by the arguments that preceed it. </div>
+      the values set by the arguments that precede it. </div>
     <br/>
     A simple example of command line parameters for a text indexer run might look 
     like this: <br/>
@@ -777,7 +778,7 @@ and configured, the XTF system may be installed and run.
         underscore (<b>_</b>) character. Punctuation and other symbols are not 
         permitted, and neither is the use of the <span class="Keyword">space</span> character. 
         Also, the index name may only be used for one index block in any given 
-        configuration (if it appears more than once, the first occurence is used, 
+        configuration (if it appears more than once, the first occurrence is used, 
         and the remaining ones are ignored.) This index name is the name passed 
         on the command line to the <span class="Keyword">textIndexer</span> to identify which 
         indexes need to be processed. </div>
@@ -804,7 +805,7 @@ and configured, the XTF system may be installed and run.
       <br/>
       <div class="IndentLR"> <span class="Code">size="<span class="MacroCode">TextChunkSize</span>"</span><br/>
         This <span class="Keyword">textIndexer</span> tool splits source documents into smaller 
-        chunks of text when adding the document to its index. Doing so makes poximity 
+        chunks of text when adding the document to its index. Doing so makes proximity 
         searches and the display of their resulting summary "blurbs" faster by 
         limiting how much of the source document must be read into memory. This 
         attribute defines (as a number of words) how large the chunk size should 
@@ -844,7 +845,6 @@ and configured, the XTF system may be installed and run.
           is not, the <span class="Keyword">textIndexer</span> will force it to be half.) </div>
       </div>
     </div>
-    <div class="GreyList"> <span class="Code"> </span> </div>
     <div class="GreyList"> <span class="Code"> &lt;docselector path="<span class="MacroCode">LocationOfDocSelector</span>"&gt; 
       </span><br/>
       <div class="IndentLR"> 
@@ -876,7 +876,7 @@ and configured, the XTF system may be installed and run.
           the".)<br/>
           <br/>
           Eliminating stop-words from an index improves search speed for an index. 
-          This is because the search doesn't need to sift through all the occurences 
+          This is because the search doesn't need to sift through all the occurrences 
           of the stop-words in the document library. Consequently, adding words 
           like <span class="Keyword">a</span>, <i> <b>an</b></i>, <span class="Keyword">the</span>, <span class="Keyword">and</span>, 
           etc. to the stop-word list, which occur frequently in documents but 
@@ -884,7 +884,7 @@ and configured, the XTF system may be installed and run.
           for more interesting words enormously. The one caveat is that searches 
           for any single stop-word by itself will yield<b> no matches</b>, so 
           it is important to pick stop-words that people aren't usually interested 
-          in finding. Note however that due to an internal process called <i>n-gramming</i>, 
+          in finding. Note however that due to an internal process called <i>bi-gramming</i>, 
           stop words will still be found as part of larger phrases, like <b>of</b> 
           in <b>Man of War</b>, or <b>the</b> in <b>The Terminator</b>.</p>
         <p>Finally, if a stop-word file is used, the file itself may be stored 
@@ -1031,7 +1031,7 @@ and configured, the XTF system may be installed and run.
       XTF_HOME </span>). <br/>
       <br/>
       Because writing and maintaining the XSLT pre-filter is beyond the scope 
-      of this depolyment guide, its format will not be discussed here. Please 
+      of this deployment guide, its format will not be discussed here. Please 
       refer to the <a href="programming.html">XTF Programming 
       Guide</a> for more information about document pre-filters. <br/>
       <br/>
@@ -1042,7 +1042,7 @@ and configured, the XTF system may be installed and run.
       be used to update the index. Fortunately, nothing special needs to be done 
       to inform the <span class="Keyword">textIndexer</span> about which documents have been 
       updated, added, or deleted. The program automatically detects the changes, 
-      and takes the appropriate action. It even has enough smarts to avoid reindexing 
+      and takes the appropriate action. It even has enough smarts to avoid re-indexing 
       documents that have not changed since the last time the index was generated. 
       <br/>
       <br/>
@@ -1050,8 +1050,8 @@ and configured, the XTF system may be installed and run.
       or changed. You might wish to run the <span class="Keyword">textIndexer</span> tool manually 
       or as part of a script whenever a change to the document library is made. 
       Alternately, you could schedule a daily or weekly <span class="Code">cron</span> 
-      job that made any accumulated changes to the document library and then reindexed 
-      afterwards. Regardless of the method selected, it is best to reindex as 
+      job that made any accumulated changes to the document library and then re-indexed 
+      afterwards. Regardless of the method selected, it is best to re-index as 
       soon as possible after the document library is updated so as to minimize 
       the chance of a user performing a search with an index that doesn't match 
       the actual document set. <br/>
@@ -1121,7 +1121,7 @@ Done.
   <p align="center"> <img src="art/dynaXMLDataFlow.gif" alt="dynaXML Data Flow"/><br/>
     Figure 7: Data Flow in the <span class="Keyword">dynaXML</span> Servlet </p>
   The <span class="Keyword">dynaXML</span> servlet is configured by modifying one or more of 
-  the the following files: 
+  the following files: 
   <ul class="UnorderedList">
     <li>The <span class="Code">dynaXML.conf</span> Configuration File</li>
     <li>The <span class="Code">docReqParser.xsl</span> Document Request Parser</li>
@@ -1135,7 +1135,7 @@ Done.
     The <span class="Code">dynaXML.conf</span> configuration file is used by the 
     <span class="Keyword">dynaXML</span> servlet to locate its <b>Document Request Parser</b> 
     and <b>Error Page Generator</b> XSLT templates. It is also used to adjust 
-    the behavior of the the servlet itself. Each tag and its associated attributes 
+    the behavior of the servlet itself. Each tag and its associated attributes 
     are discussed here, and a sample <span class="Code">dynaXML.conf</span> can 
     be found in the <span class="Code">conf</span> subdirectory below the servlet 
     base directory (i.e., the <span class="Code">XTF_HOME</span> directory.) 
@@ -1347,7 +1347,7 @@ Done.
       <div class="IndentLR"> 
         <p>Controls whether a profile is generated for each document request. 
           A profile identifies the stylesheet and line number of each XSLT command 
-          that was executed for the query, and a relative count that identifes 
+          that was executed for the query, and a relative count that identifies 
           roughly how long it took to execute that command. Within the profile, 
           the executed commands are ordered such that the most used commands appear 
           first, and the least used commands appear last. This provides clues 
@@ -1439,10 +1439,10 @@ Done.
     servlet should translate the XML file for a document in the library into HTML 
     that can be displayed in the user's browser. Which document formatter to use 
     is determined by a tag in the <span class="Code">docReqParser.xsl</span> template. 
-    Sample document formatters are provided in the<span class="Code"> ./style/dynaXML/docFormatter/eschol 
-    and ./style/dynaXML/docFormatter/oac </span>subdirectories below the <span class="Code"> 
+    Sample document formatters are provided in the<span class="Code"> ./style/dynaXML/docFormatter/tei 
+    and ./style/dynaXML/docFormatter/ead </span>subdirectories below the <span class="Code"> 
     XTF_HOME </span>base directory under which the XTF system was installed. In 
-    both sub-directories, the document formatters are <span class="Code">dynaxml.xsl</span>, 
+    both sub-directories, the document formatters are <span class="Code">docFormatter.xsl</span>, 
     but implement different output formatting schemes. A full discussion of the 
     internal workings of the document formatter templates is beyond the scope 
     of this document. Please refer to the <a href="programming.html">XTF 
@@ -1466,7 +1466,7 @@ Done.
   <p align="center"> <img src="art/crossQueryDataFlow.gif" alt="crossQuery Data Flow"/><br/>
     Figure 8: Data Flow in the <span class="Keyword">crossQuery</span> Servlet </p>
   The <span class="Keyword">crossQuery</span> servlet is configured by modifying one or more 
-  of the the following files: 
+  of the following files: 
   <ul class="UnorderedList">
     <li>The <span class="Code">crossQuery.conf</span> Configuration File</li>
     <li>The <span class="Code">queryGen.xsl</span> Request Parser</li>
@@ -1481,7 +1481,7 @@ Done.
     The <span class="Code">crossQuery.conf</span> configuration file is used by 
     the <span class="Keyword">crossQuery</span> servlet to locate its <b>Query Generator</b> 
     and <b>Error Page Generator</b> XSLT templates. It is also used to adjust 
-    the behavior of the the servlet itself. Each tag and its associated attributes 
+    the behavior of the servlet itself. Each tag and its associated attributes 
     are discussed here, and a sample <span class="Code">crossQuery.conf</span> 
     can be found in the <span class="Code">conf</span> subdirectory below the 
     servlet base directory (i.e., the <span class="Code">XTF_HOME</span> directory.) 
@@ -1692,7 +1692,7 @@ Done.
     <br/>
     <br/>
     <b><u>Running the crossQuery Servlet</u></b> <br/>
-    As with the <span class="Keyword">dynaXML</span> servlet, once your servlet containiner has 
+    As with the <span class="Keyword">dynaXML</span> servlet, once your servlet container has 
     been configured to invoke it, running the <span class="Keyword">crossQuery</span> servlet 
     consists of simply issuing a valid search query URL. </div>
 </div>
@@ -1782,7 +1782,7 @@ Done.
   The <span class="Keyword">dynaXML</span> servlet can be configured to take advantage of user 
   authentication to limit access to retrieved documents. The types of authentication 
   available are IP List, LDAP, and External. An brief overview of each of these 
-  methods is provded in the following sections. 
+  methods is provided in the following sections. 
   <div class="IndentL"> 
     <p class="Heading2">IP List Authentication<a name="AuthIPList"></a></p>
     <!-- - - - - - - - - - - - - - --> 
@@ -1855,7 +1855,7 @@ Done.
     <!-- - - - - - - - - - - - - - --> 
     The final authentication mechanism uses an external web page to check the 
     user's permission, and uses a special protocol to ensure security during the 
-    transaction. External authentication provides great flexibiltity, allowing 
+    transaction. External authentication provides great flexibility, allowing 
     form-based login, <span class="Code">.htpasswd</span> apache-style checking, 
     Shibboleth, and any other method that uses a web page. <br/>
     <br/>
