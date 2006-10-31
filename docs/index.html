@@ -49,12 +49,17 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     The documentation for XTF is divided into several different guides:
   </p>
   <ul>
-    <li><a href="deployment.html">Deployment Guide</a>: Complete setup and configuration information.</li>
-    <li><a href="programming.html">Programming Guide</a>: An in-depth technical overview of XTF, and instructions on how to program XTF stylesheets.</li>
-    <li><a href="tagRef.html">Tag Reference</a>: Complete information on XTF elements and attributes.</li>
-    <li><a href="tips.html">Tips &amp; Tricks</a>: Pointers on debugging XTF stylesheets, setting up external tools, and other useful items.</li>
-    <li><a href="underHood.html">Under the Hood</a>: Very technical details about the actual operation of XTF and how it performs tasks.</li>
-    <li><a href="experimental.html">Experimental Features</a>: Some information on partly-cooked features being developed for XTF.</li>
+    <li><a href="deployment.html"><b>Deployment Guide</b></a>: Complete setup and configuration information.
+      <b>If you are new to XTF, start with this guide.</b><br/><br/></li>
+    <li><a href="programming.html"><b>Programming Guide</b></a>: An in-depth technical overview of XTF, and
+      instructions on how to program XTF stylesheets.<br/><br/></li>
+    <li><a href="tagRef.html"><b>Tag Reference</b></a>: Complete information on XTF elements and attributes.<br/><br/></li>
+    <li><a href="tips.html"><b>Tips &amp; Tricks</b></a>: Pointers on debugging XTF stylesheets, 
+      setting up external tools, and other useful items.<br/><br/></li>
+    <li><a href="underHood.html"><b>Under the Hood</b></a>: Very technical details about the actual operation 
+      of XTF and how it performs tasks.<br/><br/></li>
+    <li><a href="experimental.html"><b>Experimental Features</b></a>: Some information on partly-cooked 
+      features being developed for XTF.<br/><br/></li>
   </ul>
   
   <p class="Heading1">What's New?<a name="WhatsNew"></a></p>
@@ -123,37 +128,51 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         <br/><br/>
       </li>
       <li>
-        Documented XTF extensions to <a href="programming.html#Common_Exec">call command-line programs</a> from stylesheets, and to check a file's existence and length.
+        Documented XTF extensions to <a href="programming.html#Common_Exec">call command-line programs</a> 
+        from stylesheets, and to <a href="programming.html#Common_FileUtils">check</a> a file's existence,
+        length, and modification time.
         <br/><br/>
       </li>
       <li>
+        For clarity, the documentation now refers to "bi-grams" instead of "n-grams", since XTF 
+        exclusively uses two-word n-grams.
         <br/><br/>
       </li>
       <li>
+        The new <a href="tagRef.html#textIndexer_PreFilt_Store"><span class="Code">xtf:store</span></a> 
+        attribute is available for meta-data fields at index time. Additionally,
+        <a href="tagRef.html#textIndexer_PreFilt_Index"><span class="Code">xtf:index</span></a> 
+        can now be specified for meta-data fields as well (it used to only apply to text.)
         <br/><br/>
       </li>
       <li>
+        An option for <a href="tagRef.html#crossQuery_QueryParser_Output_Range">numeric range searching</a> 
+        is now available, which allows efficient processing
+        of very granular numeric data, as long as it is in a fixed, consistent format.
         <br/><br/>
       </li>
       <li>
+        Some of the error tags that <span class="Keyword">dynaXML</span> could send to the
+        <b>Error Generator Stylesheet</b> were not previously documented: 
+        <span class="Code"><a href="tagRef.html#ErrorGenerator_InvalidDocument">&lt;InvalidDocument&gt;</a></span> and
+        <span class="Code"><a href="tagRef.html#ErrorGenerator_NoPermission">&lt;NoPermission&gt;</a></span>.
         <br/><br/>
       </li>
       <li>
+        Documented how to specify <a href="tagRef.html#textIndexer_DocSel_Output_File">multiple pre-filters</a> 
+        in the <span class="Code">&lt;file></span> tag
+        produced by the <b>Document Selector Stylesheet</b>. The pre-filters are chained together
+        in the order listed.
         <br/><br/>
       </li>
       <li>
+        Experimental support for <a href="experimental.html#MARC">MARC record parsing</a> is now documented.
         <br/><br/>
       </li>
       <li>
-        <br/><br/>
-      </li>
-      <li>
-        <br/><br/>
-      </li>
-      <li>
-        <br/><br/>
-      </li>
-      <li>
+        <a href="programming.html#Common_PassThrough">Pass-through configuration parameters</a> 
+        have been supported for a long time, but are now
+        properly documented.
         <br/><br/>
       </li>
     </ul>
