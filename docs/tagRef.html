@@ -53,10 +53,10 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               name="xtf:noindex"/&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Meta">&lt;xsl:attribute 
               name="xtf:meta"/&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Store">&lt;xsl:attribute 
+              name="xtf:store"/&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Tokenize">&lt;xsl:attribute 
               name="xtf:tokenize"/&gt;</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code">&lt;xsl:attribute 
-              name="xtf:store"/&gt;</span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_ProxBreak">&lt;xsl:attribute 
               name="xtf:proximitybreak"/&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SentBump">&lt;xsl:attribute 
@@ -86,6 +86,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#http_Referer_Att">http.Referer</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#http_IfModSince_Att">http.If-Modified-Since</a></span></font></li>
             <li class="ListItem"><font size="-1"><a href="#http_other_Att"><span class="Code">http.</span><span class="MacroCode">OtherHeaders</span></a></font></li>
+            <li class="ListItem"><a href="#pass_through">Pass-Through Configuration Parameters</a></li>
           </ul>
         </li>
       </ul>
@@ -106,6 +107,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#ErrorGenerator_QueryFormat">&lt;QueryFormat&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#ErrorGenerator_TermLimit">&lt;TermLimit&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#ErrorGenerator_ExcessiveWork">&lt;ExcessiveWork&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#ErrorGenerator_InvalidDocument">&lt;InvalidDocument&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#ErrorGenerator_NoPermission">&lt;NoPermission&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#ErrorGenerator_UnsupportedQuery">&lt;UnsupportedQuery&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#ErrorGenerator_General">&lt;<span class="MacroCode">GeneralExceptionName</span>&gt;</a></span><br/>
               <br/>
@@ -119,9 +122,14 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <br/>
         </li>
         <li><a href="#Exec">Calling Command-line Tools</a><br/>
-        </li>
-        <li>Checking for File Existence<br/>
           <br/>
+        </li>
+        <li><a href="#FileUtils">File Utility Functions</a><br/>
+          <ul class="NoBullets">
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#FileUtils_Exists">FileUtils:exists()</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#FileUtils_Length">FileUtils:length()</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#FileUtils_LastModified">FileUtils:lastModified()</a></span></font></li>
+          </ul>
         </li>
       </ul>
       <br/>
@@ -130,9 +138,6 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       Reference</font></b></a><br/>
       <br/>
       <ul class="NoBullets">
-        <li>Debug Step Mode<br/>
-          <br/>
-        </li>
         <li><a href="#crossQuery_QueryParser_Tags">Query Parser</a><br/>
           <ul class="NoBullets">
             <li class="ListItem"><a href="#crossQuery_QueryParser_Input_Tags">Input 
@@ -152,7 +157,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Range">&lt;range&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_SectionType">&lt;sectionType&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Facet">&lt;facet&gt;</a></span></font></li>
-                <li class="ListItem"><font size="-1"><span class="Code">&lt;resultData&gt;</span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_ResultData">&lt;resultData&gt;</a></span></font></li>
               </ul>
             </li>
           </ul>
@@ -235,7 +240,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     with the general organization of the XTF system as described in the <a href="programming.html">XTF 
     Programmer's Guide</a>.</p>
   <p>The first section covers the two stylesheets used by the <span class="Keyword">textIndexer</span>: 
-    the Document Selector and the Prefilter. The second section goes over parameters, 
+    the Document Selector and the Pre-filter. The second section goes over parameters, 
     tags, and utilities that are common in both <span class="Keyword">crossQuery</span> and <span class="Keyword">dynaXML</span>. 
     The final two sections cover the unique parameters and tags of stylesheets 
     unique to each servlet; first <span class="Keyword">crossQuery</span> and then <span class="Keyword">dynaXML</span>.<br/>
@@ -353,7 +358,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <div class="IndentLR"> 
             <pre class="Code">&lt;file fileName      = "<span class="MacroCode">FileName</span>"
       <i>{</i>format       = "<span class="MacroCode">FileFormat</span>"<i>}</i>
-      <i>{</i>preFilter    = "<span class="MacroCode">PreFilterPath</span>"<i>}
+      <i>{</i>preFilter    = "<span class="MacroCode">PreFilterPath(s)</span>"<i>}
 </i>      <i>{</i>displayStyle = "<span class="MacroCode">DocumentFormatterPath</span>"<i>}</i>/&gt;</pre>
             where<br/>
             <br/>
@@ -387,14 +392,23 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               </tr>
               <tr> 
                 <td align="right" valign="top" class="Code"> 
-                  preFilter="<span class="MacroCode">PreFilterPath</span>"
+                  preFilter="<span class="MacroCode">PreFilterPath(s)</span>"
                 </td>
                 <td> 
                   <div align="left"><span class="BaseStyle">is an optional attribute 
                     that specifies the path to the <b>Pre-Filter</b> stylesheet 
                     to be applied to this file. If this path is not specified 
                     as an absolute path, it is assumed to be relative to the XTF 
-                    base installation directory (i.e., <span class="Code">XTF_HOME</span>.) 
+                    base installation directory (i.e., <span class="Code">XTF_HOME</span>.)<br/>
+                    <br/>
+                    Multiple pre-filters may be specified in a list; they should
+                    be separated by "<span class="Code">;</span>" or "<span class="Code">,</span>" 
+                    characters. The
+                    pre-filters will be applied in the order listed (e.g. the
+                    original file is sent to the first pre-filter; its output
+                    is sent to the second pre-filter, whose output is sent
+                    to the third, etc.)<br/>
+                    <br/>
                     If this attribute is omitted, no pre-filter will be applied 
                     to the file.</span></div>
                 </td>
@@ -446,13 +460,21 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <div class="Note"> (Note: If not explicitly set, nested sub-tags for a document 
             inherit the index/noindex state from the closest parent tag for which 
             an index state is defined.) </div>
+          <p>
+            This attribute can be used for normal text blocks, and also on blocks
+            marked as metadata using the <span class="Code">xtf:meta</span> attribute
+            <a href="#textIndexer_PreFilt_Meta">below</a>. In both cases, it controls
+            whether the given block of text, or meta-data field, is added to the
+            index. In the case of meta-data, a field that isn't added to the index
+            will still be made available to the <b>Result Formatter</b> stylesheet
+            when <span class="Keyword">crossQuery</span> results are displayed.
+          </p>
         </div>
       </div>
       <br/>
       <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:meta" 
         select="<span class="MacroCode">'TrueOrFalse'</span>"/&gt;<a name="textIndexer_PreFilt_Meta"></a> 
         </span> <br/>
-        <br/>
         <div class="IndentLR"> 
           <p>This attribute is used to mark the contents of a tag as being part 
             of the meta-data for a document rather than main-body text for the 
@@ -481,6 +503,29 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             and not marking the other.
           </p>
 
+        </div>
+      </div>
+      <br/>
+      <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:store" 
+        select="'<span class="MacroCode">TrueOrFalse</span>'"/&gt;<a name="textIndexer_PreFilt_Store"></a><a name="textIndexer_PreFilt_NoIndex"></a> 
+        </span><br/>
+        <br/>
+        <div class="IndentLR"> This attribute is used to turn on/off whether to
+          store the contents of a meta-data field in the index, and make them available to the
+          <b>Result Formatter</b> stylesheet.<br/>
+          <br/>
+          The value for either of these tags should be set to either the string<span class="Code"> 
+            'true' </span>or the string <span class="Code"> 'false'</span>. If not specified,
+          this attribute defaults to<span class="Code"> 'true'</span>.<br/>
+          <p>
+            This attribute can only be used on meta-data blocks that also have the
+            <span class="Code">xtf:meta</span> attribute set. Setting <span class="Code">xtf:store</span>
+            to<span class="Code"> 'false' </span> can make the final index smaller, and
+            can also speed up processing by the <b>Result Formatter</b> stylesheet, since
+            it will have less data to process.  A field can be indexed and stored,
+            indexed and not stored, or stored and not indexed; all of these combinations
+            can be useful in certain circumstances.
+          </p>
         </div>
       </div>
       <br/>
@@ -851,6 +896,19 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       <div class="IndentLR"> <span class="Code"> </span></div>
     </div><br/>
     
+    <!-- - - - - - - - - - - - - - --> 
+    <div class="GreyList"> <b><u>Pass-Through Configuration Parameters</u></b><a name="pass_through"></a><br/>
+      Any unrecognized tag present in the configuration file for a given tool (i.e.
+      <span class="Code">textIndexer.conf</span> for the <span class="Keyword">textIndexer</span>,
+      <span class="Code">dynaXML.conf</span> for the <span class="Keyword">dynaXML</span>, etc.)
+      will be made available to stylesheets run by that tool. These can be accessed by
+      declaring an XSLT parameter containing the element name and the attribute name:<br/>
+      <div class="IndentLR">
+        <pre class="Code"><b>&lt;xsl:param name="<span class="MacroCode">ElementName</span>.<span class="MacroCode">AttributeName</span>/></b></pre>
+      </div>
+      For a concrete example, see the <a href="programming.html#Common_PassThrough">Programming Guide</a>. 
+    </div><br/>
+    
 </div>
       
 <div class="IndentL"> 
@@ -1037,7 +1095,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       
     <div class="Sample"> <b><u>Term Limit Error Tag<a name="ErrorGenerator_TermLimit"></a></u></b><br/>
         <!-- - - - - - - - - - - - - - --> 
-        This error tag is issued when the number terms or clauses in a query exceeds 
+        This error tag is issued by the <b>Query Parser</b> or <b>Document Request 
+        Parser </b>stylesheet if the number terms or clauses in a query exceeds 
         the maximum term limit established by the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">termLimit</a> 
         </span>attribute of the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">query</a> 
         </span>tag produced by the <a href="programming.html#crossQuery_QueryParser_Prog"><b>Query 
@@ -1053,7 +1112,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       
     <div class="Sample"> <b><u>Excessive Work Error Tag<a name="ErrorGenerator_ExcessiveWork"></a></u></b><br/>
         <!-- - - - - - - - - - - - - - --> 
-        This error tag is issued when a query exceeds the maximum work limit established 
+        This error tag is issued by the <b>Query Parser</b> or <b>Document Request 
+        Parser </b>stylesheet if a query exceeds the maximum work limit established 
         by the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">workLimit</a> 
         </span>attribute of the<span class="Code"> <a href="#crossQuery_QueryParser_Output_Query">query</a> 
         </span>tag produced by the <a href="programming.html#crossQuery_QueryParser_Prog"><b>Query 
@@ -1063,13 +1123,53 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
 &lt;/ExcessiveWork&gt;</pre>
         </div>
-      </div>
+    </div><br/>
       
-    <div class="Sample"><b><u>Unsupported Query Tag<a name="ErrorGenerator_UnsupportedQuery"></a></u></b><br/>
+    <div class="Sample"><b><u>Invalid Document Error Tag<a name="ErrorGenerator_InvalidDocument"></a></u></b><br/>
       <!-- - - - - - - - - - - - - - --> 
       This error tag is issued by the <span class="Keyword">dynaXML</span> servlet if a document 
-      request issued by the <b>Document Request Parser</b> stylesheet has an error. 
-      It has the form: 
+      requested by the <b>Document Request Parser</b> stylesheet 
+      (in the <span class="Code">&lt;source></span> tag)
+      cannot be located.
+      This tag has the form: 
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;InvalidDocument&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+    &lt;docId&gt;<span class="MacroCode">Document Identifier</span>&lt;/message&gt;
+&lt;/InvalidDocument&gt;</pre>
+      </div>
+      Usually, this error is generated when a request is made for a document that
+      doesn't exist (for instance, it might have been removed, or the document ID
+      might be invalid.) </div>
+    <br/>
+  
+    <div class="Sample"><b><u>No Permission Error Tag<a name="ErrorGenerator_NoPermission"></a></u></b><br/>
+      <!-- - - - - - - - - - - - - - --> 
+      This error tag is issued by the <span class="Keyword">dynaXML</span> servlet if 
+      the authentication (specified by the <b>Document Request Parser</b> stylesheet) 
+      fails for some reason. For instance, if IP-based authentication has been
+      specified, and the requestor's IP address isn't in the IP list, this error
+      will be issued.
+      This tag has the form: 
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;NoPermission&gt;
+    &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
+    &lt;ipAddr&gt;<span class="MacroCode">IP Address</span>&lt;/message&gt;
+&lt;/NoPermission&gt;</pre>
+      </div>
+      Note that the IP address will only be included for requests that failed
+      during IP-list authentication (and not for LDAP or external authentication,
+      for example.)
+    </div>
+    <br/>
+  
+    <div class="Sample"><b><u>Unsupported Query Error Tag<a name="ErrorGenerator_UnsupportedQuery"></a></u></b><br/>
+      <!-- - - - - - - - - - - - - - --> 
+      This error tag is issued by the <span class="Keyword">dynaXML</span> servlet if a document 
+      request issued by the <b>Document Request Parser</b> stylesheet specifies a text
+      query, and the document being queried is not present in the index. Searching can only
+      be performed on documents that have been indexed.
+      This tag has the form: 
       <div class="IndentLR"> 
         <pre class="Code">&lt;UnsupporedQuery&gt;
     &lt;message&gt;<span class="MacroCode">Error Message</span>&lt;/message&gt;
@@ -1078,11 +1178,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       Usually, this error is generated when a<span class="Code"> <a href="#dynaXML_ReqParser_Output_Query">query</a> 
       </span>tag has been used in a document request without the required<span class="Code"> 
       <a href="#dynaXML_ReqParser_Output_Index">index</a> </span>tag. </div>
-    <div class="Sample"></div>
     <br/>
-    <div class="Sample"> <b><u>General Exception Tag<a name="ErrorGenerator_General"></a></u></b><br/>
+
+    <div class="Sample"> <b><u>General Exception Error Tag<a name="ErrorGenerator_General"></a></u></b><br/>
         <!-- - - - - - - - - - - - - - --> 
-        This error tag is generated whenever an internal exception occurs in the <span class="Keyword">crossQuery</span> 
+        This error tag is generated whenever an internal exception occurs in any 
         Servlet. This tag looks as follows: 
         <div class="IndentLR"> 
           <pre class="Code">&lt;<span class="MacroCode">GeneralExceptionName</span>&gt;
@@ -1091,7 +1191,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 &lt;/<span class="MacroCode">GeneralExceptionName</span>&gt;</pre>
         </div>
         Exceptions are usually generated by anomalous fatal conditions like missing 
-        required files, corrupted indexes, or files locked by other applications. 
+        required files, corrupted indexes, files locked by other applications,
+        or bugs in the XTF code itself. 
       </div>
       <br/>
   <p class="Heading2">Raw Dump Mode<a name="Raw_Dump_Mode"></a></p>
@@ -1439,6 +1540,127 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         </p>
       </div>
     </div>
+  
+    <br/>
+    <p class="Heading2">File Utility Functions<a name="FileUtils"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    <p>XTF provides a number of functions that stylesheets can use to check
+      attributes of a file in the local filesystem. See the
+      <a href="programming.html#Common_FileUtils">XTF Programming Guide</a>
+      for a description and examples.<br/>
+    </p>
+    <div class="Sample"><b><u>File Existence Extension Function<a name="FileUtils_Exists"></a></u></b><br/>
+      <!-- - - - - - - - - - - - - - --> 
+      This extension function can be used within a stylesheet to determine whether a
+      particular file exists on the filesystem, like this:<br/>
+      <br/>
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;xsl:if test="FileUtils:exists(<span class="MacroCode">FilePath</span>)">…</pre> 
+      </div>
+      <p>where
+      </p>
+      <div class="IndentLR"> 
+        <table cellspacing="12">
+          <tr> 
+            <td align="right" valign="top" class="Code">FileUtils:</td>
+            <td><span class="BaseStyle">is a namespace prefix identifying this
+              set of Saxon extension functions.</span> The namespace URI for this 
+              prefix must be: <span class="Code"><b>java:org.cdlib.xtf.xslt.FileUtils</b></span>.</td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code"><span class="MacroCode">FilePath</span></td>
+            <td>specifies the relative or absolute path to the file in question.
+              If a relative path is specified, it will be resolved in
+              relation to the stylesheet that calls the function.
+            </td>
+          </tr>
+        </table>
+      </div>
+      <p>
+        The extension function returns the boolean value <span class="Code">true</span>
+        if the file is readable by the stylesheet, or <span class="Code">false</span> if not.
+      </p>
+    </div>
+    <br/>
+
+    <div class="Sample"><b><u>File Length Function<a name="FileUtils_Length"></a></u></b><br/>
+      <!-- - - - - - - - - - - - - - --> 
+      This extension function can be used within a stylesheet to determine the length (in bytes) of a
+      particular file exists on the filesystem, like this:<br/>
+      <br/>
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;xsl:variable name="myFileLen" select="FileUtils:length(<span class="MacroCode">FilePath</span>)">…</pre> 
+      </div>
+      <p>where
+      </p>
+      <div class="IndentLR"> 
+        <table cellspacing="12">
+          <tr> 
+            <td align="right" valign="top" class="Code">FileUtils:</td>
+            <td><span class="BaseStyle">is a namespace prefix identifying this
+              set of Saxon extension functions.</span> The namespace URI for this 
+              prefix must be: <span class="Code"><b>java:org.cdlib.xtf.xslt.FileUtils</b></span>.</td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code"><span class="MacroCode">FilePath</span></td>
+            <td>specifies the relative or absolute path to the file in question.
+              If a relative path is specified, it will be resolved in
+              relation to the stylesheet that calls the function.
+            </td>
+          </tr>
+        </table>
+      </div>
+      <p>
+        The extension function returns the length, in bytes, of the specified file, or
+        <span class="Code">-1</span> if the file cannot be read.
+      </p>
+    </div>
+    <br/>
+
+    <div class="Sample"><b><u>File Modification Time Function<a name="FileUtils_LastModified"></a></u></b><br/>
+      <!-- - - - - - - - - - - - - - --> 
+      This extension function can be used within a stylesheet to find out when a
+      particular file was last modified, like this:<br/>
+      <br/>
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;xsl:variable name="myModTime" 
+              select="FileUtils:lastModified(<span class="MacroCode">FilePath</span>, <span class="MacroCode">DateFormat</span>)">...</pre> 
+      </div>
+      <p>where
+      </p>
+      <div class="IndentLR"> 
+        <table cellspacing="12">
+          <tr> 
+            <td align="right" valign="top" class="Code">FileUtils:</td>
+            <td><span class="BaseStyle">is a namespace prefix identifying this
+              set of Saxon extension functions.</span> The namespace URI for this 
+              prefix must be: <span class="Code"><b>java:org.cdlib.xtf.xslt.FileUtils</b></span>.</td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code"><span class="MacroCode">FilePath</span></td>
+            <td>specifies the relative or absolute path to the file in question.
+              If a relative path is specified, it will be resolved in
+              relation to the stylesheet that calls the function.
+            </td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code"><span class="MacroCode">DateFormat</span></td>
+            <td>is a string representing the format that the date and/or time
+              should be returned in. This uses codes from Java's 
+              <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html"><span class="Code">SimpleDateFormat</span></a>
+              class such as <span class="Code">yyyy-MM-dd:HH:mm:ss</span>.
+            </td>
+          </tr>
+        </table>
+      </div>
+      <p>
+        The extension function returns a formatted version of the date and/or time (depending on
+        format) that a given file was last modified. This can be useful for detecting
+        which files are newer than others, processing all files newer than a certain date, etc.
+      </p>
+    </div>
+    <br/>
+
   </div>
   <!-- crossQuery Tag Reference --> <br/>
   <br/>
@@ -1469,7 +1691,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         
     <p>The XML input to the Query Parser stylesheet is a simple XML representation 
       of the query URL supplied to the <span class="Keyword">crossQuery</span> servlet from the 
-      user query web-page. The XML input and and XSL parameters are the same as 
+      user query web-page. The XML input and XSL parameters are the same as 
       those for the <span class="Keyword">dynaXML </span>Document Request Parser, and are documented 
       in the <a href="#Common_Parser_Input_Tags">Common Parser Input Tags</a> 
       and <a href="#Common_Stylesheet_Parameters">Common Stylesheet Parameters</a> 
@@ -2236,7 +2458,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <td align="right" valign="top" class="Code"><i></i>useProxmity="<span class="MacroCode">YesOrNo</span>"<i></i></td>
                 <td> 
                   is an optional attribute that specifies whether the AND query should
-                  take the proxmity of terms into account. Generally it's best to leave
+                  take the proximity of terms into account. Generally it's best to leave
                   this on (the default) as it results in higher quality results for the
                   user. However, turning it off can increase query processing speed, as
                   the <span class="Keyword">Text Engine</span> will have less work to
@@ -2245,7 +2467,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                   <p>If not specified, this attribute defaults to
                   <span class="MacroCode">Yes</span>, that is, proximity will be
                   taken into account.</p>
-                  <p>Note that if proxmity processing is turned off, individual text
+                  <p>Note that if proximity processing is turned off, individual text
                     hits within document text and meta-data fields will <i>not</i> be
                     highlighted, and scores for matching documents will be somewhat
                     different.
@@ -2668,9 +2890,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           specified first and last term. It has the form: <br/>
           <br/>
           <div class="IndentLR"> 
-            <pre class="Code">&lt;range <i>{</i>inclusive   = "<span class="MacroCode">YesOrNo</span>"<i>}<br/>       {</i>field       = "<span class="MacroCode">FieldName</span>"<i>}</i>
+            <pre class="Code">&lt;range <i>{</i>inclusive   = "<span class="MacroCode">YesOrNo</span>"<i>}</i>
+       <i>{</i>numeric     = "<span class="MacroCode">YesOrNo</span>"<i>}</i>
+       <i>{</i>field       = "<span class="MacroCode">FieldName</span>"<i>}</i>
        <i>{</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
-   <i>    {</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
+       <i>{</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
 
     &lt;upper&gt;<span class="MacroCode">FirstTermToFind</span>&lt;/upper&gt;
     &lt;lower&gt;<span class="MacroCode">LastTermToFind</span>&lt;/lower&gt;
@@ -2688,6 +2912,25 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <td> <span class="BaseStyle"> is an optional attribute that specifies 
                   whether the range should include the first and last term when 
                   matching. If not specified, this attribute defaults to <b>yes</b>. 
+                  </span> </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code"> numeric="<span class="MacroCode">YesOrNo</span>" 
+                </td>
+                <td> <span class="BaseStyle"> is an optional attribute that specifies 
+                  whether the data in the field is numeric and in a rigid consistent format.
+                  If set to <span class="Code">yes</span>, upon the first range query
+                  on the field, XTF will read into memory a table of all the data values,
+                  converting them to 64-bit integers; subsequent queries can then be
+                  processed extremely efficiently. <br/>
+                  <br/>
+                  If this attribute is set to <span class="Code">no</span>,
+                  the query is much more tolerant of variable formatting in the data;
+                  XTF will expand the range query into a multi-term OR (just like a wildcard query.) However, 
+                  for some types of data, wildcard expansion can result in too many terms for the engine
+                  to handle. <br/>
+                  <br/>
+                  If not specified, this attribute defaults to <span class="Code">no</span>.
                   </span> </td>
               </tr>
               <tr> 
@@ -2797,7 +3040,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             time by the <b> Pre-Filter </b>stylesheet using the <a href="#textIndexer_PreFilt_SectType">xtf:sectionType</a> 
             attribute.</p>
           <p>For example, if one wanted the option to only search the chapter 
-            headings of all books in a repository, then the prefilter would be 
+            headings of all books in a repository, then the pre-filter would be 
             modified to mark all the headings with<span class="Code"> xtf:sectionType=&quot;heading&quot;</span>, 
             and then a<span class="Code"> sectionType </span>tag would be added 
             within the main text query, containing<span class="Code"> term </span>tag 
@@ -3425,7 +3668,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     Parser</b> stylesheet. They constitute a simple XML representation of the 
     document request URL supplied to the <span class="Keyword">dynaXML</span> servlet from either 
     a document catalog web-page or a <span class="Keyword">crossQuery</span> search result web-page. 
-    The XML input and and XSL parameters are the same as those for the <span class="Keyword">crossQuery</span><b><i> 
+    The XML input and XSL parameters are the same as those for the <span class="Keyword">crossQuery</span><b><i> 
     </i>Query Parser</b>, and are documented in the <a href="#Common_Parser_Input_Tags">Common 
     Parser Input Tags</a> and <a href="#Common_Stylesheet_Parameters">Common Stylesheet 
     Parameters</a> sections above. <br/>
@@ -3902,7 +4145,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <td width="10" height="40">&nbsp;</td>
           <td height="40"> 
             <span class="BaseStyle"> is an XTF namespace prefix added to the 
-              tag to differentiate it from tags that came came from the original 
+              tag to differentiate it from tags that came from the original 
               XML document.</span> The namespace URI for this prefix is: <span class="Code">http://cdlib.org/xtf 
               </span><br/>
             </td>
@@ -3970,7 +4213,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <td width="10">&nbsp;</td>
               
           <td> <span class="BaseStyle"> is an XTF namespace prefix added to the 
-            tag to differentiate it from tags that came came from the original 
+            tag to differentiate it from tags that came from the original 
             XML document. The prefix will <span class="Keyword">not</span> be present in<span class="Code"> 
             hit </span>tags that appear within the initial<span class="Code"> 
             <a href="#dynaXML_DocFormatter_Snippets">snippets</a> </span>summary 
@@ -4060,7 +4303,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <td width="10">&nbsp;</td>
               
           <td> <span class="BaseStyle"> is an XTF namespace prefix added to the 
-            tag to differentiate it from tags that came came from the original 
+            tag to differentiate it from tags that came from the original 
             XML document. The namespace URI for this prefix is: <span class="Code">http://cdlib.org/xtf</span></span> 
           </td>
             </tr>
@@ -4127,7 +4370,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               <td width="10">&nbsp;</td>
               
           <td> <span class="BaseStyle"> is an XTF namespace prefix added to the 
-            tag to differentiate it from tags that came came from the original 
+            tag to differentiate it from tags that came from the original 
             XML document. The prefix will <span class="Keyword">not</span> be present in<span class="Code"> 
             term </span>tags that appear within the initial<span class="Code"> 
             <a href="#dynaXML_DocFormatter_Snippets">snippets</a> </span>summary 
