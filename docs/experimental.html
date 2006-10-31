@@ -44,6 +44,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       </ul>
       <br/>
     </li>
+    <li> <a href="#MARC"><b>MARC Record Parsing</b></a><br/>
+      <br/>
+    </li>
     <li> <a href="#SRU_Servlet"><b>SRU Servlet</b></a><br/>
       <br/>
     </li>
@@ -513,7 +516,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             </td>
             <td valign="baseline">
               is an optional attribute helps control which correctly spelled
-              words are considered for suggesion. This should be a non-negative
+              words are considered for suggestion. This should be a non-negative
               decimal number. If greater than one, suggested terms must occur
               more frequently than the original (misspelled) term. For instance,
               if the factor is set to <span class="Code">2.0</span>, suggested
@@ -530,7 +533,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               must match the original misspelled term. 
               A score is calculated based on the "edit distance"
               between the original term and each suggested term. If that score falls
-              below this accuracy threshhold, the suggested term is removed from
+              below this accuracy threshold, the suggested term is removed from
               consideration. A value of <span class="Code">0.5</span> has been found 
               to be effective. Lower values
               will allow looser matches; higher values restrict to closer matches.
@@ -795,7 +798,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             </td>
             <td valign="baseline">
               is an optional field name to sort the resulting groups by. If preceded
-              with a hypen, the sort is reversed. If not specified, the groups
+              with a hyphen, the sort is reversed. If not specified, the groups
               order will be arbitrary.
             </td>
           </tr>
@@ -823,6 +826,58 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 
   </div>
 
+  <p class="Heading1">MARC Record Parsing<a name="MARC"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  <p>
+    California Digital Library (CDL) is experimenting with indexing millions of
+    MARC 21 records using XTF. MARC stands for MAchine Readable Cataloging
+    and was developed by the <a href="http://www.loc.gov/marc/">Library of Congress</a>,
+    Adding MARC support is important for XTF since  many existing library 
+    catalogs are available only in MARC format, and XTF can add powerful capabilities (such as
+    relevance-based ranking, spelling correction, similarity queries,
+    integration with full text data, etc.) to these catalogs.
+  </p>
+  <p>
+    Since MARC records these are not in XML format, the 
+    <span class="Keyword">textIndexer</span> has the ability to convert
+    them to XML, and then send each record to one or more pre-filter
+    stylesheets. Support for MARC is potentially very powerful, since
+  </p>
+  <p>
+    One might ask: why not convert all the records to MARCXML once,
+    store those XML files in the filesystem, and then index them?
+    While this does work, it has proven very slow, and also quite
+    wasteful of hard drive space. MARC records on their own are
+    very compact, and so great efficiency is gained by converting them
+    <i>in memory</i> to MARCXML, and passing that XML directly
+    to the pre-filter stylesheets for indexing.
+  </p>
+  <p>
+    To enable this processing, when the <b>Document Selector Stylesheet</b>
+    encounters a file containing MARC records, it should output a 
+    <a href="tagRef.html#textIndexer_DocSel_Output_File"><span class="Code">&lt;file></span></a> tag with
+    the <span class="Code">format</span> attribute set to <span class="Code">'MARC'</span>.
+    The <span class="Keyword">textIndexer</span> will recognize this, open the file,
+    and convert each record to a separate MARCXML record, and pass each record in
+    turn to the pre-filter stylesheets(s). The conversion from MARC to
+    MARCXML is performed by the <b>marc4j</b> library, included with the
+    XTF distribution.
+  </p>
+  <p>
+    CDL's experience with MARC conversion has been very positive: the conversion
+    process is quite fast and the source records remain compact. To deal with
+    some data corruption problems, XTF now makes every attempt to
+    normalize Unicode characters when possible, and skip invalid characters.
+    Also, if an entire record is corrupted, XTF will attempt to re-synchronize
+    on the next uncorrupted record. In this way, the system is now
+    fairly resilient in the face of minor data corruption.
+  </p>
+  <p class="Note">
+    Note that <span class="Keyword">dynaXML</span> does not handle MARC
+    record parsing or display. In CDL's system, <span class="Keyword">crossQuery</span>
+    was used to display the records, drawing its data directly from the index.
+  </p>
+  
   <p class="Heading1">SRU Servlet<a name="SRU_Servlet"></a></p>
   <!-- - - - - - - - - - - - - - --> 
   <p>XTF currently contains an experimental servlet that provides exposes a Zing 
@@ -839,7 +894,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       along with some of those records formatted according to an XML schema that 
       the user requested.<br/><br/>
     The query is represented in CQL, the "Common Query Language", designed 
-      for human readable, human writeable, intuitive queries. It supports very 
+      for human readable, human writable, intuitive queries. It supports very 
       simple queries -- for example an unqualified single term (e.g. "cat") -- 
       but maintains the expressiveness of more complex languages, to represent 
       arbitrarily complex queries.
