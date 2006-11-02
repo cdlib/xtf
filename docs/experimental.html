@@ -359,7 +359,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       We began with a base of existing Java spelling correction code that had been contributed 
       to the Lucene project (written by Nicolas Maisonneuve, based on code originally 
       contributed by David Spencer).  The base Lucene algorithm first breaks up the word 
-      we're looking for into "n-grams" (for instance, the word <span>Code</span> might end up as: 
+      we're looking for into "n-grams" (for instance, the word <span class="Code">primer</span> might end up as: 
       <span class="Code">~pri prim rime imer mer~</span>). Next, it forms a Lucene 
       OR query on the index (also built with n-grams), then runs that query against the index, 
       retaining the top 100 hits (where a hit 
@@ -709,7 +709,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   <!-- - - - - - - - - - - - - - --> 
   <p>
     In a catalog with millions of bibliographic records, the problem of duplicate
-    or near-duplicate records often arises. An recognized approach to dealing
+    or near-duplicate records often arises. A recognized approach to dealing
     with this problem is to group them together using 
     <a href="http://www.ifla.org/VII/s13/frbr/frbr.htm">Functional Requirements for Bibliographic Records</a> 
     (FRBR).
@@ -838,7 +838,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     integration with full text data, etc.) to these catalogs.
   </p>
   <p>
-    Since MARC records these are not in XML format, the 
+    Since MARC records are in a binary (non-XML) format, the 
     <span class="Keyword">textIndexer</span> has the ability to convert
     them to XML, and then send each record to one or more pre-filter
     stylesheets. Support for MARC is potentially very powerful, since

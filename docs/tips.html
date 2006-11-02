@@ -375,7 +375,10 @@ $</pre>
       <span class="Code">textIndexer</span>, it can be very time-consuming to
       re-index your entire document collection every time you make a small
       change. You can achieve a much faster edit-run-fix cycle if you index
-      only small subsets of your data.
+      only small subsets of your data. In other words, when you discover a
+      bug, it's useful to just re-index one or a few documents required for
+      debug and testing purposes, and then once you've figured out the bug,
+      reindex the entire set of content.
     </p>
     <p>
       There are at least two ways to index small sets. First is to simply set up a
