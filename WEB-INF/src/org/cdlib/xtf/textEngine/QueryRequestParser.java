@@ -234,10 +234,18 @@ public class QueryRequestParser
             throw new QueryFormatError( main.attrValue("message") );
         
         // Process all the top-level attributes.
+        int maxSnippets = DEFAULT_MAX_SNIPPETS;
         for( int i = 0; i < main.nAttrs(); i++ ) {
             String name = main.attrName( i );
             String val  = main.attrValue( i );
-            parseMainAttrib( main, name, val );
+            if( name.equals("maxSnippets") ) {
+                int oldVal = maxSnippets;
+                maxSnippets = parseIntAttrib( main, name );
+                if( maxSnippets < 0 )
+                    maxSnippets = 999999999;
+            }
+            else
+                parseMainAttrib( main, name, val );
         }
 
         // Process the children. If we find an old <combine> element,
