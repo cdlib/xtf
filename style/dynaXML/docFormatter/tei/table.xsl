@@ -121,4 +121,28 @@
   </xsl:element>
 </xsl:template>
 
+<!-- Adding templates for row and cell to minimally support the TEI table model -->
+
+<xsl:template match="row">
+  <xsl:element name="tr">
+    <xsl:copy-of select="@*"/>
+    <xsl:apply-templates/>
+    <xsl:if test="normalize-space(.)"><xsl:text>&#160;</xsl:text></xsl:if>
+  </xsl:element>
+</xsl:template>
+
+<xsl:template match="cell">
+  <xsl:element name="td">
+    <xsl:copy-of select="@*[not(name()='cols' and name()='rows')]"/>
+    <xsl:if test="@cols">
+      <xsl:attribute name="colspan" select="@cols"/>
+    </xsl:if>
+    <xsl:if test="@rows">
+      <xsl:attribute name="rowspan" select="@rows"/>
+    </xsl:if>
+    <xsl:apply-templates/>
+    <xsl:if test="normalize-space(.)"><xsl:text>&#160;</xsl:text></xsl:if>
+  </xsl:element>
+</xsl:template>
+
 </xsl:stylesheet>
