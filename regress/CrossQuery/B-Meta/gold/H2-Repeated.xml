@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc10.xml" totalHits="0">
+      <meta>
+         <title>Wow, that's weird</title>
+         <creator>My Happy Hamster</creator>
+         <subject>
+            <snippet rank="1">
+               <hit>
+                  <term>Latin</term> 
+                  <term>American</term>, <term>American</term> 
+                  <term>Art</term>, <term>Mexican</term> 
+                  <term>American</term> 
+                  <term>Art</term>
+               </hit>
+            </snippet>
+         </subject>
+         <relation>http://www.orangecrush.com/</relation>
+         <rights>Public</rights>
+         <foo>bar</foo>
+         <era>Snoot 1920'fribble</era>
+      </meta>
+   </docHit>
+</crossQueryResult>
