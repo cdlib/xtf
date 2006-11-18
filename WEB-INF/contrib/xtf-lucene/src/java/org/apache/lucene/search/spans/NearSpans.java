@@ -18,6 +18,7 @@ package org.apache.lucene.search.spans;
 
 import java.io.IOException;
 
+import java.util.BitSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Similarity;
-import org.apache.lucene.util.PriorityQueue;
 
 /** Calculates spans that match several queries "near" each other. In-order
  *  matches score higher than out-of-order matches.
@@ -40,48 +40,23 @@ class NearSpans implements Spans {
   private int slop;                               // from query
   private boolean inOrder;                        // from query
 
-  private SpansCell first;                        // linked list of spans
-  private SpansCell last;                         // sorted by doc only
+  private SpansCell firstCell;                        // linked list of spans
+  private SpansCell lastCell;                         // fully sorted
+  private int nCellsInList;                       // number of cells added so far
 
   private int totalLength;                        // sum of current lengths
   private float totalScore;                       // sum of current scores
   private int totalSlop;                          // sloppiness of current match
-
-  private CellQueue queue;                        // sorted queue of spans
-  private SpansCell max;                          // max element in queue
+  private BitSet overlapBits = new BitSet();      // for detecting overlap
 
   private boolean more = true;                    // true iff not done
   private boolean firstTime = true;               // true before first next()
 
-  private class CellQueue extends PriorityQueue {
-    public CellQueue(int size) {
-      initialize(size);
-    }
-    
-    protected final boolean lessThan(Object o1, Object o2) {
-      SpansCell spans1 = (SpansCell)o1;
-      SpansCell spans2 = (SpansCell)o2;
-      if (spans1.doc() == spans2.doc()) {
-        if (spans1.start() == spans2.start()) {
-          if (spans1.end() == spans2.end()) {
-            return spans1.index > spans2.index;
-          } else {
-            return spans1.end() < spans2.end();
-          }
-        } else {
-          return spans1.start() < spans2.start();
-        }
-      } else {
-        return spans1.doc() < spans2.doc();
-      }
-    }
-  }
-
-
   /** Wraps a Spans, and can be used to form a linked list. */
   private class SpansCell implements Spans {
     private Spans spans;
-    private SpansCell next;
+    private SpansCell prevCell;
+    private SpansCell nextCell;
     private int length = -1;
     private float score;
     private int index;
@@ -92,49 +67,159 @@ class NearSpans implements Spans {
     }
 
     public boolean next() throws IOException {
-      if (length != -1) {                         // subtract old length
-        totalLength -= length;
-        totalScore -= score;
-      }
+      preChange();
 
       boolean more = spans.next();                // move to next
-
-      if (more) {
-        length = end() - start();                 // compute new length
-        totalLength += length;                    // add new length to total
-        score = spans.score();
-        totalScore += score;
-        
-        if (max == null || doc() > max.doc() ||   // maintain max
-            (doc() == max.doc() && end() > max.end()))
-          max = this;
-      }
-
+      if (more)
+        postChange();
+      
       return more;
     }
-
+    
     public boolean skipTo(int target) throws IOException {
-      if (length != -1) {                         // subtract old length
-        totalLength -= length;
-        totalScore -= score;
-      }
+      preChange();
 
       boolean more = spans.skipTo(target);        // skip
 
-      if (more) {
-        length = end() - start();                 // compute new length
-        totalLength += length;                    // add new length to total
-        score = spans.score();
-        totalScore += score;
-
-        if (max == null || doc() > max.doc() ||   // maintain max
-            (doc() == max.doc() && end() > max.end()))
-          max = this;
-      }
+      if (more)
+        postChange();
 
       return more;
     }
 
+    /** Called just before advancing the cell */
+    private void preChange() {
+      if (length != -1) {                         // subtract old length
+        totalLength -= length;
+        totalScore -= score;
+      }
+    }
+    
+    /** Called just after advancing the cell */
+    private void postChange() {
+      length = end() - start();                 // compute new length
+      totalLength += length;                    // add new length to total
+      score = spans.score();
+      totalScore += score;
+      adjustPosition();
+    }
+
+    // If cell needs to move toward end of list, move it.
+    public void adjustPosition() {
+      // Already at the end? Can't move forward.
+      if (this == lastCell)
+        return;
+      
+      // Optimization for common case: jump to end
+      SpansCell putBefore;
+      if (!lessThan(lastCell))
+        putBefore = null;
+      else {
+        // Find where to put it
+        putBefore = nextCell;
+        while (putBefore != null && !lessThan(putBefore))
+          putBefore = putBefore.nextCell;
+      }
+      
+      // If changing position, unlink and relink
+      if (putBefore != nextCell) {
+        unlink();
+        linkBefore(putBefore);
+      }
+    }
+
+    /** Remove the current cell from the linked list */
+    private void unlink() {
+      if (prevCell == null)
+        firstCell = nextCell;
+      else
+        prevCell.nextCell = nextCell;
+      
+      if (nextCell == null)
+        lastCell = this;
+      else
+        nextCell.prevCell = prevCell;
+      
+      nextCell = prevCell = null;
+      
+      --nCellsInList;
+    }
+    
+    /** Link the cell into the list just before 'other', or at the tail if null */
+    private void linkBefore(SpansCell other) {
+      nextCell = other;
+      prevCell = (other == null) ? lastCell : other.prevCell;
+      ++nCellsInList;
+      fixLinks();
+    }
+    
+    /** Link the cell into the list just after 'other', or at the head if null */
+    private void linkAfter(SpansCell other) {
+      prevCell = other;
+      nextCell = (other == null) ? firstCell : other.nextCell;
+      ++nCellsInList;
+      fixLinks();
+    }
+    
+    /** Helper function for linkAfter and linkBefore */
+    private void fixLinks()
+    {
+      if (nextCell == null)
+        lastCell = this;
+      else
+        nextCell.prevCell = this;
+      
+      if (prevCell == null)
+        firstCell = this;
+      else
+        prevCell.nextCell = this;
+    }
+
+    /** Debugging only: check that the links are all correct */
+    private void checkList()
+    {
+      System.out.println("DEBUGGING ONLY");
+
+      int nCells = 0;
+      for (SpansCell cell = firstCell; cell != null; cell = cell.nextCell) {
+        if (cell == firstCell)
+          assert cell.prevCell == null;
+        
+        if (cell == lastCell)
+          assert cell.nextCell == null;
+        
+        if (cell.prevCell == null)
+          assert firstCell == cell;
+        else
+          assert cell.prevCell.nextCell == cell;
+        
+        if (cell.nextCell == null)
+          assert lastCell == cell;
+        else
+          assert cell.nextCell.prevCell == cell;
+        ++nCells;
+        assert nCells <= nCellsInList; // infinite loop?
+      }
+      assert nCells == nCellsInList;
+    }
+    
+    /** Ordering function for cells in the list */
+    private final boolean lessThan(SpansCell otherCell) {
+      if (doc() == otherCell.doc()) {
+        if (start() == otherCell.start()) {
+          if (end() == otherCell.end()) {
+            return index > otherCell.index; // do not flip: needed for out-of-order check
+          } else {
+            return end() < otherCell.end();
+          }
+        } else {
+          return start() < otherCell.start();
+        }
+      } else {
+        return doc() < otherCell.doc();
+      }
+    }
+    
     public int doc() { return spans.doc(); }
     public int start() { return spans.start(); }
     public int end() { return spans.end(); }
@@ -152,7 +237,6 @@ class NearSpans implements Spans {
     this.inOrder = query.isInOrder();
 
     SpanQuery[] clauses = query.getClauses();     // initialize spans & list
-    queue = new CellQueue(clauses.length);
     for (int i = 0; i < clauses.length; i++) {
       SpansCell cell =                            // construct clause spans
         new SpansCell(clauses[i].getSpans(reader, searcher), i);
@@ -164,79 +248,66 @@ class NearSpans implements Spans {
 
   public boolean next() throws IOException {
     if (firstTime) {
-      initList(true);
-      listToQueue();                              // initialize queue
+      initList(-1);
       firstTime = false;
     } else if (more) {
-      more = min().next();                        // trigger further scanning
-      if (more)
-        queue.adjustTop();                        // maintain queue
+      more = advanceOneCell();        // trigger further scanning
     }
 
     while (more) {
 
-      boolean queueStale = false;
-
       // Get rid of cached slop value.
       totalSlop = -1;
 
-      if (min().doc() != max.doc()) {             // maintain list
-        queueToList();
-        queueStale = true;
-      }
-
       // skip to doc w/ all clauses
-
-      while (more && first.doc() < last.doc()) {
-        more = first.skipTo(last.doc());          // skip first upto last
-        firstToLast();                            // and move it to the end
-        queueStale = true;
+      while (more && firstCell.doc() < lastCell.doc()) {
+        more = firstCell.skipTo(lastCell.doc());          // skip first upto last
       }
 
       if (!more) return false;
-
-      // found doc w/ all clauses
-
-      if (queueStale) {                           // maintain the queue
-        listToQueue();
-        queueStale = false;
-      }
-
+      
+      // found doc w/ all clauses - is there a match?
       if (atMatch())
         return true;
       
-      // trigger further scanning
-      if (inOrder && checkSlop()) {
-        /* There is a non ordered match within slop and an ordered match is needed. */
-        more = firstNonOrderedNextToPartialList();
-        if (more) {
-          partialListToQueue();                            
-        }
-      } else {
-        more = min().next();
-        if (more) {
-          queue.adjustTop();                      // maintain queue
-        }
-      }
+      // Trigger further scanning.
+      more = advanceOneCell();
     }
     return false;                                 // no more matches
   }
 
+  private boolean advanceOneCell() throws IOException
+  {
+    // Is it even possible to adjust the order and get a better match?
+    int matchLength = lastCell.end() - firstCell.start();
+    if (matchLength - totalLength > slop) {
+      // Nope... just advance the first cell.
+      return firstCell.next();
+    }
+
+    // If things are out of order, but the endpoints are within the
+    // specified slop, we might be able to get a better match
+    // by advancing one of the out-of-order spans, rather than
+    // the first span. This can happen, for instance, if there are
+    // repeated terms in a phrase query.
+    //
+    int index = 0;
+    for (SpansCell cell = firstCell; cell != null; cell = cell.nextCell) {
+      if (cell.index != index++)
+        return cell.next();
+    }
+    
+    // No out-of-order cell found... just advance the first cell.
+    return firstCell.next();
+  }
+  
   public boolean skipTo(int target) throws IOException {
     if (firstTime) {                              // initialize
-      initList(false);
-      for (SpansCell cell = first; more && cell!=null; cell=cell.next) {
-        more = cell.skipTo(target);               // skip all
-      }
-      if (more) {
-        listToQueue();
-      }
+      initList(target);
       firstTime = false;
     } else {                                      // normal case
-      while (more && min().doc() < target) {      // skip as needed
-        more = min().skipTo(target);
-        if (more)
-          queue.adjustTop();
+      while (more && firstCell.doc() < target) {      // skip as needed
+        more = firstCell.skipTo(target);
       }
     }
     
@@ -254,11 +325,9 @@ class NearSpans implements Spans {
     return false;
   }
 
-  private SpansCell min() { return (SpansCell)queue.top(); }
-
-  public int doc() { return min().doc(); }
-  public int start() { return min().start(); }
-  public int end() { return max.end(); }
+  public int doc() { return firstCell.doc(); }
+  public int start() { return firstCell.start(); }
+  public int end() { return lastCell.end(); }
   public float score() { return totalScore *
                                 query.getBoost() *
                                 similarity.sloppyFreq(totalSlop()); 
@@ -269,82 +338,25 @@ class NearSpans implements Spans {
       (firstTime?"START":(more?(doc()+":"+start()+"-"+end()):"END"));
   }
 
-  private void initList(boolean next) throws IOException {
+  private void initList(int target) throws IOException {
     for (int i = 0; more && i < ordered.size(); i++) {
       SpansCell cell = (SpansCell)ordered.get(i);
-      if (next)
+      cell.linkAfter(null); // link as first to start with
+      if (target < 0)
         more = cell.next();                       // move to first entry
-      if (more) {
-        addToList(cell);                          // add to list
-      }
-    }
-  }
-
-  private void addToList(SpansCell cell) {
-    if (last != null) {			  // add next to end of list
-      last.next = cell;
-    } else
-      first = cell;
-    last = cell;
-    cell.next = null;
-  }
-
-  private void firstToLast() {
-    last.next = first;			  // move first to end of list
-    last = first;
-    first = first.next;
-    last.next = null;
-  }
-
-  private void queueToList() {
-    last = first = null;
-    while (queue.top() != null) {
-      addToList((SpansCell)queue.pop());
-    }
-  }
-  
-  private boolean firstNonOrderedNextToPartialList() throws IOException {
-    /* Creates a partial list consisting of first non ordered and earlier.
-     * Returns first non ordered .next().
-     */
-    last = first = null;
-    int orderedIndex = 0;
-    while (queue.top() != null) {
-      SpansCell cell = (SpansCell)queue.pop();
-      addToList(cell);
-      if (cell.index == orderedIndex) {
-        orderedIndex++;
-      } else {
-        return cell.next();
-        // FIXME: continue here, rename to eg. checkOrderedMatch():
-        // when checkSlop() and not ordered, repeat cell.next().
-        // when checkSlop() and ordered, add to list and repeat queue.pop()
-        // without checkSlop(): no match, rebuild the queue from the partial list.
-        // When queue is empty and checkSlop() and ordered there is a match.
-      }
-    }
-    throw new RuntimeException("Unexpected: ordered");
-  }
-
-  private void listToQueue() {
-    queue.clear(); // rebuild queue
-    partialListToQueue();
-  }
-
-  private void partialListToQueue() {
-    for (SpansCell cell = first; cell != null; cell = cell.next) {
-      queue.put(cell);                      // add to queue from list
+      else
+        more = cell.skipTo(target);
     }
   }
 
   private boolean atMatch() {
-    return (min().doc() == max.doc())
+    return (firstCell.doc() == lastCell.doc())
           && checkSlop()
           && (!inOrder || matchIsOrdered());
   }
   
   private boolean checkSlop() {
-    int matchLength = max.end() - min().start();
+    int matchLength = lastCell.end() - firstCell.start();
     
     // Is a match even possible?
     if (matchLength - totalLength > slop)
