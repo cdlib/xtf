@@ -34,6 +34,7 @@
     
     <xsl:param name="keyword"/>
     <xsl:param name="fieldList"/>   
+    <xsl:param name="query"/>
     
 <!-- ====================================================================== -->
 <!-- Format Query for Display                                               -->
@@ -44,7 +45,7 @@
         <xsl:choose>
             <xsl:when test="$keyword">
                 <!-- probably very fragile -->
-                <xsl:apply-templates select="(query//*[@field])[1]/*" mode="query"/>
+                <xsl:apply-templates select="(query//*[@fields])[1]/*" mode="query"/>
                 <xsl:choose>
                     <!-- if they did not search all fields, tell them which are in the fieldList -->
                     <xsl:when test="$fieldList">
