@@ -34,6 +34,7 @@
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
                               xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xtf="http://cdlib.org/xtf" 
                               xmlns:cdl="http://cdlib.org">
   
   <xsl:import href="format-query.xsl"/>
@@ -784,7 +785,94 @@
     </xsl:choose>    
     
   </xsl:template>
-
+   
+   <!-- ====================================================================== -->
+   <!-- URL Encoding                                                           -->
+   <!-- ====================================================================== -->
+   
+   <xtf:encoding-map>
+      <xtf:regex>
+         <xtf:find>%</xtf:find>    <!-- % must be done first! -->
+         <xtf:replace>%25</xtf:replace>
+      </xtf:regex>
+      <xtf:regex>
+         <xtf:find>SPACE</xtf:find>
+         <xtf:replace>%20</xtf:replace>
+      </xtf:regex>
+      <xtf:regex>
+         <xtf:find>"</xtf:find>
+         <xtf:replace>%22</xtf:replace>
+      </xtf:regex>
+      <xtf:regex>
+         <xtf:find>'</xtf:find>
+         <xtf:replace>%27</xtf:replace>
+      </xtf:regex>
+      <xtf:regex>
+         <xtf:find>&lt;</xtf:find>
+         <xtf:replace>%3C</xtf:replace>
+      </xtf:regex>
+      <xtf:regex>
+         <xtf:find>&gt;</xtf:find>
+         <xtf:replace>%3E</xtf:replace>
+      </xtf:regex>
+      <xtf:regex>
+         <xtf:find>#</xtf:find>
+         <xtf:replace>%23</xtf:replace>
+      </xtf:regex>
+   </xtf:encoding-map>
+   
+   <xsl:template name="url-encode">
+      <xsl:param name="url-string"/>
+      <xsl:param name="regex" select="document('')/*/xtf:encoding-map/xtf:regex"/>
+      <xsl:variable name="encoded-string">
+         <xsl:call-template name="regex-replace">
+            <xsl:with-param name="string" select="$url-string"/>
+            <xsl:with-param name="find" select="$regex[1]/xtf:find"/>
+            <xsl:with-param name="replace" select="$regex[1]/xtf:replace"/>
+         </xsl:call-template>
+      </xsl:variable>
+      <xsl:choose>
+         <xsl:when test="$regex[2]">
+            <xsl:call-template name="url-encode">
+               <xsl:with-param name="url-string" select="$encoded-string"/>
+               <xsl:with-param name="regex" select="$regex[position() > 1]"/>
+            </xsl:call-template>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="$encoded-string"/>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="regex-replace">
+      <xsl:param name="string"/>
+      <xsl:param name="find"/>
+      <xsl:param name="replace"/>
+      <xsl:choose>
+         <xsl:when test="contains($string, ' ') and $find='SPACE'">
+            <xsl:value-of select="substring-before($string, ' ')"/>
+            <xsl:value-of select="$replace"/>
+            <xsl:call-template name="regex-replace">
+               <xsl:with-param name="string" select="substring-after($string, ' ')"/>
+               <xsl:with-param name="find" select="$find"/>
+               <xsl:with-param name="replace" select="$replace"/>
+            </xsl:call-template>
+         </xsl:when>
+         <xsl:when test="contains($string, $find)">
+            <xsl:value-of select="substring-before($string, $find)"/>
+            <xsl:value-of select="$replace"/>
+            <xsl:call-template name="regex-replace">
+               <xsl:with-param name="string" select="substring-after($string, $find)"/>
+               <xsl:with-param name="find" select="$find"/>
+               <xsl:with-param name="replace" select="$replace"/>
+            </xsl:call-template>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="$string"/>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>  
+   
   <!-- ====================================================================== -->
   <!-- Generate ARK List for Testing                                          -->
   <!-- ====================================================================== -->
