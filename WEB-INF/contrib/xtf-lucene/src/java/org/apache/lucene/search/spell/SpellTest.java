@@ -166,6 +166,7 @@ public class SpellTest
   {
     System.out.println( "Writing spell index..." );
     
+    long startTime = System.currentTimeMillis();
     SpellWriter spellWriter = new SpellWriter() {
       int prevPct = -1;
       long prevTime = System.currentTimeMillis();
@@ -195,7 +196,7 @@ public class SpellTest
     spellWriter.flushQueuedWords();
     spellWriter.close();
     
-    System.out.println( "Done." );
+    System.out.println( "Done. Total time: " + (System.currentTimeMillis() - startTime) + " msec" );
     
   } // writeSpellIndex()
   
@@ -256,7 +257,7 @@ public class SpellTest
         
         // For testing, stop early.
         if( stopAt != null && word.compareTo(stopAt) >= 0 )
-            break;
+            continue;
         
         // Skip if the target word isn't in our dictionary.
         if( !spellReader.inDictionary(correction) )
