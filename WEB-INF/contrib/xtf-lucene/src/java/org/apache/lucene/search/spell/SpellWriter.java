@@ -440,14 +440,14 @@ public class SpellWriter {
           String end=null;
           for (int i=0; i<len-ng+1; i++) {
               String gram=text.substring(i, i+ng);
-              doc.add(new Field(key, gram, true, true, false));
+              doc.add(new Field(key, gram, false, true, false));
               if (i==0) {
-                  doc.add(new Field("start"+ng, gram, true, true, false));
+                  doc.add(new Field("start"+ng, gram, false, true, false));
               }
               end=gram;
           }
           if (end!=null) { // may not be present if len==ng1
-              doc.add(new Field("end"+ng, end, true, true, false));
+              doc.add(new Field("end"+ng, end, false, true, false));
           }
       }
   }
@@ -464,7 +464,7 @@ public class SpellWriter {
           ch[i] = ch[i+1];
           ch[i+1] = tmp;
           
-          doc.add(new Field(key, new String(ch), true, true, false));
+          doc.add(new Field(key, new String(ch), false, true, false));
           
           tmp = ch[i];
           ch[i] = ch[i+1];
@@ -475,7 +475,7 @@ public class SpellWriter {
 
   static void addMetaphone (String text, Document doc) {
       String metaPhone = calcMetaphone(text);
-      doc.add(new Field("metaphone", metaPhone, true, true, false));
+      doc.add(new Field("metaphone", metaPhone, false, true, false));
   }
 
 
@@ -486,7 +486,7 @@ public class SpellWriter {
           String dropped = text.substring(0, i) + 
                            text.substring(Math.min(len, i+1));
           if( dropped.length() > 0 )
-              doc.add(new Field(key, dropped, true, true, false));
+              doc.add(new Field(key, dropped, false, true, false));
       }
   }
 
