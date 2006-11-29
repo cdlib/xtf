@@ -54,4 +54,10 @@ public class SQL implements ExtensionElementFactory {
 // Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
 // Contributor(s): none.
+// 
+// Acknowledgements:
+// 
+// A significant amount of new and/or modified code in this module
+// was made possible by a grant from the Andrew W. Mellon Foundation,
+// as part of the Melvyl Recommender Project.
 //

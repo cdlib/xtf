@@ -14,6 +14,12 @@ package org.cdlib.xtf.textEngine;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * Acknowledgements:
+ * 
+ * A significant amount of new and/or modified code in this module
+ * was made possible by a grant from the Andrew W. Mellon Foundation,
+ * as part of the Melvyl Recommender Project.
  */
 
 import org.apache.lucene.index.IndexReader;

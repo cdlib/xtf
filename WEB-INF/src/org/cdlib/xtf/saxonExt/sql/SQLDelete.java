@@ -136,3 +136,9 @@ public class SQLDelete extends ExtensionInstruction {
 //
 // Additional Contributor(s): Martin Haye
 //
+// Acknowledgements:
+//
+// A significant amount of new and/or modified code in this module
+// was made possible by a grant from the Andrew W. Mellon Foundation,
+// as part of the Melvyl Recommender Project.
+//

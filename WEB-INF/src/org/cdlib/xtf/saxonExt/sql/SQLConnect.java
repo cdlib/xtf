@@ -241,3 +241,9 @@ public class SQLConnect extends ExtensionInstruction {
 //
 // Additional Contributor(s): Martin Haye, Rick Bonnett [rbonnett@acadia.net]
 //
+// Acknowledgements:
+//
+// A significant amount of new and/or modified code in this module
+// was made possible by a grant from the Andrew W. Mellon Foundation,
+// as part of the Melvyl Recommender Project.
+//

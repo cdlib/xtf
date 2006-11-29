@@ -36,6 +36,12 @@ import net.sf.saxon.expr.XPathContext;
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * Acknowledgements:
+ * 
+ * A significant amount of new and/or modified code in this module
+ * was made possible by a grant from the Andrew W. Mellon Foundation,
+ * as part of the Melvyl Recommender Project.
  */
 
 /*
