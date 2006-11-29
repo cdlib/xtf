@@ -287,7 +287,10 @@
     <xsl:param name="groups"/>
     
     <xsl:variable name="total" as="xs:integer">
-      <xsl:choose>
+       <xsl:choose>
+        <xsl:when test="matches($smode,'moreLike')">
+           <xsl:value-of select="'20'"/>
+        </xsl:when>
         <xsl:when test="$groups">
           <xsl:choose>
             <xsl:when test="facet//group[docHit]">
