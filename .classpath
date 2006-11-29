@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/src"/>
-	<classpathentry excluding="**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/contrib/xtf-lucene/src/java"/>
-	<classpathentry excluding="**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/backport/src/java"/>
+	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/src"/>
+	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/contrib/xtf-lucene/src/java"/>
+	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/backport/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry sourcepath="WEB-INF/lib/source/PDFBox-0.7.2/" kind="lib" path="WEB-INF/lib/PDFBox-0.7.2.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/log4j-1.2.9.jar"/>
