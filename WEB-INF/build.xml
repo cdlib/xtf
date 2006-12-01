@@ -115,6 +115,7 @@
         <include name="bin/indexStats"/>
         <include name="bin/indexDump"/>
         <include name="bin/indexMerge"/>
+        <include name="bin/textIndexer.bat"/>
 
         <include name="brand/default.xml"/>
 
