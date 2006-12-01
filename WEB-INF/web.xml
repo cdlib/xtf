@@ -1,73 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- DOCTYPE web-app PUBLIC '-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN' 'http://java.sun.com/j2ee/dtds/web-app_2.2.dtd' -->
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+    
+    <web-app>
+        
+        <servlet>
+            <servlet-name>crossQuery</servlet-name>
+            <servlet-class>org.cdlib.xtf.crossQuery.CrossQuery</servlet-class>
+        </servlet>
+        
+        <servlet>
+            <servlet-name>dynaXML</servlet-name>
+            <servlet-class>org.cdlib.xtf.dynaXML.DynaXML</servlet-class>
+        </servlet>
+        
+        <servlet>
+            <servlet-name>SRU</servlet-name>
+            <servlet-class>org.cdlib.xtf.zing.SRU</servlet-class>
+        </servlet>
+        
+        <servlet>
+            <servlet-name>previewXML</servlet-name>
+            <servlet-class>org.cdlib.xtf.web.PreviewXML</servlet-class>
+        </servlet>
 
-<web-app>
+        <servlet>
+            <servlet-name>org.cdlib.xtf.dynaXML.DynaXML</servlet-name>
+            <servlet-class>org.cdlib.xtf.dynaXML.DynaXML</servlet-class>
+        </servlet>
 
-  <servlet>
-    <servlet-name>crossQuery</servlet-name>
-    <servlet-class>org.cdlib.xtf.crossQuery.CrossQuery</servlet-class>
-  </servlet>
+        <servlet>
+            <servlet-name>org.cdlib.xtf.crossQuery.CrossQuery</servlet-name>
+            <servlet-class>org.cdlib.xtf.crossQuery.CrossQuery</servlet-class>
+        </servlet>
 
-  <servlet>
-    <servlet-name>dynaXML</servlet-name>
-    <servlet-class>org.cdlib.xtf.dynaXML.DynaXML</servlet-class>
-  </servlet>
+        <servlet>
+            <servlet-name>org.cdlib.xtf.zing.SRU</servlet-name>
+            <servlet-class>org.cdlib.xtf.zing.SRU</servlet-class>
+        </servlet>
+        
+        <servlet-mapping>
+            <servlet-name>crossQuery</servlet-name>
+            <url-pattern>/search</url-pattern>
+        </servlet-mapping>
+        
+        <servlet-mapping>
+            <servlet-name>dynaXML</servlet-name>
+            <url-pattern>/view</url-pattern>
+        </servlet-mapping>
+        
+        <servlet-mapping>
+            <servlet-name>SRU</servlet-name>
+            <url-pattern>/SRU</url-pattern>
+        </servlet-mapping>
+        
+        <servlet-mapping>
+            <servlet-name>previewXML</servlet-name>
+            <url-pattern>/preview</url-pattern>
+        </servlet-mapping>
+        
+        <servlet-mapping>
+            <servlet-name>org.cdlib.xtf.dynaXML.DynaXML</servlet-name>
+            <url-pattern>/servlet/org.cdlib.xtf.dynaXML.DynaXML</url-pattern>
+        </servlet-mapping>
 
-  <servlet>
-    <servlet-name>SRU</servlet-name>
-    <servlet-class>org.cdlib.xtf.zing.SRU</servlet-class>
-  </servlet>
+        <servlet-mapping>
+            <servlet-name>org.cdlib.xtf.crossQuery.CrossQuery</servlet-name>
+            <url-pattern>/servlet/org.cdlib.xtf.crossQuery.CrossQuery</url-pattern>
+        </servlet-mapping>
 
-  <servlet>
-    <servlet-name>previewXML</servlet-name>
-    <servlet-class>org.cdlib.xtf.web.PreviewXML</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <url-pattern>/search</url-pattern>
-    <servlet-name>crossQuery</servlet-name>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <url-pattern>/view</url-pattern>
-    <servlet-name>dynaXML</servlet-name>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <url-pattern>/SRU</url-pattern>
-    <servlet-name>SRU</servlet-name>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <url-pattern>/preview</url-pattern>
-    <servlet-name>previewXML</servlet-name>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>org.cdlib.xtf.dynaXML.DynaXML</servlet-name>
-    <servlet-class>org.cdlib.xtf.dynaXML.DynaXML</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>org.cdlib.xtf.crossQuery.CrossQuery</servlet-name>
-    <servlet-class>org.cdlib.xtf.crossQuery.CrossQuery</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>org.cdlib.xtf.zing.SRU</servlet-name>
-    <servlet-class>org.cdlib.xtf.zing.SRU</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>org.cdlib.xtf.dynaXML.DynaXML</servlet-name>
-    <url-pattern>/servlet/org.cdlib.xtf.dynaXML.DynaXML</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>org.cdlib.xtf.crossQuery.CrossQuery</servlet-name>
-    <url-pattern>/servlet/org.cdlib.xtf.crossQuery.CrossQuery</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>org.cdlib.xtf.zing.SRU</servlet-name>
-    <url-pattern>/servlet/org.cdlib.xtf.zing.SRU</url-pattern>
-  </servlet-mapping>
-
-</web-app>
-
+        <servlet-mapping>
+            <servlet-name>org.cdlib.xtf.zing.SRU</servlet-name>
+            <url-pattern>/servlet/org.cdlib.xtf.zing.SRU</url-pattern>
+        </servlet-mapping>
+        
+    </web-app>    
