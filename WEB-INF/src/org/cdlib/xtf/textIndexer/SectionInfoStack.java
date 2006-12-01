@@ -240,11 +240,11 @@ public class SectionInfoStack
    *  pushing entire duplicate entries. <br><br>
    * 
    *  @.notes Use the 
-   *  {@link org.cdlib.xtf.textIndexer.SectionInfoStack#valuesChanged(int,String,int,float,int) valuesChanged()}
+   *  {@link org.cdlib.xtf.textIndexer.SectionInfoStack#valuesChanged(int,String,int,float,int,int) valuesChanged()}
    *  method to determine if your attributes for a new section are identical to 
    *  the section currently at the top of the stack before calling this method.
    *  Alternately, you can simply pass your new attributes to the  
-   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int) explicit section-push operator},
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int,int) explicit section-push operator},
    *  which performs the same check internally and calls this method as needed.
    *  <br><br>
    *
@@ -434,7 +434,7 @@ public class SectionInfoStack
    *  This function will never return
    *  {@link org.cdlib.xtf.textIndexer.SectionInfo#parentIndex parentIndex}.
    *  That value is only used as an argument when calling the 
-   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int) explicit section-push}
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int,int) explicit section-push}
    *  operator to force the new section to adopt it's parents index
    *  flag.<br><br>
    * 
@@ -472,7 +472,7 @@ public class SectionInfoStack
    *  This function will never return
    *  {@link org.cdlib.xtf.textIndexer.SectionInfo#parentSpell parentSpell}.
    *  That value is only used as an argument when calling the 
-   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int) explicit section-push}
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int,int) explicit section-push}
    *  operator to force the new section to adopt it's parents spell
    *  flag.<br><br>
    * 

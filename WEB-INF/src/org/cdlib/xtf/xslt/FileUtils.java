@@ -108,7 +108,6 @@ public class FileUtils {
    * @param context   Context used to figure out which stylesheet is calling
    *                  the function.
    * @param filePath  Path to the file in question
-   * @param formatStr A strftime-style format string. See {@link Format}.
    * @return          The file size, or -1 if it doesn't exist.
    */
   public static long length( XPathContext context, 

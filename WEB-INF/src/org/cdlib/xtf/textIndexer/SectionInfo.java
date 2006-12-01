@@ -85,7 +85,7 @@ public class SectionInfo
    *  This index flag value is never actually stored in the index flag attribute 
    *  for a <code>SectionInfo</code> instance. It is only passed as an argument 
    *  to the
-   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int) explicit section push}
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int,int) explicit section push}
    *  method defined by the {@link org.cdlib.xtf.textIndexer.SectionInfoStack}
    *  class. That method in turn uses the parent section's index flag value,
    *  which will be either
@@ -127,7 +127,7 @@ public class SectionInfo
    *  This section bump value is never actually stored in the section bump
    *  attribute for a <code>SectionInfo</code> instance. It is only passed as 
    *  an argument to the
-   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int) explicit section push}
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int,int) explicit section push}
    *  method defined by the {@link org.cdlib.xtf.textIndexer.SectionInfoStack}
    *  class. That method in turn uses the parent section's bump value for the
    *  new entry on the stack.<br><br> 
@@ -264,7 +264,7 @@ public class SectionInfo
    *  The value {@link org.cdlib.xtf.textIndexer.SectionInfo#parentIndex parentIndex}
    *  is never actually stored in the index flag attribute for a 
    *  <code>SectionInfo</code> instance. It is only passed as an argument to the
-   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int) explicit section push}
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int,int) explicit section push}
    *  method defined by the {@link org.cdlib.xtf.textIndexer.SectionInfoStack}
    *  class. That method in turn uses the parent section's index flag value,
    *  which will be either
@@ -300,7 +300,7 @@ public class SectionInfo
    *  The value {@link org.cdlib.xtf.textIndexer.SectionInfo#parentSectionBump parentSectionBump}
    *  is never actually stored in the sectionBump attribute for a 
    *  <code>SectionInfo</code> instance. It is only passed as an argument to the
-   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int) explicit section push}
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int,int) explicit section push}
    *  method defined by the {@link org.cdlib.xtf.textIndexer.SectionInfoStack}
    *  class. That method in turn uses the parent section's bump value. <br><br> 
    */
@@ -338,7 +338,7 @@ public class SectionInfo
    *  The value {@link org.cdlib.xtf.textIndexer.SectionInfo#parentSpell parentSpell}
    *  is never actually stored in the spell flag attribute for a 
    *  <code>SectionInfo</code> instance. It is only passed as an argument to the
-   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int) explicit section push}
+   *  {@linkplain org.cdlib.xtf.textIndexer.SectionInfoStack#push(int,String,int,float,int,int) explicit section push}
    *  method defined by the {@link org.cdlib.xtf.textIndexer.SectionInfoStack}
    *  class. That method in turn uses the parent section's spell flag value,
    *  which will be either

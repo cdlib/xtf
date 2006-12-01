@@ -335,7 +335,7 @@ public class BigramQueryRewriter extends QueryRewriter {
    * Removes stop words from a set of consecutive queries by combining
    * them with adjacent non-stop-words.
    * 
-   * @param queryVec    Vector of queries to work on
+   * @param clauses     array of queries to work on
    * @param slop        zero for exact matching, non-zero for 'near' matching.
    * @param joiner      used to join the resulting bi-grammed clauses
    * @return            original list, or a new query containing bi-grams
@@ -576,7 +576,6 @@ public class BigramQueryRewriter extends QueryRewriter {
    * 
    * @param queries Original queries in the sequence
    * @param terms   Corresponding term text of each query
-   * @param slop    Sloppiness for the resulting query
    * @param joiner  Used to join the resulting bi-grammed clauses
    * 
    * @return        A new query possibly containing bi-grams

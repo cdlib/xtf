@@ -64,13 +64,13 @@ public class NumericFieldData
   private LongList values = new LongList();
 
   /**
-   * Retrieves tags for a given set of fields from a given reader. Maintains a cache
+   * Retrieves tags for a given field from a given reader. Maintains a cache
    * so that if the same fields are requested again for this reader, we don't have
    * to re-read the tags.
    * 
    * @param reader  Where to read the tags from
-   * @param fields  Which fields to read
-   * @return        FRBR tags for the specified fields
+   * @param field   Which field to read
+   * @return        FRBR tags for the specified field
    */
   public static NumericFieldData getCachedData(IndexReader reader, String field)
       throws IOException
