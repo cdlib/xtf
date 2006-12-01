@@ -131,6 +131,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#FileUtils_LastModified">FileUtils:lastModified()</a></span></font></li>
           </ul>
         </li>
+        <li><a href="#Redirect">Redirecting to Another URL</a><br/>
+          <br/>
+        </li>
       </ul>
       <br/>
     </li>
@@ -152,6 +155,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Exact">&lt;exact&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_And">&lt;and&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Or">&lt;or&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_OrNear">&lt;orNear&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Not">&lt;not&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Near">&lt;near&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Range">&lt;range&gt;</a></span></font></li>
@@ -1659,6 +1663,64 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         which files are newer than others, processing all files newer than a certain date, etc.
       </p>
     </div>
+
+    <br/>
+    <p class="Heading2">Redirecting to Another URL<a name="Redirect"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    <p>XTF provides an extension element that immediately redirects the user's
+      browser to a different URL, suppressing further processing of the
+      formatting stylesheet.
+      See the
+      <a href="programming.html#Common_Redirect">XTF Programming Guide</a>
+      for a description and example.<br/>
+    </p>
+    <div class="Sample"><b><u>HTTP Redirection Extension<a name="Redirect_Send"></a></u></b><br/>
+      <!-- - - - - - - - - - - - - - --> 
+      This element can be used inside any parsing or formatting stylesheet in XTF
+      like this:<br/>
+      <br/>
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;redirect:send url="<span class="MacroCode">TargetURL</span>" 
+               xmlns:redirect="java:/org.cdlib.xtf.saxonExt.Redirect" 
+               xsl:extension-element-prefixes="redirect"/></pre>
+      </div>
+      <p>where <br/>
+      </p>
+      <div class="IndentLR"> 
+        <table cellspacing="12">
+          <tr> 
+            <td align="right" valign="top" class="Code">url="<span class="MacroCode">TargetURL</span>" 
+            </td>
+            <td>
+              is a required attribute specifying the URL that the user's browser should
+              be redirected to. An absolute or relative URL may be specified. If relative,
+              the URL will be resolved by the servlet container to an absolute URL.
+            </td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code">redirect:</td>
+            <td><span class="BaseStyle">is a namespace prefix identifying this
+              Saxon extension instruction. The namespace URI for this              
+              prefix must be: <span class="Code"><b>java:/org.cdlib.xtf.saxonExt.Redirect</b></span> .
+              In addition, it must be declared in the list of 
+              <span class="Code">extension-element-prefixes</span> for
+              Saxon. The declarations are most easily done in-line as shown above.
+              </span>
+            </td>
+          </tr>
+        </table>
+        <p>
+          This extension element causes an immediate HTTP redirect (code 302) to be
+          sent to the user's browser. Further processing of the stylesheet is
+          aborted.
+        </p>
+        <p>
+          No prior output is allowed before this extension instruction is executed.
+          If any output was generated, an exception will be thrown and the redirect
+          will fail.
+        </p>
+      </div>
+    </div>
     <br/>
 
   </div>
@@ -1910,7 +1972,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 </td>
                 <td valign="baseline"> 
                   is an optional parameter that identifies which field in the 
-                    index to search. Normally, this attribute is set to <span class="Code">text</span> 
+                    index to search. Often this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
                     or <span class="Code">subject</span>.<br/>
@@ -1992,7 +2054,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           tag, or a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_OrNear">orNear</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
           <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
@@ -2044,7 +2106,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                   field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline"> <span class="BaseStyle"> </span> 
                   is an optional attribute that identifies which field in the 
-                    index to search. Normally, this attribute is set to <span class="Code">text</span> 
+                    index to search. Often this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
                     or <span class="Code">subject</span>.<br/>
@@ -2137,7 +2199,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                   field="<span class="MacroCode">FieldName</span>"</td>
                 <td height="224" valign="baseline"> <span class="BaseStyle"> </span> 
                   is an optional attribute that identifies which field in the 
-                    index to search. Normally, this attribute is set to <span class="Code">text</span> 
+                    index to search. Often this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
                     or <span class="Code">subject</span>.<br/>
@@ -2214,7 +2276,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             and <span class="MacroCode">Clause</span> is a<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
             </span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_OrNear">orNear</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
           <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
@@ -2336,8 +2398,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <a href="#crossQuery_QueryParser_Output_Term">term</a> </span>tag, 
             and <span class="MacroCode">Clause</span> is a<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+            </span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_OrNear">orNear</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
             <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
@@ -2367,10 +2429,20 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         <div class="Sample"> <b><u>AND Search Tag<a name="crossQuery_QueryParser_Output_And"></a></u></b><br/>
       <!-- - - - - - - - - - - - - - --> This tag 
       defines a search where all of the sub-terms or clauses must exist in a document 
-      for a match to be made. This tag has the form: <br/>
+      for a match to be made. <br/>
+          
+      <p>
+        If multiple fields are specified, all of the sub-terms
+        or clauses must appear, in any field (that is, it doesn't matter which field(s)
+        they appear in, as long as all of them appear somewhere.) If multiple
+        terms appear in the same field, the score will be higher, and if the
+        terms are close together, the score will be higher still.
+      </p>
+      <p>This tag has the form:</p>
           <br/>
           <div class="IndentLR"> 
-            <pre class="Code">&lt;and <i>{</i>field       = "<span class="MacroCode">FieldName</span>"<i>}</i>
+            <pre class="Code">&lt;and <i>{</i>field        = "<span class="MacroCode">FieldName</span>"<i>}</i>
+     <i>{</i>fields       = "<span class="MacroCode">FieldList</span>"<i>}</i>
      <i>{</i>maxSnippets  = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
      <i>{</i>boost        = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
      <i>{</i>useProximity = "<span class="MacroCode">YesOrNo</span>"<i>}</i>&gt;
@@ -2391,13 +2463,13 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                   field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline"> <span class="BaseStyle"> </span> 
                   is an optional attribute that identifies which field in the 
-                    index to search. Normally, this attribute is set to <span class="Code">text</span> 
+                    index to search. Often this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
                     or <span class="Code">subject</span>.<br/>
                   <p>It should be mentioned that if the <span class="Code">field</span> 
                     attribute appears in any tags outside it, the field name in 
-                    the <span class="Code">&lt;and...&gt;</span> tag <span class="Keyword">must</span> 
+                    the <span class="Code">&lt;and...&gt;</span> tag <b><i>must</i></b> 
                     match the value set in the outer tags. Otherwise, an error 
                     will be generated. </p>
                   
@@ -2407,6 +2479,24 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 tag may have any combination of field names desired. This is how 
                 mixed queries of document text and meta data are formed.</p>
                   </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code"> 
+                  fields="<span class="MacroCode">FieldList</span>"</td>
+                <td valign="baseline"> <span class="BaseStyle"> </span> 
+                  is an optional attribute that identifies a list of fields in the 
+                    index to search. Using a list of fields is an ideal way to
+                    perform a "keyword" search, for example searching the title,
+                    subject, author, and full text of documents.<br/>
+                  <p>It should be mentioned that if the <span class="Code">field</span> 
+                    attribute appears in any tags outside the multi-field 
+                    <span class="Code">&lt;and...&gt;</span> tag, an error 
+                    will be generated. Likewise, any elements nested
+                    within the tag are <i><b>not</b></i>
+                    allowed to specify a <span class="Code">field</span>
+                    attribute.
+                  </p>
+                </td>
               </tr>
               <tr> 
                 <td align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
@@ -2481,8 +2571,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+          </span><span class="Code"></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_OrNear">orNear</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
           <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
@@ -2592,8 +2682,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+          </span><span class="Code"></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_OrNear">orNear</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
           <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
@@ -2604,6 +2694,157 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           stylesheet at index time.</div>
         <br/>
         <!-- OR Tag --> 
+
+        <!-- orNear Tag --> 
+        <div class="Sample"> <b><u>Or/Near Search Tag<a name="crossQuery_QueryParser_Output_OrNear"></a></u></b><br/>
+          <!-- - - - - - - - - - - - - - --> 
+          This tag defines a search where at least one of the sub-terms or clauses must 
+          be in a document. If multiple terms do appear, hits where the terms are close
+          together will score higher than those where the terms are far from each other.
+          Essentially, this provides the functionality of an <span class="Code">&lt;or&gt;</span>
+          search, with improved scoring. This tag has the form: <br/>
+          <br/>
+          <div class="IndentLR"> 
+            <pre class="Code">&lt;orNear slop         = "<span class="MacroCode">MaxMatchDistance</span>"
+<i>        {</i>field       = "<span class="MacroCode">FieldName</span>"<i>}</i>
+       <i> {</i>maxSnippets = "<span class="MacroCode">SnippetsToOutput</span>"<i>}</i>
+ <i>       {</i>boost       = "<span class="MacroCode">BoostValue</span>"<i>}</i>&gt;
+
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+    <span class="MacroCode">Term</span> | <span class="MacroCode">Clause</span>
+      …
+
+    <i>{</i><span class="MacroCode">OptionalSectionTypeQuery</span><i>}</i>
+
+&lt;/near&gt;</pre>
+          </div>
+          where 
+          <div class="IndentLR"> 
+            <table cellspacing="12">
+              <tr> 
+                <td align="right" valign="top" class="Code"> slop="<span class="MacroCode">MaxMatchDistance</span>" 
+                </td>
+                <td> <span class="BaseStyle"> is a measure of the 
+                  "nearness" of the terms or clauses specified. A slop value for 
+                  a potential match is accumulated as follows:</span> 
+                  <ol>
+                    <li class="ListItem"> A potential match is found when all 
+                      the items specified in the<span class="Code"> orNear </span> 
+                      tag are found in a document. Initially, the accumulated 
+                      slop for this potential match is set to zero.<br/>
+                    </li>
+                    <li class="ListItem"> Next the accumulated slop is incremented 
+                      by one for each word in the potential match that doesn't 
+                      appear in<span class="Code"> orNear </span>tag. </li>
+                    <li class="ListItem"> Finally, the accumulated slop is incremented 
+                      by one each time a word specified in the<span class="Code"> 
+                      orNear </span>tag appears out of order in the document. </li>
+                  </ol>
+                  <span class="BaseStyle">
+                    If the final accumulated slop exceeds the value set by the<span class="Code"> 
+                    slop </span> attribute of the<span class="Code"> orNear </span>tag, 
+                    the terms are considered to be separate (and thus lower scoring). <br/>
+                  </span>
+                </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code" height="248"> field="<span class="MacroCode">FieldName</span>"</td>
+                <td valign="baseline" height="248"> <span class="BaseStyle"> </span> 
+                  is an optional attribute that identifies which field in the 
+                    index to search. Often this attribute is set to <span class="Code">text</span> 
+                    to indicate that the main text of the document should be searched. 
+                    It can also be set to the name of a meta field such as <span class="Code">author</span> 
+                    or <span class="Code">subject</span>.<br/>
+                  <p>It should be mentioned that the field name specified by a 
+                    <span class="Code">&lt;orNear...&gt;</span> tag<span class="Keyword"> must</span> 
+                    match the field name set by any tags that contain it. Otherwise, 
+                    an error will be generated. If no parent tags specify a field 
+                    name, any field name can be used by the <span class="Code">&lt;orNear...&gt;</span> 
+                    tag.</p>
+                  <p>Similarly, any tags within a <span class="Code">&lt;orNear...&gt;</span> 
+                    tag must either specify the same field name as the orNear clause, 
+                    or specify no field name at all. Otherwise, an error will 
+                    be generated.</p>
+                  <p class="Note">(Note: Allowing nested copies of the <span class="Code">field</span> 
+                    attribute doesn't serve a purpose other than to make it easier 
+                    to write <b>docReqParser.xsl</b> stylesheets in a uniform 
+                    way. Effectively, the outermost <span class="Code">field</span> 
+                    value is always used.)</p>
+                </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code">maxSnippets="<span class="MacroCode">SnippetsToOutput</span>"</td>
+                <td valign="baseline"> 
+                  <span class="BaseStyle">identifies the number of snippets 
+                    to pass on to the <b>Result Formatter</b> stylesheet for display. 
+                    A snippet is defined as the matching text found in a document 
+                    for a particular query, along with some additional text around 
+                    it for context. The amount of context displayed for each match 
+                    is defined by the <span class="Code">maxContext</span> attribute. 
+                    <br/>
+                    <br/>
+                    If not specified this attribute defaults to 3, meaning snippets 
+                    for the top three matches for a document are returned. Also, 
+                    this attribute can be set to -1, meaning all the snippets 
+                    for a document are returned. </span><br/>
+                  
+              <p>As with the <span class="Code">field</span> attribute, if the 
+                <span class="Code">maxSnippets</span> attribute appears in any 
+                containing tags, the value set for it in the <span class="Code">&lt;orNear...&gt;</span> 
+                tag <span class="Keyword">must</span> match the value set in the containing tags. 
+                Otherwise, an error will be generated. Similarly, any occurrences 
+                of the <span class="Code">maxSnippets</span> attribute in tags 
+                within the <span class="Code">&lt;orNear...&gt;</span> tag must 
+                have the same value as their containing tags.</p>
+                  <p class="Note">(Note: Allowing nested copies of the <span class="Code">maxSnippets</span> 
+                    attribute doesn't serve a purpose other than to make it easier 
+                    to write <b>docReqParser.xsl</b> stylesheets in a uniform 
+                    way. Effectively, the outermost <span class="Code">maxSnippets</span> 
+                    value is always used.)</p>
+                </td>
+              </tr>
+              <tr> 
+                <td align="right" valign="top" class="Code"><i></i>boost="<span class="MacroCode">BoostValue</span>"<i></i></td>
+                <td valign="baseline"> 
+                  is an optional attribute that specifies a relevance boost 
+                    multiplier for this clause in the query. Boost values higher 
+                    than 1.0 increase the relevance of a clause, while boost values 
+                    between 0.0 and 1.0 decrease the relevance of a clause. Boost 
+                    values less than zero will generate an error.<br/>
+                  <p>Note that boost values multiply. That is, if tags within 
+                    an <span class="Code">&lt;orNear...&gt;</span> tag have boost 
+                    attributes, their individual boost values will be multiplied 
+                    by the boost set for the containing <span class="Code">&lt;orNear...&gt;</span> 
+                    tag.</p>
+                </td>
+              </tr>
+            </table>
+            <br/>
+          </div>
+          <p>Within the <span class="Code">orNear</span> tag, <span class="MacroCode">Term</span> 
+            is a<span class="Code"> <a href="#crossQuery_QueryParser_Output_Term">term</a> 
+            </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
+            </span><span class="Code"></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_OrNear">orNear</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
+            <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag. <br/>
+            <br/>
+            It should also be noted that, when applied to the &quot;text&quot; 
+            field, if the value specified for the<span class="Code"> slop </span>attribute 
+            exceeds the maximum proximity for the index being used, the maximum 
+            proximity value will be used instead. There is no limit on the<span class="Code"> 
+            slop </span>attribute when applied to meta-data fields.</p>
+          <p>If the field is "text", a <a href="#crossQuery_QueryParser_Output_SectionType">Section Type</a> 
+            sub-query may optionally appear, restricting this query to particular 
+            sections of a document based on section types added by the <b>Pre-Filter</b> 
+            stylesheet at index time.</p>
+        </div>
+        <br/>
+
         <div class="Sample"> <b><u>Not Search Tag<a name="crossQuery_QueryParser_Output_Not"></a></u></b><br/>
           <!-- - - - - - - - - - - - - - --> This 
           tag defines a search where none of the sub-terms or clauses must exist 
@@ -2701,8 +2942,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+            </span><span class="Code"></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_OrNear">orNear</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>,<span class="Code"> 
             </span>or<span class="Code"> <a href="#crossQuery_QueryParser_Output_Range">range</a> 
@@ -2733,7 +2974,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             clause operates as a &quot;<b>not anywhere</b>&quot;, and ignores 
             chunk sizing. </p>
         </div><br/>
-        <!-- Not Tag --> 
+        
+        <!-- Near Tag --> 
         <div class="Sample"> <b><u>Near Search Tag<a name="crossQuery_QueryParser_Output_Near"></a></u></b><br/>
           <!-- - - - - - - - - - - - - - --> 
           This tag defines a search where all of the sub-terms or clauses must 
@@ -2790,7 +3032,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <td align="right" valign="top" class="Code" height="248"> field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline" height="248"> <span class="BaseStyle"> </span> 
                   is an optional attribute that identifies which field in the 
-                    index to search. Normally, this attribute is set to <span class="Code">text</span> 
+                    index to search. Often this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
                     or <span class="Code">subject</span>.<br/>
@@ -2865,8 +3107,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+            </span><span class="Code"></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_OrNear">orNear</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
             <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
@@ -2883,7 +3125,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             stylesheet at index time.</p>
         </div>
         <br/>
-        <!-- Near Tag --> 
+        
+        <!-- Range Tag --> 
         <div class="Sample"> <b><u>Range Search Tag<a name="crossQuery_QueryParser_Output_Range"></a></u></b><br/>
           <!-- - - - - - - - - - - - - - --> 
           This tag matches any words that fall within the range specified by the 
@@ -2937,7 +3180,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <td align="right" valign="top" class="Code" height="94"> field="<span class="MacroCode">FieldName</span>"</td>
                 <td valign="baseline" height="94"> <span class="BaseStyle"> </span> 
                   is an optional attribute that identifies which field in the 
-                    index to search. Normally, this attribute is set to <span class="Code">text</span> 
+                    index to search. Often this attribute is set to <span class="Code">text</span> 
                     to indicate that the main text of the document should be searched. 
                     It can also be set to the name of a meta field such as <span class="Code">author</span> 
                     or <span class="Code">subject</span>.<br/>
@@ -3051,8 +3294,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             </span>tag, and <span class="MacroCode">Clause</span> is a<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Phrase">phrase</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Exact">exact</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_Or"></a></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
-            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> 
+            </span><span class="Code"></span><span class="Code"><a href="#crossQuery_QueryParser_Output_And">and</a></span>,<span class="Code"> 
+            <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_OrNear">orNear</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
             <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
             <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 

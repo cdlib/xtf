@@ -60,6 +60,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         <li><a href="#Common_Session_State">Tracking Session State</a></li>
         <li><a href="#Common_Exec">Calling Command-line Tools</a></li>
         <li><a href="#Common_FileUtils">Checking File Existence, Length, and Modification Time</a></li>
+        <li><a href="#Common_Redirect">Redirecting to another URL</a></li>
       </ul>
       <br/>
     </li>
@@ -2070,6 +2071,37 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       please refer to the <a href="tagRef.html#FileUtils">XTF Tag Reference</a> 
       section on <span class="Code">FileUtils</span>.
     </p>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p class="Heading2">Redirecting to another URL<a name="Common_Redirect"></a></p>
+    <p>
+      You may encounter scenarios where the best thing to do isn't to generate
+      the output for a given query or document request, but rather to redirect
+      the user's browser to a different URL. While this can be done in the
+      <span class="Code">&lt;meta></span> tag of the output HTML document, that
+      method is not very clean. In particular, it prevents the "Back" button in
+      the user's browser from working properly. If they hit the "Back" button,
+      the browser simply encounters the redirect again, effectively blocking the
+      user from getting back to where they came from.
+    </p>
+    <p>
+      The preferable method for redirecting is to generate an HTTP 302 status
+      code. But how can a servlet do that? By using an XTF extension built just
+      for this purpose. Here's an example of redirecting to a new URL:
+    </p>
+    <pre class="Sample">&lt;redirect:send url="http://<span class="MacroCode">another_URL_here</span>" 
+               xmlns:redirect="java:/org.cdlib.xtf.saxonExt.Redirect" 
+               xsl:extension-element-prefixes="redirect"/></pre>
+    <p>
+      This needs to be placed fairly early in the result or document formatter, before
+      any other output. The redirect needs to be the first output; even having an
+      HTML header before it will cause an exception to be thrown. Once the redirect
+      instruction is executed, further stylesheet processing is aborted and the
+      user is immediately taken to the new URL. For more information, see the
+      <a href="tagRef.html#Redirect">XTF Tag Reference</a> 
+      section on <span class="Code">Redirect</span>.
+    </p>
+  
   </div>
   
   <!-- Common --> 

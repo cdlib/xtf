@@ -22,7 +22,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <li> <b><a href="#Guide">Guide to Documentation</a></b></li>
     <li> <b><a href="#WhatsNew">What's New?</a></b> 
       <ul class="NoBullets">
-        <li><a href="#WhatsNew_1_8_1">Version 1.8.1</a></li>
+        <li><a href="#WhatsNew_1_9">Version 1.9</a></li>
       </ul>
     </li>
   </ul>
@@ -66,7 +66,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   
   <div class="IndentL"> 
-    <p class="Heading2">Version 1.8.1<a name="WhatsNew_1_8_1"></a></p>
+    <p class="Heading2">Version 1.9<a name="WhatsNew_1_9"></a></p>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
     <p>
       The main goal of XTF 1.8.1 has been to update the documentation, attempting to cover
@@ -78,6 +78,21 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         An extensive <a href="tips.html">Tips &amp; Tricks</a> guide has been added, covering topics such as
         various handy ways to debug stylesheets, setting up XTF to work in external tools
         such as &lt;oXygen/> and Eclipse, and other helpful tips.
+        <br/><br/>
+      </li>
+      <li>
+        Multi-field <a href="tagRef.html#crossQuery_QueryParser_Output_And"><span class="Code">&lt;and></span></a> 
+        queries have been added. This is a powerful way to provide a simple "keyword" search that automatically
+        searches for <i>all</i> of the terms in <i>any</i> of the specified fields. For instance, this
+        would give good results for a query spanning title and author such as 
+        <span class="Code">against all enemies clarke</span>.
+        <br/><br/>
+      </li>
+      <li>
+        A hybrid 
+        <a href="tagRef.html#crossQuery_QueryParser_Output_OrNear"><span class="Code">&lt;orNear></span></a> 
+        query operator has been added, that operates like an 
+        <span class="Code">&lt;or></span> query but uses proximity for better scoring.
         <br/><br/>
       </li>
       <li>
@@ -131,6 +146,12 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         Documented XTF extensions to <a href="programming.html#Common_Exec">call command-line programs</a> 
         from stylesheets, and to <a href="programming.html#Common_FileUtils">check</a> a file's existence,
         length, and modification time.
+        <br/><br/>
+      </li>
+      <li>
+        An Saxon extension instruction, 
+        <span class="Code"><a href="programming.html#Common_Redirect">redirect:send</a></span>,
+        has been added to allow a stylesheet to force an immediate HTTP redirect.
         <br/><br/>
       </li>
       <li>
