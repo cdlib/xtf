@@ -158,7 +158,7 @@ public class TextIndexer
       
 
       // Regardless of whether we succeed or fail, say our name.
-      Trace.info( "TextIndexer v" + 1.8 );
+      Trace.info( "TextIndexer v" + 1.9 );
       Trace.info( "" );
       Trace.tab();
       
