@@ -251,9 +251,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       index the document library. To do this, follow the steps below. </p>
     <p class="GreyList"><i>Note: </i>this 
       procedure depends on a Unix-type shell and a Perl command interpreter. If 
-      you are attempting to run XTF on Windows, and don't have an environment such
-      as cygwin that includes Perl, a batch file and a different procedure
-      are available, then see the section <a href="#RunningOnWindows">Running on Windows</a>, 
+      you are attempting to run XTF on <b>Microsoft Windows</b>, and don't have an environment such
+      as <b>cygwin</b> that includes Perl, 
+      then see the section <a href="#RunningOnWindows">Running on Windows</a>, 
       below.</p>
     <ol class="OrderedList">
       <li>From the command prompt, set the<span class="Code"> XTF_HOME </span>environment 
@@ -322,7 +322,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 <p class="Heading1"> Running on Windows<a name="RunningOnWindows"></a></p>
 <!-- - - - - - - - - - - - - - --> 
 <p>The base XTF distribution works well on a number of Unix variants, including 
-  Solaris and Linux. XTF also works under Windows, but there are some special 
+  Solaris, MacOS, and Linux. XTF also works under Microsoft Windows, but there are some special 
   considerations.</p>
 <p>Instead of the usual Perl script to run the textIndexer, a batch file
   front-end has been provided: <span class="Code">bin/textIndexer.bat</span>.
@@ -342,7 +342,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <div class="Note"> (<u>Note</u>: To avoid having to repeatedly set 
       the<span class="Code"> XTF_HOME </span> environment variable, 
       you may wish to add it to the list of system environment variables
-      in Windows. On Windows XP, this can be done using the <b>System</b> control panel,
+      in Windows. On <b>Windows XP</b>, this can be done using the <b>System</b> control panel,
       under <b>Advanced</b> -> <b>Environment Variables</b>.)<br/><br/>
     </div>
   </li>
@@ -456,13 +456,11 @@ and configured, the XTF system may be installed and run.
   as described in the <a href="#RunTimeInstall">previous section</a>. Once the 
   run-time environment is up and running, do the following steps to install the 
   XTF Package.</p>
-  <p class="GreyList"><i>Note: </i>this procedure 
-    depends on a Unix-type shell and a Perl command interpreter. If you are attempting 
-    to run XTF on Windows, you'll need an environment such as <b>cygwin</b> that 
-    includes these things. Alternately, you could create a driver script that does 
-    the same work, namely forming a classpath that includes all the .jar files in<span class="Code"> 
-    WEB-INF/lib</span>.<br/>
-  </p>
+  <p class="GreyList"><i>Note: </i>this 
+    procedure depends on a Unix-type shell and a Perl command interpreter. If 
+    you are attempting to run XTF on <b>Microsoft Windows</b>, and don't have an environment such
+    as <b>cygwin</b> that includes Perl, 
+    then see the section <a href="#RunningOnWindows">Running on Windows</a>.</p>
   <ol class="OrderedList">
     <li> Shut down your servlet container, to keep it from prematurely trying to 
       unpack <span class="Keyword">XTF</span>.<br/>
