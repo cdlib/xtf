@@ -50,5 +50,5 @@ class CQLParseException extends GeneralException
     /** This particular exception isn't really severe enough to log */
     public boolean isSevere() { return false; }
 
-} // class SRUCQLParseException
+} // class CQLParseException
 
