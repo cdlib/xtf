@@ -201,7 +201,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     document library. To do so, perform the following steps: 
     <div class="IndentL"> 
       <ul>
-        <li> Download the <b>sample</b> package (<span class="Code">xtf-sample.zip</span>) 
+        <li> Download the <b>sample</b> package (<span class="Code">sample-data-<span class="MacroCode">x.x</span>.zip</span>) 
           from <a href="http://sourceforge.net/projects/xtf">SourceForge</a>. 
           <br/>
           <br/>
@@ -251,9 +251,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       index the document library. To do this, follow the steps below. </p>
     <p class="GreyList"><i>Note: </i>this 
       procedure depends on a Unix-type shell and a Perl command interpreter. If 
-      you are attempting to run XTF on Windows, you may need an environment such 
-      as <b>cygwin</b> that includes these things. Alternately, you could create 
-      a driver script that does the same work. See the section <a href="#RunningOnWindows">Running on Windows</a>, 
+      you are attempting to run XTF on Windows, and don't have an environment such
+      as cygwin that includes Perl, a batch file and a different procedure
+      are available, then see the section <a href="#RunningOnWindows">Running on Windows</a>, 
       below.</p>
     <ol class="OrderedList">
       <li>From the command prompt, set the<span class="Code"> XTF_HOME </span>environment 
@@ -324,34 +324,36 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 <p>The base XTF distribution works well on a number of Unix variants, including 
   Solaris and Linux. XTF also works under Windows, but there are some special 
   considerations.</p>
-<p>To get the textIndexer script to work as shipped in the XTF distribution, you 
-  need a Unix-like command interpreter. We have found that cygwin works well for 
-  this, and that once installed (be sure to include Perl), the normal instructions 
-  for configuring and running XTF work fine.</p>
-<p>Another option is to create a batch file to do indexing. The instructions below 
-  were contributed by Seth Cherney. Note that his instructions use Resin; substitute 
-  the appropriate path to your servlet container. Feedback and/or improvements 
-  on these instructions is always appreciated.</p>
+<p>Instead of the usual Perl script to run the textIndexer, a batch file
+  front-end has been provided: <span class="Code">bin/textIndexer.bat</span>.
+  Using this batch file, there's no need for external tools such as Perl.
+  However, you do need to set the XTF_HOME environment variable. Here
+  are the steps:
+</p>
 <ol>
-  <li> Get perl at activestate.com. </li>
-  <li> Rename the <span class="Code">textIndexer</span> file in the Bin folder 
-    to <span class="Code">textIndexer.pl</span>. </li>
-  <li> Paste the following into a text editor and save as <span class="Code">indexer.bat</span> 
-    in the same folder: <span class="Code">textIndexer.pl -index default</span> 
+  <li>
+    From the Windows command prompt, set the<span class="Code"> XTF_HOME </span>environment 
+    variable to the directory where the XTF package is installed. This environment 
+    variable is used by the <span class="Keyword">textIndexer.bat</span> driver to 
+    locate various XTF components. For example:<br/>
+    <br/>
+    <div class="Sample"> <span class="Code"> C:<span class="MacroCode">...</span>\> set XTF_HOME=C:\<span class="MacroCode">servlet-container-directory</span>\webapps\xtf </span> </div>
+    <br/>
+    <div class="Note"> (<u>Note</u>: To avoid having to repeatedly set 
+      the<span class="Code"> XTF_HOME </span> environment variable, 
+      you may wish to add it to the list of system environment variables
+      in Windows. On Windows XP, this can be done using the <b>System</b> control panel,
+      under <b>Advanced</b> -> <b>Environment Variables</b>.)<br/><br/>
+    </div>
   </li>
-  <li> Paste following into a new file named <span class="Code">XTFJava.bat</span>. 
-    You may need to edit for your setup path (this is the safe way for registering 
-    a classpath, it is not global - Google set java classpath). All text is on 
-    one line without any returns: <br/>
-    <span class="Code">java -classpath C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\cql-java.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\log4j-1.2.9.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\PDFBox-0.6.7a.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\saxonb-8.3.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\Tidy.jar;C:\resin-3.0.18\webapps\xtf\WEB-INF\lib\xtf.jar</span> 
-  </li>
-  <li> Open control panel - system - advanced - environmental variables, and add 
-    the <span class="Code">XTF_HOME</span> variable (and JAVA_HOME if necessary). 
-  </li>
-  <li> Copy the sample data files as directed by XTF user guide. </li>
-  <li> Run <span class="Code">XTFjava.bat</span>, then run <span class="Code">indexer.bat</span>. 
+  <li>
+    Once XTF_HOME has been set, you can simply run <span class="Code">textIndexer.bat</span> as per the
+    normal instructions. For example:<br/>
+    <br/>
+    <div class="Sample"> <span class="Code"> C:<span class="MacroCode">...</span>\xtf\bin> textIndexer -index default </span> </div>
   </li>
 </ol>
+
 <p class="Heading1">Upgrading a Prior XTF Installation<a name="Upgrading"></a></p>
 <div class="BaseStyle"><!-- - - - - - - - - - - - - - --> 
   <p>If you have previously installed XTF and want to retain your existing stylesheets 
