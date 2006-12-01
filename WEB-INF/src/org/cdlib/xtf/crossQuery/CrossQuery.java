@@ -50,6 +50,7 @@ import net.sf.saxon.tree.TreeBuilder;
 
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
+import org.cdlib.xtf.servletBase.RedirectException;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
@@ -149,7 +150,12 @@ public class CrossQuery extends TextServlet
             apply( attribs, req, res );
         }
         catch( Exception e ) {
-            genErrorPage( req, res, e );
+            if( !(e instanceof RedirectException) ) {
+                try {
+                    genErrorPage( req, res, e );
+                }
+                catch( RedirectException re ) { }
+            }
             return;
         }
     } // doGet()

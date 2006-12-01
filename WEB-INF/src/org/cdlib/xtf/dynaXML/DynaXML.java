@@ -53,6 +53,7 @@ import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.trans.KeyManager;
 
+import org.cdlib.xtf.servletBase.RedirectException;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.IndexUtil;
@@ -279,7 +280,12 @@ public class DynaXML extends TextServlet
             apply( docInfo, req, res );
         } 
         catch( Exception e ) {
-            genErrorPage( req, res, e );
+            if( !(e instanceof RedirectException) ) {
+                try {
+                    genErrorPage( req, res, e );
+                }
+                catch( RedirectException re ) { }
+            }
             return;
         }
     } // doGet()
