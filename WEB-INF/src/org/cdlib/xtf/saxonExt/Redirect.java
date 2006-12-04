@@ -85,29 +85,30 @@ public class Redirect implements ExtensionElementFactory
    */
   public static class SendElement extends ExtensionInstruction 
   {
-    String url;
+    Expression urlExp;
     
     public void prepareAttributes() throws TransformerConfigurationException 
     {
       // Get mandatory 'url' attribute
-      url = getAttributeList().getValue("", "url");
-      if( url == null )
-          reportAbsence( "url" );       
+      String urlAtt = getAttributeList().getValue("", "url");
+      if( urlAtt == null )
+          reportAbsence( "url" );
+      urlExp = makeAttributeValueTemplate( urlAtt );
     } // prepareAttributes()
       
     public Expression compile(Executable exec) 
       throws TransformerConfigurationException 
     {
-      return new SendInstruction(url);
+      return new SendInstruction( urlExp );
     }
 
     private class SendInstruction extends SimpleExpression 
     {
-      String  url;
+      Expression urlExp;
 
-      public SendInstruction( String url )
+      public SendInstruction( Expression urlExp )
       {
-          this.url = url;
+          this.urlExp = urlExp;
       }
 
       /**
@@ -126,6 +127,7 @@ public class Redirect implements ExtensionElementFactory
       public Item evaluateItem(XPathContext context) throws XPathException 
       {
         HttpServletResponse res = TextServlet.getCurResponse();
+        String url = urlExp.evaluateAsString( context );
         String encodedUrl = res.encodeRedirectURL( url );
         try {
           res.sendRedirect( encodedUrl );
