@@ -369,16 +369,17 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         assert req.maxDocs < 0 || hitVec.size() <= req.maxDocs;
         
-        // Make spelling suggestions if applicable.
-        if( spellReader != null && req.spellcheckParams != null )
-            spellCheck( req, result );
-        
-        // And we're done. Pack up the results into a tidy array.
+        // Pack up the results into a tidy array.
         result.totalDocs = nDocsHit;
         result.startDoc  = req.startDoc;
         result.endDoc    = req.startDoc + hitVec.size();
         result.docHits   = (DocHit[]) hitVec.toArray( new DocHit[hitVec.size()] );
         
+        // Make spelling suggestions if applicable.
+        if( spellReader != null && req.spellcheckParams != null )
+            spellCheck( req, result );
+
+        // All done.
         return result;
     } // processReq()
     
