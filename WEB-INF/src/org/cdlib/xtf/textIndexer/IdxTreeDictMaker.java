@@ -128,7 +128,7 @@ public class IdxTreeDictMaker
     // Detect if spelling data is present.
     String indexPath    = Path.normalizePath(idxDir.toString());
     String spellIdxPath = indexPath + "spellDict/";
-    String queuePath    = spellIdxPath + "newWords.dat";
+    String queuePath    = spellIdxPath + "newWords.txt";
     if( new File(queuePath).length() < 1 )
         return;
   

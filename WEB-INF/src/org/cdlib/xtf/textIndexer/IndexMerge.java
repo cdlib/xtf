@@ -35,16 +35,16 @@ package org.cdlib.xtf.textIndexer;
  * as part of the Melvyl Recommender Project.
  */
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -365,7 +365,7 @@ public class IndexMerge
     boolean anyToDo = false;
     for( int i = 1; i < dirInfos.length; i++ ) {
         String sourceDir = dirInfos[i].path;
-        File sourceFile = new File( sourceDir + "spellDict/newWords.dat" );
+        File sourceFile = new File( sourceDir + "spellDict/newWords.txt" );
         if( !sourceFile.isFile() && sourceFile.canRead() )
             continue;
         anyToDo = true;
@@ -379,27 +379,33 @@ public class IndexMerge
     // Append each input file.
     for( int i = 1; i < dirInfos.length; i++ ) {
         String sourceDir = dirInfos[i].path;
-        File sourceFile = new File( sourceDir + "spellDict/newWords.dat" );
+        File sourceFile = new File( sourceDir + "spellDict/newWords.txt" );
         if( !sourceFile.isFile() && sourceFile.canRead() )
             continue;
 
         // Open the target file.
         String targetDir = dirInfos[0].path;
         Path.createPath( targetDir + "spellDict" );
-        File targetFile = new File( targetDir + "spellDict/newWords.dat" );
-        ObjectOutputStream targetWriter = new ObjectOutputStream(
-            new BufferedOutputStream(
-                new FileOutputStream(targetFile, targetFile.isFile())));
+        File targetFile = new File( targetDir + "spellDict/newWords.txt" );
+        PrintWriter targetWriter = new PrintWriter(
+            new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream(targetFile, targetFile.isFile()),
+                    "UTF-8")));
         
-        InputStream sourceRaw = new BufferedInputStream(
-            new FileInputStream(sourceFile));
-        ObjectInputStream sourceReader = new ObjectInputStream(sourceRaw);
+        BufferedReader sourceReader = new BufferedReader(
+            new InputStreamReader(
+                new FileInputStream(sourceFile), 
+                "UTF-8"));
         
         boolean eof = false;
         while( !eof ) {
             try {
-                String word = sourceReader.readUTF();
-                targetWriter.writeUTF( word );
+                String word = sourceReader.readLine();
+                if (word == null)
+                    eof = true;
+                else
+                    targetWriter.println( word );
             }
             catch (EOFException e) { eof = true; }
             catch (IOException e) { 
@@ -409,7 +415,6 @@ public class IndexMerge
         }
         
         sourceReader.close();
-        sourceRaw.close();
         targetWriter.close();
     } // for
     
