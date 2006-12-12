@@ -57,9 +57,22 @@ public class StringList
       data[size++] = value;
   }
   
+  public final void ensureCapacity( int cap ) {
+      if( cap > data.length )
+          data = ArrayUtil.resize( data, cap );
+  }
+  
   public final void compact() {
       if( size != data.length )
           data = ArrayUtil.resize( data, size );
+  }
+  
+  public final void resize( int newSize ) {
+      if( newSize != size ) {
+          data = ArrayUtil.resize( data, newSize );
+          if( newSize > size )
+              Arrays.fill( data, size, newSize, null );
+      }
   }
   
   public final String[] toArray() {
