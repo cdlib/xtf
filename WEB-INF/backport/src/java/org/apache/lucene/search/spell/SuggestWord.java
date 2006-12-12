@@ -43,7 +43,13 @@ package org.apache.lucene.search.spell;
      * the suggested word
      */
     public String string;
-
+    
+    
+    /**
+     * the field it was suggested from
+     */
+    public String field;
+    
 
     public final int compareTo (SuggestWord a) {
         //first criteria: the edit distance

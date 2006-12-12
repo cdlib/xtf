@@ -38,6 +38,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
+import org.cdlib.xtf.textEngine.Constants;
 
 /**
  * <p>
@@ -139,7 +140,7 @@ public class SpellReader
                                   boolean morePopular) 
       throws IOException 
   {
-    SuggestWord[] list = suggestSimilar(word, num_sug, ir, field, 
+    SuggestWord[] list = suggestSimilar(word, num_sug, ir, new String[] { field }, 
                                morePopular ? 1 : 0, 0.5f);
     
     // Throw away other data and just return list of strings
@@ -178,12 +179,59 @@ public class SpellReader
                                        final float accuracy) 
       throws IOException 
   {
+    return suggestSimilar(word, num_sug, ir, new String[] { field }, 
+                          morePopularFactor, accuracy);
+  }
+  
+  /**
+   * Suggest similar words (restricted or not to a field of a user index)
+   * 
+   * @param word          the word you want a spell check done on
+   * @param num_sug       max number of words to suggest
+   * @param ir            the indexReader of the user index (can be null; see field param)
+   * @param field         the field of the user index: if field is not null, the 
+   *                      suggested words are restricted to the words present in 
+   *                      this field.
+   * @param morePopularFactor  return only the suggest words that are more 
+   *                           frequent by the given factor than the searched 
+   *                           word (only if restricted mode = 
+   *                           (indexReader!=null and field!=null))
+   * @param accuracy      minimum accuracy of returned words (0.5f is good)
+   * 
+   * @throws IOException  if something goes wrong during the process
+   * @return String[]     the sorted list of the suggest words with these
+   *                      criteria: first, the edit distance; second: (only if 
+   *                      restricted mode): the popularity of the suggest word 
+   *                      in the field of the user index
+   */
+  public SuggestWord[] suggestSimilar (final String word, 
+                                       final int num_sug, 
+                                       final IndexReader ir, 
+                                       final String[] fields,
+                                       float morePopularFactor, 
+                                       final float accuracy) 
+      throws IOException 
+  {
     final TRStringDistance sd = new TRStringDistance(word);
     final int lengthWord = word.length();
 
-    // Determine the frequency above which the suggestions must be
-    final int docFreq  = (ir!=null) ? ir.docFreq(new Term(field, word)) : 0;
-    final int goalFreq = (int)(morePopularFactor * docFreq);
+    // Determine the frequency above which the suggestions must be. Also,
+    // get data on which terms are rare and which are common.
+    //
+    int docFreq[]     = null;
+    int goalFreq[]    = null;
+    int termFreqs[][] = null;
+    
+    if (false && ir != null) {
+        docFreq = new int[fields.length];
+        goalFreq = new int[fields.length];
+        termFreqs = new int[fields.length][];
+        for (int i=0; i<fields.length; i++) {
+            docFreq[i] = ir.docFreq(new Term(fields[i], word));
+            goalFreq[i] = (int)(morePopularFactor * docFreq[i]);
+            termFreqs[i] = getTermFreqs(ir, fields[i]);
+        }
+    }
 
     // If the word exists in the index and we're not concerned about finding
     // a more popular one (or more than one), then we have nothing to suggest.
@@ -230,13 +278,6 @@ public class SpellReader
     // Calculate the main word's metaphone once.
     String metaphone = SpellWriter.calcMetaphone( word );
     
-    // If we're checking index frequencies, get data on which terms are rare
-    // and which are common.
-    //
-    int[] termFreqs = null;
-    if (ir != null && field != null)
-        termFreqs = getTermFreqs(ir, field);
-
     // Make a queue of the best matches. Leave a little extra room for some
     // to hang off the end at the same score but different frequencies.
     //
@@ -263,29 +304,51 @@ public class SpellReader
         if( sugword.score < accuracy )
             continue;
         
-        // If a user index was supplied...
-        if (ir!=null) 
+        // Find the field with the best score boost...
+        int    bestFreq  = 0;
+        float  bestBoost = -1;
+        String bestField = null;
+        /*
+        for (int fn=0; fn<fields.length; fn++)
         {
             // Get the word frequency from the index
-            sugword.freq = ir.docFreq(new Term(field, sugword.string)); 
-            
+            int freq = ir.docFreq(new Term(fields[fn], sugword.string));
+
             // Don't suggest a word that is not present in the field
-            if ((goalFreq>sugword.freq)||sugword.freq<1)  
+            if ((goalFreq[fn] >freq) || freq<1)  
                 continue;
             
             // If this word is more frequent than normal, give it a nudge up.
-            sugword.origScore = sugword.score;
-            if( sugword.freq >= termFreqs[0] ) // 1000
-                sugword.score += 0.25;
-            else if( sugword.freq >= termFreqs[1] ) // 40
-                sugword.score += 0.20;
-            else if( sugword.freq >= termFreqs[2] ) // 4
-                sugword.score += 0.15;
-            else if( sugword.freq >= termFreqs[3] ) // 2
-                sugword.score += 0.10f;
-            else if (sugword.freq >= termFreqs[4] ) // 1
-                sugword.score += 0.05f;
-        }
+            float boost = 0.0f;
+            if( freq >= termFreqs[fn][0] ) // 1000
+                boost = 0.25f;
+            else if( freq >= termFreqs[fn][1] ) // 40
+                boost = 0.20f;
+            else if( freq >= termFreqs[fn][2] ) // 4
+                boost = 0.15f;
+            else if( freq >= termFreqs[fn][3] ) // 2
+                boost = 0.10f;
+            else if (freq >= termFreqs[fn][4] ) // 1
+                boost = 0.05f;
+
+            if (boost > bestBoost) {
+                bestField = fields[fn];
+                bestBoost = boost;
+                bestFreq  = freq;
+            }
+        } // for fn
+        */
+        bestField = fields[0];
+        bestFreq  = 1;
+        bestBoost = 0.0f;
+        
+        if (bestField == null)
+            continue;
+        
+        sugword.origScore = sugword.score;
+        sugword.field     = bestField;
+        sugword.freq      = bestFreq;
+        sugword.score     += bestBoost;
         
         // If the metaphone matches, nudge the score
         if( SpellWriter.calcMetaphone(sugword.string).equals(metaphone) )
@@ -333,39 +396,13 @@ public class SpellReader
     int nTerms = 0;
     TermEnum terms = reader.terms( new Term(fieldName, "") );
     while( terms.next() ) {
+        if (shouldSkipTerm(terms.term().text()))
+            continue;
         totalFreq += terms.docFreq();
         ++nTerms;
     }
     terms.close();
     double avgFreq = totalFreq / (double)nTerms;
-    
-    /*
-    // Now calculate the standard deviation
-    double variation = 0;
-    terms = reader.terms( new Term(fieldName, "") );
-    while( terms.next() ) {
-        double diff = terms.docFreq() - avgFreq;
-        variation += diff*diff;
-        ++nTerms;
-    }
-    terms.close();
-    
-    double stddev = Math.sqrt(variation / (nTerms+1));
-    
-    // If not enough terms, turn off frequency boosting.
-    res = new int[5];
-    if( nTerms < 500 )
-        res[0] = res[1] = res[2] = res[3] = res[4] = res[5] = Integer.MAX_VALUE;
-    else
-    {
-        // Sort the frequencies, and pick out the levels of interest to us.
-        res[0] = (int) (avgFreq + (stddev *22.077520));
-        res[1] = (int) (avgFreq + (stddev * 0.848076));
-        res[2] = (int) (avgFreq + (stddev * 0.051972));
-        res[3] = (int) (avgFreq + (stddev * 0.007800));
-        res[4] = (int) (avgFreq);
-    }
-    */
     
     // Okay, we have to build a new one. Sample at least 10000 above-average
     // terms (if there are that many.)
@@ -376,9 +413,13 @@ public class SpellReader
     int pos = 0;
     int cycle = 0;
     int cutoff = (int) avgFreq;
+    int nSampledTerms = 0;
     terms = reader.terms( new Term(fieldName, "") );
     while( terms.next() ) 
     {
+        if (shouldSkipTerm(terms.term().text()))
+            continue;
+        
         int freq = terms.docFreq();
         if( freq <= cutoff )
             continue;
@@ -398,8 +439,10 @@ public class SpellReader
                 pos /= 2;
             }
         }
-        ++nTerms;
+        ++nSampledTerms;
     }
+
+    System.out.println( "Field " + fieldName + ": " + nSampledTerms + " above-avg terms out of " + nTerms );
     
     res = new int[5];
     
@@ -425,6 +468,30 @@ public class SpellReader
 
   } // getTermFreqs()
 
+  private static boolean shouldSkipTerm(String term)
+  {
+    if (term.length() < 2)
+      return true;
+    
+    if (term.charAt(0) == Constants.FIELD_START_MARKER)
+        return true;
+    if (term.charAt(term.length()-1) == Constants.FIELD_END_MARKER)
+        return true;
+    
+    // Skip words with digits. We seldom want to correct with these,
+    // and they introduce a big burden on indexing. Also, skip
+    // all n-grams.
+    //
+    for (int i = 0; i < term.length(); i++) {
+        char c = term.charAt(i);
+        if (Character.isDigit(c))
+            return true;
+        if (c == '~')
+            return true;
+    }
+    
+    return false;
+  }
 
   /**
    * Add a clause to a boolean query.

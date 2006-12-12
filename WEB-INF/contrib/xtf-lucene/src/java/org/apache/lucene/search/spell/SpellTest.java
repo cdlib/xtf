@@ -196,7 +196,7 @@ public class SpellTest
     
     for( int i = 0; i < pairList.size(); i++ ) {
         Pair pair = (Pair) pairList.get( i );
-        spellWriter.queueWord( pair.token.termText() );
+        spellWriter.queueWord( null, null, pair.token.termText() );
     }
     
     spellWriter.flushQueuedWords();
@@ -209,6 +209,8 @@ public class SpellTest
   /** Test the spelling index */
   private void test( String testFile ) throws IOException 
   {
+    long startTime = System.currentTimeMillis();
+    
     // Open the spelling index.
     FSDirectory spellDir = FSDirectory.getDirectory( "spell", false );
     SpellReader spellReader = new SpellReader( spellDir );
@@ -217,7 +219,8 @@ public class SpellTest
     FSDirectory indexDir = FSDirectory.getDirectory( "index", false );
     IndexReader indexReader = IndexReader.open( indexDir );
     
-    final int[] sizes = { 1, 5, 10, 25, 50 };
+    //final int[] sizes = { 1, 5, 10, 25, 50 };
+    final int[] sizes = { 1 };
     final int[] totals = new int[sizes.length];
     int nWords = 0;
     
@@ -288,8 +291,11 @@ public class SpellTest
                     totals[j]++;
             }
         }
-        
+                
         System.out.println( " " + (pos+1) );
+        
+        if( nWords == 1 )
+            System.out.println( "Time to first word: " + (System.currentTimeMillis() - startTime) + " msec" );
         
     } // while
     
@@ -308,6 +314,8 @@ public class SpellTest
     }
     System.out.println();
     
+    System.out.println( "Done. Total time: " + (System.currentTimeMillis() - startTime) + " msec" );
+    
     lineReader.close();
     indexReader.close();
     spellReader.close();
@@ -323,6 +331,54 @@ public class SpellTest
                         String      word, 
                         String      correction, 
                         int         nSuggestions )
+    throws IOException
+  {
+    ArrayList list = new ArrayList();
+    String[] fields = { "text", "title-main", "author", "subject", "note" };
+    //String[] fields = { "words" };
+    
+    SuggestWord[] suggestions = spellReader.suggestSimilar( 
+        word, nSuggestions, indexReader, fields, 
+        0, 0.5f );
+    
+    int found = -1;
+    for( int i = 0; i < suggestions.length; i++ )
+    {
+        if( suggestions[i].string.equals(correction) ) {
+            found = i;
+            break;
+        }
+    } // for i
+
+    /*
+    if( found != 0 ) {
+        System.out.println( "...orig metaphone: " + SpellWriter.calcMetaphone(word) );
+        for( int i = 0; i < suggestions.length; i++ ) {
+            SuggestWord sugg = suggestions[i];
+            System.out.print( "   " );
+            System.out.print( (i == found)     ? "*" : " " );
+            System.out.println( sugg.string +
+                "\t" + sugg.score +
+                "\t" + sugg.origScore +
+                "\t" + sugg.freq +
+                "\t" + SpellWriter.calcMetaphone(sugg.string) );
+        }
+    }
+    */
+    
+    return found;
+    
+  } // trySpell()
+  
+  /**
+   * Gather the specified number of suggestions for a word, and return the
+   * position of the correction in the result list.
+   */
+  private int trySpellOld( SpellReader spellReader,
+                           IndexReader indexReader,
+                           String      word, 
+                           String      correction, 
+                           int         nSuggestions )
     throws IOException
   {
     SuggestWord[] suggestions = spellReader.suggestSimilar( 
