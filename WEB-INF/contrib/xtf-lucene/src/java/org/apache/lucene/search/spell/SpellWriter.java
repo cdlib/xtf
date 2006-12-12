@@ -22,19 +22,22 @@ package org.apache.lucene.search.spell;
  * as part of the Melvyl Recommender Project.
  */
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
 
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
@@ -46,6 +49,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.util.CountedInputStream;
 import org.cdlib.xtf.util.FastStringCache;
+import org.cdlib.xtf.util.IntegerValues;
 
 /**
  * <p>
@@ -67,25 +71,37 @@ public class SpellWriter {
   private Directory indexDir;
   
   /** File to queue words into */
-  private File queueFile;
+  private File wordQueueFile;
 
+  /** File to queue words into */
+  private File pairQueueFile;
+  
   /** How large to make the cache of recently added words */
-  private int cacheSize = 20000;
+  private static final int CACHE_SIZE = 20000;
 
   /** Cache of recently added words (so we don't look them up twice.) */
-  private FastStringCache recentWords = new FastStringCache(cacheSize);
+  private FastStringCache recentWords = new FastStringCache(CACHE_SIZE);
 
   /** Boolean object to mark words in cache */
   private static final Boolean trueValue = new Boolean(true);
 
   /** Max # of queued words to process at a time */
-  private int blockSize = 50000;
+  private static final int BLOCK_SIZE = 50000;
   
   /** Number of words added during flush */
   private int totalAdded;
   
   /** For writing to the word queue */
-  private ObjectOutputStream queueWriter = null;
+  private PrintWriter wordQueueWriter = null;
+  
+  /** For writing to the pair queue */
+  private PrintWriter pairQueueWriter = null;
+  
+  /** For counting pair frequencies prior to write */
+  private HashMap pairHash = null;
+
+  /** Max # of pairs to hash before flushing */
+  private static final int MAX_PAIR_HASH_SIZE = 200000;
 
   /** For checking term existence */
   private IndexReader indexReader;
@@ -103,7 +119,8 @@ public class SpellWriter {
     throws IOException 
   {
     this.indexPath = new File(indexPath).getAbsolutePath();
-    this.queueFile = new File(indexPath + "newWords.dat");
+    this.wordQueueFile = new File(indexPath + "newWords.txt");
+    this.pairQueueFile = new File(indexPath + "newPairs.txt");
     
     // Open the index directory, if it exists. If not, create it.
     if (new File(indexPath).isDirectory()) {
@@ -119,7 +136,7 @@ public class SpellWriter {
    * disk.) 
    */
   public synchronized void close() throws IOException {
-    closeQueueWriter();
+    closeQueueWriters();
     closeIndexReader();
     closeIndexWriter();
   }
@@ -127,7 +144,8 @@ public class SpellWriter {
   /** Delete all words in the dictionary (including those queued on disk) */
   public synchronized void clearIndex() throws IOException {
     close();
-    queueFile.delete();
+    wordQueueFile.delete();
+    pairQueueFile.delete();
     recentWords.clear();
     if (indexDir != null) {
         IndexReader.unlock(indexDir);
@@ -141,19 +159,58 @@ public class SpellWriter {
    * call checkFlush() to see whether the queue is getting full. The queue will
    * auto-expand if necessary, but it's better to flush it when near full.
    */
-  public synchronized void queueWord(String word) throws IOException {
+  public synchronized void queueWord(String field, String prevWord, String word) throws IOException {
+    openQueueWriters();
+    
+    if (prevWord != null) 
+    {
+        // Calculate a key for this pair, and get the current count
+        String key = field + "|" + prevWord + "|" + word;
+        Integer val = (Integer) pairHash.get(key);
+        
+        // Increment the count
+        if (val == null)
+            val = IntegerValues.valueOf(1);
+        else
+            val = IntegerValues.valueOf(val.intValue() + 1);
+        
+        // Store it, and if the hash is full, flush it.
+        pairHash.put(key, val);
+        if (pairHash.size() >= MAX_PAIR_HASH_SIZE)
+            flushPairHash();
+    }
+
+    // If we've seen the word recently, skip it.
     if (recentWords.contains(word))
       return;
     recentWords.put(word, trueValue);
     
-    openQueueWriter();
-    queueWriter.writeUTF(word);
+    // Write the word.
+    wordQueueWriter.println(word);
   } // queueWord()
+  
+  /** 
+   * Flush any accumulated pairs, with their counts. For efficiency, skip any 
+   * pair that appeared only once.
+   */
+  private void flushPairHash() throws IOException {
+    Set keySet = pairHash.keySet();
+    ArrayList list = new ArrayList(keySet);
+    Collections.sort(list);
+    for (int i=0; i<list.size(); i++) {
+        String key = (String) list.get(i);
+        int count = ((Integer)pairHash.get(key)).intValue();
+        if (count > 1)
+            pairQueueWriter.println( count + "|" + key);
+    }
+    pairQueueWriter.flush();
+    pairHash.clear();
+  }
 
   /** Check if any words are queued for add. */
   public synchronized boolean anyWordsQueued() throws IOException {
-    closeQueueWriter();
-    long queueSize = queueFile.length();
+    closeQueueWriters();
+    long queueSize = wordQueueFile.length();
     return queueSize > 1;
   }
 
@@ -171,20 +228,20 @@ public class SpellWriter {
    * @return number of non-duplicate words actually written
    */
   public synchronized int flushQueuedWords() throws IOException {
-    closeQueueWriter();
+    closeQueueWriters();
     
     InputStream queueRaw = null;
     try {
-        queueRaw = new BufferedInputStream(new FileInputStream(queueFile));
+        queueRaw = new FileInputStream(wordQueueFile);
     }
     catch( IOException e ) {
         return 0;
     }
     
     CountedInputStream queueCounted = new CountedInputStream(queueRaw);
-    ObjectInputStream  queueReader  = new ObjectInputStream(queueCounted);
+    BufferedReader     queueReader  = new BufferedReader(new InputStreamReader(queueCounted, "UTF-8"));
     
-    long fileTotal = queueFile.length();
+    long fileTotal = wordQueueFile.length();
     int prevPctDone = 0;
     totalAdded = 0;
 
@@ -195,12 +252,15 @@ public class SpellWriter {
             // Read in a block of words.
             //System.out.print(" r");
             
-            ArrayList block = new ArrayList(blockSize);
+            ArrayList block = new ArrayList(BLOCK_SIZE);
             
             try {
-                while (block.size() < blockSize && !eof) {
-                    String word = queueReader.readUTF();
-                    block.add(word);
+                while (block.size() < BLOCK_SIZE && !eof) {
+                    String word = queueReader.readLine();
+                    if (word == null)
+                        eof = true;
+                    else
+                        block.add(word);
                 }
             }
             catch (EOFException e) { eof = true; }
@@ -211,6 +271,7 @@ public class SpellWriter {
             
             // Add the block.
             addBlock(block, prevPctDone, pctDone);
+            prevPctDone = pctDone;
         } // while
     }
     finally {
@@ -223,9 +284,9 @@ public class SpellWriter {
     // Now that we've added them, clear the queue (truncate the file). Try
     // to delete it as well.
     //
-    FileOutputStream tmp = new FileOutputStream(queueFile);
+    FileOutputStream tmp = new FileOutputStream(wordQueueFile);
     tmp.close();
-    queueFile.delete();
+    wordQueueFile.delete();
 
     // All done.
     return totalAdded;
@@ -299,32 +360,44 @@ public class SpellWriter {
       }
     }
     
-    // Finish progress counter
-    progress( pct2, totalAdded );
-    
     // Optimize the index so that future access (and block adds) are fast.
     //System.out.print( "o " );
     indexWriter.optimize();
+
+    // Finish progress counter
+    progress( pct2, totalAdded );
+    
   } // addBlock()
     
   /** Opens the queue writer, closing the queue reader if necessary. */
-  private void openQueueWriter() throws IOException {
+  private void openQueueWriters() throws IOException {
     // If already open, skip re-opening.
-    if (queueWriter != null)
+    if (wordQueueWriter != null)
         return;
 
-    // Open the writer now. Be sure to append if it already exists.
-    queueWriter = new ObjectOutputStream(new BufferedOutputStream(
-                           new FileOutputStream(queueFile, true)));
-  } // openQueueWriter()
+    // Open the writers now. Be sure to append if they already exist.
+    wordQueueWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+                           new FileOutputStream(wordQueueFile, true),
+                           "UTF-8")));
+    pairQueueWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+                           new FileOutputStream(pairQueueFile, true),
+                           "UTF-8")));
+    pairHash = new HashMap(MAX_PAIR_HASH_SIZE);
+  } // openQueueWriters()
 
   /** Closes the queue writer if it's open */
-  private void closeQueueWriter() throws IOException {
-    if (queueWriter != null) {
-        queueWriter.close();
-        queueWriter = null;
+  private void closeQueueWriters() throws IOException {
+    if (wordQueueWriter != null) {
+        wordQueueWriter.close();
+        wordQueueWriter = null;
     }
-  } // closeQueueWriter()
+    if (pairQueueWriter != null) {
+        flushPairHash();
+        pairHash = null;
+        pairQueueWriter.close();
+        pairQueueWriter = null;
+    }
+  } // closeQueueWriters()
 
   /**
    * Opens the IndexReader, closing the IndexWriter if necessary. If the reader
@@ -499,5 +572,9 @@ public class SpellWriter {
 
   protected void finalize() throws Throwable {
     close();
+  }
+  
+  private static class IntHolder {
+    public int value;
   }
 } // class SpellWriter
