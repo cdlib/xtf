@@ -114,17 +114,7 @@
 
 
 <xsl:variable name="project-name">
-  <xsl:choose>
-    <xsl:when test="$METS//dc:relation[. = 'http://www.ucpress.edu']">
-      <xsl:text>University of California Press eScholarship Edition</xsl:text>
-    </xsl:when>
-    <xsl:when test="$METS//dc:relation[. = 'http://escholarship.cdlib.org']">
-      <xsl:text>eScholarship Edition</xsl:text>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:text>Online Archive of California</xsl:text>
-    </xsl:otherwise>
-  </xsl:choose>
+   <xsl:text>eScholarship Edition</xsl:text>
 </xsl:variable>
 
 <xsl:variable name="reason">
