@@ -47,7 +47,7 @@
     <xsl:choose>
       <xsl:when test="$term">
         <xsl:variable name="remainder" select="cdl:replace-misspellings($baseURL, $terms[position() > 1])"/>
-        <xsl:variable name="match" select="concat('(', $field, '=[^&amp;]*)', $term/@term)"/>
+        <xsl:variable name="match" select="concat('(', $field, '=[^;]*)', $term/@term)"/>
         <xsl:value-of select="replace($remainder, $match, concat('$1', $term/suggestion[1]/@term), 'i')"/>
       </xsl:when>
       <xsl:otherwise>

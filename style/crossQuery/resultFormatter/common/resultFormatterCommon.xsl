@@ -252,18 +252,18 @@
   <!-- extract query string and clean it up -->
   <xsl:param name="queryString">
     <xsl:value-of select="replace(replace(replace(replace(replace($http.URL, '.+\?', ''), 
-      '[0-9A-Za-z\-]+=&amp;', '&amp;'), 
-      '&amp;[0-9A-Za-z\-]+=$', '&amp;'), 
-      '&amp;+', '&amp;'),
-      '&amp;startDoc=[0-9]+', '')"/>
+      '[0-9A-Za-z\-]+=;', ';'), 
+      ';[0-9A-Za-z\-]+=$', ';'), 
+      ';+', ';'),
+      ';startDoc=[0-9]+', '')"/>
   </xsl:param> 
   
   <!-- Hidden Query String -->
 
   <xsl:template name="hidden.query">
     <xsl:param name="queryString"/>
-    <xsl:variable name ="before" select="if(contains($queryString, '&amp;')) then substring-before($queryString, '&amp;') else $queryString"/>
-    <xsl:variable name ="after" select="substring-after($queryString, '&amp;')"/>
+    <xsl:variable name ="before" select="if(contains($queryString, ';')) then substring-before($queryString, ';') else $queryString"/>
+    <xsl:variable name ="after" select="substring-after($queryString, ';')"/>
     <xsl:variable name="name" select="substring-before($before, '=')"/>
     <xsl:variable name="value" select="replace(substring-after($before, '='), '\+', ' ')"/>
     <input type="hidden" name="{$name}" value="{$value}"/>
@@ -434,10 +434,10 @@
     <xsl:variable name="pageQueryString">
       <xsl:choose>
         <xsl:when test="$groups">
-          <xsl:value-of select="replace(replace($queryString, '&amp;startGroup=[0-9]+', ''), '&amp;group=[0-9A-Za-z\-\+''%% ]+', '')"/>
+          <xsl:value-of select="replace(replace($queryString, ';startGroup=[0-9]+', ''), ';group=[0-9A-Za-z\-\+''%% ]+', '')"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="replace($queryString, '&amp;startDoc=[0-9]+', '')"/>
+          <xsl:value-of select="replace($queryString, ';startDoc=[0-9]+', '')"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>   
@@ -465,14 +465,14 @@
       <!-- Individual Paging -->
       <xsl:if test="($pageNum = 1) and ($pageStart != $start)">
         <xsl:variable name="prevPage" as="xs:integer" select="$start - $perPage"/>
-        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;{$startName}={$prevPage}">Prev</a>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString};{$startName}={$prevPage}">Prev</a>
         <xsl:text>&#160;&#160;</xsl:text>
       </xsl:if>
       
       <!-- Paging by Blocks -->
       <xsl:variable name="prevBlock" as="xs:integer" select="(($blockStart - $blockSize) * $perPage) - ($perPage - 1)"/>
       <xsl:if test="($pageNum = 1) and ($prevBlock &gt;= 1)">
-        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;{$startName}={$prevBlock}">...</a>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString};{$startName}={$prevBlock}">...</a>
         <xsl:text>&#160;&#160;</xsl:text>
       </xsl:if>
                 
@@ -482,7 +482,7 @@
         <xsl:choose>
           <!-- Make a hyperlink if it's not the page we're currently on. -->
           <xsl:when test="($pageStart != $start)">
-            <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;{$startName}={$pageStart}">
+            <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString};{$startName}={$pageStart}">
               <xsl:value-of select="$pageNum"/>
             </a>
             <xsl:if test="$pageNum &lt; $showPages">
@@ -502,14 +502,14 @@
       <xsl:variable name="nextBlock" as="xs:integer" select="(($blockStart + $blockSize) * $perPage) - ($perPage - 1)"/>
       <xsl:if test="($pageNum = $showPages) and (($showPages * $perPage) &gt; $nextBlock)">
         <xsl:text>&#160;&#160;</xsl:text>
-        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;{$startName}={$nextBlock}">...</a>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString};{$startName}={$nextBlock}">...</a>
       </xsl:if>
 
       <!-- Individual Paging -->      
       <xsl:if test="($pageNum = $showPages) and ($pageStart != $start)">
         <xsl:variable name="nextPage" as="xs:integer" select="$start + $perPage"/>
         <xsl:text>&#160;&#160;</xsl:text>
-        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString}&amp;{$startName}={$nextPage}">Next</a>
+        <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString};{$startName}={$nextPage}">Next</a>
       </xsl:if>
 
     </xsl:for-each>
@@ -521,7 +521,7 @@
   <!-- ====================================================================== -->
 
   <xsl:template match="subject">
-    <a href="{$xtfURL}{$crossqueryPath}?subject={.}&amp;subject-join=exact&amp;smode={$smode}&amp;rmode={$rmode}&amp;style={$style}&amp;brand={$brand}">
+    <a href="{$xtfURL}{$crossqueryPath}?subject={.};subject-join=exact;smode={$smode};rmode={$rmode};style={$style};brand={$brand}">
       <xsl:apply-templates/>
     </a>
     <xsl:if test="not(position() = last())">
@@ -544,7 +544,7 @@
       <xsl:when test="(contains($rmode, 'showDescrip')) and (matches($string , '.{500}'))">
         <xsl:apply-templates select="$block"/>
         <xsl:text>&#160;&#160;&#160;</xsl:text>
-        <a href="{$xtfURL}{$crossqueryPath}?{$hideString}&amp;startDoc={$startDoc}&amp;rmode=hideDescrip#{$identifier}">[brief]</a>         
+        <a href="{$xtfURL}{$crossqueryPath}?{$hideString};startDoc={$startDoc};rmode=hideDescrip#{$identifier}">[brief]</a>         
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates select="$block" mode="crop">
@@ -565,7 +565,7 @@
       <xsl:when test="matches($string , '.{300}')">
         <xsl:value-of select="replace($string, '(.{300}).+', '$1')"/>
         <xsl:text> . . . </xsl:text>
-        <a href="{$xtfURL}{$crossqueryPath}?{$moreString}&amp;startDoc={$startDoc}&amp;rmode=showDescrip#{$identifier}">[more]</a>  
+        <a href="{$xtfURL}{$crossqueryPath}?{$moreString};startDoc={$startDoc};rmode=showDescrip#{$identifier}">[more]</a>  
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates/>
@@ -649,36 +649,36 @@
       </xsl:choose>
     </xsl:variable>
     
-    <xsl:value-of select="concat($dynaxmlPath, '?docId=', $docId, '&amp;query=', replace($query, '&amp;', '%26'))"/>
+    <xsl:value-of select="concat($dynaxmlPath, '?docId=', $docId, ';query=', replace($query, ';', '%26'))"/>
     <!-- -join & -prox are mutually exclusive -->
     <xsl:choose>
       <xsl:when test="$text-prox">
-        <xsl:value-of select="concat('&amp;query-prox=', $text-prox)"/>
+        <xsl:value-of select="concat(';query-prox=', $text-prox)"/>
       </xsl:when>
       <xsl:when test="$text-join">
-        <xsl:value-of select="concat('&amp;query-join=', $text-join)"/>
+        <xsl:value-of select="concat(';query-join=', $text-join)"/>
       </xsl:when>            
     </xsl:choose>
     <xsl:if test="$text-exclude">
-      <xsl:value-of select="concat('&amp;query-exclude=', $text-exclude)"/>
+      <xsl:value-of select="concat(';query-exclude=', $text-exclude)"/>
     </xsl:if>
     <!-- -join & -prox are mutually exclusive -->
     <xsl:choose>
       <xsl:when test="$keyword-prox">
-        <xsl:value-of select="concat('&amp;query-prox=', $keyword-prox)"/>
+        <xsl:value-of select="concat(';query-prox=', $keyword-prox)"/>
       </xsl:when>
       <xsl:when test="$keyword-join">
-        <xsl:value-of select="concat('&amp;query-join=', $keyword-join)"/>
+        <xsl:value-of select="concat(';query-join=', $keyword-join)"/>
       </xsl:when>            
     </xsl:choose>
     <xsl:if test="$keyword-exclude">
-      <xsl:value-of select="concat('&amp;query-exclude=', $keyword-exclude)"/>
+      <xsl:value-of select="concat(';query-exclude=', $keyword-exclude)"/>
     </xsl:if>
     <xsl:if test="$sectionType">
-      <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
+      <xsl:value-of select="concat(';sectionType=', $sectionType)"/>
     </xsl:if>
     <xsl:if test="$brand">
-      <xsl:value-of select="concat('&amp;brand=',$brand)"/>
+      <xsl:value-of select="concat(';brand=',$brand)"/>
     </xsl:if>
     
   </xsl:template>

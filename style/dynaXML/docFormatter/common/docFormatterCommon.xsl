@@ -60,7 +60,7 @@
   <xsl:param name="source" select="''"/>
 
   <xsl:variable name="sourceStr">
-    <xsl:if test="$source">&amp;source=<xsl:value-of select="$source"/></xsl:if>
+    <xsl:if test="$source">;source=<xsl:value-of select="$source"/></xsl:if>
   </xsl:variable>
 
   <xsl:param name="query.string" select="concat('docId=', $docId, $sourceStr)"/>
@@ -120,16 +120,16 @@
   
   <xsl:param name="search">
     <xsl:if test="$query">
-      <xsl:value-of select="concat('&amp;query=', replace($query, '&amp;', '%26'))"/>
+      <xsl:value-of select="concat(';query=', replace($query, ';', '%26'))"/>
     </xsl:if>
     <xsl:if test="$query-join">
-      <xsl:value-of select="concat('&amp;query-join=', $query-join)"/>
+      <xsl:value-of select="concat(';query-join=', $query-join)"/>
     </xsl:if>
     <xsl:if test="$query-exclude">
-      <xsl:value-of select="concat('&amp;query-exclude=', $query-exclude)"/>
+      <xsl:value-of select="concat(';query-exclude=', $query-exclude)"/>
     </xsl:if>
     <xsl:if test="$sectionType">
-      <xsl:value-of select="concat('&amp;sectionType=', $sectionType)"/>
+      <xsl:value-of select="concat(';sectionType=', $sectionType)"/>
     </xsl:if>
   </xsl:param>  
     

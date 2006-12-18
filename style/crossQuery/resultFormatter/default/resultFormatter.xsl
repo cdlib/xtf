@@ -141,7 +141,7 @@
           </xsl:analyze-string>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="concat($queryString, '&amp;smode=simple-modify')"/>
+          <xsl:value-of select="concat($queryString, ';smode=simple-modify')"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -215,7 +215,7 @@
               <td align="left" valign="bottom">
                 <xsl:call-template name="sort.options"/>
                 <xsl:call-template name="hidden.query">
-                  <xsl:with-param name="queryString" select="replace($queryString, 'sort=[^&amp;]+&amp;', '')"/>
+                  <xsl:with-param name="queryString" select="replace($queryString, 'sort=[^;]+;', '')"/>
                 </xsl:call-template>
                 <input type="submit" value="Go!"/>
               </td>
@@ -694,7 +694,7 @@
         
           <xsl:choose>
             <xsl:when test="$smode = 'showBag'">
-              <xsl:variable name="removeURL" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=removeFromBag&amp;identifier=', $indexId))"/>
+              <xsl:variable name="removeURL" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=removeFromBag;identifier=', $indexId))"/>
               <span id="{$ark}-remove">
                 <a class="highlight" href="{concat('javascript:removeFromBag(', $quotedArk, ', &quot;', $removeURL, '&quot;)')}">
                   Remove from bag
@@ -702,13 +702,13 @@
               </span>
             </xsl:when>
             <xsl:otherwise>
-              <a href="{concat($xtfURL, $crossqueryPath, '?smode=showBag&amp;', $queryString)}">Show bag</a> |
+              <a href="{concat($xtfURL, $crossqueryPath, '?smode=showBag;', $queryString)}">Show bag</a> |
               <xsl:choose>
                 <xsl:when test="session:getData('bag')/bag/savedDoc[@id=$indexId]">
                   <span class="highlight">In bag.</span>
                 </xsl:when>
                 <xsl:otherwise>
-                  <xsl:variable name="addURL" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=addToBag&amp;identifier=', $indexId))"/>
+                  <xsl:variable name="addURL" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=addToBag;identifier=', $indexId))"/>
                   <span id="{$ark}-add">
                     <a href="{concat('javascript:addToBag(', $quotedArk, ', &quot;', $addURL, '&quot;)')}">
                       Add to bag
@@ -735,7 +735,7 @@
         <span class="heading">Similar:&#160;&#160;</span>
       </td>
       <td align="left">
-        <xsl:variable name="url" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=moreLike&amp;docsPerPage=5&amp;identifier=', $indexId))"/>
+        <xsl:variable name="url" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=moreLike;docsPerPage=5;identifier=', $indexId))"/>
         <span id="{$ark}-moreLike">
           <a class="highlight" href="{concat('javascript:moreLike(', $quotedArk, ', &quot;', $url, '&quot;)')}">
             Fetch
@@ -782,7 +782,7 @@
       <xsl:call-template name="dynaxml.url">
         <xsl:with-param name="path" select="$path"/>
       </xsl:call-template>
-      <xsl:value-of select="concat('&amp;hit.rank=', $hit.rank)"/>
+      <xsl:value-of select="concat(';hit.rank=', $hit.rank)"/>
     </xsl:variable>
     
     <xsl:choose>
