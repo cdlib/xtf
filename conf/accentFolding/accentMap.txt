@@ -1,0 +1,1922 @@
+00A9|0043       ; Copyright Sign|Latin Capital Letter C
+00AA|0061  ; Feminine Ordinal Indicator|<super> Latin Small Letter A
+00AD|           ; Soft Hypen|<remove>
+00AE|0052       ; Registered Sign|Latin Capital Letter R
+00B2|0032  ; Superscript Two|<super> Digit Two
+00B3|0033  ; Superscript Three|<super> Digit Three
+00B9|0031  ; Superscript One|<super> Digit One
+00BA|006F  ; Masculine Ordinal Indicator|<super> Latin Small Letter O
+00BC|0031 2044 0034  ; Vulgar Fraction One Quarter|<fraction> Digit One, Fraction Slash, Digit Four
+00BD|0031 2044 0032  ; Vulgar Fraction One Half|<fraction> Digit One, Fraction Slash, Digit Two
+00BE|0033 2044 0034  ; Vulgar Fraction Three Quarters|<fraction> Digit Three, Fraction Slash, Digit Four
+00C0|0041  ; Latin Capital Letter A With Grave|Latin Capital Letter A
+00C1|0041  ; Latin Capital Letter A With Acute|Latin Capital Letter A
+00C2|0041  ; Latin Capital Letter A With Circumflex|Latin Capital Letter A
+00C3|0041  ; Latin Capital Letter A With Tilde|Latin Capital Letter A
+00C4|0041  ; Latin Capital Letter A With Diaeresis|Latin Capital Letter A
+00C5|0041  ; Latin Capital Letter A With Ring Above|Latin Capital Letter A
+00C6|0041 0045  ; Latin Capital Letter AE|Latin Capital Letters A E
+00C7|0043  ; Latin Capital Letter C With Cedilla|Latin Capital Letter C
+00C8|0045  ; Latin Capital Letter E With Grave|Latin Capital Letter E
+00C9|0045  ; Latin Capital Letter E With Acute|Latin Capital Letter E
+00CA|0045  ; Latin Capital Letter E With Circumflex|Latin Capital Letter E
+00CB|0045  ; Latin Capital Letter E With Diaeresis|Latin Capital Letter E
+00CC|0049  ; Latin Capital Letter I With Grave|Latin Capital Letter I
+00CD|0049  ; Latin Capital Letter I With Acute|Latin Capital Letter I
+00CE|0049  ; Latin Capital Letter I With Circumflex|Latin Capital Letter I
+00CF|0049  ; Latin Capital Letter I With Diaeresis|Latin Capital Letter I
+00D1|004E  ; Latin Capital Letter N With Tilde|Latin Capital Letter N
+00D2|004F  ; Latin Capital Letter O With Grave|Latin Capital Letter O
+00D3|004F  ; Latin Capital Letter O With Acute|Latin Capital Letter O
+00D4|004F  ; Latin Capital Letter O With Circumflex|Latin Capital Letter O
+00D5|004F  ; Latin Capital Letter O With Tilde|Latin Capital Letter O
+00D6|004F  ; Latin Capital Letter O With Diaeresis|Latin Capital Letter O
+00D7|002A       ; Multiplication Sign|Asterisk
+00D9|0055  ; Latin Capital Letter U With Grave|Latin Capital Letter U
+00DA|0055  ; Latin Capital Letter U With Acute|Latin Capital Letter U
+00DB|0055  ; Latin Capital Letter U With Circumflex|Latin Capital Letter U
+00DC|0055  ; Latin Capital Letter U With Diaeresis|Latin Capital Letter U
+00DD|0059  ; Latin Capital Letter Y With Acute|Latin Capital Letter Y
+00DF|0073 0073  ; Latin Small Letter Sharp S|Latin Small Letters S S
+00E0|0061  ; Latin Small Letter A With Grave|Latin Small Letter A
+00E1|0061  ; Latin Small Letter A With Acute|Latin Small Letter A
+00E2|0061  ; Latin Small Letter A With Circumflex|Latin Small Letter A
+00E3|0061  ; Latin Small Letter A With Tilde|Latin Small Letter A
+00E4|0061  ; Latin Small Letter A With Diaeresis|Latin Small Letter A
+00E5|0061  ; Latin Small Letter A With Ring Above|Latin Small Letter A
+00E6|0061 0065  ; Latin Small Letter AE|Latin Small Letters A E
+00E7|0063  ; Latin Small Letter C With Cedilla|Latin Small Letter C
+00E8|0065  ; Latin Small Letter E With Grave|Latin Small Letter E
+00E9|0065  ; Latin Small Letter E With Acute|Latin Small Letter E
+00EA|0065  ; Latin Small Letter E With Circumflex|Latin Small Letter E
+00EB|0065  ; Latin Small Letter E With Diaeresis|Latin Small Letter E
+00EC|0069  ; Latin Small Letter I With Grave|Latin Small Letter I
+00ED|0069  ; Latin Small Letter I With Acute|Latin Small Letter I
+00EE|0069  ; Latin Small Letter I With Circumflex|Latin Small Letter I
+00EF|0069  ; Latin Small Letter I With Diaeresis|Latin Small Letter I
+00F1|006E  ; Latin Small Letter N With Tilde|Latin Small Letter N
+00F2|006F  ; Latin Small Letter O With Grave|Latin Small Letter O
+00F3|006F  ; Latin Small Letter O With Acute|Latin Small Letter O
+00F4|006F  ; Latin Small Letter O With Circumflex|Latin Small Letter O
+00F5|006F  ; Latin Small Letter O With Tilde|Latin Small Letter O
+00F6|006F  ; Latin Small Letter O With Diaeresis|Latin Small Letter O
+00F7|002F       ; Division Sign|Solidus
+00F9|0075  ; Latin Small Letter U With Grave|Latin Small Letter U
+00FA|0075  ; Latin Small Letter U With Acute|Latin Small Letter U
+00FB|0075  ; Latin Small Letter U With Circumflex|Latin Small Letter U
+00FC|0075  ; Latin Small Letter U With Diaeresis|Latin Small Letter U
+00FD|0079  ; Latin Small Letter Y With Acute|Latin Small Letter Y
+00FF|0079  ; Latin Small Letter Y With Diaeresis|Latin Small Letter Y
+0100|0041  ; Latin Capital Letter A With Macron|Latin Capital Letter A
+0101|0061  ; Latin Small Letter A With Macron|Latin Small Letter A
+0102|0041  ; Latin Capital Letter A With Breve|Latin Capital Letter A
+0103|0061  ; Latin Small Letter A With Breve|Latin Small Letter A
+0104|0041  ; Latin Capital Letter A With Ogonek|Latin Capital Letter A
+0105|0061  ; Latin Small Letter A With Ogonek|Latin Small Letter A
+0106|0043  ; Latin Capital Letter C With Acute|Latin Capital Letter C
+0107|0063  ; Latin Small Letter C With Acute|Latin Small Letter C
+0108|0043  ; Latin Capital Letter C With Circumflex|Latin Capital Letter C
+0109|0063  ; Latin Small Letter C With Circumflex|Latin Small Letter C
+010A|0043  ; Latin Capital Letter C With Dot Above|Latin Capital Letter C
+010B|0063  ; Latin Small Letter C With Dot Above|Latin Small Letter C
+010C|0043  ; Latin Capital Letter C With Caron|Latin Capital Letter C
+010D|0063  ; Latin Small Letter C With Caron|Latin Small Letter C
+010E|0044  ; Latin Capital Letter D With Caron|Latin Capital Letter D
+010F|0064  ; Latin Small Letter D With Caron|Latin Small Letter D
+0112|0045  ; Latin Capital Letter E With Macron|Latin Capital Letter E
+0113|0065  ; Latin Small Letter E With Macron|Latin Small Letter E
+0114|0045  ; Latin Capital Letter E With Breve|Latin Capital Letter E
+0115|0065  ; Latin Small Letter E With Breve|Latin Small Letter E
+0116|0045  ; Latin Capital Letter E With Dot Above|Latin Capital Letter E
+0117|0065  ; Latin Small Letter E With Dot Above|Latin Small Letter E
+0118|0045  ; Latin Capital Letter E With Ogonek|Latin Capital Letter E
+0119|0065  ; Latin Small Letter E With Ogonek|Latin Small Letter E
+011A|0045  ; Latin Capital Letter E With Caron|Latin Capital Letter E
+011B|0065  ; Latin Small Letter E With Caron|Latin Small Letter E
+011C|0047  ; Latin Capital Letter G With Circumflex|Latin Capital Letter G
+011D|0067  ; Latin Small Letter G With Circumflex|Latin Small Letter G
+011E|0047  ; Latin Capital Letter G With Breve|Latin Capital Letter G
+011F|0067  ; Latin Small Letter G With Breve|Latin Small Letter G
+0120|0047  ; Latin Capital Letter G With Dot Above|Latin Capital Letter G
+0121|0067  ; Latin Small Letter G With Dot Above|Latin Small Letter G
+0122|0047  ; Latin Capital Letter G With Cedilla|Latin Capital Letter G
+0123|0067  ; Latin Small Letter G With Cedilla|Latin Small Letter G
+0124|0048  ; Latin Capital Letter H With Circumflex|Latin Capital Letter H
+0125|0068  ; Latin Small Letter H With Circumflex|Latin Small Letter H
+0128|0049  ; Latin Capital Letter I With Tilde|Latin Capital Letter I
+0129|0069  ; Latin Small Letter I With Tilde|Latin Small Letter I
+012A|0049  ; Latin Capital Letter I With Macron|Latin Capital Letter I
+012B|0069  ; Latin Small Letter I With Macron|Latin Small Letter I
+012C|0049  ; Latin Capital Letter I With Breve|Latin Capital Letter I
+012D|0069  ; Latin Small Letter I With Breve|Latin Small Letter I
+012E|0049  ; Latin Capital Letter I With Ogonek|Latin Capital Letter I
+012F|0069  ; Latin Small Letter I With Ogonek|Latin Small Letter I
+0130|0049  ; Latin Capital Letter I With Dot Above|Latin Capital Letter I
+0132|0049 004A  ; Latin Capital Ligature IJ|Latin Capital Letters I J
+0133|0069 006A  ; Latin Small Ligature IJ|Latin Small Letters I J
+0134|004A  ; Latin Capital Letter J With Circumflex|Latin Capital Letter J
+0135|006A  ; Latin Small Letter J With Circumflex|Latin Small Letter J
+0136|004B  ; Latin Capital Letter K With Cedilla|Latin Capital Letter K
+0137|006B  ; Latin Small Letter K With Cedilla|Latin Small Letter K
+0139|004C  ; Latin Capital Letter L With Acute|Latin Capital Letter L
+013A|006C  ; Latin Small Letter L With Acute|Latin Small Letter L
+013B|004C  ; Latin Capital Letter L With Cedilla|Latin Capital Letter L
+013C|006C  ; Latin Small Letter L With Cedilla|Latin Small Letter L
+013D|004C  ; Latin Capital Letter L With Caron|Latin Capital Letter L
+013E|006C  ; Latin Small Letter L With Caron|Latin Small Letter L
+013F|004C 00B7  ; Latin Capital Letter L With Middle Dot|Latin Capital Letter L, Middle Dot
+0140|006C 00B7  ; Latin Small Letter L With Middle Dot|Latin Small Letter L, Middle Dot
+0143|004E  ; Latin Capital Letter N With Acute|Latin Capital Letter N
+0144|006E  ; Latin Small Letter N With Acute|Latin Small Letter N
+0145|004E  ; Latin Capital Letter N With Cedilla|Latin Capital Letter N
+0146|006E  ; Latin Small Letter N With Cedilla|Latin Small Letter N
+0147|004E  ; Latin Capital Letter N With Caron|Latin Capital Letter N
+0148|006E  ; Latin Small Letter N With Caron|Latin Small Letter N
+0149|02BC 006E  ; Latin Small Letter N Preceded By Apostrophe|Latin Small Letter N, Modifier Letter Apostrophe
+014C|004F  ; Latin Capital Letter O With Macron|Latin Capital Letter O
+014D|006F  ; Latin Small Letter O With Macron|Latin Small Letter O
+014E|004F  ; Latin Capital Letter O With Breve|Latin Capital Letter O
+014F|006F  ; Latin Small Letter O With Breve|Latin Small Letter O
+0150|004F  ; Latin Capital Letter O With Double Acute|Latin Capital Letter O
+0151|006F  ; Latin Small Letter O With Double Acute|Latin Small Letter O
+0152|004F 0045  ; Latin Capital Letter OE|Latin Capital Letters O E
+0153|006F 0065  ; Latin Small Letter OE|Latin Small Letters O E
+0154|0052  ; Latin Capital Letter R With Acute|Latin Capital Letter R
+0155|0072  ; Latin Small Letter R With Acute|Latin Small Letter R
+0156|0052  ; Latin Capital Letter R With Cedilla|Latin Capital Letter R
+0157|0072  ; Latin Small Letter R With Cedilla|Latin Small Letter R
+0158|0052  ; Latin Capital Letter R With Caron|Latin Capital Letter R
+0159|0072  ; Latin Small Letter R With Caron|Latin Small Letter R
+015A|0053  ; Latin Capital Letter S With Acute|Latin Capital Letter S
+015B|0073  ; Latin Small Letter S With Acute|Latin Small Letter S
+015C|0053  ; Latin Capital Letter S With Circumflex|Latin Capital Letter S
+015D|0073  ; Latin Small Letter S With Circumflex|Latin Small Letter S
+015E|0053  ; Latin Capital Letter S With Cedilla|Latin Capital Letter S
+015F|0073  ; Latin Small Letter S With Cedilla|Latin Small Letter S
+0160|0053  ; Latin Capital Letter S With Caron|Latin Capital Letter S
+0161|0073  ; Latin Small Letter S With Caron|Latin Small Letter S
+0162|0054  ; Latin Capital Letter T With Cedilla|Latin Capital Letter T
+0163|0074  ; Latin Small Letter T With Cedilla|Latin Small Letter T
+0164|0054  ; Latin Capital Letter T With Caron|Latin Capital Letter T
+0165|0074  ; Latin Small Letter T With Caron|Latin Small Letter T
+0168|0055  ; Latin Capital Letter U With Tilde|Latin Capital Letter U
+0169|0075  ; Latin Small Letter U With Tilde|Latin Small Letter U
+016A|0055  ; Latin Capital Letter U With Macron|Latin Capital Letter U
+016B|0075  ; Latin Small Letter U With Macron|Latin Small Letter U
+016C|0055  ; Latin Capital Letter U With Breve|Latin Capital Letter U
+016D|0075  ; Latin Small Letter U With Breve|Latin Small Letter U
+016E|0055  ; Latin Capital Letter U With Ring Above|Latin Capital Letter U
+016F|0075  ; Latin Small Letter U With Ring Above|Latin Small Letter U
+0170|0055  ; Latin Capital Letter U With Double Acute|Latin Capital Letter U
+0171|0075  ; Latin Small Letter U With Double Acute|Latin Small Letter U
+0172|0055  ; Latin Capital Letter U With Ogonek|Latin Capital Letter U
+0173|0075  ; Latin Small Letter U With Ogonek|Latin Small Letter U
+0174|0057  ; Latin Capital Letter W With Circumflex|Latin Capital Letter W
+0175|0077  ; Latin Small Letter W With Circumflex|Latin Small Letter W
+0176|0059  ; Latin Capital Letter Y With Circumflex|Latin Capital Letter Y
+0177|0079  ; Latin Small Letter Y With Circumflex|Latin Small Letter Y
+0178|0059  ; Latin Capital Letter Y With Diaeresis|Latin Capital Letter Y
+0179|005A  ; Latin Capital Letter Z With Acute|Latin Capital Letter Z
+017A|007A  ; Latin Small Letter Z With Acute|Latin Small Letter Z
+017B|005A  ; Latin Capital Letter Z With Dot Above|Latin Capital Letter Z
+017C|007A  ; Latin Small Letter Z With Dot Above|Latin Small Letter Z
+017D|005A  ; Latin Capital Letter Z With Caron|Latin Capital Letter Z
+017E|007A  ; Latin Small Letter Z With Caron|Latin Small Letter Z
+017F|0073       ; Latin Small Letter Long S|Latin Small Letter S
+01A0|004F  ; Latin Capital Letter O With Horn|Latin Capital Letter O
+01A1|006F  ; Latin Small Letter O With Horn|Latin Small Letter O
+01AF|0055  ; Latin Capital Letter U With Horn|Latin Capital Letter U
+01B0|0075  ; Latin Small Letter U With Horn|Latin Small Letter U
+01C4|0044 017D  ; Latin Capital Letter DZ With Caron|Latin Capital Letter D, Latin Capital Letter Z With Caron
+01C5|0044 017E  ; Latin Capital Letter D With Small Letter Z With Caron|Latin Capital Letter D, Latin Small Letter Z With Caron
+01C6|0064 017E  ; Latin Small Letter DZ With Caron|Latin Small Letter D, Latin Capital Letter Z With Caron
+01C7|004C 004A  ; Latin Capital Letter LJ|Latin Capital Letters L J
+01C8|004C 006A  ; Latin Capital Letter L With Small Letter J|Latin Capital Letter L, Latin Small Letter J
+01C9|006C 006A  ; Latin Small Letter LJ|Latin Small Letters L J
+01CA|004E 004A  ; Latin Capital Letter NJ|Latin Capital Letters N J
+01CB|004E 006A  ; Latin Capital Letter N With Small Letter J|Latin Capital Letter N, Latin Small Letter J
+01CC|006E 006A  ; Latin Small Letter NJ|Latin Small Letters N J
+01CD|0041  ; Latin Capital Letter A With Caron|Latin Capital Letter A
+01CE|0061  ; Latin Small Letter A With Caron|Latin Small Letter A
+01CF|0049  ; Latin Capital Letter I With Caron|Latin Capital Letter I
+01D0|0069  ; Latin Small Letter I With Caron|Latin Small Letter I
+01D1|004F  ; Latin Capital Letter O With Caron|Latin Capital Letter O
+01D2|006F  ; Latin Small Letter O With Caron|Latin Small Letter O
+01D3|0055  ; Latin Capital Letter U With Caron|Latin Capital Letter U
+01D4|0075  ; Latin Small Letter U With Caron|Latin Small Letter U
+01D5|00DC  ; Latin Capital Letter U With Diaeresis And Macron|Latin Capital Letter U With Diaeresis
+01D6|00FC  ; Latin Small Letter U With Diaeresis And Macron|Latin Small Letter U With Diaeresis
+01D7|00DC  ; Latin Capital Letter U With Diaeresis And Acute|Latin Capital Letter U With Diaeresis
+01D8|00FC  ; Latin Small Letter U With Diaeresis And Acute|Latin Small Letter U With Diaeresis
+01D9|00DC  ; Latin Capital Letter U With Diaeresis And Caron|Latin Capital Letter U With Diaeresis
+01DA|00FC  ; Latin Small Letter U With Diaeresis And Caron|Latin Small Letter U With Diaeresis
+01DB|00DC  ; Latin Capital Letter U With Diaeresis And Grave|Latin Capital Letter U With Diaeresis
+01DC|00FC  ; Latin Small Letter U With Diaeresis And Grave|Latin Small Letter U With Diaeresis
+01DE|00C4  ; Latin Capital Letter A With Diaeresis And Macron|Latin Capital Letter A With Diaeresis
+01DF|00E4  ; Latin Small Letter A With Diaeresis And Macron|Latin Small Letter A With Diaeresis
+01E0|0226  ; Latin Capital Letter A With Dot Above And Macron|Latin Capital Letter A With Dot Above
+01E1|0227  ; Latin Small Letter A With Dot Above And Macron|Latin Small Letter A With Dot Above
+01E2|00C6  ; Latin Capital Letter Ae With Macron|Latin Capital Letter Ae
+01E3|00E6  ; Latin Small Letter Ae With Macron|Latin Small Letter Ae
+01E6|0047  ; Latin Capital Letter G With Caron|Latin Capital Letter G
+01E7|0067  ; Latin Small Letter G With Caron|Latin Small Letter G
+01E8|004B  ; Latin Capital Letter K With Caron|Latin Capital Letter K
+01E9|006B  ; Latin Small Letter K With Caron|Latin Small Letter K
+01EA|004F  ; Latin Capital Letter O With Ogonek|Latin Capital Letter O
+01EB|006F  ; Latin Small Letter O With Ogonek|Latin Small Letter O
+01EC|01EA  ; Latin Capital Letter O With Ogonek And Macron|Latin Capital Letter O With Ogonek
+01ED|01EB  ; Latin Small Letter O With Ogonek And Macron|Latin Small Letter O With Ogonek
+01EE|01B7  ; Latin Capital Letter Ezh With Caron|Latin Capital Letter Ezh
+01EF|0292  ; Latin Small Letter Ezh With Caron|Latin Small Letter Ezh
+01F0|006A  ; Latin Small Letter J With Caron|Latin Small Letter J
+01F1|0044 005A  ; Latin Capital Letter DZ|Latin Capital Letters D Z
+01F2|0044 007A  ; Latin Capital Letter D With Small Letter Z|Latin Capital Letter D, Latin Small Letter Z
+01F3|0064 007A  ; Latin Small Letter DZ|Latin Small Letters D Z
+01F4|0047  ; Latin Capital Letter G With Acute|Latin Capital Letter G
+01F5|0067  ; Latin Small Letter G With Acute|Latin Small Letter G
+01F8|004E  ; Latin Capital Letter N With Grave|Latin Capital Letter N
+01F9|006E  ; Latin Small Letter N With Grave|Latin Small Letter N
+01FA|00C5  ; Latin Capital Letter A With Ring Above And Acute|Latin Capital Letter A With Ring Above
+01FB|00E5  ; Latin Small Letter A With Ring Above And Acute|Latin Small Letter A With Ring Above
+01FC|00C6  ; Latin Capital Letter Ae With Acute|Latin Capital Letter Ae
+01FD|00E6  ; Latin Small Letter Ae With Acute|Latin Small Letter Ae
+01FE|00D8  ; Latin Capital Letter O With Stroke And Acute|Latin Capital Letter O With Stroke
+01FF|00F8  ; Latin Small Letter O With Stroke And Acute|Latin Small Letter O With Stroke
+0200|0041  ; Latin Capital Letter A With Double Grave|Latin Capital Letter A
+0201|0061  ; Latin Small Letter A With Double Grave|Latin Small Letter A
+0202|0041  ; Latin Capital Letter A With Inverted Breve|Latin Capital Letter A
+0203|0061  ; Latin Small Letter A With Inverted Breve|Latin Small Letter A
+0204|0045  ; Latin Capital Letter E With Double Grave|Latin Capital Letter E
+0205|0065  ; Latin Small Letter E With Double Grave|Latin Small Letter E
+0206|0045  ; Latin Capital Letter E With Inverted Breve|Latin Capital Letter E
+0207|0065  ; Latin Small Letter E With Inverted Breve|Latin Small Letter E
+0208|0049  ; Latin Capital Letter I With Double Grave|Latin Capital Letter I
+0209|0069  ; Latin Small Letter I With Double Grave|Latin Small Letter I
+020A|0049  ; Latin Capital Letter I With Inverted Breve|Latin Capital Letter I
+020B|0069  ; Latin Small Letter I With Inverted Breve|Latin Small Letter I
+020C|004F  ; Latin Capital Letter O With Double Grave|Latin Capital Letter O
+020D|006F  ; Latin Small Letter O With Double Grave|Latin Small Letter O
+020E|004F  ; Latin Capital Letter O With Inverted Breve|Latin Capital Letter O
+020F|006F  ; Latin Small Letter O With Inverted Breve|Latin Small Letter O
+0210|0052  ; Latin Capital Letter R With Double Grave|Latin Capital Letter R
+0211|0072  ; Latin Small Letter R With Double Grave|Latin Small Letter R
+0212|0052  ; Latin Capital Letter R With Inverted Breve|Latin Capital Letter R
+0213|0072  ; Latin Small Letter R With Inverted Breve|Latin Small Letter R
+0214|0055  ; Latin Capital Letter U With Double Grave|Latin Capital Letter U
+0215|0075  ; Latin Small Letter U With Double Grave|Latin Small Letter U
+0216|0055  ; Latin Capital Letter U With Inverted Breve|Latin Capital Letter U
+0217|0075  ; Latin Small Letter U With Inverted Breve|Latin Small Letter U
+0218|0053  ; Latin Capital Letter S With Comma Below|Latin Capital Letter S
+0219|0073  ; Latin Small Letter S With Comma Below|Latin Small Letter S
+021A|0054  ; Latin Capital Letter T With Comma Below|Latin Capital Letter T
+021B|0074  ; Latin Small Letter T With Comma Below|Latin Small Letter T
+021E|0048  ; Latin Capital Letter H With Caron|Latin Capital Letter H
+021F|0068  ; Latin Small Letter H With Caron|Latin Small Letter H
+0226|0041  ; Latin Capital Letter A With Dot Above|Latin Capital Letter A
+0227|0061  ; Latin Small Letter A With Dot Above|Latin Small Letter A
+0228|0045  ; Latin Capital Letter E With Cedilla|Latin Capital Letter E
+0229|0065  ; Latin Small Letter E With Cedilla|Latin Small Letter E
+022A|00D6  ; Latin Capital Letter O With Diaeresis And Macron|Latin Capital Letter O With Diaeresis
+022B|00F6  ; Latin Small Letter O With Diaeresis And Macron|Latin Small Letter O With Diaeresis
+022C|00D5  ; Latin Capital Letter O With Tilde And Macron|Latin Capital Letter O With Tilde
+022D|00F5  ; Latin Small Letter O With Tilde And Macron|Latin Small Letter O With Tilde
+022E|004F  ; Latin Capital Letter O With Dot Above|Latin Capital Letter O
+022F|006F  ; Latin Small Letter O With Dot Above|Latin Small Letter O
+0230|022E  ; Latin Capital Letter O With Dot Above And Macron|Latin Capital Letter O With Dot Above
+0231|022F  ; Latin Small Letter O With Dot Above And Macron|Latin Small Letter O With Dot Above
+0232|0059  ; Latin Capital Letter Y With Macron|Latin Capital Letter Y
+0233|0079  ; Latin Small Letter Y With Macron|Latin Small Letter Y
+02B0|0068  ; Modifier Letter Small H|<super> Latin Small Letter H
+02B1|0266  ; Modifier Letter Small H With Hook|<super> Latin Small Letter H With Hook
+02B2|006A  ; Modifier Letter Small J|<super> Latin Small Letter J
+02B3|0072  ; Modifier Letter Small R|<super> Latin Small Letter R
+02B4|0279  ; Modifier Letter Small Turned R|<super> Latin Small Letter Turned R
+02B5|027B  ; Modifier Letter Small Turned R With Hook|<super> Latin Small Letter Turned R With Hook
+02B6|0281  ; Modifier Letter Small Capital Inverted R|<super> Latin Letter Small Capital Inverted R
+02B7|0077  ; Modifier Letter Small W|<super> Latin Small Letter W
+02B8|0079  ; Modifier Letter Small Y|<super> Latin Small Letter Y
+02E0|0263  ; Modifier Letter Small Gamma|<super> Latin Small Letter Gamma
+02E1|006C  ; Modifier Letter Small L|<super> Latin Small Letter L
+02E2|0073  ; Modifier Letter Small S|<super> Latin Small Letter S
+02E3|0078  ; Modifier Letter Small X|<super> Latin Small Letter X
+02E4|0295  ; Modifier Letter Small Reversed Glottal Stop|<super> Latin Letter Pharyngeal Voiced Fricative
+0300| ; COMBINING GRAVE ACCENT|<remove>
+0301| ; COMBINING ACUTE ACCENT|<remove>
+0302| ; COMBINING CIRCUMFLEX ACCENT|<remove>
+0303| ; COMBINING TILDE|<remove>
+0304| ; COMBINING MACRON|<remove>
+0305| ; COMBINING OVERLINE|<remove>
+0306| ; COMBINING BREVE|<remove>
+0307| ; COMBINING DOT ABOVE|<remove>
+0308| ; COMBINING DIAERESIS|<remove>
+0309| ; COMBINING HOOK ABOVE|<remove>
+030A| ; COMBINING RING ABOVE|<remove>
+030B| ; COMBINING DOUBLE ACUTE ACCENT|<remove>
+030C| ; COMBINING CARON|<remove>
+030D| ; COMBINING VERTICAL LINE ABOVE|<remove>
+030E| ; COMBINING DOUBLE VERTICAL LINE ABOVE|<remove>
+030F| ; COMBINING DOUBLE GRAVE ACCENT|<remove>
+0310| ; COMBINING CANDRABINDU|<remove>
+0311| ; COMBINING INVERTED BREVE|<remove>
+0312| ; COMBINING TURNED COMMA ABOVE|<remove>
+0313| ; COMBINING COMMA ABOVE|<remove>
+0314| ; COMBINING REVERSED COMMA ABOVE|<remove>
+0315| ; COMBINING COMMA ABOVE RIGHT|<remove>
+0316| ; COMBINING GRAVE ACCENT BELOW|<remove>
+0317| ; COMBINING ACUTE ACCENT BELOW|<remove>
+0318| ; COMBINING LEFT TACK BELOW|<remove>
+0319| ; COMBINING RIGHT TACK BELOW|<remove>
+031A| ; COMBINING LEFT ANGLE ABOVE|<remove>
+031B| ; COMBINING HORN|<remove>
+031C| ; COMBINING LEFT HALF RING BELOW|<remove>
+031D| ; COMBINING UP TACK BELOW|<remove>
+031E| ; COMBINING DOWN TACK BELOW|<remove>
+031F| ; COMBINING PLUS SIGN BELOW|<remove>
+0320| ; COMBINING MINUS SIGN BELOW|<remove>
+0321| ; COMBINING PALATALIZED HOOK BELOW|<remove>
+0322| ; COMBINING RETROFLEX HOOK BELOW|<remove>
+0323| ; COMBINING DOT BELOW|<remove>
+0324| ; COMBINING DIAERESIS BELOW|<remove>
+0325| ; COMBINING RING BELOW|<remove>
+0326| ; COMBINING COMMA BELOW|<remove>
+0327| ; COMBINING CEDILLA|<remove>
+0328| ; COMBINING OGONEK|<remove>
+0329| ; COMBINING VERTICAL LINE BELOW|<remove>
+032A| ; COMBINING BRIDGE BELOW|<remove>
+032B| ; COMBINING INVERTED DOUBLE ARCH BELOW|<remove>
+032C| ; COMBINING CARON BELOW|<remove>
+032D| ; COMBINING CIRCUMFLEX ACCENT BELOW|<remove>
+032E| ; COMBINING BREVE BELOW|<remove>
+032F| ; COMBINING INVERTED BREVE BELOW|<remove>
+0330| ; COMBINING TILDE BELOW|<remove>
+0331| ; COMBINING MACRON BELOW|<remove>
+0332| ; COMBINING LOW LINE|<remove>
+0333| ; COMBINING DOUBLE LOW LINE|<remove>
+0334| ; COMBINING TILDE OVERLAY|<remove>
+0335| ; COMBINING SHORT STROKE OVERLAY|<remove>
+0336| ; COMBINING LONG STROKE OVERLAY|<remove>
+0337| ; COMBINING SHORT SOLIDUS OVERLAY|<remove>
+0338| ; COMBINING LONG SOLIDUS OVERLAY|<remove>
+0339| ; COMBINING RIGHT HALF RING BELOW|<remove>
+033A| ; COMBINING INVERTED BRIDGE BELOW|<remove>
+033B| ; COMBINING SQUARE BELOW|<remove>
+033C| ; COMBINING SEAGULL BELOW|<remove>
+033D| ; COMBINING X ABOVE|<remove>
+033E| ; COMBINING VERTICAL TILDE|<remove>
+033F| ; COMBINING DOUBLE OVERLINE|<remove>
+0340| ; COMBINING GRAVE TONE MARK|<remove>
+0341| ; COMBINING ACUTE TONE MARK|<remove>
+0342| ; COMBINING GREEK PERISPOMENI|<remove>
+0343| ; COMBINING GREEK KORONIS|<remove>
+0344| ; COMBINING GREEK DIALYTIKA TONOS|<remove>
+0345| ; COMBINING GREEK YPOGEGRAMMENI|<remove>
+0346| ; COMBINING BRIDGE ABOVE|<remove>
+0347| ; COMBINING EQUALS SIGN BELOW|<remove>
+0348| ; COMBINING DOUBLE VERTICAL LINE BELOW|<remove>
+0349| ; COMBINING LEFT ANGLE BELOW|<remove>
+034A| ; COMBINING NOT TILDE ABOVE|<remove>
+034B| ; COMBINING HOMOTHETIC ABOVE|<remove>
+034C| ; COMBINING ALMOST EQUAL TO ABOVE|<remove>
+034D| ; COMBINING LEFT RIGHT ARROW BELOW|<remove>
+034E| ; COMBINING UPWARDS ARROW BELOW|<remove>
+034F| ; COMBINING GRAPHEME JOINER|<remove>
+0350| ; COMBINING RIGHT ARROWHEAD ABOVE|<remove>
+0351| ; COMBINING LEFT HALF RING ABOVE|<remove>
+0352| ; COMBINING FERMATA|<remove>
+0353| ; COMBINING X BELOW|<remove>
+0354| ; COMBINING LEFT ARROWHEAD BELOW|<remove>
+0355| ; COMBINING RIGHT ARROWHEAD BELOW|<remove>
+0356| ; COMBINING RIGHT ARROWHEAD AND UP ARROWHEAD BELOW|<remove>
+0357| ; COMBINING RIGHT HALF RING ABOVE|<remove>
+0358| ; COMBINING DOT ABOVE RIGHT|<remove>
+0359| ; COMBINING ASTERISK BELOW|<remove>
+035A| ; COMBINING DOUBLE RING BELOW|<remove>
+035B| ; COMBINING ZIGZAG ABOVE|<remove>
+035C| ; COMBINING DOUBLE BREVE BELOW|<remove>
+035D| ; COMBINING DOUBLE BREVE|<remove>
+035E| ; COMBINING DOUBLE MACRON|<remove>
+035F| ; COMBINING DOUBLE MACRON BELOW|<remove>
+0360| ; COMBINING DOUBLE TILDE|<remove>
+0361| ; COMBINING DOUBLE INVERTED BREVE|<remove>
+0362| ; COMBINING DOUBLE RIGHTWARDS ARROW BELOW|<remove>
+0363| ; COMBINING LATIN SMALL LETTER A|<remove>
+0364| ; COMBINING LATIN SMALL LETTER E|<remove>
+0365| ; COMBINING LATIN SMALL LETTER I|<remove>
+0366| ; COMBINING LATIN SMALL LETTER O|<remove>
+0367| ; COMBINING LATIN SMALL LETTER U|<remove>
+0368| ; COMBINING LATIN SMALL LETTER C|<remove>
+0369| ; COMBINING LATIN SMALL LETTER D|<remove>
+036A| ; COMBINING LATIN SMALL LETTER H|<remove>
+036B| ; COMBINING LATIN SMALL LETTER M|<remove>
+036C| ; COMBINING LATIN SMALL LETTER R|<remove>
+036D| ; COMBINING LATIN SMALL LETTER T|<remove>
+036E| ; COMBINING LATIN SMALL LETTER V|<remove>
+036F| ; COMBINING LATIN SMALL LETTER X|<remove>
+0385|00A8  ; Greek Dialytika Tonos|Diaeresis
+0386|0391  ; Greek Capital Letter Alpha With Tonos|Greek Capital Letter Alpha
+0388|0395  ; Greek Capital Letter Epsilon With Tonos|Greek Capital Letter Epsilon
+0389|0397  ; Greek Capital Letter Eta With Tonos|Greek Capital Letter Eta
+038A|0399  ; Greek Capital Letter Iota With Tonos|Greek Capital Letter Iota
+038C|039F  ; Greek Capital Letter Omicron With Tonos|Greek Capital Letter Omicron
+038E|03A5  ; Greek Capital Letter Upsilon With Tonos|Greek Capital Letter Upsilon
+038F|03A9  ; Greek Capital Letter Omega With Tonos|Greek Capital Letter Omega
+0390|03CA  ; Greek Small Letter Iota With Dialytika And Tonos|Greek Small Letter Iota With Dialytika
+03AA|0399  ; Greek Capital Letter Iota With Dialytika|Greek Capital Letter Iota
+03AB|03A5  ; Greek Capital Letter Upsilon With Dialytika|Greek Capital Letter Upsilon
+03AC|03B1  ; Greek Small Letter Alpha With Tonos|Greek Small Letter Alpha
+03AD|03B5  ; Greek Small Letter Epsilon With Tonos|Greek Small Letter Epsilon
+03AE|03B7  ; Greek Small Letter Eta With Tonos|Greek Small Letter Eta
+03AF|03B9  ; Greek Small Letter Iota With Tonos|Greek Small Letter Iota
+03B0|03CB  ; Greek Small Letter Upsilon With Dialytika And Tonos|Greek Small Letter Upsilon With Dialytika
+03CA|03B9  ; Greek Small Letter Iota With Dialytika|Greek Small Letter Iota
+03CB|03C5  ; Greek Small Letter Upsilon With Dialytika|Greek Small Letter Upsilon
+03CC|03BF  ; Greek Small Letter Omicron With Tonos|Greek Small Letter Omicron
+03CD|03C5  ; Greek Small Letter Upsilon With Tonos|Greek Small Letter Upsilon
+03CE|03C9  ; Greek Small Letter Omega With Tonos|Greek Small Letter Omega
+03D3|03D2  ; Greek Upsilon With Acute And Hook Symbol|Greek Upsilon With Hook Symbol
+03D4|03D2  ; Greek Upsilon With Diaeresis And Hook Symbol|Greek Upsilon With Hook Symbol
+0400|0415  ; Cyrillic Capital Letter Ie With Grave|Cyrillic Capital Letter Ie
+0401|0415  ; Cyrillic Capital Letter Io|Cyrillic Capital Letter Ie
+0403|0413  ; Cyrillic Capital Letter Gje|Cyrillic Capital Letter Ghe
+0407|0406  ; Cyrillic Capital Letter Yi|Cyrillic Capital Letter Byelorussian-ukrainian I
+040C|041A  ; Cyrillic Capital Letter Kje|Cyrillic Capital Letter Ka
+040D|0418  ; Cyrillic Capital Letter I With Grave|Cyrillic Capital Letter I
+040E|0423  ; Cyrillic Capital Letter Short U|Cyrillic Capital Letter U
+0419|0418  ; Cyrillic Capital Letter Short I|Cyrillic Capital Letter I
+0439|0438  ; Cyrillic Small Letter Short I|Cyrillic Small Letter I
+0450|0435  ; Cyrillic Small Letter Ie With Grave|Cyrillic Small Letter Ie
+0451|0435  ; Cyrillic Small Letter Io|Cyrillic Small Letter Ie
+0453|0433  ; Cyrillic Small Letter Gje|Cyrillic Small Letter Ghe
+0457|0456  ; Cyrillic Small Letter Yi|Cyrillic Small Letter Byelorussian-ukrainian I
+045C|043A  ; Cyrillic Small Letter Kje|Cyrillic Small Letter Ka
+045D|0438  ; Cyrillic Small Letter I With Grave|Cyrillic Small Letter I
+045E|0443  ; Cyrillic Small Letter Short U|Cyrillic Small Letter U
+0476|0474  ; Cyrillic Capital Letter Izhitsa With Double Grave Accent|Cyrillic Capital Letter Izhitsa
+0477|0475  ; Cyrillic Small Letter Izhitsa With Double Grave Accent|Cyrillic Small Letter Izhitsa
+04C1|0416  ; Cyrillic Capital Letter Zhe With Breve|Cyrillic Capital Letter Zhe
+04C2|0436  ; Cyrillic Small Letter Zhe With Breve|Cyrillic Small Letter Zhe
+04D0|0410  ; Cyrillic Capital Letter A With Breve|Cyrillic Capital Letter A
+04D1|0430  ; Cyrillic Small Letter A With Breve|Cyrillic Small Letter A
+04D2|0410  ; Cyrillic Capital Letter A With Diaeresis|Cyrillic Capital Letter A
+04D3|0430  ; Cyrillic Small Letter A With Diaeresis|Cyrillic Small Letter A
+04D6|0415  ; Cyrillic Capital Letter Ie With Breve|Cyrillic Capital Letter Ie
+04D7|0435  ; Cyrillic Small Letter Ie With Breve|Cyrillic Small Letter Ie
+04DA|04D8  ; Cyrillic Capital Letter Schwa With Diaeresis|Cyrillic Capital Letter Schwa
+04DB|04D9  ; Cyrillic Small Letter Schwa With Diaeresis|Cyrillic Small Letter Schwa
+04DC|0416  ; Cyrillic Capital Letter Zhe With Diaeresis|Cyrillic Capital Letter Zhe
+04DD|0436  ; Cyrillic Small Letter Zhe With Diaeresis|Cyrillic Small Letter Zhe
+04DE|0417  ; Cyrillic Capital Letter Ze With Diaeresis|Cyrillic Capital Letter Ze
+04DF|0437  ; Cyrillic Small Letter Ze With Diaeresis|Cyrillic Small Letter Ze
+04E2|0418  ; Cyrillic Capital Letter I With Macron|Cyrillic Capital Letter I
+04E3|0438  ; Cyrillic Small Letter I With Macron|Cyrillic Small Letter I
+04E4|0418  ; Cyrillic Capital Letter I With Diaeresis|Cyrillic Capital Letter I
+04E5|0438  ; Cyrillic Small Letter I With Diaeresis|Cyrillic Small Letter I
+04E6|041E  ; Cyrillic Capital Letter O With Diaeresis|Cyrillic Capital Letter O
+04E7|043E  ; Cyrillic Small Letter O With Diaeresis|Cyrillic Small Letter O
+04EA|04E8  ; Cyrillic Capital Letter Barred O With Diaeresis|Cyrillic Capital Letter Barred O
+04EB|04E9  ; Cyrillic Small Letter Barred O With Diaeresis|Cyrillic Small Letter Barred O
+04EC|042D  ; Cyrillic Capital Letter E With Diaeresis|Cyrillic Capital Letter E
+04ED|044D  ; Cyrillic Small Letter E With Diaeresis|Cyrillic Small Letter E
+04EE|0423  ; Cyrillic Capital Letter U With Macron|Cyrillic Capital Letter U
+04EF|0443  ; Cyrillic Small Letter U With Macron|Cyrillic Small Letter U
+04F0|0423  ; Cyrillic Capital Letter U With Diaeresis|Cyrillic Capital Letter U
+04F1|0443  ; Cyrillic Small Letter U With Diaeresis|Cyrillic Small Letter U
+04F2|0423  ; Cyrillic Capital Letter U With Double Acute|Cyrillic Capital Letter U
+04F3|0443  ; Cyrillic Small Letter U With Double Acute|Cyrillic Small Letter U
+04F4|0427  ; Cyrillic Capital Letter Che With Diaeresis|Cyrillic Capital Letter Che
+04F5|0447  ; Cyrillic Small Letter Che With Diaeresis|Cyrillic Small Letter Che
+04F8|042B  ; Cyrillic Capital Letter Yeru With Diaeresis|Cyrillic Capital Letter Yeru
+04F9|044B  ; Cyrillic Small Letter Yeru With Diaeresis|Cyrillic Small Letter Yeru
+10FC|10DC  ; Modifier Letter Georgian Nar|<super> Georgian Letter Nar
+1D2C|0041  ; Modifier Letter Capital A|<super> Latin Capital Letter A
+1D2D|00C6  ; Modifier Letter Capital Ae|<super> Latin Capital Letter Ae
+1D2E|0042  ; Modifier Letter Capital B|<super> Latin Capital Letter B
+1D30|0044  ; Modifier Letter Capital D|<super> Latin Capital Letter D
+1D31|0045  ; Modifier Letter Capital E|<super> Latin Capital Letter E
+1D32|018E  ; Modifier Letter Capital Reversed E|<super> Latin Capital Letter Reversed E
+1D33|0047  ; Modifier Letter Capital G|<super> Latin Capital Letter G
+1D34|0048  ; Modifier Letter Capital H|<super> Latin Capital Letter H
+1D35|0049  ; Modifier Letter Capital I|<super> Latin Capital Letter I
+1D36|004A  ; Modifier Letter Capital J|<super> Latin Capital Letter J
+1D37|004B  ; Modifier Letter Capital K|<super> Latin Capital Letter K
+1D38|004C  ; Modifier Letter Capital L|<super> Latin Capital Letter L
+1D39|004D  ; Modifier Letter Capital M|<super> Latin Capital Letter M
+1D3A|004E  ; Modifier Letter Capital N|<super> Latin Capital Letter N
+1D3C|004F  ; Modifier Letter Capital O|<super> Latin Capital Letter O
+1D3D|0222  ; Modifier Letter Capital Ou|<super> Latin Capital Letter Ou
+1D3E|0050  ; Modifier Letter Capital P|<super> Latin Capital Letter P
+1D3F|0052  ; Modifier Letter Capital R|<super> Latin Capital Letter R
+1D40|0054  ; Modifier Letter Capital T|<super> Latin Capital Letter T
+1D41|0055  ; Modifier Letter Capital U|<super> Latin Capital Letter U
+1D42|0057  ; Modifier Letter Capital W|<super> Latin Capital Letter W
+1D43|0061  ; Modifier Letter Small A|<super> Latin Small Letter A
+1D44|0250  ; Modifier Letter Small Turned A|<super> Latin Small Letter Turned A
+1D45|0251  ; Modifier Letter Small Alpha|<super> Latin Small Letter Alpha
+1D46|1D02  ; Modifier Letter Small Turned Ae|<super> Latin Small Letter Turned Ae
+1D47|0062  ; Modifier Letter Small B|<super> Latin Small Letter B
+1D48|0064  ; Modifier Letter Small D|<super> Latin Small Letter D
+1D49|0065  ; Modifier Letter Small E|<super> Latin Small Letter E
+1D4A|0259  ; Modifier Letter Small Schwa|<super> Latin Small Letter Schwa
+1D4B|025B  ; Modifier Letter Small Open E|<super> Latin Small Letter Open E
+1D4C|025C  ; Modifier Letter Small Turned Open E|<super> Latin Small Letter Reversed Open E
+1D4D|0067  ; Modifier Letter Small G|<super> Latin Small Letter G
+1D4F|006B  ; Modifier Letter Small K|<super> Latin Small Letter K
+1D50|006D  ; Modifier Letter Small M|<super> Latin Small Letter M
+1D51|014B  ; Modifier Letter Small Eng|<super> Latin Small Letter Eng
+1D52|006F  ; Modifier Letter Small O|<super> Latin Small Letter O
+1D53|0254  ; Modifier Letter Small Open O|<super> Latin Small Letter Open O
+1D54|1D16  ; Modifier Letter Small Top Half O|<super> Latin Small Letter Top Half O
+1D55|1D17  ; Modifier Letter Small Bottom Half O|<super> Latin Small Letter Bottom Half O
+1D56|0070  ; Modifier Letter Small P|<super> Latin Small Letter P
+1D57|0074  ; Modifier Letter Small T|<super> Latin Small Letter T
+1D58|0075  ; Modifier Letter Small U|<super> Latin Small Letter U
+1D59|1D1D  ; Modifier Letter Small Sideways U|<super> Latin Small Letter Sideways U
+1D5A|026F  ; Modifier Letter Small Turned M|<super> Latin Small Letter Turned M
+1D5B|0076  ; Modifier Letter Small V|<super> Latin Small Letter V
+1D5C|1D25  ; Modifier Letter Small Ain|<super> Latin Letter Ain
+1D5D|03B2  ; Modifier Letter Small Beta|<super> Greek Small Letter Beta
+1D5E|03B3  ; Modifier Letter Small Greek Gamma|<super> Greek Small Letter Gamma
+1D5F|03B4  ; Modifier Letter Small Delta|<super> Greek Small Letter Delta
+1D60|03C6  ; Modifier Letter Small Greek Phi|<super> Greek Small Letter Phi
+1D61|03C7  ; Modifier Letter Small Chi|<super> Greek Small Letter Chi
+1D62|0069  ; Latin Subscript Small Letter I|<sub> Latin Small Letter I
+1D63|0072  ; Latin Subscript Small Letter R|<sub> Latin Small Letter R
+1D64|0075  ; Latin Subscript Small Letter U|<sub> Latin Small Letter U
+1D65|0076  ; Latin Subscript Small Letter V|<sub> Latin Small Letter V
+1D66|03B2  ; Greek Subscript Small Letter Beta|<sub> Greek Small Letter Beta
+1D67|03B3  ; Greek Subscript Small Letter Gamma|<sub> Greek Small Letter Gamma
+1D68|03C1  ; Greek Subscript Small Letter Rho|<sub> Greek Small Letter Rho
+1D69|03C6  ; Greek Subscript Small Letter Phi|<sub> Greek Small Letter Phi
+1D6A|03C7  ; Greek Subscript Small Letter Chi|<sub> Greek Small Letter Chi
+1D78|043D  ; Modifier Letter Cyrillic En|<super> Cyrillic Small Letter En
+1D9B|0252  ; Modifier Letter Small Turned Alpha|<super> Latin Small Letter Turned Alpha
+1D9C|0063  ; Modifier Letter Small C|<super> Latin Small Letter C
+1D9D|0255  ; Modifier Letter Small C With Curl|<super> Latin Small Letter C With Curl
+1D9E|00F0  ; Modifier Letter Small Eth|<super> Latin Small Letter Eth
+1D9F|025C  ; Modifier Letter Small Reversed Open E|<super> Latin Small Letter Reversed Open E
+1DA0|0066  ; Modifier Letter Small F|<super> Latin Small Letter F
+1DA1|025F  ; Modifier Letter Small Dotless J With Stroke|<super> Latin Small Letter Dotless J With Stroke
+1DA2|0261  ; Modifier Letter Small Script G|<super> Latin Small Letter Script G
+1DA3|0265  ; Modifier Letter Small Turned H|<super> Latin Small Letter Turned H
+1DA4|0268  ; Modifier Letter Small I With Stroke|<super> Latin Small Letter I With Stroke
+1DA5|0269  ; Modifier Letter Small Iota|<super> Latin Small Letter Iota
+1DA6|026A  ; Modifier Letter Small Capital I|<super> Latin Letter Small Capital I
+1DA7|1D7B  ; Modifier Letter Small Capital I With Stroke|<super> Latin Small Capital Letter I With Stroke
+1DA8|029D  ; Modifier Letter Small J With Crossed-tail|<super> Latin Small Letter J With Crossed-tail
+1DA9|026D  ; Modifier Letter Small L With Retroflex Hook|<super> Latin Small Letter L With Retroflex Hook
+1DAA|1D85  ; Modifier Letter Small L With Palatal Hook|<super> Latin Small Letter L With Palatal Hook
+1DAB|029F  ; Modifier Letter Small Capital L|<super> Latin Letter Small Capital L
+1DAC|0271  ; Modifier Letter Small M With Hook|<super> Latin Small Letter M With Hook
+1DAD|0270  ; Modifier Letter Small Turned M With Long Leg|<super> Latin Small Letter Turned M With Long Leg
+1DAE|0272  ; Modifier Letter Small N With Left Hook|<super> Latin Small Letter N With Left Hook
+1DAF|0273  ; Modifier Letter Small N With Retroflex Hook|<super> Latin Small Letter N With Retroflex Hook
+1DB0|0274  ; Modifier Letter Small Capital N|<super> Latin Letter Small Capital N
+1DB1|0275  ; Modifier Letter Small Barred O|<super> Latin Small Letter Barred O
+1DB2|0278  ; Modifier Letter Small Phi|<super> Latin Small Letter Phi
+1DB3|0282  ; Modifier Letter Small S With Hook|<super> Latin Small Letter S With Hook
+1DB4|0283  ; Modifier Letter Small Esh|<super> Latin Small Letter Esh
+1DB5|01AB  ; Modifier Letter Small T With Palatal Hook|<super> Latin Small Letter T With Palatal Hook
+1DB6|0289  ; Modifier Letter Small U Bar|<super> Latin Small Letter U Bar
+1DB7|028A  ; Modifier Letter Small Upsilon|<super> Latin Small Letter Upsilon
+1DB8|1D1C  ; Modifier Letter Small Capital U|<super> Latin Letter Small Capital U
+1DB9|028B  ; Modifier Letter Small V With Hook|<super> Latin Small Letter V With Hook
+1DBA|028C  ; Modifier Letter Small Turned V|<super> Latin Small Letter Turned V
+1DBB|007A  ; Modifier Letter Small Z|<super> Latin Small Letter Z
+1DBC|0290  ; Modifier Letter Small Z With Retroflex Hook|<super> Latin Small Letter Z With Retroflex Hook
+1DBD|0291  ; Modifier Letter Small Z With Curl|<super> Latin Small Letter Z With Curl
+1DBE|0292  ; Modifier Letter Small Ezh|<super> Latin Small Letter Ezh
+1DBF|03B8  ; Modifier Letter Small Theta|<super> Greek Small Letter Theta
+1E00|0041  ; Latin Capital Letter A With Ring Below|Latin Capital Letter A
+1E01|0061  ; Latin Small Letter A With Ring Below|Latin Small Letter A
+1E02|0042  ; Latin Capital Letter B With Dot Above|Latin Capital Letter B
+1E03|0062  ; Latin Small Letter B With Dot Above|Latin Small Letter B
+1E04|0042  ; Latin Capital Letter B With Dot Below|Latin Capital Letter B
+1E05|0062  ; Latin Small Letter B With Dot Below|Latin Small Letter B
+1E06|0042  ; Latin Capital Letter B With Line Below|Latin Capital Letter B
+1E07|0062  ; Latin Small Letter B With Line Below|Latin Small Letter B
+1E08|00C7  ; Latin Capital Letter C With Cedilla And Acute|Latin Capital Letter C With Cedilla
+1E09|00E7  ; Latin Small Letter C With Cedilla And Acute|Latin Small Letter C With Cedilla
+1E0A|0044  ; Latin Capital Letter D With Dot Above|Latin Capital Letter D
+1E0B|0064  ; Latin Small Letter D With Dot Above|Latin Small Letter D
+1E0C|0044  ; Latin Capital Letter D With Dot Below|Latin Capital Letter D
+1E0D|0064  ; Latin Small Letter D With Dot Below|Latin Small Letter D
+1E0E|0044  ; Latin Capital Letter D With Line Below|Latin Capital Letter D
+1E0F|0064  ; Latin Small Letter D With Line Below|Latin Small Letter D
+1E10|0044  ; Latin Capital Letter D With Cedilla|Latin Capital Letter D
+1E11|0064  ; Latin Small Letter D With Cedilla|Latin Small Letter D
+1E12|0044  ; Latin Capital Letter D With Circumflex Below|Latin Capital Letter D
+1E13|0064  ; Latin Small Letter D With Circumflex Below|Latin Small Letter D
+1E14|0112  ; Latin Capital Letter E With Macron And Grave|Latin Capital Letter E With Macron
+1E15|0113  ; Latin Small Letter E With Macron And Grave|Latin Small Letter E With Macron
+1E16|0112  ; Latin Capital Letter E With Macron And Acute|Latin Capital Letter E With Macron
+1E17|0113  ; Latin Small Letter E With Macron And Acute|Latin Small Letter E With Macron
+1E18|0045  ; Latin Capital Letter E With Circumflex Below|Latin Capital Letter E
+1E19|0065  ; Latin Small Letter E With Circumflex Below|Latin Small Letter E
+1E1A|0045  ; Latin Capital Letter E With Tilde Below|Latin Capital Letter E
+1E1B|0065  ; Latin Small Letter E With Tilde Below|Latin Small Letter E
+1E1C|0228  ; Latin Capital Letter E With Cedilla And Breve|Latin Capital Letter E With Cedilla
+1E1D|0229  ; Latin Small Letter E With Cedilla And Breve|Latin Small Letter E With Cedilla
+1E1E|0046  ; Latin Capital Letter F With Dot Above|Latin Capital Letter F
+1E1F|0066  ; Latin Small Letter F With Dot Above|Latin Small Letter F
+1E20|0047  ; Latin Capital Letter G With Macron|Latin Capital Letter G
+1E21|0067  ; Latin Small Letter G With Macron|Latin Small Letter G
+1E22|0048  ; Latin Capital Letter H With Dot Above|Latin Capital Letter H
+1E23|0068  ; Latin Small Letter H With Dot Above|Latin Small Letter H
+1E24|0048  ; Latin Capital Letter H With Dot Below|Latin Capital Letter H
+1E25|0068  ; Latin Small Letter H With Dot Below|Latin Small Letter H
+1E26|0048  ; Latin Capital Letter H With Diaeresis|Latin Capital Letter H
+1E27|0068  ; Latin Small Letter H With Diaeresis|Latin Small Letter H
+1E28|0048  ; Latin Capital Letter H With Cedilla|Latin Capital Letter H
+1E29|0068  ; Latin Small Letter H With Cedilla|Latin Small Letter H
+1E2A|0048  ; Latin Capital Letter H With Breve Below|Latin Capital Letter H
+1E2B|0068  ; Latin Small Letter H With Breve Below|Latin Small Letter H
+1E2C|0049  ; Latin Capital Letter I With Tilde Below|Latin Capital Letter I
+1E2D|0069  ; Latin Small Letter I With Tilde Below|Latin Small Letter I
+1E2E|00CF  ; Latin Capital Letter I With Diaeresis And Acute|Latin Capital Letter I With Diaeresis
+1E2F|00EF  ; Latin Small Letter I With Diaeresis And Acute|Latin Small Letter I With Diaeresis
+1E30|004B  ; Latin Capital Letter K With Acute|Latin Capital Letter K
+1E31|006B  ; Latin Small Letter K With Acute|Latin Small Letter K
+1E32|004B  ; Latin Capital Letter K With Dot Below|Latin Capital Letter K
+1E33|006B  ; Latin Small Letter K With Dot Below|Latin Small Letter K
+1E34|004B  ; Latin Capital Letter K With Line Below|Latin Capital Letter K
+1E35|006B  ; Latin Small Letter K With Line Below|Latin Small Letter K
+1E36|004C  ; Latin Capital Letter L With Dot Below|Latin Capital Letter L
+1E37|006C  ; Latin Small Letter L With Dot Below|Latin Small Letter L
+1E38|1E36  ; Latin Capital Letter L With Dot Below And Macron|Latin Capital Letter L With Dot Below
+1E39|1E37  ; Latin Small Letter L With Dot Below And Macron|Latin Small Letter L With Dot Below
+1E3A|004C  ; Latin Capital Letter L With Line Below|Latin Capital Letter L
+1E3B|006C  ; Latin Small Letter L With Line Below|Latin Small Letter L
+1E3C|004C  ; Latin Capital Letter L With Circumflex Below|Latin Capital Letter L
+1E3D|006C  ; Latin Small Letter L With Circumflex Below|Latin Small Letter L
+1E3E|004D  ; Latin Capital Letter M With Acute|Latin Capital Letter M
+1E3F|006D  ; Latin Small Letter M With Acute|Latin Small Letter M
+1E40|004D  ; Latin Capital Letter M With Dot Above|Latin Capital Letter M
+1E41|006D  ; Latin Small Letter M With Dot Above|Latin Small Letter M
+1E42|004D  ; Latin Capital Letter M With Dot Below|Latin Capital Letter M
+1E43|006D  ; Latin Small Letter M With Dot Below|Latin Small Letter M
+1E44|004E  ; Latin Capital Letter N With Dot Above|Latin Capital Letter N
+1E45|006E  ; Latin Small Letter N With Dot Above|Latin Small Letter N
+1E46|004E  ; Latin Capital Letter N With Dot Below|Latin Capital Letter N
+1E47|006E  ; Latin Small Letter N With Dot Below|Latin Small Letter N
+1E48|004E  ; Latin Capital Letter N With Line Below|Latin Capital Letter N
+1E49|006E  ; Latin Small Letter N With Line Below|Latin Small Letter N
+1E4A|004E  ; Latin Capital Letter N With Circumflex Below|Latin Capital Letter N
+1E4B|006E  ; Latin Small Letter N With Circumflex Below|Latin Small Letter N
+1E4C|00D5  ; Latin Capital Letter O With Tilde And Acute|Latin Capital Letter O With Tilde
+1E4D|00F5  ; Latin Small Letter O With Tilde And Acute|Latin Small Letter O With Tilde
+1E4E|00D5  ; Latin Capital Letter O With Tilde And Diaeresis|Latin Capital Letter O With Tilde
+1E4F|00F5  ; Latin Small Letter O With Tilde And Diaeresis|Latin Small Letter O With Tilde
+1E50|014C  ; Latin Capital Letter O With Macron And Grave|Latin Capital Letter O With Macron
+1E51|014D  ; Latin Small Letter O With Macron And Grave|Latin Small Letter O With Macron
+1E52|014C  ; Latin Capital Letter O With Macron And Acute|Latin Capital Letter O With Macron
+1E53|014D  ; Latin Small Letter O With Macron And Acute|Latin Small Letter O With Macron
+1E54|0050  ; Latin Capital Letter P With Acute|Latin Capital Letter P
+1E55|0070  ; Latin Small Letter P With Acute|Latin Small Letter P
+1E56|0050  ; Latin Capital Letter P With Dot Above|Latin Capital Letter P
+1E57|0070  ; Latin Small Letter P With Dot Above|Latin Small Letter P
+1E58|0052  ; Latin Capital Letter R With Dot Above|Latin Capital Letter R
+1E59|0072  ; Latin Small Letter R With Dot Above|Latin Small Letter R
+1E5A|0052  ; Latin Capital Letter R With Dot Below|Latin Capital Letter R
+1E5B|0072  ; Latin Small Letter R With Dot Below|Latin Small Letter R
+1E5C|1E5A  ; Latin Capital Letter R With Dot Below And Macron|Latin Capital Letter R With Dot Below
+1E5D|1E5B  ; Latin Small Letter R With Dot Below And Macron|Latin Small Letter R With Dot Below
+1E5E|0052  ; Latin Capital Letter R With Line Below|Latin Capital Letter R
+1E5F|0072  ; Latin Small Letter R With Line Below|Latin Small Letter R
+1E60|0053  ; Latin Capital Letter S With Dot Above|Latin Capital Letter S
+1E61|0073  ; Latin Small Letter S With Dot Above|Latin Small Letter S
+1E62|0053  ; Latin Capital Letter S With Dot Below|Latin Capital Letter S
+1E63|0073  ; Latin Small Letter S With Dot Below|Latin Small Letter S
+1E64|015A  ; Latin Capital Letter S With Acute And Dot Above|Latin Capital Letter S With Acute
+1E65|015B  ; Latin Small Letter S With Acute And Dot Above|Latin Small Letter S With Acute
+1E66|0160  ; Latin Capital Letter S With Caron And Dot Above|Latin Capital Letter S With Caron
+1E67|0161  ; Latin Small Letter S With Caron And Dot Above|Latin Small Letter S With Caron
+1E68|1E62  ; Latin Capital Letter S With Dot Below And Dot Above|Latin Capital Letter S With Dot Below
+1E69|1E63  ; Latin Small Letter S With Dot Below And Dot Above|Latin Small Letter S With Dot Below
+1E6A|0054  ; Latin Capital Letter T With Dot Above|Latin Capital Letter T
+1E6B|0074  ; Latin Small Letter T With Dot Above|Latin Small Letter T
+1E6C|0054  ; Latin Capital Letter T With Dot Below|Latin Capital Letter T
+1E6D|0074  ; Latin Small Letter T With Dot Below|Latin Small Letter T
+1E6E|0054  ; Latin Capital Letter T With Line Below|Latin Capital Letter T
+1E6F|0074  ; Latin Small Letter T With Line Below|Latin Small Letter T
+1E70|0054  ; Latin Capital Letter T With Circumflex Below|Latin Capital Letter T
+1E71|0074  ; Latin Small Letter T With Circumflex Below|Latin Small Letter T
+1E72|0055  ; Latin Capital Letter U With Diaeresis Below|Latin Capital Letter U
+1E73|0075  ; Latin Small Letter U With Diaeresis Below|Latin Small Letter U
+1E74|0055  ; Latin Capital Letter U With Tilde Below|Latin Capital Letter U
+1E75|0075  ; Latin Small Letter U With Tilde Below|Latin Small Letter U
+1E76|0055  ; Latin Capital Letter U With Circumflex Below|Latin Capital Letter U
+1E77|0075  ; Latin Small Letter U With Circumflex Below|Latin Small Letter U
+1E78|0168  ; Latin Capital Letter U With Tilde And Acute|Latin Capital Letter U With Tilde
+1E79|0169  ; Latin Small Letter U With Tilde And Acute|Latin Small Letter U With Tilde
+1E7A|016A  ; Latin Capital Letter U With Macron And Diaeresis|Latin Capital Letter U With Macron
+1E7B|016B  ; Latin Small Letter U With Macron And Diaeresis|Latin Small Letter U With Macron
+1E7C|0056  ; Latin Capital Letter V With Tilde|Latin Capital Letter V
+1E7D|0076  ; Latin Small Letter V With Tilde|Latin Small Letter V
+1E7E|0056  ; Latin Capital Letter V With Dot Below|Latin Capital Letter V
+1E7F|0076  ; Latin Small Letter V With Dot Below|Latin Small Letter V
+1E80|0057  ; Latin Capital Letter W With Grave|Latin Capital Letter W
+1E81|0077  ; Latin Small Letter W With Grave|Latin Small Letter W
+1E82|0057  ; Latin Capital Letter W With Acute|Latin Capital Letter W
+1E83|0077  ; Latin Small Letter W With Acute|Latin Small Letter W
+1E84|0057  ; Latin Capital Letter W With Diaeresis|Latin Capital Letter W
+1E85|0077  ; Latin Small Letter W With Diaeresis|Latin Small Letter W
+1E86|0057  ; Latin Capital Letter W With Dot Above|Latin Capital Letter W
+1E87|0077  ; Latin Small Letter W With Dot Above|Latin Small Letter W
+1E88|0057  ; Latin Capital Letter W With Dot Below|Latin Capital Letter W
+1E89|0077  ; Latin Small Letter W With Dot Below|Latin Small Letter W
+1E8A|0058  ; Latin Capital Letter X With Dot Above|Latin Capital Letter X
+1E8B|0078  ; Latin Small Letter X With Dot Above|Latin Small Letter X
+1E8C|0058  ; Latin Capital Letter X With Diaeresis|Latin Capital Letter X
+1E8D|0078  ; Latin Small Letter X With Diaeresis|Latin Small Letter X
+1E8E|0059  ; Latin Capital Letter Y With Dot Above|Latin Capital Letter Y
+1E8F|0079  ; Latin Small Letter Y With Dot Above|Latin Small Letter Y
+1E90|005A  ; Latin Capital Letter Z With Circumflex|Latin Capital Letter Z
+1E91|007A  ; Latin Small Letter Z With Circumflex|Latin Small Letter Z
+1E92|005A  ; Latin Capital Letter Z With Dot Below|Latin Capital Letter Z
+1E93|007A  ; Latin Small Letter Z With Dot Below|Latin Small Letter Z
+1E94|005A  ; Latin Capital Letter Z With Line Below|Latin Capital Letter Z
+1E95|007A  ; Latin Small Letter Z With Line Below|Latin Small Letter Z
+1E96|0068  ; Latin Small Letter H With Line Below|Latin Small Letter H
+1E97|0074  ; Latin Small Letter T With Diaeresis|Latin Small Letter T
+1E98|0077  ; Latin Small Letter W With Ring Above|Latin Small Letter W
+1E99|0079  ; Latin Small Letter Y With Ring Above|Latin Small Letter Y
+1E9B|017F  ; Latin Small Letter Long S With Dot Above|Latin Small Letter Long S
+1EA0|0041  ; Latin Capital Letter A With Dot Below|Latin Capital Letter A
+1EA1|0061  ; Latin Small Letter A With Dot Below|Latin Small Letter A
+1EA2|0041  ; Latin Capital Letter A With Hook Above|Latin Capital Letter A
+1EA3|0061  ; Latin Small Letter A With Hook Above|Latin Small Letter A
+1EA4|00C2  ; Latin Capital Letter A With Circumflex And Acute|Latin Capital Letter A With Circumflex
+1EA5|00E2  ; Latin Small Letter A With Circumflex And Acute|Latin Small Letter A With Circumflex
+1EA6|00C2  ; Latin Capital Letter A With Circumflex And Grave|Latin Capital Letter A With Circumflex
+1EA7|00E2  ; Latin Small Letter A With Circumflex And Grave|Latin Small Letter A With Circumflex
+1EA8|00C2  ; Latin Capital Letter A With Circumflex And Hook Above|Latin Capital Letter A With Circumflex
+1EA9|00E2  ; Latin Small Letter A With Circumflex And Hook Above|Latin Small Letter A With Circumflex
+1EAA|00C2  ; Latin Capital Letter A With Circumflex And Tilde|Latin Capital Letter A With Circumflex
+1EAB|00E2  ; Latin Small Letter A With Circumflex And Tilde|Latin Small Letter A With Circumflex
+1EAC|1EA0  ; Latin Capital Letter A With Circumflex And Dot Below|Latin Capital Letter A With Dot Below
+1EAD|1EA1  ; Latin Small Letter A With Circumflex And Dot Below|Latin Small Letter A With Dot Below
+1EAE|0102  ; Latin Capital Letter A With Breve And Acute|Latin Capital Letter A With Breve
+1EAF|0103  ; Latin Small Letter A With Breve And Acute|Latin Small Letter A With Breve
+1EB0|0102  ; Latin Capital Letter A With Breve And Grave|Latin Capital Letter A With Breve
+1EB1|0103  ; Latin Small Letter A With Breve And Grave|Latin Small Letter A With Breve
+1EB2|0102  ; Latin Capital Letter A With Breve And Hook Above|Latin Capital Letter A With Breve
+1EB3|0103  ; Latin Small Letter A With Breve And Hook Above|Latin Small Letter A With Breve
+1EB4|0102  ; Latin Capital Letter A With Breve And Tilde|Latin Capital Letter A With Breve
+1EB5|0103  ; Latin Small Letter A With Breve And Tilde|Latin Small Letter A With Breve
+1EB6|1EA0  ; Latin Capital Letter A With Breve And Dot Below|Latin Capital Letter A With Dot Below
+1EB7|1EA1  ; Latin Small Letter A With Breve And Dot Below|Latin Small Letter A With Dot Below
+1EB8|0045  ; Latin Capital Letter E With Dot Below|Latin Capital Letter E
+1EB9|0065  ; Latin Small Letter E With Dot Below|Latin Small Letter E
+1EBA|0045  ; Latin Capital Letter E With Hook Above|Latin Capital Letter E
+1EBB|0065  ; Latin Small Letter E With Hook Above|Latin Small Letter E
+1EBC|0045  ; Latin Capital Letter E With Tilde|Latin Capital Letter E
+1EBD|0065  ; Latin Small Letter E With Tilde|Latin Small Letter E
+1EBE|00CA  ; Latin Capital Letter E With Circumflex And Acute|Latin Capital Letter E With Circumflex
+1EBF|00EA  ; Latin Small Letter E With Circumflex And Acute|Latin Small Letter E With Circumflex
+1EC0|00CA  ; Latin Capital Letter E With Circumflex And Grave|Latin Capital Letter E With Circumflex
+1EC1|00EA  ; Latin Small Letter E With Circumflex And Grave|Latin Small Letter E With Circumflex
+1EC2|00CA  ; Latin Capital Letter E With Circumflex And Hook Above|Latin Capital Letter E With Circumflex
+1EC3|00EA  ; Latin Small Letter E With Circumflex And Hook Above|Latin Small Letter E With Circumflex
+1EC4|00CA  ; Latin Capital Letter E With Circumflex And Tilde|Latin Capital Letter E With Circumflex
+1EC5|00EA  ; Latin Small Letter E With Circumflex And Tilde|Latin Small Letter E With Circumflex
+1EC6|1EB8  ; Latin Capital Letter E With Circumflex And Dot Below|Latin Capital Letter E With Dot Below
+1EC7|1EB9  ; Latin Small Letter E With Circumflex And Dot Below|Latin Small Letter E With Dot Below
+1EC8|0049  ; Latin Capital Letter I With Hook Above|Latin Capital Letter I
+1EC9|0069  ; Latin Small Letter I With Hook Above|Latin Small Letter I
+1ECA|0049  ; Latin Capital Letter I With Dot Below|Latin Capital Letter I
+1ECB|0069  ; Latin Small Letter I With Dot Below|Latin Small Letter I
+1ECC|004F  ; Latin Capital Letter O With Dot Below|Latin Capital Letter O
+1ECD|006F  ; Latin Small Letter O With Dot Below|Latin Small Letter O
+1ECE|004F  ; Latin Capital Letter O With Hook Above|Latin Capital Letter O
+1ECF|006F  ; Latin Small Letter O With Hook Above|Latin Small Letter O
+1ED0|00D4  ; Latin Capital Letter O With Circumflex And Acute|Latin Capital Letter O With Circumflex
+1ED1|00F4  ; Latin Small Letter O With Circumflex And Acute|Latin Small Letter O With Circumflex
+1ED2|00D4  ; Latin Capital Letter O With Circumflex And Grave|Latin Capital Letter O With Circumflex
+1ED3|00F4  ; Latin Small Letter O With Circumflex And Grave|Latin Small Letter O With Circumflex
+1ED4|00D4  ; Latin Capital Letter O With Circumflex And Hook Above|Latin Capital Letter O With Circumflex
+1ED5|00F4  ; Latin Small Letter O With Circumflex And Hook Above|Latin Small Letter O With Circumflex
+1ED6|00D4  ; Latin Capital Letter O With Circumflex And Tilde|Latin Capital Letter O With Circumflex
+1ED7|00F4  ; Latin Small Letter O With Circumflex And Tilde|Latin Small Letter O With Circumflex
+1ED8|1ECC  ; Latin Capital Letter O With Circumflex And Dot Below|Latin Capital Letter O With Dot Below
+1ED9|1ECD  ; Latin Small Letter O With Circumflex And Dot Below|Latin Small Letter O With Dot Below
+1EDA|01A0  ; Latin Capital Letter O With Horn And Acute|Latin Capital Letter O With Horn
+1EDB|01A1  ; Latin Small Letter O With Horn And Acute|Latin Small Letter O With Horn
+1EDC|01A0  ; Latin Capital Letter O With Horn And Grave|Latin Capital Letter O With Horn
+1EDD|01A1  ; Latin Small Letter O With Horn And Grave|Latin Small Letter O With Horn
+1EDE|01A0  ; Latin Capital Letter O With Horn And Hook Above|Latin Capital Letter O With Horn
+1EDF|01A1  ; Latin Small Letter O With Horn And Hook Above|Latin Small Letter O With Horn
+1EE0|01A0  ; Latin Capital Letter O With Horn And Tilde|Latin Capital Letter O With Horn
+1EE1|01A1  ; Latin Small Letter O With Horn And Tilde|Latin Small Letter O With Horn
+1EE2|01A0  ; Latin Capital Letter O With Horn And Dot Below|Latin Capital Letter O With Horn
+1EE3|01A1  ; Latin Small Letter O With Horn And Dot Below|Latin Small Letter O With Horn
+1EE4|0055  ; Latin Capital Letter U With Dot Below|Latin Capital Letter U
+1EE5|0075  ; Latin Small Letter U With Dot Below|Latin Small Letter U
+1EE6|0055  ; Latin Capital Letter U With Hook Above|Latin Capital Letter U
+1EE7|0075  ; Latin Small Letter U With Hook Above|Latin Small Letter U
+1EE8|01AF  ; Latin Capital Letter U With Horn And Acute|Latin Capital Letter U With Horn
+1EE9|01B0  ; Latin Small Letter U With Horn And Acute|Latin Small Letter U With Horn
+1EEA|01AF  ; Latin Capital Letter U With Horn And Grave|Latin Capital Letter U With Horn
+1EEB|01B0  ; Latin Small Letter U With Horn And Grave|Latin Small Letter U With Horn
+1EEC|01AF  ; Latin Capital Letter U With Horn And Hook Above|Latin Capital Letter U With Horn
+1EED|01B0  ; Latin Small Letter U With Horn And Hook Above|Latin Small Letter U With Horn
+1EEE|01AF  ; Latin Capital Letter U With Horn And Tilde|Latin Capital Letter U With Horn
+1EEF|01B0  ; Latin Small Letter U With Horn And Tilde|Latin Small Letter U With Horn
+1EF0|01AF  ; Latin Capital Letter U With Horn And Dot Below|Latin Capital Letter U With Horn
+1EF1|01B0  ; Latin Small Letter U With Horn And Dot Below|Latin Small Letter U With Horn
+1EF2|0059  ; Latin Capital Letter Y With Grave|Latin Capital Letter Y
+1EF3|0079  ; Latin Small Letter Y With Grave|Latin Small Letter Y
+1EF4|0059  ; Latin Capital Letter Y With Dot Below|Latin Capital Letter Y
+1EF5|0079  ; Latin Small Letter Y With Dot Below|Latin Small Letter Y
+1EF6|0059  ; Latin Capital Letter Y With Hook Above|Latin Capital Letter Y
+1EF7|0079  ; Latin Small Letter Y With Hook Above|Latin Small Letter Y
+1EF8|0059  ; Latin Capital Letter Y With Tilde|Latin Capital Letter Y
+1EF9|0079  ; Latin Small Letter Y With Tilde|Latin Small Letter Y
+1F00|03B1  ; Greek Small Letter Alpha With Psili|Greek Small Letter Alpha
+1F01|03B1  ; Greek Small Letter Alpha With Dasia|Greek Small Letter Alpha
+1F02|1F00  ; Greek Small Letter Alpha With Psili And Varia|Greek Small Letter Alpha With Psili
+1F03|1F01  ; Greek Small Letter Alpha With Dasia And Varia|Greek Small Letter Alpha With Dasia
+1F04|1F00  ; Greek Small Letter Alpha With Psili And Oxia|Greek Small Letter Alpha With Psili
+1F05|1F01  ; Greek Small Letter Alpha With Dasia And Oxia|Greek Small Letter Alpha With Dasia
+1F06|1F00  ; Greek Small Letter Alpha With Psili And Perispomeni|Greek Small Letter Alpha With Psili
+1F07|1F01  ; Greek Small Letter Alpha With Dasia And Perispomeni|Greek Small Letter Alpha With Dasia
+1F08|0391  ; Greek Capital Letter Alpha With Psili|Greek Capital Letter Alpha
+1F09|0391  ; Greek Capital Letter Alpha With Dasia|Greek Capital Letter Alpha
+1F0A|1F08  ; Greek Capital Letter Alpha With Psili And Varia|Greek Capital Letter Alpha With Psili
+1F0B|1F09  ; Greek Capital Letter Alpha With Dasia And Varia|Greek Capital Letter Alpha With Dasia
+1F0C|1F08  ; Greek Capital Letter Alpha With Psili And Oxia|Greek Capital Letter Alpha With Psili
+1F0D|1F09  ; Greek Capital Letter Alpha With Dasia And Oxia|Greek Capital Letter Alpha With Dasia
+1F0E|1F08  ; Greek Capital Letter Alpha With Psili And Perispomeni|Greek Capital Letter Alpha With Psili
+1F0F|1F09  ; Greek Capital Letter Alpha With Dasia And Perispomeni|Greek Capital Letter Alpha With Dasia
+1F10|03B5  ; Greek Small Letter Epsilon With Psili|Greek Small Letter Epsilon
+1F11|03B5  ; Greek Small Letter Epsilon With Dasia|Greek Small Letter Epsilon
+1F12|1F10  ; Greek Small Letter Epsilon With Psili And Varia|Greek Small Letter Epsilon With Psili
+1F13|1F11  ; Greek Small Letter Epsilon With Dasia And Varia|Greek Small Letter Epsilon With Dasia
+1F14|1F10  ; Greek Small Letter Epsilon With Psili And Oxia|Greek Small Letter Epsilon With Psili
+1F15|1F11  ; Greek Small Letter Epsilon With Dasia And Oxia|Greek Small Letter Epsilon With Dasia
+1F18|0395  ; Greek Capital Letter Epsilon With Psili|Greek Capital Letter Epsilon
+1F19|0395  ; Greek Capital Letter Epsilon With Dasia|Greek Capital Letter Epsilon
+1F1A|1F18  ; Greek Capital Letter Epsilon With Psili And Varia|Greek Capital Letter Epsilon With Psili
+1F1B|1F19  ; Greek Capital Letter Epsilon With Dasia And Varia|Greek Capital Letter Epsilon With Dasia
+1F1C|1F18  ; Greek Capital Letter Epsilon With Psili And Oxia|Greek Capital Letter Epsilon With Psili
+1F1D|1F19  ; Greek Capital Letter Epsilon With Dasia And Oxia|Greek Capital Letter Epsilon With Dasia
+1F20|03B7  ; Greek Small Letter Eta With Psili|Greek Small Letter Eta
+1F21|03B7  ; Greek Small Letter Eta With Dasia|Greek Small Letter Eta
+1F22|1F20  ; Greek Small Letter Eta With Psili And Varia|Greek Small Letter Eta With Psili
+1F23|1F21  ; Greek Small Letter Eta With Dasia And Varia|Greek Small Letter Eta With Dasia
+1F24|1F20  ; Greek Small Letter Eta With Psili And Oxia|Greek Small Letter Eta With Psili
+1F25|1F21  ; Greek Small Letter Eta With Dasia And Oxia|Greek Small Letter Eta With Dasia
+1F26|1F20  ; Greek Small Letter Eta With Psili And Perispomeni|Greek Small Letter Eta With Psili
+1F27|1F21  ; Greek Small Letter Eta With Dasia And Perispomeni|Greek Small Letter Eta With Dasia
+1F28|0397  ; Greek Capital Letter Eta With Psili|Greek Capital Letter Eta
+1F29|0397  ; Greek Capital Letter Eta With Dasia|Greek Capital Letter Eta
+1F2A|1F28  ; Greek Capital Letter Eta With Psili And Varia|Greek Capital Letter Eta With Psili
+1F2B|1F29  ; Greek Capital Letter Eta With Dasia And Varia|Greek Capital Letter Eta With Dasia
+1F2C|1F28  ; Greek Capital Letter Eta With Psili And Oxia|Greek Capital Letter Eta With Psili
+1F2D|1F29  ; Greek Capital Letter Eta With Dasia And Oxia|Greek Capital Letter Eta With Dasia
+1F2E|1F28  ; Greek Capital Letter Eta With Psili And Perispomeni|Greek Capital Letter Eta With Psili
+1F2F|1F29  ; Greek Capital Letter Eta With Dasia And Perispomeni|Greek Capital Letter Eta With Dasia
+1F30|03B9  ; Greek Small Letter Iota With Psili|Greek Small Letter Iota
+1F31|03B9  ; Greek Small Letter Iota With Dasia|Greek Small Letter Iota
+1F32|1F30  ; Greek Small Letter Iota With Psili And Varia|Greek Small Letter Iota With Psili
+1F33|1F31  ; Greek Small Letter Iota With Dasia And Varia|Greek Small Letter Iota With Dasia
+1F34|1F30  ; Greek Small Letter Iota With Psili And Oxia|Greek Small Letter Iota With Psili
+1F35|1F31  ; Greek Small Letter Iota With Dasia And Oxia|Greek Small Letter Iota With Dasia
+1F36|1F30  ; Greek Small Letter Iota With Psili And Perispomeni|Greek Small Letter Iota With Psili
+1F37|1F31  ; Greek Small Letter Iota With Dasia And Perispomeni|Greek Small Letter Iota With Dasia
+1F38|0399  ; Greek Capital Letter Iota With Psili|Greek Capital Letter Iota
+1F39|0399  ; Greek Capital Letter Iota With Dasia|Greek Capital Letter Iota
+1F3A|1F38  ; Greek Capital Letter Iota With Psili And Varia|Greek Capital Letter Iota With Psili
+1F3B|1F39  ; Greek Capital Letter Iota With Dasia And Varia|Greek Capital Letter Iota With Dasia
+1F3C|1F38  ; Greek Capital Letter Iota With Psili And Oxia|Greek Capital Letter Iota With Psili
+1F3D|1F39  ; Greek Capital Letter Iota With Dasia And Oxia|Greek Capital Letter Iota With Dasia
+1F3E|1F38  ; Greek Capital Letter Iota With Psili And Perispomeni|Greek Capital Letter Iota With Psili
+1F3F|1F39  ; Greek Capital Letter Iota With Dasia And Perispomeni|Greek Capital Letter Iota With Dasia
+1F40|03BF  ; Greek Small Letter Omicron With Psili|Greek Small Letter Omicron
+1F41|03BF  ; Greek Small Letter Omicron With Dasia|Greek Small Letter Omicron
+1F42|1F40  ; Greek Small Letter Omicron With Psili And Varia|Greek Small Letter Omicron With Psili
+1F43|1F41  ; Greek Small Letter Omicron With Dasia And Varia|Greek Small Letter Omicron With Dasia
+1F44|1F40  ; Greek Small Letter Omicron With Psili And Oxia|Greek Small Letter Omicron With Psili
+1F45|1F41  ; Greek Small Letter Omicron With Dasia And Oxia|Greek Small Letter Omicron With Dasia
+1F48|039F  ; Greek Capital Letter Omicron With Psili|Greek Capital Letter Omicron
+1F49|039F  ; Greek Capital Letter Omicron With Dasia|Greek Capital Letter Omicron
+1F4A|1F48  ; Greek Capital Letter Omicron With Psili And Varia|Greek Capital Letter Omicron With Psili
+1F4B|1F49  ; Greek Capital Letter Omicron With Dasia And Varia|Greek Capital Letter Omicron With Dasia
+1F4C|1F48  ; Greek Capital Letter Omicron With Psili And Oxia|Greek Capital Letter Omicron With Psili
+1F4D|1F49  ; Greek Capital Letter Omicron With Dasia And Oxia|Greek Capital Letter Omicron With Dasia
+1F50|03C5  ; Greek Small Letter Upsilon With Psili|Greek Small Letter Upsilon
+1F51|03C5  ; Greek Small Letter Upsilon With Dasia|Greek Small Letter Upsilon
+1F52|1F50  ; Greek Small Letter Upsilon With Psili And Varia|Greek Small Letter Upsilon With Psili
+1F53|1F51  ; Greek Small Letter Upsilon With Dasia And Varia|Greek Small Letter Upsilon With Dasia
+1F54|1F50  ; Greek Small Letter Upsilon With Psili And Oxia|Greek Small Letter Upsilon With Psili
+1F55|1F51  ; Greek Small Letter Upsilon With Dasia And Oxia|Greek Small Letter Upsilon With Dasia
+1F56|1F50  ; Greek Small Letter Upsilon With Psili And Perispomeni|Greek Small Letter Upsilon With Psili
+1F57|1F51  ; Greek Small Letter Upsilon With Dasia And Perispomeni|Greek Small Letter Upsilon With Dasia
+1F59|03A5  ; Greek Capital Letter Upsilon With Dasia|Greek Capital Letter Upsilon
+1F5B|1F59  ; Greek Capital Letter Upsilon With Dasia And Varia|Greek Capital Letter Upsilon With Dasia
+1F5D|1F59  ; Greek Capital Letter Upsilon With Dasia And Oxia|Greek Capital Letter Upsilon With Dasia
+1F5F|1F59  ; Greek Capital Letter Upsilon With Dasia And Perispomeni|Greek Capital Letter Upsilon With Dasia
+1F60|03C9  ; Greek Small Letter Omega With Psili|Greek Small Letter Omega
+1F61|03C9  ; Greek Small Letter Omega With Dasia|Greek Small Letter Omega
+1F62|1F60  ; Greek Small Letter Omega With Psili And Varia|Greek Small Letter Omega With Psili
+1F63|1F61  ; Greek Small Letter Omega With Dasia And Varia|Greek Small Letter Omega With Dasia
+1F64|1F60  ; Greek Small Letter Omega With Psili And Oxia|Greek Small Letter Omega With Psili
+1F65|1F61  ; Greek Small Letter Omega With Dasia And Oxia|Greek Small Letter Omega With Dasia
+1F66|1F60  ; Greek Small Letter Omega With Psili And Perispomeni|Greek Small Letter Omega With Psili
+1F67|1F61  ; Greek Small Letter Omega With Dasia And Perispomeni|Greek Small Letter Omega With Dasia
+1F68|03A9  ; Greek Capital Letter Omega With Psili|Greek Capital Letter Omega
+1F69|03A9  ; Greek Capital Letter Omega With Dasia|Greek Capital Letter Omega
+1F6A|1F68  ; Greek Capital Letter Omega With Psili And Varia|Greek Capital Letter Omega With Psili
+1F6B|1F69  ; Greek Capital Letter Omega With Dasia And Varia|Greek Capital Letter Omega With Dasia
+1F6C|1F68  ; Greek Capital Letter Omega With Psili And Oxia|Greek Capital Letter Omega With Psili
+1F6D|1F69  ; Greek Capital Letter Omega With Dasia And Oxia|Greek Capital Letter Omega With Dasia
+1F6E|1F68  ; Greek Capital Letter Omega With Psili And Perispomeni|Greek Capital Letter Omega With Psili
+1F6F|1F69  ; Greek Capital Letter Omega With Dasia And Perispomeni|Greek Capital Letter Omega With Dasia
+1F70|03B1  ; Greek Small Letter Alpha With Varia|Greek Small Letter Alpha
+1F72|03B5  ; Greek Small Letter Epsilon With Varia|Greek Small Letter Epsilon
+1F74|03B7  ; Greek Small Letter Eta With Varia|Greek Small Letter Eta
+1F76|03B9  ; Greek Small Letter Iota With Varia|Greek Small Letter Iota
+1F78|03BF  ; Greek Small Letter Omicron With Varia|Greek Small Letter Omicron
+1F7A|03C5  ; Greek Small Letter Upsilon With Varia|Greek Small Letter Upsilon
+1F7C|03C9  ; Greek Small Letter Omega With Varia|Greek Small Letter Omega
+1F80|1F00  ; Greek Small Letter Alpha With Psili And Ypogegrammeni|Greek Small Letter Alpha With Psili
+1F81|1F01  ; Greek Small Letter Alpha With Dasia And Ypogegrammeni|Greek Small Letter Alpha With Dasia
+1F82|1F02  ; Greek Small Letter Alpha With Psili And Varia And Ypogegrammeni|Greek Small Letter Alpha With Psili And Varia
+1F83|1F03  ; Greek Small Letter Alpha With Dasia And Varia And Ypogegrammeni|Greek Small Letter Alpha With Dasia And Varia
+1F84|1F04  ; Greek Small Letter Alpha With Psili And Oxia And Ypogegrammeni|Greek Small Letter Alpha With Psili And Oxia
+1F85|1F05  ; Greek Small Letter Alpha With Dasia And Oxia And Ypogegrammeni|Greek Small Letter Alpha With Dasia And Oxia
+1F86|1F06  ; Greek Small Letter Alpha With Psili And Perispomeni And Ypogegrammeni|Greek Small Letter Alpha With Psili And Perispomeni
+1F87|1F07  ; Greek Small Letter Alpha With Dasia And Perispomeni And Ypogegrammeni|Greek Small Letter Alpha With Dasia And Perispomeni
+1F88|1F08  ; Greek Capital Letter Alpha With Psili And Prosgegrammeni|Greek Capital Letter Alpha With Psili
+1F89|1F09  ; Greek Capital Letter Alpha With Dasia And Prosgegrammeni|Greek Capital Letter Alpha With Dasia
+1F8A|1F0A  ; Greek Capital Letter Alpha With Psili And Varia And Prosgegrammeni|Greek Capital Letter Alpha With Psili And Varia
+1F8B|1F0B  ; Greek Capital Letter Alpha With Dasia And Varia And Prosgegrammeni|Greek Capital Letter Alpha With Dasia And Varia
+1F8C|1F0C  ; Greek Capital Letter Alpha With Psili And Oxia And Prosgegrammeni|Greek Capital Letter Alpha With Psili And Oxia
+1F8D|1F0D  ; Greek Capital Letter Alpha With Dasia And Oxia And Prosgegrammeni|Greek Capital Letter Alpha With Dasia And Oxia
+1F8E|1F0E  ; Greek Capital Letter Alpha With Psili And Perispomeni And Prosgegrammeni|Greek Capital Letter Alpha With Psili And Perispomeni
+1F8F|1F0F  ; Greek Capital Letter Alpha With Dasia And Perispomeni And Prosgegrammeni|Greek Capital Letter Alpha With Dasia And Perispomeni
+1F90|1F20  ; Greek Small Letter Eta With Psili And Ypogegrammeni|Greek Small Letter Eta With Psili
+1F91|1F21  ; Greek Small Letter Eta With Dasia And Ypogegrammeni|Greek Small Letter Eta With Dasia
+1F92|1F22  ; Greek Small Letter Eta With Psili And Varia And Ypogegrammeni|Greek Small Letter Eta With Psili And Varia
+1F93|1F23  ; Greek Small Letter Eta With Dasia And Varia And Ypogegrammeni|Greek Small Letter Eta With Dasia And Varia
+1F94|1F24  ; Greek Small Letter Eta With Psili And Oxia And Ypogegrammeni|Greek Small Letter Eta With Psili And Oxia
+1F95|1F25  ; Greek Small Letter Eta With Dasia And Oxia And Ypogegrammeni|Greek Small Letter Eta With Dasia And Oxia
+1F96|1F26  ; Greek Small Letter Eta With Psili And Perispomeni And Ypogegrammeni|Greek Small Letter Eta With Psili And Perispomeni
+1F97|1F27  ; Greek Small Letter Eta With Dasia And Perispomeni And Ypogegrammeni|Greek Small Letter Eta With Dasia And Perispomeni
+1F98|1F28  ; Greek Capital Letter Eta With Psili And Prosgegrammeni|Greek Capital Letter Eta With Psili
+1F99|1F29  ; Greek Capital Letter Eta With Dasia And Prosgegrammeni|Greek Capital Letter Eta With Dasia
+1F9A|1F2A  ; Greek Capital Letter Eta With Psili And Varia And Prosgegrammeni|Greek Capital Letter Eta With Psili And Varia
+1F9B|1F2B  ; Greek Capital Letter Eta With Dasia And Varia And Prosgegrammeni|Greek Capital Letter Eta With Dasia And Varia
+1F9C|1F2C  ; Greek Capital Letter Eta With Psili And Oxia And Prosgegrammeni|Greek Capital Letter Eta With Psili And Oxia
+1F9D|1F2D  ; Greek Capital Letter Eta With Dasia And Oxia And Prosgegrammeni|Greek Capital Letter Eta With Dasia And Oxia
+1F9E|1F2E  ; Greek Capital Letter Eta With Psili And Perispomeni And Prosgegrammeni|Greek Capital Letter Eta With Psili And Perispomeni
+1F9F|1F2F  ; Greek Capital Letter Eta With Dasia And Perispomeni And Prosgegrammeni|Greek Capital Letter Eta With Dasia And Perispomeni
+1FA0|1F60  ; Greek Small Letter Omega With Psili And Ypogegrammeni|Greek Small Letter Omega With Psili
+1FA1|1F61  ; Greek Small Letter Omega With Dasia And Ypogegrammeni|Greek Small Letter Omega With Dasia
+1FA2|1F62  ; Greek Small Letter Omega With Psili And Varia And Ypogegrammeni|Greek Small Letter Omega With Psili And Varia
+1FA3|1F63  ; Greek Small Letter Omega With Dasia And Varia And Ypogegrammeni|Greek Small Letter Omega With Dasia And Varia
+1FA4|1F64  ; Greek Small Letter Omega With Psili And Oxia And Ypogegrammeni|Greek Small Letter Omega With Psili And Oxia
+1FA5|1F65  ; Greek Small Letter Omega With Dasia And Oxia And Ypogegrammeni|Greek Small Letter Omega With Dasia And Oxia
+1FA6|1F66  ; Greek Small Letter Omega With Psili And Perispomeni And Ypogegrammeni|Greek Small Letter Omega With Psili And Perispomeni
+1FA7|1F67  ; Greek Small Letter Omega With Dasia And Perispomeni And Ypogegrammeni|Greek Small Letter Omega With Dasia And Perispomeni
+1FA8|1F68  ; Greek Capital Letter Omega With Psili And Prosgegrammeni|Greek Capital Letter Omega With Psili
+1FA9|1F69  ; Greek Capital Letter Omega With Dasia And Prosgegrammeni|Greek Capital Letter Omega With Dasia
+1FAA|1F6A  ; Greek Capital Letter Omega With Psili And Varia And Prosgegrammeni|Greek Capital Letter Omega With Psili And Varia
+1FAB|1F6B  ; Greek Capital Letter Omega With Dasia And Varia And Prosgegrammeni|Greek Capital Letter Omega With Dasia And Varia
+1FAC|1F6C  ; Greek Capital Letter Omega With Psili And Oxia And Prosgegrammeni|Greek Capital Letter Omega With Psili And Oxia
+1FAD|1F6D  ; Greek Capital Letter Omega With Dasia And Oxia And Prosgegrammeni|Greek Capital Letter Omega With Dasia And Oxia
+1FAE|1F6E  ; Greek Capital Letter Omega With Psili And Perispomeni And Prosgegrammeni|Greek Capital Letter Omega With Psili And Perispomeni
+1FAF|1F6F  ; Greek Capital Letter Omega With Dasia And Perispomeni And Prosgegrammeni|Greek Capital Letter Omega With Dasia And Perispomeni
+1FB0|03B1  ; Greek Small Letter Alpha With Vrachy|Greek Small Letter Alpha
+1FB1|03B1  ; Greek Small Letter Alpha With Macron|Greek Small Letter Alpha
+1FB2|1F70  ; Greek Small Letter Alpha With Varia And Ypogegrammeni|Greek Small Letter Alpha With Varia
+1FB3|03B1  ; Greek Small Letter Alpha With Ypogegrammeni|Greek Small Letter Alpha
+1FB4|03AC  ; Greek Small Letter Alpha With Oxia And Ypogegrammeni|Greek Small Letter Alpha With Tonos
+1FB6|03B1  ; Greek Small Letter Alpha With Perispomeni|Greek Small Letter Alpha
+1FB7|1FB6  ; Greek Small Letter Alpha With Perispomeni And Ypogegrammeni|Greek Small Letter Alpha With Perispomeni
+1FB8|0391  ; Greek Capital Letter Alpha With Vrachy|Greek Capital Letter Alpha
+1FB9|0391  ; Greek Capital Letter Alpha With Macron|Greek Capital Letter Alpha
+1FBA|0391  ; Greek Capital Letter Alpha With Varia|Greek Capital Letter Alpha
+1FBC|0391  ; Greek Capital Letter Alpha With Prosgegrammeni|Greek Capital Letter Alpha
+1FC1|00A8  ; Greek Dialytika And Perispomeni|Diaeresis
+1FC2|1F74  ; Greek Small Letter Eta With Varia And Ypogegrammeni|Greek Small Letter Eta With Varia
+1FC3|03B7  ; Greek Small Letter Eta With Ypogegrammeni|Greek Small Letter Eta
+1FC4|03AE  ; Greek Small Letter Eta With Oxia And Ypogegrammeni|Greek Small Letter Eta With Tonos
+1FC6|03B7  ; Greek Small Letter Eta With Perispomeni|Greek Small Letter Eta
+1FC7|1FC6  ; Greek Small Letter Eta With Perispomeni And Ypogegrammeni|Greek Small Letter Eta With Perispomeni
+1FC8|0395  ; Greek Capital Letter Epsilon With Varia|Greek Capital Letter Epsilon
+1FCA|0397  ; Greek Capital Letter Eta With Varia|Greek Capital Letter Eta
+1FCC|0397  ; Greek Capital Letter Eta With Prosgegrammeni|Greek Capital Letter Eta
+1FCD|1FBF  ; Greek Psili And Varia|Greek Psili
+1FCE|1FBF  ; Greek Psili And Oxia|Greek Psili
+1FCF|1FBF  ; Greek Psili And Perispomeni|Greek Psili
+1FD0|03B9  ; Greek Small Letter Iota With Vrachy|Greek Small Letter Iota
+1FD1|03B9  ; Greek Small Letter Iota With Macron|Greek Small Letter Iota
+1FD2|03CA  ; Greek Small Letter Iota With Dialytika And Varia|Greek Small Letter Iota With Dialytika
+1FD6|03B9  ; Greek Small Letter Iota With Perispomeni|Greek Small Letter Iota
+1FD7|03CA  ; Greek Small Letter Iota With Dialytika And Perispomeni|Greek Small Letter Iota With Dialytika
+1FD8|0399  ; Greek Capital Letter Iota With Vrachy|Greek Capital Letter Iota
+1FD9|0399  ; Greek Capital Letter Iota With Macron|Greek Capital Letter Iota
+1FDA|0399  ; Greek Capital Letter Iota With Varia|Greek Capital Letter Iota
+1FDD|1FFE  ; Greek Dasia And Varia|Greek Dasia
+1FDE|1FFE  ; Greek Dasia And Oxia|Greek Dasia
+1FDF|1FFE  ; Greek Dasia And Perispomeni|Greek Dasia
+1FE0|03C5  ; Greek Small Letter Upsilon With Vrachy|Greek Small Letter Upsilon
+1FE1|03C5  ; Greek Small Letter Upsilon With Macron|Greek Small Letter Upsilon
+1FE2|03CB  ; Greek Small Letter Upsilon With Dialytika And Varia|Greek Small Letter Upsilon With Dialytika
+1FE4|03C1  ; Greek Small Letter Rho With Psili|Greek Small Letter Rho
+1FE5|03C1  ; Greek Small Letter Rho With Dasia|Greek Small Letter Rho
+1FE6|03C5  ; Greek Small Letter Upsilon With Perispomeni|Greek Small Letter Upsilon
+1FE7|03CB  ; Greek Small Letter Upsilon With Dialytika And Perispomeni|Greek Small Letter Upsilon With Dialytika
+1FE8|03A5  ; Greek Capital Letter Upsilon With Vrachy|Greek Capital Letter Upsilon
+1FE9|03A5  ; Greek Capital Letter Upsilon With Macron|Greek Capital Letter Upsilon
+1FEA|03A5  ; Greek Capital Letter Upsilon With Varia|Greek Capital Letter Upsilon
+1FEC|03A1  ; Greek Capital Letter Rho With Dasia|Greek Capital Letter Rho
+1FED|00A8  ; Greek Dialytika And Varia|Diaeresis
+1FF2|1F7C  ; Greek Small Letter Omega With Varia And Ypogegrammeni|Greek Small Letter Omega With Varia
+1FF3|03C9  ; Greek Small Letter Omega With Ypogegrammeni|Greek Small Letter Omega
+1FF4|03CE  ; Greek Small Letter Omega With Oxia And Ypogegrammeni|Greek Small Letter Omega With Tonos
+1FF6|03C9  ; Greek Small Letter Omega With Perispomeni|Greek Small Letter Omega
+1FF7|1FF6  ; Greek Small Letter Omega With Perispomeni And Ypogegrammeni|Greek Small Letter Omega With Perispomeni
+1FF8|039F  ; Greek Capital Letter Omicron With Varia|Greek Capital Letter Omicron
+1FFA|03A9  ; Greek Capital Letter Omega With Varia|Greek Capital Letter Omega
+1FFC|03A9  ; Greek Capital Letter Omega With Prosgegrammeni|Greek Capital Letter Omega
+2010|002D       ; Hyphen|Hypen-Minus
+2011|002D       ; Non-Breaking Hyphen|Hyphen-Minus
+2044|002F       ; Fraction Slash|Solidus
+2070|0030  ; Superscript Zero|<super> Digit Zero
+2071|0069  ; Superscript Latin Small Letter I|<super> Latin Small Letter I
+2074|0034  ; Superscript Four|<super> Digit Four
+2075|0035  ; Superscript Five|<super> Digit Five
+2076|0036  ; Superscript Six|<super> Digit Six
+2077|0037  ; Superscript Seven|<super> Digit Seven
+2078|0038  ; Superscript Eight|<super> Digit Eight
+2079|0039  ; Superscript Nine|<super> Digit Nine
+207A|002B  ; Superscript Plus Sign|<super> Plus Sign
+207B|2212  ; Superscript Minus|<super> Minus Sign
+207C|003D  ; Superscript Equals Sign|<super> Equals Sign
+207D|0028  ; Superscript Left Parenthesis|<super> Left Parenthesis
+207E|0029  ; Superscript Right Parenthesis|<super> Right Parenthesis
+207F|006E  ; Superscript Latin Small Letter N|<super> Latin Small Letter N
+2080|0030  ; Subscript Zero|<sub> Digit Zero
+2081|0031  ; Subscript One|<sub> Digit One
+2082|0032  ; Subscript Two|<sub> Digit Two
+2083|0033  ; Subscript Three|<sub> Digit Three
+2084|0034  ; Subscript Four|<sub> Digit Four
+2085|0035  ; Subscript Five|<sub> Digit Five
+2086|0036  ; Subscript Six|<sub> Digit Six
+2087|0037  ; Subscript Seven|<sub> Digit Seven
+2088|0038  ; Subscript Eight|<sub> Digit Eight
+2089|0039  ; Subscript Nine|<sub> Digit Nine
+208A|002B  ; Subscript Plus Sign|<sub> Plus Sign
+208B|2212  ; Subscript Minus|<sub> Minus Sign
+208C|003D  ; Subscript Equals Sign|<sub> Equals Sign
+208D|0028  ; Subscript Left Parenthesis|<sub> Left Parenthesis
+208E|0029  ; Subscript Right Parenthesis|<sub> Right Parenthesis
+2090|0061  ; Latin Subscript Small Letter A|<sub> Latin Small Letter A
+2091|0065  ; Latin Subscript Small Letter E|<sub> Latin Small Letter E
+2092|006F  ; Latin Subscript Small Letter O|<sub> Latin Small Letter O
+2093|0078  ; Latin Subscript Small Letter X|<sub> Latin Small Letter X
+2094|0259  ; Latin Subscript Small Letter Schwa|<sub> Latin Small Letter Schwa
+2102|0043  ; Double-struck Capital C|<font> Latin Capital Letter C
+210A|0067  ; Script Small G|<font> Latin Small Letter G
+210B|0048  ; Script Capital H|<font> Latin Capital Letter H
+210C|0048  ; Black-letter Capital H|<font> Latin Capital Letter H
+210D|0048  ; Double-struck Capital H|<font> Latin Capital Letter H
+210E|0068  ; Planck Constant|<font> Latin Small Letter H
+210F|0127  ; Planck Constant Over Two Pi|<font> Latin Small Letter H With Stroke
+2110|0049  ; Script Capital I|<font> Latin Capital Letter I
+2111|0049  ; Black-letter Capital I|<font> Latin Capital Letter I
+2112|004C  ; Script Capital L|<font> Latin Capital Letter L
+2113|006C  ; Script Small L|<font> Latin Small Letter L
+2115|004E  ; Double-struck Capital N|<font> Latin Capital Letter N
+2119|0050  ; Double-struck Capital P|<font> Latin Capital Letter P
+211A|0051  ; Double-struck Capital Q|<font> Latin Capital Letter Q
+211B|0052  ; Script Capital R|<font> Latin Capital Letter R
+211C|0052  ; Black-letter Capital R|<font> Latin Capital Letter R
+211D|0052  ; Double-struck Capital R|<font> Latin Capital Letter R
+2120|0053 004D  ; Service Mark|<super> Latin Capital Letter S, Latin Capital Letter M
+2122|0054 004D  ; Trade Mark Sign|Latin Capital Letters T M
+2124|005A  ; Double-struck Capital Z|<font> Latin Capital Letter Z
+2128|005A  ; Black-letter Capital Z|<font> Latin Capital Letter Z
+212C|0042  ; Script Capital B|<font> Latin Capital Letter B
+212D|0043  ; Black-letter Capital C|<font> Latin Capital Letter C
+212F|0065  ; Script Small E|<font> Latin Small Letter E
+2130|0045  ; Script Capital E|<font> Latin Capital Letter E
+2131|0046  ; Script Capital F|<font> Latin Capital Letter F
+2133|004D  ; Script Capital M|<font> Latin Capital Letter M
+2134|006F  ; Script Small O|<font> Latin Small Letter O
+2139|0069  ; Information Source|<font> Latin Small Letter I
+213C|03C0  ; Double-struck Small Pi|<font> Greek Small Letter Pi
+213D|03B3  ; Double-struck Small Gamma|<font> Greek Small Letter Gamma
+213E|0393  ; Double-struck Capital Gamma|<font> Greek Capital Letter Gamma
+213F|03A0  ; Double-struck Capital Pi|<font> Greek Capital Letter Pi
+2140|2211  ; Double-struck N-ary Summation|<font> N-ary Summation
+2145|0044  ; Double-struck Italic Capital D|<font> Latin Capital Letter D
+2146|0064  ; Double-struck Italic Small D|<font> Latin Small Letter D
+2147|0065  ; Double-struck Italic Small E|<font> Latin Small Letter E
+2148|0069  ; Double-struck Italic Small I|<font> Latin Small Letter I
+2149|006A  ; Double-struck Italic Small J|<font> Latin Small Letter J
+2153|0031 2044 0033  ; Vulgar Fraction One Third|<fraction> Digit One, Fraction Slash, Digit Three
+2154|0032 2044 0033  ; Vulgar Fraction Two Thirds|<fraction> Digit Two, Fraction Slash, Digit Three
+2155|0031 2044 0035  ; Vulgar Fraction One Fifth|<fraction> Digit One, Fraction Slash, Digit Five
+2156|0032 2044 0035  ; Vulgar Fraction Two Fifths|<fraction> Digit Two, Fraction Slash, Digit Five
+2157|0033 2044 0035  ; Vulgar Fraction Three Fifths|<fraction> Digit Three, Fraction Slash, Digit Five
+2158|0034 2044 0035  ; Vulgar Fraction Four Fifths|<fraction> Digit Four, Fraction Slash, Digit Five
+2159|0031 2044 0036  ; Vulgar Fraction One Sixth|<fraction> Digit One, Fraction Slash, Digit Six
+215A|0035 2044 0036  ; Vulgar Fraction Five Sixths|<fraction> Digit Five, Fraction Slash, Digit Six
+215B|0031 2044 0038  ; Vulgar Fraction One Eighth|<fraction> Digit One, Fraction Slash, Digit Eight
+215C|0033 2044 0038  ; Vulgar Fraction Three Eighths|<fraction> Digit Three, Fraction Slash, Digit Eight
+215D|0035 2044 0038  ; Vulgar Fraction Five Eighths|<fraction> Digit Five, Fraction Slash, Digit Eight
+215E|0037 2044 0038  ; Vulgar Fraction Seven Eighths|<fraction> Digit Seven, Fraction Slash, Digit Eight
+215F|0031 2044  ; Fraction Numerator One|<fraction> Digit One, Fraction Slash
+2160|0049       ; Roman Numeral One|Latin Capital Letter I
+2161|0049 0049  ; Roman Numeral Two|Latin Capital Letters I I
+2162|0049 0049 0049  ; Roman Numeral Three|Latin Capital Letters I I I
+2163|0049 0056  ; Roman Numeral Four|Latin Capital Letters I V
+2164|0056       ; Roman Numeral Five|Latin Capital Letter V
+2165|0056 0049  ; Roman Numeral Six|Latin Capital Letters V I
+2166|0056 0049 0049  ; Roman Numeral Seven|Latin Capital Letters V I I
+2167|0056 0049 0049 0049  ; Roman Numeral Eight|Latin Capital Letters V I I I
+2168|0049 0058  ; Roman Numeral Nine|Latin Capital Letters I X
+2169|0058       ; Roman Numeral Ten|Latin Capital Letter X
+216A|0058 0049  ; Roman Numeral Eleven|Latin Capital Letters X I
+216B|0058 0049 0049  ; Roman Numeral Twelve|Latin Capital Letters X I I
+216C|004C       ; Roman Numeral Fifty|Latin Capital Letter L
+216D|0043       ; Roman Numeral One Hundred|Latin Capital Letter C
+216E|0044       ; Roman Numeral Five Hundred|Latin Capital Letter D
+216F|004D       ; Roman Numeral One Thousand|Latin Capital Letter M
+2170|0069       ; Roman Numeral One|Latin Small Letter I
+2171|0069 0069  ; Roman Numeral Two|Latin Small Letters I I
+2172|0069 0069 0069  ; Roman Numeral Three|Latin Small Letters I I I
+2173|0069 0076  ; Roman Numeral Four|Latin Small Letters I V
+2174|0076       ; Roman Numeral Five|Latin Small Letter V
+2175|0076 0069  ; Roman Numeral Six|Latin Small Letters V I
+2176|0076 0069 0069  ; Roman Numeral Seven|Latin Small Letters V I I
+2177|0076 0069 0069 0069  ; Roman Numeral Eight|Latin Small Letters V I I I
+2178|0069 0078  ; Roman Numeral Nine|Latin Small Letters I X
+2179|0078       ; Roman Numeral Ten|Latin Small Letter X
+217A|0078 0069  ; Roman Numeral Eleven|Latin Small Letters X I
+217B|0078 0069 0069  ; Roman Numeral Twelve|Latin Small Letters X I I
+217C|006C       ; Roman Numeral Fifty|Latin Small Letter L
+217D|0063       ; Roman Numeral One Hundred|Latin Small Letter C
+217E|0064       ; Roman Numeral Five Hundred|Latin Small Letter D
+217F|006D       ; Roman Numeral One Thousand|Latin Small Letter M
+219A|2190  ; Leftwards Arrow With Stroke|Leftwards Arrow
+219B|2192  ; Rightwards Arrow With Stroke|Rightwards Arrow
+21AE|2194  ; Left Right Arrow With Stroke|Left Right Arrow
+21CD|21D0  ; Leftwards Double Arrow With Stroke|Leftwards Double Arrow
+21CE|21D4  ; Left Right Double Arrow With Stroke|Left Right Double Arrow
+21CF|21D2  ; Rightwards Double Arrow With Stroke|Rightwards Double Arrow
+2204|2203  ; There Does Not Exist|There Exists
+2209|2208  ; Not An Element Of|Element Of
+220C|220B  ; Does Not Contain As Member|Contains As Member
+2212|002D       ; Minus Sign|Hyphen-Minus
+2215|002F       ; Division Slash|Solidus
+2224|2223  ; Does Not Divide|Divides
+2226|2225  ; Not Parallel To|Parallel To
+2241|223C  ; Not Tilde|Tilde Operator
+2244|2243  ; Not Asymptotically Equal To|Asymptotically Equal To
+2247|2245  ; Neither Approximately Nor Actually Equal To|Approximately Equal To
+2249|2248  ; Not Almost Equal To|Almost Equal To
+2260|003D  ; Not Equal To|Equals Sign
+2262|2261  ; Not Identical To|Identical To
+226D|224D  ; Not Equivalent To|Equivalent To
+226E|003C  ; Not Less-than|Less-than Sign
+226F|003E  ; Not Greater-than|Greater-than Sign
+2270|2264  ; Neither Less-than Nor Equal To|Less-than Or Equal To
+2271|2265  ; Neither Greater-than Nor Equal To|Greater-than Or Equal To
+2274|2272  ; Neither Less-than Nor Equivalent To|Less-than Or Equivalent To
+2275|2273  ; Neither Greater-than Nor Equivalent To|Greater-than Or Equivalent To
+2278|2276  ; Neither Less-than Nor Greater-than|Less-than Or Greater-than
+2279|2277  ; Neither Greater-than Nor Less-than|Greater-than Or Less-than
+2280|227A  ; Does Not Precede|Precedes
+2281|227B  ; Does Not Succeed|Succeeds
+2284|2282  ; Not A Subset Of|Subset Of
+2285|2283  ; Not A Superset Of|Superset Of
+2288|2286  ; Neither A Subset Of Nor Equal To|Subset Of Or Equal To
+2289|2287  ; Neither A Superset Of Nor Equal To|Superset Of Or Equal To
+22AC|22A2  ; Does Not Prove|Right Tack
+22AD|22A8  ; Not True|True
+22AE|22A9  ; Does Not Force|Forces
+22AF|22AB  ; Negated Double Vertical Bar Double Right Turnstile|Double Vertical Bar Double Right Turnstile
+22E0|227C  ; Does Not Precede Or Equal|Precedes Or Equal To
+22E1|227D  ; Does Not Succeed Or Equal|Succeeds Or Equal To
+22E2|2291  ; Not Square Image Of Or Equal To|Square Image Of Or Equal To
+22E3|2292  ; Not Square Original Of Or Equal To|Square Original Of Or Equal To
+22EA|22B2  ; Not Normal Subgroup Of|Normal Subgroup Of
+22EB|22B3  ; Does Not Contain As Normal Subgroup|Contains As Normal Subgroup
+22EC|22B4  ; Not Normal Subgroup Of Or Equal To|Normal Subgroup Of Or Equal To
+22ED|22B5  ; Does Not Contain As Normal Subgroup Or Equal|Contains As Normal Subgroup Or Equal To
+2460|0031  ; Circled Digit One|<circle> Digit One
+2461|0032  ; Circled Digit Two|<circle> Digit Two
+2462|0033  ; Circled Digit Three|<circle> Digit Three
+2463|0034  ; Circled Digit Four|<circle> Digit Four
+2464|0035  ; Circled Digit Five|<circle> Digit Five
+2465|0036  ; Circled Digit Six|<circle> Digit Six
+2466|0037  ; Circled Digit Seven|<circle> Digit Seven
+2467|0038  ; Circled Digit Eight|<circle> Digit Eight
+2468|0039  ; Circled Digit Nine|<circle> Digit Nine
+2469|0031 0030  ; Circled Number Ten|<circle> Digit One, Digit Zero
+246A|0031 0031  ; Circled Number Eleven|<circle> Digit One, Digit One
+246B|0031 0032  ; Circled Number Twelve|<circle> Digit One, Digit Two
+246C|0031 0033  ; Circled Number Thirteen|<circle> Digit One, Digit Three
+246D|0031 0034  ; Circled Number Fourteen|<circle> Digit One, Digit Four
+246E|0031 0035  ; Circled Number Fifteen|<circle> Digit One, Digit Five
+246F|0031 0036  ; Circled Number Sixteen|<circle> Digit One, Digit Six
+2470|0031 0037  ; Circled Number Seventeen|<circle> Digit One, Digit Seven
+2471|0031 0038  ; Circled Number Eighteen|<circle> Digit One, Digit Eight
+2472|0031 0039  ; Circled Number Nineteen|<circle> Digit One, Digit Nine
+2473|0032 0030  ; Circled Number Twenty|<circle> Digit Two, Digit Zero
+24B6|0041  ; Circled Latin Capital Letter A|<circle> Latin Capital Letter A
+24B7|0042  ; Circled Latin Capital Letter B|<circle> Latin Capital Letter B
+24B8|0043  ; Circled Latin Capital Letter C|<circle> Latin Capital Letter C
+24B9|0044  ; Circled Latin Capital Letter D|<circle> Latin Capital Letter D
+24BA|0045  ; Circled Latin Capital Letter E|<circle> Latin Capital Letter E
+24BB|0046  ; Circled Latin Capital Letter F|<circle> Latin Capital Letter F
+24BC|0047  ; Circled Latin Capital Letter G|<circle> Latin Capital Letter G
+24BD|0048  ; Circled Latin Capital Letter H|<circle> Latin Capital Letter H
+24BE|0049  ; Circled Latin Capital Letter I|<circle> Latin Capital Letter I
+24BF|004A  ; Circled Latin Capital Letter J|<circle> Latin Capital Letter J
+24C0|004B  ; Circled Latin Capital Letter K|<circle> Latin Capital Letter K
+24C1|004C  ; Circled Latin Capital Letter L|<circle> Latin Capital Letter L
+24C2|004D  ; Circled Latin Capital Letter M|<circle> Latin Capital Letter M
+24C3|004E  ; Circled Latin Capital Letter N|<circle> Latin Capital Letter N
+24C4|004F  ; Circled Latin Capital Letter O|<circle> Latin Capital Letter O
+24C5|0050  ; Circled Latin Capital Letter P|<circle> Latin Capital Letter P
+24C6|0051  ; Circled Latin Capital Letter Q|<circle> Latin Capital Letter Q
+24C7|0052  ; Circled Latin Capital Letter R|<circle> Latin Capital Letter R
+24C8|0053  ; Circled Latin Capital Letter S|<circle> Latin Capital Letter S
+24C9|0054  ; Circled Latin Capital Letter T|<circle> Latin Capital Letter T
+24CA|0055  ; Circled Latin Capital Letter U|<circle> Latin Capital Letter U
+24CB|0056  ; Circled Latin Capital Letter V|<circle> Latin Capital Letter V
+24CC|0057  ; Circled Latin Capital Letter W|<circle> Latin Capital Letter W
+24CD|0058  ; Circled Latin Capital Letter X|<circle> Latin Capital Letter X
+24CE|0059  ; Circled Latin Capital Letter Y|<circle> Latin Capital Letter Y
+24CF|005A  ; Circled Latin Capital Letter Z|<circle> Latin Capital Letter Z
+24D0|0061  ; Circled Latin Small Letter A|<circle> Latin Small Letter A
+24D1|0062  ; Circled Latin Small Letter B|<circle> Latin Small Letter B
+24D2|0063  ; Circled Latin Small Letter C|<circle> Latin Small Letter C
+24D3|0064  ; Circled Latin Small Letter D|<circle> Latin Small Letter D
+24D4|0065  ; Circled Latin Small Letter E|<circle> Latin Small Letter E
+24D5|0066  ; Circled Latin Small Letter F|<circle> Latin Small Letter F
+24D6|0067  ; Circled Latin Small Letter G|<circle> Latin Small Letter G
+24D7|0068  ; Circled Latin Small Letter H|<circle> Latin Small Letter H
+24D8|0069  ; Circled Latin Small Letter I|<circle> Latin Small Letter I
+24D9|006A  ; Circled Latin Small Letter J|<circle> Latin Small Letter J
+24DA|006B  ; Circled Latin Small Letter K|<circle> Latin Small Letter K
+24DB|006C  ; Circled Latin Small Letter L|<circle> Latin Small Letter L
+24DC|006D  ; Circled Latin Small Letter M|<circle> Latin Small Letter M
+24DD|006E  ; Circled Latin Small Letter N|<circle> Latin Small Letter N
+24DE|006F  ; Circled Latin Small Letter O|<circle> Latin Small Letter O
+24DF|0070  ; Circled Latin Small Letter P|<circle> Latin Small Letter P
+24E0|0071  ; Circled Latin Small Letter Q|<circle> Latin Small Letter Q
+24E1|0072  ; Circled Latin Small Letter R|<circle> Latin Small Letter R
+24E2|0073  ; Circled Latin Small Letter S|<circle> Latin Small Letter S
+24E3|0074  ; Circled Latin Small Letter T|<circle> Latin Small Letter T
+24E4|0075  ; Circled Latin Small Letter U|<circle> Latin Small Letter U
+24E5|0076  ; Circled Latin Small Letter V|<circle> Latin Small Letter V
+24E6|0077  ; Circled Latin Small Letter W|<circle> Latin Small Letter W
+24E7|0078  ; Circled Latin Small Letter X|<circle> Latin Small Letter X
+24E8|0079  ; Circled Latin Small Letter Y|<circle> Latin Small Letter Y
+24E9|007A  ; Circled Latin Small Letter Z|<circle> Latin Small Letter Z
+24EA|0030  ; Circled Digit Zero|<circle> Digit Zero
+2ADC|2ADD  ; Forking|Nonforking
+2D6F|2D61  ; Tifinagh Modifier Letter Labialization Mark|<super> Tifinagh Letter Yaw
+3000|0020  ; Ideographic Space|<wide> Space
+3192|4E00  ; Ideographic Annotation One Mark|<super> <cjk Ideograph, First>
+3193|4E8C  ; Ideographic Annotation Two Mark|<super> 
+3194|4E09  ; Ideographic Annotation Three Mark|<super> 
+3195|56DB  ; Ideographic Annotation Four Mark|<super> 
+3196|4E0A  ; Ideographic Annotation Top Mark|<super> 
+3197|4E2D  ; Ideographic Annotation Middle Mark|<super> 
+3198|4E0B  ; Ideographic Annotation Bottom Mark|<super> 
+3199|7532  ; Ideographic Annotation First Mark|<super> 
+319A|4E59  ; Ideographic Annotation Second Mark|<super> 
+319B|4E19  ; Ideographic Annotation Third Mark|<super> 
+319C|4E01  ; Ideographic Annotation Fourth Mark|<super> 
+319D|5929  ; Ideographic Annotation Heaven Mark|<super> 
+319E|5730  ; Ideographic Annotation Earth Mark|<super> 
+319F|4EBA  ; Ideographic Annotation Man Mark|<super> 
+3250|0050 0054 0045  ; Partnership Sign|<square> Latin Capital Letter P, Latin Capital Letter T, Latin Capital Letter E
+3251|0032 0031  ; Circled Number Twenty One|<circle> Digit Two, Digit One
+3252|0032 0032  ; Circled Number Twenty Two|<circle> Digit Two, Digit Two
+3253|0032 0033  ; Circled Number Twenty Three|<circle> Digit Two, Digit Three
+3254|0032 0034  ; Circled Number Twenty Four|<circle> Digit Two, Digit Four
+3255|0032 0035  ; Circled Number Twenty Five|<circle> Digit Two, Digit Five
+3256|0032 0036  ; Circled Number Twenty Six|<circle> Digit Two, Digit Six
+3257|0032 0037  ; Circled Number Twenty Seven|<circle> Digit Two, Digit Seven
+3258|0032 0038  ; Circled Number Twenty Eight|<circle> Digit Two, Digit Eight
+3259|0032 0039  ; Circled Number Twenty Nine|<circle> Digit Two, Digit Nine
+325A|0033 0030  ; Circled Number Thirty|<circle> Digit Three, Digit Zero
+325B|0033 0031  ; Circled Number Thirty One|<circle> Digit Three, Digit One
+325C|0033 0032  ; Circled Number Thirty Two|<circle> Digit Three, Digit Two
+325D|0033 0033  ; Circled Number Thirty Three|<circle> Digit Three, Digit Three
+325E|0033 0034  ; Circled Number Thirty Four|<circle> Digit Three, Digit Four
+325F|0033 0035  ; Circled Number Thirty Five|<circle> Digit Three, Digit Five
+3260|1100  ; Circled Hangul Kiyeok|<circle> Hangul Choseong Kiyeok
+3261|1102  ; Circled Hangul Nieun|<circle> Hangul Choseong Nieun
+3262|1103  ; Circled Hangul Tikeut|<circle> Hangul Choseong Tikeut
+3263|1105  ; Circled Hangul Rieul|<circle> Hangul Choseong Rieul
+3264|1106  ; Circled Hangul Mieum|<circle> Hangul Choseong Mieum
+3265|1107  ; Circled Hangul Pieup|<circle> Hangul Choseong Pieup
+3266|1109  ; Circled Hangul Sios|<circle> Hangul Choseong Sios
+3267|110B  ; Circled Hangul Ieung|<circle> Hangul Choseong Ieung
+3268|110C  ; Circled Hangul Cieuc|<circle> Hangul Choseong Cieuc
+3269|110E  ; Circled Hangul Chieuch|<circle> Hangul Choseong Chieuch
+326A|110F  ; Circled Hangul Khieukh|<circle> Hangul Choseong Khieukh
+326B|1110  ; Circled Hangul Thieuth|<circle> Hangul Choseong Thieuth
+326C|1111  ; Circled Hangul Phieuph|<circle> Hangul Choseong Phieuph
+326D|1112  ; Circled Hangul Hieuh|<circle> Hangul Choseong Hieuh
+326E|1100 1161  ; Circled Hangul Kiyeok A|<circle> Hangul Choseong Kiyeok, Hangul Jungseong A
+326F|1102 1161  ; Circled Hangul Nieun A|<circle> Hangul Choseong Nieun, Hangul Jungseong A
+3270|1103 1161  ; Circled Hangul Tikeut A|<circle> Hangul Choseong Tikeut, Hangul Jungseong A
+3271|1105 1161  ; Circled Hangul Rieul A|<circle> Hangul Choseong Rieul, Hangul Jungseong A
+3272|1106 1161  ; Circled Hangul Mieum A|<circle> Hangul Choseong Mieum, Hangul Jungseong A
+3273|1107 1161  ; Circled Hangul Pieup A|<circle> Hangul Choseong Pieup, Hangul Jungseong A
+3274|1109 1161  ; Circled Hangul Sios A|<circle> Hangul Choseong Sios, Hangul Jungseong A
+3275|110B 1161  ; Circled Hangul Ieung A|<circle> Hangul Choseong Ieung, Hangul Jungseong A
+3276|110C 1161  ; Circled Hangul Cieuc A|<circle> Hangul Choseong Cieuc, Hangul Jungseong A
+3277|110E 1161  ; Circled Hangul Chieuch A|<circle> Hangul Choseong Chieuch, Hangul Jungseong A
+3278|110F 1161  ; Circled Hangul Khieukh A|<circle> Hangul Choseong Khieukh, Hangul Jungseong A
+3279|1110 1161  ; Circled Hangul Thieuth A|<circle> Hangul Choseong Thieuth, Hangul Jungseong A
+327A|1111 1161  ; Circled Hangul Phieuph A|<circle> Hangul Choseong Phieuph, Hangul Jungseong A
+327B|1112 1161  ; Circled Hangul Hieuh A|<circle> Hangul Choseong Hieuh, Hangul Jungseong A
+327C|110E 1161 11B7 1100 1169  ; Circled Korean Character Chamko|<circle> Hangul Choseong Chieuch, Hangul Jungseong A, Hangul Jongseong Mieum, Hangul Choseong Kiyeok, Hangul Jungseong O
+327D|110C 116E 110B 1174  ; Circled Korean Character Jueui|<circle> Hangul Choseong Cieuc, Hangul Jungseong U, Hangul Choseong Ieung, Hangul Jungseong Yi
+327E|110B 116E  ; Circled Hangul Ieung U|<circle> Hangul Choseong Ieung, Hangul Jungseong U
+3280|4E00  ; Circled Ideograph One|<circle> <cjk Ideograph, First>
+3281|4E8C  ; Circled Ideograph Two|<circle> 
+3282|4E09  ; Circled Ideograph Three|<circle> 
+3283|56DB  ; Circled Ideograph Four|<circle> 
+3284|4E94  ; Circled Ideograph Five|<circle> 
+3285|516D  ; Circled Ideograph Six|<circle> 
+3286|4E03  ; Circled Ideograph Seven|<circle> 
+3287|516B  ; Circled Ideograph Eight|<circle> 
+3288|4E5D  ; Circled Ideograph Nine|<circle> 
+3289|5341  ; Circled Ideograph Ten|<circle> 
+328A|6708  ; Circled Ideograph Moon|<circle> 
+328B|706B  ; Circled Ideograph Fire|<circle> 
+328C|6C34  ; Circled Ideograph Water|<circle> 
+328D|6728  ; Circled Ideograph Wood|<circle> 
+328E|91D1  ; Circled Ideograph Metal|<circle> 
+328F|571F  ; Circled Ideograph Earth|<circle> 
+3290|65E5  ; Circled Ideograph Sun|<circle> 
+3291|682A  ; Circled Ideograph Stock|<circle> 
+3292|6709  ; Circled Ideograph Have|<circle> 
+3293|793E  ; Circled Ideograph Society|<circle> 
+3294|540D  ; Circled Ideograph Name|<circle> 
+3295|7279  ; Circled Ideograph Special|<circle> 
+3296|8CA1  ; Circled Ideograph Financial|<circle> 
+3297|795D  ; Circled Ideograph Congratulation|<circle> 
+3298|52B4  ; Circled Ideograph Labor|<circle> 
+3299|79D8  ; Circled Ideograph Secret|<circle> 
+329A|7537  ; Circled Ideograph Male|<circle> 
+329B|5973  ; Circled Ideograph Female|<circle> 
+329C|9069  ; Circled Ideograph Suitable|<circle> 
+329D|512A  ; Circled Ideograph Excellent|<circle> 
+329E|5370  ; Circled Ideograph Print|<circle> 
+329F|6CE8  ; Circled Ideograph Attention|<circle> 
+32A0|9805  ; Circled Ideograph Item|<circle> 
+32A1|4F11  ; Circled Ideograph Rest|<circle> 
+32A2|5199  ; Circled Ideograph Copy|<circle> 
+32A3|6B63  ; Circled Ideograph Correct|<circle> 
+32A4|4E0A  ; Circled Ideograph High|<circle> 
+32A5|4E2D  ; Circled Ideograph Centre|<circle> 
+32A6|4E0B  ; Circled Ideograph Low|<circle> 
+32A7|5DE6  ; Circled Ideograph Left|<circle> 
+32A8|53F3  ; Circled Ideograph Right|<circle> 
+32A9|533B  ; Circled Ideograph Medicine|<circle> 
+32AA|5B97  ; Circled Ideograph Religion|<circle> 
+32AB|5B66  ; Circled Ideograph Study|<circle> 
+32AC|76E3  ; Circled Ideograph Supervise|<circle> 
+32AD|4F01  ; Circled Ideograph Enterprise|<circle> 
+32AE|8CC7  ; Circled Ideograph Resource|<circle> 
+32AF|5354  ; Circled Ideograph Alliance|<circle> 
+32B0|591C  ; Circled Ideograph Night|<circle> 
+32B1|0033 0036  ; Circled Number Thirty Six|<circle> Digit Three, Digit Six
+32B2|0033 0037  ; Circled Number Thirty Seven|<circle> Digit Three, Digit Seven
+32B3|0033 0038  ; Circled Number Thirty Eight|<circle> Digit Three, Digit Eight
+32B4|0033 0039  ; Circled Number Thirty Nine|<circle> Digit Three, Digit Nine
+32B5|0034 0030  ; Circled Number Forty|<circle> Digit Four, Digit Zero
+32B6|0034 0031  ; Circled Number Forty One|<circle> Digit Four, Digit One
+32B7|0034 0032  ; Circled Number Forty Two|<circle> Digit Four, Digit Two
+32B8|0034 0033  ; Circled Number Forty Three|<circle> Digit Four, Digit Three
+32B9|0034 0034  ; Circled Number Forty Four|<circle> Digit Four, Digit Four
+32BA|0034 0035  ; Circled Number Forty Five|<circle> Digit Four, Digit Five
+32BB|0034 0036  ; Circled Number Forty Six|<circle> Digit Four, Digit Six
+32BC|0034 0037  ; Circled Number Forty Seven|<circle> Digit Four, Digit Seven
+32BD|0034 0038  ; Circled Number Forty Eight|<circle> Digit Four, Digit Eight
+32BE|0034 0039  ; Circled Number Forty Nine|<circle> Digit Four, Digit Nine
+32BF|0035 0030  ; Circled Number Fifty|<circle> Digit Five, Digit Zero
+32CC|0048 0067  ; Square Hg|<square> Latin Capital Letter H, Latin Small Letter G
+32CD|0065 0072 0067  ; Square Erg|<square> Latin Small Letter E, Latin Small Letter R, Latin Small Letter G
+32CE|0065 0056  ; Square Ev|<square> Latin Small Letter E, Latin Capital Letter V
+32CF|004C 0054 0044  ; Limited Liability Sign|<square> Latin Capital Letter L, Latin Capital Letter T, Latin Capital Letter D
+32D0|30A2  ; Circled Katakana A|<circle> Katakana Letter A
+32D1|30A4  ; Circled Katakana I|<circle> Katakana Letter I
+32D2|30A6  ; Circled Katakana U|<circle> Katakana Letter U
+32D3|30A8  ; Circled Katakana E|<circle> Katakana Letter E
+32D4|30AA  ; Circled Katakana O|<circle> Katakana Letter O
+32D5|30AB  ; Circled Katakana Ka|<circle> Katakana Letter Ka
+32D6|30AD  ; Circled Katakana Ki|<circle> Katakana Letter Ki
+32D7|30AF  ; Circled Katakana Ku|<circle> Katakana Letter Ku
+32D8|30B1  ; Circled Katakana Ke|<circle> Katakana Letter Ke
+32D9|30B3  ; Circled Katakana Ko|<circle> Katakana Letter Ko
+32DA|30B5  ; Circled Katakana Sa|<circle> Katakana Letter Sa
+32DB|30B7  ; Circled Katakana Si|<circle> Katakana Letter Si
+32DC|30B9  ; Circled Katakana Su|<circle> Katakana Letter Su
+32DD|30BB  ; Circled Katakana Se|<circle> Katakana Letter Se
+32DE|30BD  ; Circled Katakana So|<circle> Katakana Letter So
+32DF|30BF  ; Circled Katakana Ta|<circle> Katakana Letter Ta
+32E0|30C1  ; Circled Katakana Ti|<circle> Katakana Letter Ti
+32E1|30C4  ; Circled Katakana Tu|<circle> Katakana Letter Tu
+32E2|30C6  ; Circled Katakana Te|<circle> Katakana Letter Te
+32E3|30C8  ; Circled Katakana To|<circle> Katakana Letter To
+32E4|30CA  ; Circled Katakana Na|<circle> Katakana Letter Na
+32E5|30CB  ; Circled Katakana Ni|<circle> Katakana Letter Ni
+32E6|30CC  ; Circled Katakana Nu|<circle> Katakana Letter Nu
+32E7|30CD  ; Circled Katakana Ne|<circle> Katakana Letter Ne
+32E8|30CE  ; Circled Katakana No|<circle> Katakana Letter No
+32E9|30CF  ; Circled Katakana Ha|<circle> Katakana Letter Ha
+32EA|30D2  ; Circled Katakana Hi|<circle> Katakana Letter Hi
+32EB|30D5  ; Circled Katakana Hu|<circle> Katakana Letter Hu
+32EC|30D8  ; Circled Katakana He|<circle> Katakana Letter He
+32ED|30DB  ; Circled Katakana Ho|<circle> Katakana Letter Ho
+32EE|30DE  ; Circled Katakana Ma|<circle> Katakana Letter Ma
+32EF|30DF  ; Circled Katakana Mi|<circle> Katakana Letter Mi
+32F0|30E0  ; Circled Katakana Mu|<circle> Katakana Letter Mu
+32F1|30E1  ; Circled Katakana Me|<circle> Katakana Letter Me
+32F2|30E2  ; Circled Katakana Mo|<circle> Katakana Letter Mo
+32F3|30E4  ; Circled Katakana Ya|<circle> Katakana Letter Ya
+32F4|30E6  ; Circled Katakana Yu|<circle> Katakana Letter Yu
+32F5|30E8  ; Circled Katakana Yo|<circle> Katakana Letter Yo
+32F6|30E9  ; Circled Katakana Ra|<circle> Katakana Letter Ra
+32F7|30EA  ; Circled Katakana Ri|<circle> Katakana Letter Ri
+32F8|30EB  ; Circled Katakana Ru|<circle> Katakana Letter Ru
+32F9|30EC  ; Circled Katakana Re|<circle> Katakana Letter Re
+32FA|30ED  ; Circled Katakana Ro|<circle> Katakana Letter Ro
+32FB|30EF  ; Circled Katakana Wa|<circle> Katakana Letter Wa
+32FC|30F0  ; Circled Katakana Wi|<circle> Katakana Letter Wi
+32FD|30F1  ; Circled Katakana We|<circle> Katakana Letter We
+32FE|30F2  ; Circled Katakana Wo|<circle> Katakana Letter Wo
+3300|30A2 30D1 30FC 30C8  ; Square Apaato|<square> Katakana Letter A, Katakana Letter Pa, Katakana-hiragana Prolonged Sound Mark, Katakana Letter To
+3301|30A2 30EB 30D5 30A1  ; Square Aruhua|<square> Katakana Letter A, Katakana Letter Ru, Katakana Letter Hu, Katakana Letter Small A
+3302|30A2 30F3 30DA 30A2  ; Square Anpea|<square> Katakana Letter A, Katakana Letter N, Katakana Letter Pe, Katakana Letter A
+3303|30A2 30FC 30EB  ; Square Aaru|<square> Katakana Letter A, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Ru
+3304|30A4 30CB 30F3 30B0  ; Square Iningu|<square> Katakana Letter I, Katakana Letter Ni, Katakana Letter N, Katakana Letter Gu
+3305|30A4 30F3 30C1  ; Square Inti|<square> Katakana Letter I, Katakana Letter N, Katakana Letter Ti
+3306|30A6 30A9 30F3  ; Square Uon|<square> Katakana Letter U, Katakana Letter Small O, Katakana Letter N
+3307|30A8 30B9 30AF 30FC 30C9  ; Square Esukuudo|<square> Katakana Letter E, Katakana Letter Su, Katakana Letter Ku, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Do
+3308|30A8 30FC 30AB 30FC  ; Square Eekaa|<square> Katakana Letter E, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Ka, Katakana-hiragana Prolonged Sound Mark
+3309|30AA 30F3 30B9  ; Square Onsu|<square> Katakana Letter O, Katakana Letter N, Katakana Letter Su
+330A|30AA 30FC 30E0  ; Square Oomu|<square> Katakana Letter O, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Mu
+330B|30AB 30A4 30EA  ; Square Kairi|<square> Katakana Letter Ka, Katakana Letter I, Katakana Letter Ri
+330C|30AB 30E9 30C3 30C8  ; Square Karatto|<square> Katakana Letter Ka, Katakana Letter Ra, Katakana Letter Small Tu, Katakana Letter To
+330D|30AB 30ED 30EA 30FC  ; Square Karorii|<square> Katakana Letter Ka, Katakana Letter Ro, Katakana Letter Ri, Katakana-hiragana Prolonged Sound Mark
+330E|30AC 30ED 30F3  ; Square Garon|<square> Katakana Letter Ga, Katakana Letter Ro, Katakana Letter N
+330F|30AC 30F3 30DE  ; Square Ganma|<square> Katakana Letter Ga, Katakana Letter N, Katakana Letter Ma
+3310|30AE 30AC  ; Square Giga|<square> Katakana Letter Gi, Katakana Letter Ga
+3311|30AE 30CB 30FC  ; Square Ginii|<square> Katakana Letter Gi, Katakana Letter Ni, Katakana-hiragana Prolonged Sound Mark
+3312|30AD 30E5 30EA 30FC  ; Square Kyurii|<square> Katakana Letter Ki, Katakana Letter Small Yu, Katakana Letter Ri, Katakana-hiragana Prolonged Sound Mark
+3313|30AE 30EB 30C0 30FC  ; Square Girudaa|<square> Katakana Letter Gi, Katakana Letter Ru, Katakana Letter Da, Katakana-hiragana Prolonged Sound Mark
+3314|30AD 30ED  ; Square Kiro|<square> Katakana Letter Ki, Katakana Letter Ro
+3315|30AD 30ED 30B0 30E9 30E0  ; Square Kiroguramu|<square> Katakana Letter Ki, Katakana Letter Ro, Katakana Letter Gu, Katakana Letter Ra, Katakana Letter Mu
+3316|30AD 30ED 30E1 30FC 30C8 30EB  ; Square Kiromeetoru|<square> Katakana Letter Ki, Katakana Letter Ro, Katakana Letter Me, Katakana-hiragana Prolonged Sound Mark, Katakana Letter To, Katakana Letter Ru
+3317|30AD 30ED 30EF 30C3 30C8  ; Square Kirowatto|<square> Katakana Letter Ki, Katakana Letter Ro, Katakana Letter Wa, Katakana Letter Small Tu, Katakana Letter To
+3318|30B0 30E9 30E0  ; Square Guramu|<square> Katakana Letter Gu, Katakana Letter Ra, Katakana Letter Mu
+3319|30B0 30E9 30E0 30C8 30F3  ; Square Guramuton|<square> Katakana Letter Gu, Katakana Letter Ra, Katakana Letter Mu, Katakana Letter To, Katakana Letter N
+331A|30AF 30EB 30BC 30A4 30ED  ; Square Kuruzeiro|<square> Katakana Letter Ku, Katakana Letter Ru, Katakana Letter Ze, Katakana Letter I, Katakana Letter Ro
+331B|30AF 30ED 30FC 30CD  ; Square Kuroone|<square> Katakana Letter Ku, Katakana Letter Ro, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Ne
+331C|30B1 30FC 30B9  ; Square Keesu|<square> Katakana Letter Ke, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Su
+331D|30B3 30EB 30CA  ; Square Koruna|<square> Katakana Letter Ko, Katakana Letter Ru, Katakana Letter Na
+331E|30B3 30FC 30DD  ; Square Koopo|<square> Katakana Letter Ko, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Po
+331F|30B5 30A4 30AF 30EB  ; Square Saikuru|<square> Katakana Letter Sa, Katakana Letter I, Katakana Letter Ku, Katakana Letter Ru
+3320|30B5 30F3 30C1 30FC 30E0  ; Square Santiimu|<square> Katakana Letter Sa, Katakana Letter N, Katakana Letter Ti, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Mu
+3321|30B7 30EA 30F3 30B0  ; Square Siringu|<square> Katakana Letter Si, Katakana Letter Ri, Katakana Letter N, Katakana Letter Gu
+3322|30BB 30F3 30C1  ; Square Senti|<square> Katakana Letter Se, Katakana Letter N, Katakana Letter Ti
+3323|30BB 30F3 30C8  ; Square Sento|<square> Katakana Letter Se, Katakana Letter N, Katakana Letter To
+3324|30C0 30FC 30B9  ; Square Daasu|<square> Katakana Letter Da, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Su
+3325|30C7 30B7  ; Square Desi|<square> Katakana Letter De, Katakana Letter Si
+3326|30C9 30EB  ; Square Doru|<square> Katakana Letter Do, Katakana Letter Ru
+3327|30C8 30F3  ; Square Ton|<square> Katakana Letter To, Katakana Letter N
+3328|30CA 30CE  ; Square Nano|<square> Katakana Letter Na, Katakana Letter No
+3329|30CE 30C3 30C8  ; Square Notto|<square> Katakana Letter No, Katakana Letter Small Tu, Katakana Letter To
+332A|30CF 30A4 30C4  ; Square Haitu|<square> Katakana Letter Ha, Katakana Letter I, Katakana Letter Tu
+332B|30D1 30FC 30BB 30F3 30C8  ; Square Paasento|<square> Katakana Letter Pa, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Se, Katakana Letter N, Katakana Letter To
+332C|30D1 30FC 30C4  ; Square Paatu|<square> Katakana Letter Pa, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Tu
+332D|30D0 30FC 30EC 30EB  ; Square Baareru|<square> Katakana Letter Ba, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Re, Katakana Letter Ru
+332E|30D4 30A2 30B9 30C8 30EB  ; Square Piasutoru|<square> Katakana Letter Pi, Katakana Letter A, Katakana Letter Su, Katakana Letter To, Katakana Letter Ru
+332F|30D4 30AF 30EB  ; Square Pikuru|<square> Katakana Letter Pi, Katakana Letter Ku, Katakana Letter Ru
+3330|30D4 30B3  ; Square Piko|<square> Katakana Letter Pi, Katakana Letter Ko
+3331|30D3 30EB  ; Square Biru|<square> Katakana Letter Bi, Katakana Letter Ru
+3332|30D5 30A1 30E9 30C3 30C9  ; Square Huaraddo|<square> Katakana Letter Hu, Katakana Letter Small A, Katakana Letter Ra, Katakana Letter Small Tu, Katakana Letter Do
+3333|30D5 30A3 30FC 30C8  ; Square Huiito|<square> Katakana Letter Hu, Katakana Letter Small I, Katakana-hiragana Prolonged Sound Mark, Katakana Letter To
+3334|30D6 30C3 30B7 30A7 30EB  ; Square Bussyeru|<square> Katakana Letter Bu, Katakana Letter Small Tu, Katakana Letter Si, Katakana Letter Small E, Katakana Letter Ru
+3335|30D5 30E9 30F3  ; Square Huran|<square> Katakana Letter Hu, Katakana Letter Ra, Katakana Letter N
+3336|30D8 30AF 30BF 30FC 30EB  ; Square Hekutaaru|<square> Katakana Letter He, Katakana Letter Ku, Katakana Letter Ta, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Ru
+3337|30DA 30BD  ; Square Peso|<square> Katakana Letter Pe, Katakana Letter So
+3338|30DA 30CB 30D2  ; Square Penihi|<square> Katakana Letter Pe, Katakana Letter Ni, Katakana Letter Hi
+3339|30D8 30EB 30C4  ; Square Herutu|<square> Katakana Letter He, Katakana Letter Ru, Katakana Letter Tu
+333A|30DA 30F3 30B9  ; Square Pensu|<square> Katakana Letter Pe, Katakana Letter N, Katakana Letter Su
+333B|30DA 30FC 30B8  ; Square Peezi|<square> Katakana Letter Pe, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Zi
+333C|30D9 30FC 30BF  ; Square Beeta|<square> Katakana Letter Be, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Ta
+333D|30DD 30A4 30F3 30C8  ; Square Pointo|<square> Katakana Letter Po, Katakana Letter I, Katakana Letter N, Katakana Letter To
+333E|30DC 30EB 30C8  ; Square Boruto|<square> Katakana Letter Bo, Katakana Letter Ru, Katakana Letter To
+333F|30DB 30F3  ; Square Hon|<square> Katakana Letter Ho, Katakana Letter N
+3340|30DD 30F3 30C9  ; Square Pondo|<square> Katakana Letter Po, Katakana Letter N, Katakana Letter Do
+3341|30DB 30FC 30EB  ; Square Hooru|<square> Katakana Letter Ho, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Ru
+3342|30DB 30FC 30F3  ; Square Hoon|<square> Katakana Letter Ho, Katakana-hiragana Prolonged Sound Mark, Katakana Letter N
+3343|30DE 30A4 30AF 30ED  ; Square Maikuro|<square> Katakana Letter Ma, Katakana Letter I, Katakana Letter Ku, Katakana Letter Ro
+3344|30DE 30A4 30EB  ; Square Mairu|<square> Katakana Letter Ma, Katakana Letter I, Katakana Letter Ru
+3345|30DE 30C3 30CF  ; Square Mahha|<square> Katakana Letter Ma, Katakana Letter Small Tu, Katakana Letter Ha
+3346|30DE 30EB 30AF  ; Square Maruku|<square> Katakana Letter Ma, Katakana Letter Ru, Katakana Letter Ku
+3347|30DE 30F3 30B7 30E7 30F3  ; Square Mansyon|<square> Katakana Letter Ma, Katakana Letter N, Katakana Letter Si, Katakana Letter Small Yo, Katakana Letter N
+3348|30DF 30AF 30ED 30F3  ; Square Mikuron|<square> Katakana Letter Mi, Katakana Letter Ku, Katakana Letter Ro, Katakana Letter N
+3349|30DF 30EA  ; Square Miri|<square> Katakana Letter Mi, Katakana Letter Ri
+334A|30DF 30EA 30D0 30FC 30EB  ; Square Miribaaru|<square> Katakana Letter Mi, Katakana Letter Ri, Katakana Letter Ba, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Ru
+334B|30E1 30AC  ; Square Mega|<square> Katakana Letter Me, Katakana Letter Ga
+334C|30E1 30AC 30C8 30F3  ; Square Megaton|<square> Katakana Letter Me, Katakana Letter Ga, Katakana Letter To, Katakana Letter N
+334D|30E1 30FC 30C8 30EB  ; Square Meetoru|<square> Katakana Letter Me, Katakana-hiragana Prolonged Sound Mark, Katakana Letter To, Katakana Letter Ru
+334E|30E4 30FC 30C9  ; Square Yaado|<square> Katakana Letter Ya, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Do
+334F|30E4 30FC 30EB  ; Square Yaaru|<square> Katakana Letter Ya, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Ru
+3350|30E6 30A2 30F3  ; Square Yuan|<square> Katakana Letter Yu, Katakana Letter A, Katakana Letter N
+3351|30EA 30C3 30C8 30EB  ; Square Rittoru|<square> Katakana Letter Ri, Katakana Letter Small Tu, Katakana Letter To, Katakana Letter Ru
+3352|30EA 30E9  ; Square Rira|<square> Katakana Letter Ri, Katakana Letter Ra
+3353|30EB 30D4 30FC  ; Square Rupii|<square> Katakana Letter Ru, Katakana Letter Pi, Katakana-hiragana Prolonged Sound Mark
+3354|30EB 30FC 30D6 30EB  ; Square Ruuburu|<square> Katakana Letter Ru, Katakana-hiragana Prolonged Sound Mark, Katakana Letter Bu, Katakana Letter Ru
+3355|30EC 30E0  ; Square Remu|<square> Katakana Letter Re, Katakana Letter Mu
+3356|30EC 30F3 30C8 30B2 30F3  ; Square Rentogen|<square> Katakana Letter Re, Katakana Letter N, Katakana Letter To, Katakana Letter Ge, Katakana Letter N
+3357|30EF 30C3 30C8  ; Square Watto|<square> Katakana Letter Wa, Katakana Letter Small Tu, Katakana Letter To
+3371|0068 0050 0061  ; Square Hpa|<square> Latin Small Letter H, Latin Capital Letter P, Latin Small Letter A
+3372|0064 0061  ; Square Da|<square> Latin Small Letter D, Latin Small Letter A
+3373|0041 0055  ; Square Au|<square> Latin Capital Letter A, Latin Capital Letter U
+3374|0062 0061 0072  ; Square Bar|<square> Latin Small Letter B, Latin Small Letter A, Latin Small Letter R
+3375|006F 0056  ; Square Ov|<square> Latin Small Letter O, Latin Capital Letter V
+3376|0070 0063  ; Square Pc|<square> Latin Small Letter P, Latin Small Letter C
+3377|0064 006D  ; Square Dm|<square> Latin Small Letter D, Latin Small Letter M
+3378|0064 006D 00B2  ; Square Dm Squared|<square> Latin Small Letter D, Latin Small Letter M, Superscript Two
+3379|0064 006D 00B3  ; Square Dm Cubed|<square> Latin Small Letter D, Latin Small Letter M, Superscript Three
+337A|0049 0055  ; Square Iu|<square> Latin Capital Letter I, Latin Capital Letter U
+337B|5E73 6210  ; Square Era Name Heisei|<square> 
+337C|662D 548C  ; Square Era Name Syouwa|<square> 
+337D|5927 6B63  ; Square Era Name Taisyou|<square> 
+337E|660E 6CBB  ; Square Era Name Meizi|<square> 
+337F|682A 5F0F 4F1A 793E  ; Square Corporation|<square> 
+3380|0070 0041  ; Square Pa Amps|<square> Latin Small Letter P, Latin Capital Letter A
+3381|006E 0041  ; Square Na|<square> Latin Small Letter N, Latin Capital Letter A
+3382|03BC 0041  ; Square Mu A|<square> Greek Small Letter Mu, Latin Capital Letter A
+3383|006D 0041  ; Square Ma|<square> Latin Small Letter M, Latin Capital Letter A
+3384|006B 0041  ; Square Ka|<square> Latin Small Letter K, Latin Capital Letter A
+3385|004B 0042  ; Square Kb|<square> Latin Capital Letter K, Latin Capital Letter B
+3386|004D 0042  ; Square Mb|<square> Latin Capital Letter M, Latin Capital Letter B
+3387|0047 0042  ; Square Gb|<square> Latin Capital Letter G, Latin Capital Letter B
+3388|0063 0061 006C  ; Square Cal|<square> Latin Small Letter C, Latin Small Letter A, Latin Small Letter L
+3389|006B 0063 0061 006C  ; Square Kcal|<square> Latin Small Letter K, Latin Small Letter C, Latin Small Letter A, Latin Small Letter L
+338A|0070 0046  ; Square Pf|<square> Latin Small Letter P, Latin Capital Letter F
+338B|006E 0046  ; Square Nf|<square> Latin Small Letter N, Latin Capital Letter F
+338C|03BC 0046  ; Square Mu F|<square> Greek Small Letter Mu, Latin Capital Letter F
+338D|03BC 0067  ; Square Mu G|<square> Greek Small Letter Mu, Latin Small Letter G
+338E|006D 0067  ; Square Mg|<square> Latin Small Letter M, Latin Small Letter G
+338F|006B 0067  ; Square Kg|<square> Latin Small Letter K, Latin Small Letter G
+3390|0048 007A  ; Square Hz|<square> Latin Capital Letter H, Latin Small Letter Z
+3391|006B 0048 007A  ; Square Khz|<square> Latin Small Letter K, Latin Capital Letter H, Latin Small Letter Z
+3392|004D 0048 007A  ; Square Mhz|<square> Latin Capital Letter M, Latin Capital Letter H, Latin Small Letter Z
+3393|0047 0048 007A  ; Square Ghz|<square> Latin Capital Letter G, Latin Capital Letter H, Latin Small Letter Z
+3394|0054 0048 007A  ; Square Thz|<square> Latin Capital Letter T, Latin Capital Letter H, Latin Small Letter Z
+3395|03BC 2113  ; Square Mu L|<square> Greek Small Letter Mu, Script Small L
+3396|006D 2113  ; Square Ml|<square> Latin Small Letter M, Script Small L
+3397|0064 2113  ; Square Dl|<square> Latin Small Letter D, Script Small L
+3398|006B 2113  ; Square Kl|<square> Latin Small Letter K, Script Small L
+3399|0066 006D  ; Square Fm|<square> Latin Small Letter F, Latin Small Letter M
+339A|006E 006D  ; Square Nm|<square> Latin Small Letter N, Latin Small Letter M
+339B|03BC 006D  ; Square Mu M|<square> Greek Small Letter Mu, Latin Small Letter M
+339C|006D 006D  ; Square Mm|<square> Latin Small Letter M, Latin Small Letter M
+339D|0063 006D  ; Square Cm|<square> Latin Small Letter C, Latin Small Letter M
+339E|006B 006D  ; Square Km|<square> Latin Small Letter K, Latin Small Letter M
+339F|006D 006D 00B2  ; Square Mm Squared|<square> Latin Small Letter M, Latin Small Letter M, Superscript Two
+33A0|0063 006D 00B2  ; Square Cm Squared|<square> Latin Small Letter C, Latin Small Letter M, Superscript Two
+33A1|006D 00B2  ; Square M Squared|<square> Latin Small Letter M, Superscript Two
+33A2|006B 006D 00B2  ; Square Km Squared|<square> Latin Small Letter K, Latin Small Letter M, Superscript Two
+33A3|006D 006D 00B3  ; Square Mm Cubed|<square> Latin Small Letter M, Latin Small Letter M, Superscript Three
+33A4|0063 006D 00B3  ; Square Cm Cubed|<square> Latin Small Letter C, Latin Small Letter M, Superscript Three
+33A5|006D 00B3  ; Square M Cubed|<square> Latin Small Letter M, Superscript Three
+33A6|006B 006D 00B3  ; Square Km Cubed|<square> Latin Small Letter K, Latin Small Letter M, Superscript Three
+33A7|006D 2215 0073  ; Square M Over S|<square> Latin Small Letter M, Division Slash, Latin Small Letter S
+33A8|006D 2215 0073 00B2  ; Square M Over S Squared|<square> Latin Small Letter M, Division Slash, Latin Small Letter S, Superscript Two
+33A9|0050 0061  ; Square Pa|<square> Latin Capital Letter P, Latin Small Letter A
+33AA|006B 0050 0061  ; Square Kpa|<square> Latin Small Letter K, Latin Capital Letter P, Latin Small Letter A
+33AB|004D 0050 0061  ; Square Mpa|<square> Latin Capital Letter M, Latin Capital Letter P, Latin Small Letter A
+33AC|0047 0050 0061  ; Square Gpa|<square> Latin Capital Letter G, Latin Capital Letter P, Latin Small Letter A
+33AD|0072 0061 0064  ; Square Rad|<square> Latin Small Letter R, Latin Small Letter A, Latin Small Letter D
+33AE|0072 0061 0064 2215 0073  ; Square Rad Over S|<square> Latin Small Letter R, Latin Small Letter A, Latin Small Letter D, Division Slash, Latin Small Letter S
+33AF|0072 0061 0064 2215 0073 00B2  ; Square Rad Over S Squared|<square> Latin Small Letter R, Latin Small Letter A, Latin Small Letter D, Division Slash, Latin Small Letter S, Superscript Two
+33B0|0070 0073  ; Square Ps|<square> Latin Small Letter P, Latin Small Letter S
+33B1|006E 0073  ; Square Ns|<square> Latin Small Letter N, Latin Small Letter S
+33B2|03BC 0073  ; Square Mu S|<square> Greek Small Letter Mu, Latin Small Letter S
+33B3|006D 0073  ; Square Ms|<square> Latin Small Letter M, Latin Small Letter S
+33B4|0070 0056  ; Square Pv|<square> Latin Small Letter P, Latin Capital Letter V
+33B5|006E 0056  ; Square Nv|<square> Latin Small Letter N, Latin Capital Letter V
+33B6|03BC 0056  ; Square Mu V|<square> Greek Small Letter Mu, Latin Capital Letter V
+33B7|006D 0056  ; Square Mv|<square> Latin Small Letter M, Latin Capital Letter V
+33B8|006B 0056  ; Square Kv|<square> Latin Small Letter K, Latin Capital Letter V
+33B9|004D 0056  ; Square Mv Mega|<square> Latin Capital Letter M, Latin Capital Letter V
+33BA|0070 0057  ; Square Pw|<square> Latin Small Letter P, Latin Capital Letter W
+33BB|006E 0057  ; Square Nw|<square> Latin Small Letter N, Latin Capital Letter W
+33BC|03BC 0057  ; Square Mu W|<square> Greek Small Letter Mu, Latin Capital Letter W
+33BD|006D 0057  ; Square Mw|<square> Latin Small Letter M, Latin Capital Letter W
+33BE|006B 0057  ; Square Kw|<square> Latin Small Letter K, Latin Capital Letter W
+33BF|004D 0057  ; Square Mw Mega|<square> Latin Capital Letter M, Latin Capital Letter W
+33C0|006B 03A9  ; Square K Ohm|<square> Latin Small Letter K, Greek Capital Letter Omega
+33C1|004D 03A9  ; Square M Ohm|<square> Latin Capital Letter M, Greek Capital Letter Omega
+33C2|0061 002E 006D 002E  ; Square Am|<square> Latin Small Letter A, Full Stop, Latin Small Letter M, Full Stop
+33C3|0042 0071  ; Square Bq|<square> Latin Capital Letter B, Latin Small Letter Q
+33C4|0063 0063  ; Square Cc|<square> Latin Small Letter C, Latin Small Letter C
+33C5|0063 0064  ; Square Cd|<square> Latin Small Letter C, Latin Small Letter D
+33C6|0043 2215 006B 0067  ; Square C Over Kg|<square> Latin Capital Letter C, Division Slash, Latin Small Letter K, Latin Small Letter G
+33C7|0043 006F 002E  ; Square Co|<square> Latin Capital Letter C, Latin Small Letter O, Full Stop
+33C8|0064 0042  ; Square Db|<square> Latin Small Letter D, Latin Capital Letter B
+33C9|0047 0079  ; Square Gy|<square> Latin Capital Letter G, Latin Small Letter Y
+33CA|0068 0061  ; Square Ha|<square> Latin Small Letter H, Latin Small Letter A
+33CB|0048 0050  ; Square Hp|<square> Latin Capital Letter H, Latin Capital Letter P
+33CC|0069 006E  ; Square In|<square> Latin Small Letter I, Latin Small Letter N
+33CD|004B 004B  ; Square Kk|<square> Latin Capital Letter K, Latin Capital Letter K
+33CE|004B 004D  ; Square Km Capital|<square> Latin Capital Letter K, Latin Capital Letter M
+33CF|006B 0074  ; Square Kt|<square> Latin Small Letter K, Latin Small Letter T
+33D0|006C 006D  ; Square Lm|<square> Latin Small Letter L, Latin Small Letter M
+33D1|006C 006E  ; Square Ln|<square> Latin Small Letter L, Latin Small Letter N
+33D2|006C 006F 0067  ; Square Log|<square> Latin Small Letter L, Latin Small Letter O, Latin Small Letter G
+33D3|006C 0078  ; Square Lx|<square> Latin Small Letter L, Latin Small Letter X
+33D4|006D 0062  ; Square Mb Small|<square> Latin Small Letter M, Latin Small Letter B
+33D5|006D 0069 006C  ; Square Mil|<square> Latin Small Letter M, Latin Small Letter I, Latin Small Letter L
+33D6|006D 006F 006C  ; Square Mol|<square> Latin Small Letter M, Latin Small Letter O, Latin Small Letter L
+33D7|0050 0048  ; Square Ph|<square> Latin Capital Letter P, Latin Capital Letter H
+33D8|0070 002E 006D 002E  ; Square Pm|<square> Latin Small Letter P, Full Stop, Latin Small Letter M, Full Stop
+33D9|0050 0050 004D  ; Square Ppm|<square> Latin Capital Letter P, Latin Capital Letter P, Latin Capital Letter M
+33DA|0050 0052  ; Square Pr|<square> Latin Capital Letter P, Latin Capital Letter R
+33DB|0073 0072  ; Square Sr|<square> Latin Small Letter S, Latin Small Letter R
+33DC|0053 0076  ; Square Sv|<square> Latin Capital Letter S, Latin Small Letter V
+33DD|0057 0062  ; Square Wb|<square> Latin Capital Letter W, Latin Small Letter B
+33DE|0056 2215 006D  ; Square V Over M|<square> Latin Capital Letter V, Division Slash, Latin Small Letter M
+33DF|0041 2215 006D  ; Square A Over M|<square> Latin Capital Letter A, Division Slash, Latin Small Letter M
+33FF|0067 0061 006C  ; Square Gal|<square> Latin Small Letter G, Latin Small Letter A, Latin Small Letter L
+FB20|05E2  ; Hebrew Letter Alternative Ayin|<font> Hebrew Letter Ayin
+FB21|05D0  ; Hebrew Letter Wide Alef|<font> Hebrew Letter Alef
+FB22|05D3  ; Hebrew Letter Wide Dalet|<font> Hebrew Letter Dalet
+FB23|05D4  ; Hebrew Letter Wide He|<font> Hebrew Letter He
+FB24|05DB  ; Hebrew Letter Wide Kaf|<font> Hebrew Letter Kaf
+FB25|05DC  ; Hebrew Letter Wide Lamed|<font> Hebrew Letter Lamed
+FB26|05DD  ; Hebrew Letter Wide Final Mem|<font> Hebrew Letter Final Mem
+FB27|05E8  ; Hebrew Letter Wide Resh|<font> Hebrew Letter Resh
+FB28|05EA  ; Hebrew Letter Wide Tav|<font> Hebrew Letter Tav
+FB29|002B  ; Hebrew Letter Alternative Plus Sign|<font> Plus Sign
+FE50|002C  ; Small Comma|<small> Comma
+FE51|3001  ; Small Ideographic Comma|<small> Ideographic Comma
+FE52|002E  ; Small Full Stop|<small> Full Stop
+FE54|003B  ; Small Semicolon|<small> Semicolon
+FE55|003A  ; Small Colon|<small> Colon
+FE56|003F  ; Small Question Mark|<small> Question Mark
+FE57|0021  ; Small Exclamation Mark|<small> Exclamation Mark
+FE58|2014  ; Small Em Dash|<small> Em Dash
+FE59|0028  ; Small Left Parenthesis|<small> Left Parenthesis
+FE5A|0029  ; Small Right Parenthesis|<small> Right Parenthesis
+FE5B|007B  ; Small Left Curly Bracket|<small> Left Curly Bracket
+FE5C|007D  ; Small Right Curly Bracket|<small> Right Curly Bracket
+FE5D|3014  ; Small Left Tortoise Shell Bracket|<small> Left Tortoise Shell Bracket
+FE5E|3015  ; Small Right Tortoise Shell Bracket|<small> Right Tortoise Shell Bracket
+FE5F|0023  ; Small Number Sign|<small> Number Sign
+FE60|0026  ; Small Ampersand|<small> Ampersand
+FE61|002A  ; Small Asterisk|<small> Asterisk
+FE62|002B  ; Small Plus Sign|<small> Plus Sign
+FE63|002D  ; Small Hyphen-minus|<small> Hyphen-minus
+FE64|003C  ; Small Less-than Sign|<small> Less-than Sign
+FE65|003E  ; Small Greater-than Sign|<small> Greater-than Sign
+FE66|003D  ; Small Equals Sign|<small> Equals Sign
+FE68|005C  ; Small Reverse Solidus|<small> Reverse Solidus
+FE69|0024  ; Small Dollar Sign|<small> Dollar Sign
+FE6A|0025  ; Small Percent Sign|<small> Percent Sign
+FE6B|0040  ; Small Commercial At|<small> Commercial At
+FF01|0021  ; Fullwidth Exclamation Mark|<wide> Exclamation Mark
+FF02|0022  ; Fullwidth Quotation Mark|<wide> Quotation Mark
+FF03|0023  ; Fullwidth Number Sign|<wide> Number Sign
+FF04|0024  ; Fullwidth Dollar Sign|<wide> Dollar Sign
+FF05|0025  ; Fullwidth Percent Sign|<wide> Percent Sign
+FF06|0026  ; Fullwidth Ampersand|<wide> Ampersand
+FF07|0027  ; Fullwidth Apostrophe|<wide> Apostrophe
+FF08|0028  ; Fullwidth Left Parenthesis|<wide> Left Parenthesis
+FF09|0029  ; Fullwidth Right Parenthesis|<wide> Right Parenthesis
+FF0A|002A  ; Fullwidth Asterisk|<wide> Asterisk
+FF0B|002B  ; Fullwidth Plus Sign|<wide> Plus Sign
+FF0C|002C  ; Fullwidth Comma|<wide> Comma
+FF0D|002D  ; Fullwidth Hyphen-minus|<wide> Hyphen-minus
+FF0E|002E  ; Fullwidth Full Stop|<wide> Full Stop
+FF0F|002F  ; Fullwidth Solidus|<wide> Solidus
+FF10|0030  ; Fullwidth Digit Zero|<wide> Digit Zero
+FF11|0031  ; Fullwidth Digit One|<wide> Digit One
+FF12|0032  ; Fullwidth Digit Two|<wide> Digit Two
+FF13|0033  ; Fullwidth Digit Three|<wide> Digit Three
+FF14|0034  ; Fullwidth Digit Four|<wide> Digit Four
+FF15|0035  ; Fullwidth Digit Five|<wide> Digit Five
+FF16|0036  ; Fullwidth Digit Six|<wide> Digit Six
+FF17|0037  ; Fullwidth Digit Seven|<wide> Digit Seven
+FF18|0038  ; Fullwidth Digit Eight|<wide> Digit Eight
+FF19|0039  ; Fullwidth Digit Nine|<wide> Digit Nine
+FF1A|003A  ; Fullwidth Colon|<wide> Colon
+FF1B|003B  ; Fullwidth Semicolon|<wide> Semicolon
+FF1C|003C  ; Fullwidth Less-than Sign|<wide> Less-than Sign
+FF1D|003D  ; Fullwidth Equals Sign|<wide> Equals Sign
+FF1E|003E  ; Fullwidth Greater-than Sign|<wide> Greater-than Sign
+FF1F|003F  ; Fullwidth Question Mark|<wide> Question Mark
+FF20|0040  ; Fullwidth Commercial At|<wide> Commercial At
+FF21|0041  ; Fullwidth Latin Capital Letter A|<wide> Latin Capital Letter A
+FF22|0042  ; Fullwidth Latin Capital Letter B|<wide> Latin Capital Letter B
+FF23|0043  ; Fullwidth Latin Capital Letter C|<wide> Latin Capital Letter C
+FF24|0044  ; Fullwidth Latin Capital Letter D|<wide> Latin Capital Letter D
+FF25|0045  ; Fullwidth Latin Capital Letter E|<wide> Latin Capital Letter E
+FF26|0046  ; Fullwidth Latin Capital Letter F|<wide> Latin Capital Letter F
+FF27|0047  ; Fullwidth Latin Capital Letter G|<wide> Latin Capital Letter G
+FF28|0048  ; Fullwidth Latin Capital Letter H|<wide> Latin Capital Letter H
+FF29|0049  ; Fullwidth Latin Capital Letter I|<wide> Latin Capital Letter I
+FF2A|004A  ; Fullwidth Latin Capital Letter J|<wide> Latin Capital Letter J
+FF2B|004B  ; Fullwidth Latin Capital Letter K|<wide> Latin Capital Letter K
+FF2C|004C  ; Fullwidth Latin Capital Letter L|<wide> Latin Capital Letter L
+FF2D|004D  ; Fullwidth Latin Capital Letter M|<wide> Latin Capital Letter M
+FF2E|004E  ; Fullwidth Latin Capital Letter N|<wide> Latin Capital Letter N
+FF2F|004F  ; Fullwidth Latin Capital Letter O|<wide> Latin Capital Letter O
+FF30|0050  ; Fullwidth Latin Capital Letter P|<wide> Latin Capital Letter P
+FF31|0051  ; Fullwidth Latin Capital Letter Q|<wide> Latin Capital Letter Q
+FF32|0052  ; Fullwidth Latin Capital Letter R|<wide> Latin Capital Letter R
+FF33|0053  ; Fullwidth Latin Capital Letter S|<wide> Latin Capital Letter S
+FF34|0054  ; Fullwidth Latin Capital Letter T|<wide> Latin Capital Letter T
+FF35|0055  ; Fullwidth Latin Capital Letter U|<wide> Latin Capital Letter U
+FF36|0056  ; Fullwidth Latin Capital Letter V|<wide> Latin Capital Letter V
+FF37|0057  ; Fullwidth Latin Capital Letter W|<wide> Latin Capital Letter W
+FF38|0058  ; Fullwidth Latin Capital Letter X|<wide> Latin Capital Letter X
+FF39|0059  ; Fullwidth Latin Capital Letter Y|<wide> Latin Capital Letter Y
+FF3A|005A  ; Fullwidth Latin Capital Letter Z|<wide> Latin Capital Letter Z
+FF3B|005B  ; Fullwidth Left Square Bracket|<wide> Left Square Bracket
+FF3C|005C  ; Fullwidth Reverse Solidus|<wide> Reverse Solidus
+FF3D|005D  ; Fullwidth Right Square Bracket|<wide> Right Square Bracket
+FF3E|005E  ; Fullwidth Circumflex Accent|<wide> Circumflex Accent
+FF3F|005F  ; Fullwidth Low Line|<wide> Low Line
+FF40|0060  ; Fullwidth Grave Accent|<wide> Grave Accent
+FF41|0061  ; Fullwidth Latin Small Letter A|<wide> Latin Small Letter A
+FF42|0062  ; Fullwidth Latin Small Letter B|<wide> Latin Small Letter B
+FF43|0063  ; Fullwidth Latin Small Letter C|<wide> Latin Small Letter C
+FF44|0064  ; Fullwidth Latin Small Letter D|<wide> Latin Small Letter D
+FF45|0065  ; Fullwidth Latin Small Letter E|<wide> Latin Small Letter E
+FF46|0066  ; Fullwidth Latin Small Letter F|<wide> Latin Small Letter F
+FF47|0067  ; Fullwidth Latin Small Letter G|<wide> Latin Small Letter G
+FF48|0068  ; Fullwidth Latin Small Letter H|<wide> Latin Small Letter H
+FF49|0069  ; Fullwidth Latin Small Letter I|<wide> Latin Small Letter I
+FF4A|006A  ; Fullwidth Latin Small Letter J|<wide> Latin Small Letter J
+FF4B|006B  ; Fullwidth Latin Small Letter K|<wide> Latin Small Letter K
+FF4C|006C  ; Fullwidth Latin Small Letter L|<wide> Latin Small Letter L
+FF4D|006D  ; Fullwidth Latin Small Letter M|<wide> Latin Small Letter M
+FF4E|006E  ; Fullwidth Latin Small Letter N|<wide> Latin Small Letter N
+FF4F|006F  ; Fullwidth Latin Small Letter O|<wide> Latin Small Letter O
+FF50|0070  ; Fullwidth Latin Small Letter P|<wide> Latin Small Letter P
+FF51|0071  ; Fullwidth Latin Small Letter Q|<wide> Latin Small Letter Q
+FF52|0072  ; Fullwidth Latin Small Letter R|<wide> Latin Small Letter R
+FF53|0073  ; Fullwidth Latin Small Letter S|<wide> Latin Small Letter S
+FF54|0074  ; Fullwidth Latin Small Letter T|<wide> Latin Small Letter T
+FF55|0075  ; Fullwidth Latin Small Letter U|<wide> Latin Small Letter U
+FF56|0076  ; Fullwidth Latin Small Letter V|<wide> Latin Small Letter V
+FF57|0077  ; Fullwidth Latin Small Letter W|<wide> Latin Small Letter W
+FF58|0078  ; Fullwidth Latin Small Letter X|<wide> Latin Small Letter X
+FF59|0079  ; Fullwidth Latin Small Letter Y|<wide> Latin Small Letter Y
+FF5A|007A  ; Fullwidth Latin Small Letter Z|<wide> Latin Small Letter Z
+FF5B|007B  ; Fullwidth Left Curly Bracket|<wide> Left Curly Bracket
+FF5C|007C  ; Fullwidth Vertical Line|<wide> Vertical Line
+FF5D|007D  ; Fullwidth Right Curly Bracket|<wide> Right Curly Bracket
+FF5E|007E  ; Fullwidth Tilde|<wide> Tilde
+FF5F|2985  ; Fullwidth Left White Parenthesis|<wide> Left White Parenthesis
+FF60|2986  ; Fullwidth Right White Parenthesis|<wide> Right White Parenthesis
+FF61|3002  ; Halfwidth Ideographic Full Stop|<narrow> Ideographic Full Stop
+FF62|300C  ; Halfwidth Left Corner Bracket|<narrow> Left Corner Bracket
+FF63|300D  ; Halfwidth Right Corner Bracket|<narrow> Right Corner Bracket
+FF64|3001  ; Halfwidth Ideographic Comma|<narrow> Ideographic Comma
+FF65|30FB  ; Halfwidth Katakana Middle Dot|<narrow> Katakana Middle Dot
+FF66|30F2  ; Halfwidth Katakana Letter Wo|<narrow> Katakana Letter Wo
+FF67|30A1  ; Halfwidth Katakana Letter Small A|<narrow> Katakana Letter Small A
+FF68|30A3  ; Halfwidth Katakana Letter Small I|<narrow> Katakana Letter Small I
+FF69|30A5  ; Halfwidth Katakana Letter Small U|<narrow> Katakana Letter Small U
+FF6A|30A7  ; Halfwidth Katakana Letter Small E|<narrow> Katakana Letter Small E
+FF6B|30A9  ; Halfwidth Katakana Letter Small O|<narrow> Katakana Letter Small O
+FF6C|30E3  ; Halfwidth Katakana Letter Small Ya|<narrow> Katakana Letter Small Ya
+FF6D|30E5  ; Halfwidth Katakana Letter Small Yu|<narrow> Katakana Letter Small Yu
+FF6E|30E7  ; Halfwidth Katakana Letter Small Yo|<narrow> Katakana Letter Small Yo
+FF6F|30C3  ; Halfwidth Katakana Letter Small Tu|<narrow> Katakana Letter Small Tu
+FF70|30FC  ; Halfwidth Katakana-hiragana Prolonged Sound Mark|<narrow> Katakana-hiragana Prolonged Sound Mark
+FF71|30A2  ; Halfwidth Katakana Letter A|<narrow> Katakana Letter A
+FF72|30A4  ; Halfwidth Katakana Letter I|<narrow> Katakana Letter I
+FF73|30A6  ; Halfwidth Katakana Letter U|<narrow> Katakana Letter U
+FF74|30A8  ; Halfwidth Katakana Letter E|<narrow> Katakana Letter E
+FF75|30AA  ; Halfwidth Katakana Letter O|<narrow> Katakana Letter O
+FF76|30AB  ; Halfwidth Katakana Letter Ka|<narrow> Katakana Letter Ka
+FF77|30AD  ; Halfwidth Katakana Letter Ki|<narrow> Katakana Letter Ki
+FF78|30AF  ; Halfwidth Katakana Letter Ku|<narrow> Katakana Letter Ku
+FF79|30B1  ; Halfwidth Katakana Letter Ke|<narrow> Katakana Letter Ke
+FF7A|30B3  ; Halfwidth Katakana Letter Ko|<narrow> Katakana Letter Ko
+FF7B|30B5  ; Halfwidth Katakana Letter Sa|<narrow> Katakana Letter Sa
+FF7C|30B7  ; Halfwidth Katakana Letter Si|<narrow> Katakana Letter Si
+FF7D|30B9  ; Halfwidth Katakana Letter Su|<narrow> Katakana Letter Su
+FF7E|30BB  ; Halfwidth Katakana Letter Se|<narrow> Katakana Letter Se
+FF7F|30BD  ; Halfwidth Katakana Letter So|<narrow> Katakana Letter So
+FF80|30BF  ; Halfwidth Katakana Letter Ta|<narrow> Katakana Letter Ta
+FF81|30C1  ; Halfwidth Katakana Letter Ti|<narrow> Katakana Letter Ti
+FF82|30C4  ; Halfwidth Katakana Letter Tu|<narrow> Katakana Letter Tu
+FF83|30C6  ; Halfwidth Katakana Letter Te|<narrow> Katakana Letter Te
+FF84|30C8  ; Halfwidth Katakana Letter To|<narrow> Katakana Letter To
+FF85|30CA  ; Halfwidth Katakana Letter Na|<narrow> Katakana Letter Na
+FF86|30CB  ; Halfwidth Katakana Letter Ni|<narrow> Katakana Letter Ni
+FF87|30CC  ; Halfwidth Katakana Letter Nu|<narrow> Katakana Letter Nu
+FF88|30CD  ; Halfwidth Katakana Letter Ne|<narrow> Katakana Letter Ne
+FF89|30CE  ; Halfwidth Katakana Letter No|<narrow> Katakana Letter No
+FF8A|30CF  ; Halfwidth Katakana Letter Ha|<narrow> Katakana Letter Ha
+FF8B|30D2  ; Halfwidth Katakana Letter Hi|<narrow> Katakana Letter Hi
+FF8C|30D5  ; Halfwidth Katakana Letter Hu|<narrow> Katakana Letter Hu
+FF8D|30D8  ; Halfwidth Katakana Letter He|<narrow> Katakana Letter He
+FF8E|30DB  ; Halfwidth Katakana Letter Ho|<narrow> Katakana Letter Ho
+FF8F|30DE  ; Halfwidth Katakana Letter Ma|<narrow> Katakana Letter Ma
+FF90|30DF  ; Halfwidth Katakana Letter Mi|<narrow> Katakana Letter Mi
+FF91|30E0  ; Halfwidth Katakana Letter Mu|<narrow> Katakana Letter Mu
+FF92|30E1  ; Halfwidth Katakana Letter Me|<narrow> Katakana Letter Me
+FF93|30E2  ; Halfwidth Katakana Letter Mo|<narrow> Katakana Letter Mo
+FF94|30E4  ; Halfwidth Katakana Letter Ya|<narrow> Katakana Letter Ya
+FF95|30E6  ; Halfwidth Katakana Letter Yu|<narrow> Katakana Letter Yu
+FF96|30E8  ; Halfwidth Katakana Letter Yo|<narrow> Katakana Letter Yo
+FF97|30E9  ; Halfwidth Katakana Letter Ra|<narrow> Katakana Letter Ra
+FF98|30EA  ; Halfwidth Katakana Letter Ri|<narrow> Katakana Letter Ri
+FF99|30EB  ; Halfwidth Katakana Letter Ru|<narrow> Katakana Letter Ru
+FF9A|30EC  ; Halfwidth Katakana Letter Re|<narrow> Katakana Letter Re
+FF9B|30ED  ; Halfwidth Katakana Letter Ro|<narrow> Katakana Letter Ro
+FF9C|30EF  ; Halfwidth Katakana Letter Wa|<narrow> Katakana Letter Wa
+FF9D|30F3  ; Halfwidth Katakana Letter N|<narrow> Katakana Letter N
+FF9E|3099  ; Halfwidth Katakana Voiced Sound Mark|<narrow> Combining Katakana-hiragana Voiced Sound Mark
+FF9F|309A  ; Halfwidth Katakana Semi-voiced Sound Mark|<narrow> Combining Katakana-hiragana Semi-voiced Sound Mark
+FFA0|3164  ; Halfwidth Hangul Filler|<narrow> Hangul Filler
+FFA1|3131  ; Halfwidth Hangul Letter Kiyeok|<narrow> Hangul Letter Kiyeok
+FFA2|3132  ; Halfwidth Hangul Letter Ssangkiyeok|<narrow> Hangul Letter Ssangkiyeok
+FFA3|3133  ; Halfwidth Hangul Letter Kiyeok-sios|<narrow> Hangul Letter Kiyeok-sios
+FFA4|3134  ; Halfwidth Hangul Letter Nieun|<narrow> Hangul Letter Nieun
+FFA5|3135  ; Halfwidth Hangul Letter Nieun-cieuc|<narrow> Hangul Letter Nieun-cieuc
+FFA6|3136  ; Halfwidth Hangul Letter Nieun-hieuh|<narrow> Hangul Letter Nieun-hieuh
+FFA7|3137  ; Halfwidth Hangul Letter Tikeut|<narrow> Hangul Letter Tikeut
+FFA8|3138  ; Halfwidth Hangul Letter Ssangtikeut|<narrow> Hangul Letter Ssangtikeut
+FFA9|3139  ; Halfwidth Hangul Letter Rieul|<narrow> Hangul Letter Rieul
+FFAA|313A  ; Halfwidth Hangul Letter Rieul-kiyeok|<narrow> Hangul Letter Rieul-kiyeok
+FFAB|313B  ; Halfwidth Hangul Letter Rieul-mieum|<narrow> Hangul Letter Rieul-mieum
+FFAC|313C  ; Halfwidth Hangul Letter Rieul-pieup|<narrow> Hangul Letter Rieul-pieup
+FFAD|313D  ; Halfwidth Hangul Letter Rieul-sios|<narrow> Hangul Letter Rieul-sios
+FFAE|313E  ; Halfwidth Hangul Letter Rieul-thieuth|<narrow> Hangul Letter Rieul-thieuth
+FFAF|313F  ; Halfwidth Hangul Letter Rieul-phieuph|<narrow> Hangul Letter Rieul-phieuph
+FFB0|3140  ; Halfwidth Hangul Letter Rieul-hieuh|<narrow> Hangul Letter Rieul-hieuh
+FFB1|3141  ; Halfwidth Hangul Letter Mieum|<narrow> Hangul Letter Mieum
+FFB2|3142  ; Halfwidth Hangul Letter Pieup|<narrow> Hangul Letter Pieup
+FFB3|3143  ; Halfwidth Hangul Letter Ssangpieup|<narrow> Hangul Letter Ssangpieup
+FFB4|3144  ; Halfwidth Hangul Letter Pieup-sios|<narrow> Hangul Letter Pieup-sios
+FFB5|3145  ; Halfwidth Hangul Letter Sios|<narrow> Hangul Letter Sios
+FFB6|3146  ; Halfwidth Hangul Letter Ssangsios|<narrow> Hangul Letter Ssangsios
+FFB7|3147  ; Halfwidth Hangul Letter Ieung|<narrow> Hangul Letter Ieung
+FFB8|3148  ; Halfwidth Hangul Letter Cieuc|<narrow> Hangul Letter Cieuc
+FFB9|3149  ; Halfwidth Hangul Letter Ssangcieuc|<narrow> Hangul Letter Ssangcieuc
+FFBA|314A  ; Halfwidth Hangul Letter Chieuch|<narrow> Hangul Letter Chieuch
+FFBB|314B  ; Halfwidth Hangul Letter Khieukh|<narrow> Hangul Letter Khieukh
+FFBC|314C  ; Halfwidth Hangul Letter Thieuth|<narrow> Hangul Letter Thieuth
+FFBD|314D  ; Halfwidth Hangul Letter Phieuph|<narrow> Hangul Letter Phieuph
+FFBE|314E  ; Halfwidth Hangul Letter Hieuh|<narrow> Hangul Letter Hieuh
+FFC2|314F  ; Halfwidth Hangul Letter A|<narrow> Hangul Letter A
+FFC3|3150  ; Halfwidth Hangul Letter Ae|<narrow> Hangul Letter Ae
+FFC4|3151  ; Halfwidth Hangul Letter Ya|<narrow> Hangul Letter Ya
+FFC5|3152  ; Halfwidth Hangul Letter Yae|<narrow> Hangul Letter Yae
+FFC6|3153  ; Halfwidth Hangul Letter Eo|<narrow> Hangul Letter Eo
+FFC7|3154  ; Halfwidth Hangul Letter E|<narrow> Hangul Letter E
+FFCA|3155  ; Halfwidth Hangul Letter Yeo|<narrow> Hangul Letter Yeo
+FFCB|3156  ; Halfwidth Hangul Letter Ye|<narrow> Hangul Letter Ye
+FFCC|3157  ; Halfwidth Hangul Letter O|<narrow> Hangul Letter O
+FFCD|3158  ; Halfwidth Hangul Letter Wa|<narrow> Hangul Letter Wa
+FFCE|3159  ; Halfwidth Hangul Letter Wae|<narrow> Hangul Letter Wae
+FFCF|315A  ; Halfwidth Hangul Letter Oe|<narrow> Hangul Letter Oe
+FFD2|315B  ; Halfwidth Hangul Letter Yo|<narrow> Hangul Letter Yo
+FFD3|315C  ; Halfwidth Hangul Letter U|<narrow> Hangul Letter U
+FFD4|315D  ; Halfwidth Hangul Letter Weo|<narrow> Hangul Letter Weo
+FFD5|315E  ; Halfwidth Hangul Letter We|<narrow> Hangul Letter We
+FFD6|315F  ; Halfwidth Hangul Letter Wi|<narrow> Hangul Letter Wi
+FFD7|3160  ; Halfwidth Hangul Letter Yu|<narrow> Hangul Letter Yu
+FFDA|3161  ; Halfwidth Hangul Letter Eu|<narrow> Hangul Letter Eu
+FFDB|3162  ; Halfwidth Hangul Letter Yi|<narrow> Hangul Letter Yi
+FFDC|3163  ; Halfwidth Hangul Letter I|<narrow> Hangul Letter I
+FFE0|00A2  ; Fullwidth Cent Sign|<wide> Cent Sign
+FFE1|00A3  ; Fullwidth Pound Sign|<wide> Pound Sign
+FFE2|00AC  ; Fullwidth Not Sign|<wide> Not Sign
+FFE3|00AF  ; Fullwidth Macron|<wide> Macron
+FFE4|00A6  ; Fullwidth Broken Bar|<wide> Broken Bar
+FFE5|00A5  ; Fullwidth Yen Sign|<wide> Yen Sign
+FFE6|20A9  ; Fullwidth Won Sign|<wide> Won Sign
+FFE8|2502  ; Halfwidth Forms Light Vertical|<narrow> Box Drawings Light Vertical
+FFE9|2190  ; Halfwidth Leftwards Arrow|<narrow> Leftwards Arrow
+FFEA|2191  ; Halfwidth Upwards Arrow|<narrow> Upwards Arrow
+FFEB|2192  ; Halfwidth Rightwards Arrow|<narrow> Rightwards Arrow
+FFEC|2193  ; Halfwidth Downwards Arrow|<narrow> Downwards Arrow
+FFED|25A0  ; Halfwidth Black Square|<narrow> Black Square
+FFEE|25CB  ; Halfwidth White Circle|<narrow> White Circle
