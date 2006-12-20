@@ -72,6 +72,7 @@ public class FloatList
           data = ArrayUtil.resize( data, newSize );
           if( newSize > size )
               Arrays.fill( data, size, newSize, 0.0f );
+          size = newSize;
       }
   }
   

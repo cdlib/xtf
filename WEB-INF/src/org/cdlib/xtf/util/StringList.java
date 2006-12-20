@@ -72,6 +72,7 @@ public class StringList
           data = ArrayUtil.resize( data, newSize );
           if( newSize > size )
               Arrays.fill( data, size, newSize, null );
+          size = newSize;
       }
   }
   

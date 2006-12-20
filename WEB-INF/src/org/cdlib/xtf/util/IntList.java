@@ -73,6 +73,7 @@ public class IntList
           data = ArrayUtil.resize( data, newSize );
           if( newSize > size )
               Arrays.fill( data, size, newSize, 0 );
+          size = newSize;
       }
   }
   
