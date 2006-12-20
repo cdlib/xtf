@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 
 /**
@@ -54,6 +55,15 @@ public class CharMap
     /** The mapping of chars. */
     private char[] map = new char[65536];
     
+    /** Special character to denote null list */
+    private static final char NULL_CHAR = '\uEE00';
+    
+    /** Size of supplimental mapping of chars... typically there are few */
+    private static final int SUPP_HASH_SIZE = 100;
+    
+    /** Supplemental mapping of characters after the first */
+    private IntHash supplementalCharsMap = new IntHash( SUPP_HASH_SIZE );
+    
     /** How many recent mappings to maintain */
     private static final int CACHE_SIZE = 5000;
     
@@ -86,36 +96,65 @@ public class CharMap
             return val;
         }
         
-        // Map the chars in the word. 
-        char[] oldChars = word.toCharArray();
-        char[] newChars = new char[ word.length() ];
-        boolean anyChanges = false;
-        
-        for( int i = 0; i < oldChars.length; i++ ) 
-        {
-            char oldChar = oldChars[i];
-            char newChar = oldChars[i];
-            
-            // Map this character. Note this has to be done repeatedly until
-            // we reach a non-mapped char.
-            //
-            while( map[newChar] != 0 ) {
-                newChar = map[newChar];
-                anyChanges = true;
-            }
-            newChars[i] = newChar;
-        }
-    
-        // If no mapped chars were found, record that fact in the cache,
-        // and return null.
+        // Do a quick scan to see if there are any mappable chars. Usually
+        // there are none, so this saves time.
         //
-        if( !anyChanges ) {
+        int i;
+        for( i = 0; i < word.length(); i++ ) {
+            if( map[word.charAt(i)] != 0 )
+                break;
+        }
+        
+        if( i == word.length() ) {
             cache.put( word, null );
             return null;
         }
+        
+        // Okay, we need to map at least one character. This might result in
+        // the string changing size, so we need to use a buffer.
+        //
+        StringBuffer buf = new StringBuffer( word.length() + 2 );
+        buf.append( word );
+        
+        i = 0;
+        int nIterations = 0;
+        while( i < buf.length() ) {
+            char c = buf.charAt( i );
+            
+            // Check for infinite loop (can happen if char X maps to Y 
+            // and Y maps back to X, or if X maps to XY)
+            //
+            if( ++nIterations > 100000 )
+                throw new RuntimeException( "Probable infinite loop detected in word map" );
 
-        // Okay, reconstitute the new word and cache it.
-        String newWord = new String( newChars );
+            // If no mapping, go on to the next character.
+            if( map[c] == 0 ) {
+                ++i;
+                continue;
+            }
+            
+            // If mapping to null, delete the character.
+            if( map[c] == NULL_CHAR ) {
+                buf.deleteCharAt( i );
+                continue;
+            }
+            
+            // Replace the existing char with the new mapped char.
+            buf.setCharAt( i, map[c] );
+            
+            // If there is a supplemental string to add, put it in.
+            String suppChars = (String) supplementalCharsMap.get( c );
+            if( suppChars != null )
+                buf.insert( i+1, suppChars );
+            
+            // Don't increment, since one of the new chars might need
+            // additional mapping.
+            //
+            ;
+        }
+        
+        // Reconstitute the new word and cache it. Then we're done.
+        String newWord = buf.toString();
         cache.put( word, newWord );
         return newWord;
 
@@ -152,28 +191,59 @@ public class CharMap
             String key = line.substring(0, barPos).trim();
             String val = line.substring(barPos+1).trim();
             
-            if( key.length() == 0 || val.length() == 0 )
-                continue;
-            
-            // Parse the hex codes to character values from 0..65535
+            // The key should be exactly four hex digits.
             int keyCode = -1;
-            int valCode = -1;
             try {
                 keyCode = Integer.parseInt( key, 16 );
-                valCode = Integer.parseInt( val, 16 );
             }
             catch( NumberFormatException e ) { }
-            
-            if( keyCode < 0 || keyCode > 65535 ||
-                valCode < 0 || valCode > 65535 )
-            {
-                Trace.warning( "Warning: Invalid key/val char mapping: " +
-                    "'" + key + "' -> '" + val + "'" );
+            if( keyCode < 0 || keyCode > 65535 || key.length() != 4 ) {
+                Trace.warning( "Warning: Invalid key in char mapping: " +
+                    "key '" + key + "' must be exactly four hex digits" );
                 continue;
+            }
+            
+            // The value should be zero or more sets of four hex digits.
+            StringTokenizer st = new StringTokenizer( val );
+            StringBuffer valBuf = new StringBuffer(3);
+            while( st.hasMoreTokens() ) {
+                String tok = st.nextToken();
+                int valCode = -1;
+                try {
+                    valCode = Integer.parseInt( tok, 16 );
+                }
+                catch( NumberFormatException e ) { }
+                
+                if( valCode < 0 || valCode > 65535 ) {
+                    Trace.warning( "Warning: Invalid key/val char mapping: " +
+                        "'" + key + "' -> '" + val + 
+                        "' (value must be series of 4-digit hex numbers)" );
+                    continue;
+                }
+                
+                valBuf.append( (char)valCode );
             }
             
             // Record the entry.
-            map[keyCode] = (char)valCode;
+            if( valBuf.length() ==  0 ) 
+            {
+                // Record null entry using a special marker character
+                map[keyCode] = NULL_CHAR;
+            }
+            else 
+            {
+                // Record the first character of the mapping (most mappings
+                // only have one anyway.)
+                //
+                map[keyCode] = valBuf.charAt( 0 );
+                
+                // In the unusual case of a mapping that has more than one
+                // character, record the remaining chars in a quick-access 
+                // hash.
+                //
+                if( valBuf.length() > 1 )
+                    supplementalCharsMap.put( keyCode, valBuf.substring(1) );
+            }
         } // while
         
     } // readFile()
