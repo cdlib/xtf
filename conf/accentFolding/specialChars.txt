@@ -1,0 +1,82 @@
+00A9|0043       ; Copyright Sign|Latin Capital Letter C
+00AE|0052       ; Registered Sign|Latin Capital Letter R
+2122|0054 004D  ; Trade Mark Sign|Latin Capital Letters T M
+
+00AD|           ; Soft Hypen|<remove>
+2010|002D       ; Hyphen|Hypen-Minus
+2011|002D       ; Non-Breaking Hyphen|Hyphen-Minus
+2212|002D       ; Minus Sign|Hyphen-Minus
+
+2044|002F       ; Fraction Slash|Solidus
+2215|002F       ; Division Slash|Solidus
+00F7|002F       ; Division Sign|Solidus
+00D7|002A       ; Multiplication Sign|Asterisk
+
+00DF|0073 0073  ; Latin Small Letter Sharp S|Latin Small Letters S S
+
+00C6|0041 0045  ; Latin Capital Letter AE|Latin Capital Letters A E
+00E6|0061 0065  ; Latin Small Letter AE|Latin Small Letters A E
+
+0132|0049 004A  ; Latin Capital Ligature IJ|Latin Capital Letters I J
+0133|0069 006A  ; Latin Small Ligature IJ|Latin Small Letters I J
+
+013F|004C 00B7  ; Latin Capital Letter L With Middle Dot|Latin Capital Letter L, Middle Dot
+0140|006C 00B7  ; Latin Small Letter L With Middle Dot|Latin Small Letter L, Middle Dot
+
+0149|02BC 006E  ; Latin Small Letter N Preceded By Apostrophe|Latin Small Letter N, Modifier Letter Apostrophe
+
+0152|004F 0045  ; Latin Capital Letter OE|Latin Capital Letters O E
+0153|006F 0065  ; Latin Small Letter OE|Latin Small Letters O E
+
+017F|0073       ; Latin Small Letter Long S|Latin Small Letter S
+
+01C4|0044 017D  ; Latin Capital Letter DZ With Caron|Latin Capital Letter D, Latin Capital Letter Z With Caron
+01C5|0044 017E  ; Latin Capital Letter D With Small Letter Z With Caron|Latin Capital Letter D, Latin Small Letter Z With Caron
+01C6|0064 017E  ; Latin Small Letter DZ With Caron|Latin Small Letter D, Latin Capital Letter Z With Caron
+
+01C7|004C 004A  ; Latin Capital Letter LJ|Latin Capital Letters L J
+01C8|004C 006A  ; Latin Capital Letter L With Small Letter J|Latin Capital Letter L, Latin Small Letter J
+01C9|006C 006A  ; Latin Small Letter LJ|Latin Small Letters L J
+
+01CA|004E 004A  ; Latin Capital Letter NJ|Latin Capital Letters N J
+01CB|004E 006A  ; Latin Capital Letter N With Small Letter J|Latin Capital Letter N, Latin Small Letter J
+01CC|006E 006A  ; Latin Small Letter NJ|Latin Small Letters N J
+
+01F1|0044 005A  ; Latin Capital Letter DZ|Latin Capital Letters D Z
+01F2|0044 007A  ; Latin Capital Letter D With Small Letter Z|Latin Capital Letter D, Latin Small Letter Z
+01F3|0064 007A  ; Latin Small Letter DZ|Latin Small Letters D Z
+
+2160|0049       ; Roman Numeral One|Latin Capital Letter I
+2161|0049 0049  ; Roman Numeral Two|Latin Capital Letters I I
+2162|0049 0049 0049  ; Roman Numeral Three|Latin Capital Letters I I I
+2163|0049 0056  ; Roman Numeral Four|Latin Capital Letters I V
+2164|0056       ; Roman Numeral Five|Latin Capital Letter V
+2165|0056 0049  ; Roman Numeral Six|Latin Capital Letters V I
+2166|0056 0049 0049  ; Roman Numeral Seven|Latin Capital Letters V I I
+2167|0056 0049 0049 0049  ; Roman Numeral Eight|Latin Capital Letters V I I I
+2168|0049 0058  ; Roman Numeral Nine|Latin Capital Letters I X
+2169|0058       ; Roman Numeral Ten|Latin Capital Letter X
+216A|0058 0049  ; Roman Numeral Eleven|Latin Capital Letters X I
+216B|0058 0049 0049  ; Roman Numeral Twelve|Latin Capital Letters X I I
+216C|004C       ; Roman Numeral Fifty|Latin Capital Letter L
+216D|0043       ; Roman Numeral One Hundred|Latin Capital Letter C
+216E|0044       ; Roman Numeral Five Hundred|Latin Capital Letter D
+216F|004D       ; Roman Numeral One Thousand|Latin Capital Letter M
+
+2170|0069       ; Roman Numeral One|Latin Small Letter I
+2171|0069 0069  ; Roman Numeral Two|Latin Small Letters I I
+2172|0069 0069 0069  ; Roman Numeral Three|Latin Small Letters I I I
+2173|0069 0076  ; Roman Numeral Four|Latin Small Letters I V
+2174|0076       ; Roman Numeral Five|Latin Small Letter V
+2175|0076 0069  ; Roman Numeral Six|Latin Small Letters V I
+2176|0076 0069 0069  ; Roman Numeral Seven|Latin Small Letters V I I
+2177|0076 0069 0069 0069  ; Roman Numeral Eight|Latin Small Letters V I I I
+2178|0069 0078  ; Roman Numeral Nine|Latin Small Letters I X
+2179|0078       ; Roman Numeral Ten|Latin Small Letter X
+217A|0078 0069  ; Roman Numeral Eleven|Latin Small Letters X I
+217B|0078 0069 0069  ; Roman Numeral Twelve|Latin Small Letters X I I
+217C|006C       ; Roman Numeral Fifty|Latin Small Letter L
+217D|0063       ; Roman Numeral One Hundred|Latin Small Letter C
+217E|0064       ; Roman Numeral Five Hundred|Latin Small Letter D
+217F|006D       ; Roman Numeral One Thousand|Latin Small Letter M
+

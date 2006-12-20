@@ -1,9 +1,10 @@
 #!/usr/bin/perl
 
-$fileName = shift;
+$unicodeDataFileName = shift;
+$specialCharsFileName = shift;
 
 # Make an initial pass and read all the names.
-open( FILE, "<$fileName" ) or die( "Error opening $fileName" );
+open( FILE, "<$unicodeDataFileName" ) or die( "Error opening $unicodeDataFileName" );
 while( <FILE> ) {
     if( /^(\w+);([^;]*);/ ) {
         $code = $1;
@@ -13,18 +14,58 @@ while( <FILE> ) {
 }
 close( FILE );
 
-# Make a second pass and generate the actual mapping.
-open( FILE, "<$fileName" ) or die( "Error opening $fileName" );
+# Read in all the special mappings and record them in a hash
+open( FILE, "<$specialCharsFileName" ) or die( "Error opening $specialCharsFileName" );
 while( <FILE> ) {
 
-    # Find entries that have decompositions. The last component in the regex
-    # is a little tricky: it checks that there are some characters, but that
-    # none of them are < or >, thus avoiding all compatability decompositions.
-    #
-    if( /^(\w+);([^;]*);[^;]*;[^;]*;[^;]*;([^;<>]+);/ ) {
+    # Find lines that specify a mapping
+    if( /^(\w\w\w\w)\|(.*)/ ) {
+        $special{$1} = $2;
+    }
+}
+close( FILE );
+
+
+# Make a second pass and generate the actual mapping.
+open( FILE, "<$unicodeDataFileName" ) or die( "Error opening $unicodeDataFileName" );
+while( <FILE> ) {
+
+    # Find entries that have decompositions.
+    if( /^(\w+);([^;]*);[^;]*;[^;]*;[^;]*;(<[^>]+>)?\s?([^;]*);/ ) {
         $src     = $1;
         $srcName = $2;
-        $dst     = $3;
+        $type    = $3;
+        $dst     = $4;
+
+        # Skip codes that are above the 16-bit range Java can handle
+        if( length($src) ne 4 ) { next; }
+
+        # If we have a special mapping for this character, that overrides any 
+        # other action.
+        #
+        if( exists $special{$src} ) {
+            print "$src|$special{$src}\n";
+            next;
+        }
+
+        # If the character is itself a diacritic, map it to nothing
+        if( isDiacritic($src) ) {
+            print "$src| ; $srcName|<remove>\n";
+            next;
+        }
+
+        # If there's no decomposition, skip this character.
+        if( $dst eq "" ) {
+            next;
+        }
+
+        # Only allow certain non-canonical decompositions through, such
+        # as those for superscript, subscript, circled, etc. These are
+        # generally called "presentation forms".
+        #
+        if( $type ne "" &&!($type =~ /<(super|sub|circle|font|fraction|square|small|wide|narrow)>/) ) {
+            next;
+        }
 
         # Break up all the components of the destination.
         @dstParts = split( /\s+/, $dst );
@@ -36,15 +77,15 @@ while( <FILE> ) {
             # Look for characters in one of the blocks of combining
             # diacritical marks.
             #
-            if( ($dstParts[$i] ge "0300" and $dstParts[$i] le "036F") or
-                ($dstParts[$i] ge "1DC0" and $dstParts[$i] le "1DFF") or
-                ($dstParts[$i] ge "20D0" and $dstParts[$i] le "20FF") )
-            {
+            if( isDiacritic($dstParts[$i]) ) {
                 $dstAccents .= $dstParts[$i] . " ";
             }
             else { 
                 $dstBase .= $dstParts[$i] . " "; 
-                $dstBaseNames .= $codeToName{$dstParts[$i]} . " ";
+                if( $dstBaseNames ne "" ) {
+                    $dstBaseNames .= ", "
+                }
+                $dstBaseNames .= $codeToName{$dstParts[$i]};
             }
         }
 
@@ -52,13 +93,26 @@ while( <FILE> ) {
         # one or more diacritical marks, then we've found a mapping we're
         # interested in.
         #
-        if( $dstBase ne "" and $dstAccents ne "" ) {
+        if( ($type ne "") || ($dstBase ne "" and $dstAccents ne "") ) {
             $srcName      = join( " ", map(ucfirst(lc($_)), 
                                   split(/\s/, $srcName)) );
             $dstBaseNames = join( " ", map(ucfirst(lc($_)),
                                   split(/\s/, $dstBaseNames)) );
-            print "$src|$dstBase ; $srcName|$dstBaseNames\n";
+            if( $type ne "" ) {
+                print "$src|$dstBase ; $srcName|$type $dstBaseNames\n";
+            }
+            else {
+                print "$src|$dstBase ; $srcName|$dstBaseNames\n";
+            }
         }
     }
 }
 close( FILE );
+
+sub isDiacritic {
+    my $num = shift;
+
+    return ($num ge "0300" and $num le "036F") or
+           ($num ge "1DC0" and $num le "1DFF") or
+           ($num ge "20D0" and $num le "20FF");
+}
