@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit rank="1" file="doc1.xml" totalHits="1">
+   <docHit rank="1" file="doc1.xml" totalHits="0">
       <meta>
          <title>The Opening of the Apartheid Mind: Options for the New South Africa</title>
-         <creator>Darwīsh, Maḥmūd</creator>
+         <creator>
+            <snippet rank="1">Darwīsh, <hit>
+                  <term>Maḥmūd</term>
+               </hit>
+            </snippet>
+         </creator>
          <subject>African Studies</subject>
          <subject>Politics</subject>
          <subject>African History</subject>
@@ -16,8 +21,5 @@
          <rights>Public</rights>
          <special>B</special>
       </meta>
-      <snippet rank="1">has words with accented chars, like <hit>
-            <term>Buñuel</term>
-         </hit>, Träger, français, and archæology.</snippet>
    </docHit>
 </crossQueryResult>

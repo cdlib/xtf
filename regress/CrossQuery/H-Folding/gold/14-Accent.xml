@@ -16,8 +16,8 @@
          <rights>Public</rights>
          <special>B</special>
       </meta>
-      <snippet rank="1">has words with accented chars, like <hit>
-            <term>Buñuel</term>
-         </hit>, Träger, français, and archæology.</snippet>
+      <snippet rank="1">has words with accented chars, like Buñuel, Träger, français, and <hit>
+            <term>archæology</term>
+         </hit>.</snippet>
    </docHit>
 </crossQueryResult>

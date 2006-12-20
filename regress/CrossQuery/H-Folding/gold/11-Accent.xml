@@ -3,7 +3,7 @@
    <docHit rank="1" file="doc1.xml" totalHits="1">
       <meta>
          <title>The Opening of the Apartheid Mind: Options for the New South Africa</title>
-         <creator>Heribert Adam and Kogila Moodley</creator>
+         <creator>Darwīsh, Maḥmūd</creator>
          <subject>African Studies</subject>
          <subject>Politics</subject>
          <subject>African History</subject>
@@ -16,8 +16,8 @@
          <rights>Public</rights>
          <special>B</special>
       </meta>
-      <snippet rank="1">the document has words with accented chars, like <hit>
+      <snippet rank="1">has words with accented chars, like <hit>
             <term>Buñuel</term>
-         </hit>, Träger, and français.</snippet>
+         </hit>, Träger, français, and archæology.</snippet>
    </docHit>
 </crossQueryResult>
