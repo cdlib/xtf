@@ -251,10 +251,14 @@
   <xsl:param name="http.URL"/>
   <!-- extract query string and clean it up -->
   <xsl:param name="queryString">
-    <xsl:value-of select="replace(replace(replace(replace(replace($http.URL, '.+\?', ''), 
-      '[0-9A-Za-z\-]+=;', ';'), 
-      ';[0-9A-Za-z\-]+=$', ';'), 
-      ';+', ';'),
+    <xsl:value-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace($http.URL, '.+\?', ''), 
+      '[0-9A-Za-z\-]+=&amp;', '&amp;'), 
+      '&amp;[0-9A-Za-z\-]+=$', '&amp;'), 
+       '&amp;+', '&amp;'),
+       '&amp;startDoc=[0-9]+', ''),
+       '[0-9A-Za-z\-]+=;', ';'), 
+       ';[0-9A-Za-z\-]+=$', ';'), 
+       ';+', ';'),
       ';startDoc=[0-9]+', '')"/>
   </xsl:param> 
   
@@ -262,8 +266,9 @@
 
   <xsl:template name="hidden.query">
     <xsl:param name="queryString"/>
-    <xsl:variable name ="before" select="if(contains($queryString, ';')) then substring-before($queryString, ';') else $queryString"/>
-    <xsl:variable name ="after" select="substring-after($queryString, ';')"/>
+    <xsl:variable name="cleanString" select="replace($queryString,'&amp;',';')"/>
+    <xsl:variable name ="before" select="if(contains($cleanString, ';')) then substring-before($cleanString, ';') else $cleanString"/>
+    <xsl:variable name ="after" select="substring-after($cleanString, ';')"/>
     <xsl:variable name="name" select="substring-before($before, '=')"/>
     <xsl:variable name="value" select="replace(substring-after($before, '='), '\+', ' ')"/>
     <input type="hidden" name="{$name}" value="{$value}"/>
