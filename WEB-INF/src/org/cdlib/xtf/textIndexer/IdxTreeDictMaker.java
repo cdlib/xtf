@@ -40,6 +40,7 @@ import java.io.File;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.spell.SpellWriter;
 
+import org.cdlib.xtf.textEngine.Constants;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
@@ -113,7 +114,7 @@ public class IdxTreeDictMaker
    * Performs the actual work of creating a spelling dictionary.   
    * <br><br>
    *                     
-   * @param  idxDir             The index database directory to scan. This 
+   * @param  mainIdxDir         The index database directory to scan. This 
    *                            directory must contain a single Lucene index.
    *                            <br><br>
    * 
@@ -122,20 +123,25 @@ public class IdxTreeDictMaker
    *                            <br><br> 
    */
 
-  public void makeDict( File idxDir ) throws Exception 
+  public void makeDict( File mainIdxDir ) throws Exception 
   
   {
     // Detect if spelling data is present.
-    String indexPath    = Path.normalizePath(idxDir.toString());
+    String indexPath    = Path.normalizePath(mainIdxDir.toString());
     String spellIdxPath = indexPath + "spellDict/";
-    String queuePath    = spellIdxPath + "newWords.txt";
-    if( new File(queuePath).length() < 1 )
+    String wordQueuePath    = spellIdxPath + "newWords.txt";
+    String pairQueuePath    = spellIdxPath + "newPairs.txt";
+    if( new File(wordQueuePath).length() < 1 &&
+        new File(pairQueuePath).length() < 1 )
+    {
         return;
+    }
   
     // Tell what index we're working on...
-    String path = Path.normalizePath( idxDir.toString() );
-    Trace.info( "Index: [" + path + "] ... " );
+    String mainIdxPath = Path.normalizePath( mainIdxDir.toString() );
+    Trace.info( "Index: [" + mainIdxPath + "] ... " );
     Trace.tab();
+    Trace.tab(); // for phase
     
     SpellWriter spellWriter = null;
     
@@ -143,24 +149,69 @@ public class IdxTreeDictMaker
 
         // Open the SpellWriter, and supply a progress monitoring method.
         spellWriter = new SpellWriter() {
-          int prevPct = -1;
+          int prevPhase = -1;
+          int prevPct   = -1;
           long prevTime = System.currentTimeMillis();
-          public void progress( int pctDone, int totalAdded ) {
+          public void progress( int phase, int pctDone, int totalAdded ) {
               long curTime = System.currentTimeMillis();
               long elapsed = curTime - prevTime;
+              if( phase != prevPhase ) {
+                  Trace.untab();
+                  Trace.info( "Phase " + phase + ":" );
+                  Trace.tab();
+                  prevPhase = phase;
+                  prevPct = -1;
+              }
               if( pctDone > prevPct && 
-                  (pctDone == 100 || elapsed > 30000) ) 
+                  (pctDone == 0 || pctDone == 100 || elapsed > 30000) ) 
               {
                   prevTime = curTime;
                   prevPct = pctDone;
                   String pctTxt = Integer.toString(pctDone);
                   while( pctTxt.length() < 3 ) 
                       pctTxt = " " + pctTxt;
-                  Trace.info( "[" + pctTxt + "%] Added " + totalAdded + " Words." );
+                  Trace.info( "[" + pctTxt + "%] Added " + totalAdded + "." );
               }
           }
+          public boolean shouldSkipTerm(String text) 
+          {
+              // Skip the defaults supplied by the spell checker.
+              if( super.shouldSkipTerm(text) )
+                  return true;
+              
+              // Skip bi-grams
+              if( text.indexOf("~") >= 0 )
+                  return true;
+              
+              // Skip empty terms (there shouldn't be any though) 
+              if( text.length() == 0 )
+                  return true;
+              
+              // Skip special start/end of field marks (normal terms will also
+              // be present, without the marks.) Also skip element and attribute
+              // markers.
+              //
+              char c = text.charAt(0);
+              if( c == Constants.FIELD_START_MARKER ||
+                  c == Constants.ELEMENT_MARKER ||
+                  c == Constants.ATTRIBUTE_MARKER )
+              {
+                  return true;
+              }
+              
+              c = text.charAt( text.length() - 1 );
+              if( c == Constants.FIELD_END_MARKER ||
+                  c == Constants.ELEMENT_MARKER ||
+                  c == Constants.ATTRIBUTE_MARKER )
+              {
+                  return true;
+              }
+              
+              // Retain all other terms.
+              return false;
+          }
         };
-        spellWriter.open( spellIdxPath );
+        spellWriter.open( mainIdxPath, spellIdxPath );
         
         // Perform the update.
         spellWriter.flushQueuedWords();
@@ -174,6 +225,7 @@ public class IdxTreeDictMaker
         spellWriter.close();
     }
   
+    Trace.untab(); // for phase
     Trace.untab();
     Trace.info( "Done." );
     
