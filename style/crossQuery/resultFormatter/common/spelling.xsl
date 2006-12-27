@@ -14,11 +14,11 @@
     <xsl:param name="baseURL"/>
     <xsl:param name="spelling"/>
     
-    <xsl:variable name="newURL" select="cdl:replace-misspellings($baseURL, $spelling/term)"/>
+    <xsl:variable name="newURL" select="cdl:replace-misspellings($baseURL, $spelling/*)"/>
     <br/>
     <b>Did you mean to search for
     <a href="{$newURL}">
-      <xsl:call-template name="format-spelling"/>
+      <xsl:apply-templates select="query" mode="spelling"/>
     </a>
     <xsl:text>?</xsl:text> </b>
   </xsl:template>
@@ -29,26 +29,24 @@
   -->
   <xsl:function name="cdl:replace-misspellings">
     <xsl:param name="baseURL"/>
-    <xsl:param name="terms"/>
-    
-    <!-- Figure out what field to apply to... handle the 'keywords' pseudo-field specially -->
-    <xsl:variable name="term" select="$terms[1]"/>
-    <xsl:variable name="field">
-      <xsl:choose>
-        <xsl:when test="$keyword and ($term/@field = 'text')">
-          <xsl:text>keyword</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$term/@field"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
+    <xsl:param name="suggestions"/>
     
     <xsl:choose>
-      <xsl:when test="$term">
-        <xsl:variable name="remainder" select="cdl:replace-misspellings($baseURL, $terms[position() > 1])"/>
-        <xsl:variable name="match" select="concat('(', $field, '=[^;]*)', $term/@term)"/>
-        <xsl:value-of select="replace($remainder, $match, concat('$1', $term/suggestion[1]/@term), 'i')"/>
+      <xsl:when test="$suggestions">
+        <xsl:variable name="sugg" select="$suggestions[1]"/>
+        <xsl:variable name="remainder" select="cdl:replace-misspellings($baseURL, $suggestions[position() > 1])"/>
+        <xsl:variable name="fields" select="concat($sugg/@fields, ',keyword')"/>
+
+        <!-- Replace the term in the proper field(s) from the URL. Make sure it has word
+             boundaries on either side of it. -->
+        <xsl:variable name="matchPattern" 
+                      select="concat('(\W(', replace($fields, ',', '|'), ')=([^=;&amp;]+\W)?)', 
+                                     $sugg/@originalTerm,
+                                     '(\W|$)')"/>
+        <xsl:variable name="changed" 
+                      select="replace($remainder, $matchPattern, 
+                                      concat('$1', $sugg/@suggestedTerm, '$4'), 'i')"/>
+        <xsl:value-of select="$changed"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="$baseURL"/>
@@ -56,37 +54,46 @@
     </xsl:choose>
   </xsl:function>
 
-    <!-- 
-    Scan the URL and replace possibly misspelled words with suggestions
+  <!-- 
+    Scan a list of terms and replace possibly misspelled words with suggestions
     from the spelling correction engine.
   -->
   <xsl:function name="cdl:fix-terms">
     <xsl:param name="terms"/>
     <xsl:param name="spelling"/>
-    
-    <!-- Figure out what field to apply to... handle the 'keywords' pseudo-field specially -->
+  
+    <!-- Get the first term -->
     <xsl:variable name="term" select="$terms[1]"/>
-    <xsl:variable name="field">
-      <xsl:choose>
-        <xsl:when test="$term/ancestor-or-self::*[@field]">
-          <xsl:value-of select="$term/ancestor-or-self::*[@field][1]/@field"/>
-        </xsl:when>
-        <xsl:otherwise> <!-- if no field, assume it's 'fields', i.e. the keyword field -->
-          <xsl:value-of select="'text'"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    
     <xsl:if test="$term">
-      <xsl:variable name="replacement" select="$spelling/term[(@field = $field) and (@term = string($term))]"/>
+
+      <!-- Figure out what field(s) to apply to. -->
+      <xsl:variable name="rawFields">
+        <xsl:choose>
+          <xsl:when test="$term/ancestor-or-self::*[@fields]">
+            <xsl:value-of select="$term/ancestor-or-self::*[@fields][1]/@fields"/>
+          </xsl:when>
+          <xsl:when test="$term/ancestor-or-self::*[@field]">
+            <xsl:value-of select="$term/ancestor-or-self::*[@field][1]/@field"/>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:variable>
+      
+      <!-- Make the field list into a handy regular expression that matches any of the fields -->
+      <xsl:variable name="fieldsRegex" select="replace($rawFields, '[\s,;]+', '|')"/>
+
+      <!-- See if there's a replacement for this term -->
+      <xsl:variable name="replacement" select="$spelling/suggestion[matches(@fields, $fieldsRegex) 
+                                           and (@originalTerm = string($term))]"/>
       <xsl:choose>
         <xsl:when test="$replacement">
-          <xsl:value-of select="$replacement/suggestion[1]/@term"/>
+          <xsl:value-of select="$replacement/@suggestedTerm"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="string($term)"/>
         </xsl:otherwise>
       </xsl:choose>
+      
+      <!-- Process the remaining terms in the list -->
       <xsl:if test="count($terms) > 1">
         <xsl:text> </xsl:text>
         <xsl:value-of select="cdl:fix-terms($terms[position() > 1], $spelling)"/>
@@ -98,25 +105,10 @@
 <!-- Format Terms with Spelling Corrections                                 -->
 <!-- ====================================================================== -->
     
-    <xsl:template name="format-spelling">
-        
-        <xsl:choose>
-            <xsl:when test="$keyword">
-                <!-- probably very fragile -->
-                <xsl:apply-templates select="(query//*[@fields])[1]/*" mode="spelling"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates select="query" mode="spelling"/>
-            </xsl:otherwise>
-        </xsl:choose>
-        
-    </xsl:template>
-    
     <xsl:template match="term" mode="spelling">
         <span class="search-term">
             <xsl:value-of select="cdl:fix-terms(., //spelling)"/>
         </span>
-        <xsl:text> </xsl:text>
     </xsl:template>
   
     <xsl:template match="phrase" mode="spelling">

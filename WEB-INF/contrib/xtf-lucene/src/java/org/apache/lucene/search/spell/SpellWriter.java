@@ -35,9 +35,12 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
@@ -45,11 +48,17 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.util.CountedInputStream;
 import org.cdlib.xtf.util.FastStringCache;
+import org.cdlib.xtf.util.IntList;
 import org.cdlib.xtf.util.IntegerValues;
+import org.cdlib.xtf.util.StringList;
+import org.cdlib.xtf.util.StructuredFile;
+import org.cdlib.xtf.util.SubStoreWriter;
 
 /**
  * <p>
@@ -65,10 +74,13 @@ public class SpellWriter {
   public static final String F_WORD = "word";
 
   /** Directory to store the spelling dictionary in */
-  private String indexPath;
+  private String spellIndexPath;
   
   /** Lucene Directory of the spelling dictionary */
-  private Directory indexDir;
+  private Directory spellIndexDir;
+  
+  /** Directory to get term frequencies from */
+  private String mainIndexPath;
   
   /** File to queue words into */
   private File wordQueueFile;
@@ -104,10 +116,10 @@ public class SpellWriter {
   private static final int MAX_PAIR_HASH_SIZE = 200000;
 
   /** For checking term existence */
-  private IndexReader indexReader;
+  private IndexReader spellIndexReader;
 
   /** For writing new terms */
-  private IndexWriter indexWriter;
+  private IndexWriter spellIndexWriter;
 
   /** Used for calculating double metaphone keys */
   private static DoubleMetaphone doubleMetaphone = new DoubleMetaphone();
@@ -115,20 +127,21 @@ public class SpellWriter {
   /** 
    * Establishes the directory to store the dictionary in. 
    */
-  public synchronized void open( String indexPath ) 
+  public synchronized void open( String mainIndexPath, String spellIndexPath ) 
     throws IOException 
   {
-    this.indexPath = new File(indexPath).getAbsolutePath();
-    this.wordQueueFile = new File(indexPath + "newWords.txt");
-    this.pairQueueFile = new File(indexPath + "newPairs.txt");
+    this.mainIndexPath = new File(mainIndexPath).getAbsolutePath() + File.separator;
+    this.spellIndexPath = new File(spellIndexPath).getAbsolutePath() + File.separator;
+    this.wordQueueFile = new File(spellIndexPath + "newWords.txt");
+    this.pairQueueFile = new File(spellIndexPath + "newPairs.txt");
     
     // Open the index directory, if it exists. If not, create it.
-    if (new File(indexPath).isDirectory()) {
-        indexDir  = FSDirectory.getDirectory(indexPath, false);
-        IndexReader.unlock( indexDir );
+    if (new File(spellIndexPath).isDirectory()) {
+        spellIndexDir  = FSDirectory.getDirectory(spellIndexPath, false);
+        IndexReader.unlock( spellIndexDir );
     }
     else
-        indexDir = FSDirectory.getDirectory( indexPath, true );
+        spellIndexDir = FSDirectory.getDirectory( spellIndexPath, true );
   }
 
   /** 
@@ -137,8 +150,8 @@ public class SpellWriter {
    */
   public synchronized void close() throws IOException {
     closeQueueWriters();
-    closeIndexReader();
-    closeIndexWriter();
+    closeSpellIndexReader();
+    closeSpellIndexWriter();
   }
 
   /** Delete all words in the dictionary (including those queued on disk) */
@@ -147,9 +160,9 @@ public class SpellWriter {
     wordQueueFile.delete();
     pairQueueFile.delete();
     recentWords.clear();
-    if (indexDir != null) {
-        IndexReader.unlock(indexDir);
-        IndexWriter writer = new IndexWriter(indexDir, null, true);
+    if (spellIndexDir != null) {
+        IndexReader.unlock(spellIndexDir);
+        IndexWriter writer = new IndexWriter(spellIndexDir, null, true);
         writer.close();
     }
   }
@@ -218,7 +231,7 @@ public class SpellWriter {
    * Called periodically during the flush process. Override to output status
    * messages.
    */
-  public void progress(int percentDone, int totalAdded) {
+  public void progress(int phase, int percentDone, int totalAdded) {
     // Default: do nothing.
   }
   
@@ -227,20 +240,52 @@ public class SpellWriter {
    * 
    * @return number of non-duplicate words actually written
    */
-  public synchronized int flushQueuedWords() throws IOException {
+  public synchronized void flushQueuedWords() throws IOException {
     closeQueueWriters();
     
+    int totalAdded = 0;
+    
+    // Phase 1: Add words and their ngrams to the Lucene index
+    totalAdded += flushPhase1();
+    
+    // Phase 2: Accumulate pairs into the pair data file
+    totalAdded += flushPhase2();
+    
+    // Phase 3: Get term frequency samples for all tokenized fields.
+    if( totalAdded > 0 )
+        flushPhase3();
+    else
+        progress(3, 100, 0);
+    
+  } // flushQueuedWords()
+
+  /**
+   * Performs the word-adding phase of the flush procedure.
+   * 
+   * @return    the number of pairs added
+   * @throws    IOException if something goes wrong
+   */
+  private int flushPhase1() throws IOException
+  {
+    // Open up the queue, and put a counter on it so we can give accurate
+    // progress messages.
+    //
     InputStream queueRaw = null;
     try {
         queueRaw = new FileInputStream(wordQueueFile);
     }
     catch( IOException e ) {
+        progress(1, 100, 0);
         return 0;
     }
     
     CountedInputStream queueCounted = new CountedInputStream(queueRaw);
     BufferedReader     queueReader  = new BufferedReader(new InputStreamReader(queueCounted, "UTF-8"));
     
+    // Initial progress message
+    progress(1, 0, 0);
+    
+    // Process each word in the queue
     long fileTotal = wordQueueFile.length();
     int prevPctDone = 0;
     totalAdded = 0;
@@ -250,8 +295,6 @@ public class SpellWriter {
         while( !eof ) {
           
             // Read in a block of words.
-            //System.out.print(" r");
-            
             ArrayList block = new ArrayList(BLOCK_SIZE);
             
             try {
@@ -278,7 +321,7 @@ public class SpellWriter {
         queueReader.close();
         queueCounted.close();
         queueRaw.close();
-        closeIndexWriter();
+        closeSpellIndexWriter();
     }
     
     // Now that we've added them, clear the queue (truncate the file). Try
@@ -287,10 +330,11 @@ public class SpellWriter {
     FileOutputStream tmp = new FileOutputStream(wordQueueFile);
     tmp.close();
     wordQueueFile.delete();
-
+    
     // All done.
+    progress(1, 100, totalAdded);
     return totalAdded;
-  } // flushQueuedWords()
+  }
 
   /**
    * Add a block of words to the index, being sure to avoid adding duplicates.
@@ -308,7 +352,7 @@ public class SpellWriter {
     Collections.sort(block);
     
     // Mark words that aren't duplicates and aren't in the index yet.
-    openIndexReader();
+    openSpellIndexReader();
     String prevWord = null;
     BitSet wordsToAdd = new BitSet(block.size());
     for (int i = 0; i < block.size(); i++) {
@@ -329,7 +373,7 @@ public class SpellWriter {
       // reader does fancy seeking and caching to make docFreq() pretty
       // fast.
       //
-      if (indexReader != null && indexReader.docFreq(new Term(F_WORD, word)) > 0)
+      if (spellIndexReader != null && spellIndexReader.docFreq(new Term(F_WORD, word)) > 0)
         continue;
 
       // Okay, got a live one. Mark it for addition to the index.
@@ -340,7 +384,7 @@ public class SpellWriter {
     // add them one at a time.
     //
     //System.out.print("w");
-    openIndexWriter();
+    openSpellIndexWriter();
     int nTotal = block.size();
     for (int i = 0; i < nTotal; i++) {
       // Only index words that have been marked to add.
@@ -350,25 +394,313 @@ public class SpellWriter {
       String word = (String) block.get(i);
       int len = word.length();
 
-      indexWriter.addDocument(createDocument(word, getMin(len), getMax(len)));
+      spellIndexWriter.addDocument(createDocument(word, getMin(len), getMax(len)));
       ++totalAdded;
       
       // Every 1000 words or so, update the progress counter 
       if( (i & 0x3FF) == 0 ) {
           int pctDone = (i * (pct2 - pct1) / nTotal) + pct1;
-          progress( pctDone, totalAdded );
+          progress( 1, pctDone, totalAdded );
       }
     }
     
     // Optimize the index so that future access (and block adds) are fast.
     //System.out.print( "o " );
-    indexWriter.optimize();
+    spellIndexWriter.optimize();
 
     // Finish progress counter
-    progress( pct2, totalAdded );
+    progress( 1, pct2, totalAdded );
     
   } // addBlock()
     
+  /**
+   * Performs the pair-adding phase of the flush procedure.
+   * 
+   * @return    the number of pairs added
+   * @throws    IOException if something goes wrong
+   */
+  private int flushPhase2() throws IOException
+  {
+    // Read in existing pair data (if any)
+    PairFreqWriter pairWriter = new PairFreqWriter();
+    File pairFreqFile = new File(spellIndexPath + "pairs.dat");
+    if (pairFreqFile.canRead())
+      pairWriter.add(pairFreqFile);
+    
+    // Open the queue, and put a counter on it so we can give accurate
+    // progress messages.
+    //
+    InputStream queueRaw = null;
+    try {
+        queueRaw = new FileInputStream(pairQueueFile);
+    }
+    catch( IOException e ) {
+        progress(2, 100, 0);
+        return 0;
+    }
+    
+    CountedInputStream queueCounted = new CountedInputStream(queueRaw);
+    BufferedReader     queueReader  = new BufferedReader(new InputStreamReader(queueCounted, "UTF-8"));
+    
+    // Initial progress message.
+    progress(2, 0, 0);
+    
+    // Process each pair in the queue.
+    long fileTotal = pairQueueFile.length();
+    int prevPctDone = 0;
+    totalAdded = 0;
+
+    try {
+        boolean eof = false;
+        while( !eof ) {
+            String line = queueReader.readLine();
+            if (line == null) {
+                eof = true;
+                break;
+            }
+
+            // Break up the four components of each line (separated by |)
+            StringTokenizer st = new StringTokenizer(line, "|");
+            String countTxt = st.hasMoreTokens() ? st.nextToken() : null;
+            String field = st.hasMoreTokens() ? st.nextToken() : null;
+            String word1 = st.hasMoreTokens() ? st.nextToken() : null;
+            String word2 = st.hasMoreTokens() ? st.nextToken() : null;
+            
+            if (word2 != null) {
+                try {
+                    pairWriter.add(field, word1, word2, Integer.parseInt(countTxt));
+                    ++totalAdded;
+                    
+                    // Every 4000 or so words, give some status feedback.
+                    // Only allocate 90%, leaving 10% for the final write.
+                    //
+                    if( (totalAdded & 0xFFF) == 0 ) {
+                        long filePos = queueCounted.nRead();
+                        int pctDone = (int) ((filePos+1) * 90 / (fileTotal+1));
+                        progress(2, pctDone, totalAdded);
+                    }
+                }
+                catch(NumberFormatException e) { /*ignore*/ }
+            }
+            
+        } // while
+    }
+    finally {
+        queueReader.close();
+        queueCounted.close();
+        queueRaw.close();
+    }
+    
+    // Write out the resulting data and replace the old data file, if any.
+    File newPairFreqFile = new File(spellIndexPath + "pairs.dat.new");
+    newPairFreqFile.delete();
+    pairWriter.save(newPairFreqFile);
+    if (pairFreqFile.canRead() && !pairFreqFile.delete())
+        throw new IOException("Could not delete old pair data file -- permission problem?");
+    if (!newPairFreqFile.renameTo(pairFreqFile))
+        throw new IOException("Could not rename new pair data file -- permission problem?");
+    
+    // Clear out (and try to delete) the queue file.
+    FileOutputStream tmp = new FileOutputStream(pairQueueFile);
+    tmp.close();
+    pairQueueFile.delete();
+    
+    // All done.
+    progress(2, 100, totalAdded);
+    return totalAdded;
+  }
+  
+  /** 
+   * Get term frequency samples for all tokenized fields.
+   *  
+   * @return the number of fields sampled
+   * @throws IOException if something goes wrong.*/
+  private int flushPhase3() throws IOException
+  {
+    File sampleFile = new File(spellIndexPath + "freqSamples.dat");
+    File newSampleFile = new File(spellIndexPath + "freqSamples.dat.new");
+    int nFields = 0;
+    totalAdded = 0;
+    
+    // Initial progress message
+    progress(3, 0, 0);
+
+    // Make a list of all tokenized fields.
+    IndexReader mainIndexReader = null;
+    
+    try 
+    {
+        mainIndexReader = IndexReader.open( mainIndexPath );
+        TermDocs docs = mainIndexReader.termDocs();
+        Collection fields = mainIndexReader.getFieldNames(true); // indexed only
+        StringList tokenizedFields = new StringList();
+        for (Iterator iter = fields.iterator(); iter.hasNext(); ) {
+            String fieldName = (String) iter.next();
+            
+            // The only way to tell if a field is tokenized is to look at a
+            // document that contains it. And to do that, we need to find
+            // one. That means we need a term for the field.
+            //
+            TermEnum terms = mainIndexReader.terms( new Term(fieldName, "") );
+            if (!terms.next()) {
+                terms.close();
+                continue;
+            }
+            Term t = terms.term();
+            terms.close();
+            if (!t.field().equals(fieldName))
+                continue;
+            
+            // Finally, we have a term. Get the first document using that term.
+            docs.seek(terms);
+            if (!docs.next())
+                continue;
+            int docId = docs.doc();
+            Document doc = mainIndexReader.document(docId);
+            
+            // Okay, see if this field was tokenized. If not, skip it.
+            Field field = doc.getField(fieldName);
+            if (field == null || !field.isTokenized())
+                continue;
+            
+            // Got a tokenized field... remember it.
+            tokenizedFields.add(fieldName);
+        }
+        docs.close();
+        nFields = tokenizedFields.size();
+        
+        // No fields? Nothing to do.
+        if (nFields == 0) {
+            progress(3, 100, 0);
+            return 0;
+        }
+        
+        // Now get samples for each one, and write them to a structured file.
+        newSampleFile.delete();
+        StructuredFile sf = StructuredFile.create(newSampleFile);
+        for (int i = 0; i < nFields; i++) {
+            progress(3, i * 100 / nFields, totalAdded);
+            String fieldName = tokenizedFields.get(i);
+            SubStoreWriter sub = sf.createSubStore(fieldName + ".samples");
+            totalAdded += writeFreqSamples(mainIndexReader, fieldName, sub);
+            sub.close();
+        }
+        sf.close();
+    }
+    finally {
+        if (mainIndexReader != null)
+            mainIndexReader.close();
+        mainIndexReader = null;
+    }
+    
+    // Replace the old sample file (if there is one)
+    if (sampleFile.canRead() && !sampleFile.delete())
+        throw new IOException("Could not delete old term sample file -- permission problem?");
+    if (!newSampleFile.renameTo(sampleFile))
+        throw new IOException("Could not rename new term sample file -- permission problem?");
+    
+    // All done.
+    progress(3, 100, totalAdded);
+    return totalAdded;
+  }
+
+  /** Write term frequency samples for the given field. */
+  private int writeFreqSamples(IndexReader reader, String fieldName, SubStoreWriter writer)
+      throws IOException 
+  {
+    // Read in all the term frequencies for this field.
+    IntList rawFreqs = new IntList( 10000 );
+    TermEnum terms = reader.terms( new Term(fieldName, "") );
+    long totalFreq = 0;
+    int nTerms = 0;
+    while( terms.next() ) {
+        Term t = terms.term();
+        if( !t.field().equals(fieldName) )
+            break;
+        
+        // Skip numeric, two-letter, one-letter terms (and others if client
+        // overrides shouldSkipTerm()
+        //
+        if( shouldSkipTerm(t.text()) )
+            continue;
+        
+        // Record the frequency of this term.
+        int docFreq = terms.docFreq();
+        rawFreqs.add( docFreq );
+        totalFreq += docFreq;
+        ++nTerms;
+    } // while
+    
+    terms.close();
+    
+    // Calculate the mean of the term frequencies
+    double avgFreq = totalFreq / (double)rawFreqs.size();
+    
+    // Eliminate all at- or below-average frequencies.
+    IntList aboveAvgFreqs = new IntList( rawFreqs.size() );
+    for( int i = 0; i < rawFreqs.size(); i++ ) {
+        int freq = rawFreqs.get( i );
+        if( freq > avgFreq )
+            aboveAvgFreqs.add( freq );
+    }
+    
+    System.out.println( "Field " + fieldName + ": " + aboveAvgFreqs.size() + 
+                        " above-avg terms out of " + rawFreqs.size() );
+    
+    // Sort the array by frequency.
+    aboveAvgFreqs.sort();
+    
+    // If more than 1000 entries, sample it down.
+    final int MAX_SAMPLES = 1000;
+    IntList finalFreqs;
+    if (aboveAvgFreqs.size() < MAX_SAMPLES)
+        finalFreqs = aboveAvgFreqs;
+    else
+    {
+        finalFreqs = new IntList(MAX_SAMPLES);
+        for( int i = 0; i < MAX_SAMPLES; i++ ) {
+            int pos = (int) (((long)i) * aboveAvgFreqs.size() / MAX_SAMPLES);
+            finalFreqs.add(aboveAvgFreqs.get(pos));
+        }
+    }
+
+    // Write out the data
+    writer.writeInt(nTerms);
+    writer.writeInt(finalFreqs.size());
+    for (int i = 0; i < finalFreqs.size(); i++)
+        writer.writeInt(finalFreqs.get(i));
+    
+    // All done.
+    return nTerms;
+  } // writeFreqSamples()
+
+  /**
+   * Determines if a given term should be skipped (not considered for spelling
+   * suggestions). Can be overridden for finer control.
+   * 
+   * @param term    the term to consider
+   * @return        true if the term should be skipped
+   */
+  public boolean shouldSkipTerm(String term)
+  {
+    if (term.length() < 2)
+      return true;
+    
+    // Skip words with digits. We seldom want to correct with these,
+    // and they introduce a big burden on indexing. Also, skip
+    // all n-grams.
+    //
+    for (int i = 0; i < term.length(); i++) {
+        char c = term.charAt(i);
+        if (Character.isDigit(c))
+            return true;
+        if (c == '~')
+            return true;
+    }
+    
+    return false;
+  }
+
   /** Opens the queue writer, closing the queue reader if necessary. */
   private void openQueueWriters() throws IOException {
     // If already open, skip re-opening.
@@ -404,52 +736,52 @@ public class SpellWriter {
    * can't be opened (for instance, if the index doesn't exist), the exception
    * is ignored and 'reader' is simply set to null.
    */
-  private void openIndexReader() throws IOException 
+  private void openSpellIndexReader() throws IOException 
   {
     // If already open, do nothing.
-    if (indexReader != null)
+    if (spellIndexReader != null)
         return;
     
     // If no directory yet, do nothing.
-    if( indexDir == null )
+    if( spellIndexDir == null )
         return;
 
     // Close the writer, open the reader.
-    closeIndexWriter();
+    closeSpellIndexWriter();
     try {
-        if( IndexReader.indexExists(indexDir) )
-            indexReader = IndexReader.open( indexDir );
+        if( IndexReader.indexExists(spellIndexDir) )
+            spellIndexReader = IndexReader.open( spellIndexDir );
     } catch (IOException e) { }
   } // openIndexReader()
 
   /** Closes the IndexReader if it's open */
-  private void closeIndexReader() throws IOException 
+  private void closeSpellIndexReader() throws IOException 
   {
-    if (indexReader != null) {
-        indexReader.close();
-        indexReader = null;
+    if (spellIndexReader != null) {
+        spellIndexReader.close();
+        spellIndexReader = null;
     }
   } // closeIndexReader()
 
   /** Opens the IndexWriter, closing the IndexReader if necessary. */
-  private void openIndexWriter() throws IOException {
+  private void openSpellIndexWriter() throws IOException {
     // Close the reader if it's open.
-    closeIndexReader();
+    closeSpellIndexReader();
     
     // Open the writer now.
-    indexWriter = new IndexWriter(indexDir, new WhitespaceAnalyzer(), 
-        !IndexReader.indexExists(indexDir));
+    spellIndexWriter = new IndexWriter(spellIndexDir, new WhitespaceAnalyzer(), 
+        !IndexReader.indexExists(spellIndexDir));
 
     // Set some factors that will help speed things up.
-    indexWriter.mergeFactor = 300;
-    indexWriter.minMergeDocs = 150;
+    spellIndexWriter.mergeFactor = 300;
+    spellIndexWriter.minMergeDocs = 150;
   } // openIndexWriter()
 
   /** Closes the IndexWriter if it's open */
-  private void closeIndexWriter() throws IOException {
-    if (indexWriter != null) {
-        indexWriter.close();
-        indexWriter = null;
+  private void closeSpellIndexWriter() throws IOException {
+    if (spellIndexWriter != null) {
+        spellIndexWriter.close();
+        spellIndexWriter = null;
     }
   } // closeIndexWriter()
 

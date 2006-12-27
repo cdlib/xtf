@@ -22,23 +22,23 @@ package org.apache.lucene.search.spell;
  * as part of the Melvyl Recommender Project.
  */
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.Directory;
-import org.cdlib.xtf.textEngine.Constants;
+import org.apache.lucene.store.FSDirectory;
+import org.cdlib.xtf.util.StructuredFile;
+import org.cdlib.xtf.util.SubStoreReader;
 
 /**
  * <p>
@@ -56,7 +56,7 @@ public class SpellReader
   public static final String F_WORD="word";
 
   /** The spell index directory */
-  Directory spellIndex;
+  File spellDir;
 
   /** Boost value for start gram */
   private float bStart=2.0f;
@@ -83,8 +83,8 @@ public class SpellReader
   private static final WeakHashMap termFreqCache = new WeakHashMap();
 
   /** Construct a reader for the given spelling index directory */
-  public SpellReader (Directory spellIndex) {
-    this.spellIndex = spellIndex;
+  public SpellReader (File spellIndexDir) {
+    this.spellDir = spellIndexDir;
   }
 
   /** Closes any open files and/or resources associated with the SpellReader */
@@ -222,7 +222,7 @@ public class SpellReader
     int goalFreq[]    = null;
     int termFreqs[][] = null;
     
-    if (false && ir != null) {
+    if (ir != null) {
         docFreq = new int[fields.length];
         goalFreq = new int[fields.length];
         termFreqs = new int[fields.length][];
@@ -308,14 +308,14 @@ public class SpellReader
         int    bestFreq  = 0;
         float  bestBoost = -1;
         String bestField = null;
-        /*
+        
         for (int fn=0; fn<fields.length; fn++)
         {
             // Get the word frequency from the index
             int freq = ir.docFreq(new Term(fields[fn], sugword.string));
 
             // Don't suggest a word that is not present in the field
-            if ((goalFreq[fn] >freq) || freq<1)  
+            if ((goalFreq[fn]>freq) || freq<1)  
                 continue;
             
             // If this word is more frequent than normal, give it a nudge up.
@@ -330,17 +330,13 @@ public class SpellReader
                 boost = 0.10f;
             else if (freq >= termFreqs[fn][4] ) // 1
                 boost = 0.05f;
-
-            if (boost > bestBoost) {
+            
+            if (freq > bestFreq) {
                 bestField = fields[fn];
                 bestBoost = boost;
                 bestFreq  = freq;
             }
         } // for fn
-        */
-        bestField = fields[0];
-        bestFreq  = 1;
-        bestBoost = 0.0f;
         
         if (bestField == null)
             continue;
@@ -373,6 +369,41 @@ public class SpellReader
     }
     return list;
   }
+
+  /**
+   * Keyword-oriented spelling suggestion mechanism. For an ordered list of
+   * terms which can appear in any of the specified fields, come up with
+   * suggestions that have a good chance of improving  the precision and/or
+   * recall.
+   * 
+   * @param terms           Ordered list of query terms
+   * @param fields          Unordered list of fields they can appear in
+   * @param indexReader     Used to obtain term frequencies
+   * @return                One suggestion per term. If unchanged, there
+   *                        was no better suggestion. If null, it is
+   *                        suggested that the term be deleted.
+   */
+  public String[] suggestKeywords(String[] terms, String[] fields, IndexReader indexReader) 
+    throws IOException
+  {
+    String[] out = new String[terms.length];
+    
+    // For now, just make a simple suggestion for each term. Later we'll do 
+    // fancy things with pair frequencies.
+    //
+    for( int i = 0; i < terms.length; i++ ) {
+        SuggestWord[] sugg = suggestSimilar( terms[i], 1,
+                                             indexReader,
+                                             fields,
+                                             1.0f, 0.5f );
+        if( sugg == null || sugg.length == 0 )
+            out[i] = terms[i];
+        else
+            out[i] = sugg[0].string;
+    }
+    
+    return out;
+  } // suggestKeywords()
   
   /** Get the term frequencies array for the given field. */
   private int[] getTermFreqs(IndexReader reader, String fieldName)
@@ -391,107 +422,63 @@ public class SpellReader
     if (res != null)
       return res;
 
-    // Calculate the mean of the term frequencies
-    long totalFreq = 0;
-    int nTerms = 0;
-    TermEnum terms = reader.terms( new Term(fieldName, "") );
-    while( terms.next() ) {
-        if (shouldSkipTerm(terms.term().text()))
-            continue;
-        totalFreq += terms.docFreq();
-        ++nTerms;
-    }
-    terms.close();
-    double avgFreq = totalFreq / (double)nTerms;
-    
-    // Okay, we have to build a new one. Sample at least 10000 above-average
-    // terms (if there are that many.)
-    //
-    final int BUF_SIZE = 20000;
-    int[] buffer = new int[BUF_SIZE];
-    int termsPerSlot = 1;
-    int pos = 0;
-    int cycle = 0;
-    int cutoff = (int) avgFreq;
-    int nSampledTerms = 0;
-    terms = reader.terms( new Term(fieldName, "") );
-    while( terms.next() ) 
-    {
-        if (shouldSkipTerm(terms.term().text()))
-            continue;
-        
-        int freq = terms.docFreq();
-        if( freq <= cutoff )
-            continue;
-        
-        if( ++cycle == termsPerSlot ) 
-        {
-            cycle = 0;
-            buffer[pos++] = freq;
-            
-            // If the buffer is full, toss half the data and increase the 
-            // terms per slot.
-            //
-            if( pos == BUF_SIZE ) {
-                for( int i = 0; i < pos/2; i++ )
-                    buffer[i] = buffer[i*2];
-                termsPerSlot *= 2;
-                pos /= 2;
-            }
-        }
-        ++nSampledTerms;
-    }
-
-    System.out.println( "Field " + fieldName + ": " + nSampledTerms + " above-avg terms out of " + nTerms );
-    
+    // Default if no frequencies found will be to turn off frequency boosting
     res = new int[5];
-    
-    // If not enough terms, turn off frequency boosting.
-    if( nTerms < 500 )
-        res[0] = res[1] = res[2] = res[3] = res[4] = Integer.MAX_VALUE;
-    else
-    {
-        // Sort the frequencies, and pick out the levels of interest to us.
-        Arrays.sort( buffer, 0, pos );
-        res[0] = buffer[(int) (pos * 0.99)]; // top 1%
-        res[1] = buffer[(int) (pos * 0.90)]; // top 10%
-        res[2] = buffer[(int) (pos * 0.50)]; // top 50%
-        res[3] = buffer[(int) (pos * 0.25)]; // top 75%
-        res[4] = cutoff;                     // all above-avg words
-    }
-      
+    res[0] = res[1] = res[2] = res[3] = res[4] = Integer.MAX_VALUE;
+
     // Store the new array in the cache, so we don't have to build it again.
     readerCache.put(fieldName, res);
+
+    // Find the frequency samples file and open it
+    File freqSamplesFile = new File(spellDir, "freqSamples.dat");
+    if (!freqSamplesFile.canRead())
+        throw new IOException("Cannot open frequency samples file '" + freqSamplesFile + "'");
     
+    StructuredFile sf = StructuredFile.open(freqSamplesFile);
+    int nSamples;
+    int[] samples;
+    try {
+      // Find the subfile with frequency samples of this field
+      SubStoreReader sub = null;
+      try {
+        sub = sf.openSubStore(fieldName + ".samples");
+        
+        // If there were less than 500 terms to sample, turn off frequency
+        // boosting for this field.
+        //
+        int nTerms = sub.readInt();
+        if (nTerms < 500)
+          return res;
+        
+        // Read in the samples.
+        nSamples = sub.readInt();
+        samples = new int[nSamples];
+        for (int i=0; i<nSamples; i++)
+          samples[i] = sub.readInt();
+      }
+      catch (IOException e) {
+        return res;
+      }
+      finally {
+        if (sub != null)
+          sub.close();
+      }
+    }
+    finally {
+      sf.close();
+    }
+    
+    // Pick out the levels of most interest to us
+    res[0] = samples[(int) (nSamples * 0.99)]; // top 1%
+    res[1] = samples[(int) (nSamples * 0.90)]; // top 10%
+    res[2] = samples[(int) (nSamples * 0.50)]; // top 50%
+    res[3] = samples[(int) (nSamples * 0.25)]; // top 75%
+    res[4] = samples[0];                     // all above-avg words
+      
     // All done.
     return res;
 
   } // getTermFreqs()
-
-  private static boolean shouldSkipTerm(String term)
-  {
-    if (term.length() < 2)
-      return true;
-    
-    if (term.charAt(0) == Constants.FIELD_START_MARKER)
-        return true;
-    if (term.charAt(term.length()-1) == Constants.FIELD_END_MARKER)
-        return true;
-    
-    // Skip words with digits. We seldom want to correct with these,
-    // and they introduce a big burden on indexing. Also, skip
-    // all n-grams.
-    //
-    for (int i = 0; i < term.length(); i++) {
-        char c = term.charAt(i);
-        if (Character.isDigit(c))
-            return true;
-        if (c == '~')
-            return true;
-    }
-    
-    return false;
-  }
 
   /**
    * Add a clause to a boolean query.
@@ -550,7 +537,7 @@ public class SpellReader
   
   private void openSearcher() throws IOException {
     if (searcher == null)
-        searcher = new IndexSearcher(spellIndex);
+        searcher = new IndexSearcher(FSDirectory.getDirectory(spellDir, false));
   }
 
   

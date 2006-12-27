@@ -35,17 +35,20 @@ package org.cdlib.xtf.textEngine;
  * as part of the Melvyl Recommender Project.
  */
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spell.SuggestWord;
-
 /**
  * Contains one or more suggestions for a specific term in a query.
  */
 public class SpellingSuggestion 
 {
   /** The original term from the query */
-  public Term           origTerm;
+  public String origTerm;
   
-  /** Suggested alternatives, in rank order */
-  public SuggestWord[]  altWords;
+  /** List of fields in which the original term was queried */
+  public String[] fields;
+
+  /** 
+   * The suggested alternative term... might be null if original term
+   * should be deleted.
+   */
+  public String suggestedTerm;
 } // class SpellingSuggestion

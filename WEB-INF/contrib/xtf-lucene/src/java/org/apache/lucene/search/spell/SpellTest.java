@@ -36,6 +36,7 @@ package org.apache.lucene.search.spell;
  */
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -191,7 +192,7 @@ public class SpellTest
           }
       }
     };
-    spellWriter.open( "spell" );
+    spellWriter.open( "index", "spell" );
     spellWriter.clearIndex();
     
     for( int i = 0; i < pairList.size(); i++ ) {
@@ -212,8 +213,7 @@ public class SpellTest
     long startTime = System.currentTimeMillis();
     
     // Open the spelling index.
-    FSDirectory spellDir = FSDirectory.getDirectory( "spell", false );
-    SpellReader spellReader = new SpellReader( spellDir );
+    SpellReader spellReader = new SpellReader( new File("spell") );
     
     // Open the frequency index.
     FSDirectory indexDir = FSDirectory.getDirectory( "index", false );

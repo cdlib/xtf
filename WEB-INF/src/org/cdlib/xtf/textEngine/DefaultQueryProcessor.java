@@ -38,7 +38,11 @@ package org.cdlib.xtf.textEngine;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -393,9 +397,6 @@ public class DefaultQueryProcessor extends QueryProcessor
     private void spellCheck( QueryRequest req, QueryResult res )
         throws IOException
     {
-        // First, gather a list of all the query terms.
-        ArrayList queryTerms = gatherTerms( req.query );
-        
         // We can use a handy reference to the spellcheck params, and to the
         // field list.
         //
@@ -421,37 +422,52 @@ public class DefaultQueryProcessor extends QueryProcessor
         if( params.totalDocsCutoff > 0 && totalDocs > params.totalDocsCutoff )
             return;
         
-        // Make suggestions for each term
-        ArrayList out = new ArrayList();
-        for( int i = 0; i < queryTerms.size(); i++ ) 
+        // Gather the query terms, grouped by field set.
+        LinkedHashMap fieldsMap = gatherKeywords( req.query, params.fields );
+        
+        // Make suggestions for each field set.
+        LinkedHashMap out = new LinkedHashMap();
+        for( Iterator fi = fieldsMap.keySet().iterator(); fi.hasNext(); )
         {
-            // Check if this term's field falls within the list of fields 
-            // for which we want suggestions. If not, skip it.
-            //
-            Term term = (Term) queryTerms.get( i );
-            if( params.fields != null && !params.fields.contains(term.field()) )
-                continue;
-          
-            // Get some suggestions
-            SpellingSuggestion sugg = new SpellingSuggestion();
-            sugg.origTerm = term;
-            sugg.altWords = spellReader.suggestSimilar(
-                term.text(),
-                req.spellcheckParams.suggestionsPerTerm,
-                indexReader,
-                term.field(),
-                params.termOccurrenceFactor,
-                params.accuracy );
+            // Make a list of fields and terms.
+            LinkedHashSet fieldsSet = (LinkedHashSet)fi.next(); 
+            String[] fields = (String[]) fieldsSet.toArray( new String[fieldsSet.size()] );
             
-            // If any alternatives suggested, record the result.
-            if( sugg.altWords.length > 0 )
-                out.add( sugg );
-        } // for i
+            LinkedHashSet termsSet = (LinkedHashSet)fieldsMap.get( fieldsSet );
+            String[] terms = (String[]) termsSet.toArray( new String[termsSet.size()] );
+            
+            // Get some suggestions
+            String[] suggested = 
+                spellReader.suggestKeywords( terms, fields, indexReader );
+            assert suggested.length == terms.length;
+            
+            // Record each suggestion.
+            for( int i = 0; i < suggested.length; i++ ) 
+            {
+                // Skip duplicated in different field sets... retain only the
+                // first one.
+                //
+                if( out.containsKey(terms[i]) )
+                    continue;
+                
+                // Skip suggestions that don't change anything.
+                if( suggested[i].equals(terms[i]) )
+                    continue;
+                
+                // Okay, record it.
+                SpellingSuggestion sugg = new SpellingSuggestion();
+                sugg.origTerm = terms[i];
+                sugg.fields = fields;
+                sugg.suggestedTerm = suggested[i];
+                out.put( terms[i], sugg );
+            }
+        } // for fi
         
         // Convert to an array.
         if( out.size() > 0 ) {
+            Collection values = out.values();
             res.suggestions = (SpellingSuggestion[])
-                out.toArray( new SpellingSuggestion[out.size()] );
+                out.values().toArray( new SpellingSuggestion[out.values().size()] );
         }
         
     } // spellCheck()
@@ -503,6 +519,85 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         return list;
     } // gatherTerms()
+
+    /**
+     * Make a list of all the terms present in the given query,
+     * grouped by field set.
+     * 
+     * @param query          The query to traverse
+     * @param desiredFields  The set of fields to limit to. If null, all
+     *                       fields are considered.
+     *                       
+     * @return  An ordered map consisting of entries of a key and a
+     *          value. The key is an ordered set of field names.
+     *          The value is an ordered set of words.
+     */
+    private LinkedHashMap gatherKeywords( Query query, 
+                                          final Set desiredFields )
+    {
+        // Make an ordered set of words, each with an ordered list of fields
+        final LinkedHashMap termMap = new LinkedHashMap();
+        
+        XtfQueryTraverser trav = new XtfQueryTraverser() {
+          private void add( Term t ) {
+              final String field = t.field();
+              final String word = t.text();
+              if( desiredFields != null && !desiredFields.contains(field) )
+                  return;
+              if( !termMap.containsKey(word) )
+                  termMap.put( word, new LinkedHashSet() );
+              ((LinkedHashSet) termMap.get(word)).add( field );
+          }
+          public void traverseQuery( Query q ) {
+              // Skip queries boosted to nothing
+              if( q.getBoost() > 0.001f )
+                  super.traverseQuery( q );
+          }
+          protected void traverse( TermQuery q ) {
+              add( q.getTerm() );
+          }
+          protected void traverse( SpanTermQuery q ) {
+              add( q.getTerm() );
+          }
+          protected void traverse(BooleanQuery bq) {
+              BooleanClause[] clauses = bq.getClauses();
+              for (int i = 0; i < clauses.length; i++) {
+                  if( !clauses[i].prohibited )
+                      traverseQuery(clauses[i].query);
+              }
+          } // traverse()
+          protected void traverse(SpanChunkedNotQuery nq) {
+              traverseQuery(nq.getInclude());
+              // No: traverseQuery(nq.getExclude());
+          } // traverse()
+          protected void traverse(SpanNotQuery nq) {
+            traverseQuery(nq.getInclude());
+            // No: traverseQuery(nq.getExclude());
+          } // traverse()
+          protected void traverse(SpanNotNearQuery nq) {
+            traverseQuery(nq.getInclude());
+            // No: traverseQuery(nq.getExclude());
+          } // traverse()
+        };
+        trav.traverseQuery( query );
+        
+        // Now invert: for each unique set of fields, make an ordered list
+        // of the keywords.
+        //
+        LinkedHashMap fieldsMap = new LinkedHashMap();
+        for( Iterator ti = termMap.keySet().iterator(); ti.hasNext(); ) 
+        {
+            String word = (String) ti.next();
+            LinkedHashSet fieldsSet = (LinkedHashSet) termMap.get(word);
+
+            if( !fieldsMap.containsKey(fieldsSet) )
+                fieldsMap.put( fieldsSet, new LinkedHashSet() );
+            ((LinkedHashSet) fieldsMap.get(fieldsSet)).add( word );
+        }
+        
+        // All done.
+        return fieldsMap;
+    } // gatherKeywords()
 
     /**
      * Create the GroupCounts objects for the given query request. Also handles

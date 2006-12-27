@@ -9,7 +9,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.lucene.search.Explanation;
-import org.apache.lucene.search.spell.SuggestWord;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.facet.ResultFacet;
 import org.cdlib.xtf.textEngine.facet.ResultGroup;
@@ -309,19 +308,17 @@ public class QueryResult
         for( int i = 0; i < suggestions.length; i++ )
         {
             SpellingSuggestion sugg = suggestions[i];
-            buf.append( "<term field=\"" + sugg.origTerm.field() + "\" " +
-                              "term=\"" + sugg.origTerm.text() + "\">\n" );
-            
-            for( int j = 0; j < sugg.altWords.length; j++ ) 
-            {
-                SuggestWord alt = sugg.altWords[j];
-                buf.append( "<suggestion rank=\"" + (j+1) + "\" " +
-                                        "term=\"" + alt.string + "\" " +
-                                        "score=\"" + alt.score + "\" " +
-                                        "freq=\"" + alt.freq + "\"/>\n" );
+            StringBuffer fieldsBuf = new StringBuffer();
+            for( int j = 0; j < sugg.fields.length; j++ ) {
+                if( fieldsBuf.length() > 0 )
+                    fieldsBuf.append( "," );
+                fieldsBuf.append( sugg.fields[j] );
             }
-            
-            buf.append( "</term>\n" );
+            buf.append( "  <suggestion" +
+                        " originalTerm=\"" + sugg.origTerm + "\"" +
+                        " fields=\"" + fieldsBuf + "\"" +
+                        " suggestedTerm=\"" + sugg.suggestedTerm + "\"" +
+                        "/>\n" );
         } // for i
         
         buf.append( "</spelling>\n" );
