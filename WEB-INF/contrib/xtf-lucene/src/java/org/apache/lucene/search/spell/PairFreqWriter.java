@@ -62,8 +62,11 @@ public class PairFreqWriter
   /** One count per key */
   private IntList  counts = new IntList();
   
-  /** Tracks whether data has been sorted. If not, needs re-sort */
-  private boolean sorted = true;
+  /** Tracks the section of the data that has been sorted. */
+  private int sortTop = 0;
+  
+  /** Upper limit on the number of unsorted entries */
+  private static final int MAX_UNSORTED = 1000000;
   
   /** Magic number stored in file when data is written */
   static final long MAGIC_NUM = ((long)'P') << (7*8) |
@@ -88,9 +91,43 @@ public class PairFreqWriter
   /** Add a count for a given hash code and count */
   private void add(long hash, int count)
   {
+    // Check within the sorted section to see if we already have this.
+    int pos = searchSorted(hash);
+    if (pos >= 0) {
+        counts.set(pos, counts.get(pos) + count);
+        return;
+    }
+    
+    // Gotta add a new entry.
     keys.add(hash);
     counts.add(count);
-    sorted = false;
+    
+    // Every once in a while, sort and de-dupe to keep our memory footprint
+    // reasonable.
+    //
+    if (keys.size() - sortTop > MAX_UNSORTED)
+        sort();
+  }
+
+  /** Search within the sorted keys for the given one. */
+  private int searchSorted(long hash)
+  {
+    int low = 0;
+    int high = sortTop - 1;
+    
+    while (low <= high) {
+        int mid = (low + high) >> 1;
+        long probe = keys.get(mid);
+        
+        if (probe < hash)
+          low = mid + 1;
+        else if (probe > hash)
+          high = mid - 1;
+        else
+          return mid;
+    }
+    
+    return -1;
   }
   
   /** Get the count for a given field/word pair, or zero if not found */
@@ -161,7 +198,7 @@ public class PairFreqWriter
       
       // If we weren't appending, there's no need to re-sort.
       if (prevSize == 0)
-        sorted = true;
+        sortTop = keys.size();
     }
     finally {
       s.close();
@@ -204,7 +241,7 @@ public class PairFreqWriter
   private void sort()
   {
     // Already sorted, or no data? Forget it.
-    if (sorted || keys.size() == 0)
+    if (sortTop == keys.size())
       return;
     
     // First step: sort both lists.
@@ -234,7 +271,7 @@ public class PairFreqWriter
     counts.resize(dp);
     
     // Lastly, remember that we don't have to sort again.
-    sorted = true;
+    sortTop = keys.size();
   }
  
 } // class
