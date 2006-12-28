@@ -98,7 +98,7 @@ public class SpellWriter {
   private static final Boolean trueValue = new Boolean(true);
 
   /** Max # of queued words to process at a time */
-  private static final int BLOCK_SIZE = 50000;
+  private static final int BLOCK_SIZE = 1000000;
   
   /** Number of words added during flush */
   private int totalAdded;
@@ -316,6 +316,10 @@ public class SpellWriter {
             addBlock(block, prevPctDone, pctDone);
             prevPctDone = pctDone;
         } // while
+        
+        // Optimize the index so that future access (and block adds) are fast.
+        //System.out.print( "o " );
+        spellIndexWriter.optimize();
     }
     finally {
         queueReader.close();
@@ -404,10 +408,6 @@ public class SpellWriter {
       }
     }
     
-    // Optimize the index so that future access (and block adds) are fast.
-    //System.out.print( "o " );
-    spellIndexWriter.optimize();
-
     // Finish progress counter
     progress( 1, pct2, totalAdded );
     
