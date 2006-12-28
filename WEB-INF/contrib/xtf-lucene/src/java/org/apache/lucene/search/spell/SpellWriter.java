@@ -663,6 +663,10 @@ public class SpellWriter {
             finalFreqs.add(aboveAvgFreqs.get(pos));
         }
     }
+    
+    // Make sure the very first sample reflects the average
+    if (finalFreqs.size() > 0)
+        finalFreqs.set(0, (int)avgFreq);
 
     // Write out the data
     writer.writeInt(nTerms);
@@ -811,6 +815,7 @@ public class SpellWriter {
   {
     String ret = doubleMetaphone.doubleMetaphone( word );
     
+    /*
     String beg = word.substring(0, 1).toUpperCase();
     if( !ret.startsWith(beg) )
         ret = beg + ret;
@@ -818,6 +823,7 @@ public class SpellWriter {
     String end = word.substring(word.length()-1).toUpperCase();
     if( !ret.endsWith(end) )
         ret += end;
+    */
     
     return ret;
   }
@@ -836,9 +842,7 @@ public class SpellWriter {
       Document doc=new Document();
       doc.add(new Field(F_WORD, text, true, true, false)); // orig term
       addGram(text, doc, ng1, ng2);
-      //addTrans(text, doc);
       addMetaphone(text, doc);
-      //addDrop(text, doc);
       return doc;
   }
 
@@ -864,41 +868,9 @@ public class SpellWriter {
   }
 
 
-  static void addTrans (String text, Document doc) {
-      final int len=text.length();
-      final char[] ch = text.toCharArray();
-      final String key="trans";
-
-      char tmp;
-      for (int i=0; i<len-1; i++) {
-          tmp = ch[i];
-          ch[i] = ch[i+1];
-          ch[i+1] = tmp;
-          
-          doc.add(new Field(key, new String(ch), false, true, false));
-          
-          tmp = ch[i];
-          ch[i] = ch[i+1];
-          ch[i+1] = tmp;
-      }
-  }
-
-
   static void addMetaphone (String text, Document doc) {
       String metaPhone = calcMetaphone(text);
       doc.add(new Field("metaphone", metaPhone, false, true, false));
-  }
-
-
-  static void addDrop (String text, Document doc) {
-      final int len=text.length();
-      final String key="drop";
-      for (int i=0; i<len; i++) {
-          String dropped = text.substring(0, i) + 
-                           text.substring(Math.min(len, i+1));
-          if( dropped.length() > 0 )
-              doc.add(new Field(key, dropped, false, true, false));
-      }
   }
 
 
