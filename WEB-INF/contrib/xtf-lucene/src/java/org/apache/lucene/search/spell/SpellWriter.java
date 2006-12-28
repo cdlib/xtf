@@ -24,7 +24,6 @@ package org.apache.lucene.search.spell;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -54,8 +53,10 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.util.CountedInputStream;
 import org.cdlib.xtf.util.FastStringCache;
+import org.cdlib.xtf.util.Hash64;
 import org.cdlib.xtf.util.IntList;
 import org.cdlib.xtf.util.IntegerValues;
+import org.cdlib.xtf.util.LongSet;
 import org.cdlib.xtf.util.StringList;
 import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.SubStoreWriter;
@@ -97,9 +98,6 @@ public class SpellWriter {
   /** Boolean object to mark words in cache */
   private static final Boolean trueValue = new Boolean(true);
 
-  /** Max # of queued words to process at a time */
-  private static final int BLOCK_SIZE = 1000000;
-  
   /** Number of words added during flush */
   private int totalAdded;
   
@@ -285,40 +283,58 @@ public class SpellWriter {
     // Initial progress message
     progress(1, 0, 0);
     
-    // Process each word in the queue
+    // Make a list of the hash codes of every word in the existing dictionary.
+    LongSet existingWords = new LongSet(500000);
+    openSpellIndexReader();
+    TermEnum terms = spellIndexReader.terms( new Term(F_WORD, "") );
+    while (terms.next()) {
+        String term = terms.term().text();
+        long hash = Hash64.hash(term);
+        existingWords.add(hash);
+    }
+    terms.close();
+    
+    // Process each word in the queue, only adding those that aren't already
+    // in the dictionary.
+    //
     long fileTotal = wordQueueFile.length();
     int prevPctDone = 0;
     totalAdded = 0;
 
     try {
+        openSpellIndexWriter();
         boolean eof = false;
-        while( !eof ) {
-          
-            // Read in a block of words.
-            ArrayList block = new ArrayList(BLOCK_SIZE);
+        int nScanned = 0;
+        while( true ) {
+           
+            String word = queueReader.readLine();
+            if (word == null)
+                break;
             
-            try {
-                while (block.size() < BLOCK_SIZE && !eof) {
-                    String word = queueReader.readLine();
-                    if (word == null)
-                        eof = true;
-                    else
-                        block.add(word);
-                }
+            // If we already have this word in the dictionary, skip it.
+            long hash = Hash64.hash(word);
+            if (existingWords.contains(hash))
+                continue;
+            
+            // Add it to the dictionary, and to our list of existing words.
+            int len = word.length();
+            spellIndexWriter.addDocument(createDocument(word, getMin(len), getMax(len)));
+            existingWords.add(hash);
+            ++totalAdded;
+            
+            // Every 4000 words or so, update the progress counter 
+            if( (nScanned++ & 0xFFF) == 0 ) {
+                long filePos = queueCounted.nRead();
+                int pctDone = (int) ((filePos+1) * 95 / (fileTotal+1));
+                progress( 1, pctDone, totalAdded );
             }
-            catch (EOFException e) { eof = true; }
-        
-            // Calculate the percent that will be done after this block.
-            long filePos = queueCounted.nRead();
-            int pctDone = (int) ((filePos+1) * 100 / (fileTotal+1));
-            
-            // Add the block.
-            addBlock(block, prevPctDone, pctDone);
-            prevPctDone = pctDone;
         } // while
         
-        // Optimize the index so that future access (and block adds) are fast.
-        //System.out.print( "o " );
+        // Finish progress counter (leave 5% for the optimize phase)
+        progress( 1, 95, totalAdded );
+        
+        // Optimize the index so that future access is fast.
+        openSpellIndexWriter();
         spellIndexWriter.optimize();
     }
     finally {
@@ -756,7 +772,7 @@ public class SpellWriter {
         if( IndexReader.indexExists(spellIndexDir) )
             spellIndexReader = IndexReader.open( spellIndexDir );
     } catch (IOException e) { }
-  } // openIndexReader()
+  } // openSpellIndexReader()
 
   /** Closes the IndexReader if it's open */
   private void closeSpellIndexReader() throws IOException 
@@ -765,7 +781,7 @@ public class SpellWriter {
         spellIndexReader.close();
         spellIndexReader = null;
     }
-  } // closeIndexReader()
+  } // closeSpellIndexReader()
 
   /** Opens the IndexWriter, closing the IndexReader if necessary. */
   private void openSpellIndexWriter() throws IOException {
@@ -773,13 +789,15 @@ public class SpellWriter {
     closeSpellIndexReader();
     
     // Open the writer now.
-    spellIndexWriter = new IndexWriter(spellIndexDir, new WhitespaceAnalyzer(), 
-        !IndexReader.indexExists(spellIndexDir));
-
-    // Set some factors that will help speed things up.
-    spellIndexWriter.mergeFactor = 300;
-    spellIndexWriter.minMergeDocs = 150;
-  } // openIndexWriter()
+    if (spellIndexWriter == null) {
+        spellIndexWriter = new IndexWriter(spellIndexDir, new WhitespaceAnalyzer(), 
+            !IndexReader.indexExists(spellIndexDir));
+    
+        // Set some factors that will help speed things up.
+        spellIndexWriter.mergeFactor = 300;
+        spellIndexWriter.minMergeDocs = 150;
+    }
+  } // openSpellIndexWriter()
 
   /** Closes the IndexWriter if it's open */
   private void closeSpellIndexWriter() throws IOException {
@@ -787,7 +805,7 @@ public class SpellWriter {
         spellIndexWriter.close();
         spellIndexWriter = null;
     }
-  } // closeIndexWriter()
+  } // closeSpellIndexWriter()
 
   static int getMin (int l) {
       if (l>5) {
