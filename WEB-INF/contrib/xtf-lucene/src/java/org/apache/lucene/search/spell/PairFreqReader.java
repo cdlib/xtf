@@ -39,6 +39,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.cdlib.xtf.util.Hash64;
+
 /**
  * Reads pair frequency data from a file created by {@link PairFreqWriter}, 
  * leaving the data on disk and accessing it via file APIs.
@@ -100,7 +102,7 @@ public class PairFreqReader
    * @throws IOException if the file can't be read.
    */
   public int getCount(String field, String word) throws IOException {
-    return getCount(PairFreqWriter.calcLongHash(field, word));
+    return getCount(Hash64.hash(field, word));
   }
 
   /** Get the count for a given field/word/word triplet, or 0 if not found.
@@ -108,7 +110,7 @@ public class PairFreqReader
    * @throws IOException if the file can't be read
    */
   public int getCount(String field, String word1, String word2) throws IOException {
-    return getCount(PairFreqWriter.calcLongHash(field, word1, word2));
+    return getCount(Hash64.hash(field, word1, word2));
   }
   
   /** Get the count for a hash code, or 0 if not found.

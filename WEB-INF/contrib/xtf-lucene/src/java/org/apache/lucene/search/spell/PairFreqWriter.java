@@ -44,6 +44,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.cdlib.xtf.util.Hash64;
 import org.cdlib.xtf.util.IntList;
 import org.cdlib.xtf.util.LongList;
 
@@ -76,12 +77,12 @@ public class PairFreqWriter
   
   /** Add a count for a given field/word pair */
   public final void add(String field, String word, int count) {
-    add(calcLongHash(field, word), count);
+    add(Hash64.hash(field, word), count);
   }
   
   /** Add a count for a given field/word/word triplet */
   public final void add(String field, String word1, String word2, int count) {
-    add(calcLongHash(field, word1, word2), count);
+    add(Hash64.hash(field, word1, word2), count);
   }
   
   /** Add a count for a given hash code and count */
@@ -94,12 +95,12 @@ public class PairFreqWriter
   
   /** Get the count for a given field/word pair, or zero if not found */
   public final int get(String field, String word) {
-    return get(calcLongHash(field, word));
+    return get(Hash64.hash(field, word));
   }
   
   /** Get the count for a given field/word/word triplet, or zero if not found */
   public final int get(String field, String word1, String word2) {
-    return get(calcLongHash(field, word1, word2));
+    return get(Hash64.hash(field, word1, word2));
   }
   
   /** Get the count for a given hash code and count, or zero if not found */
@@ -236,31 +237,4 @@ public class PairFreqWriter
     sorted = true;
   }
  
-  /** Calculate a non-negative 64-bit hash code for two strings */
-  static long calcLongHash(String s1, String s2)
-  {
-    long h = 0;
-    for (int i=0; i<s1.length(); i++)
-      h = 31*h + s1.charAt(i);
-    h = 31*h + '|';
-    for (int i=0; i<s2.length(); i++)
-      h = 31*h + s2.charAt(i);
-    return h & 0x7fffffffffffffffL;
-  }
-
-  /** Calculate a non-negative 64-bit hash code for three strings */
-  static long calcLongHash(String s1, String s2, String s3)
-  {
-    long h = 0;
-    for (int i=0; i<s1.length(); i++)
-      h = 31*h + s1.charAt(i);
-    h = 31*h + '|';
-    for (int i=0; i<s2.length(); i++)
-      h = 31*h + s2.charAt(i);
-    h = 31*h + '|';
-    for (int i=0; i<s3.length(); i++)
-      h = 31*h + s3.charAt(i);
-    return h & 0x7fffffffffffffffL;
-  }
-
 } // class
