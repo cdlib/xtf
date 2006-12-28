@@ -286,13 +286,15 @@ public class SpellWriter {
     // Make a list of the hash codes of every word in the existing dictionary.
     LongSet existingWords = new LongSet(500000);
     openSpellIndexReader();
-    TermEnum terms = spellIndexReader.terms( new Term(F_WORD, "") );
-    while (terms.next()) {
-        String term = terms.term().text();
-        long hash = Hash64.hash(term);
-        existingWords.add(hash);
+    if (spellIndexReader != null) {
+        TermEnum terms = spellIndexReader.terms( new Term(F_WORD, "") );
+        while (terms.next()) {
+            String term = terms.term().text();
+            long hash = Hash64.hash(term);
+            existingWords.add(hash);
+        }
+        terms.close();
     }
-    terms.close();
     
     // Process each word in the queue, only adding those that aren't already
     // in the dictionary.
