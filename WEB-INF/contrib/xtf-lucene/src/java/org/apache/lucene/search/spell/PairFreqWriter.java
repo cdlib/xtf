@@ -185,15 +185,22 @@ public class PairFreqWriter
   
       // Read each pair, verify ascending key order, and add it to our lists.
       long prevKey = -1;
-      for (int i=0; i<numCounts; i++) {
+      for (int i=0; i<numCounts; i++) 
+      {
+        // Read the data
         long key = s.readLong();
         int  count = s.readInt();
+
+        // Validate it
         if (key <= prevKey)
           throw new IOException("freq data was not sorted correctly on disk, or file is corrupt");
+        prevKey = key;
         if (count < 0)
           throw new IOException("frequency data file is corrupted");
-        prevKey = key;
-        add(key, count);
+        
+        // And record it
+        keys.add(key);
+        counts.add(count);
       }
       
       // If we weren't appending, there's no need to re-sort.
