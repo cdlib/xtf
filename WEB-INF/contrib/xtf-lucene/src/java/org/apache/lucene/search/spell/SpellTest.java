@@ -53,6 +53,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
+import org.cdlib.xtf.util.Trace;
 
 /**
  * Automated test of spelling correction to determine its overall accuracy.
@@ -175,22 +176,30 @@ public class SpellTest
     
     long startTime = System.currentTimeMillis();
     SpellWriter spellWriter = new SpellWriter() {
-      int prevPct = -1;
-      long prevTime = System.currentTimeMillis();
-      public void progress( int pctDone, int totalAdded ) {
-          long curTime = System.currentTimeMillis();
-          long elapsed = curTime - prevTime;
-          if( pctDone > prevPct && 
-              (pctDone == 100 || elapsed > 30000) ) 
-          {
-              prevTime = curTime;
-              prevPct = pctDone;
-              String pctTxt = Integer.toString(pctDone);
-              while( pctTxt.length() < 3 ) 
-                  pctTxt = " " + pctTxt;
-              System.out.println( "[" + pctTxt + "%] Added " + totalAdded + " Words." );
-          }
-      }
+        int prevPhase = -1;
+        int prevPct   = -1;
+        long prevTime = System.currentTimeMillis();
+        public void progress( int phase, int pctDone, int totalAdded ) {
+            long curTime = System.currentTimeMillis();
+            long elapsed = curTime - prevTime;
+            if( phase != prevPhase ) {
+                Trace.untab();
+                System.out.println( "Phase " + phase + ":" );
+                Trace.tab();
+                prevPhase = phase;
+                prevPct = -1;
+            }
+            if( pctDone > prevPct && 
+                (pctDone == 0 || pctDone == 100 || elapsed > 30000) ) 
+            {
+                prevTime = curTime;
+                prevPct = pctDone;
+                String pctTxt = Integer.toString(pctDone);
+                while( pctTxt.length() < 3 ) 
+                    pctTxt = " " + pctTxt;
+                System.out.println( "[" + pctTxt + "%] Added " + totalAdded + "." );
+            }
+        }
     };
     spellWriter.open( "index", "spell" );
     spellWriter.clearIndex();
@@ -199,7 +208,7 @@ public class SpellTest
         Pair pair = (Pair) pairList.get( i );
         spellWriter.queueWord( null, null, pair.token.termText() );
     }
-    
+
     spellWriter.flushQueuedWords();
     spellWriter.close();
     
@@ -219,8 +228,8 @@ public class SpellTest
     FSDirectory indexDir = FSDirectory.getDirectory( "index", false );
     IndexReader indexReader = IndexReader.open( indexDir );
     
-    //final int[] sizes = { 1, 5, 10, 25, 50 };
-    final int[] sizes = { 1 };
+    final int[] sizes = { 1, 5, 10, 25, 50 };
+    //final int[] sizes = { 1 };
     final int[] totals = new int[sizes.length];
     int nWords = 0;
     
@@ -334,8 +343,8 @@ public class SpellTest
     throws IOException
   {
     ArrayList list = new ArrayList();
-    String[] fields = { "text", "title-main", "author", "subject", "note" };
-    //String[] fields = { "words" };
+    //String[] fields = { "text", "title-main", "author", "subject", "note" };
+    String[] fields = { "words" };
     
     SuggestWord[] suggestions = spellReader.suggestSimilar( 
         word, nSuggestions, indexReader, fields, 

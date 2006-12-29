@@ -405,10 +405,10 @@ public class SpellWriter {
     // Now that we've identified the words that aren't yet in our index,
     // add them one at a time.
     //
-    //System.out.print("w");
     openSpellIndexWriter();
     int nTotal = block.size();
-    for (int i = 0; i < nTotal; i++) {
+    for (int i = 0; i < nTotal; i++) 
+    {
       // Only index words that have been marked to add.
       if (!wordsToAdd.get(i))
         continue;
@@ -661,9 +661,6 @@ public class SpellWriter {
         if( freq > avgFreq )
             aboveAvgFreqs.add( freq );
     }
-    
-    System.out.println( "Field " + fieldName + ": " + aboveAvgFreqs.size() + 
-                        " above-avg terms out of " + rawFreqs.size() );
     
     // Sort the array by frequency.
     aboveAvgFreqs.sort();

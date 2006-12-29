@@ -28,8 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -37,6 +39,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
+import org.cdlib.xtf.util.IntMultiMap;
+import org.cdlib.xtf.util.StringList;
 import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.SubStoreReader;
 
@@ -67,17 +71,17 @@ public class SpellReader
   /** Boost value for simple transposition */
   private float bTrans=6.0f;
   
-  /** Boost value for single-char insertion */
-  private float bInsert=2.0f;
-  
-  /** Boost value for single-char deletion */
-  private float bDelete=2.0f;
-  
   /** Boost value for metaphones */
   private float bMetaphone=3.0f;
 
+  /** Index reader for the spelling index */
+  private IndexReader spellIndexReader;
+  
   /** Index searcher, for querying the spelling index */
   private IndexSearcher searcher;
+  
+  /** Pair frequency data */
+  private PairFreqWriter pairFreqs;
 
   /** Cache of term frequencies per field */
   private static final WeakHashMap termFreqCache = new WeakHashMap();
@@ -183,6 +187,64 @@ public class SpellReader
                           morePopularFactor, accuracy);
   }
   
+  private StringList  allWords  = null;
+  private StringList  allMphs   = null;
+  private IntMultiMap mphMap = null;
+
+  /**
+   * Make a mapping of metaphone to words.
+   */
+  private void loadMphMap() 
+    throws IOException 
+  {
+    if (mphMap != null)
+      return;
+    
+    long startTime = System.currentTimeMillis();
+    
+    // First, load all the metaphone strings.
+    openSearcher();
+    TermEnum terms = spellIndexReader.terms( new Term("metaphone", "") );
+    allMphs = new StringList();
+    while( terms.next() ) {
+      Term t = terms.term();
+      if (!t.field().equals("metaphone"))
+        break;
+      allMphs.add(t.text());
+    }
+    allMphs.sort();
+    terms.close();
+    
+    // Now load all the words and associate thespellIndexReader metaphones
+    allWords = new StringList(spellIndexReader.maxDoc());
+    mphMap = new IntMultiMap(allMphs.size());
+    for (int docId = 0; docId < spellIndexReader.maxDoc(); docId++) {
+      Document d = spellIndexReader.document(docId);
+      if (d == null)
+        continue;
+      
+      String word = d.get(F_WORD);
+      if (word == null)
+        continue;
+      
+      int wordId = allWords.size();
+      allWords.add(word);
+      
+      String mph = SpellWriter.calcMetaphone(word);
+      if (mph.length() == 0)
+        continue;
+      
+      int mphId = allMphs.binarySearch(mph);
+      assert mphId >= 0 : "metaphone index is inconsistent";
+      
+      mphMap.add(mphId, wordId);
+    }
+    
+    System.out.println("MphMap load time: " + (System.currentTimeMillis() - startTime));
+    System.out.println("  ndocs: " + spellIndexReader.maxDoc());
+    System.out.println("  nWords: " + allWords.size() + ", nMphs: " + allMphs.size());
+  }
+  
   /**
    * Suggest similar words (restricted or not to a field of a user index)
    * 
@@ -214,7 +276,7 @@ public class SpellReader
   {
     final TRStringDistance sd = new TRStringDistance(word);
     final int lengthWord = word.length();
-
+  
     // Determine the frequency above which the suggestions must be. Also,
     // get data on which terms are rare and which are common.
     //
@@ -233,47 +295,11 @@ public class SpellReader
         }
     }
 
-    // If the word exists in the index and we're not concerned about finding
-    // a more popular one (or more than one), then we have nothing to suggest.
-    //
-    //if (docFreq > goalFreq && num_sug == 1)
-    //    return new SuggestWord[0];
-
-    // Form a query using ngrams of each length from the original word.
-    BooleanQuery query=new BooleanQuery();
-    String[] grams;
-    String key;
-
-    addTrans(query, word, bTrans);
-    add(query, "metaphone", SpellWriter.calcMetaphone(word), bMetaphone);
-
-    for (int ng=SpellWriter.getMin(lengthWord); 
-         ng<=SpellWriter.getMax(lengthWord); 
-         ng++) 
-    {
-        key="gram"+ng; // form key
-
-        grams=formGrams(word, ng); // form word into ngrams (allow dups too)
-
-        if (grams.length==0)
-            continue; // hmm
-
-        if (bStart>0)
-            add(query, "start"+ng, grams[0], bStart); // matches start of word
-        if (bEnd>0)
-            add(query, "end"+ng, grams[grams.length-1], bEnd); // matches end of word
-        for (int i=0; i<grams.length; i++)
-            add(query, key, grams[i]);
-    }
-    
-    // Using the query built above, go look for matches.
-    openSearcher();
-    
     // To ensure that we've caught all the good candidates, scan ten times the
     // requested number of matches (and at least 100).
     //
     int nToScan = Math.max(100, 10*num_sug);
-    TopDocs hits = searcher.search( query, null, nToScan );
+    String[] hits = queryWords(word, nToScan);
     
     // Calculate the main word's metaphone once.
     String metaphone = SpellWriter.calcMetaphone( word );
@@ -281,17 +307,15 @@ public class SpellReader
     // Make a queue of the best matches. Leave a little extra room for some
     // to hang off the end at the same score but different frequencies.
     //
-    float min = accuracy;
+    float min = 0;
     SuggestWord sugword = new SuggestWord();
     int queueSize = num_sug+10;
     final SuggestWordQueue sugqueue = new SuggestWordQueue(queueSize);
-    for( int i = 0; i < hits.scoreDocs.length; i++ )
+    for( int i = 0; i < hits.length; i++ )
     {
         // Get original word
-        sugword.string = searcher.doc(hits.scoreDocs[i].doc).get(F_WORD);
+        sugword.string = hits[i];
         
-        //System.out.println( "L: " + sugword.string + ", " + hits.scoreDocs[i].score );
-
         // Don't suggest a word for itself, that would be silly.
         if (sugword.string.equals(word))
             continue;
@@ -302,6 +326,21 @@ public class SpellReader
         
         // Enforce the accuracy limit imposed on us.
         if( sugword.score < accuracy )
+            continue;
+        
+        // If the metaphone matches, nudge the score
+        String suggMetaphone = SpellWriter.calcMetaphone(sugword.string);
+        if( suggMetaphone.equals(metaphone) )
+            sugword.score += 0.10f;
+        
+        int metaDist = new TRStringDistance(metaphone).getDistance(suggMetaphone);
+        if (metaDist > 3)
+            continue;
+        
+        // Don't bother checking the frequency if it can't get us into the
+        // queue.
+        //
+        if( sugword.score + 0.25f <= min )
             continue;
         
         // Find the field with the best score boost...
@@ -337,18 +376,16 @@ public class SpellReader
                 bestFreq  = freq;
             }
         } // for fn
-        
+
+        // If the term isn't in any of our fields, skip it.
         if (bestField == null)
             continue;
         
+        // Make a suggestion.
         sugword.origScore = sugword.score;
         sugword.field     = bestField;
         sugword.freq      = bestFreq;
         sugword.score     += bestBoost;
-        
-        // If the metaphone matches, nudge the score
-        if( SpellWriter.calcMetaphone(sugword.string).equals(metaphone) )
-            sugword.score += 0.10f;
         
         sugqueue.insert(sugword);
         
@@ -386,24 +423,281 @@ public class SpellReader
   public String[] suggestKeywords(String[] terms, String[] fields, IndexReader indexReader) 
     throws IOException
   {
-    String[] out = new String[terms.length];
+    // No terms? Then we can't suggest anything.
+    if (terms.length == 0)
+        return terms;
     
-    // For now, just make a simple suggestion for each term. Later we'll do 
-    // fancy things with pair frequencies.
+    // Start with a null change.
+    Change bestChange = new Change();
+    bestChange.terms = terms;
+    bestChange.fields = fields;
+    bestChange.indexReader = indexReader;
+    bestChange.descrip = "no change";
+    bestChange.score = 0.0f;
+    
+    // If there's just one word, out work is simple: just find the best 
+    // replacement for that word.
     //
-    for( int i = 0; i < terms.length; i++ ) {
-        SuggestWord[] sugg = suggestSimilar( terms[i], 1,
-                                             indexReader,
-                                             fields,
-                                             1.0f, 0.5f );
-        if( sugg == null || sugg.length == 0 )
-            out[i] = terms[i];
-        else
-            out[i] = sugg[0].string;
+    if (terms.length == 1)
+        return subWord(bestChange, 0).terms;
+    
+    // Consider two-word changes at each position.
+    for (int i = 0; i < terms.length-1; i++)
+        bestChange = subPair(bestChange, i);
+    
+    return bestChange.terms;
+    
+  } // suggestKeywords()
+  
+  /**
+   * Consider a set of changes to the pair of words at the given position.
+   * 
+   * @param in  the current best we've found
+   * @param pos           position to consider
+   * @return            new best
+   */
+  private Change subPair(Change in, int pos) 
+    throws IOException
+  {
+    String word1 = in.terms[pos];
+    String word2 = in.terms[pos+1];
+    
+    // As the base case, consider changing nothing.
+    float basePairScore = scorePair(in, 0, word1, word2);
+    
+    // Get a list of independent suggestions for both words.
+    final int NUM_SUG = 50;
+    SuggestWord[] list1 = suggestSimilar(word1, NUM_SUG, in.indexReader, in.fields, 0.0f, 0.5f);
+    SuggestWord[] list2 = suggestSimilar(word2, NUM_SUG, in.indexReader, in.fields, 0.0f, 0.5f);
+    
+    float baseWord1Score = scoreWord(word1, in.fields, in.indexReader, word1);
+    float baseWord2Score = scoreWord(word2, in.fields, in.indexReader, word2);
+    
+    System.out.println("List 1:");
+    for (int p1 = 0; p1 < list1.length; p1++)
+        System.out.println("  " + list1[p1].string + " " + SpellWriter.calcMetaphone(list1[p1].string));
+    System.out.println("List 2:");
+    for (int p2 = 0; p2 < list2.length; p2++)
+        System.out.println("  " + list2[p2].string + " " + SpellWriter.calcMetaphone(list2[p2].string));
+    
+    // Now score all possible combinations, looking for the best one.
+    float bestScore = 0.0f;
+    String bestSugg1 = null;
+    String bestSugg2 = null;
+    for (int p1 = 0; p1 < list1.length+1; p1++) {
+        String sugg1 = (p1 < list1.length) ? list1[p1].string : word1;
+        for (int p2 = 0; p2 < list2.length+1; p2++) {
+            String sugg2 = (p2 < list2.length) ? list2[p2].string : word2;
+            float pairScore = scorePair(in, pos, sugg1, sugg2);
+            float word1Score = (p1 < list1.length) ? list1[p1].score : baseWord1Score;
+            float word2Score = (p2 < list2.length) ? list2[p2].score : baseWord2Score;
+            float totalScore = (word1Score - baseWord1Score) +
+                               (word2Score - baseWord2Score) +
+                               (pairScore - basePairScore);
+            
+            //System.out.println("replace '" + word1 + " " + word2 + "' with '" +
+            //    sugg1 + " " + sugg2 + "': " + score);
+            
+            if (totalScore > bestScore) {
+                bestScore = totalScore;
+                bestSugg1 = sugg1;
+                bestSugg2 = sugg2;
+            }
+        }
     }
     
+    // If we found something better than doing nothing, record it.
+    Change out = in;
+    if (bestScore > in.score) {
+        out = (Change) in.clone();
+        if (bestSugg2.equals(word2))
+            out.descrip = "replace '" + word1 + "' with '" + bestSugg1 + "'";
+        else if (bestSugg1.equals(word1))
+            out.descrip = "replace '" + word2 + "' with '" + bestSugg2 + "'";
+        else {
+            out.descrip = "replace '" + word1 + " " + word2 + "' with '" +
+                bestSugg1 + " " + bestSugg2 + "'";
+        }
+        out.terms[pos] = bestSugg1;
+        out.terms[pos+1] = bestSugg2;
+        out.score = bestScore;
+    }
     return out;
-  } // suggestKeywords()
+  }
+
+  /** Pick the best of two possible changes, based on max score */
+  private static Change max(Change ch1, Change ch2)
+  {
+    if (ch1.score >= ch2.score)
+        return ch1;
+    else
+        return ch2;
+  }
+
+  /**
+   * Substitute a single word at the given position, trying to improve the score.
+   * 
+   * @param in      the best we've done so far
+   * @param i       position to substitute at
+   * @return        the best we can do at that position
+   */
+  private Change subWord(Change in, int pos) throws IOException
+  {
+    String word = in.terms[pos];
+    final float baseScore = scoreWord(word, in.fields, in.indexReader, word);
+
+    // Make a queue of the best matches. Leave a little extra room for some
+    // to hang off the end at the same score but different frequencies.
+    //
+    String[] hits = queryWords(word, 500);
+    String bestSugg = word;
+    float bestScore = baseScore;
+    for( int i = 0; i < hits.length; i++ )
+    {
+        // No need to consider the original word twice.
+        String suggWord = hits[i];
+        if (suggWord.equals(word))
+            continue;
+
+        // Calculate a score for it. If better than what we had, save it.
+        float score = scoreWord(word, in.fields, in.indexReader, suggWord);
+        if (score > bestScore) {
+            bestSugg = suggWord;
+            bestScore = score;
+        }
+    }
+    
+    // If we found a better suggestion, record it.
+    Change out = in;
+    if (bestScore > baseScore) {
+        out = (Change) in.clone();
+        out.descrip = "replace '" + out.terms[pos] + "' with '" + bestSugg + "'";
+        out.terms[pos] = bestSugg;
+        out.score = (bestScore - baseScore);
+    }
+    return out;
+  }
+
+  /**
+   * Form a Lucene query based on the input word, looking for words with
+   * similar sets of letters.
+   * 
+   * @param word        the word we're looking to resemble
+   * @param nToScan     max number of potential words to return
+   * @return            array of potential words
+   */
+  private String[] queryWords(String word, int nToScan) throws IOException
+  {
+    // Form a query using ngrams of each length from the original word.
+    BooleanQuery query=new BooleanQuery();
+    String[] grams;
+    String key;
+
+    addTrans(query, word, bTrans);
+    add(query, "metaphone", SpellWriter.calcMetaphone(word), bMetaphone);
+
+    for (int ng=SpellWriter.getMin(word.length()); 
+         ng<=SpellWriter.getMax(word.length()); 
+         ng++) 
+    {
+        key="gram"+ng; // form key
+
+        grams=formGrams(word, ng); // form word into ngrams (allow dups too)
+
+        if (grams.length==0)
+            continue; // hmm
+
+        if (bStart>0)
+            add(query, "start"+ng, grams[0], bStart); // matches start of word
+        if (bEnd>0)
+            add(query, "end"+ng, grams[grams.length-1], bEnd); // matches end of word
+        for (int i=0; i<grams.length; i++)
+            add(query, key, grams[i]);
+    }
+    
+    // Using the query built above, go look for matches.
+    openSearcher();
+    TopDocs hits = searcher.search( query, null, nToScan );
+    
+    // Translate the hits into actual words.
+    String[] out = new String[hits.scoreDocs.length];
+    for (int i=0; i<hits.scoreDocs.length; i++)
+        out[i] = searcher.doc(hits.scoreDocs[i].doc).get(F_WORD);
+    return out;
+  }
+
+  /**
+   * Calculate a score for a suggested replacement for a given word.
+   */
+  private float scorePair(Change orig, int pos, String sugg1, String sugg2)
+    throws IOException
+  {
+    openPairFreqs();
+    float bestFreqBoost = 0.0f;
+
+    for (int i = 0; i < orig.fields.length; i++) {
+        int origPairFreq = pairFreqs.get(orig.fields[i], orig.terms[pos], orig.terms[pos+1]);
+        int suggPairFreq = pairFreqs.get(orig.fields[i], sugg1, sugg2);
+        if (suggPairFreq <= origPairFreq)
+            continue;
+        double freqFactor = (suggPairFreq + 1.0) / (origPairFreq + 1.0);
+        float freqBoost = (float) (Math.log(freqFactor) / Math.log(100.0));
+        bestFreqBoost = Math.max(freqBoost, bestFreqBoost);
+    }
+
+    return bestFreqBoost;
+  }
+  
+  /**
+   * Calculate a score for a suggested replacement for a given word.
+   */
+  private float scoreWord(String origTerm, String[] fields, 
+                          IndexReader ir, String suggTerm) 
+    throws IOException
+  {
+    // Calculate the edit distance (and normalize with the min word length)
+    TRStringDistance sd = new TRStringDistance(origTerm);
+    float dist = sd.getDistance(suggTerm) / 2.0f;
+    float score = 1.0f-(dist/Math.min(suggTerm.length(), origTerm.length()));
+    
+    // Find the field with the best score boost...
+    float freqBoost = 0;
+    for (int fn=0; fn<fields.length; fn++)
+    {
+        // Get the word frequency from the index
+        int freq = ir.docFreq(new Term(fields[fn], suggTerm));
+
+        // Don't suggest a word that is not present in the field
+        if (freq<1)  
+            continue;
+        
+        // If this word is more frequent than average, give it a nudge up.
+        float boost = 0.0f;
+        int[] termFreqs = getTermFreqs(ir, fields[fn]);
+        if( freq >= termFreqs[0] ) // 1000
+            boost = 0.25f;
+        else if( freq >= termFreqs[1] ) // 40
+            boost = 0.20f;
+        else if( freq >= termFreqs[2] ) // 4
+            boost = 0.15f;
+        else if( freq >= termFreqs[3] ) // 2
+            boost = 0.10f;
+        else if (freq >= termFreqs[4] ) // 1
+            boost = 0.05f;
+        
+        if (boost > freqBoost)
+            freqBoost = boost;
+    } // for fn
+    
+    // If the metaphone matches, nudge the score
+    float metaphoneBoost = 0.0f;
+    if( SpellWriter.calcMetaphone(origTerm).equals(
+             SpellWriter.calcMetaphone(suggTerm)) )
+        metaphoneBoost = 0.10f;
+    
+    // All done.
+    return score + freqBoost + metaphoneBoost;
+  }
   
   /** Get the term frequencies array for the given field. */
   private int[] getTermFreqs(IndexReader reader, String fieldName)
@@ -533,16 +827,44 @@ public class SpellReader
     }
     return res;
   }
-
   
   private void openSearcher() throws IOException {
-    if (searcher == null)
-        searcher = new IndexSearcher(FSDirectory.getDirectory(spellDir, false));
+    if (searcher == null) {
+        spellIndexReader = IndexReader.open(FSDirectory.getDirectory(spellDir, false));
+        searcher = new IndexSearcher(spellIndexReader);
+    }
   }
 
+  private void openPairFreqs() throws IOException {
+    if (pairFreqs == null) {
+        pairFreqs = new PairFreqWriter();
+        pairFreqs.add(new File(spellDir, "pairs.dat"));
+    }
+  }
   
   protected void finalize () throws Throwable {
     close();
+  }
+  
+  private class Change implements Cloneable
+  {
+    String[]    terms;
+    String[]    fields;
+    IndexReader indexReader;
+    String      descrip;
+    float       score;
+
+    public Object clone() { 
+      try {
+        Change out = (Change) super.clone();
+        out.terms = new String[terms.length];
+        System.arraycopy(terms, 0, out.terms, 0, terms.length);
+        return out;
+      }
+      catch (CloneNotSupportedException e) {
+        return null;
+      } 
+    }
   }
   
 } // class SpellReader
