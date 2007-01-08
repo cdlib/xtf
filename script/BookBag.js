@@ -23,6 +23,6 @@ removeFromBag = function( ark, url )
   var countElement = document.getElementById( "itemCount" );
   littleElement.innerHTML = "Removing...";
   var loader = new net.AsyncLoader( url, 
-      function() { bigElement.innerHTML = ""; --countElement.innerHTML; },
+      function() { bigElement.parentNode.removeChild(bigElement); --countElement.innerHTML; },
       function() { littleElement.innerHTML = "Error."; } );
 }
