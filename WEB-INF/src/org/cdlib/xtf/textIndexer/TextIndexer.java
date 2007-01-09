@@ -375,9 +375,8 @@ public class TextIndexer
         
       
       // Create spelling dictionaries, now that we're done indexing.
-      if( cfgInfo.updateSpellDict ) {
+      if( cfgInfo.updateSpellDict && cfgInfo.indexInfo.createSpellcheckDict ) {
         
-        // Create a tree culler.
         IdxTreeDictMaker dictMaker = new IdxTreeDictMaker();
        
         Trace.info("");
