@@ -712,7 +712,7 @@ public class SrcTreeProcessor
     else if( format.equalsIgnoreCase("PDF") )
         srcFile = new PDFIndexSource( srcPath, key, preFilters, displayStyle, null );
     else if( format.equalsIgnoreCase("HTML") )
-        srcFile = new HTMLIndexSource( srcPath, key, preFilters, displayStyle, null );
+        srcFile = new HTMLIndexSource( srcPath, key, preFilters, displayStyle, lazyStore );
     else if( format.equalsIgnoreCase("Text") )
         srcFile = new TextIndexSource( srcPath, key, preFilters, displayStyle, null );
     else if( format.equalsIgnoreCase("MARC") )
