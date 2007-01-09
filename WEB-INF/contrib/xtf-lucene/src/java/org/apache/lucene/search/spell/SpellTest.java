@@ -93,11 +93,9 @@ public class SpellTest
         String word = line.substring( 0, spacePos );
         int    freq = Integer.parseInt( line.substring(spacePos+1) );
         
-        // Clamp frequencies greater than 10000, and less than 1.
+        // Clamp frequencies greater than 10000
         if( freq > 10000 )
             freq = 10000;
-        if( freq < 1 )
-            freq = 1;
         
         // For testing, do only part of the dictionary.
         if( stopAt != null && word.compareTo(stopAt) >= 0 )
@@ -165,7 +163,7 @@ public class SpellTest
     // Add each word the specified number of times.
     for( int i = 0; i < pairList.size(); i++ ) {
         Pair pair = (Pair)pairList.get(i);
-        for( int j = 0; j < pair.freq; j++ )
+        for( int j = 0; j < (pair.freq+1); j++ )
             spellWriter.queueWord( null, pair.word );
     }
 

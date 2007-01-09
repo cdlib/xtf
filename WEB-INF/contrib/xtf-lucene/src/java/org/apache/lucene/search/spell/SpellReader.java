@@ -248,6 +248,15 @@ public class SpellReader
         continue;
       checked.add(hash);
       
+      // Eliminate suggestions that are too distant from the original. In
+      // testing, this has the effect of increasing accuracy for the #1
+      // spot, and in general getting rid of many "ridiculous" suggestions,
+      // but it does eliminate certain distant suggestions way down the
+      // list.
+      //
+      if (orig.wordDist(word) > 4)
+        continue;
+      
       // Add the new word to the queue.
       Word w = new Word(orig, word, freq);
       queue.insert(w);
@@ -662,6 +671,7 @@ public class SpellReader
     public Word(Word inOrig, String word, int freq) throws IOException {
       this.word = word;
       this.orig = (inOrig == null) ? this : inOrig;
+      this.freq = freq;
       
       metaphone = calcMetaphone(word);
       wordDist = mphDist = null; // lazily created if necessary
