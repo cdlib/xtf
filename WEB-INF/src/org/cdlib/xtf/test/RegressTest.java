@@ -73,6 +73,7 @@ import org.cdlib.xtf.util.IntHash;
 import org.cdlib.xtf.util.IntList;
 import org.cdlib.xtf.util.IntMultiMap;
 import org.cdlib.xtf.util.LongList;
+import org.cdlib.xtf.util.LongSet;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.StructuredStore;
@@ -135,6 +136,7 @@ public class RegressTest
         IntMultiMap.tester.test();
         IntList.tester.test();
         LongList.tester.test();
+        LongSet.tester.test();
         
         // Go for it.
         RegressTest test = new RegressTest();
