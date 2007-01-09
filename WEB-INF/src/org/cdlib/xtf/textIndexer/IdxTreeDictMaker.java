@@ -40,7 +40,6 @@ import java.io.File;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.spell.SpellWriter;
 
-import org.cdlib.xtf.textEngine.Constants;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
@@ -173,45 +172,8 @@ public class IdxTreeDictMaker
                   Trace.info( "[" + pctTxt + "%] Added " + totalAdded + "." );
               }
           }
-          public boolean shouldSkipTerm(String text) 
-          {
-              // Skip the defaults supplied by the spell checker.
-              if( super.shouldSkipTerm(text) )
-                  return true;
-              
-              // Skip bi-grams
-              if( text.indexOf("~") >= 0 )
-                  return true;
-              
-              // Skip empty terms (there shouldn't be any though) 
-              if( text.length() == 0 )
-                  return true;
-              
-              // Skip special start/end of field marks (normal terms will also
-              // be present, without the marks.) Also skip element and attribute
-              // markers.
-              //
-              char c = text.charAt(0);
-              if( c == Constants.FIELD_START_MARKER ||
-                  c == Constants.ELEMENT_MARKER ||
-                  c == Constants.ATTRIBUTE_MARKER )
-              {
-                  return true;
-              }
-              
-              c = text.charAt( text.length() - 1 );
-              if( c == Constants.FIELD_END_MARKER ||
-                  c == Constants.ELEMENT_MARKER ||
-                  c == Constants.ATTRIBUTE_MARKER )
-              {
-                  return true;
-              }
-              
-              // Retain all other terms.
-              return false;
-          }
         };
-        spellWriter.open( mainIdxPath, spellIdxPath );
+        spellWriter.open( spellIdxPath, 3 );
         
         // Perform the update.
         spellWriter.flushQueuedWords();

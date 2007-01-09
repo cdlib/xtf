@@ -3877,7 +3877,7 @@ public class XMLTextProcessor extends DefaultHandler
     if( indexInfo.createSpellcheckDict ) {
         if( spellWriter == null ) {
             spellWriter = new SpellWriter();
-            spellWriter.open( indexPath, indexPath + "spellDict/" );
+            spellWriter.open( indexPath + "spellDict/", 3 );
         }
         analyzer.setSpellWriter( spellWriter );
     }

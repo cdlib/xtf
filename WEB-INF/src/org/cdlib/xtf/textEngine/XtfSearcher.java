@@ -191,7 +191,7 @@ public class XtfSearcher
         // If there's a spelling correction dictionary, attach to it.
         File spellDir = new File( indexPath, "spellDict" );
         if( spellDir.isDirectory() )
-            spellReader = new SpellReader( spellDir );
+            spellReader = SpellReader.open( spellDir );
 
         // Determine whether this is a "sparse" index. Our definition of
         // sparse is that there are more than 5 chunks per document, meaning

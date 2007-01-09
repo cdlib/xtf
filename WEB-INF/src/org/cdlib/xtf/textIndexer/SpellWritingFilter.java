@@ -125,7 +125,7 @@ public class SpellWritingFilter extends TokenFilter
             prevWord = null;
         
         // Queue the word (and pair with the previous word, if any)
-        writer.queueWord( field, prevWord, word );
+        writer.queueWord( prevWord, word );
         prevWord = word;
     }
     else
