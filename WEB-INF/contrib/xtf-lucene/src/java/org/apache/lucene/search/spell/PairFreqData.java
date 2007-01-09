@@ -54,7 +54,7 @@ import org.cdlib.xtf.util.LongList;
  *
  * @author Martin Haye
  */
-public class PairFreqWriter 
+public class PairFreqData 
 {
   /** List of keys */
   private LongList keys = new LongList();
@@ -78,18 +78,13 @@ public class PairFreqWriter
                                 ((long)'q') << (1*8) |
                                 ((long)'1') << (0*8);
   
-  /** Add a count for a given field/word pair */
-  public final void add(String field, String word, int count) {
-    add(Hash64.hash(field, word), count);
-  }
-  
-  /** Add a count for a given field/word/word triplet */
-  public final void add(String field, String word1, String word2, int count) {
-    add(Hash64.hash(field, word1, word2), count);
+  /** Add a count for a given word pair */
+  public final void add(String word1, String word2, int count) {
+    add(Hash64.hash(word1, word2), count);
   }
   
   /** Add a count for a given hash code and count */
-  private void add(long hash, int count)
+  public void add(long hash, int count)
   {
     // Check within the sorted section to see if we already have this.
     int pos = searchSorted(hash);
