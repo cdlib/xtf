@@ -110,7 +110,7 @@ final class TRStringDistance {
         // Step 2
 
         for (int i=0; i<=n; i++) {
-            d[i][0]=i;
+            d[i][0]=i*2;
 
         }
         for (int j=0; j<=m; j++) {
