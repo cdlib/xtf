@@ -417,10 +417,10 @@ public class DefaultQueryProcessor extends QueryProcessor
         // Check the cutoffs. If the documents scored well, or there were
         // a lot of them, then suggestions aren't needed.
         //
-        if( params.docScoreCutoff > 0 && maxDocScore > params.docScoreCutoff )
-            return;
-        if( params.totalDocsCutoff > 0 && totalDocs > params.totalDocsCutoff )
-            return;
+        //if( params.docScoreCutoff > 0 && maxDocScore > params.docScoreCutoff )
+        //    return;
+        //if( params.totalDocsCutoff > 0 && totalDocs > params.totalDocsCutoff )
+        //    return;
         
         // Gather the query terms, grouped by field set.
         LinkedHashMap fieldsMap = gatherKeywords( req.query, params.fields );
@@ -437,8 +437,7 @@ public class DefaultQueryProcessor extends QueryProcessor
             String[] terms = (String[]) termsSet.toArray( new String[termsSet.size()] );
             
             // Get some suggestions
-            String[] suggested = 
-                spellReader.suggestKeywords( terms, fields, indexReader );
+            String[] suggested = spellReader.suggestKeywords( terms, fields );
             assert suggested.length == terms.length;
             
             // Record each suggestion.
