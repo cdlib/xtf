@@ -38,21 +38,13 @@ package org.apache.lucene.search.spell;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Token;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.util.Trace;
 
 /**
@@ -101,9 +93,11 @@ public class SpellTest
         String word = line.substring( 0, spacePos );
         int    freq = Integer.parseInt( line.substring(spacePos+1) );
         
-        // Clamp frequencies greater than 10000
+        // Clamp frequencies greater than 10000, and less than 1.
         if( freq > 10000 )
             freq = 10000;
+        if( freq < 1 )
+            freq = 1;
         
         // For testing, do only part of the dictionary.
         if( stopAt != null && word.compareTo(stopAt) >= 0 )
@@ -121,52 +115,16 @@ public class SpellTest
         
         // Add the pair to our list
         Pair pair  = new Pair();
-        pair.token = new Token( word, 0, 1 );
+        pair.word  = word;
         pair.freq  = freq;
         pairList.add( pair ); 
     } // while
     reader.close();
 
-    // Construct all the documents that embody the frequency data
-    //writeFreqIndex( pairList );
-    
     // Construct the spelling index.
     writeSpellIndex( pairList );
   } // build()
 
-  private void writeFreqIndex( ArrayList pairList ) throws IOException
-  {
-    System.out.println( "Building frequency index..." );
-    
-    // Create a new index directory (clear any old one)
-    FSDirectory indexDir = FSDirectory.getDirectory( "index", true );
-    FreqAnalyzer analyzer = new FreqAnalyzer( pairList );
-    IndexWriter indexWriter = new IndexWriter( indexDir, analyzer, true );
-    
-    // Increase the max field length to handle our biggest document.
-    indexWriter.maxFieldLength = pairList.size() * 2;
-    
-    // Make a document for each frequency (including words for all higher
-    // frequencies.)
-    //
-    StringReader nullReader = new StringReader("");
-    int maxFreq = ((Pair)pairList.get(0)).freq;
-    for( int limit = 0; limit <= maxFreq; limit++ )
-    {
-        if( (limit % 1000) == 0 ) 
-            System.out.print( limit + "\r" );
-        analyzer.limit = limit;
-        Document doc = new Document();
-        doc.add( Field.Text("words", nullReader) );
-        indexWriter.addDocument( doc );
-    } // for limit
-    
-    indexWriter.optimize();
-    indexWriter.close();
-    
-    System.out.println( "Done." );
-  } // writeFreqIndex()
-  
   /**
    * Constructs a spelling index based on all the words in the list.
    */
@@ -190,7 +148,7 @@ public class SpellTest
                 prevPct = -1;
             }
             if( pctDone > prevPct && 
-                (pctDone == 0 || pctDone == 100 || elapsed > 30000) ) 
+                (pctDone == 0 || pctDone == 100 || elapsed > 1000) ) 
             {
                 prevTime = curTime;
                 prevPct = pctDone;
@@ -201,14 +159,17 @@ public class SpellTest
             }
         }
     };
-    spellWriter.open( "index", "spell" );
+    spellWriter.open( "spell", 1 );
     spellWriter.clearIndex();
     
+    // Add each word the specified number of times.
     for( int i = 0; i < pairList.size(); i++ ) {
-        Pair pair = (Pair) pairList.get( i );
-        spellWriter.queueWord( null, null, pair.token.termText() );
+        Pair pair = (Pair)pairList.get(i);
+        for( int j = 0; j < pair.freq; j++ )
+            spellWriter.queueWord( null, pair.word );
     }
 
+    // Now comes the bulk of the work
     spellWriter.flushQueuedWords();
     spellWriter.close();
     
@@ -216,17 +177,19 @@ public class SpellTest
     
   } // writeSpellIndex()
   
+  static String topSugg = null;
+  
   /** Test the spelling index */
   private void test( String testFile ) throws IOException 
   {
     long startTime = System.currentTimeMillis();
     
     // Open the spelling index.
-    SpellReader spellReader = new SpellReader( new File("spell") );
+    SpellReader spellReader = SpellReader.open( new File("spell") );
     
-    // Open the frequency index.
-    FSDirectory indexDir = FSDirectory.getDirectory( "index", false );
-    IndexReader indexReader = IndexReader.open( indexDir );
+    // Open the debug stream.
+    PrintWriter debugWriter = new PrintWriter(new FileWriter("spellDebug.log"));
+    spellReader.setDebugWriter(debugWriter);
     
     final int[] sizes = { 1, 5, 10, 25, 50 };
     //final int[] sizes = { 1 };
@@ -284,11 +247,11 @@ public class SpellTest
         // Bump the word count.
         ++nWords;
         
-        System.out.print( word + " " + correction );
-
         // Get some suggestions.
-        int pos = trySpell( spellReader, indexReader, 
+        debugWriter.println("orig=" + word + ", lookFor=" + correction);
+        int pos = trySpell( spellReader, 
                             word, correction, sizes[sizes.length-1] );
+        debugWriter.println();
         
         // Increment the correct totals.
         if( pos < 0 )
@@ -300,11 +263,15 @@ public class SpellTest
                     totals[j]++;
             }
         }
-                
-        System.out.println( " " + (pos+1) );
+
+        if (pos != 0) {
+            System.out.print( word + " " + correction );
+            System.out.print( " " + new TRStringDistance(word).getDistance(correction) );
+            System.out.println( " " + topSugg + " " + (pos+1) );
+        }
         
         if( nWords == 1 )
-            System.out.println( "Time to first word: " + (System.currentTimeMillis() - startTime) + " msec" );
+            debugWriter.println( "Time to first word: " + (System.currentTimeMillis() - startTime) + " msec" );
         
     } // while
     
@@ -326,8 +293,8 @@ public class SpellTest
     System.out.println( "Done. Total time: " + (System.currentTimeMillis() - startTime) + " msec" );
     
     lineReader.close();
-    indexReader.close();
     spellReader.close();
+    debugWriter.close();
     
   } // test()
   
@@ -336,7 +303,6 @@ public class SpellTest
    * position of the correction in the result list.
    */
   private int trySpell( SpellReader spellReader,
-                        IndexReader indexReader,
                         String      word, 
                         String      correction, 
                         int         nSuggestions )
@@ -346,79 +312,20 @@ public class SpellTest
     //String[] fields = { "text", "title-main", "author", "subject", "note" };
     String[] fields = { "words" };
     
-    SuggestWord[] suggestions = spellReader.suggestSimilar( 
-        word, nSuggestions, indexReader, fields, 
-        0, 0.5f );
+    String[] suggestions = spellReader.suggestSimilar(word, fields, nSuggestions);
     
     int found = -1;
+    topSugg = null;
     for( int i = 0; i < suggestions.length; i++ )
     {
-        if( suggestions[i].string.equals(correction) ) {
+        if (i == 0)
+            topSugg = suggestions[i];
+        if( suggestions[i].equals(correction) ) {
             found = i;
             break;
         }
     } // for i
 
-    /*
-    if( found != 0 ) {
-        System.out.println( "...orig metaphone: " + SpellWriter.calcMetaphone(word) );
-        for( int i = 0; i < suggestions.length; i++ ) {
-            SuggestWord sugg = suggestions[i];
-            System.out.print( "   " );
-            System.out.print( (i == found)     ? "*" : " " );
-            System.out.println( sugg.string +
-                "\t" + sugg.score +
-                "\t" + sugg.origScore +
-                "\t" + sugg.freq +
-                "\t" + SpellWriter.calcMetaphone(sugg.string) );
-        }
-    }
-    */
-    
-    return found;
-    
-  } // trySpell()
-  
-  /**
-   * Gather the specified number of suggestions for a word, and return the
-   * position of the correction in the result list.
-   */
-  private int trySpellOld( SpellReader spellReader,
-                           IndexReader indexReader,
-                           String      word, 
-                           String      correction, 
-                           int         nSuggestions )
-    throws IOException
-  {
-    SuggestWord[] suggestions = spellReader.suggestSimilar( 
-        word, nSuggestions, indexReader, "words", 
-        0, 0.5f );
-    
-    int found = -1;
-    for( int i = 0; i < suggestions.length; i++ )
-    {
-        if( suggestions[i].string.equals(correction) ) {
-            found = i;
-            break;
-        }
-    } // for i
-
-    /*
-    if( found != 0 ) {
-        System.out.println( "...orig metaphone: " + SpellWriter.calcMetaphone(word) );
-        for( int i = 0; i < suggestions.length; i++ ) {
-            SuggestWord sugg = suggestions[i];
-            System.out.print( "   " );
-            System.out.print( (i == found)     ? "*" : " " );
-            System.out.println( sugg.string +
-                "\t" + sugg.score +
-                "\t" + sugg.origScore +
-                "\t" + sugg.freq +
-                "\t" + SpellWriter.calcMetaphone(sugg.string) );
-        }
-    }
-    */
-    
     return found;
     
   } // trySpell()
@@ -426,40 +333,7 @@ public class SpellTest
   /** Records a token/frequency pair */
   private class Pair
   {
-    Token token;
-    int   freq;
+    String word;
+    int    freq;
   } // class Pair
-  
-  /** Creates the synthetic field contents to embody the frequency data */
-  private class FreqAnalyzer extends Analyzer
-  {
-    private ArrayList pairList;
-    
-    public FreqAnalyzer( ArrayList pairList ) {
-      this.pairList = pairList;
-    }
-    
-    public int limit;
-    
-    public TokenStream tokenStream( String field, Reader reader )
-    {
-      return new TokenStream() 
-      {
-          private int cur = 0;
-          
-          public Token next() 
-          {
-              if( cur == pairList.size() )
-                  return null;
-              
-              Pair pair = (Pair)pairList.get(cur);
-              if( pair.freq < limit )
-                  return null;
-              
-              cur++;
-              return pair.token;
-          }
-      };
-    } // tokenStream()
-  } // class FreqAnalyzer
 } // class SpellTest

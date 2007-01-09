@@ -22,79 +22,68 @@ package org.apache.lucene.search.spell;
  * as part of the Melvyl Recommender Project.
  */
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
-import org.apache.lucene.analysis.WhitespaceAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.index.TermEnum;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.util.CountedInputStream;
-import org.cdlib.xtf.util.FastStringCache;
-import org.cdlib.xtf.util.Hash64;
 import org.cdlib.xtf.util.IntList;
 import org.cdlib.xtf.util.IntegerValues;
-import org.cdlib.xtf.util.LongSet;
-import org.cdlib.xtf.util.StringList;
-import org.cdlib.xtf.util.StructuredFile;
-import org.cdlib.xtf.util.SubStoreWriter;
 
 /**
  * <p>
- * Spell Writer class <br/>(built on Nicolas Maisonneuve / David Spencer code).
+ * Spell Writer class <br/>(very distantly based on Nicolas Maisonneuve /
+ * David Spencer code).
+ * 
  * Provides efficient, high-volume updates to a spelling correction index.
  * </p>
  * 
  * @author Martin Haye
- * @version 1.0
  */
-public class SpellWriter {
-  /** Field name for each word in the ngram index. */
-  public static final String F_WORD = "word";
-
+public class SpellWriter 
+{
   /** Directory to store the spelling dictionary in */
   private String spellIndexPath;
-  
-  /** Lucene Directory of the spelling dictionary */
-  private Directory spellIndexDir;
-  
-  /** Directory to get term frequencies from */
-  private String mainIndexPath;
   
   /** File to queue words into */
   private File wordQueueFile;
 
   /** File to queue words into */
   private File pairQueueFile;
+
+  /** File containing compiled word frequencies */
+  private File freqFile;
   
-  /** How large to make the cache of recently added words */
-  private static final int CACHE_SIZE = 20000;
-
-  /** Cache of recently added words (so we don't look them up twice.) */
-  private FastStringCache recentWords = new FastStringCache(CACHE_SIZE);
-
+  /** File containing frequency sample data */
+  private File sampleFile;
+  
+  /** File containing edit map data */ 
+  private File edmapFile;
+  
+  /** File containing compiled pair frequency data */
+  private File pairFreqFile;
+  
   /** Boolean object to mark words in cache */
   private static final Boolean trueValue = new Boolean(true);
 
@@ -107,39 +96,50 @@ public class SpellWriter {
   /** For writing to the pair queue */
   private PrintWriter pairQueueWriter = null;
   
-  /** For counting pair frequencies prior to write */
-  private HashMap pairHash = null;
+  /** How large to make the cache of recently added words */
+  private static final int MAX_RECENT_WORDS = 20000;
+
+  /** For counting word frequencies prior to write */
+  private HashMap recentWords = new HashMap(MAX_RECENT_WORDS);
 
   /** Max # of pairs to hash before flushing */
-  private static final int MAX_PAIR_HASH_SIZE = 200000;
+  private static final int MAX_RECENT_PAIRS = 200000;
 
-  /** For checking term existence */
-  private IndexReader spellIndexReader;
+  /** For counting pair frequencies prior to write */
+  private HashMap recentPairs = new HashMap(MAX_RECENT_PAIRS);
 
-  /** For writing new terms */
-  private IndexWriter spellIndexWriter;
+  /** Minimum frequency to retain in frequency data file */
+  private int minWordFreq;
 
   /** Used for calculating double metaphone keys */
   private static DoubleMetaphone doubleMetaphone = new DoubleMetaphone();
+  
+  /** Used for splitting lines delimited with bar */
+  Pattern splitPat = Pattern.compile("\\|");
     
   /** 
    * Establishes the directory to store the dictionary in. 
    */
-  public synchronized void open( String mainIndexPath, String spellIndexPath ) 
+  public synchronized void open(String spellIndexPath, int minWordFreq) 
     throws IOException 
   {
-    this.mainIndexPath = new File(mainIndexPath).getAbsolutePath() + File.separator;
+    this.minWordFreq = minWordFreq;
     this.spellIndexPath = new File(spellIndexPath).getAbsolutePath() + File.separator;
-    this.wordQueueFile = new File(spellIndexPath + "newWords.txt");
-    this.pairQueueFile = new File(spellIndexPath + "newPairs.txt");
     
-    // Open the index directory, if it exists. If not, create it.
-    if (new File(spellIndexPath).isDirectory()) {
-        spellIndexDir  = FSDirectory.getDirectory(spellIndexPath, false);
-        IndexReader.unlock( spellIndexDir );
+    // Figure out the files we're going to store stuff in
+    wordQueueFile = new File(spellIndexPath, "newWords.txt");
+    pairQueueFile = new File(spellIndexPath, "newPairs.txt");
+    freqFile = new File(spellIndexPath, "words.dat");
+    sampleFile = new File(spellIndexPath, "freqSamples.dat");
+    edmapFile = new File(spellIndexPath, "edmap.dat");
+    pairFreqFile = new File(spellIndexPath, "pairs.dat");
+    
+    // If the index directory doesn't exist, make it.
+    File dir = new File(spellIndexPath);
+    if (!dir.isDirectory()) {
+      if (!dir.mkdir())
+        throw new IOException("Error creating spelling index directory");
     }
-    else
-        spellIndexDir = FSDirectory.getDirectory( spellIndexPath, true );
   }
 
   /** 
@@ -148,21 +148,21 @@ public class SpellWriter {
    */
   public synchronized void close() throws IOException {
     closeQueueWriters();
-    closeSpellIndexReader();
-    closeSpellIndexWriter();
   }
 
   /** Delete all words in the dictionary (including those queued on disk) */
   public synchronized void clearIndex() throws IOException {
     close();
+    
     wordQueueFile.delete();
     pairQueueFile.delete();
+    freqFile.delete();
+    sampleFile.delete();
+    edmapFile.delete();
+    pairFreqFile.delete();
+    
     recentWords.clear();
-    if (spellIndexDir != null) {
-        IndexReader.unlock(spellIndexDir);
-        IndexWriter writer = new IndexWriter(spellIndexDir, null, true);
-        writer.close();
-    }
+    recentPairs.clear();
   }
 
   /**
@@ -170,14 +170,16 @@ public class SpellWriter {
    * call checkFlush() to see whether the queue is getting full. The queue will
    * auto-expand if necessary, but it's better to flush it when near full.
    */
-  public synchronized void queueWord(String field, String prevWord, String word) throws IOException {
+  public synchronized void queueWord(String prevWord, String word) throws IOException 
+  {
     openQueueWriters();
     
+    // Is this a pair?
     if (prevWord != null) 
     {
         // Calculate a key for this pair, and get the current count
-        String key = field + "|" + prevWord + "|" + word;
-        Integer val = (Integer) pairHash.get(key);
+        String key = prevWord + "|" + word;
+        Integer val = (Integer) recentPairs.get(key);
         
         // Increment the count
         if (val == null)
@@ -186,36 +188,56 @@ public class SpellWriter {
             val = IntegerValues.valueOf(val.intValue() + 1);
         
         // Store it, and if the hash is full, flush it.
-        pairHash.put(key, val);
-        if (pairHash.size() >= MAX_PAIR_HASH_SIZE)
-            flushPairHash();
+        recentPairs.put(key, val);
+        if (recentPairs.size() >= MAX_RECENT_PAIRS)
+            flushRecentPairs();
     }
 
-    // If we've seen the word recently, skip it.
-    if (recentWords.contains(word))
-      return;
-    recentWords.put(word, trueValue);
+    // Bump the count for this word.
+    Integer val = (Integer) recentWords.get(word);
+    if (val == null)
+        val = IntegerValues.valueOf(1);
+    else
+        val = IntegerValues.valueOf(val.intValue() + 1);
     
-    // Write the word.
-    wordQueueWriter.println(word);
+    // Store it, and if the hash is full, flush it.
+    recentWords.put(word, val);
+    if (recentWords.size() >= MAX_RECENT_WORDS)
+        flushRecentWords();
   } // queueWord()
   
   /** 
    * Flush any accumulated pairs, with their counts. For efficiency, skip any 
    * pair that appeared only once.
    */
-  private void flushPairHash() throws IOException {
-    Set keySet = pairHash.keySet();
+  private void flushRecentPairs() throws IOException {
+    Set keySet = recentPairs.keySet();
     ArrayList list = new ArrayList(keySet);
     Collections.sort(list);
     for (int i=0; i<list.size(); i++) {
         String key = (String) list.get(i);
-        int count = ((Integer)pairHash.get(key)).intValue();
+        int count = ((Integer)recentPairs.get(key)).intValue();
         if (count > 1)
-            pairQueueWriter.println( count + "|" + key);
+            pairQueueWriter.println(key + "|" + count);
     }
     pairQueueWriter.flush();
-    pairHash.clear();
+    recentPairs.clear();
+  }
+
+  /** 
+   * Flush any accumulated words, with their counts.
+   */
+  private void flushRecentWords() throws IOException {
+    Set keySet = recentWords.keySet();
+    ArrayList list = new ArrayList(keySet);
+    Collections.sort(list);
+    for (int i=0; i<list.size(); i++) {
+        String key = (String) list.get(i);
+        int count = ((Integer)recentWords.get(key)).intValue();
+        wordQueueWriter.println(key + "|" + count);
+    }
+    wordQueueWriter.flush();
+    recentWords.clear();
   }
 
   /** Check if any words are queued for add. */
@@ -249,12 +271,6 @@ public class SpellWriter {
     // Phase 2: Accumulate pairs into the pair data file
     totalAdded += flushPhase2();
     
-    // Phase 3: Get term frequency samples for all tokenized fields.
-    if( totalAdded > 0 )
-        flushPhase3();
-    else
-        progress(3, 100, 0);
-    
   } // flushQueuedWords()
 
   /**
@@ -265,93 +281,56 @@ public class SpellWriter {
    */
   private int flushPhase1() throws IOException
   {
-    // Open up the queue, and put a counter on it so we can give accurate
-    // progress messages.
-    //
-    InputStream queueRaw = null;
-    try {
-        queueRaw = new FileInputStream(wordQueueFile);
+    // If there are no new words to add, skip this phase.
+    if (!wordQueueFile.canRead()) {
+      progress(1, 100, 0);
+      return 0;
     }
-    catch( IOException e ) {
-        progress(1, 100, 0);
-        return 0;
-    }
-    
-    CountedInputStream queueCounted = new CountedInputStream(queueRaw);
-    BufferedReader     queueReader  = new BufferedReader(new InputStreamReader(queueCounted, "UTF-8"));
-    
+      
     // Initial progress message
     progress(1, 0, 0);
     
-    // Make a list of the hash codes of every word in the existing dictionary.
-    LongSet existingWords = new LongSet(500000);
-    openSpellIndexReader();
-    if (spellIndexReader != null) {
-        TermEnum terms = spellIndexReader.terms( new Term(F_WORD, "") );
-        while (terms.next()) {
-            String term = terms.term().text();
-            long hash = Hash64.hash(term);
-            existingWords.add(hash);
-        }
-        terms.close();
+    // Read the existing frequency list (if any)
+    HashMap freqMap = new HashMap();
+    readFreqs(freqFile, freqMap);
+    
+    // Add in the new frequencies, then remove entries with low frequency.
+    readFreqs(wordQueueFile, freqMap);
+    cullFreqs(freqMap, minWordFreq);
+    
+    // And write out the accumulated frequencies
+    File newFreqFile = new File(spellIndexPath, "words.dat.new");
+    writeFreqs(newFreqFile, freqMap);
+    
+    // Write out frequency samples for statistical purposes.
+    File newSampleFile = new File(spellIndexPath, "freqSamples.dat.new");
+    writeFreqSamples(freqMap, newSampleFile);
+    
+    // Let's call that 5% of the work.
+    progress(1, 5, 0);
+    
+    // Now comes the time-consuming work: making the edit distance map, giving
+    // progress updates once in a while.
+    //
+    HashMap editMap = new HashMap();
+    int nDone = 0;
+    for (Iterator keyIter = freqMap.keySet().iterator(); keyIter.hasNext(); ) {
+      addCombos((String) keyIter.next(), editMap);
+      if ((nDone++ & 0xFFF) == 0) {
+        int pctDone = (nDone * 45 / freqMap.size()) + 5;
+        progress(1, pctDone, nDone);
+      }
     }
     
-    // Process each word in the queue, only adding those that aren't already
-    // in the dictionary.
-    //
-    long fileTotal = wordQueueFile.length();
-    int prevPctDone = 0;
-    totalAdded = 0;
-
-    try {
-        openSpellIndexWriter();
-        boolean eof = false;
-        int nScanned = 0;
-        while( true ) {
-           
-            String word = queueReader.readLine();
-            if (word == null)
-                break;
-            
-            // If we already have this word in the dictionary, skip it.
-            long hash = Hash64.hash(word);
-            if (existingWords.contains(hash))
-                continue;
-            
-            // Add it to the dictionary, and to our list of existing words.
-            int len = word.length();
-            spellIndexWriter.addDocument(createDocument(word, getMin(len), getMax(len)));
-            existingWords.add(hash);
-            ++totalAdded;
-            
-            // Every 4000 words or so, update the progress counter 
-            if( (nScanned++ & 0xFFF) == 0 ) {
-                long filePos = queueCounted.nRead();
-                int pctDone = (int) ((filePos+1) * 95 / (fileTotal+1));
-                progress( 1, pctDone, totalAdded );
-            }
-        } // while
-        
-        // Finish progress counter (leave 5% for the optimize phase)
-        progress( 1, 95, totalAdded );
-        
-        // Optimize the index so that future access is fast.
-        openSpellIndexWriter();
-        spellIndexWriter.optimize();
-    }
-    finally {
-        queueReader.close();
-        queueCounted.close();
-        queueRaw.close();
-        closeSpellIndexWriter();
-    }
+    // Write out the new edit map.
+    File newEdmapFile = new File(spellIndexPath, "edmap.dat.new");
+    writeEdMap(freqMap, editMap, nDone, newEdmapFile);
     
-    // Now that we've added them, clear the queue (truncate the file). Try
-    // to delete it as well.
-    //
-    FileOutputStream tmp = new FileOutputStream(wordQueueFile);
-    tmp.close();
-    wordQueueFile.delete();
+    // Clear the queue, and replace the old data files.
+    replaceFile(freqFile, newFreqFile);
+    replaceFile(sampleFile, newSampleFile);
+    replaceFile(edmapFile, newEdmapFile);
+    deleteFile(wordQueueFile);
     
     // All done.
     progress(1, 100, totalAdded);
@@ -359,307 +338,132 @@ public class SpellWriter {
   }
 
   /**
-   * Add a block of words to the index, being sure to avoid adding duplicates.
-   * 
-   * @param block           Words to add
-   * @param pct1            % done before add
-   * @param pct2            % done after add
-   * @throws IOException    If something bad happens during the process
+   * Write out a prefix-compressed edit-distance map, which also contains
+   * term frequencies.
    */
-  private void addBlock(ArrayList block, int pct1, int pct2) throws IOException
+  private void writeEdMap(HashMap freqMap, HashMap editMap, int nDone, File file) 
+    throws IOException
   {
-    // Sort the queued words. Checking them in order is faster since
-    // the IndexReader can enumerate the terms in order.
-    //
-    Collections.sort(block);
+    BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+    StringBuffer sbuf = new StringBuffer();
+    CharsetEncoder enc = Charset.forName("UTF-8").newEncoder();
+    byte[] bytes = new byte[1000];
+    ByteBuffer bbuf = ByteBuffer.wrap(bytes);
     
-    // Mark words that aren't duplicates and aren't in the index yet.
-    openSpellIndexReader();
-    String prevWord = null;
-    BitSet wordsToAdd = new BitSet(block.size());
-    for (int i = 0; i < block.size(); i++) {
-      String word = (String) block.get(i);
-
-      // Ignore duplicate words in the list. These can occur because our
-      // cache of recently checked words is finite.
-      //
-      if (word.equals(prevWord))
+    ArrayList edKeys = new ArrayList(editMap.keySet());
+    Collections.sort(edKeys);
+    
+    int pos = 0;
+    IntList sizes = new IntList(edKeys.size());
+    for (int i=0; i<edKeys.size(); i++) {
+      String key = (String) edKeys.get(i);
+      ArrayList words = new ArrayList((LinkedList) editMap.get(key));
+      Collections.sort(words);
+      if (words.size() == 0)
         continue;
-      prevWord = word;
-
-      // Ignore words that are too short.
-      if (word.length() < 3)
-        continue;
-
-      // Ignore words that are already in the index. Note that the
-      // reader does fancy seeking and caching to make docFreq() pretty
-      // fast.
-      //
-      if (spellIndexReader != null && spellIndexReader.docFreq(new Term(F_WORD, word)) > 0)
-        continue;
-
-      // Okay, got a live one. Mark it for addition to the index.
-      wordsToAdd.set(i);
-    } // for i
-
-    // Now that we've identified the words that aren't yet in our index,
-    // add them one at a time.
-    //
-    openSpellIndexWriter();
-    int nTotal = block.size();
-    for (int i = 0; i < nTotal; i++) 
-    {
-      // Only index words that have been marked to add.
-      if (!wordsToAdd.get(i))
-        continue;
-
-      String word = (String) block.get(i);
-      int len = word.length();
-
-      spellIndexWriter.addDocument(createDocument(word, getMin(len), getMax(len)));
-      ++totalAdded;
       
-      // Every 1000 words or so, update the progress counter 
-      if( (i & 0x3FF) == 0 ) {
-          int pctDone = (i * (pct2 - pct1) / nTotal) + pct1;
-          progress( 1, pctDone, totalAdded );
+      String prev = (String) words.get(0);
+      int freq = ((IntHolder)freqMap.get(prev)).value;
+      
+      // Write the key and the first word in full
+      sbuf.setLength(0);
+      sbuf.append(key);
+      sbuf.append('|');
+      sbuf.append(prev);
+      sbuf.append('|');
+      sbuf.append(Integer.toString(freq));
+      
+      // Prefix-compress the list.
+      for (int j=0; j<words.size(); j++) {
+        String word = (String) words.get(j);
+        
+        // Skip duplicates
+        if (word.equals(prev))
+          continue;
+        
+        // Get the frequency of the word
+        freq = ((IntHolder)freqMap.get(word)).value;
+        
+        // Figure out how many characters overlap.
+        int k;
+        for (k=0; k<Math.min(prev.length(), word.length()); k++) {
+          if (word.charAt(k) != prev.charAt(k))
+            break;
+        }
+        
+        // Write it the prefix length, suffix, and frequency
+        sbuf.append('|');
+        sbuf.append((char) ('0' + k));
+        sbuf.append(word.substring(k));
+        sbuf.append('|');
+        sbuf.append(Integer.toString(freq));
+        
+        // Next...
+        prev = word;
       }
+      
+      // Done with this line.
+      sbuf.append('\n');
+      int needed = (int) enc.maxBytesPerChar() * sbuf.length();
+      if (bytes.length < needed) {
+        bytes = new byte[needed];
+        bbuf = ByteBuffer.wrap(bytes);
+      }
+      bbuf.position(0);
+      enc.encode(CharBuffer.wrap(sbuf), bbuf, true);
+      int nBytes = bbuf.position();
+      out.write(bytes, 0, nBytes);
+      sizes.add(nBytes);
+      pos += nBytes;
+      
+      // Give progress every once in a while.
+      if ((i & 0xFFF) == 0) {
+        int pctDone = (i * 49 / editMap.size()) + 50;
+        progress(1, pctDone, nDone);
+      }
+    }    
+    
+    // At the end of the file, write an index of positions.
+    int indexPos = pos;
+    OutputStreamWriter w = new OutputStreamWriter(out, "UTF-8");
+    w.append("edMap index\n");
+    w.append(Integer.toString(edKeys.size()));
+    w.append('\n');
+    for (int i=0; i<edKeys.size(); i++) {
+      String key = (String) edKeys.get(i);
+      w.append(key);
+      w.append('|');
+      w.append(Integer.toString(sizes.get(i)));
+      w.append('\n');
     }
     
-    // Finish progress counter
-    progress( 1, pct2, totalAdded );
-    
-  } // addBlock()
-    
-  /**
-   * Performs the pair-adding phase of the flush procedure.
-   * 
-   * @return    the number of pairs added
-   * @throws    IOException if something goes wrong
-   */
-  private int flushPhase2() throws IOException
-  {
-    // Read in existing pair data (if any)
-    PairFreqWriter pairWriter = new PairFreqWriter();
-    File pairFreqFile = new File(spellIndexPath + "pairs.dat");
-    if (pairFreqFile.canRead())
-      pairWriter.add(pairFreqFile);
-    
-    // Open the queue, and put a counter on it so we can give accurate
-    // progress messages.
-    //
-    InputStream queueRaw = null;
-    try {
-        queueRaw = new FileInputStream(pairQueueFile);
-    }
-    catch( IOException e ) {
-        progress(2, 100, 0);
-        return 0;
-    }
-    
-    CountedInputStream queueCounted = new CountedInputStream(queueRaw);
-    BufferedReader     queueReader  = new BufferedReader(new InputStreamReader(queueCounted, "UTF-8"));
-    
-    // Initial progress message.
-    progress(2, 0, 0);
-    
-    // Process each pair in the queue.
-    long fileTotal = pairQueueFile.length();
-    int prevPctDone = 0;
-    totalAdded = 0;
-
-    try {
-        boolean eof = false;
-        while( !eof ) {
-            String line = queueReader.readLine();
-            if (line == null) {
-                eof = true;
-                break;
-            }
-
-            // Break up the four components of each line (separated by |)
-            StringTokenizer st = new StringTokenizer(line, "|");
-            String countTxt = st.hasMoreTokens() ? st.nextToken() : null;
-            String field = st.hasMoreTokens() ? st.nextToken() : null;
-            String word1 = st.hasMoreTokens() ? st.nextToken() : null;
-            String word2 = st.hasMoreTokens() ? st.nextToken() : null;
-            
-            if (word2 != null) {
-                try {
-                    pairWriter.add(field, word1, word2, Integer.parseInt(countTxt));
-                    ++totalAdded;
-                    
-                    // Every 4000 or so words, give some status feedback.
-                    // Only allocate 90%, leaving 10% for the final write.
-                    //
-                    if( (totalAdded & 0xFFF) == 0 ) {
-                        long filePos = queueCounted.nRead();
-                        int pctDone = (int) ((filePos+1) * 90 / (fileTotal+1));
-                        progress(2, pctDone, totalAdded);
-                    }
-                }
-                catch(NumberFormatException e) { /*ignore*/ }
-            }
-            
-        } // while
-    }
-    finally {
-        queueReader.close();
-        queueCounted.close();
-        queueRaw.close();
-    }
-    
-    // Write out the resulting data and replace the old data file, if any.
-    File newPairFreqFile = new File(spellIndexPath + "pairs.dat.new");
-    newPairFreqFile.delete();
-    pairWriter.save(newPairFreqFile);
-    if (pairFreqFile.canRead() && !pairFreqFile.delete())
-        throw new IOException("Could not delete old pair data file -- permission problem?");
-    if (!newPairFreqFile.renameTo(pairFreqFile))
-        throw new IOException("Could not rename new pair data file -- permission problem?");
-    
-    // Clear out (and try to delete) the queue file.
-    FileOutputStream tmp = new FileOutputStream(pairQueueFile);
-    tmp.close();
-    pairQueueFile.delete();
+    // And finally, at the very end, write the position of the index.
+    sbuf.replace(0, sbuf.length(), Integer.toString(indexPos));
+    while (sbuf.length() < 20)
+      sbuf.insert(0, ' ');
+    sbuf.append('\n');
+    w.append(sbuf);
     
     // All done.
-    progress(2, 100, totalAdded);
-    return totalAdded;
-  }
-  
-  /** 
-   * Get term frequency samples for all tokenized fields.
-   *  
-   * @return the number of fields sampled
-   * @throws IOException if something goes wrong.*/
-  private int flushPhase3() throws IOException
-  {
-    File sampleFile = new File(spellIndexPath + "freqSamples.dat");
-    File newSampleFile = new File(spellIndexPath + "freqSamples.dat.new");
-    int nFields = 0;
-    totalAdded = 0;
-    
-    // Initial progress message
-    progress(3, 0, 0);
-
-    // Make a list of all tokenized fields.
-    IndexReader mainIndexReader = null;
-    
-    try 
-    {
-        mainIndexReader = IndexReader.open( mainIndexPath );
-        TermDocs docs = mainIndexReader.termDocs();
-        Collection fields = mainIndexReader.getFieldNames(true); // indexed only
-        StringList tokenizedFields = new StringList();
-        for (Iterator iter = fields.iterator(); iter.hasNext(); ) {
-            String fieldName = (String) iter.next();
-            
-            // The only way to tell if a field is tokenized is to look at a
-            // document that contains it. And to do that, we need to find
-            // one. That means we need a term for the field.
-            //
-            TermEnum terms = mainIndexReader.terms( new Term(fieldName, "") );
-            if (!terms.next()) {
-                terms.close();
-                continue;
-            }
-            Term t = terms.term();
-            terms.close();
-            if (!t.field().equals(fieldName))
-                continue;
-            
-            // Finally, we have a term. Get the first document using that term.
-            docs.seek(terms);
-            if (!docs.next())
-                continue;
-            int docId = docs.doc();
-            Document doc = mainIndexReader.document(docId);
-            
-            // Okay, see if this field was tokenized. If not, skip it.
-            Field field = doc.getField(fieldName);
-            if (field == null || !field.isTokenized())
-                continue;
-            
-            // Got a tokenized field... remember it.
-            tokenizedFields.add(fieldName);
-        }
-        docs.close();
-        nFields = tokenizedFields.size();
-        
-        // No fields? Nothing to do.
-        if (nFields == 0) {
-            progress(3, 100, 0);
-            return 0;
-        }
-        
-        // Now get samples for each one, and write them to a structured file.
-        newSampleFile.delete();
-        StructuredFile sf = StructuredFile.create(newSampleFile);
-        for (int i = 0; i < nFields; i++) {
-            progress(3, i * 100 / nFields, totalAdded);
-            String fieldName = tokenizedFields.get(i);
-            SubStoreWriter sub = sf.createSubStore(fieldName + ".samples");
-            totalAdded += writeFreqSamples(mainIndexReader, fieldName, sub);
-            sub.close();
-        }
-        sf.close();
-    }
-    finally {
-        if (mainIndexReader != null)
-            mainIndexReader.close();
-        mainIndexReader = null;
-    }
-    
-    // Replace the old sample file (if there is one)
-    if (sampleFile.canRead() && !sampleFile.delete())
-        throw new IOException("Could not delete old term sample file -- permission problem?");
-    if (!newSampleFile.renameTo(sampleFile))
-        throw new IOException("Could not rename new term sample file -- permission problem?");
-    
-    // All done.
-    progress(3, 100, totalAdded);
-    return totalAdded;
+    w.close();
   }
 
-  /** Write term frequency samples for the given field. */
-  private int writeFreqSamples(IndexReader reader, String fieldName, SubStoreWriter writer)
+  /** Write term frequency samples to the given file. */
+  private void writeFreqSamples(HashMap freqMap, File file)
       throws IOException 
   {
-    // Read in all the term frequencies for this field.
-    IntList rawFreqs = new IntList( 10000 );
-    TermEnum terms = reader.terms( new Term(fieldName, "") );
-    long totalFreq = 0;
-    int nTerms = 0;
-    while( terms.next() ) {
-        Term t = terms.term();
-        if( !t.field().equals(fieldName) )
-            break;
-        
-        // Skip numeric, two-letter, one-letter terms (and others if client
-        // overrides shouldSkipTerm()
-        //
-        if( shouldSkipTerm(t.text()) )
-            continue;
-        
-        // Record the frequency of this term.
-        int docFreq = terms.docFreq();
-        rawFreqs.add( docFreq );
-        totalFreq += docFreq;
-        ++nTerms;
-    } // while
-    
-    terms.close();
-    
     // Calculate the mean of the term frequencies
-    double avgFreq = totalFreq / (double)rawFreqs.size();
+    long totalFreq = 0L;
+    for (Iterator iter = freqMap.values().iterator(); iter.hasNext(); )
+      totalFreq += ((IntHolder)iter.next()).value;
+    double avgFreq = totalFreq / (double)freqMap.size();
     
     // Eliminate all at- or below-average frequencies.
-    IntList aboveAvgFreqs = new IntList( rawFreqs.size() );
-    for( int i = 0; i < rawFreqs.size(); i++ ) {
-        int freq = rawFreqs.get( i );
-        if( freq > avgFreq )
-            aboveAvgFreqs.add( freq );
+    IntList aboveAvgFreqs = new IntList( freqMap.size() );
+    for (Iterator iter = freqMap.values().iterator(); iter.hasNext(); ) {
+      int freq = ((IntHolder)iter.next()).value;
+      if (freq > avgFreq)
+        aboveAvgFreqs.add(freq);
     }
     
     // Sort the array by frequency.
@@ -684,40 +488,246 @@ public class SpellWriter {
         finalFreqs.set(0, (int)avgFreq);
 
     // Write out the data
-    writer.writeInt(nTerms);
-    writer.writeInt(finalFreqs.size());
+    PrintWriter writer = new PrintWriter(new FileWriter(file));
+    writer.println(freqMap.size());
+    writer.println(finalFreqs.size());
     for (int i = 0; i < finalFreqs.size(); i++)
-        writer.writeInt(finalFreqs.get(i));
-    
-    // All done.
-    return nTerms;
+        writer.println(finalFreqs.get(i));
+    writer.close();
   } // writeFreqSamples()
 
   /**
-   * Determines if a given term should be skipped (not considered for spelling
-   * suggestions). Can be overridden for finer control.
-   * 
-   * @param term    the term to consider
-   * @return        true if the term should be skipped
+   * Add combinations of the first six letters of the word, capturing all the
+   * possibilities that represent an edit distance of 2 or less.
    */
-  public boolean shouldSkipTerm(String term)
+  private void addCombos(String word, HashMap editMap)
   {
-    if (term.length() < 2)
-      return true;
+    // Add combinations to the edit map
+    addCombo(word, editMap, 0, 1, 2, 3);
+    addCombo(word, editMap, 0, 1, 2, 4);
+    addCombo(word, editMap, 0, 1, 2, 5);
+    addCombo(word, editMap, 0, 1, 3, 4);
+    addCombo(word, editMap, 0, 1, 3, 5);
+    addCombo(word, editMap, 0, 1, 4, 5);
+    addCombo(word, editMap, 0, 2, 3, 4);
+    addCombo(word, editMap, 0, 2, 3, 5);
+    addCombo(word, editMap, 0, 2, 4, 5);
+    addCombo(word, editMap, 0, 3, 4, 5);
+    if (word.length() > 1) {
+      addCombo(word, editMap, 1, 2, 3, 4);
+      addCombo(word, editMap, 1, 2, 3, 5);
+      addCombo(word, editMap, 1, 2, 4, 5);
+      addCombo(word, editMap, 1, 3, 4, 5);
+      if (word.length() > 2)
+        addCombo(word, editMap, 2, 3, 4, 5);
+    }
+  }
+      
+  /** Add a combination of letters to the edit map */
+  private void addCombo(String word, HashMap editMap, 
+                        int p0, int p1, int p2, int p3)
+  {
+    String key = comboKey(word, p0, p1, p2, p3);
+    LinkedList list = (LinkedList) editMap.get(key);
+    if (list == null) {
+      list = new LinkedList();
+      editMap.put(key, list);
+    }
+    list.add(word);
+  }
+
+  /** Calculate a key from the given characters of the word. */
+  static String comboKey(String word, int p0, int p1, int p2, int p3)
+  {
+    char[] ch = new char[4];
+    ch[0] = word.length() > p0 ? word.charAt(p0) : ' ';
+    ch[1] = word.length() > p1 ? word.charAt(p1) : ' ';
+    ch[2] = word.length() > p2 ? word.charAt(p2) : ' ';
+    ch[3] = word.length() > p3 ? word.charAt(p3) : ' ';
+    for (int i=0; i<4; i++)
+      ch[i] = (char) (ch[i] & 0x7f);
+    return new String(ch);
+  }
+
+  /** Attempt to delete (and at least truncate) the given file. */ 
+  private void deleteFile(File file) throws IOException
+  {
+    // First, simply try to delete it.
+    if (file.delete())
+      return;
     
-    // Skip words with digits. We seldom want to correct with these,
-    // and they introduce a big burden on indexing. Also, skip
-    // all n-grams.
+    // Couldn't delete it... at least truncate it.
+    FileOutputStream tmp = new FileOutputStream(file);
+    tmp.close();
+  }
+  
+  /** Replace an old file with a new one */
+  private void replaceFile(File oldFile, File newFile)
+  {
+    // First, try to delete the old one.
+    oldFile.delete();
+    
+    // Then rename the new one to the old one's name.
+    newFile.renameTo(oldFile);
+  }
+
+  /**
+   * Write out frequency data, in sorted order.
+   */
+  private void writeFreqs(File file, HashMap freqMap) throws IOException
+  {
+    BufferedWriter out = new BufferedWriter(new FileWriter(file));
+    ArrayList keys = new ArrayList(freqMap.keySet());
+    Collections.sort(keys);
+    for (int i=0; i<keys.size(); i++) {
+      String key = (String) keys.get(i);
+      IntHolder freq = (IntHolder) freqMap.get(key);
+      out.write(key);
+      out.write("|");
+      out.write(Integer.toString(freq.value));
+      out.write("\n");
+    }
+    out.close();
+  }
+  
+  /**
+   * Remove entries from the map where the freqency is less than the given
+   * threshold.
+   */
+  private void cullFreqs(HashMap freqMap, int minThresh)
+  {
+    for (Iterator keyIter = freqMap.keySet().iterator(); keyIter.hasNext(); ) {
+      String key = (String) keyIter.next();
+      IntHolder freq = (IntHolder) freqMap.get(key);
+      if (freq.value < minThresh)
+        keyIter.remove();
+    }
+  }
+
+  /**
+   * Read an existing frequency file, and add it to the in-memory frequency 
+   * tables.
+   */
+  private void readFreqs(File file, HashMap freqMap) 
+    throws IOException
+  {
+    // Skip if we can't open the file.
+    if (!file.canRead())
+      return;
+    
+    // Read each line, consisting of a word and a count separated by "|"
+    BufferedReader freqReader = new BufferedReader(new FileReader(file));
+    while (true) {
+      String line = freqReader.readLine();
+      if (line == null)
+        break;
+      String[] tokens = splitPat.split(line, 0);
+      
+      // If we haven't seen this word yet, allocate a spot for it.
+      IntHolder count = (IntHolder) freqMap.get(tokens[0]);
+      if (count == null) {
+        count = new IntHolder();
+        freqMap.put(tokens[0], count);
+      }
+      
+      // Accumulate the frequency
+      count.value += Integer.parseInt(tokens[1]);
+    }
+    freqReader.close();
+  }
+
+  /**
+   * Performs the pair-adding phase of the flush procedure.
+   * 
+   * @return    the number of pairs added
+   * @throws    IOException if something goes wrong
+   */
+  private int flushPhase2() throws IOException
+  {
+    // Read in existing pair data (if any)
+    PairFreqData pairData = new PairFreqData();
+    if (pairFreqFile.canRead())
+      pairData.add(pairFreqFile);
+    
+    // Open the queue, and put a counter on it so we can give accurate
+    // progress messages.
     //
-    for (int i = 0; i < term.length(); i++) {
-        char c = term.charAt(i);
-        if (Character.isDigit(c))
-            return true;
-        if (c == '~')
-            return true;
+    InputStream queueRaw = null;
+    try {
+      queueRaw = new FileInputStream(pairQueueFile);
+    }
+    catch( IOException e ) {
+      progress(2, 100, 0);
+      return 0;
     }
     
-    return false;
+    CountedInputStream queueCounted = new CountedInputStream(queueRaw);
+    BufferedReader     queueReader  = new BufferedReader(new InputStreamReader(queueCounted, "UTF-8"));
+    
+    // Initial progress message.
+    progress(2, 0, 0);
+    
+    // Process each pair in the queue.
+    long fileTotal = pairQueueFile.length();
+    int prevPctDone = 0;
+    totalAdded = 0;
+
+    try {
+      boolean eof = false;
+      while( !eof ) {
+        String line = queueReader.readLine();
+        if (line == null) {
+          eof = true;
+          break;
+        }
+
+        // Break up the three components of each line (separated by |)
+        String[] tokens = splitPat.split(line);
+        if (tokens.length == 3) {
+          String word1 = tokens[0];
+          String word2 = tokens[1];
+          String countTxt = tokens[2];
+      
+          try {
+            pairData.add(word1, word2, Integer.parseInt(countTxt));
+            ++totalAdded;
+            
+            // Every 4000 or so words, give some status feedback.
+            // Only allocate 90%, leaving 10% for the final write.
+            //
+            if( (totalAdded & 0xFFF) == 0 ) {
+              long filePos = queueCounted.nRead();
+              int pctDone = (int) ((filePos+1) * 90 / (fileTotal+1));
+              progress(2, pctDone, totalAdded);
+            }
+          }
+          catch(NumberFormatException e) { /*ignore*/ }
+        }
+      } // while
+    }
+    finally {
+      queueReader.close();
+      queueCounted.close();
+      queueRaw.close();
+    }
+    
+    // Write out the resulting data and replace the old data file, if any.
+    File newPairFreqFile = new File(spellIndexPath, "pairs.dat.new");
+    newPairFreqFile.delete();
+    pairData.save(newPairFreqFile);
+    if (pairFreqFile.canRead() && !pairFreqFile.delete())
+      throw new IOException("Could not delete old pair data file -- permission problem?");
+    if (!newPairFreqFile.renameTo(pairFreqFile))
+      throw new IOException("Could not rename new pair data file -- permission problem?");
+    
+    // Clear out (and try to delete) the queue file.
+    FileOutputStream tmp = new FileOutputStream(pairQueueFile);
+    tmp.close();
+    pairQueueFile.delete();
+    
+    // All done.
+    progress(2, 100, totalAdded);
+    return totalAdded;
   }
 
   /** Opens the queue writer, closing the queue reader if necessary. */
@@ -733,163 +743,27 @@ public class SpellWriter {
     pairQueueWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
                            new FileOutputStream(pairQueueFile, true),
                            "UTF-8")));
-    pairHash = new HashMap(MAX_PAIR_HASH_SIZE);
   } // openQueueWriters()
 
   /** Closes the queue writer if it's open */
   private void closeQueueWriters() throws IOException {
     if (wordQueueWriter != null) {
+        flushRecentWords();
         wordQueueWriter.close();
         wordQueueWriter = null;
     }
     if (pairQueueWriter != null) {
-        flushPairHash();
-        pairHash = null;
+        flushRecentPairs();
+        recentPairs = null;
         pairQueueWriter.close();
         pairQueueWriter = null;
     }
   } // closeQueueWriters()
 
-  /**
-   * Opens the IndexReader, closing the IndexWriter if necessary. If the reader
-   * can't be opened (for instance, if the index doesn't exist), the exception
-   * is ignored and 'reader' is simply set to null.
-   */
-  private void openSpellIndexReader() throws IOException 
-  {
-    // If already open, do nothing.
-    if (spellIndexReader != null)
-        return;
-    
-    // If no directory yet, do nothing.
-    if( spellIndexDir == null )
-        return;
 
-    // Close the writer, open the reader.
-    closeSpellIndexWriter();
-    try {
-        if( IndexReader.indexExists(spellIndexDir) )
-            spellIndexReader = IndexReader.open( spellIndexDir );
-    } catch (IOException e) { }
-  } // openSpellIndexReader()
-
-  /** Closes the IndexReader if it's open */
-  private void closeSpellIndexReader() throws IOException 
-  {
-    if (spellIndexReader != null) {
-        spellIndexReader.close();
-        spellIndexReader = null;
-    }
-  } // closeSpellIndexReader()
-
-  /** Opens the IndexWriter, closing the IndexReader if necessary. */
-  private void openSpellIndexWriter() throws IOException {
-    // Close the reader if it's open.
-    closeSpellIndexReader();
-    
-    // Open the writer now.
-    if (spellIndexWriter == null) {
-        spellIndexWriter = new IndexWriter(spellIndexDir, new WhitespaceAnalyzer(), 
-            !IndexReader.indexExists(spellIndexDir));
-    
-        // Set some factors that will help speed things up.
-        spellIndexWriter.mergeFactor = 300;
-        spellIndexWriter.minMergeDocs = 150;
-    }
-  } // openSpellIndexWriter()
-
-  /** Closes the IndexWriter if it's open */
-  private void closeSpellIndexWriter() throws IOException {
-    if (spellIndexWriter != null) {
-        spellIndexWriter.close();
-        spellIndexWriter = null;
-    }
-  } // closeSpellIndexWriter()
-
-  static int getMin (int l) {
-      if (l>5) {
-          return 3;
-      }
-      if (l==5) {
-          return 2;
-      }
-      return 1;
+  public static String calcMetaphone( String word ) {
+    return doubleMetaphone.doubleMetaphone( word );
   }
-
-
-  static int getMax (int l) {
-      if (l>5) {
-          return 4;
-      }
-      if (l==5) {
-          return 3;
-      }
-      return 2;
-  }
-
-
-  public static String calcMetaphone( String word )
-  {
-    String ret = doubleMetaphone.doubleMetaphone( word );
-    
-    /*
-    String beg = word.substring(0, 1).toUpperCase();
-    if( !ret.startsWith(beg) )
-        ret = beg + ret;
-    
-    String end = word.substring(word.length()-1).toUpperCase();
-    if( !ret.endsWith(end) )
-        ret += end;
-    */
-    
-    return ret;
-  }
-
-
-  static String removeDoubles(String text) {
-    for (int i=0; i<text.length()-1; i++) {
-        if (text.charAt(i) == text.charAt(i+1))
-            text = text.substring(0, i) + text.substring(i+1);
-    }
-    return text;
-  }
-  
-  
-  static Document createDocument (String text, int ng1, int ng2) {
-      Document doc=new Document();
-      doc.add(new Field(F_WORD, text, true, true, false)); // orig term
-      addGram(text, doc, ng1, ng2);
-      addMetaphone(text, doc);
-      return doc;
-  }
-
-
-  static void addGram (String text, Document doc, int ng1, int ng2) {
-      text = removeDoubles(text);
-      int len=text.length();
-      for (int ng=ng1; ng<=ng2; ng++) {
-          String key="gram"+ng;
-          String end=null;
-          for (int i=0; i<len-ng+1; i++) {
-              String gram=text.substring(i, i+ng);
-              doc.add(new Field(key, gram, false, true, false));
-              if (i==0) {
-                  doc.add(new Field("start"+ng, gram, false, true, false));
-              }
-              end=gram;
-          }
-          if (end!=null) { // may not be present if len==ng1
-              doc.add(new Field("end"+ng, end, false, true, false));
-          }
-      }
-  }
-
-
-  static void addMetaphone (String text, Document doc) {
-      String metaPhone = calcMetaphone(text);
-      doc.add(new Field("metaphone", metaPhone, false, true, false));
-  }
-
 
   protected void finalize() throws Throwable {
     close();
