@@ -35,10 +35,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,6 +45,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.cdlib.xtf.util.CountedInputStream;
+import org.cdlib.xtf.util.CountedOutputStream;
 import org.cdlib.xtf.util.IntList;
 import org.cdlib.xtf.util.IntegerValues;
 
@@ -344,16 +342,13 @@ public class SpellWriter
   private void writeEdMap(HashMap freqMap, HashMap editMap, int nDone, File file) 
     throws IOException
   {
-    BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-    StringBuffer sbuf = new StringBuffer();
-    CharsetEncoder enc = Charset.forName("UTF-8").newEncoder();
-    byte[] bytes = new byte[1000];
-    ByteBuffer bbuf = ByteBuffer.wrap(bytes);
+    CountedOutputStream outCounted = new CountedOutputStream(
+        new BufferedOutputStream(new FileOutputStream(file)));
+    Writer out = new OutputStreamWriter(outCounted);
     
     ArrayList edKeys = new ArrayList(editMap.keySet());
     Collections.sort(edKeys);
     
-    int pos = 0;
     IntList sizes = new IntList(edKeys.size());
     for (int i=0; i<edKeys.size(); i++) {
       String key = (String) edKeys.get(i);
@@ -362,16 +357,17 @@ public class SpellWriter
       if (words.size() == 0)
         continue;
       
+      long prevPos = outCounted.nWritten();
+      
       String prev = (String) words.get(0);
       int freq = ((IntHolder)freqMap.get(prev)).value;
       
       // Write the key and the first word in full
-      sbuf.setLength(0);
-      sbuf.append(key);
-      sbuf.append('|');
-      sbuf.append(prev);
-      sbuf.append('|');
-      sbuf.append(Integer.toString(freq));
+      out.append(key);
+      out.append('|');
+      out.append(prev);
+      out.append('|');
+      out.append(Integer.toString(freq));
       
       // Prefix-compress the list.
       for (int j=0; j<words.size(); j++) {
@@ -392,29 +388,20 @@ public class SpellWriter
         }
         
         // Write it the prefix length, suffix, and frequency
-        sbuf.append('|');
-        sbuf.append((char) ('0' + k));
-        sbuf.append(word.substring(k));
-        sbuf.append('|');
-        sbuf.append(Integer.toString(freq));
+        out.append('|');
+        out.append((char) ('0' + k));
+        out.append(word.substring(k));
+        out.append('|');
+        out.append(Integer.toString(freq));
         
         // Next...
         prev = word;
       }
       
-      // Done with this line.
-      sbuf.append('\n');
-      int needed = (int) enc.maxBytesPerChar() * sbuf.length();
-      if (bytes.length < needed) {
-        bytes = new byte[needed];
-        bbuf = ByteBuffer.wrap(bytes);
-      }
-      bbuf.position(0);
-      enc.encode(CharBuffer.wrap(sbuf), bbuf, true);
-      int nBytes = bbuf.position();
-      out.write(bytes, 0, nBytes);
-      sizes.add(nBytes);
-      pos += nBytes;
+      // Done with this line. Write it, and record the size.
+      out.append('\n');
+      out.flush();
+      sizes.add((int) (outCounted.nWritten() - prevPos));
       
       // Give progress every once in a while.
       if ((i & 0xFFF) == 0) {
@@ -424,28 +411,26 @@ public class SpellWriter
     }    
     
     // At the end of the file, write an index of positions.
-    int indexPos = pos;
-    OutputStreamWriter w = new OutputStreamWriter(out, "UTF-8");
-    w.append("edMap index\n");
-    w.append(Integer.toString(edKeys.size()));
-    w.append('\n');
+    long indexPos = outCounted.nWritten();
+    out.append("edMap index\n");
+    out.append(Integer.toString(edKeys.size()));
+    out.append('\n');
     for (int i=0; i<edKeys.size(); i++) {
       String key = (String) edKeys.get(i);
-      w.append(key);
-      w.append('|');
-      w.append(Integer.toString(sizes.get(i)));
-      w.append('\n');
+      out.append(key);
+      out.append('|');
+      out.append(Integer.toString(sizes.get(i)));
+      out.append('\n');
     }
     
     // And finally, at the very end, write the position of the index.
-    sbuf.replace(0, sbuf.length(), Integer.toString(indexPos));
-    while (sbuf.length() < 20)
-      sbuf.insert(0, ' ');
-    sbuf.append('\n');
-    w.append(sbuf);
+    String tmp = Long.toString(indexPos);
+    while (tmp.length() < 20)
+      tmp = " " + tmp;
+    out.append(tmp);
     
     // All done.
-    w.close();
+    out.close();
   }
 
   /** Write term frequency samples to the given file. */
