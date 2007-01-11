@@ -590,7 +590,7 @@ public class SpellWriter
         }
         curWords.add(tokens[1]);
         try { curFreqs.add(Integer.parseInt(tokens[2])); }
-        catch (NumberFormatException e½) { assert false : "invalid edmap line"; }
+        catch (NumberFormatException e) { assert false : "invalid edmap line"; }
         
         // Give progress every once in a while.
         if ((nWritten++ & 0xFFF) == 0)
