@@ -28,10 +28,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -39,15 +37,16 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.cdlib.xtf.util.CountedInputStream;
 import org.cdlib.xtf.util.CountedOutputStream;
+import org.cdlib.xtf.util.FileSorter;
 import org.cdlib.xtf.util.IntList;
 import org.cdlib.xtf.util.IntegerValues;
+import org.cdlib.xtf.util.ProgressTracker;
+import org.cdlib.xtf.util.StringList;
 
 /**
  * <p>
@@ -62,7 +61,7 @@ import org.cdlib.xtf.util.IntegerValues;
 public class SpellWriter 
 {
   /** Directory to store the spelling dictionary in */
-  private String spellIndexPath;
+  private File spellIndexDir;
   
   /** File to queue words into */
   private File wordQueueFile;
@@ -85,9 +84,6 @@ public class SpellWriter
   /** Boolean object to mark words in cache */
   private static final Boolean trueValue = new Boolean(true);
 
-  /** Number of words added during flush */
-  private int totalAdded;
-  
   /** For writing to the word queue */
   private PrintWriter wordQueueWriter = null;
   
@@ -114,15 +110,42 @@ public class SpellWriter
   
   /** Used for splitting lines delimited with bar */
   Pattern splitPat = Pattern.compile("\\|");
-    
+
+  /** Memory limit for sorting */
+  private int SORT_MEM_LIMIT = 100*1024*1024; // 10 megs per file (2 files)
+  
+  /** Character array for forming combo keys */
+  private char[] keyChars = new char[4];
+  
+  /** String buffer for edmap pairs */
+  private StringBuffer edmapBuf = new StringBuffer();
+  
+  /** 
+   * Protected constructor -- do not construct directly; rather, use the
+   * static open() method.
+   */
+  protected SpellWriter() { }
+  
+  /** 
+   * Creates a SpellWriter, and establishes the directory to store the 
+   * dictionary in. 
+   */
+  public static SpellWriter open(String spellIndexPath, int minWordFreq) 
+    throws IOException
+  {
+    SpellWriter writer = new SpellWriter();
+    writer.openInternal(spellIndexPath, minWordFreq);
+    return writer;
+  }
+  
   /** 
    * Establishes the directory to store the dictionary in. 
    */
-  public synchronized void open(String spellIndexPath, int minWordFreq) 
+  private void openInternal(String spellIndexPath, int minWordFreq) 
     throws IOException 
   {
     this.minWordFreq = minWordFreq;
-    this.spellIndexPath = new File(spellIndexPath).getAbsolutePath() + File.separator;
+    this.spellIndexDir = new File(spellIndexPath);
     
     // Figure out the files we're going to store stuff in
     wordQueueFile = new File(spellIndexPath, "newWords.txt");
@@ -170,8 +193,6 @@ public class SpellWriter
    */
   public synchronized void queueWord(String prevWord, String word) throws IOException 
   {
-    openQueueWriters();
-    
     // Is this a pair?
     if (prevWord != null) 
     {
@@ -209,6 +230,10 @@ public class SpellWriter
    * pair that appeared only once.
    */
   private void flushRecentPairs() throws IOException {
+    if (recentPairs.isEmpty())
+      return;
+    
+    openPairQueueWriter();
     Set keySet = recentPairs.keySet();
     ArrayList list = new ArrayList(keySet);
     Collections.sort(list);
@@ -226,6 +251,10 @@ public class SpellWriter
    * Flush any accumulated words, with their counts.
    */
   private void flushRecentWords() throws IOException {
+    if (recentWords.isEmpty())
+      return;
+    
+    openWordQueueWriter();
     Set keySet = recentWords.keySet();
     ArrayList list = new ArrayList(keySet);
     Collections.sort(list);
@@ -245,29 +274,30 @@ public class SpellWriter
     return queueSize > 1;
   }
 
-  /** 
-   * Called periodically during the flush process. Override to output status
-   * messages.
-   */
-  public void progress(int phase, int percentDone, int totalAdded) {
-    // Default: do nothing.
-  }
-  
   /**
    * Ensures that all words in the queue are written to the dictionary on disk.
    * 
    * @return number of non-duplicate words actually written
    */
-  public synchronized void flushQueuedWords() throws IOException {
+  public synchronized void flushQueuedWords(ProgressTracker prog) throws IOException 
+  {
     closeQueueWriters();
     
-    int totalAdded = 0;
+    // Approximately calculate how much work there is to do, so we can report
+    // progress in a rational way.
+    //
+    ProgressTracker[] phaseProgs = prog.split( 
+        (freqFile.length() + wordQueueFile.length()) * 10, 
+        pairQueueFile.length());
     
     // Phase 1: Add words and their ngrams to the Lucene index
-    totalAdded += flushPhase1();
+    flushPhase1(phaseProgs[0]);
     
     // Phase 2: Accumulate pairs into the pair data file
-    totalAdded += flushPhase2();
+    flushPhase2(phaseProgs[1]);
+    
+    // All done.
+    prog.progress(100, 100, "Done.");
     
   } // flushQueuedWords()
 
@@ -277,138 +307,314 @@ public class SpellWriter
    * @return    the number of pairs added
    * @throws    IOException if something goes wrong
    */
-  private int flushPhase1() throws IOException
+  private void flushPhase1(ProgressTracker prog) throws IOException
   {
     // If there are no new words to add, skip this phase.
-    if (!wordQueueFile.canRead()) {
-      progress(1, 100, 0);
-      return 0;
-    }
+    if (!wordQueueFile.canRead())
+      return;
+    
+    // Divide the progress into sub-phases: reading word lists, 
+    // writing frequency samples, writing frequencies, writing edmap.
+    //
+    ProgressTracker[] subProgs = prog.split(5, 30, 5, 60);
       
     // Initial progress message
-    progress(1, 0, 0);
+    ProgressTracker[] wordProgs = subProgs[0].split(
+        freqFile.length(), wordQueueFile.length());
     
     // Read the existing frequency list (if any)
-    HashMap freqMap = new HashMap();
-    readFreqs(freqFile, freqMap);
+    FileSorter freqSorter = FileSorter.start(spellIndexDir, SORT_MEM_LIMIT);
+    readFreqs(freqFile, freqSorter, wordProgs[0]);
     
-    // Add in the new frequencies, then remove entries with low frequency.
-    readFreqs(wordQueueFile, freqMap);
-    cullFreqs(freqMap, minWordFreq);
+    // Add in the new frequencies
+    readFreqs(wordQueueFile, freqSorter, wordProgs[1]);
     
-    // And write out the accumulated frequencies
-    File newFreqFile = new File(spellIndexPath, "words.dat.new");
-    writeFreqs(newFreqFile, freqMap);
+    // And write out the accumulated frequencies (culling entries with low 
+    // frequency as we go). Also, we'll start building the edit map.
+    //
+    File newFreqFile = new File(spellIndexDir, "words.dat.new");
+    FileSorter edmapSorter = FileSorter.start(spellIndexDir, SORT_MEM_LIMIT);
+    IntList allFreqs = new IntList(10000);
+    writeFreqs(newFreqFile, freqSorter, allFreqs, edmapSorter, subProgs[1]);
     
     // Write out frequency samples for statistical purposes.
-    File newSampleFile = new File(spellIndexPath, "freqSamples.dat.new");
-    writeFreqSamples(freqMap, newSampleFile);
-    
-    // Let's call that 5% of the work.
-    progress(1, 5, 0);
-    
-    // Now comes the time-consuming work: making the edit distance map, giving
-    // progress updates once in a while.
-    //
-    HashMap editMap = new HashMap();
-    int nDone = 0;
-    for (Iterator keyIter = freqMap.keySet().iterator(); keyIter.hasNext(); ) {
-      addCombos((String) keyIter.next(), editMap);
-      if ((nDone++ & 0xFFF) == 0) {
-        int pctDone = (nDone * 45 / freqMap.size()) + 5;
-        progress(1, pctDone, nDone);
-      }
-    }
+    File newSampleFile = new File(spellIndexDir, "freqSamples.dat.new");
+    writeFreqSamples(allFreqs, newSampleFile, subProgs[2]);
     
     // Write out the new edit map.
-    File newEdmapFile = new File(spellIndexPath, "edmap.dat.new");
-    writeEdMap(freqMap, editMap, nDone, newEdmapFile);
+    File newEdmapFile = new File(spellIndexDir, "edmap.dat.new");
+    writeEdMap(edmapSorter, newEdmapFile, subProgs[3]);
     
     // Clear the queue, and replace the old data files.
     replaceFile(freqFile, newFreqFile);
     replaceFile(sampleFile, newSampleFile);
     replaceFile(edmapFile, newEdmapFile);
     deleteFile(wordQueueFile);
-    
-    // All done.
-    progress(1, 100, totalAdded);
-    return totalAdded;
   }
+
+  /**
+   * Read an existing frequency file, and add it to a file sorter.
+   * @param tracker 
+   */
+  private void readFreqs(File inFile, FileSorter out, ProgressTracker prog) 
+    throws IOException
+  {
+    // Skip if we can't open the file.
+    if (!inFile.canRead())
+      return;
+    
+    // Read each line, consisting of a word and a count separated by "|"
+    CountedInputStream countedIn = new CountedInputStream(
+        new FileInputStream(inFile));
+    BufferedReader freqReader = new BufferedReader(new InputStreamReader(countedIn));
+    int lineCt = 0;
+    while (true) {
+      String line = freqReader.readLine();
+      if (line == null)
+        break;
+      out.addLine(line);
+      
+      // Report progress every once in a while.
+      if ((lineCt++ & 0xfff) == 0)
+        prog.progress(countedIn.nRead(), inFile.length(), "Reading word files.");
+    }
+    freqReader.close();
+  }
+
+  /**
+   * Write out frequency data, in sorted order.
+   * @param tracker 
+   */
+  private void writeFreqs(final File outFile, 
+                          final FileSorter freqSorter,
+                          final IntList allFreqs,
+                          final FileSorter edmapSorter, 
+                          final ProgressTracker prog) 
+    throws IOException
+  {
+    final BufferedWriter out = new BufferedWriter(new FileWriter(outFile));
+    freqSorter.finish(new FileSorter.Output() 
+    {
+      String curWord = null;
+      int curFreq = 0;
+      int nProcessed = 0;
+      
+      // For each token/frequency pair...
+      public void writeLine(String line) throws IOException 
+      {
+        String[] tokens = splitPat.split(line);
+        if (tokens.length == 2) 
+        {
+          // If this is a new word, flush the old one.
+          if (!tokens[0].equals(curWord)) {
+            if (curWord != null)
+              flushWord();
+            curWord = tokens[0];
+          }
+          
+          // Accumulate the frequency (skip if invalid)
+          try { curFreq += Integer.parseInt(tokens[1]); }
+          catch (NumberFormatException e) { }
+          
+          // Report progress every once in a while.
+          if ((nProcessed++ & 0xfff) == 0 && nProcessed > 1)
+            prog.progress(nProcessed, freqSorter.nLinesAdded(), "Processed " +  nProcessed + " words.");
+        }
+      }
+      
+      private void flushWord() throws IOException
+      {
+        // Skip if the frequency is below our threshold
+        if (curFreq < minWordFreq)
+          return;
+        
+        // Add the frequency to our list of all (for statistics later)
+        allFreqs.add(curFreq);
+        
+        // Write a line to the final frequency file
+        out.append(curWord);
+        out.append('|');
+        out.append(Integer.toString(curFreq));
+        out.append('\n');
+        
+        // Add combinations to the edit map.
+        addCombos(curWord, curFreq, edmapSorter);
+        
+        // Prepare for the next word.
+        curFreq = 0;
+      }
+      
+      public void close() throws IOException { out.close(); }
+    });
+  }
+  
+  /**
+   * Add combinations of the first six letters of the word, capturing all the
+   * possibilities that represent an edit distance of 2 or less.
+   */
+  private void addCombos(String word, int freq, FileSorter edMapSorter) 
+    throws IOException
+  {
+    // Add combinations to the edit map
+    addCombo(word, freq, edMapSorter, 0, 1, 2, 3);
+    addCombo(word, freq, edMapSorter, 0, 1, 2, 4);
+    addCombo(word, freq, edMapSorter, 0, 1, 2, 5);
+    addCombo(word, freq, edMapSorter, 0, 1, 3, 4);
+    addCombo(word, freq, edMapSorter, 0, 1, 3, 5);
+    addCombo(word, freq, edMapSorter, 0, 1, 4, 5);
+    addCombo(word, freq, edMapSorter, 0, 2, 3, 4);
+    addCombo(word, freq, edMapSorter, 0, 2, 3, 5);
+    addCombo(word, freq, edMapSorter, 0, 2, 4, 5);
+    addCombo(word, freq, edMapSorter, 0, 3, 4, 5);
+    if (word.length() > 1) {
+      addCombo(word, freq, edMapSorter, 1, 2, 3, 4);
+      addCombo(word, freq, edMapSorter, 1, 2, 3, 5);
+      addCombo(word, freq, edMapSorter, 1, 2, 4, 5);
+      addCombo(word, freq, edMapSorter, 1, 3, 4, 5);
+      if (word.length() > 2)
+        addCombo(word, freq, edMapSorter, 2, 3, 4, 5);
+    }
+  }
+      
+  /** Add a combination of letters to the edit map */
+  private void addCombo(String word, int freq, FileSorter edmapSorter, 
+                        int p0, int p1, int p2, int p3) 
+    throws IOException
+  {
+    edmapBuf.setLength(0);
+    edmapBuf.append(comboKey(word, p0, p1, p2, p3));
+    edmapBuf.append('|');
+    edmapBuf.append(word);
+    edmapBuf.append('|');
+    edmapBuf.append(freq);
+    String line = edmapBuf.toString();
+    edmapSorter.addLine(line);
+  }
+
+  /** Calculate a key from the given characters of the word. */
+  private char[] comboKey(String word, int p0, int p1, int p2, int p3)
+  {
+    keyChars[0] = word.length() > p0 ? word.charAt(p0) : ' ';
+    keyChars[1] = word.length() > p1 ? word.charAt(p1) : ' ';
+    keyChars[2] = word.length() > p2 ? word.charAt(p2) : ' ';
+    keyChars[3] = word.length() > p3 ? word.charAt(p3) : ' ';
+    for (int i=0; i<4; i++)
+      keyChars[i] = (char) (keyChars[i] & 0x7f);
+    return keyChars;
+  }
+
+  /** Write term frequency samples to the given file. */
+  private void writeFreqSamples(IntList allFreqs, File file, ProgressTracker prog)
+      throws IOException 
+  {
+    // Calculate the mean of the term frequencies
+    prog.progress(0, 100, "Sampling frequencies.");
+    long totalFreq = 0L;
+    for (int i=0; i<allFreqs.size(); i++)
+      totalFreq += allFreqs.get(i);
+    double avgFreq = totalFreq / (double)allFreqs.size();
+    
+    // Eliminate all at- or below-average frequencies.
+    prog.progress(10, 100, "Sampling frequencies.");
+    IntList aboveAvgFreqs = new IntList(allFreqs.size() / 2);
+    for (int i=0; i<allFreqs.size(); i++) {
+      int freq = allFreqs.get(i);
+      if (freq > avgFreq)
+        aboveAvgFreqs.add(freq);
+    }
+    
+    // Sort the array by frequency.
+    prog.progress(20, 100, "Sampling frequencies.");
+    aboveAvgFreqs.sort();
+    
+    // If more than 1000 entries, sample it down.
+    final int MAX_SAMPLES = 1000;
+    IntList finalFreqs;
+    if (aboveAvgFreqs.size() < MAX_SAMPLES)
+        finalFreqs = aboveAvgFreqs;
+    else
+    {
+        finalFreqs = new IntList(MAX_SAMPLES);
+        for( int i = 0; i < MAX_SAMPLES; i++ ) {
+            int pos = (int) (((long)i) * aboveAvgFreqs.size() / MAX_SAMPLES);
+            finalFreqs.add(aboveAvgFreqs.get(pos));
+        }
+    }
+    
+    // Make sure the very first sample reflects the average
+    if (finalFreqs.size() > 0)
+        finalFreqs.set(0, (int)avgFreq);
+
+    // Write out the data
+    prog.progress(50, 100, "Sampling frequencies.");
+    PrintWriter writer = new PrintWriter(new FileWriter(file));
+    writer.println(allFreqs.size());
+    writer.println(finalFreqs.size());
+    for (int i = 0; i < finalFreqs.size(); i++)
+        writer.println(finalFreqs.get(i));
+    writer.close();
+    
+    prog.progress(100, 100, "Sampling frequencies.");
+  } // writeFreqSamples()
 
   /**
    * Write out a prefix-compressed edit-distance map, which also contains
    * term frequencies.
    */
-  private void writeEdMap(HashMap freqMap, HashMap editMap, int nDone, File file) 
+  private void writeEdMap(final FileSorter edmapSorter, 
+                          final File outFile, 
+                          final ProgressTracker prog) 
     throws IOException
   {
-    CountedOutputStream outCounted = new CountedOutputStream(
-        new BufferedOutputStream(new FileOutputStream(file)));
-    Writer out = new OutputStreamWriter(outCounted);
-    
-    ArrayList edKeys = new ArrayList(editMap.keySet());
-    Collections.sort(edKeys);
-    
-    IntList sizes = new IntList(edKeys.size());
-    for (int i=0; i<edKeys.size(); i++) {
-      String key = (String) edKeys.get(i);
-      ArrayList words = new ArrayList((LinkedList) editMap.get(key));
-      Collections.sort(words);
-      if (words.size() == 0)
-        continue;
+    final CountedOutputStream outCounted = new CountedOutputStream(
+        new BufferedOutputStream(new FileOutputStream(outFile)));
+    final Writer out = new OutputStreamWriter(outCounted);
+   
+    // Finish sorting all the edit map entries, group them, and write out the keys.
+    final StringList edKeys = new StringList();
+    final IntList sizes = new IntList();
+    edmapSorter.finish(new FileSorter.Output() {
+      String curKey = null;
+      StringList curWords = new StringList();
+      IntList curFreqs = new IntList();
+      int nWritten = 0;
       
-      long prevPos = outCounted.nWritten();
-      
-      String prev = (String) words.get(0);
-      int freq = ((IntHolder)freqMap.get(prev)).value;
-      
-      // Write the key and the first word in full
-      out.append(key);
-      out.append('|');
-      out.append(prev);
-      out.append('|');
-      out.append(Integer.toString(freq));
-      
-      // Prefix-compress the list.
-      for (int j=0; j<words.size(); j++) {
-        String word = (String) words.get(j);
-        
-        // Skip duplicates
-        if (word.equals(prev))
-          continue;
-        
-        // Get the frequency of the word
-        freq = ((IntHolder)freqMap.get(word)).value;
-        
-        // Figure out how many characters overlap.
-        int k;
-        for (k=0; k<Math.min(prev.length(), word.length()); k++) {
-          if (word.charAt(k) != prev.charAt(k))
-            break;
+      public void writeLine(String line) throws IOException 
+      {
+        String[] tokens = splitPat.split(line);
+        assert tokens.length == 3 : "invalid edmap line";
+        if (!tokens[0].equals(curKey)) {
+          if (curKey != null)
+            flushKey();
+          curKey = tokens[0];
         }
+        curWords.add(tokens[1]);
+        try { curFreqs.add(Integer.parseInt(tokens[2])); }
+        catch (NumberFormatException e½) { assert false : "invalid edmap line"; }
         
-        // Write it the prefix length, suffix, and frequency
-        out.append('|');
-        out.append((char) ('0' + k));
-        out.append(word.substring(k));
-        out.append('|');
-        out.append(Integer.toString(freq));
-        
-        // Next...
-        prev = word;
+        // Give progress every once in a while.
+        if ((nWritten++ & 0xFFF) == 0)
+          prog.progress(nWritten, edmapSorter.nLinesAdded(), "Building word map.");
       }
       
-      // Done with this line. Write it, and record the size.
-      out.append('\n');
-      out.flush();
-      sizes.add((int) (outCounted.nWritten() - prevPos));
-      
-      // Give progress every once in a while.
-      if ((i & 0xFFF) == 0) {
-        int pctDone = (i * 49 / editMap.size()) + 50;
-        progress(1, pctDone, nDone);
+      private void flushKey() throws IOException 
+      {
+        // Write out the condensed key
+        long prevPos = outCounted.nWritten();
+        condenseEdmapKey(curKey, curWords, curFreqs, out);
+        out.flush();
+        
+        // Record the key and its size on disk
+        edKeys.add(curKey);
+        sizes.add((int) (outCounted.nWritten() - prevPos));
+        
+        // Clear the word and frequency lists in preparation for the next word
+        curWords.clear();
+        curFreqs.clear();
       }
-    }    
+
+      public void close() { }
+    });
     
     // At the end of the file, write an index of positions.
     long indexPos = outCounted.nWritten();
@@ -432,106 +638,54 @@ public class SpellWriter
     // All done.
     out.close();
   }
-
-  /** Write term frequency samples to the given file. */
-  private void writeFreqSamples(HashMap freqMap, File file)
-      throws IOException 
-  {
-    // Calculate the mean of the term frequencies
-    long totalFreq = 0L;
-    for (Iterator iter = freqMap.values().iterator(); iter.hasNext(); )
-      totalFreq += ((IntHolder)iter.next()).value;
-    double avgFreq = totalFreq / (double)freqMap.size();
-    
-    // Eliminate all at- or below-average frequencies.
-    IntList aboveAvgFreqs = new IntList( freqMap.size() );
-    for (Iterator iter = freqMap.values().iterator(); iter.hasNext(); ) {
-      int freq = ((IntHolder)iter.next()).value;
-      if (freq > avgFreq)
-        aboveAvgFreqs.add(freq);
-    }
-    
-    // Sort the array by frequency.
-    aboveAvgFreqs.sort();
-    
-    // If more than 1000 entries, sample it down.
-    final int MAX_SAMPLES = 1000;
-    IntList finalFreqs;
-    if (aboveAvgFreqs.size() < MAX_SAMPLES)
-        finalFreqs = aboveAvgFreqs;
-    else
-    {
-        finalFreqs = new IntList(MAX_SAMPLES);
-        for( int i = 0; i < MAX_SAMPLES; i++ ) {
-            int pos = (int) (((long)i) * aboveAvgFreqs.size() / MAX_SAMPLES);
-            finalFreqs.add(aboveAvgFreqs.get(pos));
-        }
-    }
-    
-    // Make sure the very first sample reflects the average
-    if (finalFreqs.size() > 0)
-        finalFreqs.set(0, (int)avgFreq);
-
-    // Write out the data
-    PrintWriter writer = new PrintWriter(new FileWriter(file));
-    writer.println(freqMap.size());
-    writer.println(finalFreqs.size());
-    for (int i = 0; i < finalFreqs.size(); i++)
-        writer.println(finalFreqs.get(i));
-    writer.close();
-  } // writeFreqSamples()
-
+  
   /**
-   * Add combinations of the first six letters of the word, capturing all the
-   * possibilities that represent an edit distance of 2 or less.
+   * Perform prefix compression on a list of words for a single edit map
+   * key.
    */
-  private void addCombos(String word, HashMap editMap)
+  private void condenseEdmapKey(String key, StringList words, IntList freqs,  
+                                Writer out) 
+    throws IOException
   {
-    // Add combinations to the edit map
-    addCombo(word, editMap, 0, 1, 2, 3);
-    addCombo(word, editMap, 0, 1, 2, 4);
-    addCombo(word, editMap, 0, 1, 2, 5);
-    addCombo(word, editMap, 0, 1, 3, 4);
-    addCombo(word, editMap, 0, 1, 3, 5);
-    addCombo(word, editMap, 0, 1, 4, 5);
-    addCombo(word, editMap, 0, 2, 3, 4);
-    addCombo(word, editMap, 0, 2, 3, 5);
-    addCombo(word, editMap, 0, 2, 4, 5);
-    addCombo(word, editMap, 0, 3, 4, 5);
-    if (word.length() > 1) {
-      addCombo(word, editMap, 1, 2, 3, 4);
-      addCombo(word, editMap, 1, 2, 3, 5);
-      addCombo(word, editMap, 1, 2, 4, 5);
-      addCombo(word, editMap, 1, 3, 4, 5);
-      if (word.length() > 2)
-        addCombo(word, editMap, 2, 3, 4, 5);
-    }
-  }
+    String prev = words.get(0);
+    int freq = freqs.get(0);
+    
+    // Write the key and the first word in full
+    out.append(key);
+    out.append('|');
+    out.append(prev);
+    out.append('|');
+    out.append(Integer.toString(freq));
+    
+    // Prefix-compress the list.
+    for (int j=1; j<words.size(); j++) {
+      String word = words.get(j);
+      freq = freqs.get(j);
       
-  /** Add a combination of letters to the edit map */
-  private void addCombo(String word, HashMap editMap, 
-                        int p0, int p1, int p2, int p3)
-  {
-    String key = comboKey(word, p0, p1, p2, p3);
-    LinkedList list = (LinkedList) editMap.get(key);
-    if (list == null) {
-      list = new LinkedList();
-      editMap.put(key, list);
+      // Skip duplicates
+      if (word.equals(prev))
+        continue;
+      
+      // Figure out how many characters overlap.
+      int k;
+      for (k=0; k<Math.min(prev.length(), word.length()); k++) {
+        if (word.charAt(k) != prev.charAt(k))
+          break;
+      }
+      
+      // Write it the prefix length, suffix, and frequency
+      out.append('|');
+      out.append((char) ('0' + k));
+      out.append(word.substring(k));
+      out.append('|');
+      out.append(Integer.toString(freq));
+      
+      // Next...
+      prev = word;
     }
-    list.add(word);
-  }
-
-  /** Calculate a key from the given characters of the word. */
-  static String comboKey(String word, int p0, int p1, int p2, int p3)
-  {
-    char[] ch = new char[4];
-    ch[0] = word.length() > p0 ? word.charAt(p0) : ' ';
-    ch[1] = word.length() > p1 ? word.charAt(p1) : ' ';
-    ch[2] = word.length() > p2 ? word.charAt(p2) : ' ';
-    ch[3] = word.length() > p3 ? word.charAt(p3) : ' ';
-    for (int i=0; i<4; i++)
-      ch[i] = (char) (ch[i] & 0x7f);
-    return new String(ch);
+    
+    // Done with this line. Write it, and record the size.
+    out.append('\n');
   }
 
   /** Attempt to delete (and at least truncate) the given file. */ 
@@ -557,78 +711,14 @@ public class SpellWriter
   }
 
   /**
-   * Write out frequency data, in sorted order.
-   */
-  private void writeFreqs(File file, HashMap freqMap) throws IOException
-  {
-    BufferedWriter out = new BufferedWriter(new FileWriter(file));
-    ArrayList keys = new ArrayList(freqMap.keySet());
-    Collections.sort(keys);
-    for (int i=0; i<keys.size(); i++) {
-      String key = (String) keys.get(i);
-      IntHolder freq = (IntHolder) freqMap.get(key);
-      out.write(key);
-      out.write("|");
-      out.write(Integer.toString(freq.value));
-      out.write("\n");
-    }
-    out.close();
-  }
-  
-  /**
-   * Remove entries from the map where the freqency is less than the given
-   * threshold.
-   */
-  private void cullFreqs(HashMap freqMap, int minThresh)
-  {
-    for (Iterator keyIter = freqMap.keySet().iterator(); keyIter.hasNext(); ) {
-      String key = (String) keyIter.next();
-      IntHolder freq = (IntHolder) freqMap.get(key);
-      if (freq.value < minThresh)
-        keyIter.remove();
-    }
-  }
-
-  /**
-   * Read an existing frequency file, and add it to the in-memory frequency 
-   * tables.
-   */
-  private void readFreqs(File file, HashMap freqMap) 
-    throws IOException
-  {
-    // Skip if we can't open the file.
-    if (!file.canRead())
-      return;
-    
-    // Read each line, consisting of a word and a count separated by "|"
-    BufferedReader freqReader = new BufferedReader(new FileReader(file));
-    while (true) {
-      String line = freqReader.readLine();
-      if (line == null)
-        break;
-      String[] tokens = splitPat.split(line, 0);
-      
-      // If we haven't seen this word yet, allocate a spot for it.
-      IntHolder count = (IntHolder) freqMap.get(tokens[0]);
-      if (count == null) {
-        count = new IntHolder();
-        freqMap.put(tokens[0], count);
-      }
-      
-      // Accumulate the frequency
-      count.value += Integer.parseInt(tokens[1]);
-    }
-    freqReader.close();
-  }
-
-  /**
    * Performs the pair-adding phase of the flush procedure.
-   * 
-   * @return    the number of pairs added
-   * @throws    IOException if something goes wrong
    */
-  private int flushPhase2() throws IOException
+  private void flushPhase2(ProgressTracker prog) throws IOException
   {
+    // Skip this phase if there are no pairs to add.
+    if (!pairQueueFile.canRead())
+      return;
+      
     // Read in existing pair data (if any)
     PairFreqData pairData = new PairFreqData();
     if (pairFreqFile.canRead())
@@ -637,25 +727,16 @@ public class SpellWriter
     // Open the queue, and put a counter on it so we can give accurate
     // progress messages.
     //
-    InputStream queueRaw = null;
-    try {
-      queueRaw = new FileInputStream(pairQueueFile);
-    }
-    catch( IOException e ) {
-      progress(2, 100, 0);
-      return 0;
-    }
-    
-    CountedInputStream queueCounted = new CountedInputStream(queueRaw);
+    CountedInputStream queueCounted = new CountedInputStream(new FileInputStream(pairQueueFile));
     BufferedReader     queueReader  = new BufferedReader(new InputStreamReader(queueCounted, "UTF-8"));
     
-    // Initial progress message.
-    progress(2, 0, 0);
+    // Divide the progress into two sub-phases: read and write
+    ProgressTracker[] subProgs = prog.split(90, 10);
     
     // Process each pair in the queue.
     long fileTotal = pairQueueFile.length();
     int prevPctDone = 0;
-    totalAdded = 0;
+    int totalAdded = 0;
 
     try {
       boolean eof = false;
@@ -683,7 +764,7 @@ public class SpellWriter
             if( (totalAdded & 0xFFF) == 0 ) {
               long filePos = queueCounted.nRead();
               int pctDone = (int) ((filePos+1) * 90 / (fileTotal+1));
-              progress(2, pctDone, totalAdded);
+              subProgs[0].progress(filePos+1, fileTotal+1, "Read " + totalAdded + " pairs.");
             }
           }
           catch(NumberFormatException e) { /*ignore*/ }
@@ -693,12 +774,12 @@ public class SpellWriter
     finally {
       queueReader.close();
       queueCounted.close();
-      queueRaw.close();
     }
     
     // Write out the resulting data and replace the old data file, if any.
-    File newPairFreqFile = new File(spellIndexPath, "pairs.dat.new");
+    File newPairFreqFile = new File(spellIndexDir, "pairs.dat.new");
     newPairFreqFile.delete();
+    subProgs[1].progress(50, 100, "Writing pair data.");
     pairData.save(newPairFreqFile);
     if (pairFreqFile.canRead() && !pairFreqFile.delete())
       throw new IOException("Could not delete old pair data file -- permission problem?");
@@ -709,14 +790,10 @@ public class SpellWriter
     FileOutputStream tmp = new FileOutputStream(pairQueueFile);
     tmp.close();
     pairQueueFile.delete();
-    
-    // All done.
-    progress(2, 100, totalAdded);
-    return totalAdded;
   }
 
-  /** Opens the queue writer, closing the queue reader if necessary. */
-  private void openQueueWriters() throws IOException {
+  /** Opens the word queue writer. */
+  private void openWordQueueWriter() throws IOException {
     // If already open, skip re-opening.
     if (wordQueueWriter != null)
         return;
@@ -725,12 +802,20 @@ public class SpellWriter
     wordQueueWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
                            new FileOutputStream(wordQueueFile, true),
                            "UTF-8")));
+  }
+  
+  /** Opens the pair queue writer. */
+  private void openPairQueueWriter() throws IOException {
+    // If already open, skip re-opening.
+    if (pairQueueWriter != null)
+        return;
+
     pairQueueWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
                            new FileOutputStream(pairQueueFile, true),
                            "UTF-8")));
   } // openQueueWriters()
 
-  /** Closes the queue writer if it's open */
+  /** Closes the queue writers if either are open */
   private void closeQueueWriters() throws IOException {
     if (wordQueueWriter != null) {
         flushRecentWords();
