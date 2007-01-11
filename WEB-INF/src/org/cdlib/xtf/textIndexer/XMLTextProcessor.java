@@ -3875,10 +3875,8 @@ public class XMLTextProcessor extends DefaultHandler
     // passed to it and queued.
     //
     if( indexInfo.createSpellcheckDict ) {
-        if( spellWriter == null ) {
-            spellWriter = new SpellWriter();
-            spellWriter.open( indexPath + "spellDict/", 3 );
-        }
+        if( spellWriter == null )
+            spellWriter = SpellWriter.open( indexPath + "spellDict/", 3 );
         analyzer.setSpellWriter( spellWriter );
     }
     
