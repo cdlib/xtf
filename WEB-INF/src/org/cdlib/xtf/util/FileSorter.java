@@ -35,7 +35,6 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -55,36 +54,105 @@ import java.util.zip.InflaterInputStream;
  */
 public class FileSorter
 {
-  private static final int DEFAULT_MEM_LIMIT = 10*1024*1024; // 10 megs
+  /** Default memory limit if none specified */
+  public static final int DEFAULT_MEM_LIMIT = 10*1024*1024; // 10 megs
+  
+  /** File to use for temporary disk storage (automatically deleted) */
+  private File tmpFile;
+  
+  /** Approximate limit on the amount of memory to consume during sort */
+  private int memLimit;
+  
+  /** Count of how many lines were read in */
+  private int nLinesAdded;
+  
+  /** Approximate amount of memory consumed by the current block of lines */
+  private int curBlockMem = 0;
+  
+  /** Buffer of lines in the current block */
+  private ArrayList curBlockLines = new ArrayList();
+  
+  /** Offsets of blocks already written to the temp file */
+  private ArrayList blockOffsets = new ArrayList();
+  
+  /** Sentinel string used to mark end of blocks */
   private static String SENTINEL = "\ueeee\ueede\ueee1";
   
-  /** Generalized interface for feeding lines to the sorter */
-  public interface Input {
-    String readLine() throws IOException;
-    void close() throws IOException;
+  /** 
+   * Protected constructor -- do not construct directly; rather, use one
+   * of the simple, intermediate, or advanced API methods below.
+   */
+  protected FileSorter() { }
+
+  /** Simple command-line interface */
+  public static void main(String[] args)
+  {
+    if (args.length != 2) {
+      System.err.println("Usage: sort <inFile> <outFile>");
+      System.exit(1);
+    }
+    try {
+      long startTime = System.currentTimeMillis();
+      sort(new File(args[0]), new File(args[1]));
+      System.out.println("Sort time: " + 
+        ((System.currentTimeMillis() - startTime) / 1000.0f) + " sec");
+    }
+    catch (IOException e) {
+      System.err.println(e);
+    }
+  }
+
+  /** Simple API: Sort from an input file to an output file */
+  public static void sort(File inFile, File outFile) throws IOException {
+    sort(inFile, outFile, null, DEFAULT_MEM_LIMIT);
   }
   
-  /** Generalized interface for writing lines from the sorter */
+  /** 
+   * Intermediate API: sort from a file, to a file, using a specified temporary
+   * directory and memory limit.
+   * 
+   * @param inFile source of input lines, in UTF-8 encoding
+   * @param outFile destination of output lines
+   * @param tmpDir filesystem directory for temporary storage during sort. If
+   *               null, then the system default temp directory will be used.
+   * @param memLimit approximate max amount of RAM to use during sort
+   */
+  public static void sort(File inFile, File outFile, File tmpDir, int memLimit) 
+    throws IOException
+  {
+    // Clear the output file
+    clearFile(outFile);
+      
+    // Open the input file.
+    BufferedReader in = new BufferedReader(new FileReader(inFile));
+    try 
+    {
+      // Do the main work of sorting.
+      FileSorter sorter = FileSorter.start(tmpDir, memLimit);
+      while (true) {
+        String line = in.readLine();
+        if (line == null)
+          break;
+        sorter.addLine(line);
+      }
+      sorter.finish(new FileOutput(outFile, memLimit/10));
+    }
+    catch (IOException e) {
+      outFile.delete();
+      throw e;
+    }
+    finally {
+      in.close();
+    }
+  }
+  
+  /** Advanced API interface for writing lines from the sorter */
   public interface Output {
     void writeLine(String line) throws IOException;
     void close() throws IOException;
   }
   
-  /** Get sort input from a file */
-  public static class FileInput implements Input {
-    private BufferedReader in;
-    public FileInput(File f) throws FileNotFoundException {
-      in = new BufferedReader(new FileReader(f));
-    }
-    public String readLine() throws IOException {
-      return in.readLine();
-    }
-    public void close() throws IOException {
-      in.close();
-    }
-  }
-  
-  /** Write sort input to a file */
+  /** Advanced API class: write output to a file */
   public static class FileOutput implements Output {
     private BufferedWriter out;
     public FileOutput(File f, int bufSize) throws IOException {
@@ -98,180 +166,86 @@ public class FileSorter
       out.close();
     }
   }
-  
-  /** Source of input lines */
-  private Input in;
-  
-  /** Sink for output lines */
-  private Output out;
-  
-  /** File to use for temporary disk storage (automatically deleted) */
-  private File tmpFile;
-  
-  /** Approximate limit on the amount of memory to consume during sort */
-  private int memLimit;
-  
-  /** Count of how many lines were read in */
-  private int nLines;
-  
-  /** Default constructor with default memory limit */
-  public FileSorter() {
-    this(DEFAULT_MEM_LIMIT);
-  }
-  
-  /** Constructor to specify a memory limit */
-  public FileSorter(int memLimit) {
-    this.memLimit = memLimit;
-  }
-  
-  /** General sort method, independent of input and output specifics. */
-  public void sort(Input in, Output out, File tmpFile) throws IOException
+
+  /** 
+   * Advanced API, independent of input and output format. Uses "push"
+   * method, where first you call start() to obtain a FileSorter object.
+   * Then you repeatedly call putLine() to specify each line to be
+   * sorted. Then finally you call finish() to complete the sorting.
+   * 
+   * @param tmpDir a filesystem directory to store temporary data during sort.
+   * @param memLimit approximate limit on the amount of RAM to use during sort.
+   */
+  public static FileSorter start(File tmpDir, int memLimit) 
+    throws IOException
   {
-    this.in = in;
-    this.out = out;
-    this.tmpFile = tmpFile;
+    if (tmpDir != null && !tmpDir.isDirectory())
+      throw new IOException("Invalid temp directory specified");
     
-    try 
-    {
-      // Clear the temp file.
-      clearFile(tmpFile);
-      
-      // First, divide the input file into sorted blocks
-      nLines = 0;
-      ArrayList blocks = partition();
-      
-      // Then merge the blocks to form the final output
-      int nWritten = merge(blocks);
-      assert nWritten == nLines : "merge missed some lines";
-    }
-    finally {
-      in.close();
+    FileSorter sorter = new FileSorter();
+    sorter.memLimit = memLimit;
+    sorter.tmpFile = File.createTempFile("sort", ".tmp", tmpDir);
+    return sorter;
+  }
+  
+  /**
+   * Add a line to be sorted.
+   * 
+   * @param line one line of data to be sorted
+   */
+  public void addLine(String line) throws IOException 
+  {
+    // Add this line to our buffer for the current block. If it's full, flush
+    // it to the temp file.
+    //
+    curBlockLines.add(line);
+    ++nLinesAdded;
+    curBlockMem += memSize(line);
+    if (curBlockMem >= memLimit)
+      flushBlock();
+  }
+  
+  /** Find out how many lines were added */
+  public int nLinesAdded() { return nLinesAdded; }
+  
+  /** 
+   * Perform the main work of sorting, sending the results to the specified
+   * output. 
+   */
+  public void finish(Output out) throws IOException 
+  {
+    // Special case: if all the lines are in memory, avoid the temp file
+    // completely.
+    //
+    if (blockOffsets.isEmpty()) {
+      Collections.sort(curBlockLines);
+      for (int i=0; i<curBlockLines.size(); i++)
+        out.writeLine((String)curBlockLines.get(i));
       out.close();
-      tmpFile.delete();
-    }
-  }
-  
-  /** Sort from an input file to an output file */
-  public static void sort(File inFile, File outFile, File tmpFile, int memLimit) 
-    throws IOException
-  {
-    try 
-    {
-      // Clear the output file first.
-      clearFile(outFile);
-      
-      // Do the main work of sorting.
-      FileSorter sorter = new FileSorter(memLimit);
-      sorter.sort(new FileInput(inFile), new FileOutput(outFile, memLimit/10), tmpFile);
-    }
-    catch (IOException e) {
-      outFile.delete();
-      throw e;
-    }
-  }
-  
-  /** Simple API: Sort from an input file to an output file */
-  public static void sort(File inFile, File outFile) throws IOException {
-    File tmpFile = new File(inFile.toString() + ".sort_tmp");
-    sort(inFile, outFile, tmpFile, DEFAULT_MEM_LIMIT);
-  }
-  
-  /** Command-line interface */
-  public static void main(String[] args)
-  {
-    if (args.length != 2) {
-      System.err.println("Usage: sort <inFile> <outFile>");
-    }
-    File inFile  = new File(args[0]);
-    File outFile = new File(args[1]);
-    try {
-      long startTime = System.currentTimeMillis();
-      sort(inFile, outFile);
-      System.out.println("Elapsed: " + (System.currentTimeMillis() - startTime));
-    }
-    catch (Throwable t) {
-      System.err.println(t);
-      System.exit(1);
-    }
-  }
-
-  /** Delete, or at least truncate, the given file */
-  private static void clearFile(File f) throws IOException
-  {
-    if (f.delete())
+      clearFile(tmpFile);
       return;
-    FileOutputStream truncator = new FileOutputStream(f);
-    truncator.close();
-    f.delete();
-  }
-  
-  /** Partition the input file into sorted blocks */
-  private ArrayList partition() 
-    throws IOException
-  {
-    BufferedReader in = null;
-    CountedOutputStream countedTmp = new CountedOutputStream(
-        new FileOutputStream(tmpFile));
-    ArrayList blocks = new ArrayList();
+    }
     
-    try 
-    {
-      while (true)
-      {
-        // Since this is disk-based, we achieve a significant performance gain
-        // by simply compressing the data going out, and coming back in.
-        //
-        DeflaterOutputStream deflater = new DeflaterOutputStream(countedTmp);
-        DataOutputStream out = new DataOutputStream(deflater);
-        
-        // Read a block of lines, up to the memory limit
-        ArrayList block = readBlock();
-        if (block.isEmpty())
-          break;
-        
-        // Sort it in memory
-        Collections.sort(block);
-        
-        // Record the block's position
-        long blockPos = countedTmp.nWritten();
-        blocks.add(new Long(blockPos));
-        
-        // Write out the block.
-        for (int i=0; i<block.size(); i++)
-          out.writeUTF((String) block.get(i));
-        out.writeUTF(SENTINEL);
-
-        // Finish off the block.
-        out.flush();
-        deflater.finish();
-      }
-    }
-    finally {
-      if (in != null)
-        in.close();
-      if (countedTmp != null)
-        countedTmp.close();
-    }
-    return blocks;
-  }
-
-  /** Merge sorted blocks from the temp file into the final output file. */
-  private int merge(ArrayList blocks) 
-    throws IOException
-  {
-    // Calculate the memory limit for each block. Make them at least 16k.
-    int blockMemLimit = Math.max(16384, memLimit / blocks.size());
+    // Okay, we have to use disk-based sorting. First, flush any lines in the
+    // last block.
+    //
+    flushBlock();
+    
+    // We will be keeping part of every block in memory while merging. 
+    // Calculate the memory limit for each block so we maximize the buffers
+    // (which minimizes disk seek time).
+    //
+    int blockMemLimit = Math.max(16384, memLimit / blockOffsets.size());
     
     // Open the temporary file which contains the sorted blocks.
-    RandomAccessFile tmp = new RandomAccessFile(tmpFile, "r");
-
+    RandomAccessFile tmpIn = new RandomAccessFile(tmpFile, "r");
     try
     {
       // Make a priority queue of each of the input blocks.
-      PriorityQueue queue = new PriorityQueue(blocks.size());
-      for (int i=0; i<blocks.size(); i++) {
-        long blockPos = ((Long)blocks.get(i)).longValue();
-        BlockReader block = new BlockReader(tmp, blockPos, blockMemLimit);
+      PriorityQueue queue = new PriorityQueue(blockOffsets.size());
+      for (int i=0; i<blockOffsets.size(); i++) {
+        long blockPos = ((Long)blockOffsets.get(i)).longValue();
+        BlockReader block = new BlockReader(tmpIn, blockPos, blockMemLimit);
         if (block.next())
           queue.add(block);
       }
@@ -293,31 +267,68 @@ public class FileSorter
         if (block.next())
           queue.add(block);
       }
-      return nLinesWritten;
+      
+      assert nLinesWritten == nLinesAdded : "wrong number of lines written";
     }
     finally {
-      tmp.close();
+      out.close();
+      tmpIn.close();
+      clearFile(tmpFile);
     }
   }
 
   /**
-   * Read in a block of lines from a file, trying to not exceed the specified
-   * memory limit.
+   * Flush currently buffered lines to the temporary file. This involves
+   * sorting them, and writing them out as a compressed block.
    */
-  private ArrayList readBlock()
-    throws IOException
+  private void flushBlock() throws IOException
   {
-    long memUsed = 0;
-    ArrayList block = new ArrayList(1000);
-    while (memUsed < memLimit) {
-      String line = in.readLine();
-      if (line == null)
-        break;
-      block.add(line);
-      nLines++;
-      memUsed += memSize(line);
+    // Sort the lines we have buffered
+    Collections.sort(curBlockLines);
+    
+    // Record the block's starting offset in the temp file.
+    blockOffsets.add(new Long(tmpFile.length()));
+        
+    // Open the temp file and record the offset of the new block.
+    FileOutputStream tmpOut = new FileOutputStream(tmpFile, true);
+    try 
+    {
+      // Testing has shown a significant performance gain (around 40%) from
+      // compressing the data going to and from disk.
+      //
+      DeflaterOutputStream deflater = new DeflaterOutputStream(tmpOut);
+      DataOutputStream blockOut = new DataOutputStream(deflater);
+          
+      // Write out each line from the block, followed by a sentinel to mark
+      // the end.
+      //
+      for (int i=0; i<curBlockLines.size(); i++)
+        blockOut.writeUTF((String) curBlockLines.get(i));
+      blockOut.writeUTF(SENTINEL);
+  
+      // Finish off the compression.
+      blockOut.flush();
+      deflater.finish();
+      
+      // Clear the buffer in preparation for the next block.
+      curBlockLines.clear();
+      curBlockMem = 0;
     }
-    return block;
+    finally {
+      tmpOut.close();
+    }
+  }
+  
+  /** Delete, or at least truncate, the given file (if it exists) */
+  private static void clearFile(File f) throws IOException
+  {
+    if (!f.canRead())
+      return;
+    if (f.delete())
+      return;
+    FileOutputStream truncator = new FileOutputStream(f);
+    truncator.close();
+    f.delete();
   }
   
   /** Give a rough estimate of how much memory a given string takes */
