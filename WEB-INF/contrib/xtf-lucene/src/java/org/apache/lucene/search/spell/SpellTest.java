@@ -45,7 +45,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.ProgressTracker;
 
 /**
  * Automated test of spelling correction to determine its overall accuracy.
@@ -131,33 +131,7 @@ public class SpellTest
     System.out.println( "Writing spell index..." );
     
     long startTime = System.currentTimeMillis();
-    SpellWriter spellWriter = new SpellWriter() {
-        int prevPhase = -1;
-        int prevPct   = -1;
-        long prevTime = System.currentTimeMillis();
-        public void progress( int phase, int pctDone, int totalAdded ) {
-            long curTime = System.currentTimeMillis();
-            long elapsed = curTime - prevTime;
-            if( phase != prevPhase ) {
-                Trace.untab();
-                System.out.println( "Phase " + phase + ":" );
-                Trace.tab();
-                prevPhase = phase;
-                prevPct = -1;
-            }
-            if( pctDone > prevPct && 
-                (pctDone == 0 || pctDone == 100 || elapsed > 1000) ) 
-            {
-                prevTime = curTime;
-                prevPct = pctDone;
-                String pctTxt = Integer.toString(pctDone);
-                while( pctTxt.length() < 3 ) 
-                    pctTxt = " " + pctTxt;
-                System.out.println( "[" + pctTxt + "%] Added " + totalAdded + "." );
-            }
-        }
-    };
-    spellWriter.open( "spell", 1 );
+    SpellWriter spellWriter = SpellWriter.open( "spell", 1 );
     spellWriter.clearIndex();
     
     // Add each word the specified number of times.
@@ -168,7 +142,16 @@ public class SpellTest
     }
 
     // Now comes the bulk of the work
-    spellWriter.flushQueuedWords();
+    ProgressTracker prog = new ProgressTracker() {
+      public void report(int pctDone, String descrip) {
+        String pctTxt = Integer.toString(pctDone);
+        while (pctTxt.length() < 3) 
+            pctTxt = " " + pctTxt;
+        System.out.println("[" + pctTxt + "%] " + descrip);
+      }
+    };
+    prog.setMinInterval(1000);
+    spellWriter.flushQueuedWords(prog);
     spellWriter.close();
     
     System.out.println( "Done. Total time: " + (System.currentTimeMillis() - startTime) + " msec" );

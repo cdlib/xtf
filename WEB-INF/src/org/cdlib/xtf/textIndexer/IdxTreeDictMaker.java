@@ -41,6 +41,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.spell.SpellWriter;
 
 import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.ProgressTracker;
 import org.cdlib.xtf.util.Trace;
 
 
@@ -146,37 +147,18 @@ public class IdxTreeDictMaker
     
     try {
 
-        // Open the SpellWriter, and supply a progress monitoring method.
-        spellWriter = new SpellWriter() {
-          int prevPhase = -1;
-          int prevPct   = -1;
-          long prevTime = System.currentTimeMillis();
-          public void progress( int phase, int pctDone, int totalAdded ) {
-              long curTime = System.currentTimeMillis();
-              long elapsed = curTime - prevTime;
-              if( phase != prevPhase ) {
-                  Trace.untab();
-                  Trace.info( "Phase " + phase + ":" );
-                  Trace.tab();
-                  prevPhase = phase;
-                  prevPct = -1;
-              }
-              if( pctDone > prevPct && 
-                  (pctDone == 0 || pctDone == 100 || elapsed > 30000) ) 
-              {
-                  prevTime = curTime;
-                  prevPct = pctDone;
-                  String pctTxt = Integer.toString(pctDone);
-                  while( pctTxt.length() < 3 ) 
-                      pctTxt = " " + pctTxt;
-                  Trace.info( "[" + pctTxt + "%] Added " + totalAdded + "." );
-              }
-          }
-        };
-        spellWriter.open( spellIdxPath, 3 );
+        // Open the SpellWriter
+        spellWriter = SpellWriter.open( spellIdxPath, 3 );
         
         // Perform the update.
-        spellWriter.flushQueuedWords();
+        spellWriter.flushQueuedWords(new ProgressTracker() {
+          public void report(int pctDone, String descrip) {
+              String pctTxt = Integer.toString(pctDone);
+              while( pctTxt.length() < 3 ) 
+                  pctTxt = " " + pctTxt;
+              Trace.info( "[" + pctTxt + "%] " + descrip );
+          }
+        });
     } //  try( to open the specified index )
     
     catch ( Exception e ) {      
