@@ -494,13 +494,18 @@ public class SpellWriter
   /** Calculate a key from the given characters of the word. */
   private char[] comboKey(String word, int p0, int p1, int p2, int p3)
   {
-    keyChars[0] = word.length() > p0 ? word.charAt(p0) : ' ';
-    keyChars[1] = word.length() > p1 ? word.charAt(p1) : ' ';
-    keyChars[2] = word.length() > p2 ? word.charAt(p2) : ' ';
-    keyChars[3] = word.length() > p3 ? word.charAt(p3) : ' ';
-    for (int i=0; i<4; i++)
-      keyChars[i] = (char) (keyChars[i] & 0x7f);
+    keyChars[0] = word.length() > p0 ? comboChar(word.charAt(p0)) : ' ';
+    keyChars[1] = word.length() > p1 ? comboChar(word.charAt(p1)) : ' ';
+    keyChars[2] = word.length() > p2 ? comboChar(word.charAt(p2)) : ' ';
+    keyChars[3] = word.length() > p3 ? comboChar(word.charAt(p3)) : ' ';
     return keyChars;
+  }
+  
+  private char comboChar(char c)
+  {
+    if ((c & ~0xff) == 0)
+      return c;
+    return (char) ((c & 0xff) | 0x80);
   }
 
   /** Write term frequency samples to the given file. */

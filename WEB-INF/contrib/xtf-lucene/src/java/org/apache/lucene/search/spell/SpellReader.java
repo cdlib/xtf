@@ -303,16 +303,22 @@ public class SpellReader
    */
   private int comboKey(String word, int p0, int p1, int p2, int p3)
   {
-    char[] ch = new char[4];
-    ch[0] = word.length() > p0 ? word.charAt(p0) : ' ';
-    ch[1] = word.length() > p1 ? word.charAt(p1) : ' ';
-    ch[2] = word.length() > p2 ? word.charAt(p2) : ' ';
-    ch[3] = word.length() > p3 ? word.charAt(p3) : ' ';
+    int[] ch = new int[4];
+    ch[0] = word.length() > p0 ? comboChar(word.charAt(p0)) : ' ';
+    ch[1] = word.length() > p1 ? comboChar(word.charAt(p1)) : ' ';
+    ch[2] = word.length() > p2 ? comboChar(word.charAt(p2)) : ' ';
+    ch[3] = word.length() > p3 ? comboChar(word.charAt(p3)) : ' ';
 
-    return ((ch[0] & 0x7f) << 24) |
-           ((ch[1] & 0x7f) << 16) |
-           ((ch[2] & 0x7f) << 8) |
-           ((ch[3] & 0x7f) << 0);
+    return (ch[0] << 24) |
+           (ch[1] << 16) |
+           (ch[2] << 8) |
+           (ch[3] << 0);
+  }
+  
+  private int comboChar(int c) {
+    if ((c & ~0xff) == 0)
+      return c;
+    return (c & 0xff) | 0x80;
   }
   
   /** Check if the given word is in the spelling dictionary */
