@@ -318,7 +318,8 @@ public class SpellReader
   private int comboChar(int c) {
     if (c >= 0x20 && (c & ~0x7f) == 0)
       return c;
-    return (char) ((c & 0x7f) | 0x20);
+    c = (char) ((c & 0x7f) | 0x20);
+    return (c == '|') ? '*' : c;
   }
   
   /** Check if the given word is in the spelling dictionary */

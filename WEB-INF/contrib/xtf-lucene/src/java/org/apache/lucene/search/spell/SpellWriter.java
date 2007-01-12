@@ -505,7 +505,8 @@ public class SpellWriter
   {
     if (c >= 0x20 && (c & ~0x7f) == 0)
       return c;
-    return (char) ((c & 0x7f) | 0x20);
+    c = (char) ((c & 0x7f) | 0x20);
+    return (c == '|') ? '*' : c;
   }
 
   /** Write term frequency samples to the given file. */
