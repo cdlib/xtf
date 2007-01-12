@@ -503,9 +503,9 @@ public class SpellWriter
   
   private char comboChar(char c)
   {
-    if ((c & ~0xff) == 0)
+    if (c >= 0x20 && (c & ~0x7f) == 0)
       return c;
-    return (char) ((c & 0xff) | 0x80);
+    return (char) ((c & 0x7f) | 0x20);
   }
 
   /** Write term frequency samples to the given file. */
