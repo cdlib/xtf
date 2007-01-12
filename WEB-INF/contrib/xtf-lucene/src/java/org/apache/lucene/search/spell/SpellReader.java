@@ -511,6 +511,10 @@ public class SpellReader
         }
     }
     
+    // If we couldn't find any pair that results in improvement, do nothing.
+    if (bestSugg1 == null)
+      return in;
+    
     // If we found something better than doing nothing, record it.
     Phrase bestPhrase = (Phrase) in.clone();
     if (bestSugg2.equals(word2))
