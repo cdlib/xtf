@@ -135,6 +135,22 @@ public class FileUtils {
     return new File(resolved);
   } // resolveFile
 
+  /**
+   * Gets the current date and time.
+   * 
+   * @param context   Context used to figure out which stylesheet is calling
+   *                  the function.
+   * @param formatStr A simple format string; see {@link SimpleDateFormat}.
+   * @return          The formatted date/time.
+   */
+  public static String curDateTime( XPathContext context, 
+                                    String formatStr )
+  {
+    SimpleDateFormat fmt = getDateFormat( formatStr );
+    String result = fmt.format( new Date() );
+    return result;
+  } // curDateTime()
+  
   /** 
    * Get a SimpleDateFormatter for the given format string. If one has
    * already been created, use that; otherwise, make a new one.
