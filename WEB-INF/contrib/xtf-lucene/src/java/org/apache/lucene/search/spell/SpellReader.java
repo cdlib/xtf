@@ -419,10 +419,9 @@ public class SpellReader
     Phrase bestPhrase = new Phrase();
     bestPhrase.descrip = "no change";
     bestPhrase.words = new Word[terms.length];
-    for (int i=0; i<terms.length; i++) {
+    for (int i=0; i<terms.length; i++)
       bestPhrase.words[i] = new Word(terms[i]);
-      bestPhrase.score += bestPhrase.words[i].score;
-    }
+    bestPhrase.calcScore();
     
     // If there's just one word, out work is simple: just find the best 
     // replacement for that word.
@@ -447,7 +446,10 @@ public class SpellReader
   private Phrase subWord(Phrase in, int pos) throws IOException
   {
     // Get a suggestion for replacing the word.
-    Word sugg = suggestSimilar(in.words[pos], 1)[0];
+    Word[] suggs = suggestSimilar(in.words[pos], 1);
+    if (suggs.length == 0)
+      return in;
+    Word sugg = suggs[0];
     
     // If no improvement, return the original.
     if (sugg == in.words[pos])
@@ -466,7 +468,7 @@ public class SpellReader
    * 
    * @param in  the current best we've found
    * @param pos           position to consider
-   * @return            new best
+   * @return              new best
    */
   private Phrase subPair(Phrase in, int pos) 
     throws IOException
@@ -475,26 +477,28 @@ public class SpellReader
     Word word2 = in.words[pos+1];
     
     // Get a list of independent suggestions for both words.
-    final int NUM_SUG = 30;
+    final int NUM_SUG = 100;
     Word[] list1 = suggestSimilar(word1, NUM_SUG);
     Word[] list2 = suggestSimilar(word2, NUM_SUG);
     
+    /*
     System.out.println("List 1:");
     for (int p1 = 0; p1 < list1.length; p1++)
         System.out.println("  " + list1[p1] + " " + list1[p1].metaphone);
     System.out.println("List 2:");
     for (int p2 = 0; p2 < list2.length; p2++)
         System.out.println("  " + list2[p2] + " " + list2[p2].metaphone);
+    */
     
     // Now score all possible combinations, looking for the best one.
     float bestScore = 0.0f;
     Word bestSugg1 = null;
     Word bestSugg2 = null;
-    for (int p1 = 0; p1 < list1.length+1; p1++) {
+    for (int p1 = 0; p1 < list1.length; p1++) {
         Word sugg1 = list1[p1];
-        for (int p2 = 0; p2 < list2.length+1; p2++) {
+        for (int p2 = 0; p2 < list2.length; p2++) {
             Word sugg2 = list2[p2];
-            float pairScore = scorePair(in, pos, sugg1, sugg2);
+            float pairScore = scorePair(sugg1, sugg2);
             
             //System.out.println("replace '" + word1 + " " + word2 + "' with '" +
             //    sugg1 + " " + sugg2 + "': " + score);
@@ -508,22 +512,23 @@ public class SpellReader
     }
     
     // If we found something better than doing nothing, record it.
-    Phrase out = in;
-    if (bestScore > in.score) {
-        out = (Phrase) in.clone();
-        if (bestSugg2.equals(word2))
-            out.descrip = "replace '" + word1 + "' with '" + bestSugg1 + "'";
-        else if (bestSugg1.equals(word1))
-            out.descrip = "replace '" + word2 + "' with '" + bestSugg2 + "'";
-        else {
-            out.descrip = "replace '" + word1 + " " + word2 + "' with '" +
-                bestSugg1 + " " + bestSugg2 + "'";
-        }
-        out.words[pos] = bestSugg1;
-        out.words[pos+1] = bestSugg2;
-        out.score = bestScore;
+    Phrase bestPhrase = (Phrase) in.clone();
+    if (bestSugg2.equals(word2))
+        bestPhrase.descrip = "replace '" + word1 + "' with '" + bestSugg1 + "'";
+    else if (bestSugg1.equals(word1))
+        bestPhrase.descrip = "replace '" + word2 + "' with '" + bestSugg2 + "'";
+    else {
+        bestPhrase.descrip = "replace '" + word1 + " " + word2 + "' with '" +
+            bestSugg1 + " " + bestSugg2 + "'";
     }
-    return out;
+    bestPhrase.words[pos] = bestSugg1;
+    bestPhrase.words[pos+1] = bestSugg2;
+    bestPhrase.calcScore();
+    
+    if (bestPhrase.score > in.score)
+      return bestPhrase;
+    else
+      return in;
   }
 
   /** Pick the best of two possible phrases, based on max score */
@@ -538,12 +543,12 @@ public class SpellReader
   /**
    * Calculate a score for a suggested replacement for a given word.
    */
-  private float scorePair(Phrase orig, int pos, Word sugg1, Word sugg2)
+  private float scorePair(Word sugg1, Word sugg2)
     throws IOException
   {
     openPairFreqs();
 
-    int origPairFreq = pairFreqs.get(orig.words[pos].word, orig.words[pos+1].word);
+    int origPairFreq = pairFreqs.get(sugg1.orig.word, sugg2.orig.word);
     int suggPairFreq = pairFreqs.get(sugg1.word, sugg2.word);
     if (suggPairFreq <= origPairFreq)
       return 0.0f;
@@ -619,41 +624,6 @@ public class SpellReader
   }
   
   /**
-   * Track an ordered group of words.
-   */
-  private class Phrase implements Cloneable
-  {
-    Word[] words;
-    String descrip;
-    float  score;
-
-    public Object clone() { 
-      try {
-        Phrase out = (Phrase) super.clone();
-        out.words = new Word[words.length];
-        System.arraycopy(words, 0, out.words, 0, words.length);
-        return out;
-      }
-      catch (CloneNotSupportedException e) {
-        return null;
-      } 
-    }
-    
-    public void calcScore() {
-      for (int i=0; i<words.length; i++)
-        score += words[i].score;
-    }
-
-    public String[] toStringArray()
-    {
-      String[] out = new String[words.length];
-      for (int i=0; i<words.length; i++)
-        out[i] = words[i].word;
-      return out;
-    }
-  }
-  
-  /**
    * Keeps track of a single word, either an original or suggested word.
    */
   private final class Word {
@@ -702,6 +672,8 @@ public class SpellReader
     }
     
     public int length() { return word.length(); }
+    
+    public boolean equals(Word other) { return word.equals(other.word); }
     
     public int wordDist(String other) { 
       if (wordDist == null)
@@ -810,4 +782,46 @@ public class SpellReader
       return false;
     }
   }
+  
+  /**
+   * Track an ordered group of words.
+   */
+  private class Phrase implements Cloneable
+  {
+    Word[] words;
+    String descrip;
+    float  score;
+
+    public Object clone() { 
+      try {
+        Phrase out = (Phrase) super.clone();
+        out.words = new Word[words.length];
+        System.arraycopy(words, 0, out.words, 0, words.length);
+        return out;
+      }
+      catch (CloneNotSupportedException e) {
+        return null;
+      } 
+    }
+    
+    public void calcScore() throws IOException {
+      float wordScore = 0.0f;
+      float pairScore = 0.0f;
+      for (int i=0; i<words.length; i++) {
+        wordScore += words[i].score;
+        if (i < words.length-1)
+          pairScore += scorePair(words[i], words[i+1]);
+      }
+      score = wordScore + pairScore;
+    }
+    
+    public String[] toStringArray()
+    {
+      String[] out = new String[words.length];
+      for (int i=0; i<words.length; i++)
+        out[i] = words[i].word;
+      return out;
+    }
+  }
+  
 } // class SpellReader
