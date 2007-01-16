@@ -523,6 +523,7 @@ public class CrossQuery extends TextServlet
         throws IOException
     {
         String baseUrl = res.encodeURL( getRequestURL(req) );
+        baseUrl = baseUrl.replaceAll("\"", "&quot;"); // because we're embedding in HTML
             
         String step = req.getParameter( "debugStep" );
         if( step == null || step.length() == 0 )
