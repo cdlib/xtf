@@ -5,7 +5,7 @@
     "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
     
     <web-app>
-        
+
         <servlet>
             <servlet-name>crossQuery</servlet-name>
             <servlet-class>org.cdlib.xtf.crossQuery.CrossQuery</servlet-class>
@@ -45,11 +45,11 @@
             <servlet-name>crossQuery</servlet-name>
             <url-pattern>/search</url-pattern>
         </servlet-mapping>
-       
-       <servlet-mapping>
-          <servlet-name>crossQuery</servlet-name>
-          <url-pattern>/oai</url-pattern>
-       </servlet-mapping>
+
+        <servlet-mapping>
+           <servlet-name>crossQuery</servlet-name>
+           <url-pattern>/oai</url-pattern>
+        </servlet-mapping>
         
         <servlet-mapping>
             <servlet-name>dynaXML</servlet-name>
@@ -80,5 +80,6 @@
             <servlet-name>org.cdlib.xtf.zing.SRU</servlet-name>
             <url-pattern>/servlet/org.cdlib.xtf.zing.SRU</url-pattern>
         </servlet-mapping>
-        
-    </web-app>    
+
+    
+    </web-app>
