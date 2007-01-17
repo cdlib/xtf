@@ -32,7 +32,7 @@
    POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:dc="http://purl.org/dc/elements/1.1/">
 
@@ -100,6 +100,7 @@
 <xsl:param name="exception"/>
 <xsl:param name="message"/>
 <xsl:param name="stackTrace" select="''"/>
+<xsl:param name="http.URL"/>
 
 <!-- ====================================================================== -->
 <!-- Root Template                                                          -->
@@ -121,37 +122,46 @@
   </xsl:choose>
 </xsl:variable>
 
-<xsl:template match="/">
-
-  <html>
-    <head>
-      <title><xsl:value-of select="$reason"/></title>
-      <link type="text/css" rel="stylesheet" href="css/default/content.css"/>
-    </head>
-
-    <body>
-
-      <div class="content">
-        <xsl:choose>
-          <xsl:when test="QueryFormat 
-                          or TermLimit
-                          or ExcessiveWork
-                          or UnsupportedQuery">
-            <xsl:apply-templates/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:for-each select="*">
-              <xsl:call-template name="GeneralError"/>
-            </xsl:for-each>
-          </xsl:otherwise>
-        </xsl:choose>
-
-      </div>
-
-     </body>
-  </html>
-
-</xsl:template>
+   <xsl:template match="/">
+      
+      <xsl:choose>
+         <xsl:when test="matches(string(QueryFormat/message),'^OAI::')">
+            <xsl:call-template name="oaiError">
+               <xsl:with-param name="message" select="replace(string(QueryFormat/message),'^OAI::','')"/>
+            </xsl:call-template>
+         </xsl:when>
+         <xsl:otherwise>
+            <html>
+               <head>
+                  <title><xsl:value-of select="$reason"/></title>
+                  <link type="text/css" rel="stylesheet" href="css/default/content.css"/>
+               </head>
+               
+               <body>
+                  
+                  <div class="content">
+                     <xsl:choose>
+                        <xsl:when test="QueryFormat 
+                           or TermLimit
+                           or ExcessiveWork
+                           or UnsupportedQuery">
+                           <xsl:apply-templates/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                           <xsl:for-each select="*">
+                              <xsl:call-template name="GeneralError"/>
+                           </xsl:for-each>
+                        </xsl:otherwise>
+                     </xsl:choose>
+                     
+                  </div>
+                  
+               </body>
+            </html>
+         </xsl:otherwise>
+      </xsl:choose>
+      
+   </xsl:template>
 
 
 <!-- For a UnsupportedQuery exception, the message is irrelevant. -->
@@ -212,6 +222,29 @@
 <!-- Pass <br> tags through untouched. -->
 <xsl:template match="br">
     <br/>
+</xsl:template>
+   
+   <!-- OAI Error Template -->
+   
+<xsl:template name="oaiError">
+   
+   <xsl:param name="message"/>
+   <xsl:variable name="responseDate" select="FileUtils:curDateTime('yyyy-MM-dd:HH:mm:ss')" xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils"/>
+   <xsl:variable name="request" select="$http.URL"/>
+   <xsl:variable name="verb" select="replace($message,'(.+)::.+::.+','$1')"/>
+   <xsl:variable name="code" select="replace($message,'.+::(.+)::.+','$1')"/>
+   <xsl:variable name="messageText" select="replace($message,'.+::.+::(.+)','$1')"/>
+   
+   <xsl:result-document method="xml" encoding="UTF-8" exclude-result-prefixes="#all">
+      <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+         <responseDate><xsl:value-of select="replace(string($responseDate),'\n','')"/></responseDate>
+         <request verb="{$verb}"><xsl:value-of select="$request"/></request>
+         <error code="{$code}"><xsl:value-of select="$messageText"/></error>
+      </OAI-PMH>
+   </xsl:result-document>
+   
 </xsl:template>
 
 

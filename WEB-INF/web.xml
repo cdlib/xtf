@@ -45,6 +45,11 @@
             <servlet-name>crossQuery</servlet-name>
             <url-pattern>/search</url-pattern>
         </servlet-mapping>
+       
+       <servlet-mapping>
+          <servlet-name>crossQuery</servlet-name>
+          <url-pattern>/oai</url-pattern>
+       </servlet-mapping>
         
         <servlet-mapping>
             <servlet-name>dynaXML</servlet-name>
