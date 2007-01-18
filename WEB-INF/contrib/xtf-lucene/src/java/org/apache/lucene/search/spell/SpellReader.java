@@ -83,6 +83,15 @@ public class SpellReader
   /** Protected constructor -- use {@link #open(File)} instead. */
   protected SpellReader() { }
   
+  /** Check if there's a valid dictionary in the given directory */
+  public static boolean isValidDictionary(File spellDir)
+  {
+    if (!spellDir.isDirectory() || !spellDir.canRead())
+      return false;
+    File file = new File(spellDir, "pairs.dat");
+    return file.canRead();
+  }
+
   /** Open a reader for the given spelling index directory. */
   public static SpellReader open(File spellIndexDir) 
     throws IOException 
@@ -348,7 +357,7 @@ public class SpellReader
    * Suggest similar words to a given original word, but not including the
    * word itself.
    */
-  public synchronized String[] suggestSimilar(String str, String[] fields, int numSugg)
+  public synchronized String[] suggestSimilar(String str, int numSugg)
     throws IOException 
   {
     // Get suggestions, including the original word
@@ -397,18 +406,16 @@ public class SpellReader
 
   /**
    * Keyword-oriented spelling suggestion mechanism. For an ordered list of
-   * terms which can appear in any of the specified fields, come up with
-   * suggestions that have a good chance of improving  the precision and/or
-   * recall.
+   * terms, come up with suggestions that have a good chance of improving  
+   * the precision and/or recall.
    * 
    * @param terms           Ordered list of query terms
-   * @param fields          Unordered list of fields they can appear in
    * @param indexReader     Used to obtain term frequencies
    * @return                One suggestion per term. If unchanged, there
    *                        was no better suggestion. If null, it is
    *                        suggested that the term be deleted.
    */
-  public synchronized String[] suggestKeywords(String[] terms, String[] fields) 
+  public synchronized String[] suggestKeywords(String[] terms) 
     throws IOException
   {
     // No terms? Then we can't suggest anything.
@@ -533,15 +540,6 @@ public class SpellReader
       return bestPhrase;
     else
       return in;
-  }
-
-  /** Pick the best of two possible phrases, based on max score */
-  private static Phrase max(Phrase ch1, Phrase ch2)
-  {
-    if (ch1.score >= ch2.score)
-        return ch1;
-    else
-        return ch2;
   }
 
   /**
@@ -827,5 +825,5 @@ public class SpellReader
       return out;
     }
   }
-  
+
 } // class SpellReader

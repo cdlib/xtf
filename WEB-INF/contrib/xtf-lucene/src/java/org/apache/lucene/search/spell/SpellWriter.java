@@ -81,9 +81,6 @@ public class SpellWriter
   /** File containing compiled pair frequency data */
   private File pairFreqFile;
   
-  /** Boolean object to mark words in cache */
-  private static final Boolean trueValue = new Boolean(true);
-
   /** For writing to the word queue */
   private PrintWriter wordQueueWriter = null;
   
@@ -94,13 +91,13 @@ public class SpellWriter
   private static final int MAX_RECENT_WORDS = 20000;
 
   /** For counting word frequencies prior to write */
-  private HashMap recentWords = new HashMap(MAX_RECENT_WORDS);
+  private HashMap<String, Integer> recentWords = new HashMap<String, Integer>(MAX_RECENT_WORDS);
 
   /** Max # of pairs to hash before flushing */
   private static final int MAX_RECENT_PAIRS = 200000;
 
   /** For counting pair frequencies prior to write */
-  private HashMap recentPairs = new HashMap(MAX_RECENT_PAIRS);
+  private HashMap<String, Integer> recentPairs = new HashMap<String, Integer>(MAX_RECENT_PAIRS);
 
   /** Minimum frequency to retain in frequency data file */
   private int minWordFreq;
@@ -198,7 +195,7 @@ public class SpellWriter
     {
         // Calculate a key for this pair, and get the current count
         String key = prevWord + "|" + word;
-        Integer val = (Integer) recentPairs.get(key);
+        Integer val = recentPairs.get(key);
         
         // Increment the count
         if (val == null)
@@ -213,7 +210,7 @@ public class SpellWriter
     }
 
     // Bump the count for this word.
-    Integer val = (Integer) recentWords.get(word);
+    Integer val = recentWords.get(word);
     if (val == null)
         val = IntegerValues.valueOf(1);
     else
@@ -234,12 +231,12 @@ public class SpellWriter
       return;
     
     openPairQueueWriter();
-    Set keySet = recentPairs.keySet();
-    ArrayList list = new ArrayList(keySet);
+    Set<String> keySet = recentPairs.keySet();
+    ArrayList<String> list = new ArrayList<String>(keySet);
     Collections.sort(list);
     for (int i=0; i<list.size(); i++) {
-        String key = (String) list.get(i);
-        int count = ((Integer)recentPairs.get(key)).intValue();
+        String key = list.get(i);
+        int count = recentPairs.get(key).intValue();
         if (count > 1)
             pairQueueWriter.println(key + "|" + count);
     }
@@ -255,12 +252,12 @@ public class SpellWriter
       return;
     
     openWordQueueWriter();
-    Set keySet = recentWords.keySet();
-    ArrayList list = new ArrayList(keySet);
+    Set<String> keySet = recentWords.keySet();
+    ArrayList<String> list = new ArrayList<String>(keySet);
     Collections.sort(list);
     for (int i=0; i<list.size(); i++) {
-        String key = (String) list.get(i);
-        int count = ((Integer)recentWords.get(key)).intValue();
+        String key = list.get(i);
+        int count = recentWords.get(key).intValue();
         wordQueueWriter.println(key + "|" + count);
     }
     wordQueueWriter.flush();
@@ -628,7 +625,7 @@ public class SpellWriter
     out.append(Integer.toString(edKeys.size()));
     out.append('\n');
     for (int i=0; i<edKeys.size(); i++) {
-      String key = (String) edKeys.get(i);
+      String key = edKeys.get(i);
       out.append(key);
       out.append('|');
       out.append(Integer.toString(sizes.get(i)));
@@ -741,7 +738,6 @@ public class SpellWriter
     
     // Process each pair in the queue.
     long fileTotal = pairQueueFile.length();
-    int prevPctDone = 0;
     int totalAdded = 0;
 
     try {
@@ -769,7 +765,6 @@ public class SpellWriter
             //
             if( (totalAdded & 0xFFF) == 0 ) {
               long filePos = queueCounted.nRead();
-              int pctDone = (int) ((filePos+1) * 90 / (fileTotal+1));
               subProgs[0].progress(filePos+1, fileTotal+1, "Read " + totalAdded + " pairs.");
             }
           }
@@ -823,13 +818,13 @@ public class SpellWriter
 
   /** Closes the queue writers if either are open */
   private void closeQueueWriters() throws IOException {
+    flushRecentWords();
     if (wordQueueWriter != null) {
-        flushRecentWords();
         wordQueueWriter.close();
         wordQueueWriter = null;
     }
+    flushRecentPairs();
     if (pairQueueWriter != null) {
-        flushRecentPairs();
         recentPairs = null;
         pairQueueWriter.close();
         pairQueueWriter = null;
@@ -843,9 +838,5 @@ public class SpellWriter
 
   protected void finalize() throws Throwable {
     close();
-  }
-  
-  private static class IntHolder {
-    public int value;
   }
 } // class SpellWriter
