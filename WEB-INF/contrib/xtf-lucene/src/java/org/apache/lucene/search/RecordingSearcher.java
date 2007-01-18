@@ -24,7 +24,6 @@ import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Scorer;
-import org.apache.lucene.search.spans.FieldSpans;
 import org.apache.lucene.search.spans.SpanRecordingScorer;
 import org.apache.lucene.index.IndexReader;
 
@@ -63,7 +62,7 @@ public class RecordingSearcher extends IndexSearcher {
     if (filter != null) {
       final BitSet bits = filter.bits(reader);
       collector = new SpanHitCollector() {
-        private final SpanHitCollector mresults = (SpanHitCollector)results;
+        private final SpanHitCollector mresults = results;
         public final void collect(int doc, float score, FieldSpanSource src) {
           if (bits.get(doc)) {		  // skip docs not in bits
             mresults.collect(doc, score, src);
@@ -91,7 +90,6 @@ public class RecordingSearcher extends IndexSearcher {
     
     // Now process all the documents and collect them and their spans.
     while (scorer.next()) {
-      FieldSpans fieldSpans = new FieldSpans();
       int doc = scorer.doc();
       spanSource.curDoc = doc;
       float score = scorer.score(); // must call before recordSpans()

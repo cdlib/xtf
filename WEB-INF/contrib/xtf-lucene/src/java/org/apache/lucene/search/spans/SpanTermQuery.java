@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import java.util.Collection;
 import java.util.ArrayList;
-import java.util.Set;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -129,7 +128,6 @@ public class SpanTermQuery extends SpanQuery {
         public int end() { return position + termLength; }
         public float score() { return value * 
                                Similarity.decodeNorm(fieldNorms[doc]); }
-        public void collectTerms(Set terms) { terms.add(term.text()); }
 
         public String toString() {
           return "spans(" + SpanTermQuery.this.toString() + ")@"+

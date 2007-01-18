@@ -102,7 +102,6 @@ public class DefaultDocLocator implements DocLocator
         // If no 'index' specified in the docInfo, then there's no way we can
         // find the lazy file.
         //
-        boolean useLazy = true;
         if( indexConfigPath == null || indexName == null )
             return null;
         

@@ -1105,7 +1105,7 @@ public class XMLTextProcessor extends DefaultHandler
                   }
                   
                   // Now index this record.
-                  int result = processText( idxFile, idxRec, recordNum );
+                  processText( idxFile, idxRec, recordNum );
                   
               } // while
           }

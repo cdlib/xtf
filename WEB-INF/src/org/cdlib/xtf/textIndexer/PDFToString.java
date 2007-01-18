@@ -79,8 +79,6 @@ public class PDFToString {
   static String convert( InputStream PDFInputStream ) throws IOException
 
   {
-    String xmlStr = null;
-    
     // If the Log4j logger needs to be configured, do so now.
     if( mustConfigureLogger ) {
       

@@ -94,7 +94,7 @@ public class SpanOrNearQuery extends SpanQuery
   }
 
   public Query[] getSubQueries() {
-    return (Query[])clauses;
+    return clauses;
   }
 
   public Query rewrite(IndexReader reader) throws IOException {
@@ -138,7 +138,7 @@ public class SpanOrNearQuery extends SpanQuery
       throws IOException 
   {
     if (clauses.length == 1)                      // optimize 1-clause case
-      return ((SpanQuery)clauses[0]).getSpans(reader, searcher);
+      return clauses[0].getSpans(reader, searcher);
 
     return new OrNearSpans(this, reader, searcher);
   }

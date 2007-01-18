@@ -2,6 +2,7 @@
 package org.cdlib.xtf.textEngine.facet;
 import java.util.ArrayList;
 
+@SuppressWarnings("unused")
 public class SelectorParser implements SelectorParserConstants {
 
 //////////////////////////////////////////////////////////////////////////////

@@ -38,6 +38,7 @@ import java.io.RandomAccessFile;
  * 
  * @author Martin Haye
  */
+@SuppressWarnings("cast")
 public class LineReader
 {
   /** Size of our internal buffer */

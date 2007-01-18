@@ -67,7 +67,7 @@ public class CheckingTokenStream extends TokenStream
         
         // Assertions must be enabled!
         boolean flag = false;
-        assert flag = true;
+        assert (flag = true) == true;
         if( !flag )
             throw new RuntimeException( 
                      "CheckingTokenStream requires assertions to be enabled" );

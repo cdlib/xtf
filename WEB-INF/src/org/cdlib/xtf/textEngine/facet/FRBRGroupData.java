@@ -54,6 +54,7 @@ import org.cdlib.xtf.util.Trace;
 public class FRBRGroupData extends DynamicGroupData
 {
   /** Original parameter string */
+  @SuppressWarnings("unused")
   private String params;
 
   /** Tag/doc data for the specified fields */
@@ -408,7 +409,6 @@ public class FRBRGroupData extends DynamicGroupData
   
   private void outputDisplayKey(String title, int doc)
   {
-    int   nFound  = 0;
     int   nToSkip = 0;
     int[] fieldMax = { 0, 50, 40, 4, 30 };
     final String spaces = 
@@ -731,6 +731,7 @@ public class FRBRGroupData extends DynamicGroupData
   /**
    * Compare two dates for a match.
    */
+  @SuppressWarnings("unused")
   private int scoreDateMatch(IntList list1, IntList list2)
   {
     // If no date, don't consider it a problem.
@@ -968,6 +969,7 @@ public class FRBRGroupData extends DynamicGroupData
   }
   
   /** Find the title of a document */
+  @SuppressWarnings("unused")
   private String docTitle(int doc)
   {
     for (int pos = data.docTags.firstPos(doc); pos >= 0; pos = data.docTags.nextPos(pos))

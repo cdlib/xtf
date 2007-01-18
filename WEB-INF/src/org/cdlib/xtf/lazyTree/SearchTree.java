@@ -395,7 +395,9 @@ public class SearchTree extends LazyDocument
                     return n;
                 
                 // Debugging help
+                @SuppressWarnings("unused")
                 String str1 = docHit.snippet(s1.rank, true).text;
+                @SuppressWarnings("unused")
                 String str2 = docHit.snippet(s2.rank, true).text;
                 assert false : "Chunk hits should never overlap!";
                 return 0;
@@ -416,7 +418,10 @@ public class SearchTree extends LazyDocument
                 if( s2.startOffset < s1.endOffset ) {
                     s1 = docHit.snippet(s1.rank, true);
                     s2 = docHit.snippet(s2.rank, true);
+                    // Debugging help
+                    @SuppressWarnings("unused")
                     String t1 = s1.text;
+                    @SuppressWarnings("unused")
                     String t2 = s2.text;
                     assert false;
                 }
@@ -546,8 +551,7 @@ public class SearchTree extends LazyDocument
         // Get the associated text node. This will have the effect of generating
         // the element we need.
         //
-        SearchTextImpl text = (SearchTextImpl) 
-            getNode( hitsByLocation[hitNum].startNode );
+        getNode( hitsByLocation[hitNum].startNode );
         
         // The element we want should now be in the cache.
         SearchElementImpl el = (SearchElementImpl)
@@ -680,8 +684,6 @@ public class SearchTree extends LazyDocument
             // Are we at the start of a hit?
             if( wordOffset == hitStart ) {
 
-                boolean assertEnabled = false;
-                assert assertEnabled = true;
                 assert snippet.startNode != num
                        || termMap.contains(mappedTerm) : 
                        "first hit token must be in search terms";

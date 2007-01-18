@@ -24,7 +24,6 @@ package org.apache.lucene.search.spans;
 
 import java.io.IOException;
 
-import java.util.BitSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
@@ -53,7 +52,6 @@ class NearSpans implements Spans {
   private int totalLength;                        // sum of current lengths
   private float totalScore;                       // sum of current scores
   private int totalSlop;                          // sloppiness of current match
-  private BitSet overlapBits = new BitSet();      // for detecting overlap
 
   private boolean more = true;                    // true iff not done
   private boolean firstTime = true;               // true before first next()
@@ -182,6 +180,7 @@ class NearSpans implements Spans {
     }
 
     /** Debugging only: check that the links are all correct */
+    @SuppressWarnings("unused")
     private void checkList()
     {
       System.out.println("DEBUGGING ONLY");

@@ -200,7 +200,6 @@ public class SQLConnect extends ExtensionInstruction {
                     props.put("password", pwdString);
                 }
                 
-                int i = 1;
                 for (int c=FIRST_PROPERTY; c<arguments.length; c++) {
                     SQLProperty.PropertyInstruction inst = 
                         (SQLProperty.PropertyInstruction)arguments[c];

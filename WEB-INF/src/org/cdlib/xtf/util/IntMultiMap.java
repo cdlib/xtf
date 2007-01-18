@@ -45,6 +45,7 @@ import java.util.Arrays;
  * 
  * @author Martin Haye
  */
+@SuppressWarnings("cast")
 public class IntMultiMap
 {  
   private int[]   keyLinks;

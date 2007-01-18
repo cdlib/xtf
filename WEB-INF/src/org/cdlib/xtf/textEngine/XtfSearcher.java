@@ -190,7 +190,7 @@ public class XtfSearcher
         
         // If there's a spelling correction dictionary, attach to it.
         File spellDir = new File( indexPath, "spellDict" );
-        if( spellDir.isDirectory() )
+        if( SpellReader.isValidDictionary(spellDir) )
             spellReader = SpellReader.open( spellDir );
 
         // Determine whether this is a "sparse" index. Our definition of

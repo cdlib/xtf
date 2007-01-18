@@ -30,7 +30,7 @@ import org.apache.lucene.search.spans.Span;
  * <p>Created: Dec 26, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: ContextMarker.java,v 1.4 2006-04-13 21:44:02 mhaye Exp $
+ * @version $Id: ContextMarker.java,v 1.5 2007-01-18 00:22:24 mhaye Exp $
  */
 public class ContextMarker {
   
@@ -269,7 +269,7 @@ public class ContextMarker {
 
     // Sanity check (but only if assertions are enabled.)
     boolean assertionsEnabled = false;
-    assert assertionsEnabled = true;
+    assert (assertionsEnabled = true) == true;
     if (assertionsEnabled && terms != null) {
       String startTerm = iter0.term();
       if (!terms.contains(startTerm) && startTerm.length() > 0) {

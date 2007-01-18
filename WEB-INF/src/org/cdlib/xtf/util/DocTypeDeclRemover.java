@@ -86,6 +86,7 @@ public class DocTypeDeclRemover extends BufferedInputStream
    *             the stream has been reached.
    * @exception  IOException  if an I/O error occurs.
    */
+  @SuppressWarnings("cast")
   public int read( byte b[], int off, int len ) throws IOException 
   {
       // The first time through, scan the start of the file for a DOCTYPE

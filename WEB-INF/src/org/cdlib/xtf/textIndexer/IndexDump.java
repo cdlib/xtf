@@ -259,7 +259,6 @@ public class IndexDump
   
   {
     // Iterate every document.
-    Field[] empty = new Field[0];
     int maxDoc = indexReader.maxDoc();
     for( int i = 0; i < maxDoc; i++ ) 
     {

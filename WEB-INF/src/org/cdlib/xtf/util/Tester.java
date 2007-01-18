@@ -84,7 +84,7 @@ public abstract class Tester
         
         // Make sure assertions are turned on.
         boolean ok = false;
-        assert ok = true;
+        assert (ok = true) == true;
         if( !ok )
             throw new AssertionError( "Must turn on assertions for test()" );
             

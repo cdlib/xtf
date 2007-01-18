@@ -39,6 +39,7 @@ package org.cdlib.xtf.util;
  * Class that represents a slice of a block, for quick access to byte-level
  * strings without object allocation.
  */
+@SuppressWarnings("cast")
 public class TagChars
 {
   int    length;

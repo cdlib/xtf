@@ -109,7 +109,7 @@ public abstract class ProgressTracker implements Cloneable
 
   /** Clone this tracker */
   public Object clone() {
-    try { return (ProgressTracker) super.clone(); }
+    try { return super.clone(); }
     catch (CloneNotSupportedException e ) { return null; }
   }
   

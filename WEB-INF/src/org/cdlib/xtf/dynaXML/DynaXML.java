@@ -38,7 +38,6 @@ import java.util.LinkedList;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -351,8 +350,6 @@ public class DynaXML extends TextServlet
                         HttpServletResponse res )
         throws Exception
     {
-        ServletOutputStream out = res.getOutputStream();
-        
         boolean dump = false;
         
         // First, load the stylesheet.

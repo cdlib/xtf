@@ -57,9 +57,6 @@ public class SpellWritingFilter extends TokenFilter
   /** The previous word, or null if none or skipped */
   private String prevWord = null;
 
-  /** The name of the field being written */
-  private String field;
-
   /** The set of stop-words being used */
   private Set stopSet;
   
@@ -70,13 +67,11 @@ public class SpellWritingFilter extends TokenFilter
    * @param input       Input stream of tokens to process
    * @param writer      Spelling dictionary writer
    */
-  public SpellWritingFilter( TokenStream input, String field, Set stopSet, SpellWriter writer ) 
+  public SpellWritingFilter( TokenStream input, Set stopSet, SpellWriter writer ) 
   {
     // Initialize the super-class
     super(input);
 
-    // Record the input parameters
-    this.field  = field;
     this.stopSet = stopSet;
     this.writer = writer;
 

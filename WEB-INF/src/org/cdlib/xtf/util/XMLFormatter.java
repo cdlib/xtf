@@ -394,9 +394,6 @@ public class XMLFormatter {
     // Close any previous tag that's hanging open.
     closeTagStart();
     
-    // Start with no accumulated end tags.
-    String outStr = "";
-
     // While there are open tags left, end each one.
     while( !tagStack.isEmpty() ) endTag();
 

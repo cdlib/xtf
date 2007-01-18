@@ -645,6 +645,7 @@ class Authenticator
      * @param bytes     An array of bytes to convert
      * @return          A long string representing those bytes in hex form
      */
+    @SuppressWarnings("cast")
     private static String bytesToHex( byte[] bytes )
     {
         StringBuffer buf = new StringBuffer();

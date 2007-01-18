@@ -37,8 +37,6 @@ package org.cdlib.xtf.textEngine;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -102,6 +100,7 @@ public class DefaultQueryProcessor extends QueryProcessor
     private DocNumMap      docNumMap;
     
     /** Max size of a chunk (in words) */
+    @SuppressWarnings("unused")
     private int            chunkSize;
     
     /** Number of words a chunk shares with its successor */
@@ -437,7 +436,7 @@ public class DefaultQueryProcessor extends QueryProcessor
             String[] terms = (String[]) termsSet.toArray( new String[termsSet.size()] );
             
             // Get some suggestions
-            String[] suggested = spellReader.suggestKeywords( terms, fields );
+            String[] suggested = spellReader.suggestKeywords( terms );
             assert suggested.length == terms.length;
             
             // Record each suggestion.
@@ -464,7 +463,6 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         // Convert to an array.
         if( out.size() > 0 ) {
-            Collection values = out.values();
             res.suggestions = (SpellingSuggestion[])
                 out.values().toArray( new SpellingSuggestion[out.values().size()] );
         }
@@ -472,53 +470,6 @@ public class DefaultQueryProcessor extends QueryProcessor
     } // spellCheck()
     
     
-    /**
-     * Make a list of all the terms present in the given query.
-     * 
-     * @param query   The query to traverse
-     * @return        List of the terms
-     */
-    private ArrayList gatherTerms( Query query )
-    {
-        final ArrayList list = new ArrayList();
-        
-        XtfQueryTraverser trav = new XtfQueryTraverser() {
-          public void traverseQuery( Query q ) {
-              // Skip queries boosted to nothing
-              if( q.getBoost() > 0.001f )
-                  super.traverseQuery( q );
-          }
-          protected void traverse( TermQuery q ) {
-              list.add( q.getTerm() );
-          }
-          protected void traverse( SpanTermQuery q ) {
-              list.add( q.getTerm() );
-          }
-          protected void traverse(BooleanQuery bq) {
-              BooleanClause[] clauses = bq.getClauses();
-              for (int i = 0; i < clauses.length; i++) {
-                  if( !clauses[i].prohibited )
-                      traverseQuery(clauses[i].query);
-              }
-          } // traverse()
-          protected void traverse(SpanChunkedNotQuery nq) {
-              traverseQuery(nq.getInclude());
-              // No: traverseQuery(nq.getExclude());
-          } // traverse()
-          protected void traverse(SpanNotQuery nq) {
-            traverseQuery(nq.getInclude());
-            // No: traverseQuery(nq.getExclude());
-          } // traverse()
-          protected void traverse(SpanNotNearQuery nq) {
-            traverseQuery(nq.getInclude());
-            // No: traverseQuery(nq.getExclude());
-          } // traverse()
-        };
-        trav.traverseQuery( query );
-        
-        return list;
-    } // gatherTerms()
-
     /**
      * Make a list of all the terms present in the given query,
      * grouped by field set.

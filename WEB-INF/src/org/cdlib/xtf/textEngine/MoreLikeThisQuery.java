@@ -364,9 +364,6 @@ public class MoreLikeThisQuery extends Query
     int queueSize = Math.min( words.size(), maxQueryTerms );
     QueryWordQueue queue = new QueryWordQueue( queueSize );
     
-    // For reference in score calculations, get the total # of docs in index
-    int numDocs = indexReader.numDocs();
-
     // For each term...
     Iterator it = words.keySet().iterator();
     while (it.hasNext()) 
@@ -567,20 +564,6 @@ public class MoreLikeThisQuery extends Query
    */
   private static class Flt { 
     public float x;
-  }
-  
-  /**
-   * Used to keep track of which fields to scan, and how to boost them.
-   */
-  private static class FieldSpec 
-  {
-    public String name;
-    public float  boost;
-    
-    public FieldSpec( String name, float boost ) {
-      this.name  = name;
-      this.boost = boost;
-    }
   }
   
   private static class QueryWord

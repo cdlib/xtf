@@ -202,7 +202,6 @@ public class IndexMerge
       //
       DirInfo[]   dirInfos = new DirInfo[mergePaths.size()];
       boolean createTarget = false;
-      boolean done = false;
       for( int i = 0; i < mergePaths.size(); i++ ) {
           String idxPath = (String) mergePaths.get( i );
           if( !IndexReader.indexExists(idxPath) ) 

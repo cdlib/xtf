@@ -73,6 +73,7 @@ public class SnippetMaker
     private DocNumMap    docNumMap;
     
     /** Max # of words in an index chunk */
+    @SuppressWarnings("unused")
     private int          chunkSize;
     
     /** Amount of overlap between adjacent index chunks */
@@ -373,6 +374,7 @@ public class SnippetMaker
               copyUpTo( pos );
               buf.append( "</snippet>" );
               if( contextSize > maxContext ) {
+                  @SuppressWarnings("unused")
                   int posDiff = contextStart.countTextTo(pos);
                   //
                   // NOTE: Do NOT re-enable the assert below. Why? Consider

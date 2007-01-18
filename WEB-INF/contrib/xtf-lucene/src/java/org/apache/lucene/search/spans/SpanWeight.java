@@ -71,8 +71,7 @@ class SpanWeight implements Weight {
 
     Explanation result = new Explanation();
     result.setDescription("weight("+getQuery()+" in "+doc+"), product of:");
-    String field = ((SpanQuery)getQuery()).getField();
-
+    
     // explain query weight
     Explanation queryExpl = new Explanation();
     queryExpl.setDescription("queryWeight(" + getQuery() + "), product of:");

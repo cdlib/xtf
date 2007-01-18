@@ -381,6 +381,7 @@ public abstract class NodeImpl
     * @return an AxisIterator that scans the nodes reached by the axis in turn.
     */
 
+    @SuppressWarnings("cast")
     public AxisIterator iterateAxis( byte axisNumber, NodeTest nodeTest ) { 
 
         int type = getNodeKind();

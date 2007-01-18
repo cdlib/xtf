@@ -214,6 +214,7 @@ class XtfChunkSource extends ChunkSource
    * Print out debugging info for the current chunk, including all of
    * its tokens.
    */
+  @SuppressWarnings("unused")
   private void debugChunk( XtfChunk chunk )
   {
       StringBuffer buf1 = new StringBuffer();

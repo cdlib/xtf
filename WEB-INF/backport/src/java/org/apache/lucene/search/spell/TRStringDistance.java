@@ -51,7 +51,7 @@ final class TRStringDistance {
        */
       public final int getDistance (String other) {
           int d[][]; // matrix
-          int baseCost, replaceCost, insertCost, deleteCost, transposeCost;
+          int baseCost, replaceCost, insertCost, deleteCost;
 
           // First, initialize the matrix.
           final char[] ta=other.toCharArray();

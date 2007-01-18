@@ -42,6 +42,7 @@ import java.util.zip.Inflater;
  * 
  * @author Martin Haye
  */
+@SuppressWarnings("cast")
 public class PackedByteBuf
 {
     /** Byte buffer to read from or write to */

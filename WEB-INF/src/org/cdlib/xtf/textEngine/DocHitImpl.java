@@ -62,6 +62,7 @@ public class DocHitImpl extends DocHit
     private String docKey;
     
     /** Date the original source XML document was last modified */
+    @SuppressWarnings("unused")
     private long fileDate = -1;
     
     /** Record number of this document within the main file */

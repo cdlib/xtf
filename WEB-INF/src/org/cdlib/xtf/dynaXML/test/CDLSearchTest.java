@@ -410,7 +410,7 @@ public class CDLSearchTest extends SearchTest
     
     // Make sure assertions are enabled...
     boolean flag = false;
-    assert flag = true;
+    assert (flag = true) == true;
     if( !flag ) {
         Trace.error( 
             "Assertions must be enabled for this test. Pass -ea to Jave VM." );

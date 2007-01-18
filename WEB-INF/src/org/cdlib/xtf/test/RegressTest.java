@@ -114,7 +114,7 @@ public class RegressTest
     {
         // Make sure assertions are enabled.
         boolean ok = false;
-        assert ok = true; // Intentional side-effect
+        assert (ok = true) == true; // Intentional side-effect
         if( !ok ) {
             Trace.error( 
                 "Error: Regression requires assertions to be enabled.\n" +

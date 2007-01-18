@@ -84,9 +84,6 @@ public class TagFilter extends TokenFilter
   /** Name of the current attribute */
   private String attrName = null;
   
-  /** Accumulated position increment for next actual token emitted */
-  private int accumPosIncr = 0;
-  
   /** Queued tokens */
   private LinkedList tokenQueue = new LinkedList();
   

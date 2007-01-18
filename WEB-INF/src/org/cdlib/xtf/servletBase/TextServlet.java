@@ -100,9 +100,6 @@ public abstract class TextServlet extends HttpServlet
     /** Caches stylesheets (based on their URL) */
     public StylesheetCache stylesheetCache;
     
-    /** Allow extra time for the first request to complete */ 
-    private static boolean firstRequest = true;
-
     /** Context useful for mapping partial paths to full paths */
     private ServletContext staticContext;
 

@@ -106,8 +106,7 @@ public class RunElement extends ExtensionInstruction
     throws TransformerConfigurationException 
   {
     List list = new ArrayList(10);
-    InputElement.InputInstruction inputInstr = null;
-
+    
     AxisIterator kids = iterateAxis(Axis.CHILD);
     NodeInfo child;
     while (true) {
@@ -415,7 +414,6 @@ public class RunElement extends ExtensionInstruction
   private static class OutputGrabber extends Thread
   {
     private InputStream           inStream;
-    private String                encoding;
     private ByteArrayOutputStream buffer = new ByteArrayOutputStream( 100 );
     
     public byte[]    outBytes = new byte[0];

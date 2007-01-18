@@ -65,7 +65,7 @@ public class SearchTest
 
     // Make sure assertions are enabled
     boolean ok = false;
-    assert ok = true;
+    assert (ok = true) == true;
     if( !ok )
         throw new RuntimeException( "Assertions must be enabled." );
     

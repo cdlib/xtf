@@ -91,6 +91,8 @@ public class SQLDelete extends ExtensionInstruction {
             }
             Connection connection = (Connection)((ObjectValue)conn).getObject();
             PreparedStatement ps = null;
+            
+            @SuppressWarnings("unused")
             int nDeleted = -1;
 
             try {

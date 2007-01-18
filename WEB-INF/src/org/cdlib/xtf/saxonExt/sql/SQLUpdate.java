@@ -147,6 +147,8 @@ public class SQLUpdate extends ExtensionInstruction {
             }
             Connection connection = (Connection)((ObjectValue)conn).getObject();
             PreparedStatement ps = null;
+            
+            @SuppressWarnings("unused")
             int nUpdated = -1;
 
             try {

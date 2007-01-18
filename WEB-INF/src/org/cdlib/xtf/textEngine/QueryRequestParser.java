@@ -245,7 +245,6 @@ public class QueryRequestParser
             String name = main.attrName( i );
             String val  = main.attrValue( i );
             if( name.equals("maxSnippets") ) {
-                int oldVal = maxSnippets;
                 maxSnippets = parseIntAttrib( main, name );
                 if( maxSnippets < 0 )
                     maxSnippets = 999999999;
@@ -381,7 +380,6 @@ public class QueryRequestParser
         SpellcheckParams params = new SpellcheckParams();
         
         // Process all the attributes.
-        FacetSpec fs = new FacetSpec();
         for( int i = 0; i < el.nAttrs(); i++ ) 
         {
             String attr = el.attrName(i);
@@ -1743,6 +1741,7 @@ public class QueryRequestParser
      * @param defaultVal If not found and useDefault is true, return this 
      *                   value.
      */
+    @SuppressWarnings("unused")
     private float parseFloatAttrib( EasyNode el, 
                                     String attribName, 
                                     float defaultVal  )
@@ -1876,6 +1875,7 @@ public class QueryRequestParser
      * @param attribName Attribute to find
      * @param defaultVal If not found, return this value.
      */
+    @SuppressWarnings("unused")
     private String parseStringAttrib( EasyNode el, 
                                       String  attribName,
                                       String  defaultVal ) 

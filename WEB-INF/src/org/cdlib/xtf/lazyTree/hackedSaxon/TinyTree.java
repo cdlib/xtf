@@ -489,6 +489,7 @@ public final class TinyTree {
         numberOfNamespaces++;
     }
 
+    @SuppressWarnings("cast")
     public TinyNodeImpl getNode(int nr) {
 
         switch ((short)nodeKind[nr]) {

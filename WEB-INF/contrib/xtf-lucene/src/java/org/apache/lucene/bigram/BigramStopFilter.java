@@ -310,6 +310,7 @@ public class BigramStopFilter extends TokenFilter
     /**
      * Run the test.
      */
+    @SuppressWarnings("unused")
     protected void testImpl() {
       stopSet.add("a");
       stopSet.add("b");
