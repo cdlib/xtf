@@ -80,7 +80,7 @@ public class SpellTest
     // Read in each line
     System.out.println( "Reading word file..." );
     BufferedReader reader = new BufferedReader(new FileReader(wordFile));
-    ArrayList pairList = new ArrayList();
+    ArrayList<Pair> pairList = new ArrayList<Pair>();
     while( true ) 
     {
         // It should consist of a word, a space, and the frequency
@@ -126,7 +126,7 @@ public class SpellTest
   /**
    * Constructs a spelling index based on all the words in the list.
    */
-  private void writeSpellIndex( ArrayList pairList ) throws IOException
+  private void writeSpellIndex( ArrayList<Pair> pairList ) throws IOException
   {
     System.out.println( "Writing spell index..." );
     
@@ -136,7 +136,7 @@ public class SpellTest
     
     // Add each word the specified number of times.
     for( int i = 0; i < pairList.size(); i++ ) {
-        Pair pair = (Pair)pairList.get(i);
+        Pair pair = pairList.get(i);
         for( int j = 0; j < (pair.freq+1); j++ )
             spellWriter.queueWord( null, pair.word );
     }
@@ -182,7 +182,7 @@ public class SpellTest
     
     // Open the file and read each line.
     BufferedReader lineReader = new BufferedReader(new FileReader(testFile));
-    ArrayList missed = new ArrayList();
+    ArrayList<String> missed = new ArrayList<String>();
     while( true ) 
     {
         // It should consist of a word, a separator, and a correction
@@ -289,11 +289,7 @@ public class SpellTest
                         int         nSuggestions )
     throws IOException
   {
-    ArrayList list = new ArrayList();
-    //String[] fields = { "text", "title-main", "author", "subject", "note" };
-    String[] fields = { "words" };
-    
-    String[] suggestions = spellReader.suggestSimilar(word, fields, nSuggestions);
+    String[] suggestions = spellReader.suggestSimilar(word, nSuggestions);
     
     int found = -1;
     topSugg = null;
