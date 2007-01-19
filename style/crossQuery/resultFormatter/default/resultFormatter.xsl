@@ -182,7 +182,7 @@
               </xsl:choose>
             </td>
           </tr>
-          <xsl:if test="//spelling/term/suggestion">
+          <xsl:if test="//spelling">
             <tr>
               <td align="right" width="10%"></td>
               <td width="1%"/>
@@ -191,6 +191,8 @@
                   <xsl:with-param name="baseURL" select="concat($xtfURL, $crossqueryPath, '?', $queryString)"/>
                   <xsl:with-param name="spelling" select="//spelling"/>
                 </xsl:call-template>
+                <br/>
+                <br/>
               </td>
             </tr>
           </xsl:if>
