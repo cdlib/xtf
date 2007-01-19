@@ -41,7 +41,6 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -356,14 +355,7 @@ public class DynaXML extends TextServlet
         Templates pss = stylesheetCache.find( docInfo.style );
 
         // Figure out the output mime type
-        Properties details = pss.getOutputProperties();
-        String mime = details.getProperty( OutputKeys.MEDIA_TYPE );
-        if( mime == null ) {
-            // Take a guess.
-            res.setContentType("text/html");
-        } else {
-            res.setContentType(mime);
-        }
+        res.setContentType(calcMimeType(pss));
 
         // Make a transformer and stuff it full of parameters. But if it's the
         // same stylesheet as we used last time in this thread, we can re-use
