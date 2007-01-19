@@ -131,14 +131,16 @@ public class SpellTest
     System.out.println( "Writing spell index..." );
     
     long startTime = System.currentTimeMillis();
-    SpellWriter spellWriter = SpellWriter.open( "spell", 1 );
+    SpellWriter spellWriter = SpellWriter.open( "spell", null, 1 );
     spellWriter.clearIndex();
     
     // Add each word the specified number of times.
     for( int i = 0; i < pairList.size(); i++ ) {
         Pair pair = pairList.get(i);
-        for( int j = 0; j < (pair.freq+1); j++ )
-            spellWriter.queueWord( null, pair.word );
+        for( int j = 0; j < (pair.freq+1); j++ ) {
+            spellWriter.queueBreak(); // we don't have any real colocation data
+            spellWriter.queueWord( pair.word );
+        }
     }
 
     // Now comes the bulk of the work

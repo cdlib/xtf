@@ -36,7 +36,6 @@ package org.cdlib.xtf.textIndexer;
  */
 
 import java.io.IOException;
-import java.util.Set;
 
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
@@ -54,11 +53,8 @@ public class SpellWritingFilter extends TokenFilter
   /** Spelling writer to write to */
   private SpellWriter writer;
   
-  /** The previous word, or null if none or skipped */
-  private String prevWord = null;
-
-  /** The set of stop-words being used */
-  private Set stopSet;
+  /** true before the first token is returned */
+  private boolean firstTime = true;
   
   /**
    * Construct a token stream to add tokens to a spelling correction
@@ -67,12 +63,11 @@ public class SpellWritingFilter extends TokenFilter
    * @param input       Input stream of tokens to process
    * @param writer      Spelling dictionary writer
    */
-  public SpellWritingFilter( TokenStream input, Set stopSet, SpellWriter writer ) 
+  public SpellWritingFilter( TokenStream input, SpellWriter writer ) 
   {
     // Initialize the super-class
     super(input);
 
-    this.stopSet = stopSet;
     this.writer = writer;
 
   } // constructor
@@ -85,16 +80,20 @@ public class SpellWritingFilter extends TokenFilter
     if( t == null )
         return t;
     
+    // Make sure the first token for this field doesn't get paired with a
+    // token from the previous field.
+    //
+    if (firstTime) {
+        writer.queueBreak();
+        firstTime = false;
+    }
+    
     // Skip words with start/end markers
     String word = t.termText();
     boolean skip = false;
     if( word.charAt(0) == Constants.FIELD_START_MARKER )
         skip = true;
     else if( word.charAt(word.length()-1) == Constants.FIELD_END_MARKER )
-        skip = true;
-    
-    // Skip stop-words
-    else if( stopSet.contains(word) )
         skip = true;
     
     // Skip words with digits. We seldom want to correct with these,
@@ -117,14 +116,13 @@ public class SpellWritingFilter extends TokenFilter
     {
         // Don't record pairs across sentence boundaries
         if( t.getPositionIncrement() != 1 )
-            prevWord = null;
+            writer.queueBreak();
         
-        // Queue the word (and pair with the previous word, if any)
-        writer.queueWord( prevWord, word );
-        prevWord = word;
+        // Queue the word
+        writer.queueWord( word );
     }
     else
-        prevWord = null;
+        writer.queueBreak();
     
     // Pass on the token unchanged.
     return t;

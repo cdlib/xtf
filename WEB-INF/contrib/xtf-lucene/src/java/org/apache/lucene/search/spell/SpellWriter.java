@@ -63,9 +63,15 @@ public class SpellWriter
   /** Directory to store the spelling dictionary in */
   private File spellIndexDir;
   
+  /** Set of stop words in use */
+  private Set stopSet;
+  
   /** File to queue words into */
   private File wordQueueFile;
-
+  
+  /** The previous word queued, or null if none (or a break was queued) */
+  private String prevWord;
+  
   /** File to queue words into */
   private File pairQueueFile;
 
@@ -126,23 +132,30 @@ public class SpellWriter
   /** 
    * Creates a SpellWriter, and establishes the directory to store the 
    * dictionary in. 
+   * 
+   * @param spellIndexPath  Path to store the spelling dictionary in
+   * @param stopSet  Set of stop words to use (or null for none)
+   * @param minWordFreq  Minumum frequency for words to be retained
    */
-  public static SpellWriter open(String spellIndexPath, int minWordFreq) 
+  public static SpellWriter open(String spellIndexPath, 
+                                 Set stopSet, 
+                                 int minWordFreq) 
     throws IOException
   {
     SpellWriter writer = new SpellWriter();
-    writer.openInternal(spellIndexPath, minWordFreq);
+    writer.openInternal(spellIndexPath, stopSet, minWordFreq);
     return writer;
   }
   
   /** 
    * Establishes the directory to store the dictionary in. 
    */
-  private void openInternal(String spellIndexPath, int minWordFreq) 
+  private void openInternal(String spellIndexPath, Set stopSet, int minWordFreq) 
     throws IOException 
   {
     this.minWordFreq = minWordFreq;
     this.spellIndexDir = new File(spellIndexPath);
+    this.stopSet = stopSet;
     
     // Figure out the files we're going to store stuff in
     wordQueueFile = new File(spellIndexPath, "newWords.txt");
@@ -184,13 +197,19 @@ public class SpellWriter
   }
 
   /**
-   * Queue the given word if not recently checked. Caller should periodically
-   * call checkFlush() to see whether the queue is getting full. The queue will
-   * auto-expand if necessary, but it's better to flush it when near full.
+   * Queue the given word. The queue can later be flushed by calling
+   * flushQueuedWords(); this is typically put off until the end of an indexing
+   * run.
    */
-  public synchronized void queueWord(String prevWord, String word) throws IOException 
+  public synchronized void queueWord(String word) throws IOException 
   {
-    // Is this a pair?
+    // If the word is a stop word, for now we simply ignore it. This way, we
+    // can still accumulate pair data for words on either side of it.
+    //
+    if (stopSet != null && stopSet.contains(word))
+      return;
+    
+    // Do we have a pair?
     if (prevWord != null) 
     {
         // Calculate a key for this pair, and get the current count
@@ -208,6 +227,9 @@ public class SpellWriter
         if (recentPairs.size() >= MAX_RECENT_PAIRS)
             flushRecentPairs();
     }
+    
+    // Save this word for pairing with the next one.
+    prevWord = word;
 
     // Bump the count for this word.
     Integer val = recentWords.get(word);
@@ -221,6 +243,18 @@ public class SpellWriter
     if (recentWords.size() >= MAX_RECENT_WORDS)
         flushRecentWords();
   } // queueWord()
+  
+  /**
+   * Called to signal a break in the text, to inform the spell checker to avoid
+   * pairing the previous word with the next one. This should be called at the
+   * start or end of a section or field, and at the start or end of each 
+   * sentence.
+   */
+  public void queueBreak()
+  {
+    // Suppress pairing until another word comes in
+    prevWord = null;
+  }
   
   /** 
    * Flush any accumulated pairs, with their counts. For efficiency, skip any 
