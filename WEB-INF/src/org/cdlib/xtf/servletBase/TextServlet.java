@@ -58,6 +58,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
@@ -71,13 +72,12 @@ import net.sf.saxon.tree.TreeBuilder;
 import net.sf.saxon.value.StringValue;
 
 import org.apache.lucene.analysis.Token;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.limit.ExcessiveWorkException;
 import org.cdlib.xtf.saxonExt.sql.SQLConnect;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.QueryProcessor;
-import org.cdlib.xtf.textIndexer.XTFTextAnalyzer;
+import org.cdlib.xtf.textIndexer.tokenizer.XTFTokenizer;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.EasyNode;
@@ -1071,11 +1071,12 @@ public abstract class TextServlet extends HttpServlet
         //
         str = saveWildcards( str );
         
-        // Otherwise, use a tokenizer to break up the string.
+        // Otherwise, use a tokenizer to break up the string. Do not perform
+        // lower-case conversion, apostrophe removal, etc. That should all
+        // happen later, at query processing time.
+        //
         try {
-            XTFTextAnalyzer analyzer = 
-                new XTFTextAnalyzer( null, null, null );
-            TokenStream toks = analyzer.tokenStream( "text", new StringReader(str) );
+            XTFTokenizer toks = new XTFTokenizer(new StringReader(str));
             int prevEnd = 0;
             while( true ) {
                 Token tok = toks.next();
@@ -1155,7 +1156,25 @@ public abstract class TextServlet extends HttpServlet
         s = s.replaceAll( SAVE_WILD_QMARK,   "?" );
         return s;
     } // restoreWildcards()
+
     
+    /**
+     * Given a stylesheet, determine what the Mime type of the servlet
+     * response should be.
+     */
+    protected static String calcMimeType( Templates stylesheet )
+    {
+        Properties details = stylesheet.getOutputProperties();
+        String mime = details.getProperty( OutputKeys.MEDIA_TYPE );
+        if( mime == null ) {
+            String method = details.getProperty( OutputKeys.METHOD );
+            if (method.equalsIgnoreCase("XML"))
+                mime = "text/xml";
+            else
+                mime = "text/html"; // Take a guess.
+        }
+        return mime;
+    } // calcMimeType
     
     /**
     * Generate an error page based on the given exception. Utilizes the system
@@ -1186,6 +1205,9 @@ public abstract class TextServlet extends HttpServlet
             TextConfig config = getConfig();
             Templates pss = stylesheetCache.find( config.errorGenSheet ); 
 
+            // Figure out the output mime type
+            res.setContentType(calcMimeType(pss));
+    
             // Make a trans and put attributes from the HTTP request
             // and from the global config file into it as attributes that
             // the stylesheet can use.
