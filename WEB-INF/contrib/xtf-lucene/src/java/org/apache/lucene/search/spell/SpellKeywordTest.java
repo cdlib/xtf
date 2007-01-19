@@ -100,8 +100,22 @@ public class SpellKeywordTest
         String origPhrase = parts[0].trim();
         String correctPhrase = parts[1].trim();
         
+        // Check that all the correct words are in our dictionary. If not,
+        // there's no point in trying.
+        //
+        String[] correctWords = StringUtil.splitWords(correctPhrase);
+        boolean skip = false;
+        for (String s : correctWords) {
+          if (!spellReader.inDictionary(s))
+            skip = true;
+        }
+        if (skip) {
+          debugWriter.println("Skip: orig=\"" + origPhrase + "\", corr=\"" + correctPhrase + "\"");
+          continue;
+        }
+        
         // Break the original phrase into words
-        String[] origWords = origPhrase.split("\\s");
+        String[] origWords = StringUtil.splitWords(origPhrase);
         
         // Get a suggestion from the spell checker.
         debugWriter.println("orig=\"" + origPhrase + "\", corr=\"" + correctPhrase + "\"");
@@ -120,9 +134,8 @@ public class SpellKeywordTest
         else
           nCorrect++;
         debugWriter.println();
-        
-        // Accumulate totals.
-        
+
+        // Record our warm-up time.
         if( nTried == 1 )
             debugWriter.println( "Time to first word: " + (System.currentTimeMillis() - startTime) + " msec" );
         
@@ -131,6 +144,7 @@ public class SpellKeywordTest
     System.out.println();
     System.out.print( "**TOTAL** " );
     System.out.printf("%.1f%%", nCorrect * 100.0 / nTried);
+    System.out.println();
     
     System.out.println( "Done. Total time: " + (System.currentTimeMillis() - startTime) + " msec" );
     

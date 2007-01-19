@@ -40,6 +40,7 @@ import org.cdlib.xtf.util.Hash64;
 import org.cdlib.xtf.util.IntList;
 import org.cdlib.xtf.util.LongSet;
 import org.cdlib.xtf.util.StringList;
+import org.cdlib.xtf.util.StringUtil;
 
 /**
  * <p>
@@ -203,11 +204,12 @@ public class SpellReader
    *
    * @param orig the original word being considered
    * @param key the 4-char key to look up
+   * @param minFreq minimum frequency of words to be queued
    * @param checked set of words that have already been considered
    * @param queue receives the resulting words
    * @return true iff the key was found
    */
-  private boolean readEdKey(Word orig, int key, 
+  private boolean readEdKey(Word orig, int key, int minFreq,
                             LongSet checked, WordQueue queue) 
     throws IOException
   {
@@ -257,6 +259,10 @@ public class SpellReader
         continue;
       checked.add(hash);
       
+      // If the frequency is too low, skip it.
+      if (freq < minFreq)
+        continue;
+      
       // Eliminate suggestions that are too distant from the original. In
       // testing, this has the effect of increasing accuracy for the #1
       // spot, and in general getting rid of many "ridiculous" suggestions,
@@ -285,25 +291,25 @@ public class SpellReader
    * constructed by deleting two of the first six characters in the
    * word. For each key, we add all words that share it.
    */
-  private void findCloseWords(Word orig, WordQueue queue) 
+  private void findCloseWords(Word orig, int minFreq, WordQueue queue) 
     throws IOException
   {
     LongSet checked = new LongSet(100);
-    readEdKey(orig, comboKey(orig.word,  0, 1, 2, 3), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  0, 1, 2, 4), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  0, 1, 2, 5), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  0, 1, 3, 4), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  0, 1, 3, 5), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  0, 1, 4, 5), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  0, 2, 3, 4), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  0, 2, 3, 5), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  0, 2, 4, 5), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  0, 3, 4, 5), checked, queue);     
-    readEdKey(orig, comboKey(orig.word,  1, 2, 3, 4), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  1, 2, 3, 5), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  1, 2, 4, 5), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  1, 3, 4, 5), checked, queue);
-    readEdKey(orig, comboKey(orig.word,  2, 3, 4, 5), checked, queue);
+    readEdKey(orig, comboKey(orig.word,  0, 1, 2, 3), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  0, 1, 2, 4), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  0, 1, 2, 5), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  0, 1, 3, 4), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  0, 1, 3, 5), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  0, 1, 4, 5), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  0, 2, 3, 4), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  0, 2, 3, 5), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  0, 2, 4, 5), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  0, 3, 4, 5), minFreq, checked, queue);     
+    readEdKey(orig, comboKey(orig.word,  1, 2, 3, 4), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  1, 2, 3, 5), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  1, 2, 4, 5), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  1, 3, 4, 5), minFreq, checked, queue);
+    readEdKey(orig, comboKey(orig.word,  2, 3, 4, 5), minFreq, checked, queue);
   }
 
   /** 
@@ -334,24 +340,34 @@ public class SpellReader
   /** Check if the given word is in the spelling dictionary */
   public boolean inDictionary (String word) throws IOException 
   {
+    return findWordFreq(word.toLowerCase()) > 0;
+  }
+  
+  /** 
+   * Determine the frequency of a given word. Fairly inefficient, so should
+   * only be called once in a while.
+   */
+  private int findWordFreq(String word) throws IOException 
+  {
     // We can tell if a word is in the dictionary by looking up the simplest
     // edit map key for the word.
     //
     WordQueue queue = new WordQueue(1000);
     Word orig = new Word(word);
     LongSet checked = new LongSet(100);
-    readEdKey(orig, comboKey(word, 0,1,2,3), checked, queue);
+    readEdKey(orig, comboKey(word, 0,1,2,3), 0, checked, queue);
     
     // Once we have the key words, see if this word is in the list.
     while (queue.size() > 0) {
       Word test = (Word) queue.pop();
       if (word.equals(test.word))
-        return true;
+        return test.freq;
     }
     
     // Couldn't find it... we don't think it's in the dictionary.
-    return false;
+    return 0;
   }
+  
   
   /**
    * Suggest similar words to a given original word, but not including the
@@ -361,7 +377,7 @@ public class SpellReader
     throws IOException 
   {
     // Get suggestions, including the original word
-    Word[] suggs = suggestSimilar(new Word(str), numSugg + 1);
+    Word[] suggs = suggestSimilar(new Word(str), numSugg + 1, 1);
     
     // Make an array, not including the original word
     StringList out = new StringList();
@@ -374,16 +390,17 @@ public class SpellReader
   }
   
   /**
-   * Suggest similar words to a given original word.
+   * Suggest similar words to a given original word. A minimum frequency limit
+   * is enforced.
    */
-  private Word[] suggestSimilar(Word word, int numSugg)
+  private Word[] suggestSimilar(Word word, int numSugg, int minFreq)
     throws IOException 
   {
     int queueSize = numSugg + 10;
     final WordQueue queue = new WordQueue(queueSize);
     
     // Find all words that are close to the original and queue them.
-    findCloseWords(word, queue);
+    findCloseWords(word, minFreq, queue);
     
     // Pop everything out of the queue and convert to an array
     Word[] array = new Word[Math.min(numSugg, queue.size())];
@@ -427,20 +444,36 @@ public class SpellReader
     bestPhrase.descrip = "no change";
     bestPhrase.words = new Word[terms.length];
     for (int i=0; i<terms.length; i++)
-      bestPhrase.words[i] = new Word(terms[i]);
+      bestPhrase.words[i] = new Word(terms[i].toLowerCase());
     bestPhrase.calcScore();
     
-    // If there's just one word, out work is simple: just find the best 
+    // If there's just one word, our work is simple: just find the best 
     // replacement for that word.
     //
     if (terms.length == 1)
-      return subWord(bestPhrase, 0).toStringArray();
+      bestPhrase = subWord(bestPhrase, 0);
+    else
+    {
+      // Consider two-word changes at each position.
+      for (int i = 0; i < terms.length-1; i++)
+          bestPhrase = subPair(bestPhrase, i);
+    }
     
-    // Consider two-word changes at each position.
-    for (int i = 0; i < terms.length-1; i++)
-        bestPhrase = subPair(bestPhrase, i);
+    // Convert to a string array, and recover the original case mapping. If
+    // our suggestion only varies by case however, stick with the original.
+    //
+    String[] out = bestPhrase.toStringArray();
+    for (int i=0; i<out.length; i++) {
+      if (out[i] != null) {
+        if (out[i].equalsIgnoreCase(terms[i]))
+          out[i] = terms[i];
+        else
+          out[i] = StringUtil.copyCase(terms[i], out[i]);
+      }
+    }
     
-    return bestPhrase.toStringArray();
+    // All done.
+    return out;
   } // suggestKeywords()
   
   /**
@@ -453,10 +486,13 @@ public class SpellReader
   private Phrase subWord(Phrase in, int pos) throws IOException
   {
     // Get a suggestion for replacing the word.
-    Word[] suggs = suggestSimilar(in.words[pos], 1);
+    int origFreq = findWordFreq(in.words[pos].word);
+    Word[] suggs = suggestSimilar(in.words[pos], 1, origFreq+1);
     if (suggs.length == 0)
       return in;
     Word sugg = suggs[0];
+    
+    assert !sugg.word.equals(in.words[pos].word);
     
     // If no improvement, return the original.
     if (sugg == in.words[pos])
@@ -485,8 +521,8 @@ public class SpellReader
     
     // Get a list of independent suggestions for both words.
     final int NUM_SUG = 100;
-    Word[] list1 = suggestSimilar(word1, NUM_SUG);
-    Word[] list2 = suggestSimilar(word2, NUM_SUG);
+    Word[] list1 = suggestSimilar(word1, NUM_SUG, 0);
+    Word[] list2 = suggestSimilar(word2, NUM_SUG, 0);
     
     /*
     System.out.println("List 1:");
