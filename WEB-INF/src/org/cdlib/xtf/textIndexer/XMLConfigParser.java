@@ -523,9 +523,8 @@ public class XMLConfigParser extends DefaultHandler
     *                   element, or the empty string if qualified names are 
     *                   disabled.
     * 
-    * @throws
-    *      {@link SAXException} Any internal exceptions generated due to 
-    *                           syntax problems in the element. <br><br>
+    * @throws SAXException  If any internal exceptions generated due to 
+    *                       syntax problems in the element. <br><br>
     * 
     * @.notes
     *  For an explanation of the config file format, see the main description 

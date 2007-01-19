@@ -427,7 +427,6 @@ public class SpellReader
    * the precision and/or recall.
    * 
    * @param terms           Ordered list of query terms
-   * @param indexReader     Used to obtain term frequencies
    * @return                One suggestion per term. If unchanged, there
    *                        was no better suggestion. If null, it is
    *                        suggested that the term be deleted.
@@ -480,7 +479,7 @@ public class SpellReader
    * Substitute a single word at the given position, trying to improve the score.
    * 
    * @param in      the best we've done so far
-   * @param i       position to substitute at
+   * @param pos     position to substitute at
    * @return        the best we can do at that position
    */
   private Phrase subWord(Phrase in, int pos) throws IOException

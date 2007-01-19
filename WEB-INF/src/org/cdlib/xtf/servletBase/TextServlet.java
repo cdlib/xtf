@@ -237,8 +237,6 @@ public abstract class TextServlet extends HttpServlet
      * Ensures that the servlet has been properly initialized. If init()
      * hasn't been called yet, or if the config file changes, then this
      * method reads the config file, then calls derivedInit().
-     * 
-     * @throws Exception    If an error occurs reading config
      */
     private final void firstTimeInit( boolean forceInit )
     {

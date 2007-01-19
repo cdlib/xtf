@@ -29,8 +29,6 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.IOException;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.chunk.ChunkedWordIter;
 import org.apache.lucene.chunk.DocNumMap;
@@ -55,8 +53,6 @@ public class XtfChunkedWordIter extends ChunkedWordIter
    * @param mainDocNum  doc ID of the main document
    * @param field       field tokenize and iterate
    * @param analyzer    used to tokenize the field
-   * 
-   * @throws IOException      If something goes wrong reading the data
    */
   public XtfChunkedWordIter( IndexReader reader,
                              DocNumMap docNumMap,

@@ -28,7 +28,7 @@ package org.apache.lucene.search.spell;
  * </ul>
  * 
  * @author Apache Software Foundation
- * @version $Id: DoubleMetaphone.java,v 1.1 2006-03-03 18:55:14 mhaye Exp $
+ * @version $Id: DoubleMetaphone.java,v 1.2 2007-01-19 22:27:45 mhaye Exp $
  */
 public class DoubleMetaphone {
 
@@ -192,7 +192,6 @@ public class DoubleMetaphone {
      *
      * @param obj Object to encode (should be of type String)
      * @return An encoded Object (will be of type String)
-     * @throws EncoderException encode parameter is not of type String
      */
     public Object encode(Object obj) {
         if (!(obj instanceof String)) {

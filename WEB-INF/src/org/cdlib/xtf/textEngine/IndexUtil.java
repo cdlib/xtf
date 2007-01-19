@@ -104,9 +104,6 @@ public class IndexUtil
    * 
    * @return                    Expected location of the lazy version of the 
    *                            source file
-   *    
-   * @throws Exception          If the config file cannot be loaded, or the
-   *                            paths are invalid.        
    */
   public static File calcLazyPath( File    xtfHome,
                                    File    idxConfigFile,
@@ -154,9 +151,6 @@ public class IndexUtil
    * 
    * @return                Expected location of the lazy version of the 
    *                        source file
-   *    
-   * @throws Exception      If the config file cannot be loaded, or the
-   *                        paths are invalid.        
    */
   public static File calcLazyPath( File      xtfHome,
                                    IndexInfo idxInfo,
@@ -209,9 +203,6 @@ public class IndexUtil
    * @param srcTextFile         Source text file of interest
    * 
    * @return                    Document key to store or look for in the index
-   *    
-   * @throws Exception          If the config file cannot be loaded, or the
-   *                            paths are invalid.        
    */
   public static String calcDocKey( File    xtfHome,
                                    File    idxConfigFile,
@@ -249,9 +240,6 @@ public class IndexUtil
    * @param srcTextFile     Source text file of interest
    * 
    * @return                Document key to store or look for in the index
-   *    
-   * @throws Exception      If the config file cannot be loaded, or the
-   *                        paths are invalid.        
    */
   public static String calcDocKey( File      xtfHomeFile,
                                    IndexInfo idxInfo,

@@ -44,6 +44,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXSource;
 
 import net.sf.saxon.Controller;
@@ -125,8 +126,6 @@ public class DynaXML extends TextServlet
     /**
      * Reads in the configuration file and sets up our helpers (caching,
      * authentication, etc.)
-     *
-     * @throws Exception    If an error occurs reading config
      */
     protected TextConfig readConfig( String configPath )
     {

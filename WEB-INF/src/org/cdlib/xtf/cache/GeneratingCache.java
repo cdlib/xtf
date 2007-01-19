@@ -55,7 +55,6 @@ public abstract class GeneratingCache extends Cache
      *
      * @param key   The key to look up
      * @return      Value corresponding to that key. Never null.
-     * @throws      An exception if the entry cannot be created for any reason.
      */
     public synchronized Object find( Object key )
         throws Exception

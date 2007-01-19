@@ -83,8 +83,6 @@ public class CrossQuery extends TextServlet
 
     /**
      * Loads the specific configuration file for crossQuery.
-     *
-     * @throws Exception    If an error occurs reading config
      */
     protected TextConfig readConfig( String configPath )
     {

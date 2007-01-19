@@ -121,7 +121,6 @@ public abstract class TextConfig
      * the servlet.
      *
      * @param  path                Filesystem path to the config file.
-     * @throws DynaXMLException    If a read or parse error occurs.
      */
     public void read( String expectedRootTag, String path )
         throws GeneralException
@@ -330,7 +329,6 @@ public abstract class TextConfig
      *
      * @param value     Value to check for null or ""
      * @param descrip   If thrown, the exception uses this as the message.
-     * @throws DynaXMLException    If the value is null.
      */
     public static void requireOrElse( String value, String descrip )
         throws GeneralException

@@ -307,8 +307,6 @@ public class SpellWriter
 
   /**
    * Ensures that all words in the queue are written to the dictionary on disk.
-   * 
-   * @return number of non-duplicate words actually written
    */
   public synchronized void flushQueuedWords(ProgressTracker prog) throws IOException 
   {
@@ -335,7 +333,6 @@ public class SpellWriter
   /**
    * Performs the word-adding phase of the flush procedure.
    * 
-   * @return    the number of pairs added
    * @throws    IOException if something goes wrong
    */
   private void flushPhase1(ProgressTracker prog) throws IOException
@@ -385,7 +382,6 @@ public class SpellWriter
 
   /**
    * Read an existing frequency file, and add it to a file sorter.
-   * @param tracker 
    */
   private void readFreqs(File inFile, FileSorter out, ProgressTracker prog) 
     throws IOException
@@ -414,7 +410,6 @@ public class SpellWriter
 
   /**
    * Write out frequency data, in sorted order.
-   * @param tracker 
    */
   private void writeFreqs(final File outFile, 
                           final FileSorter freqSorter,

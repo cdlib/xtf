@@ -249,7 +249,7 @@ public class BigramStopFilter extends TokenFilter
   public static final Object tester = new Object() {
     /**
      * Very simple tokenizer that breaks up a string into a series of Lucene
-     * {@link Tokens Token}s.
+     * {@link Token Token}s.
      */
     class StringTokenStream extends TokenStream {
       private String str;

@@ -152,7 +152,7 @@ public class PairFreqData
   
   /**
    * Append sorted counts from an input stream that were saved by
-   * {@link #save(DataOutputStream)}.
+   * {@link #save(File)}.
    * 
    * @param f             File to load from
    * @throws IOException  if anything goes wrong
@@ -209,7 +209,7 @@ public class PairFreqData
   
   /**
    * Save sorted counts to an input stream. These can later be loaded by
-   * {@link #add(DataInputStream)}.
+   * {@link #add(File)}.
    * 
    * @param f             File to write to (existing contents are replaced)
    * @throws IOException  if anything goes wrong

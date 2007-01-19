@@ -114,7 +114,7 @@ public final class CharSlice implements CharSequence {
 
     /**
      * Get the index of a specific character in the sequence. Returns -1 if not found.
-     * This method mimics {@link String#indexOf}
+     * This method mimics {@link String#indexOf(char)}
      * @param c the character to be found
      * @return the position of the first occurrence of that character, or -1 if not found.
      */

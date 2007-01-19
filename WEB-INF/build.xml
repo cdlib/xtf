@@ -197,8 +197,6 @@
              classpath="${libs}"
              noqualifier="all">
       <tag name=".notes" description="Notes:"/>
-      <tag name=".warnings" description="Warnings:"/>
-      <tag name="todo" description="To Do:"/>
 
       <packageset dir="${src1}">
         <include name="**"/>

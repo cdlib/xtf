@@ -107,8 +107,6 @@ public class SrcTreeProcessor
    * 
    *  Instantiates the {@link org.cdlib.xtf.textIndexer.XMLTextProcessor} 
    *  used internally to process individual XML source files. <br><br>
-   * 
-   *  @throws Exception  if the docSelector stylesheet cannot be loaded.
    */
   public SrcTreeProcessor()
   

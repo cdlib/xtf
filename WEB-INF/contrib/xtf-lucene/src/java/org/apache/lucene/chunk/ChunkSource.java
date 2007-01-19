@@ -78,8 +78,6 @@ public class ChunkSource
    * @param mainDocNum is the document ID of the main doc
    * @param field is the name of the field to read in
    * @param analyzer will be used to tokenize the stored field contents
-   * 
-   * @throws IOException      If something goes wrong reading the data
    */
   public ChunkSource(IndexReader reader, DocNumMap docNumMap, int mainDocNum,
                      String field, Analyzer analyzer) 
