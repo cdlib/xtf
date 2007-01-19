@@ -1,6 +1,6 @@
 package org.cdlib.xtf.util;
 
-import java.text.BreakIterator;
+import java.util.regex.Pattern;
 
 /**
  * Copyright (c) 2007, Regents of the University of California
@@ -34,6 +34,9 @@ import java.text.BreakIterator;
 /** Provides some handy utilities missing from the Java String class. */
 public class StringUtil
 {
+  /** Used for splitting strings on spaces */
+  private static final Pattern spacePat = Pattern.compile("\\s+");
+  
   /** 
    * Join a number of strings (or other objects) into a single
    * string, separated by spaces. Each object's toString() method will be used.
@@ -160,7 +163,7 @@ public class StringUtil
       String word = words[0];
       if (word.length() <= 1)
         return false;
-      return Character.isTitleCase(word.charAt(0)) &&
+      return Character.isUpperCase(word.charAt(0)) &&
              isLowerCase(word.substring(1));
     }
     
@@ -178,54 +181,37 @@ public class StringUtil
    */
   public static String toTitleCase(String in)
   {
-    BreakIterator iter = BreakIterator.getWordInstance();
-    iter.setText(in);
-    int start = iter.first();
-    int end;
-    int prevStart = 0;
-    StringBuffer out = new StringBuffer();
-    
-    // Consider each word in turn
-    for (end = iter.next(); 
-         end != BreakIterator.DONE;
-         prevStart = start, start = end, end = iter.next()) 
-    {
-      // Copy the separations between words
-      if (start > prevStart)
-        out.append(in.subSequence(prevStart, start));
-      
-      // Convert this word to title case
-      out.append(Character.toTitleCase(in.charAt(start)));
-      out.append(in.substring(start+1, end).toLowerCase());
+    // See if there's more than one word.
+    String[] words = splitWords(in);
+
+    // If no words, there's nothing to do.
+    if (words.length == 0)
+      return in;
+
+    // If only one word, convert it.
+    if (words.length == 1) {
+      String word = words[0];
+      if (word.length() < 1)
+        return word;
+      return Character.toUpperCase(word.charAt(0)) +
+             word.substring(1);
     }
     
-    // Copy any space at the end of the original string
-    if (end < in.length())
-      out.append(in.substring(end));
-    
-    // All done.
-    return out.toString();
+    // If a series of words, convert them all, then join.
+    String[] converted = new String[words.length];
+    for (int i=0; i<words.length; i++)
+      converted[i] = toTitleCase(words[i]);
+    return join(converted);
   }
   
   /** 
-   * Break a string up into words, using the "official" method, i.e.
-   * Java's BreakIterator class.
+   * Break a string up into words, defined by whitespace boundaries.
    * 
    * @param in a string to break up
    * @return an array of the words in the string
    */
   public static String[] splitWords(String in) {
-    BreakIterator iter = BreakIterator.getWordInstance();
-    iter.setText(in);
-    int start = iter.first();
-    StringList list = new StringList(10);
-    for (int end = iter.next(); 
-         end != BreakIterator.DONE;
-         start = end, end = iter.next()) 
-    {
-      list.add(in.substring(start,end));
-    }
-    return list.toArray();
+    return spacePat.split(in.trim());
   }
   
 }
