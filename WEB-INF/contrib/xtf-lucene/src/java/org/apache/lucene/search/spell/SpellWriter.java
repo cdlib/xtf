@@ -825,7 +825,6 @@ public class SpellWriter
     }
     flushRecentPairs();
     if (pairQueueWriter != null) {
-        recentPairs = null;
         pairQueueWriter.close();
         pairQueueWriter = null;
     }
