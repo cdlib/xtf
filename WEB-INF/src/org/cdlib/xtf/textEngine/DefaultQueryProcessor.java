@@ -219,6 +219,11 @@ public class DefaultQueryProcessor extends QueryProcessor
             return result;
         }
         
+        // Perform standard tokenization tasks: change words to lowercase,
+        // remove apostrophes, etc.
+        //
+        query = new StdTermRewriter().rewriteQuery(query);
+        
         // If a plural map is present, change plural words to non-plural.
         if( pluralMap != null )
             query = new PluralFoldingRewriter(pluralMap).rewriteQuery(query);
@@ -420,6 +425,13 @@ public class DefaultQueryProcessor extends QueryProcessor
         //    return;
         //if( params.totalDocsCutoff > 0 && totalDocs > params.totalDocsCutoff )
         //    return;
+
+        // When comparing changes, we'll perform standard term filtering (such
+        // as converting to lowercase). This helps avoid suggesting a change
+        // that couldn't possibly improve results because the terms are
+        // actually identical in the index.
+        //
+        StdTermFilter stdFilter = new StdTermFilter();
         
         // Gather the query terms, grouped by field set.
         LinkedHashMap fieldsMap = gatherKeywords( req.query, params.fields );
@@ -449,7 +461,7 @@ public class DefaultQueryProcessor extends QueryProcessor
                     continue;
                 
                 // Skip suggestions that don't change anything.
-                if( suggested[i].equals(terms[i]) )
+                if( stdFilter.filter(suggested[i]).equals(stdFilter.filter(terms[i])) )
                     continue;
                 
                 // Okay, record it.

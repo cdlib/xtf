@@ -1523,11 +1523,6 @@ public class QueryRequestParser
         if( termText == null || termText.length() == 0 )
             error( "Missing term text in element '" + parent.name() + "'" );
         
-        // For now, convert text to lowercase. In the future, we might allow
-        // case-sensitive searching.
-        //
-        termText = termText.toLowerCase();
-        
         // Make a term out of the field and the text.
         Term term = new Term( field, termText );
         
