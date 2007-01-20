@@ -109,6 +109,9 @@ public abstract class TextServlet extends HttpServlet
     /** Flag to discern whether class has been initialized yet */
     private boolean isInitted = false;
     
+    /** The error generator stylesheet to use */
+    private ThreadLocal<String> errorGenSheet = new ThreadLocal<String>();
+    
     /** 
      * Last modification time of the configuration file, so we can decide
      * when we need to re-initialize the servlet.
@@ -359,6 +362,9 @@ public abstract class TextServlet extends HttpServlet
         curRequest.set( req );
         curResponse.set( res );
         
+        // Default the error generator stylesheet to use
+        errorGenSheet.set( config.errorGenSheet );
+        
         // Get or create a session if enabled.
         if( config.trackSessions )
             req.getSession( true );
@@ -403,6 +409,15 @@ public abstract class TextServlet extends HttpServlet
         } // finally
         
     } // service()
+    
+    
+    /**
+     * Switch to using a different error generator stylesheet than the default.
+     */
+    public void setErrorGenSheet( String newPath ) 
+    {
+        errorGenSheet.set( newPath );
+    }
     
     
     /**
@@ -1166,8 +1181,14 @@ public abstract class TextServlet extends HttpServlet
         String mime = details.getProperty( OutputKeys.MEDIA_TYPE );
         if( mime == null ) {
             String method = details.getProperty( OutputKeys.METHOD );
-            if (method.equalsIgnoreCase("XML"))
+            if (method.equalsIgnoreCase("xml"))
                 mime = "text/xml";
+            else if (method.equalsIgnoreCase("xhtml"))
+                mime = "application/xhtml+xml";
+            else if (method.equals("text"))
+                mime = "text/plain";
+            else if (method.equals("html"))
+                mime = "text/html";
             else
                 mime = "text/html"; // Take a guess.
         }
@@ -1201,7 +1222,7 @@ public abstract class TextServlet extends HttpServlet
 
             // First, load the error generating stylesheet.
             TextConfig config = getConfig();
-            Templates pss = stylesheetCache.find( config.errorGenSheet ); 
+            Templates pss = stylesheetCache.find( errorGenSheet.get() ); 
 
             // Figure out the output mime type
             res.setContentType(calcMimeType(pss));

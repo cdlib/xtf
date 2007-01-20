@@ -293,6 +293,11 @@ public class CrossQuery extends TextServlet
         // Translate relative path, if necessary.
         route.queryParserSheet = getRealPath( route.queryParserSheet );
         
+        // If the route specified an error generator, override the default.
+        if( route.errorGenSheet != null )
+            setErrorGenSheet( getRealPath(route.errorGenSheet) );
+        
+
         // Record extra stuff for debugging/step mode
         route.routerInput = fmt.toString();
         route.routerOutput = XMLWriter.toString( queryRouteDoc, false );

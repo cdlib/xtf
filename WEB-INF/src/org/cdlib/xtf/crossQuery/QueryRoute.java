@@ -45,6 +45,9 @@ public class QueryRoute
   /** Path to the query parser stylesheet */
   public String queryParserSheet;
   
+  /** Optional: path to the error generator stylesheet */
+  public String errorGenSheet;
+  
   /** Special parsing requests for particular URL parameters */
   public HashMap tokenizerMap = new HashMap();
   
@@ -100,6 +103,8 @@ public class QueryRoute
           String tagName = el.name();
           if( tagName.equalsIgnoreCase("queryParser") )
               ret.parseQueryParser( el );
+          else if( tagName.equalsIgnoreCase("errorGen") )
+              ret.parseErrorGen( el );
           else if( tagName.equalsIgnoreCase("tokenize") )
               ret.parseTokenizer( el );
           
@@ -129,6 +134,23 @@ public class QueryRoute
         }
     }
   } // parseQueryParser()
+
+
+  /**
+   * Parse a 'errorGen' element
+   */
+  private void parseErrorGen( EasyNode el )
+  {
+    // Scan each attribute of each element.
+    for( int j = 0; j < el.nAttrs(); j++ ) {
+        if( el.attrName(j).equalsIgnoreCase("path") )
+            errorGenSheet = el.attrValue( j );
+        else {
+            throw new GeneralException( "Query router attribute " +
+                el.name() + "." + el.attrName(j) + " not recognized" );
+        }
+    }
+  } // parseErrorGen()
 
 
   /**
