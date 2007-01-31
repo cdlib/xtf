@@ -323,24 +323,27 @@ public class TextIndexer
                         Path.normalizePath(cfgInfo.indexInfo.subDir) );
           }
 
-          // Process everything below it.
-          srcTreeProcessor.open( cfgInfo );
-          srcTreeProcessor.processDir( new File(srcRootDir), 0 );
-          srcTreeProcessor.close();
+          // Process everything below it (unless instructed to skip this part)
+          if( !cfgInfo.skipIndexing ) 
+          {
+              srcTreeProcessor.open( cfgInfo );
+              srcTreeProcessor.processDir( new File(srcRootDir), 0 );
+              srcTreeProcessor.close();
 
-          // Cull files which are present in the index but missing
-          // from the filesystem.
-          //
-          IdxTreeCuller culler = new IdxTreeCuller();
-      
-          Trace.info( "Removing Missing Documents From Index:" );
-          Trace.tab();
-        
-          culler.cullIndex( new File(cfgInfo.xtfHomePath), 
-                            cfgInfo.indexInfo );
-        
-          Trace.untab();
-          Trace.info( "Done." );
+              // Cull files which are present in the index but missing
+              // from the filesystem.
+              //
+              IdxTreeCuller culler = new IdxTreeCuller();
+          
+              Trace.info( "Removing Missing Documents From Index:" );
+              Trace.tab();
+            
+              culler.cullIndex( new File(cfgInfo.xtfHomePath), 
+                                cfgInfo.indexInfo );
+            
+              Trace.untab();
+              Trace.info( "Done." );
+          }
           
           Trace.untab();
           Trace.info( "Done." );

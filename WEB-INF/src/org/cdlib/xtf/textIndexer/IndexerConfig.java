@@ -110,6 +110,16 @@ public class IndexerConfig
    */
   public boolean   updateSpellDict;
   
+  /** 
+   * Flag indicating whether or not to skip the main indexing pass. Useful
+   * for debugging later phases, such as optimization or spelling.
+   * <br><br>
+   *  
+   *  true  = Skip the main indexing pass.  <br>
+   *  false = Perform the main indexing pass. <br><br>
+   */
+  public boolean   skipIndexing;
+  
   /** Index specific information for the current index being created or 
    *  updated.
    */
@@ -141,6 +151,9 @@ public class IndexerConfig
     
     // Default to making spellcheck dictionary (if enabled in the index's info)
     updateSpellDict = true;
+    
+    // Default to performing the main indexing pass
+    skipIndexing = false;
     
     // Set the default trace level to display errors.
     traceLevel = Trace.info;
@@ -297,6 +310,10 @@ public class IndexerConfig
         // If the user asked for no lazy files to be built, flag it.
         else if( args[i].equalsIgnoreCase("-nobuildlazy") )
               buildLazyFiles = false;
+        
+        // If the user asked for us to skip the main indexing pass, flat it.
+        else if( args[i].equalsIgnoreCase("-skipindexing") )
+              skipIndexing = true;
         
         // If we found the -trace argument...
         else if( args[i].equalsIgnoreCase("-trace") ) {  
