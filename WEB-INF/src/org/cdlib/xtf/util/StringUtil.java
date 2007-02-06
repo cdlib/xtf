@@ -60,6 +60,8 @@ public class StringUtil
   {
     StringBuffer buf = new StringBuffer();
     for (int i=0; i<in.length; i++) {
+      if (in[i] == null)
+        continue;
       if (i > 0)
         buf.append(separator);
       buf.append(in[i].toString());
@@ -211,6 +213,8 @@ public class StringUtil
    * @return an array of the words in the string
    */
   public static String[] splitWords(String in) {
+    if (in.trim().length() == 0)
+      return new String[0];
     return spacePat.split(in.trim());
   }
   
