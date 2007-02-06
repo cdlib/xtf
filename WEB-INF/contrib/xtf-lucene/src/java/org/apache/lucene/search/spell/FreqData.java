@@ -54,7 +54,7 @@ import org.cdlib.xtf.util.LongList;
  *
  * @author Martin Haye
  */
-public class PairFreqData 
+public class FreqData 
 {
   /** List of keys */
   private LongList keys = new LongList();
@@ -77,6 +77,11 @@ public class PairFreqData
                                 ((long)'r') << (2*8) |
                                 ((long)'q') << (1*8) |
                                 ((long)'1') << (0*8);
+  
+  /** Add a count for a given word */
+  public final void add(String word, int count) {
+    add(Hash64.hash(word), count);
+  }
   
   /** Add a count for a given word pair */
   public final void add(String word1, String word2, int count) {
@@ -125,14 +130,14 @@ public class PairFreqData
     return -1;
   }
   
-  /** Get the count for a given field/word pair, or zero if not found */
-  public final int get(String field, String word) {
-    return get(Hash64.hash(field, word));
+  /** Get the count for a given word, or zero if not found */
+  public final int get(String word) {
+    return get(Hash64.hash(word));
   }
   
-  /** Get the count for a given field/word/word triplet, or zero if not found */
-  public final int get(String field, String word1, String word2) {
-    return get(Hash64.hash(field, word1, word2));
+  /** Get the count for a given word pair, or zero if not found */
+  public final int get(String word1, String word2) {
+    return get(Hash64.hash(word1, word2));
   }
   
   /** Get the count for a given hash code and count, or zero if not found */

@@ -41,7 +41,21 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.lucene.analysis.Token;
+import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
+import org.cdlib.xtf.textEngine.QueryRequest;
+import org.cdlib.xtf.textEngine.QueryRequestParser;
+import org.cdlib.xtf.textEngine.QueryResult;
+import org.cdlib.xtf.textEngine.XtfSearcher;
+import org.cdlib.xtf.textIndexer.tokenizer.ParseException;
+import org.cdlib.xtf.textIndexer.tokenizer.XTFTokenizer;
+import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.StringList;
 import org.cdlib.xtf.util.StringUtil;
 
 /**
@@ -64,20 +78,25 @@ public class SpellKeywordTest
         System.exit( 1 );
     }
   } // main()
+
+  /** Directory in which the index (and spelling data) is stored */
+  private String indexDir;
   
   /** Test the spelling index */
   private void test( String testFile ) throws IOException 
   {
     long startTime = System.currentTimeMillis();
     
-    // Open the spelling dictionary.
-    SpellReader spellReader = SpellReader.open( new File("spell") );
+    // Create a query processor, and open the index.
+    indexDir = Path.resolveRelOrAbs(new File(".").getAbsoluteFile(), "index");
+    XtfSearcher searcher = DefaultQueryProcessor.getXtfSearcher(indexDir);
     
-    // Open the debug stream.
+    // Attach a debug stream to the spell reader.
+    SpellReader spellReader = searcher.spellReader();
     PrintWriter debugWriter = new PrintWriter(new FileWriter("spellDebug.log"));
     spellReader.setDebugWriter(debugWriter);
     
-    // Open the file and read each line.
+    // Open the test query file and read each line.
     BufferedReader lineReader = new BufferedReader(new FileReader(testFile));
     int nTried = 0;
     int nCorrect = 0;
@@ -98,8 +117,12 @@ public class SpellKeywordTest
           continue;
         }
         String origPhrase = parts[0].trim();
-        String correctPhrase = parts[1].trim();
-        
+        String correctPhraseStr = parts[1].trim();
+        String[] correctPhrases = correctPhraseStr.split("\\|");
+
+        /*
+         * This ends up skipping some interesting cases.
+         * 
         // Check that all the correct words are in our dictionary. If not,
         // there's no point in trying.
         //
@@ -113,28 +136,26 @@ public class SpellKeywordTest
           debugWriter.println("Skip: orig=\"" + origPhrase + "\", corr=\"" + correctPhrase + "\"");
           continue;
         }
+        */
         
-        // Break the original phrase into words
-        String[] origWords = StringUtil.splitWords(origPhrase);
-        
-        // Get a suggestion from the spell checker.
-        debugWriter.println("orig=\"" + origPhrase + "\", corr=\"" + correctPhrase + "\"");
-        String[] suggWords = spellReader.suggestKeywords(origWords);
-        
-        // Form up the suggested phrase.
-        String suggPhrase = StringUtil.join(suggWords);
-        nTried++;
+        // Try out the spelling suggestion algorithms
+        debugWriter.println("orig=\"" + origPhrase + "\", corr=\"" + correctPhraseStr + "\"");
+        String suggPhrase = testPhrase(origPhrase, debugWriter);
         
         // Output the results.
+        nTried++;
         debugWriter.print("--> sugg=\"" + suggPhrase + "\"");
-        if (!suggPhrase.equals(correctPhrase) ) {
+        boolean correct = false;
+        for (int i = 0; i < correctPhrases.length; i++)
+          correct |= correctPhrases[i].equalsIgnoreCase(suggPhrase);
+        if (!correct) {
           debugWriter.print("  WRONG");
-          System.out.println("orig=\"" + origPhrase + "\", corr=\"" + correctPhrase + "\", sugg=\"" + suggPhrase + "\"");
+          System.out.println("orig=\"" + origPhrase + "\", corr=\"" + correctPhraseStr + "\", sugg=\"" + suggPhrase + "\"");
         }
         else
           nCorrect++;
         debugWriter.println();
-
+        
         // Record our warm-up time.
         if( nTried == 1 )
             debugWriter.println( "Time to first word: " + (System.currentTimeMillis() - startTime) + " msec" );
@@ -153,5 +174,61 @@ public class SpellKeywordTest
     debugWriter.close();
     
   } // test()
+
+  private String testPhrase(String origPhrase, 
+                            PrintWriter debugWriter) 
+    throws IOException
+  {
+    // Break the original phrase into words
+    String[] origWords = split(origPhrase);
+    
+    // Create a query using those words.
+    StringBuffer buf = new StringBuffer();
+    buf.append("<query indexPath=\"index\" termLimit=\"1000\" workLimit=\"20000000\" " +
+               "style=\"style/crossQuery/resultFormatter/marc/resultFormatter.xsl\" " +
+               "startDoc=\"1\" maxDocs=\"20\" normalizeScores=\"false\">\n" +
+               "<spellcheck suggestionsPerTerm=\"1\"/>\n" +
+               "<and fields=\"text title-main author subject note\" boosts=\"0.5  1.0        1.0    0.5     1.0 \" slop=\"10\" maxTextSnippets=\"3\" maxMetaSnippets=\"all\">\n");
+    for (String s : origWords)
+      buf.append("<term>" + s + "</term>\n");
+    buf.append("</and></query>");
+    
+    // Transform it into a query request.
+    QueryRequestParser parser = new QueryRequestParser();
+    Source src = new StreamSource(new StringReader(buf.toString()));
+    QueryRequest req = parser.parseRequest(src, new File(".").getAbsoluteFile(), indexDir);
+    
+    // Now process the query.
+    DefaultQueryProcessor queryProcessor = new DefaultQueryProcessor();
+    QueryResult res = queryProcessor.processRequest(req);
+    
+    // See if it made a spelling suggestion. If not, return the original.
+    if (res.suggestions == null || res.suggestions.length == 0)
+      return null;
+    
+    // Okay, put together the first suggestion.
+    String[] suggWords = new String[origWords.length];
+    for (int i=0; i<origWords.length; i++) {
+      suggWords[i] = origWords[i];
+      for (int j=0; j<res.suggestions.length; j++) {
+        if (res.suggestions[j].origTerm.equals(origWords[i]))
+          suggWords[i] = res.suggestions[j].suggestedTerm;
+      }
+    }
+    return StringUtil.join(suggWords);
+  }
+  
+  public String[] split(String in) throws ParseException, IOException
+  {
+    XTFTokenizer toks = new XTFTokenizer(new StringReader(in));
+    StringList list = new StringList();
+    while (true) {
+      Token t = toks.next();
+      if (t == null)
+        break;
+      list.add(t.termText());
+    }
+    return list.toArray();
+  }
   
 } // class

@@ -33,6 +33,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.util.PriorityQueue;
@@ -70,7 +71,10 @@ public class SpellReader
   private CharsetDecoder edMapDecoder;
   
   /** Pair frequency data */
-  private PairFreqData pairFreqs;
+  private FreqData pairFreqs;
+  
+  /** Word frequency data */
+  private FreqData wordFreqs;
   
   /** Frequencies from the term data, sampled at 5 levels */
   private int[] freqSamples;
@@ -80,8 +84,14 @@ public class SpellReader
 
   /** Pattern used for splitting up lines delimited by bars */
   private final Pattern splitPat = Pattern.compile("\\||\n");
+
+  /** Set of stop-words to use during spell correction, or null for none */
+  private Set stopSet;
+
+  /** Word equivalency checker */
+  private WordEquiv wordEquiv;
   
-  /** Protected constructor -- use {@link #open(File)} instead. */
+  /** Protected constructor -- use {@link #open} instead. */
   protected SpellReader() { }
   
   /** Check if there's a valid dictionary in the given directory */
@@ -93,14 +103,26 @@ public class SpellReader
     return file.canRead();
   }
 
-  /** Open a reader for the given spelling index directory. */
-  public static SpellReader open(File spellIndexDir) 
+  /** 
+   * Open a reader for the given spelling index directory. Also associates
+   * the given stop-word set and word equivalency.
+   * 
+   * @param spellIndexDir   directory containing the spelling dictionary
+   * @param stopSet         set of stop-words to use, or null for none
+   * @param wordEquiv       word equivalency checker, or null for default
+   */
+  public static SpellReader open(File spellIndexDir, 
+                                 Set stopSet, 
+                                 WordEquiv wordEquiv) 
     throws IOException 
   {
     SpellReader reader = new SpellReader();
     reader.spellDir = spellIndexDir;
+    reader.stopSet = stopSet;
+    reader.wordEquiv = (wordEquiv == null) ? WordEquiv.DEFAULT : wordEquiv;
     reader.openEdmap();
     reader.loadFreqSamples();
+    reader.loadWordFreqs();
     return reader;
   }
 
@@ -340,34 +362,8 @@ public class SpellReader
   /** Check if the given word is in the spelling dictionary */
   public boolean inDictionary (String word) throws IOException 
   {
-    return findWordFreq(word.toLowerCase()) > 0;
+    return wordFreqs.get(word.toLowerCase()) > 0;
   }
-  
-  /** 
-   * Determine the frequency of a given word. Fairly inefficient, so should
-   * only be called once in a while.
-   */
-  private int findWordFreq(String word) throws IOException 
-  {
-    // We can tell if a word is in the dictionary by looking up the simplest
-    // edit map key for the word.
-    //
-    WordQueue queue = new WordQueue(1000);
-    Word orig = new Word(word);
-    LongSet checked = new LongSet(100);
-    readEdKey(orig, comboKey(word, 0,1,2,3), 0, checked, queue);
-    
-    // Once we have the key words, see if this word is in the list.
-    while (queue.size() > 0) {
-      Word test = (Word) queue.pop();
-      if (word.equals(test.word))
-        return test.freq;
-    }
-    
-    // Couldn't find it... we don't think it's in the dictionary.
-    return 0;
-  }
-  
   
   /**
    * Suggest similar words to a given original word, but not including the
@@ -404,16 +400,22 @@ public class SpellReader
     
     // Pop everything out of the queue and convert to an array
     Word[] array = new Word[Math.min(numSugg, queue.size())];
+    if (debugWriter != null)
+      debugWriter.println("    Consider: ");
     for (int i=queue.size()-1; i>=0; i--) {
         Word sugg = (Word) queue.pop();
+        if (debugWriter != null) {
+          debugWriter.print("      ");
+          sugg.debug(debugWriter);
+        }
         if (i < array.length)
             array[i] = sugg;
     }
     
     if (debugWriter != null) {
-      debugWriter.println("  Final suggestion(s):");
+      debugWriter.println("    Final suggestion(s):");
       for (int i=0; i<array.length; i++) {
-        debugWriter.print("    ");
+        debugWriter.print("      ");
         array[i].debug(debugWriter);
       }
     }
@@ -430,48 +432,71 @@ public class SpellReader
    * @return                One suggestion per term. If unchanged, there
    *                        was no better suggestion. If null, it is
    *                        suggested that the term be deleted.
+   *                        If the array returned is null, there were
+   *                        no suggestions at all.
    */
   public synchronized String[] suggestKeywords(String[] terms) 
     throws IOException
   {
     // No terms? Then we can't suggest anything.
     if (terms.length == 0)
-        return terms;
-    
-    // Start with a null change.
-    Phrase bestPhrase = new Phrase();
-    bestPhrase.descrip = "no change";
-    bestPhrase.words = new Word[terms.length];
+        return null;
+
+    // Load pair frequency data if we haven't already.
+    openPairFreqs();
+
+    // Start with a null change, but reduce it's score so we hopefully end
+    // up suggesting something.
+    //
+    Phrase in = new Phrase();
+    in.words = new Word[terms.length];
+    in.baseScore = -0.2f;
     for (int i=0; i<terms.length; i++)
-      bestPhrase.words[i] = new Word(terms[i].toLowerCase());
-    bestPhrase.calcScore();
+      in.words[i] = new Word(null, terms[i].toLowerCase(), wordFreqs.get(terms[i].toLowerCase()));
+    in.calcScore();
+    
+    if (debugWriter != null) {
+      debugWriter.append("Original: ");
+      in.calcScore(debugWriter);
+    }
     
     // If there's just one word, our work is simple: just find the best 
     // replacement for that word.
     //
-    if (terms.length == 1)
-      bestPhrase = subWord(bestPhrase, 0);
+    Phrase bestPhrase = in;
+    if (terms.length == 1) {
+      bestPhrase = max(bestPhrase, subWord(in, 0));
+      bestPhrase = max(bestPhrase, subSplit(in, 0));
+    }
     else
-    {
-      // Consider two-word changes at each position.
-      for (int i = 0; i < terms.length-1; i++)
-          bestPhrase = subPair(bestPhrase, i);
+      bestPhrase = subPairs(in);
+    
+    if (debugWriter != null) {
+      debugWriter.append("  Final : ");
+      bestPhrase.calcScore(debugWriter);
     }
     
-    // Convert to a string array, and recover the original case mapping. If
-    // our suggestion only varies by case however, stick with the original.
+    // Convert to a string array, and recover the original case mapping. Also,
+    // if any requivalent replacements were made, just use the original word.
     //
     String[] out = bestPhrase.toStringArray();
+    boolean anyChange = false;
     for (int i=0; i<out.length; i++) {
-      if (out[i] != null) {
-        if (out[i].equalsIgnoreCase(terms[i]))
-          out[i] = terms[i];
-        else
-          out[i] = StringUtil.copyCase(terms[i], out[i]);
+      if (out[i] == null) {
+        anyChange = true;
+        continue;
+      }
+      if (wordEquiv.isEquivalent(terms[i], out[i]))
+        out[i] = terms[i];
+      else {
+        anyChange = true;
+        out[i] = StringUtil.copyCase(terms[i], out[i]);
       }
     }
-    
-    // All done.
+
+    // If no changes were made, signal that to the caller.
+    if (!anyChange)
+      return null;
     return out;
   } // suggestKeywords()
   
@@ -485,7 +510,7 @@ public class SpellReader
   private Phrase subWord(Phrase in, int pos) throws IOException
   {
     // Get a suggestion for replacing the word.
-    int origFreq = findWordFreq(in.words[pos].word);
+    int origFreq = wordFreqs.get(in.words[pos].word);
     Word[] suggs = suggestSimilar(in.words[pos], 1, origFreq+1);
     if (suggs.length == 0)
       return in;
@@ -497,40 +522,129 @@ public class SpellReader
     if (sugg == in.words[pos])
       return in;
     
+    // If the word is "equivalent" (e.g. just a change of plurality) then
+    // just return the original.
+    //
+    if (wordEquiv.isEquivalent(sugg.word, in.words[pos].word))
+      return in;
+    
     // Make a new phrase.
     Phrase out = (Phrase) in.clone();
-    out.descrip = "replace '" + out.words[pos] + "' with '" + sugg + "'";
     out.words[0] = sugg;
     out.calcScore();
-    return out;
+    return max(in, out);
+  }
+  
+  /**
+   * Return the better of two phrases (an original phase vs. a test phrase).
+   * If a debug stream has been specified, output debug info too.
+   */
+  private Phrase max(Phrase orig, Phrase test) throws IOException
+  {
+    // Output debugging info
+    if (debugWriter != null && test.score != orig.score) {
+      debugWriter.append((test.score > orig.score) ? "    Better: " : "    Worse : ");
+      test.calcScore(debugWriter);
+    }
+    
+    // Now pick the best one and return it.
+    if (test.score > orig.score)
+      return test;
+    else
+      return orig;
+  }
+
+  /**
+   * Consider pair-wise changes at each position.
+   */
+  private Phrase subPairs(Phrase in)
+    throws IOException
+  {
+    Phrase bestPhrase = in;
+    
+    // Consider two-word changes at each position, but skip stop-words.
+    for (int pass = 1; pass <= 2; pass++) 
+    {
+      if (debugWriter != null) {
+        debugWriter.println("  ---- Pass " + pass + " ----");
+        debugWriter.print("  Starting with: ");
+        in.calcScore(debugWriter);
+      }
+      
+      int prev = -1;
+      for (int i = 0; i < in.words.length; i++) {
+        Word w = in.words[i];
+        
+        // Skip words removed by joining
+        if (w == null)
+          continue;
+        
+        // Skip stop words
+        if (stopSet != null && stopSet.contains(w.word.toLowerCase()))
+          continue;
+        
+        // Skip words that are the product of splitting.
+        if (w.word.indexOf(' ') >= 0)
+          continue;
+        
+        // Consider operations on a single word (as long as we haven't changed
+        // this word already)
+        //
+        if (in.words[i].orig == in.words[i])
+          bestPhrase = max(bestPhrase, subSplit(in, i));
+        
+        // Consider operations on multiple words (as long as we haven't changed
+        // either of them already.)
+        //
+        if (prev >= 0) {
+          if (in.words[i].orig == in.words[i] &&
+              in.words[prev].orig == in.words[prev])
+          {
+            bestPhrase = max(bestPhrase, subPair(in, prev, i));
+            bestPhrase = max(bestPhrase, subJoin(in, prev, i));
+          }
+        }
+        prev = i;
+      }
+      
+      if (in == bestPhrase)
+        break;
+      
+      in = bestPhrase;
+    }
+    
+    return bestPhrase;
   }
 
   /**
    * Consider a set of changes to the pair of words at the given position.
    * 
    * @param in  the current best we've found
-   * @param pos           position to consider
+   * @param pos1          first position to consider
+   * @param pos2          second position to consider
    * @return              new best
    */
-  private Phrase subPair(Phrase in, int pos) 
+  private Phrase subPair(Phrase in, int pos1, int pos2) 
     throws IOException
   {
-    Word word1 = in.words[pos];
-    Word word2 = in.words[pos+1];
+    Word word1 = in.words[pos1];
+    Word word2 = in.words[pos2];
+    
+    if (debugWriter != null) {
+      debugWriter.println("  subPair(" + pos1 + ", " + pos2 + "): " + 
+          in.words[pos1].word + " " + in.words[pos2].word);
+    }
     
     // Get a list of independent suggestions for both words.
     final int NUM_SUG = 100;
     Word[] list1 = suggestSimilar(word1, NUM_SUG, 0);
     Word[] list2 = suggestSimilar(word2, NUM_SUG, 0);
     
-    /*
-    System.out.println("List 1:");
-    for (int p1 = 0; p1 < list1.length; p1++)
-        System.out.println("  " + list1[p1] + " " + list1[p1].metaphone);
-    System.out.println("List 2:");
-    for (int p2 = 0; p2 < list2.length; p2++)
-        System.out.println("  " + list2[p2] + " " + list2[p2].metaphone);
-    */
+    // If either list is empty, substitute the original.
+    if (list1.length == 0)
+      list1 = new Word[] { in.words[pos1] };
+    if (list2.length == 0)
+      list2 = new Word[] { in.words[pos2] };
     
     // Now score all possible combinations, looking for the best one.
     float bestScore = 0.0f;
@@ -538,15 +652,27 @@ public class SpellReader
     Word bestSugg2 = null;
     for (int p1 = 0; p1 < list1.length; p1++) {
         Word sugg1 = list1[p1];
+        boolean change1 = !wordEquiv.isEquivalent(in.words[pos1].word, sugg1.word);
+        
         for (int p2 = 0; p2 < list2.length; p2++) {
             Word sugg2 = list2[p2];
+            boolean change2 = !wordEquiv.isEquivalent(in.words[pos2].word, sugg2.word);
+            
+            // Change at least one word
+            if (!change1 && !change2)
+              continue;
+            
             float pairScore = scorePair(sugg1, sugg2);
+            float totalScore = pairScore + sugg1.score + sugg2.score;
             
-            //System.out.println("replace '" + word1 + " " + word2 + "' with '" +
-            //    sugg1 + " " + sugg2 + "': " + score);
+            if (debugWriter != null) {
+              debugWriter.format("    Pair-replace \"%s %s\" with \"%s %s\": %.2f (%.2f + %.2f + %.2f)\n",
+                  word1, word2, sugg1, sugg2, 
+                  totalScore, pairScore, sugg1.score, sugg2.score);
+            }
             
-            if (pairScore > bestScore) {
-                bestScore = pairScore;
+            if (totalScore > bestScore) {
+                bestScore = totalScore;
                 bestSugg1 = sugg1;
                 bestSugg2 = sugg2;
             }
@@ -559,39 +685,97 @@ public class SpellReader
     
     // If we found something better than doing nothing, record it.
     Phrase bestPhrase = (Phrase) in.clone();
-    if (bestSugg2.equals(word2))
-        bestPhrase.descrip = "replace '" + word1 + "' with '" + bestSugg1 + "'";
-    else if (bestSugg1.equals(word1))
-        bestPhrase.descrip = "replace '" + word2 + "' with '" + bestSugg2 + "'";
-    else {
-        bestPhrase.descrip = "replace '" + word1 + " " + word2 + "' with '" +
-            bestSugg1 + " " + bestSugg2 + "'";
-    }
-    bestPhrase.words[pos] = bestSugg1;
-    bestPhrase.words[pos+1] = bestSugg2;
+    bestPhrase.words[pos1] = bestSugg1;
+    bestPhrase.words[pos2] = bestSugg2;
     bestPhrase.calcScore();
-    
-    if (bestPhrase.score > in.score)
-      return bestPhrase;
-    else
-      return in;
+    return bestPhrase;
   }
+  
+  /**
+   * Consider splitting a word
+   */
+  private Phrase subSplit(Phrase in, int pos) 
+    throws IOException
+  {
+    Phrase bestPhrase = in;
+    
+    // Only consider splits where both pieces are >= 2 chars in length.
+    String origStr = in.words[pos].word;
+    for (int i = 2; i < origStr.length()-1; i++) 
+    {
+      // Extract the pieces
+      String leftStr  = origStr.substring(0, i);
+      String rightStr = origStr.substring(i);
+      
+      // Make sure both parts are real words
+      int leftFreq  = wordFreqs.get(leftStr);
+      int rightFreq = wordFreqs.get(rightStr);
+      if (leftFreq <= 0 || rightFreq <= 0)
+        continue;
+      
+      // Get the frequency. It must be greater than the original.
+      int pairFreq = pairFreqs.get(leftStr, rightStr);
+      if (debugWriter != null) {
+        debugWriter.format("  split-replace: '%s' with '%s' '%s': freq %d\n",
+          origStr, leftStr, rightStr, pairFreq);
+      }
+      
+      // Okay, this is a candidate. Score it for real
+      Phrase testPhrase = (Phrase) in.clone();
+      testPhrase.words[pos] = new Word(in.words[pos], leftStr + " " + rightStr, pairFreq+1);
+      testPhrase.calcScore();
+      bestPhrase = max(bestPhrase, testPhrase);
+    }
+    
+    return bestPhrase;
+  }
+    
 
+  /**
+   * Consider joining the first two words together
+   */
+  private Phrase subJoin(Phrase in, int pos1, int pos2) 
+    throws IOException
+  {
+    Word   origWord   = new Word(in.words[pos1].word + " " + in.words[pos2].word);
+    int    origFreq   = pairFreqs.get(in.words[pos1].word, in.words[pos2].word);
+    String joinedStr  = in.words[pos1].word + in.words[pos2].word;
+    int    joinedFreq = wordFreqs.get(joinedStr);
+    
+    if (joinedFreq == 0)
+      return in;
+    
+    if (debugWriter != null) {
+      debugWriter.format("  join-replace: \"%s %s\" with \"%s\": freq %d\n",
+        in.words[pos1].word, in.words[pos2].word,
+        joinedStr, joinedFreq);
+    }
+    
+    if (joinedFreq <= origFreq)
+      return in;
+      
+    Phrase testPhrase = (Phrase) in.clone();
+    testPhrase.words[pos1] = new Word(origWord, joinedStr, joinedFreq);
+    testPhrase.words[pos1].score = in.words[pos1].score + in.words[pos2].score +
+      scorePair(in.words[pos1], in.words[pos2]);
+    testPhrase.words[pos2] = null;
+    testPhrase.calcScore();
+    return testPhrase;
+  }
+    
   /**
    * Calculate a score for a suggested replacement for a given word.
    */
   private float scorePair(Word sugg1, Word sugg2)
     throws IOException
   {
-    openPairFreqs();
-
     int origPairFreq = pairFreqs.get(sugg1.orig.word, sugg2.orig.word);
     int suggPairFreq = pairFreqs.get(sugg1.word, sugg2.word);
     if (suggPairFreq <= origPairFreq)
       return 0.0f;
     
     double freqFactor = (suggPairFreq + 1.0) / (origPairFreq + 1.0);
-    float freqBoost = (float) (Math.log(freqFactor) / Math.log(100.0));
+    float freqBoost = (float) (Math.log(freqFactor) / Math.log(100.0)) / 2.0f;
     return freqBoost;
   }
   
@@ -645,9 +829,40 @@ public class SpellReader
     freqSamples = res;
   }
 
+  /** Get the term frequency sample array for our dictionary. */
+  private void loadWordFreqs()
+      throws IOException 
+  {
+    // Find the word frequency file and open it
+    File freqFile = new File(spellDir, "words.dat");
+    if (!freqFile.canRead())
+      throw new IOException("Cannot open word frequency file '" + freqFile + "'");
+    
+    // Read in each word and its frequency.
+    wordFreqs = new FreqData();
+    BufferedReader reader = new BufferedReader(new FileReader(freqFile));
+    try {
+      while (true) {
+        String line = reader.readLine();
+        if (line == null)
+          break;
+        String[] toks = splitPat.split(line);
+        String word = toks[0];
+        int freq = Integer.parseInt(toks[1]);
+        wordFreqs.add(word, freq);
+      }
+    }
+    catch (NumberFormatException e) {
+      throw new IOException("term frequencies file corrupt");
+    }
+    finally {
+      reader.close();
+    }
+  }
+
   private void openPairFreqs() throws IOException {
     if (pairFreqs == null) {
-        pairFreqs = new PairFreqData();
+        pairFreqs = new FreqData();
         pairFreqs.add(new File(spellDir, "pairs.dat"));
     }
   }
@@ -657,7 +872,10 @@ public class SpellReader
   }
   
   private String calcMetaphone(String word) {
-    return SpellWriter.calcMetaphone(word);
+    String mph = SpellWriter.calcMetaphone(word);
+    if (mph == null)
+      return "";
+    return mph;
   }
   
   /**
@@ -690,6 +908,13 @@ public class SpellReader
       metaphone = calcMetaphone(word);
       wordDist = mphDist = null; // lazily created if necessary
       
+      // If equivalent to the original word, inherit the score.
+      if (orig != this && wordEquiv.isEquivalent(word, orig.word)) {
+        freqBoost = orig.freqBoost;
+        score = orig.score;
+        return;
+      }
+      
       // Calculate the edit distance and turn it into the base score
       float dist = orig.wordDist(word) / 2.0f;
       score = 1.0f - (dist/orig.length());
@@ -699,7 +924,8 @@ public class SpellReader
         score += 0.1f;
       
       // If the first and last letters match, nudge the score.
-      if (word.charAt(0) == orig.word.charAt(0) &&
+      if (word.length() > 0 && orig.word.length() > 0 &&
+          word.charAt(0) == orig.word.charAt(0) &&
           word.charAt(word.length()-1) == orig.word.charAt(orig.word.length()-1))
         score += 0.1f;
       
@@ -731,7 +957,14 @@ public class SpellReader
     {
       align(w, "word=" + word + "[" + orig.wordDist(word) + "]", 22);
       align(w, "mph=" + metaphone + "[" + orig.mphDist(metaphone) + "]", 13);
-      align(w, "freq=" + freq, 8);
+      align(w, "freq=" + freq, 12);
+      
+      // If equivalent to the original word, inherit the score.
+      if (orig != this && wordEquiv.isEquivalent(word, orig.word)) {
+        align(w, "copyScore=" + orig.score, 20);
+        w.println();
+        return;
+      }
       
       // Calculate the edit distance and turn it into the base score
       float dist = orig.wordDist(word) / 2.0f;
@@ -771,8 +1004,8 @@ public class SpellReader
      */
     private float calcFreqBoost(int[] termFreqs, int freq)
     {
-      if (freq <= 1)
-        return 0.0f;
+      if (freq == 0)
+        return -0.2f;
         
       // If this word is more frequent than normal, give it a nudge up.
       int i = 0;
@@ -826,13 +1059,14 @@ public class SpellReader
   private class Phrase implements Cloneable
   {
     Word[] words;
-    String descrip;
+    float  baseScore = 0.0f;
     float  score;
 
     public Object clone() { 
       try {
         Phrase out = (Phrase) super.clone();
         out.words = new Word[words.length];
+        out.baseScore = 0.0f;
         System.arraycopy(words, 0, out.words, 0, words.length);
         return out;
       }
@@ -842,21 +1076,54 @@ public class SpellReader
     }
     
     public void calcScore() throws IOException {
+      calcScore(null);
+    }
+    
+    public void calcScore(PrintWriter debugWriter) throws IOException {
       float wordScore = 0.0f;
       float pairScore = 0.0f;
-      for (int i=0; i<words.length; i++) {
+      int prev = -1;
+      for (int i=0; i<words.length; i++) 
+      {
+        // Skip words that have been removed by joining
+        if (words[i] == null)
+          continue;
+        
+        // Skip stop words
+        if (stopSet != null && stopSet.contains(words[i].word.toLowerCase())) {
+          if (debugWriter != null)
+            debugWriter.append(words[i].word + " ");
+          continue;
+        }
+        
+        // Okay, score it.
         wordScore += words[i].score;
-        if (i < words.length-1)
-          pairScore += scorePair(words[i], words[i+1]);
+        
+        // Do pair scoring, except for words created by splitting
+        if (prev >= 0 && words[i].word.indexOf(' ') < 0) {
+          pairScore += scorePair(words[prev], words[i]);
+          if (debugWriter != null)
+            debugWriter.format("+%.2f ", scorePair(words[prev], words[i]));
+        }
+        prev = i;
+        
+        // Print the word after the pair score (if any)
+        if (debugWriter != null)
+          debugWriter.format("%s[%.2f] ", words[i].word, words[i].score);
       }
-      score = wordScore + pairScore;
+      score = baseScore + wordScore + pairScore;
+      if (debugWriter != null) {
+        if (baseScore != 0.0f)
+          debugWriter.format("... base: %.2f ", baseScore);
+        debugWriter.format("... Total: %.2f\n", score);
+      }
     }
     
     public String[] toStringArray()
     {
       String[] out = new String[words.length];
       for (int i=0; i<words.length; i++)
-        out[i] = words[i].word;
+        out[i] = (words[i] == null) ? null : words[i].word;
       return out;
     }
   }

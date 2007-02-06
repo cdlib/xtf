@@ -752,7 +752,7 @@ public class SpellWriter
       return;
       
     // Read in existing pair data (if any)
-    PairFreqData pairData = new PairFreqData();
+    FreqData pairData = new FreqData();
     if (pairFreqFile.canRead())
       pairData.add(pairFreqFile);
     

@@ -156,14 +156,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         String indexPath = req.indexPath;
         
-        XtfSearcher xtfSearcher = null;
-        synchronized( searchers ) {
-            xtfSearcher = (XtfSearcher) searchers.get( indexPath );
-            if( xtfSearcher == null ) {
-                xtfSearcher = new XtfSearcher( indexPath, 30 ); // 30-sec update chk
-                searchers.put( indexPath, xtfSearcher );
-            }
-        }
+        XtfSearcher xtfSearcher = getXtfSearcher( indexPath );
         
         // Get a reader, searcher, and document number map that will all be
         // consistent with each other and up-to-date.
@@ -390,6 +383,25 @@ public class DefaultQueryProcessor extends QueryProcessor
         // All done.
         return result;
     } // processReq()
+
+    /**
+     * Get the XtfSearcher, which holds a reference to the Lucene index reader,
+     * cached chunk info, etc.
+     */
+    public static XtfSearcher getXtfSearcher( String indexPath) 
+      throws IOException
+    {
+        XtfSearcher xtfSearcher = null;
+        synchronized( searchers ) {
+            xtfSearcher = (XtfSearcher) searchers.get( indexPath );
+            if( xtfSearcher == null ) {
+                xtfSearcher = new XtfSearcher( indexPath, 30 ); // 30-sec update chk
+                searchers.put( indexPath, xtfSearcher );
+            }
+        }
+        return xtfSearcher;
+    }
+    
     
     /**
      * Checks spelling of query terms, if spelling suggestion is enabled and
@@ -426,13 +438,6 @@ public class DefaultQueryProcessor extends QueryProcessor
         //if( params.totalDocsCutoff > 0 && totalDocs > params.totalDocsCutoff )
         //    return;
 
-        // When comparing changes, we'll perform standard term filtering (such
-        // as converting to lowercase). This helps avoid suggesting a change
-        // that couldn't possibly improve results because the terms are
-        // actually identical in the index.
-        //
-        StdTermFilter stdFilter = new StdTermFilter();
-        
         // Gather the query terms, grouped by field set.
         LinkedHashMap fieldsMap = gatherKeywords( req.query, params.fields );
         
@@ -449,6 +454,10 @@ public class DefaultQueryProcessor extends QueryProcessor
             
             // Get some suggestions
             String[] suggested = spellReader.suggestKeywords( terms );
+            
+            // If no suggestions, skip these fields.
+            if( suggested == null )
+                continue;
             assert suggested.length == terms.length;
             
             // Record each suggestion.
@@ -458,10 +467,6 @@ public class DefaultQueryProcessor extends QueryProcessor
                 // first one.
                 //
                 if( out.containsKey(terms[i]) )
-                    continue;
-                
-                // Skip suggestions that don't change anything.
-                if( stdFilter.filter(suggested[i]).equals(stdFilter.filter(terms[i])) )
                     continue;
                 
                 // Okay, record it.

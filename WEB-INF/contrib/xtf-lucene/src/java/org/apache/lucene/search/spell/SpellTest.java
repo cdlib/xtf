@@ -168,7 +168,7 @@ public class SpellTest
     long startTime = System.currentTimeMillis();
     
     // Open the spelling index.
-    SpellReader spellReader = SpellReader.open( new File("spell") );
+    SpellReader spellReader = SpellReader.open( new File("spell"), null, null );
     
     // Open the debug stream.
     PrintWriter debugWriter = new PrintWriter(new FileWriter("spellDebug.log"));
