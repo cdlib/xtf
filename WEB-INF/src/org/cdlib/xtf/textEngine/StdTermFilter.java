@@ -35,6 +35,8 @@ import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardFilter;
+import org.cdlib.xtf.util.FastStringReader;
+import org.cdlib.xtf.util.FastTokenizer;
 
 /*
  * This file created on Jan 17, 2007 by Martin Haye
@@ -46,7 +48,7 @@ import org.apache.lucene.analysis.standard.StandardFilter;
  * 
  * @author Martin Haye
  */
-public class StdTermFilter extends XtfQueryRewriter 
+public class StdTermFilter 
 {
   private DribbleStream dribble;
   private TokenStream filter;
@@ -68,7 +70,7 @@ public class StdTermFilter extends XtfQueryRewriter
       Token mapped = filter.next();
       if (mapped.termText().equals(term))
         return term;
-      return mapped.termText();
+        return mapped.termText();
     }
     catch (IOException e) {
       throw new RuntimeException("Very unexpected IO exception: " + e);
@@ -83,7 +85,12 @@ public class StdTermFilter extends XtfQueryRewriter
     @Override
     public Token next() throws IOException
     {
-      return new Token(nextToken, 0, 0);
+      FastTokenizer toks = new FastTokenizer(new FastStringReader(nextToken));
+      Token t = toks.next();
+      if (t == null)
+        return new Token(nextToken, 0, 0);
+      else
+        return t;
     }
   }
   
