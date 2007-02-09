@@ -6,7 +6,7 @@
     <subject>Fribble Color Wheel Smarmy</subject>
     <type>text</type>
     <identifier xtf:store="false">http://ark.cdlib.org/ark:/13030/7z35ss92</identifier>
-    <relation>http://www.orangecrush.com/</relation>
+    <relation xtf:tokenize="no">http://www.orangecrush.com/</relation>
     <rights xtf:index="no">Public</rights>
     <foo>bar</foo>
     <family xtf:meta="yes" xtf:store="no">O'Connell family</family>

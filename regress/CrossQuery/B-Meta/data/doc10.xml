@@ -5,7 +5,7 @@
     <creator>My Happy Hamster</creator>
     <subject>Latin American, American Art, Mexican American Art</subject>
     <identifier xtf:store="false">http://ark.cdlib.org/ark:/13030/18283</identifier>
-    <relation>http://www.orangecrush.com/</relation>
+    <relation xtf:tokenize="no">http://www.orangecrush.com/</relation>
     <rights xtf:index="no">Public</rights>
     <foo>bar</foo>
     <era xtf:meta="yes">Snoot 1920'fribble</era>

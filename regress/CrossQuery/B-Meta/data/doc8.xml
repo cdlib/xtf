@@ -8,7 +8,7 @@
     <subject>;1 oz., pure gld.</subject>
     <type>text</type>
     <identifier xtf:store="false">http://ark.cdlib.org/ark:/13030/7z35ss91</identifier>
-    <relation>http://www.orangecrush.com/</relation>
+    <relation xtf:tokenize="false">http://www.orangecrush.com/</relation>
     <rights xtf:index="no">Public</rights>
     <foo>bar</foo>
 </document>
