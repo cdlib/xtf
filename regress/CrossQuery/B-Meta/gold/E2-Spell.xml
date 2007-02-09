@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
    <spelling>
-      <term field="text" term="embodise">
-         <suggestion rank="1" term="embodies"/>
-      </term>
+        <suggestion originalTerm="embodise" fields="text" suggestedTerm="embodies"/>
    </spelling>
 </crossQueryResult>
