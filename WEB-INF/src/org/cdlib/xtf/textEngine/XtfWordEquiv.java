@@ -71,15 +71,19 @@ public class XtfWordEquiv implements WordEquiv
   
       // Next, ignore accents.
       String tmp;
-      tmp = accentMap.mapWord(out);
-      if (tmp != null)
-        out = tmp;
+      if (accentMap != null) {
+        tmp = accentMap.mapWord(out);
+        if (tmp != null)
+          out = tmp;
+      }
       
       // Then ignore plurals.
       tmp = pluralMap.lookup(out);
-      if (tmp != null)
-        out = tmp;
-      recent.put(in, out);
+      if (pluralMap != null) {
+        if (tmp != null)
+          out = tmp;
+        recent.put(in, out);
+      }
     }
     return out;
   }
