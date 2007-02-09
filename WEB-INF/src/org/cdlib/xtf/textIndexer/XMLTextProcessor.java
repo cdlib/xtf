@@ -40,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -64,6 +65,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
@@ -72,7 +74,6 @@ import org.apache.lucene.search.spell.SpellWriter;
 import org.apache.lucene.store.FSDirectory;
 
 import org.apache.lucene.analysis.*;
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.bigram.BigramStopFilter;
 
 import org.xml.sax.Attributes;
@@ -385,6 +386,9 @@ public class XMLTextProcessor extends DefaultHandler
   /** Queues words for spelling dictionary creator */
   private SpellWriter spellWriter;
   
+  /** Keeps track of fields we already know are tokenized */
+  private HashSet tokenizedFields;
+  
   /** Maximum number of document deletions to do in a single batch */
   private static final int MAX_DELETION_BATCH = 50;
   
@@ -599,6 +603,17 @@ public class XMLTextProcessor extends DefaultHandler
               
               accentMap = new CharMap( stream );
           }
+          
+          // Read in the list of tokenized fields (if any)
+          tokenizedFields = new HashSet();
+          TermEnum tokTerms = indexReader.terms(new Term("tokenizedFields", ""));
+          while (tokTerms.next()) {
+            Term t = tokTerms.term();
+            if (!t.field().equals("tokenizedFields"))
+              break;
+            tokenizedFields.add(t.text());
+          }
+          tokTerms.close();
       } // try
       
       catch( IOException e ) {
@@ -3612,6 +3627,21 @@ public class XMLTextProcessor extends DefaultHandler
                                         metaField.tokenize );
             docField.setBoost( metaField.wordBoost );
             doc.add( docField );
+            
+            // Record which fields are tokenized, the first time we notice
+            // the fact. It doesn't matter which document we do this on, as
+            // the reader code simply iterates the terms.
+            //
+            if (metaField.tokenize && !metaField.isFacet) {
+              if (!tokenizedFields.contains(metaField.name)) {
+                doc.add(new Field("tokenizedFields",
+                                  metaField.name,
+                                  false,   // not stored
+                                  true,    // indexed
+                                  false)); // not tokenized itself 
+                tokenizedFields.add(metaField.name);
+              }
+            }
             
         } // while(  metaIter.hasNext() )
    

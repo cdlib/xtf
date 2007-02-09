@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
@@ -41,6 +42,7 @@ import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
@@ -96,6 +98,12 @@ public class XtfSearcher
     
     /** Map of accented chars to remove diacritics from */
     private CharMap       accentMap;
+    
+    /** Set of all indexed fields in the index */
+    private Set           indexedFields;
+    
+    /** Set of all fields which are tokenized in the index */
+    private Set           tokenizedFields;
     
     /** Whether this index is "sparse" (i.e. more than 5 chunks per doc) */
     private boolean       isSparse;
@@ -203,16 +211,49 @@ public class XtfSearcher
         int nChunks = indexReader.maxDoc();
         isSparse = nChunks > (nDocs*5);
         
+        // Determine the list of all fields.
+        indexedFields = new LinkedHashSet(indexReader.getFieldNames(true));
+        
+        // Determine which fields are tokenized.
+        tokenizedFields = new LinkedHashSet();
+        TermEnum tokTerms = indexReader.terms();
+        if (tokTerms.skipTo(new Term("tokenizedFields", "")))
+        {
+          do {
+            Term t = tokTerms.term();
+            if (!t.field().equals("tokenizedFields"))
+              break;
+            tokenizedFields.add(t.text());
+          } while (tokTerms.next());
+        }
+        
+        // Of course, the "text" field is always tokenized.
+        tokenizedFields.add("text");
+        
         // Remember the version that we've checked.
         curVersion = ver;
     } // update()
     
-    
+
+    /**
+     * Get the list of all tokenized fields.
+     */
+    public Set tokenizedFields() {
+      return tokenizedFields;
+    }
+
     /**
      * Gets the reader this searcher is using to read indexes.
      */
     public IndexReader indexReader() {
         return indexReader;
+    }
+    
+    /**
+     * Gets the set of all fields that have been indexed.
+     */
+    public Set indexedFields() {
+      return indexedFields;
     }
     
     
