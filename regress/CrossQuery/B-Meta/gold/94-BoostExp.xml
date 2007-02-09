@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="5" startDoc="1" endDoc="5">
-   <docHit rank="1" file="doc5.xml" score="15.929" totalHits="0">
-      <explanation value="15.928774" description="boosted, product of:">
+   <docHit rank="1" file="doc5.xml" score="16.117" totalHits="0">
+      <explanation value="16.117224" description="boosted, product of:">
          <explanation value="9.0" description="exponentBoosted">
             <explanation value="3.0" description="boostSetFactor">
             </explanation>
             <explanation value="2.0" description="boostSetExponent">
             </explanation>
          </explanation>
-         <explanation value="1.7698637" description="tf(spanFreq=3.1324177)">
-            <explanation value="3.1324177" description="weight(spans(rights:public)@217:0), product of:">
-               <explanation value="5.0118685" description="idf(docFreq=3)">
+         <explanation value="1.7908026" description="tf(spanFreq=3.206974)">
+            <explanation value="3.206974" description="weight(spans(rights:public)@245:0), product of:">
+               <explanation value="5.1311584" description="idf(docFreq=3)">
                </explanation>
-               <explanation value="0.625" description="fieldNorm(field=rights, doc=217)">
+               <explanation value="0.625" description="fieldNorm(field=rights, doc=245)">
                </explanation>
             </explanation>
          </explanation>
@@ -31,19 +31,19 @@
          <rights>Public</rights>
       </meta>
    </docHit>
-   <docHit rank="2" file="doc4.xml" score="11.375" totalHits="0">
-      <explanation value="11.37469" description="boosted, product of:">
+   <docHit rank="2" file="doc4.xml" score="11.502" totalHits="0">
+      <explanation value="11.501995" description="boosted, product of:">
          <explanation value="6.25" description="exponentBoosted">
             <explanation value="2.5" description="boostSetFactor">
             </explanation>
             <explanation value="2.0" description="boostSetExponent">
             </explanation>
          </explanation>
-         <explanation value="1.8199503" description="tf(spanFreq=3.3122191)">
-            <explanation value="3.3122191" description="weight(spans(rights:uconly)@176:0), product of:">
-               <explanation value="5.2995505" description="idf(docFreq=2)">
+         <explanation value="1.8403193" description="tf(spanFreq=3.3867753)">
+            <explanation value="3.3867753" description="weight(spans(rights:uconly)@204:0), product of:">
+               <explanation value="5.4188404" description="idf(docFreq=2)">
                </explanation>
-               <explanation value="0.625" description="fieldNorm(field=rights, doc=176)">
+               <explanation value="0.625" description="fieldNorm(field=rights, doc=204)">
                </explanation>
             </explanation>
          </explanation>
@@ -66,19 +66,19 @@
          <rights>UCOnly</rights>
       </meta>
    </docHit>
-   <docHit rank="3" file="doc3.xml" score="7.079" totalHits="0">
-      <explanation value="7.079455" description="boosted, product of:">
+   <docHit rank="3" file="doc3.xml" score="7.163" totalHits="0">
+      <explanation value="7.1632104" description="boosted, product of:">
          <explanation value="4.0" description="exponentBoosted">
             <explanation value="2.0" description="boostSetFactor">
             </explanation>
             <explanation value="2.0" description="boostSetExponent">
             </explanation>
          </explanation>
-         <explanation value="1.7698637" description="tf(spanFreq=3.1324177)">
-            <explanation value="3.1324177" description="weight(spans(rights:public)@133:0), product of:">
-               <explanation value="5.0118685" description="idf(docFreq=3)">
+         <explanation value="1.7908026" description="tf(spanFreq=3.206974)">
+            <explanation value="3.206974" description="weight(spans(rights:public)@161:0), product of:">
+               <explanation value="5.1311584" description="idf(docFreq=3)">
                </explanation>
-               <explanation value="0.625" description="fieldNorm(field=rights, doc=133)">
+               <explanation value="0.625" description="fieldNorm(field=rights, doc=161)">
                </explanation>
             </explanation>
          </explanation>
@@ -98,19 +98,19 @@
          <rights>Public</rights>
       </meta>
    </docHit>
-   <docHit rank="4" file="doc2.xml" score="1.82" totalHits="0">
-      <explanation value="1.8199503" description="boosted, product of:">
+   <docHit rank="4" file="doc2.xml" score="1.84" totalHits="0">
+      <explanation value="1.8403193" description="boosted, product of:">
          <explanation value="1.0" description="exponentBoosted">
             <explanation value="1.0" description="boostSetFactor">
             </explanation>
             <explanation value="2.0" description="boostSetExponent">
             </explanation>
          </explanation>
-         <explanation value="1.8199503" description="tf(spanFreq=3.3122191)">
-            <explanation value="3.3122191" description="weight(spans(rights:uconly)@92:0), product of:">
-               <explanation value="5.2995505" description="idf(docFreq=2)">
+         <explanation value="1.8403193" description="tf(spanFreq=3.3867753)">
+            <explanation value="3.3867753" description="weight(spans(rights:uconly)@120:0), product of:">
+               <explanation value="5.4188404" description="idf(docFreq=2)">
                </explanation>
-               <explanation value="0.625" description="fieldNorm(field=rights, doc=92)">
+               <explanation value="0.625" description="fieldNorm(field=rights, doc=120)">
                </explanation>
             </explanation>
          </explanation>
@@ -132,19 +132,19 @@
          <rights>UCOnly</rights>
       </meta>
    </docHit>
-   <docHit rank="5" file="doc1.xml" score="0.442" totalHits="0">
-      <explanation value="0.44246593" description="boosted, product of:">
+   <docHit rank="5" file="doc1.xml" score="0.448" totalHits="0">
+      <explanation value="0.44770065" description="boosted, product of:">
          <explanation value="0.25" description="exponentBoosted">
             <explanation value="0.5" description="boostSetFactor">
             </explanation>
             <explanation value="2.0" description="boostSetExponent">
             </explanation>
          </explanation>
-         <explanation value="1.7698637" description="tf(spanFreq=3.1324177)">
-            <explanation value="3.1324177" description="weight(spans(rights:public)@51:0), product of:">
-               <explanation value="5.0118685" description="idf(docFreq=3)">
+         <explanation value="1.7908026" description="tf(spanFreq=3.206974)">
+            <explanation value="3.206974" description="weight(spans(rights:public)@79:0), product of:">
+               <explanation value="5.1311584" description="idf(docFreq=3)">
                </explanation>
-               <explanation value="0.625" description="fieldNorm(field=rights, doc=51)">
+               <explanation value="0.625" description="fieldNorm(field=rights, doc=79)">
                </explanation>
             </explanation>
          </explanation>

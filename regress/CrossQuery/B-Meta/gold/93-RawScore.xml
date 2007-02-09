@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="5" startDoc="1" endDoc="5">
-   <docHit rank="1" file="doc5.xml" score="5.31" totalHits="0">
+   <docHit rank="1" file="doc5.xml" score="5.372" totalHits="0">
       <meta>
          <title>California Riparian Systems: Ecology, Conservation, and Productive Management</title>
          <creator>Richard E. Warner and Kathleen M. Hendrix, editors</creator>
@@ -15,7 +15,7 @@
          <rights>Public</rights>
       </meta>
    </docHit>
-   <docHit rank="2" file="doc4.xml" score="4.55" totalHits="0">
+   <docHit rank="2" file="doc4.xml" score="4.601" totalHits="0">
       <meta>
          <title>Asylia: Territorial Inviolability in the Hellenistic World</title>
          <creator>Kent J. Rigsby</creator>
@@ -34,7 +34,7 @@
          <rights>UCOnly</rights>
       </meta>
    </docHit>
-   <docHit rank="3" file="doc3.xml" score="3.54" totalHits="0">
+   <docHit rank="3" file="doc3.xml" score="3.582" totalHits="0">
       <meta>
          <title>Thirty-Eight Witnesses: The Kitty Genovese Case</title>
          <creator>A.M. Rosenthal</creator>
@@ -50,7 +50,7 @@
          <rights>Public</rights>
       </meta>
    </docHit>
-   <docHit rank="4" file="doc2.xml" score="1.82" totalHits="0">
+   <docHit rank="4" file="doc2.xml" score="1.84" totalHits="0">
       <meta>
          <title>The Problems of a Political Animal: Community, Justice, and Conflict in Aristotelian Political Thought</title>
          <creator>Bernard R. Yack</creator>
@@ -68,7 +68,7 @@
          <rights>UCOnly</rights>
       </meta>
    </docHit>
-   <docHit rank="5" file="doc1.xml" score="0.885" totalHits="0">
+   <docHit rank="5" file="doc1.xml" score="0.895" totalHits="0">
       <meta>
          <title>The Opening of the Apartheid Mind: Options for the New South Africa</title>
          <creator>Heribert Adam and Kogila Moodley</creator>
