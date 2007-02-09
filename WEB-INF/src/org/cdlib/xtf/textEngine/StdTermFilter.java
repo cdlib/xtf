@@ -53,6 +53,18 @@ public class StdTermFilter
   private DribbleStream dribble;
   private TokenStream filter;
   
+  /** 
+   * During tokenization, the '*' wildcard has to be changed to a word
+   * to keep it from being removed.
+   */
+  private static final String SAVE_WILD_STAR = "jwxbkn";
+  
+  /** 
+   * During tokenization, the '?' wildcard has to be changed to a word
+   * to keep it from being removed.
+   */
+  private static final String SAVE_WILD_QMARK   = "vkyqxw";
+  
   /** Construct the rewriter */
   public StdTermFilter() {
     dribble = new DribbleStream();
@@ -65,18 +77,51 @@ public class StdTermFilter
    * @return changed version, or original term if no change required.
    */
   public String filter(String term) {
-    dribble.nextToken = term;
+    dribble.nextToken = saveWildcards(term);
     try {
       Token mapped = filter.next();
-      if (mapped.termText().equals(term))
+      String restored = restoreWildcards(mapped.termText());
+      if (restored.equals(term))
         return term;
-        return mapped.termText();
+      return restored;
     }
     catch (IOException e) {
       throw new RuntimeException("Very unexpected IO exception: " + e);
     }
   }
   
+  /**
+   * Converts wildcard characters into word-looking bits that would never
+   * occur in real text, so the standard tokenizer will keep them part of
+   * words. Resurrect using {@link #restoreWildcards(String)}.
+   */
+  protected static String saveWildcards( String s )
+  {
+      // Early out if no wildcards found.
+      if( s.indexOf('*') < 0 && s.indexOf('?') < 0 )
+          return s;
+      
+      // Convert to wordish stuff.
+      s = s.replaceAll( "\\*", SAVE_WILD_STAR );
+      s = s.replaceAll( "\\?", SAVE_WILD_QMARK );
+      return s;
+  } // saveWildcards()
+  
+  /**
+   * Restores wildcards saved by {@link #saveWildcards(String)}.
+   */
+  protected static String restoreWildcards( String s )
+  {
+      // Early out if no wildcards found.
+      if( s.indexOf(SAVE_WILD_STAR) < 0 && s.indexOf(SAVE_WILD_QMARK) < 0 )
+          return s;
+
+      // Convert back from wordish stuff to real wildcards.
+      s = s.replaceAll( SAVE_WILD_STAR, "*" );
+      s = s.replaceAll( SAVE_WILD_QMARK,   "?" );
+      return s;
+  } // restoreWildcards()
+
   private class DribbleStream extends TokenStream
   {
     public String nextToken;
