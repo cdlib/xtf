@@ -494,6 +494,9 @@ public class SpellReader
       }
     }
 
+    if (debugWriter != null)
+      debugWriter.flush();
+    
     // If no changes were made, signal that to the caller.
     if (!anyChange)
       return null;
