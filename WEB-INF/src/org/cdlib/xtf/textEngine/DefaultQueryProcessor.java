@@ -215,19 +215,20 @@ public class DefaultQueryProcessor extends QueryProcessor
         // Perform standard tokenization tasks: change words to lowercase,
         // remove apostrophes, etc.
         //
-        query = new StdTermRewriter().rewriteQuery(query);
+        Set tokFields = xtfSearcher.tokenizedFields();
+        query = new StdTermRewriter(tokFields).rewriteQuery(query);
         
         // If a plural map is present, change plural words to non-plural.
         if( pluralMap != null )
-            query = new PluralFoldingRewriter(pluralMap).rewriteQuery(query);
+            query = new PluralFoldingRewriter(pluralMap, tokFields).rewriteQuery(query);
         
         // If an accent map is present, remove diacritics.
         if( accentMap != null )
-            query = new AccentFoldingRewriter(accentMap).rewriteQuery(query);
+            query = new AccentFoldingRewriter(accentMap, tokFields).rewriteQuery(query);
         
         // Rewrite the query for bigrams (if we have stop-words to deal with.)
         if( stopSet != null )
-            query = new XtfBigramQueryRewriter(stopSet, chunkOverlap).
+            query = new XtfBigramQueryRewriter(stopSet, chunkOverlap, tokFields).
                             rewriteQuery(query);
         
         // If there's nothing left (for instance if the query was all stop-words)
@@ -467,6 +468,10 @@ public class DefaultQueryProcessor extends QueryProcessor
                 // first one.
                 //
                 if( out.containsKey(terms[i]) )
+                    continue;
+                
+                // Skip suggestions that don't change anything.
+                if( terms[i].equals(suggested[i]) )
                     continue;
                 
                 // Okay, record it.

@@ -29,6 +29,8 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Set;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -49,10 +51,12 @@ public class PluralFoldingRewriter extends XtfQueryRewriter
 {
   
   private WordMap pluralMap;
+  private Set tokenizedFields;
 
-  /** Construct a new rewriter to use the given map */
-  public PluralFoldingRewriter( WordMap pluralMap ) {
+  /** Construct a new rewriter to use the given map  */
+  public PluralFoldingRewriter( WordMap pluralMap, Set tokFields ) {
     this.pluralMap = pluralMap;
+    this.tokenizedFields = tokFields;
   }
   
   /** 
@@ -64,13 +68,17 @@ public class PluralFoldingRewriter extends XtfQueryRewriter
   }
   
   /** 
-   * Rewrite a span term query. Maps plural words to singular.
+   * Rewrite a span term query. Maps plural words to singular, but only
+   * for tokenized fields.
    * 
    * @param q  The query to rewrite
    * @return   Rewritten version, or 'q' unchanged if no changed needed.
    */
   protected Query rewrite( SpanTermQuery q ) {
     Term t = q.getTerm();
+    if( !tokenizedFields.contains(t.field()) )
+      return q;
+    
     String mapped = pluralMap.lookup( t.text() );
     if( mapped == null )
         return q;

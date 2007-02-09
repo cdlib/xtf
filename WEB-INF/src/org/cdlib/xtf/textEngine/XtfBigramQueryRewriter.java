@@ -42,8 +42,10 @@ import org.cdlib.xtf.util.Trace;
  * adjacent non-stop-words, forming "bi-grams". This is a fairly in-depth
  * process, as bi-gramming across NEAR and OR queries is complex.
  */
-public class XtfBigramQueryRewriter extends BigramQueryRewriter {
-
+public class XtfBigramQueryRewriter extends BigramQueryRewriter 
+{
+  private Set tokenizedFields;
+  
   /**
    * Constructs a rewriter using the given stopword set.
    * 
@@ -52,19 +54,28 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
    *                  {@link #makeStopSet(String)}.
    * @param maxSlop   Maximum slop to allow in a query, based on the index
    *                  being queried.
+   * @param tokFields List of fields that are tokenized. We won't rewrite
+   *                  queries for non-tokenized fields.
    */
-  public XtfBigramQueryRewriter(Set stopSet, int maxSlop) {
+  public XtfBigramQueryRewriter(Set stopSet, int maxSlop, Set tokFields) {
     super( stopSet, maxSlop );
+    tokenizedFields = tokFields;
   } // constructor
 
   /**
    * Rewrite a query of any supported type. Stop words will either be
-   * removed or bi-grammed.
+   * removed or bi-grammed. Skips all queries for un-tokenized fields.
    * 
    * @param q   Query to rewrite
    * @return    A new query, or 'q' unchanged if no change was needed.
    */
-  public Query rewriteQuery(Query q) {
+  public Query rewriteQuery(Query q) 
+  {
+    // Skip all queries for non-tokenized fields
+    if (q instanceof SpanQuery && !tokenizedFields.contains(((SpanQuery)q).getField()))
+      return q;
+    
+    // Handle our special XTF queries.
     if (q instanceof SpanSectionTypeQuery)
       return rewrite((SpanSectionTypeQuery) q);
     else if( q instanceof SpanExactQuery )
@@ -73,6 +84,8 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter {
         return rewrite((MoreLikeThisQuery)q);
     else if( q instanceof NumericRangeQuery )
       return rewrite((NumericRangeQuery)q);
+    
+    // Punt to normal handling.
     return super.rewriteQuery(q);
   }
   

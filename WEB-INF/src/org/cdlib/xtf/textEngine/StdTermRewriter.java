@@ -29,6 +29,8 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Set;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -48,8 +50,18 @@ import org.apache.lucene.search.spans.SpanWildcardQuery;
  */
 public class StdTermRewriter extends XtfQueryRewriter 
 {
+  private Set tokenizedFields;
   private StdTermFilter filter = new StdTermFilter();
   
+  /**
+   * Construct a term rewriter that will operate on the given tokenized
+   * fields.
+   */
+  public StdTermRewriter(Set tokFields)
+  {
+    tokenizedFields = tokFields;
+  }
+
   /** 
    * Rewrite a term query. This is only called for artificial queries
    * introduced by XTF system itself, and therefore we don't map here.
@@ -66,8 +78,8 @@ public class StdTermRewriter extends XtfQueryRewriter
    */
   protected Query rewrite( SpanTermQuery q ) {
     Term t = q.getTerm();
-    String mapped = filter.filter(t.text());
-    if( mapped.equals(t.text()) )
+    String mapped = mapTerm(t);
+    if( mapped == null )
         return q;
     
     Term newTerm = new Term( t.field(), mapped );
@@ -84,12 +96,32 @@ public class StdTermRewriter extends XtfQueryRewriter
     assert q instanceof XtfSpanWildcardQuery;
     
     Term t = q.getTerm();
-    String mapped = filter.filter(t.text());
-    if( mapped.equals(t.text()) )
+    String mapped = mapTerm(t);
+    if( mapped == null )
         return q;
     
     Term newTerm = new Term( t.field(), mapped );
     return copyBoost( q, new XtfSpanWildcardQuery(newTerm, q.getTermLimit()) ); 
+  }
+  
+  /**
+   * Map the given term and return the mapped result.
+   * 
+   * @param t   term to map
+   * @return    different term, or null if not different. Also null if the
+   *            field isn't tokenized.
+   */
+  private String mapTerm(Term t)
+  {
+    // If the field isn't tokenized, leave the term unmodified.
+    if (!tokenizedFields.contains(t.field()))
+      return null;
+    
+    // Okay, let's try mapping it.
+    String mapped = filter.filter(t.text());
+    if (mapped.equals(t.text()))
+      return null;
+    return mapped;
   }
   
 } // class

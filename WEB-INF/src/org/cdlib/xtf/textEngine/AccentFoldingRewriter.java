@@ -29,6 +29,8 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Set;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -50,10 +52,13 @@ public class AccentFoldingRewriter extends XtfQueryRewriter
 {
   
   private CharMap accentMap;
+  private Set tokenizedFields;
 
-  /** Construct a new rewriter to use the given map */
-  public AccentFoldingRewriter( CharMap accentMap ) {
+  /** Construct a new rewriter to use the given map 
+   * @param tokFields */
+  public AccentFoldingRewriter( CharMap accentMap, Set tokFields ) {
     this.accentMap = accentMap;
+    this.tokenizedFields = tokFields;
   }
   
   /** 
@@ -72,6 +77,9 @@ public class AccentFoldingRewriter extends XtfQueryRewriter
    */
   protected Query rewrite( SpanTermQuery q ) {
     Term t = q.getTerm();
+    if( !tokenizedFields.contains(t.field()) )
+      return q;
+    
     String mapped = accentMap.mapWord( t.text() );
     if( mapped == null )
         return q;
@@ -90,6 +98,9 @@ public class AccentFoldingRewriter extends XtfQueryRewriter
     assert q instanceof XtfSpanWildcardQuery;
     
     Term t = q.getTerm();
+    if( !tokenizedFields.contains(t.field()) )
+      return q;
+    
     String mapped = accentMap.mapWord( t.text() );
     if( mapped == null )
         return q;
