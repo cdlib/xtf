@@ -389,6 +389,13 @@ public class QueryRequestParser
             else if( attr.equalsIgnoreCase("fields") ||
                      attr.equalsIgnoreCase("field") )
             {
+                String fieldsStr = parseStringAttrib( el, attr );
+                if (!fieldsStr.equals("#all")) {
+                    params.fields = new HashSet();
+                    StringTokenizer st = new StringTokenizer( fieldsStr, ";,| \t" );
+                    while( st.hasMoreTokens() )
+                        params.fields.add( st.nextToken() );
+                }
             }
             else if( attr.equalsIgnoreCase("docScoreCutoff") )
                 params.docScoreCutoff = parseFloatAttrib( el, attr );
