@@ -316,7 +316,8 @@ public class QueryResult
       buf.append("  <suggestion" + 
                  " originalTerm=\"" + sugg.origTerm + "\"" +
                  " fields=\"" + fieldsBuf + "\"" + 
-                 " suggestedTerm=\"" + sugg.suggestedTerm + "\"" + 
+                 " suggestedTerm=\"" + 
+                 (sugg.suggestedTerm != null ? sugg.suggestedTerm : "") + "\"" + 
                  "/>\n");
     }
 
