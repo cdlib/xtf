@@ -187,7 +187,7 @@ public class SpellKeywordTest
     buf.append("<query indexPath=\"index\" termLimit=\"1000\" workLimit=\"20000000\" " +
                "style=\"style/crossQuery/resultFormatter/marc/resultFormatter.xsl\" " +
                "startDoc=\"1\" maxDocs=\"20\" normalizeScores=\"false\">\n" +
-               "<spellcheck suggestionsPerTerm=\"1\"/>\n" +
+               "<spellcheck suggestionsPerTerm=\"1\" totalDocsCutoff=\"1000\" fields=\"text,title-main,author,subject,note\"/>\n" +
                "<and fields=\"text title-main author subject note\" boosts=\"0.5  1.0        1.0    0.5     1.0 \" slop=\"10\" maxTextSnippets=\"3\" maxMetaSnippets=\"all\">\n");
     for (String s : origWords)
       buf.append("<term>" + s + "</term>\n");
