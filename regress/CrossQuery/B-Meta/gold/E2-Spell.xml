@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
    <spelling>
-        <suggestion originalTerm="embodise" fields="text" suggestedTerm="embodies"/>
+        <suggestion originalTerm="em" fields="text" suggestedTerm="embodies"/>
+        <suggestion originalTerm="bodies" fields="text" suggestedTerm=""/>
    </spelling>
 </crossQueryResult>

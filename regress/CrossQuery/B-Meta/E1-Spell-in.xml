@@ -6,8 +6,7 @@
   <spellcheck suggestionsPerTerm="1" fields="#all"/>
   <and>
     <term field="title">arfica</term>
-    <term field="subject">arfican</term>
-    <term field="text">coventional</term>
+    <term field="text">arfican</term>
   </and>
   
 </query>

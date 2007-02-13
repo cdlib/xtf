@@ -2,6 +2,6 @@
 <crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
    <spelling>
         <suggestion originalTerm="arfica" fields="title" suggestedTerm="africa"/>
-        <suggestion originalTerm="arfican" fields="subject" suggestedTerm="africa"/>
+        <suggestion originalTerm="arfican" fields="text" suggestedTerm="africa"/>
    </spelling>
 </crossQueryResult>

@@ -2,12 +2,11 @@
 
 <query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
   
-  <!-- Test spelling exclusion in meta-data and text. -->
-  <spellcheck suggestionsPerTerm="1" fields="#all"/>
+  <!-- Test multi-word spelling, and exclusion of sections -->
+  <spellcheck suggestionsPerTerm="1"/>
   <and>
-    <term field="description">govrened</term>
-    <term field="text">embodise</term>
-    <term field="text">Johannesburgh</term>
+    <term field="text">em</term>
+    <term field="text">bodies</term>
   </and>
   
 </query>
