@@ -216,16 +216,15 @@ public class XtfSearcher
         
         // Determine which fields are tokenized.
         tokenizedFields = new LinkedHashSet();
-        TermEnum tokTerms = indexReader.terms();
-        if (tokTerms.skipTo(new Term("tokenizedFields", "")))
-        {
-          do {
-            Term t = tokTerms.term();
-            if (!t.field().equals("tokenizedFields"))
-              break;
-            tokenizedFields.add(t.text());
-          } while (tokTerms.next());
-        }
+        TermEnum tokTerms = indexReader.terms(new Term("tokenizedFields", ""));
+        do {
+          Term t = tokTerms.term();
+          if (t == null)
+            break;
+          if (!t.field().equals("tokenizedFields"))
+            break;
+          tokenizedFields.add(t.text());
+        } while (tokTerms.next());
         
         // Of course, the "text" field is always tokenized.
         tokenizedFields.add("text");
