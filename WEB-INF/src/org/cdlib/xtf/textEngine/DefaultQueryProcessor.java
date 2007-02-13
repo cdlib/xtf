@@ -379,7 +379,7 @@ public class DefaultQueryProcessor extends QueryProcessor
         
         // Make spelling suggestions if applicable.
         if( spellReader != null && req.spellcheckParams != null )
-            spellCheck( req, result );
+            spellCheck( req, result, tokFields );
 
         // All done.
         return result;
@@ -410,8 +410,10 @@ public class DefaultQueryProcessor extends QueryProcessor
      * 
      * @param req   Original query request
      * @param res   Results of the query
+     * @param tokFields  Set of tokenized fields (in case no field list was
+     *                   specified in the query request.)
      */
-    private void spellCheck( QueryRequest req, QueryResult res )
+    private void spellCheck( QueryRequest req, QueryResult res, Set tokFields )
         throws IOException
     {
         // We can use a handy reference to the spellcheck params, and to the
@@ -434,13 +436,14 @@ public class DefaultQueryProcessor extends QueryProcessor
         // Check the cutoffs. If the documents scored well, or there were
         // a lot of them, then suggestions aren't needed.
         //
-        //if( params.docScoreCutoff > 0 && maxDocScore > params.docScoreCutoff )
-        //    return;
-        //if( params.totalDocsCutoff > 0 && totalDocs > params.totalDocsCutoff )
-        //    return;
+        if( params.docScoreCutoff > 0 && maxDocScore > params.docScoreCutoff )
+            return;
+        if( params.totalDocsCutoff > 0 && totalDocs > params.totalDocsCutoff )
+            return;
 
         // Gather the query terms, grouped by field set.
-        LinkedHashMap fieldsMap = gatherKeywords( req.query, params.fields );
+        Set spellFieldSet = params.fields != null ? params.fields : tokFields;
+        LinkedHashMap fieldsMap = gatherKeywords( req.query, spellFieldSet );
         
         // Make suggestions for each field set.
         LinkedHashMap out = new LinkedHashMap();
@@ -483,14 +486,78 @@ public class DefaultQueryProcessor extends QueryProcessor
             }
         } // for fi
         
-        // Convert to an array.
-        if( out.size() > 0 ) {
-            res.suggestions = (SpellingSuggestion[])
-                out.values().toArray( new SpellingSuggestion[out.values().size()] );
-        }
+        // If no suggestions, we're done.
+        if( out.size() == 0 )
+          return;
+        
+        // Make sure the suggestions result in better results.
+        if (!spellingImprovesResults(req, res, spellFieldSet, out))
+          return;
+        
+        // Record the final suggestions in an array.
+        res.suggestions = (SpellingSuggestion[])
+            out.values().toArray( new SpellingSuggestion[out.values().size()] );
         
     } // spellCheck()
     
+    
+    /**
+     * Re-runs the original query, except with terms replaced by their suggestions.
+     * Checks that the results are improved -- at present that means that there
+     * are more of them, and their max score is higher.
+     * 
+     * @param origReq   Original query request
+     * @param origRes   Results of the original query
+     * @param spellFieldSet  Set of fields to rewrite terms within
+     * @param suggs     Map of terms to their suggested replacements   
+     * @return          true if the suggestions improve the results.
+     * @throws IOException 
+     */
+    private boolean spellingImprovesResults(QueryRequest origReq, 
+                                            QueryResult origRes, 
+                                            Set spellFieldSet, 
+                                            LinkedHashMap suggs) 
+      throws IOException
+    {
+      // First, clone the original request, and then turn off spellcheck for
+      // the clone so that we don't get in an infinite recursive loop.
+      //
+      QueryRequest newReq = (QueryRequest) origReq.clone();
+      newReq.spellcheckParams = null;
+      
+      // Before re-querying, save the max doc score.
+      float origMaxDocScore = maxDocScore;
+      
+      // Now apply the spelling suggestions to the original query.
+      newReq.query = new SpellSuggRewriter(suggs, spellFieldSet).
+                            rewriteQuery(newReq.query);
+      QueryResult newRes = this.processRequest(newReq);
+      
+      // If the new query returns nothing and the old query also returned
+      // nothing, it's a semi-failure. There's no use suggesting the new
+      // words even if they are better, because it won't help the user.
+      //
+      if (newRes.totalDocs == 0 && origRes.totalDocs == 0) {
+        //System.out.print("No docs before or after: " + newReq.query.toString() + "... ");
+        return false;
+      }
+      
+      // If the new query returns less results, consider it a failure.
+      if (newRes.totalDocs < origRes.totalDocs) {
+        //System.out.print("Fewer docs: " + newReq.query.toString() + "... ");
+        return false;
+      }
+      
+      // If the max doc score is lower, that's also a failure.
+      if (maxDocScore < origMaxDocScore) {
+        //System.out.print("Lower score: " + newReq.query.toString() + "... ");
+        return false;
+      }
+      
+      // Cool! We think this is a better query.
+      return true;
+    }
+
     
     /**
      * Make a list of all the terms present in the given query,
