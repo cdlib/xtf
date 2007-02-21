@@ -151,8 +151,8 @@ public abstract class QueryRewriter
   {
     // Rewrite each clause. Allow single clauses to be promoted.
     return rewriteClauses(q, q.getClauses(), true,
-                          new SpanClauseJoiner() 
-    {
+      new SpanClauseJoiner() 
+      {
         public SpanQuery join(SpanQuery[] clauses) {
           return new SpanNearQuery(clauses, q.getSlop(), q.isInOrder());
         }
@@ -174,11 +174,11 @@ public abstract class QueryRewriter
       true,
       new SpanClauseJoiner() 
       {
-          public SpanQuery join(SpanQuery[] clauses) {
-            return new SpanOrNearQuery(clauses,
-                                       q.getSlop(),
-                                       q.penalizeOutOfOrder());
-          }
+        public SpanQuery join(SpanQuery[] clauses) {
+          return new SpanOrNearQuery(clauses,
+                                     q.getSlop(),
+                                     q.penalizeOutOfOrder());
+        }
       });
   } // rewrite()
 
@@ -192,7 +192,7 @@ public abstract class QueryRewriter
   {
     // Rewrite each clause. Allow single clauses to be promoted.
     return rewriteClauses(q, q.getClauses(), true,
-                          new SpanClauseJoiner() 
+      new SpanClauseJoiner() 
       {
         public SpanQuery join(SpanQuery[] clauses) {
           return new SpanOrQuery(clauses);

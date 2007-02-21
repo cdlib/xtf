@@ -113,100 +113,100 @@ public class SpanDechunkingQuery extends SpanQuery
 
     return new Spans() 
     {
-        private Spans spans = wrapped.getSpans(reader, searcher);
-        private int firstChunk = -1;
-        private int lastChunk = -1;
-        private int mainDoc = -1;
-        private float lengthNorm = 0.0f;
-        private int chunkOffset;
+      private Spans spans = wrapped.getSpans(reader, searcher);
+      private int firstChunk = -1;
+      private int lastChunk = -1;
+      private int mainDoc = -1;
+      private float lengthNorm = 0.0f;
+      private int chunkOffset;
 
-        public boolean next()
-          throws IOException 
+      public boolean next()
+        throws IOException 
+      {
+        if (!spans.next())
+          return false;
+
+        update();
+        return true;
+      }
+
+      private void update() 
+      {
+        // See if we have started a new main document.
+        int chunk = spans.doc();
+        if (chunk > lastChunk) 
         {
-          if (!spans.next())
-            return false;
-
-          update();
-          return true;
+          // Get params for the new main doc.
+          mainDoc = docNumMap.getDocNum(chunk);
+          firstChunk = docNumMap.getFirstChunk(mainDoc);
+          lastChunk = docNumMap.getLastChunk(mainDoc);
+          lengthNorm = similarity.lengthNorm(wrapped.getField(),
+                                             (lastChunk + 1) - firstChunk);
         }
 
-        private void update() 
-        {
-          // See if we have started a new main document.
-          int chunk = spans.doc();
-          if (chunk > lastChunk) 
-          {
-            // Get params for the new main doc.
-            mainDoc = docNumMap.getDocNum(chunk);
-            firstChunk = docNumMap.getFirstChunk(mainDoc);
-            lastChunk = docNumMap.getLastChunk(mainDoc);
-            lengthNorm = similarity.lengthNorm(wrapped.getField(),
-                                               (lastChunk + 1) - firstChunk);
-          }
+        // Now calculate an appropriate offset for the current chunk.
+        chunkOffset = (chunk - firstChunk) * chunkBump;
+      }
 
-          // Now calculate an appropriate offset for the current chunk.
-          chunkOffset = (chunk - firstChunk) * chunkBump;
-        }
+      public boolean skipTo(int target)
+        throws IOException 
+      {
+        int first = docNumMap.getFirstChunk(target);
+        if (first < 0 || target < first)
+          first = target;
 
-        public boolean skipTo(int target)
-          throws IOException 
-        {
-          int first = docNumMap.getFirstChunk(target);
-          if (first < 0 || target < first)
-            first = target;
+        if (!spans.skipTo(first))
+          return false;
 
-          if (!spans.skipTo(first))
-            return false;
+        update();
+        return true;
+      }
 
-          update();
-          return true;
-        }
+      public int doc() {
+        return mainDoc;
+      }
 
-        public int doc() {
-          return mainDoc;
-        }
+      public int start() {
+        int start = spans.start();
+        assert start >= 0 && start < chunkSize;
+        return start + chunkOffset;
+      }
 
-        public int start() {
-          int start = spans.start();
-          assert start >= 0 && start < chunkSize;
-          return start + chunkOffset;
-        }
+      public int end() {
+        int end = spans.end();
+        assert end > 0 && end <= chunkSize;
+        return end + chunkOffset;
+      }
 
-        public int end() {
-          int end = spans.end();
-          assert end > 0 && end <= chunkSize;
-          return end + chunkOffset;
-        }
+      public float score() {
+        return spans.score() * lengthNorm * getBoost();
+      }
 
-        public float score() {
-          return spans.score() * lengthNorm * getBoost();
-        }
+      public String toString() {
+        return "spans(" + SpanDechunkingQuery.this.toString() + ")";
+      }
 
-        public String toString() {
-          return "spans(" + SpanDechunkingQuery.this.toString() + ")";
-        }
+      public Explanation explain()
+        throws IOException 
+      {
+        Explanation result = new Explanation(0,
+                                             "weight(" + toString() +
+                                             "), product of:");
 
-        public Explanation explain()
-          throws IOException 
-        {
-          Explanation result = new Explanation(0,
-                                               "weight(" + toString() +
-                                               "), product of:");
+        Explanation boostExpl = new Explanation(getBoost(), "boost");
+        if (boostExpl.getValue() != 1.0f)
+          result.addDetail(boostExpl);
 
-          Explanation boostExpl = new Explanation(getBoost(), "boost");
-          if (boostExpl.getValue() != 1.0f)
-            result.addDetail(boostExpl);
+        Explanation lengthExpl = new Explanation(lengthNorm, "lengthNorm");
+        result.addDetail(lengthExpl);
 
-          Explanation lengthExpl = new Explanation(lengthNorm, "lengthNorm");
-          result.addDetail(lengthExpl);
+        Explanation inclExpl = spans.explain();
+        result.addDetail(inclExpl);
 
-          Explanation inclExpl = spans.explain();
-          result.addDetail(inclExpl);
-
-          result.setValue(
-            boostExpl.getValue() * lengthExpl.getValue() * inclExpl.getValue());
-          return result;
-        }
-      };
+        result.setValue(
+          boostExpl.getValue() * lengthExpl.getValue() * inclExpl.getValue());
+        return result;
+      }
+    };
   }
 }

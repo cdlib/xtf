@@ -79,10 +79,10 @@ public class ThreadWatcher
       {
         watcherThread = new Thread() 
         {
-            public void run() {
-              watch();
-            }
-          };
+          public void run() {
+            watch();
+          }
+        };
         watcherThread.setDaemon(true);
         watcherThread.start();
       }

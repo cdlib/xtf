@@ -103,95 +103,95 @@ public class SpanNotNearQuery extends SpanQuery
   {
     return new Spans() 
     {
-        private Spans includeSpans = include.getSpans(reader, searcher);
-        private boolean moreInclude = true;
-        private Spans excludeSpans = exclude.getSpans(reader, searcher);
-        private boolean moreExclude = true;
+      private Spans includeSpans = include.getSpans(reader, searcher);
+      private boolean moreInclude = true;
+      private Spans excludeSpans = exclude.getSpans(reader, searcher);
+      private boolean moreExclude = true;
 
-        public boolean next()
-          throws IOException 
+      public boolean next()
+        throws IOException 
+      {
+        if (moreInclude) // move to next include
+          moreInclude = includeSpans.next();
+
+        return advance();
+      }
+
+      private boolean advance()
+        throws IOException 
+      {
+        while (moreInclude && moreExclude) 
         {
-          if (moreInclude) // move to next include
-            moreInclude = includeSpans.next();
+          if (includeSpans.doc() > excludeSpans.doc()) // skip exclude
+            moreExclude = excludeSpans.skipTo(includeSpans.doc());
 
-          return advance();
-        }
-
-        private boolean advance()
-          throws IOException 
-        {
-          while (moreInclude && moreExclude) 
+          while (moreExclude // while exclude is before
+                  &&
+                 includeSpans.doc() == excludeSpans.doc() &&
+                 excludeSpans.end() <= (includeSpans.start() - slop)) 
           {
-            if (includeSpans.doc() > excludeSpans.doc()) // skip exclude
-              moreExclude = excludeSpans.skipTo(includeSpans.doc());
-
-            while (moreExclude // while exclude is before
-                    &&
-                   includeSpans.doc() == excludeSpans.doc() &&
-                   excludeSpans.end() <= (includeSpans.start() - slop)) 
-            {
-              moreExclude = excludeSpans.next(); // increment exclude
-            }
-
-            if (!moreExclude // if no intersection
-                 ||
-                includeSpans.doc() != excludeSpans.doc() ||
-                excludeSpans.start() >= (includeSpans.end() + slop))
-              break; // we found a match
-
-            moreInclude = includeSpans.next(); // intersected: keep scanning
+            moreExclude = excludeSpans.next(); // increment exclude
           }
-          return moreInclude;
+
+          if (!moreExclude // if no intersection
+               ||
+              includeSpans.doc() != excludeSpans.doc() ||
+              excludeSpans.start() >= (includeSpans.end() + slop))
+            break; // we found a match
+
+          moreInclude = includeSpans.next(); // intersected: keep scanning
         }
+        return moreInclude;
+      }
 
-        public boolean skipTo(int target)
-          throws IOException 
-        {
-          if (moreInclude) // skip include
-            moreInclude = includeSpans.skipTo(target);
+      public boolean skipTo(int target)
+        throws IOException 
+      {
+        if (moreInclude) // skip include
+          moreInclude = includeSpans.skipTo(target);
 
-          return advance();
-        }
+        return advance();
+      }
 
-        public int doc() {
-          return includeSpans.doc();
-        }
+      public int doc() {
+        return includeSpans.doc();
+      }
 
-        public int start() {
-          return includeSpans.start();
-        }
+      public int start() {
+        return includeSpans.start();
+      }
 
-        public int end() {
-          return includeSpans.end();
-        }
+      public int end() {
+        return includeSpans.end();
+      }
 
-        public float score() {
-          return includeSpans.score() * getBoost();
-        }
+      public float score() {
+        return includeSpans.score() * getBoost();
+      }
 
-        public String toString() {
-          return "spans(" + SpanNotNearQuery.this.toString() + ")";
-        }
+      public String toString() {
+        return "spans(" + SpanNotNearQuery.this.toString() + ")";
+      }
 
-        public Explanation explain()
-          throws IOException 
-        {
-          if (getBoost() == 1.0f)
-            return includeSpans.explain();
+      public Explanation explain()
+        throws IOException 
+      {
+        if (getBoost() == 1.0f)
+          return includeSpans.explain();
 
-          Explanation result = new Explanation(0,
-                                               "weight(" + toString() +
-                                               "), product of:");
+        Explanation result = new Explanation(0,
+                                             "weight(" + toString() +
+                                             "), product of:");
 
-          Explanation boostExpl = new Explanation(getBoost(), "boost");
-          result.addDetail(boostExpl);
+        Explanation boostExpl = new Explanation(getBoost(), "boost");
+        result.addDetail(boostExpl);
 
-          Explanation inclExpl = includeSpans.explain();
-          result.addDetail(inclExpl);
+        Explanation inclExpl = includeSpans.explain();
+        result.addDetail(inclExpl);
 
-          result.setValue(boostExpl.getValue() * inclExpl.getValue());
-          return result;
-        }
-      };
+        result.setValue(boostExpl.getValue() * inclExpl.getValue());
+        return result;
+      }
+    };
   }
 }

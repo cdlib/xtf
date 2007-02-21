@@ -152,128 +152,128 @@ public class SpanOrQuery extends SpanQuery
 
     return new Spans() 
     {
-        private List all = new ArrayList(clauses.size());
-        private SpanQueue queue = new SpanQueue(clauses.size());
-        
-        {
-          Iterator i = clauses.iterator();
-          while (i.hasNext()) { // initialize all
-            all.add(((SpanQuery)i.next()).getSpans(reader, searcher));
-          }
+      private List all = new ArrayList(clauses.size());
+      private SpanQueue queue = new SpanQueue(clauses.size());
+      
+      {
+        Iterator i = clauses.iterator();
+        while (i.hasNext()) { // initialize all
+          all.add(((SpanQuery)i.next()).getSpans(reader, searcher));
         }
+      }
 
-        private boolean firstTime = true;
+      private boolean firstTime = true;
 
-        public boolean next()
-          throws IOException 
+      public boolean next()
+        throws IOException 
+      {
+        if (firstTime) { // first time -- initialize
+          for (int i = 0; i < all.size(); i++) 
         {
-          if (firstTime) { // first time -- initialize
-            for (int i = 0; i < all.size(); i++) 
-          {
-              Spans spans = (Spans)all.get(i);
-              if (spans.next()) { // move to first entry
-                queue.put(spans); // build queue
-              }
-              else {
-                all.remove(i--);
-              }
+            Spans spans = (Spans)all.get(i);
+            if (spans.next()) { // move to first entry
+              queue.put(spans); // build queue
             }
-            firstTime = false;
-            return queue.size() != 0;
+            else {
+              all.remove(i--);
+            }
           }
-
-          if (queue.size() == 0) { // all done
-            return false;
-          }
-
-          if (top().next()) { // move to next
-            queue.adjustTop();
-            return true;
-          }
-
-          all.remove(queue.pop()); // exhausted a clause
-
+          firstTime = false;
           return queue.size() != 0;
         }
 
-        private Spans top() {
-          return (Spans)queue.top();
+        if (queue.size() == 0) { // all done
+          return false;
         }
 
-        public boolean skipTo(int target)
-          throws IOException 
+        if (top().next()) { // move to next
+          queue.adjustTop();
+          return true;
+        }
+
+        all.remove(queue.pop()); // exhausted a clause
+
+        return queue.size() != 0;
+      }
+
+      private Spans top() {
+        return (Spans)queue.top();
+      }
+
+      public boolean skipTo(int target)
+        throws IOException 
+      {
+        if (firstTime) 
         {
-          if (firstTime) 
+          for (int i = 0; i < all.size(); i++) 
           {
-            for (int i = 0; i < all.size(); i++) 
-            {
-              Spans spans = (Spans)all.get(i);
-              if (spans.skipTo(target)) { // skip each spans in all
-                queue.put(spans); // build queue
-              }
-              else {
-                all.remove(i--);
-              }
+            Spans spans = (Spans)all.get(i);
+            if (spans.skipTo(target)) { // skip each spans in all
+              queue.put(spans); // build queue
             }
-            firstTime = false;
-          }
-          else {
-            while (queue.size() != 0 && top().doc() < target) 
-            {
-              if (top().skipTo(target)) {
-                queue.adjustTop();
-              }
-              else {
-                all.remove(queue.pop());
-              }
+            else {
+              all.remove(i--);
             }
           }
-
-          return queue.size() != 0;
+          firstTime = false;
+        }
+        else {
+          while (queue.size() != 0 && top().doc() < target) 
+          {
+            if (top().skipTo(target)) {
+              queue.adjustTop();
+            }
+            else {
+              all.remove(queue.pop());
+            }
+          }
         }
 
-        public int doc() {
-          return top().doc();
-        }
+        return queue.size() != 0;
+      }
 
-        public int start() {
-          return top().start();
-        }
+      public int doc() {
+        return top().doc();
+      }
 
-        public int end() {
-          return top().end();
-        }
+      public int start() {
+        return top().start();
+      }
 
-        public float score() {
-          return top().score() * getBoost();
-        }
+      public int end() {
+        return top().end();
+      }
 
-        public String toString() {
-          return "spans(" + SpanOrQuery.this + ")@" +
-                 (firstTime ? "START"
-                  : (queue.size() > 0 ? (doc() + ":" + start() + "-" + end())
-                     : "END"));
-        }
+      public float score() {
+        return top().score() * getBoost();
+      }
 
-        public Explanation explain()
-          throws IOException 
-        {
-          if (getBoost() == 1.0f)
-            return top().explain();
+      public String toString() {
+        return "spans(" + SpanOrQuery.this + ")@" +
+               (firstTime ? "START"
+                : (queue.size() > 0 ? (doc() + ":" + start() + "-" + end())
+                   : "END"));
+      }
 
-          Explanation result = new Explanation(0,
-                                               "weight(" + toString() +
-                                               "), product of:");
+      public Explanation explain()
+        throws IOException 
+      {
+        if (getBoost() == 1.0f)
+          return top().explain();
 
-          Explanation boostExpl = new Explanation(getBoost(), "boost");
-          result.addDetail(boostExpl);
+        Explanation result = new Explanation(0,
+                                             "weight(" + toString() +
+                                             "), product of:");
 
-          Explanation inclExpl = top().explain();
-          result.addDetail(inclExpl);
+        Explanation boostExpl = new Explanation(getBoost(), "boost");
+        result.addDetail(boostExpl);
 
-          result.setValue(boostExpl.getValue() * inclExpl.getValue());
-          return result;
-        }
+        Explanation inclExpl = top().explain();
+        result.addDetail(inclExpl);
+
+        result.setValue(boostExpl.getValue() * inclExpl.getValue());
+        return result;
+      }
     };
   }
 }

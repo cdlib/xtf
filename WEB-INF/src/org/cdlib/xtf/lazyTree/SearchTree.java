@@ -382,7 +382,7 @@ public class SearchTree extends LazyDocument
     hitsByLocation = new Snippet[hitsByScore.length];
     System.arraycopy(hitsByScore, 0, hitsByLocation, 0, hitsByScore.length);
     Arrays.sort(hitsByLocation,
-                new Comparator() 
+      new Comparator() 
       {
         public int compare(Object o1, Object o2) 
         {
@@ -1151,8 +1151,8 @@ public class SearchTree extends LazyDocument
   {
     // Figure out the first hit that involves this node.
     int hitNum = Arrays.binarySearch(hitsByLocation, null,
-                                     new Comparator() 
-    {
+      new Comparator() 
+      {
         public int compare(Object o1, Object o2) {
           return ((Snippet)o1).endNode < nodeNum ? -1 : 1;
         }

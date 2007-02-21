@@ -86,69 +86,69 @@ public class SpanFirstQuery extends SpanQuery
   {
     return new Spans() 
     {
-        private Spans spans = match.getSpans(reader, searcher);
+      private Spans spans = match.getSpans(reader, searcher);
 
-        public boolean next()
-          throws IOException 
-        {
-          while (spans.next()) { // scan to next match
-            if (end() <= end)
-              return true;
-          }
-          return false;
-        }
-
-        public boolean skipTo(int target)
-          throws IOException 
-        {
-          if (!spans.skipTo(target))
-            return false;
-
-          if (spans.end() <= end) // there is a match
+      public boolean next()
+        throws IOException 
+      {
+        while (spans.next()) { // scan to next match
+          if (end() <= end)
             return true;
-
-          return next(); // scan to next match
         }
+        return false;
+      }
 
-        public int doc() {
-          return spans.doc();
-        }
+      public boolean skipTo(int target)
+        throws IOException 
+      {
+        if (!spans.skipTo(target))
+          return false;
 
-        public int start() {
-          return spans.start();
-        }
+        if (spans.end() <= end) // there is a match
+          return true;
 
-        public int end() {
-          return spans.end();
-        }
+        return next(); // scan to next match
+      }
 
-        public float score() {
-          return spans.score() * getBoost();
-        }
+      public int doc() {
+        return spans.doc();
+      }
 
-        public String toString() {
-          return "spans(" + SpanFirstQuery.this.toString() + ")";
-        }
+      public int start() {
+        return spans.start();
+      }
 
-        public Explanation explain()
-          throws IOException 
-        {
-          if (getBoost() == 1.0f)
-            return spans.explain();
+      public int end() {
+        return spans.end();
+      }
 
-          Explanation result = new Explanation(0,
-                                               "weight(" + toString() +
-                                               "), product of:");
+      public float score() {
+        return spans.score() * getBoost();
+      }
 
-          Explanation boostExpl = new Explanation(getBoost(), "boost");
-          result.addDetail(boostExpl);
+      public String toString() {
+        return "spans(" + SpanFirstQuery.this.toString() + ")";
+      }
 
-          Explanation inclExpl = spans.explain();
-          result.addDetail(inclExpl);
+      public Explanation explain()
+        throws IOException 
+      {
+        if (getBoost() == 1.0f)
+          return spans.explain();
 
-          result.setValue(boostExpl.getValue() * inclExpl.getValue());
-          return result;
-        }
-      };
+        Explanation result = new Explanation(0,
+                                             "weight(" + toString() +
+                                             "), product of:");
+
+        Explanation boostExpl = new Explanation(getBoost(), "boost");
+        result.addDetail(boostExpl);
+
+        Explanation inclExpl = spans.explain();
+        result.addDetail(inclExpl);
+
+        result.setValue(boostExpl.getValue() * inclExpl.getValue());
+        return result;
+      }
+    };
   }
 }

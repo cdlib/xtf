@@ -189,77 +189,77 @@ public class SnippetMaker
       getText ? termMode : ContextMarker.MARK_NO_TERMS,
       stopSet,
       new MarkCollector() 
-    {
-          private Snippet curSnippet;
-          private MarkPos prevPos = null;
-          private StringBuffer buf = getText ? new StringBuffer() : null;
+      {
+        private Snippet curSnippet;
+        private MarkPos prevPos = null;
+        private StringBuffer buf = getText ? new StringBuffer() : null;
 
-          private void copyUpTo(MarkPos pos) {
-            if (prevPos != null)
-              buf.append(mapXMLChars(prevPos.getTextTo(pos)));
-            prevPos = pos;
+        private void copyUpTo(MarkPos pos) {
+          if (prevPos != null)
+            buf.append(mapXMLChars(prevPos.getTextTo(pos)));
+          prevPos = pos;
+        }
+
+        public void beginField(MarkPos pos) {
+        }
+
+        public void beginContext(MarkPos pos, Span span) {
+          if (getText)
+            buf.setLength(0);
+          prevPos = pos;
+        }
+
+        public void term(MarkPos startPos, MarkPos endPos, String term) 
+        {
+          if (getText) {
+            copyUpTo(startPos);
+            buf.append("<term>");
+            buf.append(startPos.getTextTo(endPos));
+            buf.append("</term>");
           }
+          prevPos = endPos;
+        }
 
-          public void beginField(MarkPos pos) {
-          }
-
-          public void beginContext(MarkPos pos, Span span) {
-            if (getText)
-              buf.setLength(0);
-            prevPos = pos;
-          }
-
-          public void term(MarkPos startPos, MarkPos endPos, String term) 
-          {
-            if (getText) {
-              copyUpTo(startPos);
-              buf.append("<term>");
-              buf.append(startPos.getTextTo(endPos));
-              buf.append("</term>");
-            }
-            prevPos = endPos;
-          }
-
-          public void beginSpan(MarkPos pos, Span span) 
-          {
-            if (getText) {
-              if (maxContext > 0)
-                copyUpTo(pos);
-              else
-                prevPos = pos;
-              buf.append("<hit>");
-            }
-            curSnippet = snippets[span.rank] = new Snippet();
-            XtfChunkMarkPos xp = (XtfChunkMarkPos)pos;
-            curSnippet.startNode = xp.nodeNumber;
-            curSnippet.startOffset = xp.wordOffset;
-            curSnippet.sectionType = xp.sectionType;
-            curSnippet.rank = span.rank;
-            curSnippet.score = span.score;
-          }
-
-          public void endSpan(MarkPos pos) 
-          {
-            if (getText) {
+        public void beginSpan(MarkPos pos, Span span) 
+        {
+          if (getText) {
+            if (maxContext > 0)
               copyUpTo(pos);
-              buf.append("</hit>");
-            }
-            XtfChunkMarkPos xp = (XtfChunkMarkPos)pos;
-            curSnippet.endNode = xp.nodeNumber;
-            curSnippet.endOffset = xp.wordOffset;
+            else
+              prevPos = pos;
+            buf.append("<hit>");
           }
+          curSnippet = snippets[span.rank] = new Snippet();
+          XtfChunkMarkPos xp = (XtfChunkMarkPos)pos;
+          curSnippet.startNode = xp.nodeNumber;
+          curSnippet.startOffset = xp.wordOffset;
+          curSnippet.sectionType = xp.sectionType;
+          curSnippet.rank = span.rank;
+          curSnippet.score = span.score;
+        }
 
-          public void endContext(MarkPos pos) 
-          {
-            if (getText) {
-              copyUpTo(pos);
-              curSnippet.text = buf.toString();
-            }
+        public void endSpan(MarkPos pos) 
+        {
+          if (getText) {
+            copyUpTo(pos);
+            buf.append("</hit>");
           }
+          XtfChunkMarkPos xp = (XtfChunkMarkPos)pos;
+          curSnippet.endNode = xp.nodeNumber;
+          curSnippet.endOffset = xp.wordOffset;
+        }
 
-          public void endField(MarkPos pos) {
+        public void endContext(MarkPos pos) 
+        {
+          if (getText) {
+            copyUpTo(pos);
+            curSnippet.text = buf.toString();
           }
-        });
+        }
+
+        public void endField(MarkPos pos) {
+        }
+      });
 
     // Make sure all the snippets got marked.
     for (int i = 0; i < nSnippets; i++)
@@ -304,107 +304,107 @@ public class SnippetMaker
         termMode,
         stopSet,
         new MarkCollector() 
-      {
-            private MarkPos prevPos = null;
-            private boolean inContext = false;
-            private boolean inSpan = false;
-            private int contextSize;
-            private MarkPos contextStart;
+        {
+          private MarkPos prevPos = null;
+          private boolean inContext = false;
+          private boolean inSpan = false;
+          private int contextSize;
+          private MarkPos contextStart;
 
-            private void copyUpTo(MarkPos pos) 
+          private void copyUpTo(MarkPos pos) 
+          {
+            if (prevPos != null) 
             {
-              if (prevPos != null) 
-              {
-                String toAdd = ((BoundedMarkPos)prevPos).getTextTo(pos,
-                                                                   inContext ||
-                                                                   inSpan);
+              String toAdd = ((BoundedMarkPos)prevPos).getTextTo(pos,
+                                                                 inContext ||
+                                                                 inSpan);
 
-                // Don't map XML chars here, since the text indexer did it
-                // for us.
-                //
-                buf.append(toAdd);
-                if (inContext)
-                  contextSize += toAdd.length();
-              }
-              prevPos = pos;
+              // Don't map XML chars here, since the text indexer did it
+              // for us.
+              //
+              buf.append(toAdd);
+              if (inContext)
+                contextSize += toAdd.length();
             }
+            prevPos = pos;
+          }
 
-            public void beginField(MarkPos pos) {
-              prevPos = pos;
-            }
+          public void beginField(MarkPos pos) {
+            prevPos = pos;
+          }
 
-            public void beginContext(MarkPos pos, Span span) 
-            {
-              copyUpTo(pos);
-              buf.append("<snippet rank=\"");
+          public void beginContext(MarkPos pos, Span span) 
+          {
+            copyUpTo(pos);
+            buf.append("<snippet rank=\"");
+            buf.append(Integer.toString(span.rank + 1));
+            buf.append("\" score=\"");
+            buf.append(Integer.toString((int)(span.score * 100)));
+            buf.append("\">");
+
+            inContext = true;
+            contextSize = 0;
+            contextStart = pos;
+          }
+
+          public void term(MarkPos startPos, MarkPos endPos, String term) {
+            copyUpTo(startPos);
+            String toAdd = startPos.getTextTo(endPos);
+            buf.append("<term>");
+            buf.append(toAdd);
+            buf.append("</term>");
+            if (inContext)
+              contextSize += toAdd.length();
+            prevPos = endPos;
+          }
+
+          public void beginSpan(MarkPos pos, Span span) 
+          {
+            copyUpTo(pos);
+            buf.append("<hit");
+            if (!inContext) {
+              buf.append(" rank=\"");
               buf.append(Integer.toString(span.rank + 1));
               buf.append("\" score=\"");
               buf.append(Integer.toString((int)(span.score * 100)));
-              buf.append("\">");
-
-              inContext = true;
-              contextSize = 0;
-              contextStart = pos;
+              buf.append("\"");
             }
+            buf.append(">");
+            inSpan = true;
+          }
 
-            public void term(MarkPos startPos, MarkPos endPos, String term) {
-              copyUpTo(startPos);
-              String toAdd = startPos.getTextTo(endPos);
-              buf.append("<term>");
-              buf.append(toAdd);
-              buf.append("</term>");
-              if (inContext)
-                contextSize += toAdd.length();
-              prevPos = endPos;
-            }
+          public void endSpan(MarkPos pos) {
+            copyUpTo(pos);
+            buf.append("</hit>");
+            inSpan = false;
+          }
 
-            public void beginSpan(MarkPos pos, Span span) 
+          public void endContext(MarkPos pos) 
+          {
+            copyUpTo(pos);
+            buf.append("</snippet>");
+            if (contextSize > maxContext) 
             {
-              copyUpTo(pos);
-              buf.append("<hit");
-              if (!inContext) {
-                buf.append(" rank=\"");
-                buf.append(Integer.toString(span.rank + 1));
-                buf.append("\" score=\"");
-                buf.append(Integer.toString((int)(span.score * 100)));
-                buf.append("\"");
-              }
-              buf.append(">");
-              inSpan = true;
-            }
+              @SuppressWarnings("unused")
+              int posDiff = contextStart.countTextTo(pos);
 
-            public void endSpan(MarkPos pos) {
-              copyUpTo(pos);
-              buf.append("</hit>");
-              inSpan = false;
+              //
+              // NOTE: Do NOT re-enable the assert below. Why? Consider
+              //       the situation where the matching search terms are
+              //       simply very far apart, and there's no way to
+              //       make a snippet that contains all of them within
+              //       the specified maxContext. I think you still want
+              //       the whole hit in this case.       
+              //
+              //assert false : "ContextMarker made snippet too big";
             }
+            inContext = false;
+          }
 
-            public void endContext(MarkPos pos) 
-            {
-              copyUpTo(pos);
-              buf.append("</snippet>");
-              if (contextSize > maxContext) 
-              {
-                @SuppressWarnings("unused")
-                int posDiff = contextStart.countTextTo(pos);
-
-                //
-                // NOTE: Do NOT re-enable the assert below. Why? Consider
-                //       the situation where the matching search terms are
-                //       simply very far apart, and there's no way to
-                //       make a snippet that contains all of them within
-                //       the specified maxContext. I think you still want
-                //       the whole hit in this case.       
-                //
-                //assert false : "ContextMarker made snippet too big";
-              }
-              inContext = false;
-            }
-
-            public void endField(MarkPos pos) {
-              copyUpTo(pos);
-            }
-          });
+          public void endField(MarkPos pos) {
+            copyUpTo(pos);
+          }
+        });
 
       String strVal = buf.toString();
       return strVal;

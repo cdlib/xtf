@@ -125,16 +125,16 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter
     // do perform bi-gramming.
     //
     return rewriteClauses(q,
-                          q.getClauses(),
-                          true,
-                          true,
-                          0,
-                          new SpanClauseJoiner() 
-    {
+      q.getClauses(),
+      true,
+      true,
+      0,
+      new SpanClauseJoiner() 
+      {
         public SpanQuery join(SpanQuery[] clauses) {
           return new SpanExactQuery(clauses);
         }
-    });
+      });
   } // rewrite()
 
   /** Rewrite a "more like this" query */

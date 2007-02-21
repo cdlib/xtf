@@ -322,17 +322,17 @@ public class XTFTextAnalyzer extends Analyzer
         // field start/end markers during the bi-gramming process.
         //
         result = new BigramStopFilter(result, stopSet) 
-          {
-            protected boolean isStopWord(String word) {
-              if (word.length() > 0 &&
-                  word.charAt(0) == Constants.FIELD_START_MARKER)
-                word = word.substring(1);
-              if (word.length() > 0 &&
-                  word.charAt(word.length() - 1) == Constants.FIELD_END_MARKER)
-                word = word.substring(0, word.length() - 1);
-              return super.isStopWord(word);
-            }
-          };
+        {
+          protected boolean isStopWord(String word) {
+            if (word.length() > 0 &&
+                word.charAt(0) == Constants.FIELD_START_MARKER)
+              word = word.substring(1);
+            if (word.length() > 0 &&
+                word.charAt(word.length() - 1) == Constants.FIELD_END_MARKER)
+              word = word.substring(0, word.length() - 1);
+            return super.isStopWord(word);
+          }
+        };
       }
     }
 

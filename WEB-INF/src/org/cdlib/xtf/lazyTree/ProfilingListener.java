@@ -140,7 +140,7 @@ public class ProfilingListener implements TraceListener
     // Make a list of all the values.
     ArrayList list = new ArrayList(countMap.values());
     Collections.sort(list,
-                     new Comparator() 
+      new Comparator() 
       {
         public int compare(Object o1, Object o2) {
           ProfileCount p1 = (ProfileCount)o1;

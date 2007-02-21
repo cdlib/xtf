@@ -199,16 +199,16 @@ public class BigramQueryRewriter extends QueryRewriter
     // do perform bi-gramming.
     //
     return rewriteClauses(q,
-                          q.getClauses(),
-                          true,
-                          true,
-                          q.getSlop(),
-                          new SpanClauseJoiner() 
-    {
+      q.getClauses(),
+      true,
+      true,
+      q.getSlop(),
+      new SpanClauseJoiner() 
+      {
         public SpanQuery join(SpanQuery[] clauses) {
           return new SpanNearQuery(clauses, q.getSlop(), false);
         }
-    });
+      });
   } // rewrite()
 
   /**
@@ -224,16 +224,16 @@ public class BigramQueryRewriter extends QueryRewriter
     // do perform bi-gramming.
     //
     return rewriteClauses(q,
-                          q.getClauses(),
-                          true,
-                          true,
-                          q.getSlop(),
-                          new SpanClauseJoiner() 
-    {
+      q.getClauses(),
+      true,
+      true,
+      q.getSlop(),
+      new SpanClauseJoiner() 
+      {
         public SpanQuery join(SpanQuery[] clauses) {
           return new SpanOrNearQuery(clauses, q.getSlop(), false);
         }
-    });
+      });
   } // rewrite()
 
   /**
@@ -249,16 +249,16 @@ public class BigramQueryRewriter extends QueryRewriter
     // avoid bi-gramming.
     //
     return rewriteClauses(q,
-                          q.getClauses(),
-                          true,
-                          false,
-                          0,
-                          new SpanClauseJoiner() 
-    {
+      q.getClauses(),
+      true,
+      false,
+      0,
+      new SpanClauseJoiner() 
+      {
         public SpanQuery join(SpanQuery[] clauses) {
           return new SpanOrQuery(clauses);
         }
-    });
+      });
   } // rewrite()
 
   /**

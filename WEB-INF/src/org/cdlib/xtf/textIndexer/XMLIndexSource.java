@@ -166,25 +166,25 @@ public class XMLIndexSource extends IndexSource
     try 
     {
       return new IndexRecord() 
+      {
+        public InputSource xmlSource()
+          throws IOException 
         {
-          public InputSource xmlSource()
-            throws IOException 
-          {
-            return filterInput();
-          }
+          return filterInput();
+        }
 
-          public int recordNum() {
-            return 0;
-          }
+        public int recordNum() {
+          return 0;
+        }
 
-          public int percentDone() {
-            return 100;
-          }
+        public int percentDone() {
+          return 100;
+        }
 
-          public StructuredStore lazyStore() {
-            return lazyStore;
-          }
-        };
+        public StructuredStore lazyStore() {
+          return lazyStore;
+        }
+      };
     }
     finally {
       isDone = true;

@@ -79,12 +79,12 @@ public abstract class XtfQueryRewriter extends QueryRewriter
     // would get rid of the 'exactness' requirement.
     //
     return rewriteClauses(q, q.getClauses(), false,
-                          new SpanClauseJoiner() 
-    {
+      new SpanClauseJoiner() 
+      {
         public SpanQuery join(SpanQuery[] clauses) {
           return new SpanExactQuery(clauses);
         }
-    });
+      });
   }
 
   /** Rewrite a "more like this" query */

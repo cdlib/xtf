@@ -611,87 +611,87 @@ public class MoreLikeThisQuery extends Query
       final Weight weight = x;
       return new Weight() 
       {
-          // pass these methods through to enclosed query's weight
-          public float getValue() {
-            return weight.getValue();
-          }
+        // pass these methods through to enclosed query's weight
+        public float getValue() {
+          return weight.getValue();
+        }
 
-          public float sumOfSquaredWeights()
-            throws IOException 
+        public float sumOfSquaredWeights()
+          throws IOException 
+        {
+          return weight.sumOfSquaredWeights();
+        }
+
+        public void normalize(float v) {
+          weight.normalize(v);
+        }
+
+        public Explanation explain(IndexReader ir, int i)
+          throws IOException 
+        {
+          Explanation innerExpl = weight.explain(ir, i);
+          Explanation wrapperExpl = new Explanation(innerExpl.getValue(),
+                                                    innerDescrip);
+          wrapperExpl.addDetail(innerExpl);
+          Explanation outerExpl = new Explanation(innerExpl.getValue(),
+                                                  outerDescrip);
+          outerExpl.addDetail(wrapperExpl);
+          return outerExpl;
+        }
+
+        // return this query
+        public Query getQuery() {
+          return MoreLikeWrapper.this;
+        }
+
+        // return a scorer that overrides the enclosed query's score if
+        // the given hit has been filtered out.
+        public Scorer scorer(IndexReader indexReader)
+          throws IOException 
+        {
+          final Scorer scorer = weight.scorer(indexReader);
+          return new Scorer(innerQuery.getSimilarity(searcher)) 
           {
-            return weight.sumOfSquaredWeights();
-          }
-
-          public void normalize(float v) {
-            weight.normalize(v);
-          }
-
-          public Explanation explain(IndexReader ir, int i)
-            throws IOException 
-          {
-            Explanation innerExpl = weight.explain(ir, i);
-            Explanation wrapperExpl = new Explanation(innerExpl.getValue(),
-                                                      innerDescrip);
-            wrapperExpl.addDetail(innerExpl);
-            Explanation outerExpl = new Explanation(innerExpl.getValue(),
-                                                    outerDescrip);
-            outerExpl.addDetail(wrapperExpl);
-            return outerExpl;
-          }
-
-          // return this query
-          public Query getQuery() {
-            return MoreLikeWrapper.this;
-          }
-
-          // return a scorer that overrides the enclosed query's score if
-          // the given hit has been filtered out.
-          public Scorer scorer(IndexReader indexReader)
-            throws IOException 
-          {
-            final Scorer scorer = weight.scorer(indexReader);
-            return new Scorer(innerQuery.getSimilarity(searcher)) 
+            // pass these methods through to the enclosed scorer
+            public boolean next()
+              throws IOException 
             {
-                // pass these methods through to the enclosed scorer
-                public boolean next()
-                  throws IOException 
-                {
-                  return scorer.next();
-                }
+              return scorer.next();
+            }
 
-                public int doc() {
-                  return scorer.doc();
-                }
+            public int doc() {
+              return scorer.doc();
+            }
 
-                public boolean skipTo(int i)
-                  throws IOException 
-                {
-                  return scorer.skipTo(i);
-                }
+            public boolean skipTo(int i)
+              throws IOException 
+            {
+              return scorer.skipTo(i);
+            }
 
-                // if the document has been filtered out, set score to 0.0
-                public float score()
-                  throws IOException 
-                {
-                  return (targetDoc != scorer.doc()) ? scorer.score() : 0.0f;
-                }
+            // if the document has been filtered out, set score to 0.0
+            public float score()
+              throws IOException 
+            {
+              return (targetDoc != scorer.doc()) ? scorer.score() : 0.0f;
+            }
 
-                // add an explanation about whether the document was filtered
-                public Explanation explain(int i)
-                  throws IOException 
-                {
-                  Explanation exp = scorer.explain(i);
-                  if (targetDoc != i)
-                    exp.setDescription(
-                      "allowed by filter: " + exp.getDescription());
-                  else
-                    exp.setDescription(
-                      "removed by filter: " + exp.getDescription());
-                  return exp;
-                }
-              };
-          }
-        };
+            // add an explanation about whether the document was filtered
+            public Explanation explain(int i)
+              throws IOException 
+            {
+              Explanation exp = scorer.explain(i);
+              if (targetDoc != i)
+                exp.setDescription(
+                  "allowed by filter: " + exp.getDescription());
+              else
+                exp.setDescription(
+                  "removed by filter: " + exp.getDescription());
+              return exp;
+            }
+          };
+        }
+      };
     }
 
     public Query getQuery() {

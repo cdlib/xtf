@@ -97,97 +97,97 @@ public class SpanSectionTypeQuery extends SpanQuery
   {
     return new Spans() 
     {
-        private Spans typeSpans = typeQuery.getSpans(reader, searcher);
-        private boolean moreType = true;
-        private Spans textSpans = textQuery.getSpans(reader, searcher);
-        private boolean moreText = true;
-        private boolean firstTime = true;
+      private Spans typeSpans = typeQuery.getSpans(reader, searcher);
+      private boolean moreType = true;
+      private Spans textSpans = textQuery.getSpans(reader, searcher);
+      private boolean moreText = true;
+      private boolean firstTime = true;
 
-        public boolean next()
-          throws IOException 
+      public boolean next()
+        throws IOException 
+      {
+        if (moreText) // move to next text
+          moreText = textSpans.next();
+        if (firstTime) {
+          moreType = typeSpans.next();
+          firstTime = false;
+        }
+
+        return advance();
+      }
+
+      public boolean skipTo(int target)
+        throws IOException 
+      {
+        moreText = textSpans.skipTo(target);
+        moreType = typeSpans.skipTo(target);
+        return advance();
+      }
+
+      private boolean advance()
+        throws IOException 
+      {
+        while (moreText && moreType) 
         {
-          if (moreText) // move to next text
-            moreText = textSpans.next();
-          if (firstTime) {
-            moreType = typeSpans.next();
-            firstTime = false;
-          }
+          // Advance text to type, or type to text. Note that the type
+          // query MUST support skipTo(), that is, it must return documents
+          // in order. Otherwise, the logic below totally breaks. Note that
+          // BooleanQuery, in particular, does not meet this criterion.
+          //
+          final int textChunk = textSpans.doc();
+          final int typeChunk = typeSpans.doc();
 
-          return advance();
+          if (textChunk < typeChunk)
+            moreText = textSpans.skipTo(typeChunk);
+          else if (textChunk > typeChunk)
+            moreType = typeSpans.skipTo(textChunk);
+          else
+            break;
         }
 
-        public boolean skipTo(int target)
-          throws IOException 
-        {
-          moreText = textSpans.skipTo(target);
-          moreType = typeSpans.skipTo(target);
-          return advance();
-        }
+        return moreText && moreType;
+      }
 
-        private boolean advance()
-          throws IOException 
-        {
-          while (moreText && moreType) 
-          {
-            // Advance text to type, or type to text. Note that the type
-            // query MUST support skipTo(), that is, it must return documents
-            // in order. Otherwise, the logic below totally breaks. Note that
-            // BooleanQuery, in particular, does not meet this criterion.
-            //
-            final int textChunk = textSpans.doc();
-            final int typeChunk = typeSpans.doc();
+      public int doc() {
+        return textSpans.doc();
+      }
 
-            if (textChunk < typeChunk)
-              moreText = textSpans.skipTo(typeChunk);
-            else if (textChunk > typeChunk)
-              moreType = typeSpans.skipTo(textChunk);
-            else
-              break;
-          }
+      public int start() {
+        return textSpans.start();
+      }
 
-          return moreText && moreType;
-        }
+      public int end() {
+        return textSpans.end();
+      }
 
-        public int doc() {
-          return textSpans.doc();
-        }
+      public float score() {
+        return textSpans.score() * getBoost();
+      }
 
-        public int start() {
-          return textSpans.start();
-        }
+      public String toString() {
+        return textSpans.toString();
+      }
 
-        public int end() {
-          return textSpans.end();
-        }
+      public Explanation explain()
+        throws IOException 
+      {
+        if (getBoost() == 1.0f)
+          return textSpans.explain();
 
-        public float score() {
-          return textSpans.score() * getBoost();
-        }
+        Explanation result = new Explanation(0,
+                                             "weight(" + toString() +
+                                             "), product of:");
 
-        public String toString() {
-          return textSpans.toString();
-        }
+        Explanation boostExpl = new Explanation(getBoost(), "boost");
+        result.addDetail(boostExpl);
 
-        public Explanation explain()
-          throws IOException 
-        {
-          if (getBoost() == 1.0f)
-            return textSpans.explain();
+        Explanation inclExpl = textSpans.explain();
+        result.addDetail(inclExpl);
 
-          Explanation result = new Explanation(0,
-                                               "weight(" + toString() +
-                                               "), product of:");
-
-          Explanation boostExpl = new Explanation(getBoost(), "boost");
-          result.addDetail(boostExpl);
-
-          Explanation inclExpl = textSpans.explain();
-          result.addDetail(inclExpl);
-
-          result.setValue(boostExpl.getValue() * inclExpl.getValue());
-          return result;
-        }
-      };
+        result.setValue(boostExpl.getValue() * inclExpl.getValue());
+        return result;
+      }
+    };
   }
 
   public String getField() {

@@ -142,14 +142,14 @@ public class IdxTreeDictMaker
 
       // Perform the update.
       spellWriter.flushQueuedWords(new ProgressTracker() 
-        {
-          public void report(int pctDone, String descrip) {
-            String pctTxt = Integer.toString(pctDone);
-            while (pctTxt.length() < 3)
-              pctTxt = " " + pctTxt;
-            Trace.info("[" + pctTxt + "%] " + descrip);
-          }
-        });
+      {
+        public void report(int pctDone, String descrip) {
+          String pctTxt = Integer.toString(pctDone);
+          while (pctTxt.length() < 3)
+            pctTxt = " " + pctTxt;
+          Trace.info("[" + pctTxt + "%] " + descrip);
+        }
+      });
     } //  try( to open the specified index )
 
     catch (Exception e) {

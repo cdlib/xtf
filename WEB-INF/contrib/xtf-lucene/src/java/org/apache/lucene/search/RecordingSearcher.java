@@ -67,14 +67,14 @@ public class RecordingSearcher extends IndexSearcher
       final BitSet bits = filter.bits(reader);
       collector = new SpanHitCollector() 
       {
-          private final SpanHitCollector mresults = results;
+        private final SpanHitCollector mresults = results;
 
-          public final void collect(int doc, float score, FieldSpanSource src) 
-          {
-            if (bits.get(doc)) { // skip docs not in bits
-              mresults.collect(doc, score, src);
-            }
+        public final void collect(int doc, float score, FieldSpanSource src) 
+        {
+          if (bits.get(doc)) { // skip docs not in bits
+            mresults.collect(doc, score, src);
           }
+        }
       };
     }
 

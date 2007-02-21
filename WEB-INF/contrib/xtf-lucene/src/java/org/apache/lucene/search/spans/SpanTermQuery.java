@@ -91,100 +91,100 @@ public class SpanTermQuery extends SpanQuery
 
     return new Spans() 
     {
-        private TermPositions positions = reader.termPositions(term);
-        private int doc = -1;
-        private int freq;
-        private int count;
-        private int position;
+      private TermPositions positions = reader.termPositions(term);
+      private int doc = -1;
+      private int freq;
+      private int count;
+      private int position;
 
-        public boolean next()
-          throws IOException 
+      public boolean next()
+        throws IOException 
+      {
+        if (count == freq) 
         {
-          if (count == freq) 
-          {
-            if (!positions.next()) {
-              doc = Integer.MAX_VALUE;
-              return false;
-            }
-            doc = positions.doc();
-            freq = positions.freq();
-            count = 0;
-          }
-          position = positions.nextPosition();
-          count++;
-          return true;
-        }
-
-        public boolean skipTo(int target)
-          throws IOException 
-        {
-          if (!positions.skipTo(target)) {
+          if (!positions.next()) {
             doc = Integer.MAX_VALUE;
             return false;
           }
-
           doc = positions.doc();
           freq = positions.freq();
           count = 0;
+        }
+        position = positions.nextPosition();
+        count++;
+        return true;
+      }
 
-          position = positions.nextPosition();
-          count++;
-
-          return true;
+      public boolean skipTo(int target)
+        throws IOException 
+      {
+        if (!positions.skipTo(target)) {
+          doc = Integer.MAX_VALUE;
+          return false;
         }
 
-        public int doc() {
-          return doc;
-        }
+        doc = positions.doc();
+        freq = positions.freq();
+        count = 0;
 
-        public int start() {
-          return position;
-        }
+        position = positions.nextPosition();
+        count++;
 
-        public int end() {
-          return position + termLength;
-        }
+        return true;
+      }
 
-        public float score() {
-          return value * Similarity.decodeNorm(fieldNorms[doc]);
-        }
+      public int doc() {
+        return doc;
+      }
 
-        public String toString() {
-          return "spans(" + SpanTermQuery.this.toString() + ")@" +
-                 (doc == -1 ? "START"
-                  : (doc == Integer.MAX_VALUE) ? "END" : doc + ":" + position);
-        }
+      public int start() {
+        return position;
+      }
 
-        public Explanation explain()
-          throws IOException 
-        {
-          Explanation result = new Explanation();
-          result.setDescription("weight(" + toString() + "), product of:");
+      public int end() {
+        return position + termLength;
+      }
 
-          // Explain idf
-          Explanation idfExpl = new Explanation(idf,
-                                                "idf(docFreq=" +
-                                                searcher.docFreq(term) + ")");
-          result.addDetail(idfExpl);
+      public float score() {
+        return value * Similarity.decodeNorm(fieldNorms[doc]);
+      }
 
-          // Explain boost
-          Explanation boostExpl = new Explanation(getBoost(), "boost");
-          if (getBoost() != 1.0f)
-            result.addDetail(boostExpl);
+      public String toString() {
+        return "spans(" + SpanTermQuery.this.toString() + ")@" +
+               (doc == -1 ? "START"
+                : (doc == Integer.MAX_VALUE) ? "END" : doc + ":" + position);
+      }
 
-          // Explain norm 
-          Explanation fieldNormExpl = new Explanation();
-          float fieldNorm = fieldNorms != null
-                            ? Similarity.decodeNorm(fieldNorms[doc]) : 0.0f;
-          fieldNormExpl.setValue(fieldNorm);
-          fieldNormExpl.setDescription(
-            "fieldNorm(field=" + getField() + ", doc=" + doc + ")");
-          result.addDetail(fieldNormExpl);
+      public Explanation explain()
+        throws IOException 
+      {
+        Explanation result = new Explanation();
+        result.setDescription("weight(" + toString() + "), product of:");
 
-          result.setValue(
-            boostExpl.getValue() * idfExpl.getValue() * fieldNormExpl.getValue());
-          return result;
-        }
+        // Explain idf
+        Explanation idfExpl = new Explanation(idf,
+                                              "idf(docFreq=" +
+                                              searcher.docFreq(term) + ")");
+        result.addDetail(idfExpl);
+
+        // Explain boost
+        Explanation boostExpl = new Explanation(getBoost(), "boost");
+        if (getBoost() != 1.0f)
+          result.addDetail(boostExpl);
+
+        // Explain norm 
+        Explanation fieldNormExpl = new Explanation();
+        float fieldNorm = fieldNorms != null
+                          ? Similarity.decodeNorm(fieldNorms[doc]) : 0.0f;
+        fieldNormExpl.setValue(fieldNorm);
+        fieldNormExpl.setDescription(
+          "fieldNorm(field=" + getField() + ", doc=" + doc + ")");
+        result.addDetail(fieldNormExpl);
+
+        result.setValue(
+          boostExpl.getValue() * idfExpl.getValue() * fieldNormExpl.getValue());
+        return result;
+      }
     };
   }
 }

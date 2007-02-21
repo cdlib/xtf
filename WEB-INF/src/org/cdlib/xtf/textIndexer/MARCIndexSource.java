@@ -190,25 +190,25 @@ public class MARCIndexSource extends IndexSource
     // Okay, make a record out of it.
     final Reader reader = new StringReader(parsedMarcXML);
     return new IndexRecord() 
+    {
+      public InputSource xmlSource()
+        throws IOException 
       {
-        public InputSource xmlSource()
-          throws IOException 
-        {
-          return new InputSource(reader);
-        }
+        return new InputSource(reader);
+      }
 
-        public int recordNum() {
-          return recordNum;
-        }
+      public int recordNum() {
+        return recordNum;
+      }
 
-        public int percentDone() {
-          return (int)((rawStream.nRead() + 1) * 100 / fileSize);
-        }
+      public int percentDone() {
+        return (int)((rawStream.nRead() + 1) * 100 / fileSize);
+      }
 
-        public StructuredStore lazyStore() {
-          return null;
-        }
-      };
+      public StructuredStore lazyStore() {
+        return null;
+      }
+    };
   } // nextRecord()
 
   private void openFile()

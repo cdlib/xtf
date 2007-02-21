@@ -130,15 +130,15 @@ public class FakeServletRequest implements HttpServletRequest
   {
     return new Enumeration() 
     {
-        public boolean hasMoreElements() {
-          return false;
-        }
+      public boolean hasMoreElements() {
+        return false;
+      }
 
-        public Object nextElement() {
-          assert false;
-          return null;
-        }
-      };
+      public Object nextElement() {
+        assert false;
+        return null;
+      }
+    };
   }
 
   public Enumeration getHeaders(String name) {
@@ -312,14 +312,14 @@ public class FakeServletRequest implements HttpServletRequest
     final Iterator iter = params.iterator();
     return new Enumeration() 
     {
-        public boolean hasMoreElements() {
-          return iter.hasNext();
-        }
+      public boolean hasMoreElements() {
+        return iter.hasNext();
+      }
 
-        public Object nextElement() {
-          return ((Attrib)iter.next()).key;
-        }
-      };
+      public Object nextElement() {
+        return ((Attrib)iter.next()).key;
+      }
+    };
   }
 
   public String[] getParameterValues(String name) {

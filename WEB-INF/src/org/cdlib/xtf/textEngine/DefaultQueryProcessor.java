@@ -287,7 +287,7 @@ public class DefaultQueryProcessor extends QueryProcessor
 
     // Now for the big show... go get the hits!
     searcher.search(finalQuery, null,
-                    new SpanHitCollector() 
+      new SpanHitCollector() 
       {
         public void collect(int doc, float score, FieldSpanSource spanSource) 
         {

@@ -112,133 +112,133 @@ public class SpanChunkedNotQuery extends SpanQuery
   {
     return new Spans() 
     {
-        private Spans includeSpans = include.getSpans(reader, searcher);
-        private boolean moreInclude = true;
-        private Spans excludeSpans = exclude.getSpans(reader, searcher);
-        private boolean moreExclude = true;
-        private boolean firstTime = true;
+      private Spans includeSpans = include.getSpans(reader, searcher);
+      private boolean moreInclude = true;
+      private Spans excludeSpans = exclude.getSpans(reader, searcher);
+      private boolean moreExclude = true;
+      private boolean firstTime = true;
 
-        public boolean next()
-          throws IOException 
+      public boolean next()
+        throws IOException 
+      {
+        if (moreInclude) // move to next include
+          moreInclude = includeSpans.next();
+        if (firstTime) {
+          moreExclude = excludeSpans.next();
+          firstTime = false;
+        }
+
+        while (moreInclude && moreExclude) 
         {
-          if (moreInclude) // move to next include
-            moreInclude = includeSpans.next();
-          if (firstTime) {
-            moreExclude = excludeSpans.next();
-            firstTime = false;
-          }
-
-          while (moreInclude && moreExclude) 
-          {
-            int includeDoc = includeSpans.doc();
-            if (includeSpans.start() < slop)
-              includeDoc--;
-            if (includeDoc > excludeSpans.doc()) // skip exclude
-              moreExclude = excludeSpans.skipTo(includeDoc);
-
-            while (moreExclude // while exclude is before
-                    &&
-                   (endPos(excludeSpans) + slop) <= startPos(includeSpans)) 
-            {
-              moreExclude = excludeSpans.next(); // increment exclude
-            }
-
-            if (!moreExclude // if no intersection
-                 ||
-                endPos(includeSpans) <= (startPos(excludeSpans) - slop))
-              break; // we found a match
-
-            moreInclude = includeSpans.next(); // intersected: keep scanning
-          }
-          return moreInclude;
-        }
-
-        private int baseDoc() {
-          if (!moreInclude)
-            return moreExclude ? excludeSpans.doc() : 0;
-          if (!moreExclude)
-            return includeSpans.doc();
-          return Math.min(includeSpans.doc(), excludeSpans.doc());
-        }
-
-        private int startPos(Spans spans) {
-          return ((spans.doc() - baseDoc()) * chunkBump) + spans.start();
-        }
-
-        private int endPos(Spans spans) {
-          return ((spans.doc() - baseDoc()) * chunkBump) + spans.end();
-        }
-
-        public boolean skipTo(int target)
-          throws IOException 
-        {
-          if (moreInclude) // skip include
-            moreInclude = includeSpans.skipTo(target);
-
-          if (!moreInclude)
-            return false;
-
-          if (moreExclude // skip exclude
-               &&
-              includeSpans.doc() > excludeSpans.doc())
-            moreExclude = excludeSpans.skipTo(includeSpans.doc());
+          int includeDoc = includeSpans.doc();
+          if (includeSpans.start() < slop)
+            includeDoc--;
+          if (includeDoc > excludeSpans.doc()) // skip exclude
+            moreExclude = excludeSpans.skipTo(includeDoc);
 
           while (moreExclude // while exclude is before
                   &&
-                 includeSpans.doc() == excludeSpans.doc() &&
-                 excludeSpans.end() <= (includeSpans.start() - slop)) 
+                 (endPos(excludeSpans) + slop) <= startPos(includeSpans)) 
           {
             moreExclude = excludeSpans.next(); // increment exclude
           }
 
           if (!moreExclude // if no intersection
                ||
-              includeSpans.doc() != excludeSpans.doc() ||
-              (includeSpans.end() + slop) <= excludeSpans.start())
-            return true; // we found a match
+              endPos(includeSpans) <= (startPos(excludeSpans) - slop))
+            break; // we found a match
 
-          return next(); // scan to next match
+          moreInclude = includeSpans.next(); // intersected: keep scanning
         }
+        return moreInclude;
+      }
 
-        public int doc() {
+      private int baseDoc() {
+        if (!moreInclude)
+          return moreExclude ? excludeSpans.doc() : 0;
+        if (!moreExclude)
           return includeSpans.doc();
-        }
+        return Math.min(includeSpans.doc(), excludeSpans.doc());
+      }
 
-        public int start() {
-          return includeSpans.start();
-        }
+      private int startPos(Spans spans) {
+        return ((spans.doc() - baseDoc()) * chunkBump) + spans.start();
+      }
 
-        public int end() {
-          return includeSpans.end();
-        }
+      private int endPos(Spans spans) {
+        return ((spans.doc() - baseDoc()) * chunkBump) + spans.end();
+      }
 
-        public float score() {
-          return includeSpans.score() * getBoost();
-        }
+      public boolean skipTo(int target)
+        throws IOException 
+      {
+        if (moreInclude) // skip include
+          moreInclude = includeSpans.skipTo(target);
 
-        public String toString() {
-          return "spans(" + SpanChunkedNotQuery.this.toString() + ")";
-        }
+        if (!moreInclude)
+          return false;
 
-        public Explanation explain()
-          throws IOException 
+        if (moreExclude // skip exclude
+             &&
+            includeSpans.doc() > excludeSpans.doc())
+          moreExclude = excludeSpans.skipTo(includeSpans.doc());
+
+        while (moreExclude // while exclude is before
+                &&
+               includeSpans.doc() == excludeSpans.doc() &&
+               excludeSpans.end() <= (includeSpans.start() - slop)) 
         {
-          if (getBoost() == 1.0f)
-            return includeSpans.explain();
-
-          Explanation result = new Explanation(0,
-                                               "weight(" + toString() +
-                                               "), product of:");
-
-          Explanation boostExpl = new Explanation(getBoost(), "boost");
-          result.addDetail(boostExpl);
-
-          Explanation inclExpl = includeSpans.explain();
-          result.addDetail(inclExpl);
-
-          result.setValue(boostExpl.getValue() * inclExpl.getValue());
-          return result;
+          moreExclude = excludeSpans.next(); // increment exclude
         }
-      };
+
+        if (!moreExclude // if no intersection
+             ||
+            includeSpans.doc() != excludeSpans.doc() ||
+            (includeSpans.end() + slop) <= excludeSpans.start())
+          return true; // we found a match
+
+        return next(); // scan to next match
+      }
+
+      public int doc() {
+        return includeSpans.doc();
+      }
+
+      public int start() {
+        return includeSpans.start();
+      }
+
+      public int end() {
+        return includeSpans.end();
+      }
+
+      public float score() {
+        return includeSpans.score() * getBoost();
+      }
+
+      public String toString() {
+        return "spans(" + SpanChunkedNotQuery.this.toString() + ")";
+      }
+
+      public Explanation explain()
+        throws IOException 
+      {
+        if (getBoost() == 1.0f)
+          return includeSpans.explain();
+
+        Explanation result = new Explanation(0,
+                                             "weight(" + toString() +
+                                             "), product of:");
+
+        Explanation boostExpl = new Explanation(getBoost(), "boost");
+        result.addDetail(boostExpl);
+
+        Explanation inclExpl = includeSpans.explain();
+        result.addDetail(inclExpl);
+
+        result.setValue(boostExpl.getValue() * inclExpl.getValue());
+        return result;
+      }
+    };
   }
 }
