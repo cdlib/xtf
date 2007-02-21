@@ -1,5 +1,6 @@
 package org.apache.lucene.search.spans;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -16,29 +17,31 @@ package org.apache.lucene.search.spans;
  * limitations under the License.
  */
 
-/** 
+/**
  * Data holder to keep track of a single matching span.
  */
-public class Span implements Cloneable {
-  
+public class Span implements Cloneable 
+{
   /** Score of the span */
   public float score;
-  
+
   /** Rank - zero for top hit, 1 for next, etc. */
-  public int   rank;
-  
+  public int rank;
+
   /** Word position of the span start */
-  public int   start;
-  
+  public int start;
+
   /** Word position of the span end */
-  public int   end;
+  public int end;
 
   /** Make an exact copy of this Span */
-  public Object clone() {
-    try { 
-      return super.clone(); 
-    } catch (CloneNotSupportedException e) { 
-      return new RuntimeException(e); 
+  public Object clone() 
+  {
+    try {
+      return super.clone();
+    }
+    catch (CloneNotSupportedException e) {
+      return new RuntimeException(e);
     }
   }
 }

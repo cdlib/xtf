@@ -1,5 +1,6 @@
 package org.apache.lucene.search.spans;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,18 +16,18 @@ package org.apache.lucene.search.spans;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.util.Comparator;
 
 /**
  * Comparator on {@link Span}s that orders them by ascending start position,
  * then end position.
  */
-public class SpanPosComparator implements Comparator {
-  
+public class SpanPosComparator implements Comparator 
+{
   /** Don't create an instance; the {@link #theInstance}. */
-  private SpanPosComparator() { }
-  
+  private SpanPosComparator() {
+  }
+
   public int compare(Object o1, Object o2) {
     Span s1 = (Span)o1;
     Span s2 = (Span)o2;
@@ -34,6 +35,6 @@ public class SpanPosComparator implements Comparator {
       return s1.end - s2.end;
     return s1.start - s2.start;
   }
-  
+
   public static SpanPosComparator theInstance = new SpanPosComparator();
 }

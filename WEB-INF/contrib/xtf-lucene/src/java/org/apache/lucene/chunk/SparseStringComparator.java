@@ -1,5 +1,6 @@
 package org.apache.lucene.chunk;
 
+
 /**
  * Copyright 2004 The Apache Software Foundation
  *
@@ -15,7 +16,6 @@ package org.apache.lucene.chunk;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
-
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
@@ -39,16 +38,17 @@ import org.apache.lucene.search.SortField;
  * Thus, instead of a huge array indexed by document ID, we keep an array
  * list in ID order and binary search it.
  */
-public class SparseStringComparator implements SortComparatorSource {
+public class SparseStringComparator implements SortComparatorSource 
+{
   private static final WeakHashMap cache = new WeakHashMap();
-
   private static final EntryComparator entryComparator = new EntryComparator();
 
   /** Make a comparator for the given field using the given reader */
   public ScoreDocComparator newComparator(IndexReader reader, String fieldName)
-      throws IOException {
+    throws IOException 
+  {
     // Check if we have a cache for this reader yet. If not, make one.
-    Map readerCache = (Map) cache.get(reader);
+    Map readerCache = (Map)cache.get(reader);
     if (readerCache == null) {
       readerCache = new HashMap();
       cache.put(reader, readerCache);
@@ -58,7 +58,7 @@ public class SparseStringComparator implements SortComparatorSource {
     // make one.
     //
     fieldName = fieldName.intern();
-    SparseComp comp = (SparseComp) readerCache.get(fieldName);
+    SparseComp comp = (SparseComp)readerCache.get(fieldName);
     if (comp == null) {
       comp = new SparseComp(reader, fieldName);
       readerCache.put(fieldName, comp);
@@ -66,13 +66,15 @@ public class SparseStringComparator implements SortComparatorSource {
 
     // Return the resulting comparator.
     return comp;
-
   } // newComparator()
 
-  private class SparseComp implements ScoreDocComparator {
+  private class SparseComp implements ScoreDocComparator 
+  {
     ArrayList entries = new ArrayList(500);
 
-    SparseComp(IndexReader reader, String field) throws IOException {
+    SparseComp(IndexReader reader, String field)
+      throws IOException 
+    {
       TermDocs termDocs = reader.termDocs();
       TermEnum termEnum = reader.terms(new Term(field, ""));
       int t = 0; // current term number
@@ -81,11 +83,13 @@ public class SparseStringComparator implements SortComparatorSource {
       // there is only one term in this field per document.
       //
       HashMap docs = new HashMap();
-      try {
+      try 
+      {
         if (termEnum.term() == null)
           throw new RuntimeException("no terms in field " + field);
 
-        do {
+        do 
+        {
           Term term = termEnum.term();
           if (term.field() != field)
             break;
@@ -93,13 +97,14 @@ public class SparseStringComparator implements SortComparatorSource {
           String termText = term.text();
 
           termDocs.seek(termEnum);
-          while (termDocs.next()) {
+          while (termDocs.next()) 
+          {
             int docId = termDocs.doc();
             Integer key = new Integer(docId);
             if (docs.get(key) != null) {
-              throw new RuntimeException("A document has more than one term ('"
-                  + termText + "', '" + (String) docs.get(key) + "') in field "
-                  + field);
+              throw new RuntimeException(
+                "A document has more than one term ('" + termText + "', '" +
+                (String)docs.get(key) + "') in field " + field);
             }
             docs.put(key, termText);
 
@@ -113,19 +118,20 @@ public class SparseStringComparator implements SortComparatorSource {
 
           t++;
         } while (termEnum.next());
-      } finally {
+      }
+      finally {
         termDocs.close();
         termEnum.close();
       }
 
       // Now sort the array by document ID.
       Collections.sort(entries, entryComparator);
-
     } // constructor
 
     /** Retrieve the entry for a given document, or null if not found. Uses
      *  an efficient binary search over the array. */
-    private Entry findEntry(int docId) {
+    private Entry findEntry(int docId) 
+    {
       Entry toFind = new Entry();
       toFind.docId = docId;
 
@@ -133,7 +139,7 @@ public class SparseStringComparator implements SortComparatorSource {
       if (index < 0 || index >= entries.size())
         return null;
 
-      Entry got = (Entry) entries.get(index);
+      Entry got = (Entry)entries.get(index);
       if (got.docId != docId)
         return null;
 
@@ -148,7 +154,8 @@ public class SparseStringComparator implements SortComparatorSource {
      * @return <code>-1</code> if <code>i</code> should come before <code>j</code><br><code>1</code> if <code>i</code> should come after <code>j</code><br><code>0</code> if they are equal
      * @see java.util.Comparator
      */
-    public int compare(ScoreDoc d1, ScoreDoc d2) {
+    public int compare(ScoreDoc d1, ScoreDoc d2) 
+    {
       Entry e1 = findEntry(d1.doc);
       Entry e2 = findEntry(d2.doc);
 
@@ -178,7 +185,7 @@ public class SparseStringComparator implements SortComparatorSource {
     }
 
     /**
-     * Returns the type of sort.  Should return <code>SortField.SCORE</code>, <code>SortField.DOC</code>, <code>SortField.STRING</code>, <code>SortField.INTEGER</code>, 
+     * Returns the type of sort.  Should return <code>SortField.SCORE</code>, <code>SortField.DOC</code>, <code>SortField.STRING</code>, <code>SortField.INTEGER</code>,
      * <code>SortField.FLOAT</code> or <code>SortField.CUSTOM</code>.  It is not valid to return <code>SortField.AUTO</code>.
      * This is used by multisearchers to determine how to collate results from their searchers.
      * @return One of the constants in SortField.
@@ -187,23 +194,21 @@ public class SparseStringComparator implements SortComparatorSource {
     public int sortType() {
       return SortField.CUSTOM;
     }
-
   } // class SparseComp
 
   /** A single entry in the sorting table */
   class Entry {
     int docId;
-
     String termText;
-
     int order;
   }
 
   /** Compare two entries for sorting purposes */
-  static class EntryComparator implements Comparator {
+  static class EntryComparator implements Comparator 
+  {
     public int compare(Object o1, Object o2) {
-      int d1 = ((Entry) o1).docId;
-      int d2 = ((Entry) o2).docId;
+      int d1 = ((Entry)o1).docId;
+      int d2 = ((Entry)o2).docId;
       if (d1 < d2)
         return -1;
       else if (d1 > d2)
@@ -212,5 +217,4 @@ public class SparseStringComparator implements SortComparatorSource {
         return 0;
     }
   } // class EntryComparator
-
 } // class SparseStringComparator

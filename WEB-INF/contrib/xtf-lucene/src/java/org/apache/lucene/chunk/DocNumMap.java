@@ -1,5 +1,6 @@
 package org.apache.lucene.chunk;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -21,8 +22,8 @@ package org.apache.lucene.chunk;
  * index, and provides a mapping from main documents to the chunks they are
  * made of.
  */
-public interface DocNumMap {
-
+public interface DocNumMap 
+{
   /** Get the max number of words per chunk */
   int getChunkSize();
 
@@ -36,7 +37,7 @@ public interface DocNumMap {
    * Given a chunk number, return the corresponding document number that it
    * is part of. Note that like all Lucene indexes, this is ephemeral and
    * only applies to the given reader. If not found, returns -1.
-   * 
+   *
    * @param chunkNumber Chunk number to translate
    * @return Document index, or -1 if no match.
    */

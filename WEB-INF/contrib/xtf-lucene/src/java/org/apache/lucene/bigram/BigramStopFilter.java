@@ -1,5 +1,6 @@
 package org.apache.lucene.bigram;
 
+
 /**
  * Copyright 2004 The Apache Software Foundation
  *
@@ -15,12 +16,10 @@ package org.apache.lucene.bigram;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
-
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -31,10 +30,10 @@ import org.apache.lucene.analysis.TokenStream;
  * their neighboring (non-stop) words to form what Doug Cutting of Lucene fame
  * calls "n-grams" and which we simplify here to "bi-grams" (n-grams of only
  * two words.)
- * 
- * An example: "man of the year" would be indexed as "man man-of the-year 
- * year". Then a query for the exact phrase "man of the year" would query for 
- * "man-of the-year" and get the correct hit without needing to scan the 
+ *
+ * An example: "man of the year" would be indexed as "man man-of the-year
+ * year". Then a query for the exact phrase "man of the year" would query for
+ * "man-of the-year" and get the correct hit without needing to scan the
  * 50-zillion occurrences of "of" and "the".
  */
 public class BigramStopFilter extends TokenFilter 
@@ -62,18 +61,18 @@ public class BigramStopFilter extends TokenFilter
 
   /**
    * Construct a token stream to filter 'stopWords' out of 'input'.
-   * 
+   *
    * @param input       Input stream of tokens to process
    * @param stopSet     Set of stop words to filter out. This can be most easily
    *                    made by calling {@link #makeStopSet(String) makeStopSet()}.
    */
-  public BigramStopFilter(TokenStream input, Set stopSet) {
+  public BigramStopFilter(TokenStream input, Set stopSet) 
+  {
     // Initialize the super-class
     super(input);
 
     // Record the set of stop words and the chunk size for later reference.
     this.stopSet = stopSet;
-
   } // constructor
 
   /**
@@ -85,7 +84,8 @@ public class BigramStopFilter extends TokenFilter
    * @return            A stop word set suitable for use when constructing an
    *                    {@link BigramStopFilter}.
    */
-  public static Set makeStopSet(String stopWords) {
+  public static Set makeStopSet(String stopWords) 
+  {
     // Break the list of stop words into a set. Be sure to convert the words
     // to lower-case, because the set of incoming tokens is assumed to already
     // be lower-case.
@@ -104,7 +104,9 @@ public class BigramStopFilter extends TokenFilter
    * to make absolutely sure that we don't accidentally introduce extra
    * position increments, or miss some.
    */
-  public Token next() throws IOException {
+  public Token next()
+    throws IOException 
+  {
     Token t = nextInternal();
     if (t != null) {
       outputPos += t.getPositionIncrement();
@@ -117,7 +119,9 @@ public class BigramStopFilter extends TokenFilter
   /**
    * Retrieve the next token in the stream.
    */
-  public Token nextInternal() throws IOException {
+  public Token nextInternal()
+    throws IOException 
+  {
     // If this is the first time through, prime the pump.
     if (firstTime) {
       nextToken = nextInput();
@@ -132,7 +136,8 @@ public class BigramStopFilter extends TokenFilter
     }
 
     // Keep going until we get a real token we can output.
-    while (true) {
+    while (true) 
+    {
       // Advance to the next input token.
       Token curToken = nextToken;
       if (curToken == null)
@@ -150,17 +155,18 @@ public class BigramStopFilter extends TokenFilter
       //
 
       // First, deal with cases (1) and (2), which begin with a real word.
-      if (curIsReal) {
-        boolean nextIsReal = nextToken != null
-            && !isStopWord(nextToken.termText())
-            && nextToken.getPositionIncrement() == 1;
+      if (curIsReal) 
+      {
+        boolean nextIsReal = nextToken != null &&
+                             !isStopWord(nextToken.termText()) &&
+                             nextToken.getPositionIncrement() == 1;
 
         // In all cases, we're going to return the real word. So take care
         // of any increment accumulated from entirely removed stop words.
         //
         if (accumIncrement > 0) {
-          curToken.setPositionIncrement(curToken.getPositionIncrement()
-              + accumIncrement);
+          curToken.setPositionIncrement(
+            curToken.getPositionIncrement() + accumIncrement);
           accumIncrement = 0;
         }
 
@@ -195,22 +201,23 @@ public class BigramStopFilter extends TokenFilter
       // Glom away!
       return glomToken(curToken, nextToken, 1);
     } // while( true )
-
   } // next()
 
   /** Retrieves the next token from the input stream, properly tracking the
    *  input position.
    */
-  private Token nextInput() throws IOException {
+  private Token nextInput()
+    throws IOException 
+  {
     Token t = input.next();
     if (t != null)
       inputPos += t.getPositionIncrement();
     return t;
   }
-  
-  /** 
+
+  /**
    * Tells whether the token is a stop-word. Can be overridden for
-   * special processing. 
+   * special processing.
    */
   protected boolean isStopWord(String word) {
     return stopSet.contains(word);
@@ -220,11 +227,13 @@ public class BigramStopFilter extends TokenFilter
    * Constructs a new token, drawing the start position, position increment,
    * and end position from the specified tokens.
    */
-  private Token glomToken(Token token1, Token token2, int increment) {
+  private Token glomToken(Token token1, Token token2, int increment) 
+  {
     // Create the new token from the text of both.
-    Token token = 
-      new Token(token1.termText() + "~" + token2.termText(), 
-                token1.startOffset(), token2.endOffset(), token1.type());
+    Token token = new Token(token1.termText() + "~" + token2.termText(),
+                            token1.startOffset(),
+                            token2.endOffset(),
+                            token1.type());
 
     // Calculate the position increment. The input 'increment' will be either
     // zero (for overlapping), or one (normal). Also, we might have accumulated
@@ -234,8 +243,8 @@ public class BigramStopFilter extends TokenFilter
     if (increment == 0)
       token.setPositionIncrement(0);
     else
-      token.setPositionIncrement(token1.getPositionIncrement() 
-                                 - 1 + increment + accumIncrement);
+      token.setPositionIncrement(
+        token1.getPositionIncrement() - 1 + increment + accumIncrement);
     accumIncrement = 0;
 
     // All done now.
@@ -245,19 +254,19 @@ public class BigramStopFilter extends TokenFilter
   /**
    * Basic regression test
    */
+
   // FIXME: Make this into a Lucene-style junit test.
-  public static final Object tester = new Object() {
+  public static final Object tester = new Object() 
+  {
     /**
      * Very simple tokenizer that breaks up a string into a series of Lucene
      * {@link Token Token}s.
      */
-    class StringTokenStream extends TokenStream {
+    class StringTokenStream extends TokenStream 
+    {
       private String str;
-
       private int prevEnd = 0;
-
       private StringTokenizer tok;
-
       private int count = 0;
 
       public StringTokenStream(String str, String delim) {
@@ -265,14 +274,14 @@ public class BigramStopFilter extends TokenFilter
         tok = new StringTokenizer(str, delim);
       }
 
-      public Token next() {
+      public Token next() 
+      {
         if (!tok.hasMoreTokens())
           return null;
         count++;
         String term = tok.nextToken();
-        Token t = new Token(term, str.indexOf(term, prevEnd), str.indexOf(term,
-            prevEnd)
-            + term.length(), "word");
+        Token t = new Token(term, str.indexOf(term, prevEnd),
+                            str.indexOf(term, prevEnd) + term.length(), "word");
         if (t.startOffset() > 0 && str.charAt(t.startOffset() - 1) == '.') {
           t.setPositionIncrement(5);
         }
@@ -286,7 +295,9 @@ public class BigramStopFilter extends TokenFilter
     /**
      * Tokenize, filter, and stick back together the input string.
      */
-    private String testFilter(String in) throws IOException {
+    private String testFilter(String in)
+      throws IOException 
+    {
       StringTokenStream sts = new StringTokenStream(in, " .");
       BigramStopFilter nsf = new BigramStopFilter(sts, stopSet);
 
@@ -334,11 +345,10 @@ public class BigramStopFilter extends TokenFilter
         assert testFilter("x a b.c d y").equals("/x,xa/ab//////cd/dy/y");
         assert testFilter("a x.y b z").equals("/ax/x/////y,yb/bz/z");
         assert testFilter("x y a.z").equals("/x/y,ya//////z"); // yes, 6 slashes
-      } catch (IOException e) {
+      }
+      catch (IOException e) {
         assert false;
       }
-
     } // testImpl()
   };
-
 } // class BigramStopFilter

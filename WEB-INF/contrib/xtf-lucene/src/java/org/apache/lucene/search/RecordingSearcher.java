@@ -1,5 +1,6 @@
 package org.apache.lucene.search;
 
+
 /**
  * Copyright 2004 The Apache Software Foundation
  *
@@ -15,11 +16,9 @@ package org.apache.lucene.search;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.Vector;
-
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -32,7 +31,8 @@ import org.apache.lucene.index.IndexReader;
  * <p>Applications usually need only call the inherited {@link #search(Query)}
  * or {@link #search(Query,Filter)} methods.
  */
-public class RecordingSearcher extends IndexSearcher {
+public class RecordingSearcher extends IndexSearcher 
+{
   private IndexReader reader;
   private Vector registered;
 
@@ -44,30 +44,37 @@ public class RecordingSearcher extends IndexSearcher {
 
   /** Lower-level search API which supports span collection.
    *
-   * <p>{@link SpanHitCollector#collect(int,float,FieldSpanSource)} is called 
+   * <p>{@link SpanHitCollector#collect(int,float,FieldSpanSource)} is called
    * for every non-zero scoring document.
    */
-  public void search(Query query, SpanHitCollector results) throws IOException {
+  public void search(Query query, SpanHitCollector results)
+    throws IOException 
+  {
     search(query, null, results);
   }
-  
+
   /** Lower-level search API which supports span collection.
    *
-   * <p>{@link SpanHitCollector#collect(int,float,FieldSpanSource)} is called 
+   * <p>{@link SpanHitCollector#collect(int,float,FieldSpanSource)} is called
    * for every non-zero scoring document which matches the filter.
    */
-  public void search(Query query, Filter filter,
-                     final SpanHitCollector results) throws IOException {
+  public void search(Query query, Filter filter, final SpanHitCollector results)
+    throws IOException 
+  {
     SpanHitCollector collector = results;
-    if (filter != null) {
+    if (filter != null) 
+    {
       final BitSet bits = filter.bits(reader);
-      collector = new SpanHitCollector() {
-        private final SpanHitCollector mresults = results;
-        public final void collect(int doc, float score, FieldSpanSource src) {
-          if (bits.get(doc)) {		  // skip docs not in bits
-            mresults.collect(doc, score, src);
+      collector = new SpanHitCollector() 
+      {
+          private final SpanHitCollector mresults = results;
+
+          public final void collect(int doc, float score, FieldSpanSource src) 
+          {
+            if (bits.get(doc)) { // skip docs not in bits
+              mresults.collect(doc, score, src);
+            }
           }
-        }
       };
     }
 
@@ -80,14 +87,14 @@ public class RecordingSearcher extends IndexSearcher {
     synchronized (this) { // prevent other threads from registering scorers
       registered = new Vector();
       scorer = query.weight(this).scorer(reader);
-      recordingScorers = (SpanRecordingScorer[])
-        registered.toArray(new SpanRecordingScorer[registered.size()]);
+      recordingScorers = (SpanRecordingScorer[])registered.toArray(
+        new SpanRecordingScorer[registered.size()]);
       registered = null;
     }
     if (scorer == null)
       return;
     FieldSpanSource spanSource = new FieldSpanSource(recordingScorers);
-    
+
     // Now process all the documents and collect them and their spans.
     while (scorer.next()) {
       int doc = scorer.doc();
@@ -101,7 +108,7 @@ public class RecordingSearcher extends IndexSearcher {
   // will register themselves.
   //
   public void registerRecordingScorer(SpanRecordingScorer scorer) {
-    if( registered != null )
-        registered.add(scorer);
+    if (registered != null)
+      registered.add(scorer);
   }
 }

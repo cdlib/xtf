@@ -1,5 +1,6 @@
 package org.apache.lucene.mark;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -23,24 +24,25 @@ package org.apache.lucene.mark;
  * <p>Created: Jan 15, 2005</p>
  *
  * @author  Martin Haye
- * @version $Id: BasicMarkPos.java,v 1.1 2005-09-12 19:06:11 mhaye Exp $
  */
-public class BasicMarkPos extends MarkPos
+public class BasicMarkPos extends MarkPos 
 {
   /** Absolute position, in number of words, from start of field */
-  protected int    wordPos;
-  
+  protected int wordPos;
+
   /** Absolute position, in number of characters, from start of field */
-  protected int    charPos;
-  
+  protected int charPos;
+
   /** The full text of the field */
   protected String fullText;
-  
+
   /** Retrieves the absolute position, in number of words, from the start
    *  of the field.
    */
-  public int wordPos() { return wordPos; }
-  
+  public int wordPos() {
+    return wordPos;
+  }
+
   /** Counts the number of characters of text starting at this position
    *  and ending at another position. It is an error if they are out of
    *  order.
@@ -52,7 +54,8 @@ public class BasicMarkPos extends MarkPos
   /** Retrieves all the text starting at this position and ending at another
    *  position. It is an error if they are out of order.
    */
-  public String getTextTo(MarkPos other) {
+  public String getTextTo(MarkPos other) 
+  {
     if (other != null) {
       assert charPos <= ((BasicMarkPos)other).charPos;
       return fullText.substring(charPos, ((BasicMarkPos)other).charPos);

@@ -1,5 +1,6 @@
 package org.apache.lucene.mark;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,11 +16,9 @@ package org.apache.lucene.mark;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
-
 import org.apache.lucene.search.spans.FieldSpans;
 import org.apache.lucene.search.spans.Span;
 
@@ -30,33 +29,32 @@ import org.apache.lucene.search.spans.Span;
  * <p>Created: Dec 26, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: ContextMarker.java,v 1.5 2007-01-18 00:22:24 mhaye Exp $
  */
-public class ContextMarker {
-  
-  /** 
+public class ContextMarker 
+{
+  /**
    * The following modes can be used for term marking:
-   * 
+   *
    * <p>MARK_NO_TERMS: Terms are not marked</p>
-   * 
+   *
    * <p>MARK_SPAN_TERMS: Search terms are marked only within span hits.</p>
-   * 
+   *
    * <p>MARK_CONTEXT_TERMS: Search terms are marked within span hits and,
    * if found, within the context surrounding those hits.</p>
-   * 
+   *
    * <p>MARK_ALL_TERMS: Search terms are marked wherever they are found.</p>
    */
-  public static final int MARK_NO_TERMS       = 0;
-  
-  /** See {@link #MARK_NO_TERMS} */
-  public static final int MARK_SPAN_TERMS     = 1;
+  public static final int MARK_NO_TERMS = 0;
 
   /** See {@link #MARK_NO_TERMS} */
-  public static final int MARK_CONTEXT_TERMS  = 2;
+  public static final int MARK_SPAN_TERMS = 1;
 
   /** See {@link #MARK_NO_TERMS} */
-  public static final int MARK_ALL_TERMS      = 3;
-  
+  public static final int MARK_CONTEXT_TERMS = 2;
+
+  /** See {@link #MARK_NO_TERMS} */
+  public static final int MARK_ALL_TERMS = 3;
+
   /** Target size (in chars) of the context surrounding each hit */
   private int maxContext;
 
@@ -94,23 +92,22 @@ public class ContextMarker {
    * Context around each hit will be up to 80 characters (including the
    * text of the hit itself). Search terms will only be marked within hits.
    * If you would like to override these defaults, use one of the other
-   * variations of this method. 
-   * 
+   * variations of this method.
+   *
    * @param field       field name to mark
    * @param fieldSpans  spans to mark with
    * @param collector   collector to receive the marks
    */
-  public void markField(String field, FieldSpans fieldSpans, 
-                        MarkCollector collector)
+  public void markField(String field, FieldSpans fieldSpans,
+                        MarkCollector collector) 
   {
     BasicWordIter wordIter = new BasicWordIter();
-    markField(fieldSpans, field, wordIter, 80, 
-              MARK_SPAN_TERMS, null, collector);
+    markField(fieldSpans, field, wordIter, 80, MARK_SPAN_TERMS, null, collector);
   }
-  
+
   /**
    * Mark context, spans, and terms within the given field of this document.
-   * 
+   *
    * @param field       field name to mark
    * @param iter        iterator over the words in the field
    * @param maxContext  target number of characters for context around
@@ -121,17 +118,16 @@ public class ContextMarker {
    * @param stopSet     set of stop words to avoid marking outside hits
    * @param collector   collector to receive the marks
    */
-  public void markField(String field, FieldSpans fieldSpans,
-                        WordIter iter, int maxContext,
-                        int termMode, Set stopSet, MarkCollector collector)
+  public void markField(String field, FieldSpans fieldSpans, WordIter iter,
+                        int maxContext, int termMode, Set stopSet,
+                        MarkCollector collector) 
   {
-    markField(fieldSpans, field, iter, maxContext, 
-              termMode, stopSet, collector);
+    markField(fieldSpans, field, iter, maxContext, termMode, stopSet, collector);
   }
-  
+
   /**
    * Mark context, spans, and terms a field of data.
-   * 
+   *
    * @param field       field name to mark
    * @param iter        iterator over the words in the field
    * @param maxContext  target number of characters for context around
@@ -142,32 +138,31 @@ public class ContextMarker {
    * @param stopSet     set of stop words to avoid marking outside hits
    * @param collector   collector to receive the marks
    */
-  public static void markField(FieldSpans fieldSpans, 
-                               String field, WordIter iter, int maxContext,
-                               int termMode, Set stopSet, 
-                               MarkCollector collector)
+  public static void markField(FieldSpans fieldSpans, String field,
+                               WordIter iter, int maxContext, int termMode,
+                               Set stopSet, MarkCollector collector) 
   {
     if (termMode < MARK_NO_TERMS || termMode > MARK_ALL_TERMS)
-      throw new IllegalArgumentException( "Invalid termMode" );
-    
+      throw new IllegalArgumentException("Invalid termMode");
+
     // No field spans? No marking to do.
-    if( fieldSpans == null ) {
+    if (fieldSpans == null) {
       collector.beginField(iter.getPos(WordIter.FIELD_START));
       collector.endField(iter.getPos(WordIter.FIELD_END));
       return;
     }
-    
+
     // Get the map of terms for the field, and the spans. Note that the spans
     // are already sorted by the FieldSpanSource in position order.
     //
     Set terms = fieldSpans.getTerms(field);
     Span[] posOrderSpans = fieldSpans.getSpans(field);
-    
+
     // Optimization: if there are no terms to mark and no spans, we've got
     // nothing left to do.
     //
     if ((terms == null || terms.isEmpty() || termMode == MARK_NO_TERMS) &&
-        (posOrderSpans == null || posOrderSpans.length == 0))
+        (posOrderSpans == null || posOrderSpans.length == 0)) 
     {
       collector.beginField(iter.getPos(WordIter.FIELD_START));
       collector.endField(iter.getPos(WordIter.FIELD_END));
@@ -178,15 +173,18 @@ public class ContextMarker {
     float maxScore = 0.0f;
     for (int i = 0; i < posOrderSpans.length; i++)
       maxScore = Math.max(maxScore, posOrderSpans[i].score);
-    
+
     // Now normalize all the scores.
     for (int i = 0; i < posOrderSpans.length; i++)
       posOrderSpans[i].score /= maxScore;
-    
+
     // We need the big guns for context marking.
-    ContextMarker marker = new ContextMarker(maxContext, 
-                                             termMode, terms, stopSet,
-                                             iter, collector);
+    ContextMarker marker = new ContextMarker(maxContext,
+                                             termMode,
+                                             terms,
+                                             stopSet,
+                                             iter,
+                                             collector);
     marker.mark(posOrderSpans, maxContext);
   }
 
@@ -204,29 +202,30 @@ public class ContextMarker {
 
   /**
    * Mark a series of spans.
-   *  
+   *
    * @param posOrderSpans   Spans to mark, in ascending position order.
-   * @param maxContext      Target # of chars for context around hits 
+   * @param maxContext      Target # of chars for context around hits
    *                        (0 for none)
    */
-  public void mark(Span[] posOrderSpans, int maxContext) {
-    
+  public void mark(Span[] posOrderSpans, int maxContext) 
+  {
     // Create holders for start/end of context.
     MarkPos contextStart = null;
     MarkPos contextEnd = null;
     if (maxContext > 0 && posOrderSpans.length > 0) {
       iter0.seekFirst(posOrderSpans[0].start, true);
       contextStart = iter0.getPos(WordIter.TERM_START);
-      contextEnd = (MarkPos) contextStart.clone();
+      contextEnd = (MarkPos)contextStart.clone();
     }
 
     // Mark the start of the field.
     collector.beginField(iter0.getPos(WordIter.FIELD_START));
 
     // Process each span in turn.
-    for (int i = 0; i < posOrderSpans.length; i++) {
+    for (int i = 0; i < posOrderSpans.length; i++) 
+    {
       Span posSpan = posOrderSpans[i];
-      Span nextSpan = (i+1 < posOrderSpans.length) ? posOrderSpans[i+1] : null;
+      Span nextSpan = (i + 1 < posOrderSpans.length) ? posOrderSpans[i + 1] : null;
 
       // Find the start and end of the context surrounding the span (if
       // context is enabled.)
@@ -250,27 +249,28 @@ public class ContextMarker {
   }
 
   /**
-   * Locate the start and end of context for the given hit.  
-   * 
+   * Locate the start and end of context for the given hit.
+   *
    * @param posSpan       hit for which to find context
    * @param nextSpan      following hit (or null if none)
    * @param contextStart  OUT: start of context
    * @param contextEnd    OUT: end of context
    */
-  void findContext(Span posSpan, Span nextSpan, 
-                   MarkPos contextStart, MarkPos contextEnd) 
+  void findContext(Span posSpan, Span nextSpan, MarkPos contextStart,
+                   MarkPos contextEnd) 
   {
     // Position our iterators at the start and end of the span. For the start,
     // be sure to set the 'force' flag to speed by any soft barriers.
     //
     iter0.seekFirst(posSpan.start, true);
-    iter1 = (WordIter) iter0.clone();
+    iter1 = (WordIter)iter0.clone();
     iter1.seekLast(posSpan.end - 1, false);
 
     // Sanity check (but only if assertions are enabled.)
     boolean assertionsEnabled = false;
     assert (assertionsEnabled = true) == true;
-    if (assertionsEnabled && terms != null) {
+    if (assertionsEnabled && terms != null) 
+    {
       String startTerm = iter0.term();
       if (!terms.contains(startTerm) && startTerm.length() > 0) {
         ArrayList sortTerms = new ArrayList(terms.size());
@@ -303,11 +303,14 @@ public class ContextMarker {
     boolean more1 = true;
     int spanChars = contextStart.countTextTo(contextEnd);
 
-    while ((more0 || more1)
-        && (spanChars + addedToStart + addedToEnd) < maxContext) {
+    while ((more0 || more1) &&
+           (spanChars + addedToStart + addedToEnd) < maxContext) 
+    {
       // Can we add some more context to the start?
-      if ((!more1 || addedToStart <= addedToEnd) && more0
-          && (more0 = iter0.prev(false))) {
+      if ((!more1 || addedToStart <= addedToEnd) &&
+          more0 &&
+          (more0 = iter0.prev(false))) 
+      {
         if (tmpPos == null)
           tmpPos = iter0.getPos(WordIter.TERM_START);
         else
@@ -325,8 +328,10 @@ public class ContextMarker {
       }
 
       // Can we add more context to the end?
-      if ((!more0 || addedToEnd <= addedToStart) && more1
-          && (more1 = iter1.next(false))) {
+      if ((!more0 || addedToEnd <= addedToStart) &&
+          more1 &&
+          (more1 = iter1.next(false))) 
+      {
         if (tmpPos == null)
           tmpPos = iter1.getPos(WordIter.TERM_END_PLUS);
         else
@@ -336,8 +341,8 @@ public class ContextMarker {
         // We'll define "probable context" as halfway between the end of the
         // current span and the start of the next span.
         //
-        if (nextSpan != null
-            && (tmpPos.wordPos() >= (posSpan.end + nextSpan.start) / 2))
+        if (nextSpan != null &&
+            (tmpPos.wordPos() >= (posSpan.end + nextSpan.start) / 2))
           more1 = false;
         else if (contextStart.countTextTo(tmpPos) > maxContext)
           more1 = false;
@@ -358,9 +363,9 @@ public class ContextMarker {
     prevEndWord = contextEnd.wordPos();
   } // findContext()
 
-  /** 
+  /**
    * Emit all the marks for the given hit.
-   * 
+   *
    * @param posSpan       hit for which to emit marks
    * @param contextStart  start of context (or null if context disabled)
    * @param contextEnd    end of context (or null if context disabled)
@@ -370,12 +375,13 @@ public class ContextMarker {
     // First, do terms up to (but not including) the
     // start of the context.
     //
-    if (maxContext > 0) {
+    if (maxContext > 0) 
+    {
       if (termMode >= MARK_ALL_TERMS)
         markTerms(iter0, termsMarkedPos, contextStart.wordPos(), false);
 
       // Start the context.
-      collector.beginContext((MarkPos) contextStart.clone(), posSpan);
+      collector.beginContext((MarkPos)contextStart.clone(), posSpan);
     }
 
     // Mark terms up til the start of the actual span.
@@ -398,12 +404,13 @@ public class ContextMarker {
     collector.endSpan(iter0.getPos(WordIter.TERM_END));
 
     // Mark terms up to (and including) end of context.
-    if (maxContext > 0) {
+    if (maxContext > 0) 
+    {
       if (termMode >= MARK_CONTEXT_TERMS)
         markTerms(iter0, posSpan.end, contextEnd.wordPos() + 1, false);
 
       // End the context.
-      collector.endContext((MarkPos) contextEnd.clone());
+      collector.endContext((MarkPos)contextEnd.clone());
     }
   }
 
@@ -417,8 +424,8 @@ public class ContextMarker {
 
     // Seek to the first spot.
     iter.seekFirst(fromPos, true);
-    while (true) {
-      
+    while (true) 
+    {
       // Get the new position.
       if (tmpPos == null)
         tmpPos = iter.getPos(WordIter.TERM_START);
@@ -432,16 +439,18 @@ public class ContextMarker {
       // Are we done yet?
       if (tmpPos.wordPos() >= toPos)
         break;
-      
+
       // See if we should mark the term. Conditions:
       // (1) The term should be in the set of search terms
       // (2a) It's a stop word, and we're supposed to mark them here, OR
       // (2b) It's not a stop word
       String term = iter.term();
-      if (terms.contains(term)) {
+      if (terms.contains(term)) 
+      {
         if (markStopWords || stopSet == null || !stopSet.contains(term)) {
-          collector.term((MarkPos) tmpPos.clone(), iter
-              .getPos(WordIter.TERM_END), term);
+          collector.term((MarkPos)tmpPos.clone(),
+                         iter.getPos(WordIter.TERM_END),
+                         term);
         }
       }
       if (!iter.next(true))

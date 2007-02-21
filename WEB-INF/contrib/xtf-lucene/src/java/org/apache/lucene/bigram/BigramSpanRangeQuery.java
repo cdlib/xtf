@@ -1,5 +1,6 @@
 package org.apache.lucene.bigram;
 
+
 /**
  * Copyright 2004 The Apache Software Foundation
  *
@@ -15,18 +16,16 @@ package org.apache.lucene.bigram;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.util.Set;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanRangeQuery;
 
-/** 
+/**
  * Matches spans containing terms within a specified range. Performs extra
  * filtering to make sure bi-grams are not matched.
  */
-public class BigramSpanRangeQuery extends SpanRangeQuery {
-
+public class BigramSpanRangeQuery extends SpanRangeQuery 
+{
   private Set stopSet;
 
   /** Constructs a span query selecting all terms greater than
@@ -36,30 +35,30 @@ public class BigramSpanRangeQuery extends SpanRangeQuery {
    * two terms, both terms <b>must</b> be for the same field. Applies
    * a limit on the total number of terms matched.
    */
-  public BigramSpanRangeQuery( Term lowerTerm, Term upperTerm, 
-                               boolean inclusive, int termLimit )
+  public BigramSpanRangeQuery(Term lowerTerm, Term upperTerm,
+                              boolean inclusive, int termLimit) 
   {
-    super( lowerTerm, upperTerm, inclusive, termLimit );
+    super(lowerTerm, upperTerm, inclusive, termLimit);
   }
 
-  public void setStopWords( Set set ) {
-      this.stopSet = set;
+  public void setStopWords(Set set) {
+    this.stopSet = set;
   }
 
-  protected boolean shouldSkipTerm( Term term )
+  protected boolean shouldSkipTerm(Term term) 
   {
-      if( stopSet == null )
-          return false;
-      
-      // Skip stop words
-      if( stopSet.contains(term.text()) )
-          return true;
-      
-      // Skip bi-grams containing stop words. 
-      if( BigramQueryRewriter.isBigram(stopSet, term.text()) )
-          return true;
-
-      // Others are okay.
+    if (stopSet == null)
       return false;
+
+    // Skip stop words
+    if (stopSet.contains(term.text()))
+      return true;
+
+    // Skip bi-grams containing stop words. 
+    if (BigramQueryRewriter.isBigram(stopSet, term.text()))
+      return true;
+
+    // Others are okay.
+    return false;
   }
 } // class BigramSpanRangeQuery

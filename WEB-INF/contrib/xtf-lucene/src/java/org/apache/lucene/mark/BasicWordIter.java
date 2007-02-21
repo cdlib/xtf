@@ -1,5 +1,6 @@
 package org.apache.lucene.mark;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,10 +16,8 @@ package org.apache.lucene.mark;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.IOException;
 import java.util.ArrayList;
-
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
 
@@ -29,9 +28,8 @@ import org.apache.lucene.analysis.TokenStream;
  * <p>Created: Dec 13, 2004</p>
  *
  * @author  Martin Haye
- * @version $Id: BasicWordIter.java,v 1.1 2005-09-12 19:06:11 mhaye Exp $
  */
-public class BasicWordIter implements WordIter, Cloneable
+public class BasicWordIter implements WordIter, Cloneable 
 {
   /** The original text to which the tokens refer */
   protected String text;
@@ -50,13 +48,14 @@ public class BasicWordIter implements WordIter, Cloneable
 
   /**
    * Construct the iterator and read in tokens from the given stream.
-   * 
+   *
    * @param text    text represented by the tokens
    * @param stream  stream of tokens from the text
-   * 
+   *
    * @throws IOException      If something goes wrong reading from 'stream'
    */
-  public BasicWordIter(String text, TokenStream stream) throws IOException
+  public BasicWordIter(String text, TokenStream stream)
+    throws IOException 
   {
     Token t;
 
@@ -72,29 +71,33 @@ public class BasicWordIter implements WordIter, Cloneable
     stream.close();
 
     // Convert the list to an easier-to-use array.
-    tokens = (Token[]) tokenList.toArray(new Token[tokenList.size()]);
+    tokens = (Token[])tokenList.toArray(new Token[tokenList.size()]);
 
     // Reset variables, and we're ready to go!
     tokNum = wordPos = -1;
   } // constructor
 
-  /** 
+  /**
    * Do-nothing constructor - should only be used by derived classes
    * that perform their own initialization.
    */
-  protected BasicWordIter() { }
+  protected BasicWordIter() {
+  }
 
   // inherit javadoc
-  public Object clone() {
+  public Object clone() 
+  {
     try {
       return super.clone();
-    } catch (CloneNotSupportedException e) {
+    }
+    catch (CloneNotSupportedException e) {
       throw new RuntimeException(e);
     }
   }
 
   // inherit javadoc
-  public boolean next(boolean force) {
+  public boolean next(boolean force) 
+  {
     // Are we at the end?
     if (tokNum >= tokens.length - 1)
       return false;
@@ -106,7 +109,8 @@ public class BasicWordIter implements WordIter, Cloneable
   }
 
   // inherit javadoc
-  public boolean prev(boolean force) {
+  public boolean prev(boolean force) 
+  {
     // Are we at the start?
     if (tokNum <= 0)
       return false;
@@ -118,7 +122,8 @@ public class BasicWordIter implements WordIter, Cloneable
   } // prev()
 
   // inherit javadoc
-  public void seekFirst(int targetPos, boolean force) {
+  public void seekFirst(int targetPos, boolean force) 
+  {
     // Move backward if we have to.
     while (targetPos <= wordPos) {
       if (!prev(force && targetPos < wordPos))
@@ -133,7 +138,8 @@ public class BasicWordIter implements WordIter, Cloneable
   }
 
   // inherit javadoc
-  public void seekLast(int targetPos, boolean force) {
+  public void seekLast(int targetPos, boolean force) 
+  {
     // Move forward if we have to.
     while (targetPos >= wordPos) {
       if (!next(force && targetPos > wordPos))
@@ -155,45 +161,45 @@ public class BasicWordIter implements WordIter, Cloneable
   }
 
   // inherit javadoc
-  public void getPos(MarkPos pos, int startOrEnd) {
-    BasicMarkPos bm = (BasicMarkPos) pos;
+  public void getPos(MarkPos pos, int startOrEnd) 
+  {
+    BasicMarkPos bm = (BasicMarkPos)pos;
     bm.fullText = text;
 
-    switch (startOrEnd) {
-    
+    switch (startOrEnd) 
+    {
       // Start of field
       case WordIter.FIELD_START:
         bm.wordPos = 0;
         bm.charPos = 0;
         break;
-        
+
       // First character of the current word
       case WordIter.TERM_START:
         bm.wordPos = wordPos;
         bm.charPos = tokens[tokNum].startOffset();
         break;
-        
+
       // Last character (plus one) of the current word
       case WordIter.TERM_END:
         bm.wordPos = wordPos;
         bm.charPos = tokens[tokNum].endOffset();
         break;
-        
+
       // End of word plus spaces and punctuation
       case WordIter.TERM_END_PLUS:
         bm.wordPos = wordPos;
         if (tokNum < tokens.length - 1)
-          bm.charPos = tokens[tokNum + 1].startOffset(); 
+          bm.charPos = tokens[tokNum + 1].startOffset();
         else
           bm.charPos = text.length();
         break;
-        
+
       // End of field.
       case WordIter.FIELD_END:
         bm.wordPos = maxWordPos;
         bm.charPos = text.length();
         break;
-        
       default:
         assert false : "Unknown start/end mode";
     }

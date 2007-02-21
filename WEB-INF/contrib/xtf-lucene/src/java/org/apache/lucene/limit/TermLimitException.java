@@ -1,5 +1,6 @@
 package org.apache.lucene.limit;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,17 +16,17 @@ package org.apache.lucene.limit;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.IOException;
 
 /**
  * Thrown when the maximum number of terms for a range or wildcard query has
- * been exceeded. This is derived from IOException instead of just Exception 
- * because it may be thrown inside Lucene methods that are only prepared to 
+ * been exceeded. This is derived from IOException instead of just Exception
+ * because it may be thrown inside Lucene methods that are only prepared to
  * handle IOExceptions.
  */
-public class TermLimitException extends IOException {
+public class TermLimitException extends IOException 
+{
   public TermLimitException(String message) {
-    super( message );
+    super(message);
   }
 }

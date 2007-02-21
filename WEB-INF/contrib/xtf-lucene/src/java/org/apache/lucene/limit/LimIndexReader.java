@@ -1,5 +1,6 @@
 package org.apache.lucene.limit;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,11 +16,9 @@ package org.apache.lucene.limit;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -33,9 +32,8 @@ import org.apache.lucene.store.Directory;
  * Wraps a normal IndexReader to limit the amount of work performed by a
  * query. "Work" is defined as the number of docs and positions read.
  * Limiting work in this way helps protect against malicious queries.
- * 
+ *
  * @author Martin Haye
- * @version $Id: LimIndexReader.java,v 1.2 2005-10-20 20:21:15 mhaye Exp $
  */
 public class LimIndexReader extends IndexReader 
 {
@@ -45,7 +43,7 @@ public class LimIndexReader extends IndexReader
 
   /**
    * Wrap an index reader and enforce the specified limit.
-   * 
+   *
    * @param toWrap        The reader to wrap
    * @param workLimit     Limit on the amount of wokr
    */
@@ -59,29 +57,36 @@ public class LimIndexReader extends IndexReader
    * Called by LimTermDocs and LimTermPositions to notify us that a certain
    * amount of work has been done. We check the limit, and if exceeded, throw
    * an exception.
-   * 
+   *
    * @param amount    How much work has been done. The unit is typically one
    *                  term or term-position.
    */
-  protected void work(int amount) throws IOException {
+  protected void work(int amount)
+    throws IOException 
+  {
     workCount += amount;
     if (workCount > workLimit)
       throw new ExcessiveWorkException();
   } // work()
 
-  /************************************************************************* 
+  /*************************************************************************
    * DELEGATED METHODS
    *************************************************************************/
-
-  public static long getCurrentVersion(File directory) throws IOException {
+  public static long getCurrentVersion(File directory)
+    throws IOException 
+  {
     return IndexReader.getCurrentVersion(directory);
   }
 
-  public static long getCurrentVersion(String directory) throws IOException {
+  public static long getCurrentVersion(String directory)
+    throws IOException 
+  {
     return IndexReader.getCurrentVersion(directory);
   }
 
-  public static long getCurrentVersion(Directory directory) throws IOException {
+  public static long getCurrentVersion(Directory directory)
+    throws IOException 
+  {
     return IndexReader.getCurrentVersion(directory);
   }
 
@@ -93,34 +98,48 @@ public class LimIndexReader extends IndexReader
     return IndexReader.indexExists(directory);
   }
 
-  public static boolean indexExists(Directory directory) throws IOException {
+  public static boolean indexExists(Directory directory)
+    throws IOException 
+  {
     return IndexReader.indexExists(directory);
   }
 
-  public static boolean isLocked(String directory) throws IOException {
+  public static boolean isLocked(String directory)
+    throws IOException 
+  {
     return IndexReader.isLocked(directory);
   }
 
-  public static boolean isLocked(Directory directory) throws IOException {
+  public static boolean isLocked(Directory directory)
+    throws IOException 
+  {
     return IndexReader.isLocked(directory);
   }
 
-  public static IndexReader open(File path) throws IOException {
+  public static IndexReader open(File path)
+    throws IOException 
+  {
     assert false : "Method should never be called";
     throw new RuntimeException();
   }
 
-  public static IndexReader open(String path) throws IOException {
+  public static IndexReader open(String path)
+    throws IOException 
+  {
     assert false : "Method should never be called";
     throw new RuntimeException();
   }
 
-  public static IndexReader open(Directory directory) throws IOException {
+  public static IndexReader open(Directory directory)
+    throws IOException 
+  {
     assert false : "Method should never be called";
     throw new RuntimeException();
   }
 
-  public static void unlock(Directory directory) throws IOException {
+  public static void unlock(Directory directory)
+    throws IOException 
+  {
     IndexReader.unlock(directory);
   }
 
@@ -128,11 +147,15 @@ public class LimIndexReader extends IndexReader
     return wrapped.directory();
   }
 
-  public int docFreq(Term t) throws IOException {
+  public int docFreq(Term t)
+    throws IOException 
+  {
     return wrapped.docFreq(t);
   }
 
-  public Document document(int n) throws IOException {
+  public Document document(int n)
+    throws IOException 
+  {
     return wrapped.document(n);
   }
 
@@ -140,11 +163,15 @@ public class LimIndexReader extends IndexReader
     return wrapped.equals(obj);
   }
 
-  public Collection getFieldNames() throws IOException {
+  public Collection getFieldNames()
+    throws IOException 
+  {
     return wrapped.getFieldNames();
   }
 
-  public Collection getFieldNames(boolean indexed) throws IOException {
+  public Collection getFieldNames(boolean indexed)
+    throws IOException 
+  {
     return wrapped.getFieldNames(indexed);
   }
 
@@ -153,11 +180,14 @@ public class LimIndexReader extends IndexReader
   }
 
   public TermFreqVector getTermFreqVector(int docNumber, String field)
-      throws IOException {
+    throws IOException 
+  {
     return wrapped.getTermFreqVector(docNumber, field);
   }
 
-  public TermFreqVector[] getTermFreqVectors(int docNumber) throws IOException {
+  public TermFreqVector[] getTermFreqVectors(int docNumber)
+    throws IOException 
+  {
     return wrapped.getTermFreqVectors(docNumber);
   }
 
@@ -177,11 +207,15 @@ public class LimIndexReader extends IndexReader
     return wrapped.maxDoc();
   }
 
-  public byte[] norms(String field) throws IOException {
+  public byte[] norms(String field)
+    throws IOException 
+  {
     return wrapped.norms(field);
   }
 
-  public void norms(String field, byte[] bytes, int offset) throws IOException {
+  public void norms(String field, byte[] bytes, int offset)
+    throws IOException 
+  {
     wrapped.norms(field, bytes, offset);
   }
 
@@ -189,31 +223,45 @@ public class LimIndexReader extends IndexReader
     return wrapped.numDocs();
   }
 
-  public void setNorm(int doc, String field, float value) throws IOException {
+  public void setNorm(int doc, String field, float value)
+    throws IOException 
+  {
     wrapped.setNorm(doc, field, value);
   }
 
-  public TermDocs termDocs() throws IOException {
+  public TermDocs termDocs()
+    throws IOException 
+  {
     return new LimTermDocs(this, wrapped.termDocs());
   }
 
-  public TermDocs termDocs(Term term) throws IOException {
+  public TermDocs termDocs(Term term)
+    throws IOException 
+  {
     return new LimTermDocs(this, wrapped.termDocs(term));
   }
 
-  public TermPositions termPositions() throws IOException {
+  public TermPositions termPositions()
+    throws IOException 
+  {
     return new LimTermPositions(this, wrapped.termPositions());
   }
 
-  public TermPositions termPositions(Term term) throws IOException {
+  public TermPositions termPositions(Term term)
+    throws IOException 
+  {
     return new LimTermPositions(this, wrapped.termPositions(term));
   }
 
-  public TermEnum terms() throws IOException {
+  public TermEnum terms()
+    throws IOException 
+  {
     return wrapped.terms();
   }
 
-  public TermEnum terms(Term t) throws IOException {
+  public TermEnum terms(Term t)
+    throws IOException 
+  {
     return wrapped.terms(t);
   }
 
@@ -221,25 +269,33 @@ public class LimIndexReader extends IndexReader
     return wrapped.toString();
   }
 
-  protected void doClose() throws IOException {
+  protected void doClose()
+    throws IOException 
+  {
     assert false : "method should never be called";
   }
 
-  protected void doCommit() throws IOException {
+  protected void doCommit()
+    throws IOException 
+  {
     assert false : "method should never be called";
   }
 
-  protected void doDelete(int docNum) throws IOException {
+  protected void doDelete(int docNum)
+    throws IOException 
+  {
     assert false : "method should never be called";
   }
 
   protected void doSetNorm(int doc, String field, byte value)
-      throws IOException {
+    throws IOException 
+  {
     assert false : "method should never be called";
   }
 
-  protected void doUndeleteAll() throws IOException {
+  protected void doUndeleteAll()
+    throws IOException 
+  {
     assert false : "method should never be called";
   }
-
 } // class LimIndexReader

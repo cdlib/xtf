@@ -1,5 +1,6 @@
 package org.apache.lucene.chunk;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,7 +16,6 @@ package org.apache.lucene.chunk;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import org.apache.lucene.mark.BasicWordIter;
 import org.apache.lucene.mark.MarkPos;
 import org.apache.lucene.mark.WordIter;
@@ -23,11 +23,11 @@ import org.apache.lucene.mark.WordIter;
 /**
  * Iterates over words in a large document that has been broken up into
  * many overlapping {@link Chunk}s. Applies section limits at empty chunks
- * (section limits can be overcome in any method to which they apply by 
+ * (section limits can be overcome in any method to which they apply by
  * simply setting the 'force' parameter.)
  */
-public class ChunkedWordIter extends BasicWordIter implements Cloneable {
-  
+public class ChunkedWordIter extends BasicWordIter implements Cloneable 
+{
   /** Source for fetching chunks */
   protected ChunkSource chunkSource;
 
@@ -36,7 +36,7 @@ public class ChunkedWordIter extends BasicWordIter implements Cloneable {
 
   /**
    * Construct the iterator to access text from the given chunk source.
-   * 
+   *
    * @param chunkSource   Source to read chunks from.
    */
   public ChunkedWordIter(ChunkSource chunkSource) {
@@ -44,77 +44,80 @@ public class ChunkedWordIter extends BasicWordIter implements Cloneable {
   }
 
   // inherit javadoc
-  public boolean next(boolean force) {
+  public boolean next(boolean force) 
+  {
     if (tokens == null)
       reseek(0);
-    else if (tokNum == tokens.length - 1) {
-
-      while( true ) 
+    else if (tokNum == tokens.length - 1) 
+    {
+      while (true) 
       {
-          // If we're at the very end, don't go further.
-          if (!chunkSource.inMainDoc(chunk.chunkNum + 1))
+        // If we're at the very end, don't go further.
+        if (!chunkSource.inMainDoc(chunk.chunkNum + 1))
+          return false;
+
+        // Don't skip past a section boundary unless requested to.
+        Chunk next = chunkSource.loadChunk(chunk.chunkNum + 1);
+        if (next.tokens.length == 0) {
+          if (!force)
             return false;
-    
-          // Don't skip past a section boundary unless requested to.
-          Chunk next = chunkSource.loadChunk(chunk.chunkNum + 1);
-          if (next.tokens.length == 0) {
-              if( !force)
-                  return false;
-              chunk = next;
-              continue;
-          }
-          
-          if( !force ) {
-              int initialGap = next.tokens[0].getPositionIncrement() - 1;
-              if( initialGap >= chunkSource.getChunkOverlap() )
-                  return false;
-          }
-    
-          // Go to the next chunk.
-          reseek(next);
-          return true;
+          chunk = next;
+          continue;
+        }
+
+        if (!force) {
+          int initialGap = next.tokens[0].getPositionIncrement() - 1;
+          if (initialGap >= chunkSource.getChunkOverlap())
+            return false;
+        }
+
+        // Go to the next chunk.
+        reseek(next);
+        return true;
       }
     }
 
     // Now do the normal work next() always does.
     return super.next(force);
-  } 
+  }
 
   // inherit javadoc
-  public boolean prev(boolean force) {
+  public boolean prev(boolean force) 
+  {
     if (tokens == null)
       return false;
-    else if (tokNum == 0) {
+    else if (tokNum == 0) 
+    {
+      while (true) 
+      {
+        // If we're at the very beginning, don't go further.
+        if (!chunkSource.inMainDoc(chunk.chunkNum - 1))
+          return false;
 
-      while( true ) {
-          // If we're at the very beginning, don't go further.
-          if (!chunkSource.inMainDoc(chunk.chunkNum - 1))
+        // Don't back over a section boundary unless requested to.
+        if (!force) {
+          int initialGap = wordPos - chunk.minWordPos;
+          if (initialGap >= chunk.source.getChunkOverlap())
             return false;
-    
-          // Don't back over a section boundary unless requested to.
-          if( !force ) {
-              int initialGap = wordPos - chunk.minWordPos;
-              if( initialGap >= chunk.source.getChunkOverlap() )
-                  return false;
-          }
-          
-          Chunk prev = chunkSource.loadChunk(chunk.chunkNum - 1);
-          if( prev.tokens.length == 0 ) {
-              if( !force )
-                  return false;
-              chunk = prev;
-              continue;
-          }
-    
-          // Go to the previous chunk.
-          reseek(prev);
-    
-          // Skip to the end of it.
-          while (wordPos < chunk.maxWordPos)
-            super.next(true);
-    
-          // All done.
-          return true;
+        }
+
+        Chunk prev = chunkSource.loadChunk(chunk.chunkNum - 1);
+        if (prev.tokens.length == 0) {
+          if (!force)
+            return false;
+          chunk = prev;
+          continue;
+        }
+
+        // Go to the previous chunk.
+        reseek(prev);
+
+        // Skip to the end of it.
+        while (wordPos < chunk.maxWordPos)
+          super.next(true);
+
+        // All done.
+        return true;
       }
     }
 
@@ -123,14 +126,15 @@ public class ChunkedWordIter extends BasicWordIter implements Cloneable {
   }
 
   // inherit javadoc
-  protected void reseek(int targetPos) {
-    if (   chunk != null 
-        && targetPos >= chunk.minWordPos
-        && targetPos < chunk.maxWordPos)
+  protected void reseek(int targetPos) 
+  {
+    if (chunk != null &&
+        targetPos >= chunk.minWordPos &&
+        targetPos < chunk.maxWordPos)
       return;
 
-    int targetChunk = (targetPos / chunkSource.chunkBump)
-                    + chunkSource.firstChunk;
+    int targetChunk = (targetPos / chunkSource.chunkBump) +
+                      chunkSource.firstChunk;
     if (targetChunk == chunkSource.lastChunk + 1)
       targetChunk = chunkSource.lastChunk;
     chunk = chunkSource.loadChunk(targetChunk);
@@ -151,7 +155,8 @@ public class ChunkedWordIter extends BasicWordIter implements Cloneable {
   } // reseek()
 
   // inherit javadoc
-  public void seekFirst(int targetPos, boolean force) {
+  public void seekFirst(int targetPos, boolean force) 
+  {
     if (force)
       reseek(targetPos);
 
@@ -159,7 +164,8 @@ public class ChunkedWordIter extends BasicWordIter implements Cloneable {
   }
 
   // inherit javadoc
-  public void seekLast(int targetPos, boolean force) {
+  public void seekLast(int targetPos, boolean force) 
+  {
     if (force)
       reseek(targetPos);
 
@@ -172,45 +178,46 @@ public class ChunkedWordIter extends BasicWordIter implements Cloneable {
   }
 
   // inherit javadoc
-  public void getPos(MarkPos pos, int startOrEnd) {
-    ChunkMarkPos cm = (ChunkMarkPos) pos;
+  public void getPos(MarkPos pos, int startOrEnd) 
+  {
+    ChunkMarkPos cm = (ChunkMarkPos)pos;
 
-    switch (startOrEnd) {
-    
+    switch (startOrEnd) 
+    {
       // FIELD_START and FIELD_END don't make sense for chunked access.
       case WordIter.FIELD_START:
       case WordIter.FIELD_END:
         cm.wordPos = cm.charPos = -1;
         cm.chunk = null;
         break;
-        
+
       // First character of the current word
       case WordIter.TERM_START:
         cm.wordPos = wordPos;
         cm.charPos = tokens[tokNum].startOffset();
         cm.chunk = chunk;
         break;
-        
+
       // Last character (plus one) of the current word
       case WordIter.TERM_END:
         cm.wordPos = wordPos;
-        cm.charPos = tokens[tokNum].startOffset() + tokens[tokNum].endOffset()
-            - tokens[tokNum].startOffset();
+        cm.charPos = tokens[tokNum].startOffset() + tokens[tokNum].endOffset() -
+                     tokens[tokNum].startOffset();
         cm.chunk = chunk;
         break;
-        
+
       // End of word plus spaces and punctuation.
       case WordIter.TERM_END_PLUS:
         cm.wordPos = wordPos;
         if (tokNum == tokens.length - 1)
-          cm.charPos = tokens[tokNum].startOffset() + chunk.text.length()
-              - tokens[tokNum].startOffset();
+          cm.charPos = tokens[tokNum].startOffset() + chunk.text.length() -
+                       tokens[tokNum].startOffset();
         else
-          cm.charPos = tokens[tokNum].startOffset()
-              + tokens[tokNum + 1].startOffset() - tokens[tokNum].startOffset();
+          cm.charPos = tokens[tokNum].startOffset() +
+                       tokens[tokNum + 1].startOffset() -
+                       tokens[tokNum].startOffset();
         cm.chunk = chunk;
         break;
-        
       default:
         assert false : "Unknown start/end mode";
     }

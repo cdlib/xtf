@@ -1,5 +1,6 @@
 package org.apache.lucene.limit;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,17 +16,18 @@ package org.apache.lucene.limit;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.IOException;
 
 /**
- * Thrown when the maximum amount of work for a query has been exceeded. This 
- * is derived from IOException instead of just Exception because it may be 
+ * Thrown when the maximum amount of work for a query has been exceeded. This
+ * is derived from IOException instead of just Exception because it may be
  * thrown inside Lucene methods that are only prepared to handle IOExceptions.
  */
-public class ExcessiveWorkException extends IOException {
+public class ExcessiveWorkException extends IOException 
+{
   public ExcessiveWorkException() {
-    super( "The query references too many potential matches. " +
-           "Making it more specific would help." );
+    super(
+      "The query references too many potential matches. " +
+      "Making it more specific would help.");
   }
 }

@@ -1,5 +1,6 @@
 package org.apache.lucene.chunk;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,13 +16,11 @@ package org.apache.lucene.chunk;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
@@ -43,10 +42,10 @@ public class ChunkSource
 
   /** Max number of words per chunk */
   protected int chunkSize;
-  
+
   /** Numer of words one chunk overlaps with the next */
   protected int chunkOverlap;
-  
+
   /** Number of words per chunk minus the overlap */
   protected int chunkBump;
 
@@ -71,7 +70,7 @@ public class ChunkSource
   /**
    * Construct the iterator and read in starting text from the given
    * chunk.
-   * 
+   *
    * @param reader where to read the chunks from
    * @param docNumMap provides a mapping from main document number to
    *                  to chunk numbers.
@@ -95,9 +94,9 @@ public class ChunkSource
     lastChunk = docNumMap.getLastChunk(mainDocNum);
   }
 
-  /** 
-   * Create a new storage place for chunk tokens (derived classes may 
-   * wish to override) 
+  /**
+   * Create a new storage place for chunk tokens (derived classes may
+   * wish to override)
    */
   protected Chunk createChunkTokens(int chunkNum) {
     return new Chunk(this, chunkNum);
@@ -117,27 +116,30 @@ public class ChunkSource
       return false;
     return true;
   }
-  
-  /** 
-   * Read the text for the given chunk (derived classes may 
-   * wish to override) 
+
+  /**
+   * Read the text for the given chunk (derived classes may
+   * wish to override)
    */
-  protected void loadText(int chunkNum, Chunk chunk) throws IOException {
+  protected void loadText(int chunkNum, Chunk chunk)
+    throws IOException 
+  {
     chunk.text = reader.document(chunkNum).get(field);
   }
 
-  /** 
+  /**
    * Read in and tokenize a chunk. Maintains a cache of recently loaded
    * chunks for speed.
    */
-  public Chunk loadChunk(int chunkNum) {
+  public Chunk loadChunk(int chunkNum) 
+  {
     Token t;
 
-    try {
-
+    try 
+    {
       // Is the requested chunk already cached? If so, just return it.
       for (Iterator i = chunkCache.iterator(); i.hasNext();) {
-        Chunk c = (Chunk) i.next();
+        Chunk c = (Chunk)i.next();
         if (c.chunkNum == chunkNum)
           return c;
       }
@@ -151,8 +153,8 @@ public class ChunkSource
       loadText(chunkNum, chunk);
 
       // Make a token stream out of it.
-      TokenStream stream = analyzer.tokenStream(field, new StringReader(
-          chunk.text));
+      TokenStream stream = analyzer.tokenStream(field,
+                                                new StringReader(chunk.text));
 
       // Pull out all the tokens and make them into a list. Stop at the
       // first token when overlaps with the next chunk (unless this is
@@ -160,7 +162,8 @@ public class ChunkSource
       //
       ArrayList tokenList = new ArrayList(10);
       int wordPos = chunk.maxWordPos;
-      while ((t = stream.next()) != null) {
+      while ((t = stream.next()) != null) 
+      {
         wordPos += t.getPositionIncrement();
         if (chunkNum < lastChunk && wordPos >= chunk.minWordPos + chunkBump) {
           chunk.text = chunk.text.substring(0, t.startOffset());
@@ -172,7 +175,7 @@ public class ChunkSource
       stream.close();
 
       // Convert the token list into a handy array.
-      chunk.tokens = (Token[]) tokenList.toArray(new Token[tokenList.size()]);
+      chunk.tokens = (Token[])tokenList.toArray(new Token[tokenList.size()]);
 
       // Make room in the chunk cache if necessary.
       if (chunkCache.size() == chunkCacheSize)
@@ -182,15 +185,19 @@ public class ChunkSource
 
       // All done!
       return chunk;
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
-  
-  /** Retrieve the max number of words per chunk */
-  public int getChunkSize() { return chunkSize; }
-  
-  /** Retrieve the number of words one chunk overlaps with the next */
-  public int getChunkOverlap() { return chunkOverlap; }
 
+  /** Retrieve the max number of words per chunk */
+  public int getChunkSize() {
+    return chunkSize;
+  }
+
+  /** Retrieve the number of words one chunk overlaps with the next */
+  public int getChunkOverlap() {
+    return chunkOverlap;
+  }
 } // class ChunkSource

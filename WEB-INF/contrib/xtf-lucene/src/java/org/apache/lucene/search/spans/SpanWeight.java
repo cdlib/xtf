@@ -1,5 +1,6 @@
 package org.apache.lucene.search.spans;
 
+
 /**
  * Copyright 2004 The Apache Software Foundation
  *
@@ -15,23 +16,20 @@ package org.apache.lucene.search.spans;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.IOException;
-
 import org.apache.lucene.index.IndexReader;
-
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Weight;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Explanation;
 
-class SpanWeight implements Weight {
+class SpanWeight implements Weight 
+{
   private Searcher searcher;
   private float value;
   private float queryNorm;
   private float queryWeight;
-
   private SpanQuery query;
 
   public SpanWeight(SpanQuery query, Searcher searcher) {
@@ -39,26 +37,40 @@ class SpanWeight implements Weight {
     this.query = query;
   }
 
-  public Searcher getSearcher() { return searcher; }
-  public Query getQuery() { return query; }
-  public float getValue() { return value; }
+  public Searcher getSearcher() {
+    return searcher;
+  }
 
-  public float sumOfSquaredWeights() throws IOException {
-    queryWeight = query.getBoost();         // compute query weight
-    return queryWeight * queryWeight;             // square it
+  public Query getQuery() {
+    return query;
+  }
+
+  public float getValue() {
+    return value;
+  }
+
+  public float sumOfSquaredWeights()
+    throws IOException 
+  {
+    queryWeight = query.getBoost(); // compute query weight
+    return queryWeight * queryWeight; // square it
   }
 
   public void normalize(float queryNorm) {
     this.queryNorm = queryNorm;
-    queryWeight *= queryNorm;                     // normalize query weight
-    value = queryWeight;                          // idf handled at lower level
+    queryWeight *= queryNorm; // normalize query weight
+    value = queryWeight; // idf handled at lower level
   }
 
-  public Scorer scorer(IndexReader reader) throws IOException {
+  public Scorer scorer(IndexReader reader)
+    throws IOException 
+  {
     if (query.getSpanRecording() == 0) {
-      return new SpanScorer(query.getSpans(reader, searcher), this,
+      return new SpanScorer(query.getSpans(reader, searcher),
+                            this,
                             query.getSimilarity(searcher));
-    } else {
+    }
+    else {
       return new SpanRecordingScorer(query.getSpans(reader, searcher),
                                      this,
                                      query.getSimilarity(searcher),
@@ -67,11 +79,12 @@ class SpanWeight implements Weight {
   }
 
   public Explanation explain(IndexReader reader, int doc)
-    throws IOException {
-
+    throws IOException 
+  {
     Explanation result = new Explanation();
-    result.setDescription("weight("+getQuery()+" in "+doc+"), product of:");
-    
+    result.setDescription("weight(" + getQuery() + " in " + doc +
+                          "), product of:");
+
     // explain query weight
     Explanation queryExpl = new Explanation();
     queryExpl.setDescription("queryWeight(" + getQuery() + "), product of:");
@@ -83,8 +96,7 @@ class SpanWeight implements Weight {
     Explanation queryNormExpl = new Explanation(queryNorm, "queryNorm");
     queryExpl.addDetail(queryNormExpl);
 
-    queryExpl.setValue(boostExpl.getValue() *
-                       queryNormExpl.getValue());
+    queryExpl.setValue(boostExpl.getValue() * queryNormExpl.getValue());
 
     result.addDetail(queryExpl);
 

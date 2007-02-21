@@ -1,5 +1,6 @@
 package org.apache.lucene.limit;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,9 +16,7 @@ package org.apache.lucene.limit;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.IOException;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.index.TermPositions;
@@ -25,9 +24,8 @@ import org.apache.lucene.index.TermPositions;
 /**
  * Used by LimIndexReader to help enforce the work limit while processing a
  * query.
- * 
+ *
  * @author Martin Haye
- * @version $Id: LimTermPositions.java,v 1.1 2005-09-12 19:06:11 mhaye Exp $
  */
 public class LimTermPositions implements TermPositions 
 {
@@ -40,41 +38,51 @@ public class LimTermPositions implements TermPositions
     this.reader = reader;
   }
 
-  /************************************************************************* 
+  /*************************************************************************
    * DELEGATED METHODS THAT PERFORM "WORK"
    *************************************************************************/
-
-  public int nextPosition() throws IOException {
+  public int nextPosition()
+    throws IOException 
+  {
     reader.work(1);
     return wrapped.nextPosition();
   }
 
-  public int read(int[] docs, int[] freqs) throws IOException {
+  public int read(int[] docs, int[] freqs)
+    throws IOException 
+  {
     int nRead = wrapped.read(docs, freqs);
     reader.work(nRead);
     return nRead;
   }
 
-  public void seek(Term term) throws IOException {
+  public void seek(Term term)
+    throws IOException 
+  {
     reader.work(1);
     wrapped.seek(term);
   }
 
-  public void seek(TermEnum termEnum) throws IOException {
+  public void seek(TermEnum termEnum)
+    throws IOException 
+  {
     reader.work(1);
     wrapped.seek(termEnum);
   }
 
-  public boolean skipTo(int target) throws IOException {
+  public boolean skipTo(int target)
+    throws IOException 
+  {
     reader.work(1);
     return wrapped.skipTo(target);
   }
 
-  /************************************************************************* 
+  /*************************************************************************
    * OTHER DELEGATED METHODS
    *************************************************************************/
-
-  public void close() throws IOException {
+  public void close()
+    throws IOException 
+  {
     wrapped.close();
   }
 
@@ -94,7 +102,9 @@ public class LimTermPositions implements TermPositions
     return wrapped.hashCode();
   }
 
-  public boolean next() throws IOException {
+  public boolean next()
+    throws IOException 
+  {
     return wrapped.next();
   }
 

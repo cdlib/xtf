@@ -1,5 +1,6 @@
 package org.apache.lucene.search.spans;
 
+
 /**
  * Copyright 2004 The Apache Software Foundation
  *
@@ -15,24 +16,23 @@ package org.apache.lucene.search.spans;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import java.io.IOException;
-
 import java.util.Collection;
-
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 
 /** Removes matches which overlap with another SpanQuery. */
-public class SpanNotQuery extends SpanQuery {
+public class SpanNotQuery extends SpanQuery 
+{
   private SpanQuery include;
   private SpanQuery exclude;
 
   /** Construct a SpanNotQuery matching spans from <code>include</code> which
    * have no overlap with spans from <code>exclude</code>.*/
-  public SpanNotQuery(SpanQuery include, SpanQuery exclude) {
+  public SpanNotQuery(SpanQuery include, SpanQuery exclude) 
+  {
     this.include = include;
     this.exclude = exclude;
 
@@ -41,14 +41,22 @@ public class SpanNotQuery extends SpanQuery {
   }
 
   /** Return the SpanQuery whose matches are filtered. */
-  public SpanQuery getInclude() { return include; }
+  public SpanQuery getInclude() {
+    return include;
+  }
 
   /** Return the SpanQuery whose matches must not overlap those returned. */
-  public SpanQuery getExclude() { return exclude; }
+  public SpanQuery getExclude() {
+    return exclude;
+  }
 
-  public String getField() { return include.getField(); }
+  public String getField() {
+    return include.getField();
+  }
 
-  public Collection getTerms() { return include.getTerms(); }
+  public Collection getTerms() {
+    return include.getTerms();
+  }
 
   public Query[] getSubQueries() {
     Query[] result = new Query[2];
@@ -57,7 +65,9 @@ public class SpanNotQuery extends SpanQuery {
     return result;
   }
 
-  public Query rewrite(IndexReader reader) throws IOException {
+  public Query rewrite(IndexReader reader)
+    throws IOException 
+  {
     SpanQuery rewrittenInclude = (SpanQuery)include.rewrite(reader);
     SpanQuery rewrittenExclude = (SpanQuery)exclude.rewrite(reader);
     if (rewrittenInclude == include && rewrittenExclude == exclude)
@@ -78,93 +88,116 @@ public class SpanNotQuery extends SpanQuery {
     return buffer.toString();
   }
 
-
-  public Spans getSpans(final IndexReader reader, final Searcher searcher) 
+  public Spans getSpans(final IndexReader reader, final Searcher searcher)
     throws IOException 
   {
-    return new Spans() {
+    return new Spans() 
+    {
         private Spans includeSpans = include.getSpans(reader, searcher);
         private boolean moreInclude = true;
-
         private Spans excludeSpans = exclude.getSpans(reader, searcher);
         private boolean moreExclude = true;
 
-        public boolean next() throws IOException {
-          if (moreInclude)                        // move to next include
+        public boolean next()
+          throws IOException 
+        {
+          if (moreInclude) // move to next include
             moreInclude = includeSpans.next();
 
-          while (moreInclude && moreExclude) {
-
+          while (moreInclude && moreExclude) 
+          {
             if (includeSpans.doc() > excludeSpans.doc()) // skip exclude
               moreExclude = excludeSpans.skipTo(includeSpans.doc());
 
-            while (moreExclude                    // while exclude is before
-                   && includeSpans.doc() == excludeSpans.doc()
-                   && excludeSpans.end() <= includeSpans.start()) {
-              moreExclude = excludeSpans.next();  // increment exclude
+            while (moreExclude // while exclude is before
+                    &&
+                   includeSpans.doc() == excludeSpans.doc() &&
+                   excludeSpans.end() <= includeSpans.start()) 
+            {
+              moreExclude = excludeSpans.next(); // increment exclude
             }
 
-            if (!moreExclude                      // if no intersection
-                || includeSpans.doc() != excludeSpans.doc()
-                || includeSpans.end() <= excludeSpans.start())
-              break;                              // we found a match
+            if (!moreExclude // if no intersection
+                 ||
+                includeSpans.doc() != excludeSpans.doc() ||
+                includeSpans.end() <= excludeSpans.start())
+              break; // we found a match
 
-            moreInclude = includeSpans.next();    // intersected: keep scanning
+            moreInclude = includeSpans.next(); // intersected: keep scanning
           }
           return moreInclude;
         }
 
-        public boolean skipTo(int target) throws IOException {
-          if (moreInclude)                        // skip include
+        public boolean skipTo(int target)
+          throws IOException 
+        {
+          if (moreInclude) // skip include
             moreInclude = includeSpans.skipTo(target);
 
           if (!moreInclude)
             return false;
 
-          if (moreExclude                         // skip exclude
-              && includeSpans.doc() > excludeSpans.doc())
+          if (moreExclude // skip exclude
+               &&
+              includeSpans.doc() > excludeSpans.doc())
             moreExclude = excludeSpans.skipTo(includeSpans.doc());
 
-          while (moreExclude                      // while exclude is before
-                 && includeSpans.doc() == excludeSpans.doc()
-                 && excludeSpans.end() <= includeSpans.start()) {
-            moreExclude = excludeSpans.next();    // increment exclude
+          while (moreExclude // while exclude is before
+                  &&
+                 includeSpans.doc() == excludeSpans.doc() &&
+                 excludeSpans.end() <= includeSpans.start()) 
+          {
+            moreExclude = excludeSpans.next(); // increment exclude
           }
 
-          if (!moreExclude                      // if no intersection
-                || includeSpans.doc() != excludeSpans.doc()
-                || includeSpans.end() <= excludeSpans.start())
-            return true;                          // we found a match
+          if (!moreExclude // if no intersection
+               ||
+              includeSpans.doc() != excludeSpans.doc() ||
+              includeSpans.end() <= excludeSpans.start())
+            return true; // we found a match
 
-          return next();                          // scan to next match
+          return next(); // scan to next match
         }
 
-        public int doc() { return includeSpans.doc(); }
-        public int start() { return includeSpans.start(); }
-        public int end() { return includeSpans.end(); }
-        public float score() { return includeSpans.score() * getBoost(); }
+        public int doc() {
+          return includeSpans.doc();
+        }
+
+        public int start() {
+          return includeSpans.start();
+        }
+
+        public int end() {
+          return includeSpans.end();
+        }
+
+        public float score() {
+          return includeSpans.score() * getBoost();
+        }
 
         public String toString() {
           return "spans(" + SpanNotQuery.this.toString() + ")";
         }
 
-        public Explanation explain() throws IOException { 
+        public Explanation explain()
+          throws IOException 
+        {
           if (getBoost() == 1.0f)
             return includeSpans.explain();
-          
-          Explanation result = new Explanation(0, 
-              "weight("+toString()+"), product of:" );
-          
+
+          Explanation result = new Explanation(0,
+                                               "weight(" + toString() +
+                                               "), product of:");
+
           Explanation boostExpl = new Explanation(getBoost(), "boost");
           result.addDetail(boostExpl);
-          
-          Explanation inclExpl = includeSpans.explain(); 
+
+          Explanation inclExpl = includeSpans.explain();
           result.addDetail(inclExpl);
-          
+
           result.setValue(boostExpl.getValue() * inclExpl.getValue());
           return result;
         }
       };
   }
-
 }

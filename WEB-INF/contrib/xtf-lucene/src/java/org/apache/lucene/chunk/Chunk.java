@@ -1,5 +1,6 @@
 package org.apache.lucene.chunk;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,7 +16,6 @@ package org.apache.lucene.chunk;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import org.apache.lucene.analysis.Token;
 
 /**
@@ -23,7 +23,7 @@ import org.apache.lucene.analysis.Token;
  * a reference back to the source of the chunk. Instances of this class are
  * typically created by and cached by a {@link ChunkSource}.
  */
-public class Chunk
+public class Chunk 
 {
   /** The source of this chunk */
   public ChunkSource source;
@@ -44,8 +44,7 @@ public class Chunk
   public int maxWordPos;
 
   /** Construct a new chunk */
-  public Chunk(ChunkSource source, int chunkNum)
-  {
+  public Chunk(ChunkSource source, int chunkNum) {
     this.source = source;
     this.chunkNum = chunkNum;
   }

@@ -1,5 +1,6 @@
 package org.apache.lucene.search;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,7 +16,6 @@ package org.apache.lucene.search;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import org.apache.lucene.search.Searcher;
 
 /** Lower-level search API.
@@ -24,7 +24,7 @@ import org.apache.lucene.search.Searcher;
  * @author  Martin Haye
  * @see RecordingSearcher#search(Query,SpanHitCollector)
  */
-public abstract class SpanHitCollector
+public abstract class SpanHitCollector 
 {
   /** Called once for every non-zero scoring document, with the document number
    * and its score, plus any spans for fields in span queries.

@@ -1,5 +1,6 @@
 package org.apache.lucene.chunk;
 
+
 /**
  * Copyright 2005 The Apache Software Foundation
  *
@@ -15,7 +16,6 @@ package org.apache.lucene.chunk;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import org.apache.lucene.mark.MarkPos;
 
 /**
@@ -39,8 +39,9 @@ public class ChunkMarkPos extends MarkPos
   }
 
   // inherit javadoc
-  public int countTextTo(MarkPos other) {
-    ChunkMarkPos cm = (ChunkMarkPos) other;
+  public int countTextTo(MarkPos other) 
+  {
+    ChunkMarkPos cm = (ChunkMarkPos)other;
 
     if (other == null)
       return chunk.text.length() - charPos;
@@ -61,8 +62,9 @@ public class ChunkMarkPos extends MarkPos
   }
 
   // inherit javadoc
-  public String getTextTo(MarkPos other) {
-    ChunkMarkPos cm = (ChunkMarkPos) other;
+  public String getTextTo(MarkPos other) 
+  {
+    ChunkMarkPos cm = (ChunkMarkPos)other;
 
     if (other == null)
       return chunk.text.substring(charPos);
@@ -76,8 +78,8 @@ public class ChunkMarkPos extends MarkPos
       assert false;
       throw new RuntimeException("Cannot getTextTo() backward position");
     }
-    
-    if (cm.chunk.chunkNum - chunk.chunkNum > 2 ) {
+
+    if (cm.chunk.chunkNum - chunk.chunkNum > 2) {
       assert false : "getText spanning many chunks is probably a logic error";
     }
 
