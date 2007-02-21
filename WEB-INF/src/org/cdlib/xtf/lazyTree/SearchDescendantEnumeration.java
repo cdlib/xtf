@@ -4,34 +4,33 @@ import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
 
 /** Iterates through all the descendants of a node in a SearchTree */
-final class SearchDescendantEnumeration extends TreeEnumeration {
+final class SearchDescendantEnumeration extends TreeEnumeration 
+{
+  private NodeImpl root;
+  private boolean includeSelf;
 
-    private NodeImpl root;
-    private boolean includeSelf;
+  public SearchDescendantEnumeration(NodeImpl node, NodeTest nodeTest,
+                                     boolean includeSelf) 
+  {
+    super(node, nodeTest);
+    root = node;
+    this.includeSelf = includeSelf;
 
-    public SearchDescendantEnumeration( NodeImpl node, NodeTest nodeTest, 
-                                        boolean includeSelf ) 
-    {
-        super(node, nodeTest);
-        root = node;
-        this.includeSelf = includeSelf;
-        
-        if (!includeSelf || !conforms(node)) {
-            advance();
-        }
+    if (!includeSelf || !conforms(node)) {
+      advance();
     }
+  }
 
-    protected void step() {
-        next = next.getNextInDocument(root);
-    }
+  protected void step() {
+    next = next.getNextInDocument(root);
+  }
 
-    /**
-    * Get another enumeration of the same nodes
-    */
-
-    public SequenceIterator getAnother() {
-        return new SearchDescendantEnumeration(start, nodeTest, includeSelf);
-    }
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new SearchDescendantEnumeration(start, nodeTest, includeSelf);
+  }
 }
 
 //

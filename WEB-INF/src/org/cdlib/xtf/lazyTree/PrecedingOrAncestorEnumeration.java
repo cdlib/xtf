@@ -1,4 +1,5 @@
 package org.cdlib.xtf.lazyTree;
+
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
 
@@ -7,29 +8,24 @@ import net.sf.saxon.pattern.NodeTest;
 * but is used when evaluating xsl:number. It is provided because
 * taking the union of the two axes would be very inefficient
 */
-final class PrecedingOrAncestorEnumeration extends TreeEnumeration {
-   
-    public PrecedingOrAncestorEnumeration(NodeImpl node, NodeTest nodeTest) {
-        super(node, nodeTest);
-        advance();   
-    }
+final class PrecedingOrAncestorEnumeration extends TreeEnumeration 
+{
+  public PrecedingOrAncestorEnumeration(NodeImpl node, NodeTest nodeTest) {
+    super(node, nodeTest);
+    advance();
+  }
 
-    protected void step() {
-        next = next.getPreviousInDocument();
-    }
+  protected void step() {
+    next = next.getPreviousInDocument();
+  }
 
-    /**
-    * Get another enumeration of the same nodes
-    */
-    
-    public SequenceIterator getAnother() {
-        return new PrecedingOrAncestorEnumeration(start, nodeTest);
-    }
-
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new PrecedingOrAncestorEnumeration(start, nodeTest);
+  }
 }
-
-
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");

@@ -1,55 +1,52 @@
 package org.cdlib.xtf.lazyTree;
+
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
 
-/** Saxon: Iterates through all nodes preceding a given one, in document 
- *  order 
+/** Saxon: Iterates through all nodes preceding a given one, in document
+ *  order
  */
-final class PrecedingEnumeration extends TreeEnumeration {
+final class PrecedingEnumeration extends TreeEnumeration 
+{
+  NodeImpl nextAncestor;
 
-    NodeImpl nextAncestor;
-    
-    public PrecedingEnumeration(NodeImpl node, NodeTest nodeTest) {
-        super(node, nodeTest);
+  public PrecedingEnumeration(NodeImpl node, NodeTest nodeTest) 
+  {
+    super(node, nodeTest);
 
-        // we need to avoid returning ancestors of the starting node
-        nextAncestor = (NodeImpl)node.getParent();
-        advance();   
+    // we need to avoid returning ancestors of the starting node
+    nextAncestor = (NodeImpl)node.getParent();
+    advance();
+  }
+
+  /**
+  * Special code to skip the ancestors of the start node
+  */
+  protected boolean conforms(NodeImpl node) 
+  {
+    // ASSERT: we'll never test the root node, because it's always
+    // an ancestor, so nextAncestor will never be null.
+    if (node != null) 
+    {
+      if (node.isSameNodeInfo(nextAncestor)) {
+        nextAncestor = (NodeImpl)nextAncestor.getParent();
+        return false;
+      }
     }
+    return super.conforms(node);
+  }
 
+  protected void step() {
+    next = next.getPreviousInDocument();
+  }
 
-    /**
-    * Special code to skip the ancestors of the start node
-    */
-
-    protected boolean conforms(NodeImpl node) {
-        // ASSERT: we'll never test the root node, because it's always
-        // an ancestor, so nextAncestor will never be null.
-        if (node!=null) {
-            if (node.isSameNodeInfo(nextAncestor)) {
-                nextAncestor = (NodeImpl)nextAncestor.getParent();
-                return false;
-            }
-        }
-        return super.conforms(node);
-    }
-
-    protected void step() {
-        next = next.getPreviousInDocument();
-    }
-
-    /**
-    * Get another enumeration of the same nodes
-    */
-    
-    public SequenceIterator getAnother() {
-        return new PrecedingEnumeration(start, nodeTest);
-    }
-
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new PrecedingEnumeration(start, nodeTest);
+  }
 }
-
-
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");

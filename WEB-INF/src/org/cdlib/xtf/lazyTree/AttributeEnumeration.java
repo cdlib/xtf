@@ -1,4 +1,5 @@
 package org.cdlib.xtf.lazyTree;
+
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.AxisIteratorImpl;
@@ -11,108 +12,111 @@ import net.sf.saxon.type.Type;
 /**
 * Saxon: AttributeEnumeration is an enumeration of all the attribute nodes of an Element.
 */
+final class AttributeEnumeration extends AxisIteratorImpl
+  implements LookaheadIterator 
+{
+  private ElementImpl element;
+  private NodeTest nodeTest;
+  private NodeInfo next;
+  private int index;
+  private int length;
 
-final class AttributeEnumeration extends AxisIteratorImpl implements LookaheadIterator {
+  /**
+  * Constructor
+  * @param node the element whose attributes are required. This may be any type of node,
+  * but if it is not an element the enumeration will be empty
+  * @param nodeTest condition to be applied to the names of the attributes selected
+  */
+  public AttributeEnumeration(NodeImpl node, NodeTest nodeTest) 
+  {
+    this.nodeTest = nodeTest;
 
-    private ElementImpl element;
-    private NodeTest nodeTest;
-    private NodeInfo next;
-    private int index;
-    private int length;
+    if (node.getNodeKind() == Type.ELEMENT) 
+    {
+      element = (ElementImpl)node;
 
-    /**
-    * Constructor
-    * @param node the element whose attributes are required. This may be any type of node,
-    * but if it is not an element the enumeration will be empty
-    * @param nodeTest condition to be applied to the names of the attributes selected
-    */
+      if (element.attrNames == null)
+        return;
 
-    public AttributeEnumeration(NodeImpl node, NodeTest nodeTest) {
-
-        this.nodeTest = nodeTest;
-
-        if (node.getNodeKind()==Type.ELEMENT) {
-            element = (ElementImpl)node;
-        
-            if( element.attrNames == null )
-                return;
-
-            if (nodeTest instanceof NameTest) {
-                NameTest test = (NameTest)nodeTest;
-                int fingerprint = test.getFingerprint();
-                for( int i = 0; i < element.attrNames.length; i++ ) {
-                    if( (element.attrNames[i] & 0xfffff) == fingerprint ) {
-                        next = new AttributeImpl( element, i );
-                        return;
-                    }
-                }
-            
-                next = null;
-            } else  {
-                length = element.attrNames.length;
-                advance();
-            }
+      if (nodeTest instanceof NameTest) 
+      {
+        NameTest test = (NameTest)nodeTest;
+        int fingerprint = test.getFingerprint();
+        for (int i = 0; i < element.attrNames.length; i++) 
+        {
+          if ((element.attrNames[i] & 0xfffff) == fingerprint) {
+            next = new AttributeImpl(element, i);
+            return;
+          }
         }
-        else {      // if it's not an element, or if we're not looking for attributes,
-                    // then there's nothing to find
-            next = null;
-            index = 0;
-            length = 0;
-        }
+
+        next = null;
+      }
+      else {
+        length = element.attrNames.length;
+        advance();
+      }
     }
+    else { // if it's not an element, or if we're not looking for attributes,
 
-    /**
-    * Test if there are mode nodes still to come.
-    * ("elements" is used here in the sense of the Java enumeration class, not in the XML sense)
-    */
-
-    public boolean hasNext() {
-        return next != null;
+             // then there's nothing to find
+      next = null;
+      index = 0;
+      length = 0;
     }
+  }
 
-    /**
-    * Get the next node in the iteration, or null if there are no more.
-    */
+  /**
+  * Test if there are mode nodes still to come.
+  * ("elements" is used here in the sense of the Java enumeration class, not in the XML sense)
+  */
+  public boolean hasNext() {
+    return next != null;
+  }
 
-    public Item next() {
-        if (next == null) {
-            return null;
-        } else {
-            current = next;
-            position++;
-            advance();
-            return current;
-        }
+  /**
+  * Get the next node in the iteration, or null if there are no more.
+  */
+  public Item next() 
+  {
+    if (next == null) {
+      return null;
     }
-
-    /**
-    * Move to the next node in the enumeration.
-    */
-
-    private void advance() {
-        do {
-            if (index<length) {
-                next = new AttributeImpl(element, index);
-                index++;
-            } else {
-                next = null;
-                return;
-            }
-        } while (!nodeTest.matches(next.getNodeKind(),
-                                   next.getFingerprint(),
-                                   next.getTypeAnnotation()));
+    else {
+      current = next;
+      position++;
+      advance();
+      return current;
     }
+  }
 
-    /**
-    * Get another enumeration of the same nodes
-    */
+  /**
+  * Move to the next node in the enumeration.
+  */
+  private void advance() 
+  {
+    do 
+    {
+      if (index < length) {
+        next = new AttributeImpl(element, index);
+        index++;
+      }
+      else {
+        next = null;
+        return;
+      }
+    } while (!nodeTest.matches(next.getNodeKind(),
+                               next.getFingerprint(),
+                               next.getTypeAnnotation()));
+  }
 
-    public SequenceIterator getAnother() {
-        return new AttributeEnumeration(element, nodeTest);
-    }
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new AttributeEnumeration(element, nodeTest);
+  }
 }
-
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");

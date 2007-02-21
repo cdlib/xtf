@@ -1,47 +1,50 @@
 package org.cdlib.xtf.lazyTree;
+
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.type.Type;
 
-/** Saxon: FollowingEnumeration iterates over all nodes following a given one 
+/** Saxon: FollowingEnumeration iterates over all nodes following a given one
  *  in document order.
  */
-final class FollowingEnumeration extends TreeEnumeration {
+final class FollowingEnumeration extends TreeEnumeration 
+{
+  private NodeImpl root;
 
-    private NodeImpl root;
+  public FollowingEnumeration(NodeImpl node, NodeTest nodeTest) 
+  {
+    super(node, nodeTest);
+    root = (LazyDocument)node.getDocumentRoot();
 
-    public FollowingEnumeration(NodeImpl node, NodeTest nodeTest) {
-        super(node, nodeTest);
-        root = (LazyDocument)node.getDocumentRoot();
-        // skip the descendant nodes if any
-        int type = node.getNodeKind();
-        if (type==Type.ATTRIBUTE || type==Type.NAMESPACE) {
-            next = ((NodeImpl)node.getParent()).getNextInDocument(root);
-        } else {
-            do {
-                next = (NodeImpl)node.getNextSibling();
-                if (next==null) node = (NodeImpl)node.getParent();
-            } while (next==null && node!=null);
-        }
-        while (!conforms(next)) {
-            step();
-        }
+    // skip the descendant nodes if any
+    int type = node.getNodeKind();
+    if (type == Type.ATTRIBUTE || type == Type.NAMESPACE) 
+    {
+      next = ((NodeImpl)node.getParent()).getNextInDocument(root);
     }
-
-    protected void step() {
-        next = next.getNextInDocument(root);
+    else {
+      do {
+        next = (NodeImpl)node.getNextSibling();
+        if (next == null)
+          node = (NodeImpl)node.getParent();
+      } while (next == null && node != null);
     }
-
-    /**
-    * Get another enumeration of the same nodes
-    */
-
-    public SequenceIterator getAnother() {
-        return new FollowingEnumeration(start, nodeTest);
+    while (!conforms(next)) {
+      step();
     }
+  }
 
+  protected void step() {
+    next = next.getNextInDocument(root);
+  }
+
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new FollowingEnumeration(start, nodeTest);
+  }
 }
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");

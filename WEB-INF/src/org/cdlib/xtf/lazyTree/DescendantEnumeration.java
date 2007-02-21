@@ -6,47 +6,47 @@ import net.sf.saxon.pattern.NodeTest;
 /** Saxon: DescendantEnumeration provides an enumeration over all the descendants
  *  of a node.
  */
-final class DescendantEnumeration extends TreeEnumeration {
+final class DescendantEnumeration extends TreeEnumeration 
+{
+  private NodeImpl root;
+  private int endNodeNum;
+  private boolean includeSelf;
 
-    private NodeImpl root;
-    private int      endNodeNum;
-    private boolean includeSelf;
+  public DescendantEnumeration(NodeImpl node, NodeTest nodeTest,
+                               boolean includeSelf) 
+  {
+    super(node, nodeTest);
+    root = node;
+    this.includeSelf = includeSelf;
 
-    public DescendantEnumeration( NodeImpl node, NodeTest nodeTest, 
-                                  boolean includeSelf ) 
+    NodeImpl p = root;
+    while (p != null) 
     {
-        super(node, nodeTest);
-        root = node;
-        this.includeSelf = includeSelf;
-        
-        NodeImpl p = root;
-        while( p != null ) {
-            NodeImpl sib = (NodeImpl) p.getNextSibling();
-            if( sib != null ) {
-                p = sib;
-                break;
-            }
-            p = (NodeImpl) p.getParent();
-        }
-        endNodeNum = (p != null) ? p.nodeNum : node.document.numberOfNodes;
-        
-        if (!includeSelf || !conforms(node)) {
-            advance();
-        }
+      NodeImpl sib = (NodeImpl)p.getNextSibling();
+      if (sib != null) {
+        p = sib;
+        break;
+      }
+      p = (NodeImpl)p.getParent();
     }
+    endNodeNum = (p != null) ? p.nodeNum : node.document.numberOfNodes;
 
-    protected void step() {
-        int nextNum = next.nodeNum + 1;
-        next = (nextNum < endNodeNum) ? next.document.getNode(nextNum) : null;
+    if (!includeSelf || !conforms(node)) {
+      advance();
     }
+  }
 
-    /**
-    * Get another enumeration of the same nodes
-    */
+  protected void step() {
+    int nextNum = next.nodeNum + 1;
+    next = (nextNum < endNodeNum) ? next.document.getNode(nextNum) : null;
+  }
 
-    public SequenceIterator getAnother() {
-        return new DescendantEnumeration(start, nodeTest, includeSelf);
-    }
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new DescendantEnumeration(start, nodeTest, includeSelf);
+  }
 }
 
 //

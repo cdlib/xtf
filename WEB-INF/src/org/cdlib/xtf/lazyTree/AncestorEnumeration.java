@@ -1,34 +1,34 @@
 package org.cdlib.xtf.lazyTree;
+
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
 
 /** Saxon: Class used to enumerate the ancestors of a node */
-final class AncestorEnumeration extends TreeEnumeration {
+final class AncestorEnumeration extends TreeEnumeration 
+{
+  private boolean includeSelf;
 
-    private boolean includeSelf;
-
-    public AncestorEnumeration(NodeImpl node, NodeTest nodeTest, boolean includeSelf) {
-        super(node, nodeTest);
-        this.includeSelf = includeSelf;
-        if (!includeSelf || !conforms(node)) {
-            advance();
-        }
+  public AncestorEnumeration(NodeImpl node, NodeTest nodeTest,
+                             boolean includeSelf) 
+  {
+    super(node, nodeTest);
+    this.includeSelf = includeSelf;
+    if (!includeSelf || !conforms(node)) {
+      advance();
     }
+  }
 
-    protected void step() {
-        next=(NodeImpl)next.getParent();
-    }
+  protected void step() {
+    next = (NodeImpl)next.getParent();
+  }
 
-    /**
-    * Get another enumeration of the same nodes
-    */
-    
-    public SequenceIterator getAnother() {
-        return new AncestorEnumeration(start, nodeTest, includeSelf);
-    }
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new AncestorEnumeration(start, nodeTest, includeSelf);
+  }
 }
-
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");

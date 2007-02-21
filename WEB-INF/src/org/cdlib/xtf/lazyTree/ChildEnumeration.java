@@ -1,31 +1,31 @@
 package org.cdlib.xtf.lazyTree;
+
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
 
 /** Saxon: ChildEnumeration is used to enumerate all the children of a given node */
-final class ChildEnumeration extends TreeEnumeration {
-
-    public ChildEnumeration(NodeImpl node, NodeTest nodeTest) {
-        super(node, nodeTest);
-        next = (NodeImpl)node.getFirstChild();
-        while (!conforms(next)) {
-            step();
-        }
+final class ChildEnumeration extends TreeEnumeration 
+{
+  public ChildEnumeration(NodeImpl node, NodeTest nodeTest) 
+  {
+    super(node, nodeTest);
+    next = (NodeImpl)node.getFirstChild();
+    while (!conforms(next)) {
+      step();
     }
+  }
 
-    protected void step() {
-        next = (NodeImpl)next.getNextSibling();
-    }
+  protected void step() {
+    next = (NodeImpl)next.getNextSibling();
+  }
 
-    /**
-    * Get another enumeration of the same nodes
-    */
-
-    public SequenceIterator getAnother() {
-        return new ChildEnumeration(start, nodeTest);
-    }
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new ChildEnumeration(start, nodeTest);
+  }
 }
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");

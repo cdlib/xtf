@@ -1,4 +1,5 @@
 package org.cdlib.xtf.lazyTree;
+
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.AxisIteratorImpl;
@@ -8,102 +9,103 @@ import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.pattern.NameTest;
 
 /**
-* Saxon: ProxyAttributeEnumeration is an enumeration of all the attribute nodes 
+* Saxon: ProxyAttributeEnumeration is an enumeration of all the attribute nodes
 * of an Element. It is used by {@link ProxyElement} to implement lazy attribute
 * loading.
 */
+final class ProxyAttributeEnumeration extends AxisIteratorImpl
+  implements LookaheadIterator 
+{
+  private ProxyElement element;
+  private NodeTest nodeTest;
+  private NodeInfo next;
+  private int index;
+  private int length;
 
-final class ProxyAttributeEnumeration extends AxisIteratorImpl implements LookaheadIterator {
+  /**
+  * Constructor
+  * @param element the element whose attributes are required. This may be any type of node,
+  * but if it is not an element the enumeration will be empty
+  * @param nodeTest condition to be applied to the names of the attributes selected
+  */
+  public ProxyAttributeEnumeration(ProxyElement element, NodeTest nodeTest) 
+  {
+    this.nodeTest = nodeTest;
 
-    private ProxyElement element;
-    private NodeTest nodeTest;
-    private NodeInfo next;
-    private int index;
-    private int length;
+    if (element.attrNames == null)
+      return;
 
-    /**
-    * Constructor
-    * @param element the element whose attributes are required. This may be any type of node,
-    * but if it is not an element the enumeration will be empty
-    * @param nodeTest condition to be applied to the names of the attributes selected
-    */
-
-    public ProxyAttributeEnumeration(ProxyElement element, NodeTest nodeTest) {
-
-        this.nodeTest = nodeTest;
-
-        if( element.attrNames == null )
-            return;
-
-        if (nodeTest instanceof NameTest) {
-            NameTest test = (NameTest)nodeTest;
-            int fingerprint = test.getFingerprint();
-            for( int i = 0; i < element.attrNames.length; i++ ) {
-                if( (element.attrNames[i] & 0xfffff) == fingerprint ) {
-                    next = new ProxyAttributeImpl( element, i );
-                    return;
-                }
-            }
-            
-            next = null;
-        } else  {
-            length = element.attrNames.length;
-            advance();
+    if (nodeTest instanceof NameTest) 
+    {
+      NameTest test = (NameTest)nodeTest;
+      int fingerprint = test.getFingerprint();
+      for (int i = 0; i < element.attrNames.length; i++) 
+      {
+        if ((element.attrNames[i] & 0xfffff) == fingerprint) {
+          next = new ProxyAttributeImpl(element, i);
+          return;
         }
-    } // constructor
+      }
 
-    /**
-    * Test if there are mode nodes still to come.
-    * ("elements" is used here in the sense of the Java enumeration class, not in the XML sense)
-    */
-
-    public boolean hasNext() {
-        return next != null;
+      next = null;
     }
-
-    /**
-    * Get the next node in the iteration, or null if there are no more.
-    */
-
-    public Item next() {
-        if (next == null) {
-            return null;
-        } else {
-            current = next;
-            position++;
-            advance();
-            return current;
-        }
+    else {
+      length = element.attrNames.length;
+      advance();
     }
+  } // constructor
 
-    /**
-    * Move to the next node in the enumeration.
-    */
+  /**
+  * Test if there are mode nodes still to come.
+  * ("elements" is used here in the sense of the Java enumeration class, not in the XML sense)
+  */
+  public boolean hasNext() {
+    return next != null;
+  }
 
-    private void advance() {
-        do {
-            if (index<length) {
-                next = new ProxyAttributeImpl(element, index);
-                index++;
-            } else {
-                next = null;
-                return;
-            }
-        } while (!nodeTest.matches(next.getNodeKind(),
-                                   next.getFingerprint(),
-                                   next.getTypeAnnotation()));
+  /**
+  * Get the next node in the iteration, or null if there are no more.
+  */
+  public Item next() 
+  {
+    if (next == null) {
+      return null;
     }
-
-    /**
-    * Get another enumeration of the same nodes
-    */
-
-    public SequenceIterator getAnother() {
-        return new ProxyAttributeEnumeration(element, nodeTest);
+    else {
+      current = next;
+      position++;
+      advance();
+      return current;
     }
+  }
+
+  /**
+  * Move to the next node in the enumeration.
+  */
+  private void advance() 
+  {
+    do 
+    {
+      if (index < length) {
+        next = new ProxyAttributeImpl(element, index);
+        index++;
+      }
+      else {
+        next = null;
+        return;
+      }
+    } while (!nodeTest.matches(next.getNodeKind(),
+                               next.getFingerprint(),
+                               next.getTypeAnnotation()));
+  }
+
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new ProxyAttributeEnumeration(element, nodeTest);
+  }
 }
-
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");

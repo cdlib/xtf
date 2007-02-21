@@ -1,27 +1,26 @@
 package org.cdlib.xtf.lazyTree;
+
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
 
 /** Saxon: Iterates through the siblings before a given node */
-final class PrecedingSiblingEnumeration extends TreeEnumeration {
-    
-    public PrecedingSiblingEnumeration(NodeImpl node, NodeTest nodeTest) {
-        super(node, nodeTest);
-        advance();      
-    }
+final class PrecedingSiblingEnumeration extends TreeEnumeration 
+{
+  public PrecedingSiblingEnumeration(NodeImpl node, NodeTest nodeTest) {
+    super(node, nodeTest);
+    advance();
+  }
 
-    protected void step() {
-        next = (NodeImpl)next.getPreviousSibling();
-    }
+  protected void step() {
+    next = (NodeImpl)next.getPreviousSibling();
+  }
 
-    /**
-    * Get another enumeration of the same nodes
-    */
-    
-    public SequenceIterator getAnother() {
-        return new PrecedingSiblingEnumeration(start, nodeTest);
-    }
-
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new PrecedingSiblingEnumeration(start, nodeTest);
+  }
 }
 
 //

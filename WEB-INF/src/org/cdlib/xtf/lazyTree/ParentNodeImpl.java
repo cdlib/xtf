@@ -7,96 +7,93 @@ import net.sf.saxon.pattern.NodeTest;
 
 /**
  * Represents any node that can have children.
- * 
+ *
  * @author Martin Haye
  */
-abstract class ParentNodeImpl extends NodeImpl
+abstract class ParentNodeImpl extends NodeImpl 
 {
-    int          childNum;
-    
-    public ParentNodeImpl( LazyDocument document ) {
-        super( document );
-    }
+  int childNum;
 
-    /**
-     * Get an enumeration of the children of this node
-     * 
-     * @param test A NodeTest to be satisfied by the child nodes, or null
-     * if all child node are to be returned
-     */
-    public final AxisIterator enumerateChildren( NodeTest test ) 
+  public ParentNodeImpl(LazyDocument document) {
+    super(document);
+  }
+
+  /**
+   * Get an enumeration of the children of this node
+   *
+   * @param test A NodeTest to be satisfied by the child nodes, or null
+   * if all child node are to be returned
+   */
+  public final AxisIterator enumerateChildren(NodeTest test) {
+    return new ChildEnumeration(this, test);
+  }
+
+  /**
+   * Determine if the node has children.
+   */
+  public boolean hasChildNodes() {
+    return childNum >= 0;
+  }
+
+  /**
+   * Get first child (DOM method)
+   *
+   * @return the first child node of this node, or null if it has no children
+   */
+  public NodeInfo getFirstChild() {
+    return document.getNode(childNum);
+  }
+
+  /** The last child of this Node, or null if none. */
+  public NodeInfo getLastChild() 
+  {
+    NodeInfo last = getFirstChild();
+    if (last != null) 
     {
-        return new ChildEnumeration( this, test );
+      while (true) {
+        NodeInfo next = ((NodeImpl)last).getNextSibling();
+        if (next == null)
+          break;
+        last = next;
+      }
     }
-    
-    /**
-     * Determine if the node has children.
-     */
-    public boolean hasChildNodes() {
-        return childNum >= 0;
-    }
+    return last;
+  } // getLastChild()
 
-    /**
-     * Get first child (DOM method)
-     * 
-     * @return the first child node of this node, or null if it has no children
-     */
-    public NodeInfo getFirstChild()  {
-        return document.getNode( childNum );
-    }
+  /**
+  * Return the string-value of the node, that is, the concatenation
+  * of the character content of all descendent elements and text nodes.
+  * @return the accumulated character content of the element, including descendant elements.
+  */
+  public final String getStringValue() {
+    return getStringValueCS().toString();
+  }
 
-    /** The last child of this Node, or null if none. */
-    public NodeInfo getLastChild() {
+  /**
+   * Get the value of the item as a CharSequence. This is in some cases more efficient than
+   * the version of the method that returns a String.
+   */
+  public CharSequence getStringValueCS() 
+  {
+    StringBuffer sb = null;
 
-        NodeInfo last = getFirstChild();
-        if( last != null ) {
-            while( true ) {
-                NodeInfo next = ((NodeImpl)last).getNextSibling();
-                if( next == null )
-                    break;
-                last = next;
-            }
-        }
-        return last;
-
-    } // getLastChild()
-
-    /**
-    * Return the string-value of the node, that is, the concatenation
-    * of the character content of all descendent elements and text nodes.
-    * @return the accumulated character content of the element, including descendant elements.
-    */
-    public final String getStringValue() {
-        return getStringValueCS().toString();
+    AxisIterator iter = iterateAxis(Axis.DESCENDANT);
+    while (true) {
+      NodeImpl node = (NodeImpl)iter.next();
+      if (node == null)
+        break;
+      if (!(node instanceof TextImpl))
+        continue;
+      if (sb == null)
+        sb = new StringBuffer();
+      sb.append(node.getStringValue());
     }
 
-    /**
-     * Get the value of the item as a CharSequence. This is in some cases more efficient than
-     * the version of the method that returns a String.
-     */
-
-    public CharSequence getStringValueCS() {
-        StringBuffer sb = null;
-
-        AxisIterator iter = iterateAxis( Axis.DESCENDANT );
-        while( true ) {
-            NodeImpl node = (NodeImpl) iter.next();
-            if( node == null )
-                break;
-            if( !(node instanceof TextImpl) )
-                continue;
-            if( sb == null )
-                sb = new StringBuffer();
-            sb.append( node.getStringValue() );
-        }
-
-        if( sb == null ) 
-            return "";
-        return sb.toString();
-    } // getStringValue()
-    
+    if (sb == null)
+      return "";
+    return sb.toString();
+  } // getStringValue()
 } // class ParentNodeImpl
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
