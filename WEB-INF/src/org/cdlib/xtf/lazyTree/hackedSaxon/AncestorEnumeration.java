@@ -1,4 +1,5 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
+
 import net.sf.saxon.om.AxisIteratorImpl;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
@@ -9,45 +10,54 @@ import net.sf.saxon.pattern.NodeTest;
 * This class enumerates the ancestor:: or ancestor-or-self:: axes,
 * starting at a given node. The start node will never be the root.
 */
+final class AncestorEnumeration extends AxisIteratorImpl 
+{
+  private TinyNodeImpl startNode;
+  private NodeTest test;
+  private boolean includeSelf;
 
-final class AncestorEnumeration extends AxisIteratorImpl {
+  public AncestorEnumeration(TinyNodeImpl node, NodeTest nodeTest,
+                             boolean includeSelf) 
+  {
+    test = nodeTest;
+    this.startNode = node;
+    this.includeSelf = includeSelf;
+    current = startNode;
+  }
 
-    private TinyNodeImpl startNode;
-    private NodeTest test;
-    private boolean includeSelf;
-
-    public AncestorEnumeration(TinyNodeImpl node, NodeTest nodeTest, boolean includeSelf) {
-        test = nodeTest;
-        this.startNode = node;
-        this.includeSelf = includeSelf;
-        current = startNode;
+  public Item next() 
+  {
+    if (position == 0 &&
+        includeSelf &&
+        test.matches(startNode.getNodeKind(),
+                     startNode.getFingerprint(),
+                     startNode.getTypeAnnotation())) 
+    {
+      current = startNode;
+      position = 1;
+      return current;
     }
-
-    public Item next() {
-        if (position==0 && includeSelf &&
-                test.matches(startNode.getNodeKind(), startNode.getFingerprint(), startNode.getTypeAnnotation())) {
-            current = startNode;
-            position = 1;
-            return current;
-        } else {
-            NodeInfo node = ((NodeInfo)current).getParent();
-            while (node != null && !test.matches(node.getNodeKind(), node.getFingerprint(), node.getTypeAnnotation())) {
-                node = node.getParent();
-            }
-            current = node;
-            position++;
-            return current;
-        }
+    else {
+      NodeInfo node = ((NodeInfo)current).getParent();
+      while (node != null &&
+             !test.matches(node.getNodeKind(),
+                           node.getFingerprint(),
+                           node.getTypeAnnotation())) 
+      {
+        node = node.getParent();
+      }
+      current = node;
+      position++;
+      return current;
     }
+  }
 
-    /**
-    * Get another enumeration of the same nodes
-    */
-
-    public SequenceIterator getAnother() {
-        return new AncestorEnumeration(startNode, test, includeSelf);
-    }
-
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new AncestorEnumeration(startNode, test, includeSelf);
+  }
 }
 
 //

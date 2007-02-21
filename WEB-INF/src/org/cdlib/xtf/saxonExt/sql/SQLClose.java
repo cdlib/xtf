@@ -1,4 +1,5 @@
 package org.cdlib.xtf.saxonExt.sql;
+
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.SimpleExpression;
 import net.sf.saxon.expr.StaticProperty;
@@ -8,7 +9,6 @@ import net.sf.saxon.style.ExtensionInstruction;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.ObjectValue;
-
 import javax.xml.transform.TransformerConfigurationException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,68 +16,81 @@ import java.sql.SQLException;
 /**
 * An sql:close element in the stylesheet.
 */
+public class SQLClose extends ExtensionInstruction 
+{
+  Expression connection = null;
 
-public class SQLClose extends ExtensionInstruction {
+  public void prepareAttributes()
+    throws TransformerConfigurationException 
+  {
+    String connectAtt = getAttributeList().getValue("", "connection");
+    if (connectAtt == null) {
+      reportAbsence("connection");
+    }
+    else {
+      connection = makeExpression(connectAtt);
+    }
+  }
 
-    Expression connection = null;
+  public void validate()
+    throws TransformerConfigurationException 
+  {
+    super.validate();
+    connection = typeCheck("connection", connection);
+  }
 
-    public void prepareAttributes() throws TransformerConfigurationException {
-        String connectAtt = getAttributeList().getValue("", "connection");
-        if (connectAtt==null) {
-            reportAbsence("connection");
-        } else {
-            connection = makeExpression(connectAtt);
-        }
+  public Expression compile(Executable exec)
+    throws TransformerConfigurationException 
+  {
+    return new CloseInstruction(connection);
+  }
+
+  private static class CloseInstruction extends SimpleExpression 
+  {
+    public static final int CONNECTION = 0;
+
+    public CloseInstruction(Expression connect) {
+      Expression[] sub = { connect };
+      setArguments(sub);
     }
 
-    public void validate() throws TransformerConfigurationException {
-        super.validate();
-        connection = typeCheck("connection", connection);
+    /**
+     * A subclass must provide one of the methods evaluateItem(), iterate(), or process().
+     * This method indicates which of the three is provided.
+     */
+    public int getImplementationMethod() {
+      return Expression.EVALUATE_METHOD;
     }
 
-    public Expression compile(Executable exec) throws TransformerConfigurationException {
-        return new CloseInstruction(connection);
+    public String getExpressionType() {
+      return "sql:close";
     }
 
-    private static class CloseInstruction extends SimpleExpression {
-
-        public static final int CONNECTION = 0;
-
-        public CloseInstruction(Expression connect) {
-            Expression[] sub = {connect};
-            setArguments(sub);
-        }
-        /**
-         * A subclass must provide one of the methods evaluateItem(), iterate(), or process().
-         * This method indicates which of the three is provided.
-         */
-
-        public int getImplementationMethod() {
-            return Expression.EVALUATE_METHOD;
-        }
-
-        public String getExpressionType() {
-            return "sql:close";
-        }
-
-        public int computeCardinality() {
-            return StaticProperty.ALLOWS_ZERO_OR_ONE;
-        }
-
-        public Item evaluateItem(XPathContext context) throws XPathException {
-            Item conn = arguments[CONNECTION].evaluateItem(context);
-            if (!(conn instanceof ObjectValue && ((ObjectValue)conn).getObject() instanceof Connection) ) {
-                dynamicError("Value of connection expression is not a JDBC Connection", context);
-            }
-            Connection connection = (Connection)((ObjectValue)conn).getObject();
-            try {
-                connection.close();
-            } catch (SQLException ex) {
-                dynamicError("(SQL) Failed to close connection: " + ex.getMessage(), context);
-            }
-            return null;
-        }
+    public int computeCardinality() {
+      return StaticProperty.ALLOWS_ZERO_OR_ONE;
     }
+
+    public Item evaluateItem(XPathContext context)
+      throws XPathException 
+    {
+      Item conn = arguments[CONNECTION].evaluateItem(context);
+      if (!(conn instanceof ObjectValue &&
+          ((ObjectValue)conn).getObject() instanceof Connection)) 
+      {
+        dynamicError("Value of connection expression is not a JDBC Connection",
+                     context);
+      }
+      Connection connection = (Connection)((ObjectValue)conn).getObject();
+      try {
+        connection.close();
+      }
+      catch (SQLException ex) {
+        dynamicError("(SQL) Failed to close connection: " + ex.getMessage(),
+                     context);
+      }
+      return null;
+    }
+  }
 }
 
 //

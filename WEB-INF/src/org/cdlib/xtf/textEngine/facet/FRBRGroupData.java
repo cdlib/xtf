@@ -1,43 +1,42 @@
 package org.cdlib.xtf.textEngine.facet;
 
+
 /**
  * Copyright (c) 2006, Regents of the University of California
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
+ *
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * - Redistributions of source code must retain the above copyright notice, 
+ * - Redistributions of source code must retain the above copyright notice,
  *   this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice, 
- *   this list of conditions and the following disclaimer in the documentation 
+ * - Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
  * - Neither the name of the University of California nor the names of its
- *   contributors may be used to endorse or promote products derived from this 
+ *   contributors may be used to endorse or promote products derived from this
  *   software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * Acknowledgements:
- * 
+ *
  * A significant amount of new and/or modified code in this module
  * was made possible by a grant from the Andrew W. Mellon Foundation,
  * as part of the Melvyl Recommender Project.
  */
-
 import java.io.IOException;
 import java.util.StringTokenizer;
-
 import org.apache.lucene.index.IndexReader;
 import org.cdlib.xtf.util.FloatList;
 import org.cdlib.xtf.util.IntList;
@@ -48,10 +47,10 @@ import org.cdlib.xtf.util.Trace;
 
 /**
  * Implements a dynamic mapping from document to a FRBR-style title/author key.
- * 
+ *
  * @author Martin Haye
  */
-public class FRBRGroupData extends DynamicGroupData
+public class FRBRGroupData extends DynamicGroupData 
 {
   /** Original parameter string */
   @SuppressWarnings("unused")
@@ -86,14 +85,15 @@ public class FRBRGroupData extends DynamicGroupData
 
   /** Primary field to sort by */
   private int primarySort = FRBRData.TYPE_TITLE;
-  
+
   /** Whether primary sort is in reverse order */
   private boolean reversePrimarySort = false;
 
   /**
    * Read in the FRBR data for the a delimited list of fields.
    */
-  public void init(IndexReader indexReader, String params) throws IOException
+  public void init(IndexReader indexReader, String params)
+    throws IOException 
   {
     // Record the input
     this.params = params;
@@ -101,9 +101,11 @@ public class FRBRGroupData extends DynamicGroupData
     // Break the string of parameters into a list of fields.
     StringTokenizer t = new StringTokenizer(params, " \t,;|");
     StringList fields = new StringList(t.countTokens());
-    while (t.hasMoreTokens()) {
+    while (t.hasMoreTokens()) 
+    {
       String tok = t.nextToken();
-      if (tok.startsWith("[")) {
+      if (tok.startsWith("[")) 
+      {
         if (tok.equals("[sort=title]"))
           primarySort = FRBRData.TYPE_TITLE;
         else if (tok.equals("[sort=author]"))
@@ -130,8 +132,7 @@ public class FRBRGroupData extends DynamicGroupData
   /**
    * Add a document (that matched the query) to our data.
    */
-  public void collect(int doc, float score)
-  {
+  public void collect(int doc, float score) {
     assert docs.isEmpty() || docs.getLast() < doc : "docs out of order";
     docs.add(doc);
     docScores.add(score);
@@ -141,7 +142,7 @@ public class FRBRGroupData extends DynamicGroupData
   /**
    * Form the final FRBR groups for the document set.
    */
-  public void finish()
+  public void finish() 
   {
     Trace.debug("Building FRBR groups for " + docs.size() + " docs...");
     Trace.tab();
@@ -151,7 +152,7 @@ public class FRBRGroupData extends DynamicGroupData
     docScores.compact();
 
     // Figure out a group for each document.
-    docGroups = new IntList(maxDoc+1);
+    docGroups = new IntList(maxDoc + 1);
     docGroups.fill(-1);
     for (int i = 0; i < docs.size(); i++) 
     {
@@ -171,7 +172,8 @@ public class FRBRGroupData extends DynamicGroupData
     groupDocs = new IntList(nGroups);
     groupDocCounts = new IntList(nGroups);
     groupScores = new FloatList(nGroups);
-    for (int i = 0; i < docs.size(); i++) {
+    for (int i = 0; i < docs.size(); i++) 
+    {
       int doc = docs.get(i);
       float score = docScores.get(i);
       int group = docGroups.get(doc);
@@ -189,16 +191,15 @@ public class FRBRGroupData extends DynamicGroupData
 
     Trace.debug("Done.");
     Trace.untab();
-
   } // finish()
 
   /**
    * Figure out a group to put the document in. If it matches other documents,
    * the group will contain all of them; otherwise, it'll be a singleton.
-   * 
+   *
    * @param mainDoc     Document to put into a group
    */
-  private void findGroup(int mainDoc)
+  private void findGroup(int mainDoc) 
   {
     // This document will be its own group, but hopefully we can add more
     // documents to that group.
@@ -206,7 +207,8 @@ public class FRBRGroupData extends DynamicGroupData
     docGroups.set(mainDoc, nGroups++);
 
     // Our starting point is the title(s) of the current document.
-    for (int pos = data.docTags.firstPos(mainDoc); pos >= 0; pos = data.docTags.nextPos(pos))
+    for (int pos = data.docTags.firstPos(mainDoc); pos >= 0;
+         pos = data.docTags.nextPos(pos)) 
     {
       int mainTitle = data.docTags.getValue(pos);
       if (data.tags.getType(mainTitle) != FRBRData.TYPE_TITLE)
@@ -234,17 +236,15 @@ public class FRBRGroupData extends DynamicGroupData
 
   /**
    * Determines if the two titles match enough to warrant further examination,
-   * and if so, continues the matching process on documents from the 
+   * and if so, continues the matching process on documents from the
    * comparable title.
-   * 
+   *
    * @param mainDoc       main document being matched
    * @param mainTitle     main doc's title tag
    * @param compTitle     title tag to compare
    * @return              true if title iteration should continue.
    */
-  private boolean matchOnTitle(int mainDoc, 
-                               int mainTitle, 
-                               int compTitle)
+  private boolean matchOnTitle(int mainDoc, int mainTitle, int compTitle) 
   {
     // If they don't match exactly, check for match before colon. If that
     // doesn't match either, stop the iteration.
@@ -255,7 +255,8 @@ public class FRBRGroupData extends DynamicGroupData
     // Okay, iterate all the documents that match on title (except the main
     // doc which of course matches itself.)
     //
-    for (int pos = data.tagDocs.firstPos(compTitle); pos >= 0; pos = data.tagDocs.nextPos(pos))
+    for (int pos = data.tagDocs.firstPos(compTitle); pos >= 0;
+         pos = data.tagDocs.nextPos(pos)) 
     {
       int compDoc = data.tagDocs.getValue(pos);
       if (compDoc == mainDoc)
@@ -266,8 +267,10 @@ public class FRBRGroupData extends DynamicGroupData
         continue;
 
       // If it's already in a group, skip it (hopefully this is rare)
-      if (docGroups.get(compDoc) >= 0) {
-        if (docGroups.get(compDoc) != docGroups.get(mainDoc)) {
+      if (docGroups.get(compDoc) >= 0) 
+      {
+        if (docGroups.get(compDoc) != docGroups.get(mainDoc)) 
+        {
           // hopefully rare
         }
         continue;
@@ -286,7 +289,6 @@ public class FRBRGroupData extends DynamicGroupData
     // matched).
     //
     return true;
-
   } // matchOnTitle()
 
   // Instance variables to avoid re-allocation for each iteration.
@@ -296,29 +298,29 @@ public class FRBRGroupData extends DynamicGroupData
   /**
    * Compare the fields of two documents to determine if they should be in
    * the same FRBR group.
-   * 
+   *
    * @param doc1     First document
    * @param doc2     Second document
    * @return            true if they're equivalent
    */
-  private boolean multiFieldMatch(int doc1, int doc2)
+  private boolean multiFieldMatch(int doc1, int doc2) 
   {
     int titleScore = 0;
     int authorScore = 0;
     int dateScore = 0;
     int idScore = 0;
-    
+
     int p1 = data.docTags.firstPos(doc1);
-    int tag1  = (p1 >= 0) ? data.docTags.getValue(p1) : -1;
+    int tag1 = (p1 >= 0) ? data.docTags.getValue(p1) : -1;
     int type1 = (p1 >= 0) ? data.tags.getType(tag1) : 99;
 
     int p2 = data.docTags.firstPos(doc2);
-    int tag2  = (p2 >= 0) ? data.docTags.getValue(p2) : -1;
+    int tag2 = (p2 >= 0) ? data.docTags.getValue(p2) : -1;
     int type2 = (p2 >= 0) ? data.tags.getType(tag2) : 99;
 
     // Iterate through each type in turn
-    while (p1 >= 0 || p2 >= 0)
-    {      
+    while (p1 >= 0 || p2 >= 0) 
+    {
       // Pick the next available type to work on.
       int curType = Math.min(type1, type2);
       assert curType != 99;
@@ -328,7 +330,7 @@ public class FRBRGroupData extends DynamicGroupData
       while (type1 == curType) {
         matchTags1.add(tag1);
         p1 = data.docTags.nextPos(p1);
-        tag1  = (p1 >= 0) ? data.docTags.getValue(p1) : -1;
+        tag1 = (p1 >= 0) ? data.docTags.getValue(p1) : -1;
         type1 = (p1 >= 0) ? data.tags.getType(tag1) : 99;
       }
 
@@ -337,12 +339,13 @@ public class FRBRGroupData extends DynamicGroupData
       while (type2 == curType) {
         matchTags2.add(tag2);
         p2 = data.docTags.nextPos(p2);
-        tag2  = (p2 >= 0) ? data.docTags.getValue(p2) : -1;
+        tag2 = (p2 >= 0) ? data.docTags.getValue(p2) : -1;
         type2 = (p2 >= 0) ? data.tags.getType(tag2) : 99;
       }
 
       // And calculate an appropriate score.
-      switch (curType) {
+      switch (curType) 
+      {
         case FRBRData.TYPE_TITLE:
           debugFieldMatch("title", doc1, doc2);
           titleScore = scoreTitleMatch(matchTags1, matchTags2);
@@ -352,6 +355,7 @@ public class FRBRGroupData extends DynamicGroupData
           authorScore = scoreAuthorMatch(matchTags1, matchTags2);
           break;
         case FRBRData.TYPE_DATE:
+
           //debugFieldMatch("date", doc1, doc2);
           //dateScore = scoreDateMatch(matchTags1, matchTags2);
           break;
@@ -361,71 +365,72 @@ public class FRBRGroupData extends DynamicGroupData
           break;
       }
     } // while
-
     assert p1 < 0 && p2 < 0;
 
     // Is the total score high enough?
     int totalScore = titleScore + authorScore + dateScore + idScore;
-    
+
     //if (compareField(FRBRData.TYPE_TITLE, doc1, doc2) != 0 && totalScore >= 150) {
     if (false) {
-        outputDisplayKey("Match: ", doc1);
-        outputDisplayKey("   vs: ", doc2);
-        Trace.debug( "     = " +
-                     titleScore + "t + " +
-                     authorScore + "a + " +
-                     dateScore + "d + " +
-                     idScore + "i = " +
-                     totalScore );
+      outputDisplayKey("Match: ", doc1);
+      outputDisplayKey("   vs: ", doc2);
+      Trace.debug(
+        "     = " + titleScore + "t + " + authorScore + "a + " + dateScore +
+        "d + " + idScore + "i = " + totalScore);
     }
-    
+
     if (totalScore < 150)
       return false;
 
     return true;
   }
-  
-  private void debugFieldMatch(String field, int doc1, int doc2)
+
+  private void debugFieldMatch(String field, int doc1, int doc2) 
   {
     if (true || Trace.getOutputLevel() != Trace.debug)
       return;
-    Trace.debug("Match " + field + ":" );
+    Trace.debug("Match " + field + ":");
     Trace.tab();
-    
+
     Trace.debug("Doc " + doc1);
     Trace.tab();
     for (int i = 0; i < matchTags1.size(); i++)
-      Trace.debug(data.tags.getString(matchTags1.get(i)) + " {tag=" + matchTags1.get(i) + "}");
+      Trace.debug(
+        data.tags.getString(matchTags1.get(i)) + " {tag=" + matchTags1.get(i) +
+        "}");
 
     Trace.untab();
     Trace.debug("Doc " + doc2);
     Trace.tab();
     for (int i = 0; i < matchTags2.size(); i++)
-      Trace.debug(data.tags.getString(matchTags2.get(i)) + " {tag=" + matchTags2.get(i) + "}");
-    
+      Trace.debug(
+        data.tags.getString(matchTags2.get(i)) + " {tag=" + matchTags2.get(i) +
+        "}");
+
     Trace.untab();
     Trace.untab();
   }
-  
-  private void outputDisplayKey(String title, int doc)
+
+  private void outputDisplayKey(String title, int doc) 
   {
-    int   nToSkip = 0;
+    int nToSkip = 0;
     int[] fieldMax = { 0, 50, 40, 4, 30 };
-    final String spaces = 
-      "                                                             ";
-    
+    final String spaces = "                                                             ";
+
     int found = 0;
-    do {
+    do 
+    {
       StringBuffer buf = new StringBuffer();
       found = 0;
-      for (int t = FRBRData.FIRST_TYPE; t <= FRBRData.LAST_TYPE; t++)
+      for (int t = FRBRData.FIRST_TYPE; t <= FRBRData.LAST_TYPE; t++) 
       {
         int skipped = 0;
         String value = "";
-        for (int pos = data.docTags.firstPos(doc); pos >= 0; pos = data.docTags.nextPos(pos))
+        for (int pos = data.docTags.firstPos(doc); pos >= 0;
+             pos = data.docTags.nextPos(pos)) 
         {
-          int tag     = data.docTags.getValue(pos);
-          int type    = data.tags.getType(tag);
+          int tag = data.docTags.getValue(pos);
+          int type = data.tags.getType(tag);
           int subType = data.tags.getSubType(tag);
 
           if (type != t)
@@ -435,14 +440,14 @@ public class FRBRGroupData extends DynamicGroupData
             found++;
           }
         }
-        
+
         int lenToKeep = Math.min(value.length(), fieldMax[t]);
         if (buf.length() > 0)
           buf.append(" | ");
-        buf.append(value.substring(0, lenToKeep) + 
+        buf.append(value.substring(0, lenToKeep) +
                    spaces.substring(0, fieldMax[t] - lenToKeep));
       } // for
-      
+
       if (found > 0 || nToSkip == 0) {
         Trace.debug(title + buf);
         title = spaces.substring(0, title.length());
@@ -450,41 +455,47 @@ public class FRBRGroupData extends DynamicGroupData
       }
     } while (found > 0);
   } // outputDisplayKey()
-  
+
   private TagChars chars1 = new TagChars();
   private TagChars chars2 = new TagChars();
 
   /**
    * Score the potential match of two lists of titles.
    */
-  private int scoreTitleMatch(IntList list1, IntList list2)
+  private int scoreTitleMatch(IntList list1, IntList list2) 
   {
     // If both lists are empty, it's no foul, no score.
     if (list1.isEmpty() && list2.isEmpty())
       return 0;
 
     // See how many match exactly, and how many we need to skip.
-    int p1 = 0, p2 = 0;
+    int p1 = 0;
+
+    // See how many match exactly, and how many we need to skip.
+    int p2 = 0;
     final int size1 = list1.size();
     final int size2 = list2.size();
     int nMatches = 0;
-    int skipped1 = 0, skipped2 = 0;
+    int skipped1 = 0;
+    int skipped2 = 0;
     int maxScore = 100;
-    while (p1 < size1 && p2 < size2) {
+    while (p1 < size1 && p2 < size2) 
+    {
       int tag1 = list1.get(p1);
       int tag2 = list2.get(p2);
       int subType1 = data.tags.getSubType(tag1);
       int subType2 = data.tags.getSubType(tag2);
 
       // If they match exactly, advance.
-      if (subType1 == subType2) {
+      if (subType1 == subType2) 
+      {
         if (tag1 == tag2) {
           ++nMatches;
           ++p1;
           ++p2;
           continue;
         }
-  
+
         // If they match before a colon, advance.
         if (matchPartialTitle(tag1, tag2)) {
           ++nMatches;
@@ -494,7 +505,7 @@ public class FRBRGroupData extends DynamicGroupData
           continue;
         }
       }
-      
+
       // Okay, figure out which one to skip.
       if (tag1 < tag2) {
         ++skipped1;
@@ -525,59 +536,65 @@ public class FRBRGroupData extends DynamicGroupData
   /**
    * Check if one title matches the other without a colon.
    */
-  private boolean matchPartialTitle(int tag1, int tag2)
+  private boolean matchPartialTitle(int tag1, int tag2) 
   {
     data.tags.getChars(tag1, chars1);
     data.tags.getChars(tag2, chars2);
-    
+
     // If at least 10 chars don't match, don't even try.
     int prefixMatch = chars1.prefixMatch(chars2);
     if (prefixMatch < 10)
       return false;
-    
+
     // Which one has the colon?
     int colonPos = chars1.indexOf(':');
-    if (colonPos >= 10 )
+    if (colonPos >= 10)
       return prefixMatch == chars2.length() && prefixMatch >= colonPos;
-    
+
     colonPos = chars2.indexOf(':');
     if (colonPos >= 10)
       return prefixMatch == chars1.length() && prefixMatch >= colonPos;
-    
+
     return false;
   }
 
   /**
    * Score the potential match of two lists of authors.
    */
-  private int scoreAuthorMatch(IntList list1, IntList list2)
+  private int scoreAuthorMatch(IntList list1, IntList list2) 
   {
     // If both lists are empty, consider that a bit of good.
     if (list1.isEmpty() && list2.isEmpty())
       return 75;
 
     // See how many match exactly, and how many we have to skip.
-    int p1 = 0, p2 = 0;
+    int p1 = 0;
+
+    // See how many match exactly, and how many we have to skip.
+    int p2 = 0;
     final int size1 = list1.size();
     final int size2 = list2.size();
     int nMatches = 0;
-    int skipped1 = 0, skipped2 = 0;
+    int skipped1 = 0;
+    int skipped2 = 0;
     int maxScore = 100;
-    while (p1 < size1 && p2 < size2) {
+    while (p1 < size1 && p2 < size2) 
+    {
       int tag1 = list1.get(p1);
       int tag2 = list2.get(p2);
       int subType1 = data.tags.getSubType(tag1);
       int subType2 = data.tags.getSubType(tag2);
 
       // If they match exactly, advance.
-      if (subType1 == subType2) {
+      if (subType1 == subType2) 
+      {
         if (tag1 == tag2) {
           ++nMatches;
           ++p1;
           ++p2;
           continue;
         }
-  
+
         // If they match out-of-order, advance.
         if (matchPartialAuthor(tag1, tag2)) {
           ++nMatches;
@@ -587,7 +604,7 @@ public class FRBRGroupData extends DynamicGroupData
           continue;
         }
       }
-      
+
       // Okay, figure out which one to skip.
       if (tag1 < tag2) {
         ++skipped1;
@@ -614,74 +631,72 @@ public class FRBRGroupData extends DynamicGroupData
     // Okay, even if there were some matches, there was at least one mismatch.
     return -100;
   } // scoreAuthorMatch()
-  
+
   private int wordHashKey = 0;
   private static final int WORD_HASH_SIZE = Prime.findAfter(1000000);
   private int[] wordHash = new int[WORD_HASH_SIZE];
   private static final char[] charType = new char[0x10000];
-  
-  /** 
-   * This table is a very quick way to identify the type of a character
-   * (alpha, numeric, punctuation, etc.)
-   */
-  static {
-      
-      // Whitespace
-      charType[' ' ] = 'p';
-      charType['\t'] = 'p';
-      charType['\n'] = 'p';
-      charType['\r'] = 'p';
-      charType['\f'] = 'p';
-      
-      // Punctuation
-      charType['\''] = 'p';
-      charType['"'] = 'p';
-      charType['.']  = 'p';
-      charType['&']  = 'p';
-      charType['@']  = 'p';
-      charType['-']  = 'p';
-      charType['/']  = 'p';
-      charType[',']  = 'p';
-      charType[':']  = 'p';
-      charType[';']  = 'p';
-      charType['(']  = 'p';
-      charType[')']  = 'p';
-      charType['[']  = 'p';
-      charType[']']  = 'p';
+
+  static 
+  {
+    // Whitespace
+    charType[' '] = 'p';
+    charType['\t'] = 'p';
+    charType['\n'] = 'p';
+    charType['\r'] = 'p';
+    charType['\f'] = 'p';
+
+    // Punctuation
+    charType['\''] = 'p';
+    charType['"'] = 'p';
+    charType['.'] = 'p';
+    charType['&'] = 'p';
+    charType['@'] = 'p';
+    charType['-'] = 'p';
+    charType['/'] = 'p';
+    charType[','] = 'p';
+    charType[':'] = 'p';
+    charType[';'] = 'p';
+    charType['('] = 'p';
+    charType[')'] = 'p';
+    charType['['] = 'p';
+    charType[']'] = 'p';
   };
-  
+
   /**
    * Compare two author names to see if the keywords from one are completely
    * contained within the other.
    */
-  private boolean matchPartialAuthor(int tag1, int tag2)
+  private boolean matchPartialAuthor(int tag1, int tag2) 
   {
     // Pick the longer one to start with
     data.tags.getChars(tag1, chars1);
     data.tags.getChars(tag2, chars2);
 
-    if (chars2.length() > chars1.length() ) {
-        int tmp = tag1;
-        tag1 = tag2;
-        tag2 = tmp;
-        
-        TagChars cTmp = chars1;
-        chars1 = chars2;
-        chars2 = cTmp;
+    if (chars2.length() > chars1.length()) 
+    {
+      int tmp = tag1;
+      tag1 = tag2;
+      tag2 = tmp;
+
+      TagChars cTmp = chars1;
+      chars1 = chars2;
+      chars2 = cTmp;
     }
-    
+
     // Advance to the next key value, so we can distinguish old hash values
     // from new ones.
     //
     ++wordHashKey;
-    
+
     // Add all the words from the first author to the hash
     int i = 0;
-    while (i < chars1.length())
+    while (i < chars1.length()) 
     {
       int hashCode = 0;
       int nChars = 0;
-      for (; i < chars1.length(); i++) {
+      for (; i < chars1.length(); i++) 
+      {
         char c = chars1.charAt(i);
         if (charType[c] == 'p') {
           i++;
@@ -690,22 +705,23 @@ public class FRBRGroupData extends DynamicGroupData
         hashCode = (hashCode * 31) + c;
         ++nChars;
       }
-      
+
       if (hashCode != 0 && nChars > 3)
         wordHash[(hashCode & 0x7FFFFFFF) % WORD_HASH_SIZE] = wordHashKey;
     }
-    
+
     // Now check all the words from the second (shorter) author to see if 
     // they're present
     //
     i = 0;
     int nWords2 = 0;
     int nMatch2 = 0;
-    while (i < chars2.length())
+    while (i < chars2.length()) 
     {
       int hashCode = 0;
       int nChars = 0;
-      for (; i < chars2.length(); i++) {
+      for (; i < chars2.length(); i++) 
+      {
         char c = chars2.charAt(i);
         if (charType[c] == 'p') {
           i++;
@@ -714,25 +730,24 @@ public class FRBRGroupData extends DynamicGroupData
         hashCode = (hashCode * 31) + c;
         ++nChars;
       }
-      
+
       if (hashCode != 0 && nChars > 3) {
         ++nWords2;
         if (wordHash[(hashCode & 0x7FFFFFFF) % WORD_HASH_SIZE] == wordHashKey)
           ++nMatch2;
       }
     } // while
-    
+
     // If all the words from the shorter author matched (and there were at least
     // two words found), call it good.
     return (nWords2 == nMatch2 && nWords2 >= 2);
-    
   } // matchPartialAuthor()
-  
+
   /**
    * Compare two dates for a match.
    */
   @SuppressWarnings("unused")
-  private int scoreDateMatch(IntList list1, IntList list2)
+  private int scoreDateMatch(IntList list1, IntList list2) 
   {
     // If no date, don't consider it a problem.
     if (list1.isEmpty() || list2.isEmpty())
@@ -754,10 +769,16 @@ public class FRBRGroupData extends DynamicGroupData
     String str2 = data.tags.getString(tag2);
     int year1 = -99;
     int year2 = -99;
-    try { year1 = Integer.parseInt(str1); }
-    catch (NumberFormatException e) { }
-    try { year2 = Integer.parseInt(str2); }
-    catch (NumberFormatException e) { }
+    try {
+      year1 = Integer.parseInt(str1);
+    }
+    catch (NumberFormatException e) {
+    }
+    try {
+      year2 = Integer.parseInt(str2);
+    }
+    catch (NumberFormatException e) {
+    }
 
     // If either is missing, no match.
     if (year1 < 0 || year2 < 0)
@@ -774,34 +795,40 @@ public class FRBRGroupData extends DynamicGroupData
   /**
    * Score the potential match of two lists of identifiers.
    */
-  private int scoreIdMatch(IntList list1, IntList list2)
+  private int scoreIdMatch(IntList list1, IntList list2) 
   {
     // If both lists are empty, it's no foul, no score.
     if (list1.isEmpty() && list2.isEmpty())
       return 0;
 
     // See how many match exactly, and how many we need to skip.
-    int p1 = 0, p2 = 0;
+    int p1 = 0;
+
+    // See how many match exactly, and how many we need to skip.
+    int p2 = 0;
     final int size1 = list1.size();
     final int size2 = list2.size();
     int nMatches = 0;
-    int skipped1 = 0, skipped2 = 0;
+    int skipped1 = 0;
+    int skipped2 = 0;
     int maxScore = 100;
-    while (p1 < size1 && p2 < size2) {
+    while (p1 < size1 && p2 < size2) 
+    {
       int tag1 = list1.get(p1);
       int tag2 = list2.get(p2);
       int subType1 = data.tags.getSubType(tag1);
       int subType2 = data.tags.getSubType(tag2);
 
       // If they match exactly, advance.
-      if (subType1 == subType2) {
+      if (subType1 == subType2) 
+      {
         if (tag1 == tag2) {
           ++nMatches;
           ++p1;
           ++p2;
           continue;
         }
-  
+
         // If they match before a paren, advance.
         if (matchPartialId(tag1, tag2)) {
           ++nMatches;
@@ -811,7 +838,7 @@ public class FRBRGroupData extends DynamicGroupData
           continue;
         }
       }
-      
+
       // Okay, figure out which one to skip.
       if (tag1 < tag2) {
         ++skipped1;
@@ -845,25 +872,25 @@ public class FRBRGroupData extends DynamicGroupData
   /**
    * Check if two identifiers match before parentheses
    */
-  private boolean matchPartialId(int tag1, int tag2)
+  private boolean matchPartialId(int tag1, int tag2) 
   {
     data.tags.getChars(tag1, chars1);
     data.tags.getChars(tag2, chars2);
-  
+
     // If at least 6 chars don't match, don't even try.
     int prefixMatch = chars1.prefixMatch(chars2);
     if (prefixMatch < 6)
       return false;
-    
+
     // Which one has the parenthesis?
     int parenPos = chars1.indexOf('(');
     if (parenPos >= 6)
       return prefixMatch == chars2.length() && prefixMatch >= parenPos;
-    
+
     parenPos = chars2.indexOf('(');
     if (parenPos >= 6)
       return prefixMatch == chars1.length() && prefixMatch >= parenPos;
-    
+
     return false;
   }
 
@@ -880,8 +907,7 @@ public class FRBRGroupData extends DynamicGroupData
   }
 
   // inherit JavaDoc
-  public int findGroup(String name)
-  {
+  public int findGroup(String name) {
     if (!name.startsWith("group-"))
       return -1;
     return Integer.parseInt(name.substring("group-".length()));
@@ -894,7 +920,7 @@ public class FRBRGroupData extends DynamicGroupData
 
   // inherit JavaDoc
   public int sibling(int groupId) {
-    return (groupId == 0 || groupId == nGroups-1) ? -1 : (groupId+1);
+    return (groupId == 0 || groupId == nGroups - 1) ? -1 : (groupId + 1);
   }
 
   // inherit JavaDoc
@@ -904,7 +930,7 @@ public class FRBRGroupData extends DynamicGroupData
 
   // inherit JavaDoc
   public int nChildren(int groupId) {
-    return (groupId == 0) ? (nGroups-1) : 0;
+    return (groupId == 0) ? (nGroups - 1) : 0;
   }
 
   // inherit JavaDoc
@@ -955,32 +981,31 @@ public class FRBRGroupData extends DynamicGroupData
 
     // First, compare the primary field.
     int x;
-    if ((x=compareField(primarySort, doc1, doc2, reversePrimarySort)) != 0) 
+    if ((x = compareField(primarySort, doc1, doc2, reversePrimarySort)) != 0)
       return x;
 
     // Now compare the secondary fields, in order.
     for (int t = FRBRData.FIRST_TYPE; t <= FRBRData.LAST_TYPE; ++t) {
-      if (t != primarySort && (x=compareField(t, doc1, doc2, false)) != 0) 
+      if (t != primarySort && (x = compareField(t, doc1, doc2, false)) != 0)
         return x;
     }
 
     // No differences found.
     return 0;
   }
-  
+
   /** Find the title of a document */
   @SuppressWarnings("unused")
-  private String docTitle(int doc)
-  {
-    for (int pos = data.docTags.firstPos(doc); pos >= 0; pos = data.docTags.nextPos(pos))
-    {
-      int tag     = data.docTags.getValue(pos);
-      int type    = data.tags.getType(tag);
+  private String docTitle(int doc) {
+    for (int pos = data.docTags.firstPos(doc); pos >= 0;
+         pos = data.docTags.nextPos(pos)) {
+      int tag = data.docTags.getValue(pos);
+      int type = data.tags.getType(tag);
       if (type != FRBRData.TYPE_TITLE)
         continue;
       return data.tags.getString(tag);
     }
-    
+
     return "";
   }
 
@@ -989,7 +1014,8 @@ public class FRBRGroupData extends DynamicGroupData
   {
     // Locate this field in the first doc.
     int tag1 = 0;
-    for (int pos = data.docTags.firstPos(doc1); pos >= 0 && tag1 == 0; pos = data.docTags.nextPos(pos)) {
+    for (int pos = data.docTags.firstPos(doc1); pos >= 0 && tag1 == 0;
+         pos = data.docTags.nextPos(pos)) {
       int tag = data.docTags.getValue(pos);
       if (data.tags.getType(tag) == type)
         tag1 = tag;
@@ -997,7 +1023,8 @@ public class FRBRGroupData extends DynamicGroupData
 
     // ... and locate it in the second doc.
     int tag2 = 0;
-    for (int pos = data.docTags.firstPos(doc2); pos >= 0 && tag2 == 0; pos = data.docTags.nextPos(pos)) {
+    for (int pos = data.docTags.firstPos(doc2); pos >= 0 && tag2 == 0;
+         pos = data.docTags.nextPos(pos)) {
       int tag = data.docTags.getValue(pos);
       if (data.tags.getType(tag) == type)
         tag2 = tag;
@@ -1015,5 +1042,4 @@ public class FRBRGroupData extends DynamicGroupData
     else
       return (tag1 < tag2) ? -1 : ((tag1 > tag2) ? +1 : 0);
   } // compareField
-
 } // class FRBRGroupData

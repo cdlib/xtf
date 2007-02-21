@@ -8,7 +8,6 @@ import net.sf.saxon.om.Item;
 import net.sf.saxon.style.ExtensionInstruction;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.ObjectValue;
-
 import javax.xml.transform.TransformerConfigurationException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,108 +16,121 @@ import java.sql.SQLException;
 /**
 * An sql:delete element in the stylesheet.
 */
+public class SQLDelete extends ExtensionInstruction 
+{
+  Expression connection;
+  Expression table;
+  Expression where;
 
-public class SQLDelete extends ExtensionInstruction {
+  public void prepareAttributes()
+    throws TransformerConfigurationException 
+  {
+    String connectAtt = getAttributeList().getValue("", "connection");
+    if (connectAtt == null)
+      reportAbsence("connection");
+    connection = makeExpression(connectAtt);
 
-    Expression connection;
-    Expression table;
-    Expression where;
+    String tableAtt = attributeList.getValue("", "table");
+    if (tableAtt == null)
+      reportAbsence("table");
+    table = makeAttributeValueTemplate(tableAtt);
 
-    public void prepareAttributes() throws TransformerConfigurationException {
+    String whereAtt = attributeList.getValue("", "where");
+    if (whereAtt == null)
+      reportAbsence("where");
+    where = makeAttributeValueTemplate(whereAtt);
+  }
 
-        String connectAtt = getAttributeList().getValue("", "connection");
-        if (connectAtt==null) reportAbsence("connection");
-        connection = makeExpression(connectAtt);
-        
-        String tableAtt = attributeList.getValue("", "table");
-        if (tableAtt==null) reportAbsence("table");
-        table = makeAttributeValueTemplate(tableAtt);
+  public void validate()
+    throws TransformerConfigurationException 
+  {
+    super.validate();
+    connection = typeCheck("connection", connection);
+    table = typeCheck("table", table);
+    where = typeCheck("where", where);
+  }
 
-        String whereAtt = attributeList.getValue("", "where");
-        if (whereAtt==null) reportAbsence("where");
-        where = makeAttributeValueTemplate(whereAtt);
+  public Expression compile(Executable exec)
+    throws TransformerConfigurationException 
+  {
+    return new DeleteInstruction(connection, table, where);
+  }
+
+  private static class DeleteInstruction extends SimpleExpression 
+  {
+    public static final int CONNECTION = 0;
+    public static final int TABLE = 1;
+    public static final int WHERE = 2;
+
+    public DeleteInstruction(Expression connection, Expression table,
+                             Expression where) 
+    {
+      Expression[] sub = { connection, table, where };
+      setArguments(sub);
     }
 
-    public void validate() throws TransformerConfigurationException {
-        super.validate();
-        connection = typeCheck("connection", connection);
-        table = typeCheck("table", table);
-        where = typeCheck("where", where);
+    /**
+     * A subclass must provide one of the methods evaluateItem(), iterate(), or process().
+     * This method indicates which of the three is provided.
+     */
+    public int getImplementationMethod() {
+      return Expression.EVALUATE_METHOD;
     }
 
-    public Expression compile(Executable exec) throws TransformerConfigurationException {
-        return new DeleteInstruction(connection, table, where);
+    public String getExpressionType() {
+      return "sql:delete";
     }
 
-    private static class DeleteInstruction extends SimpleExpression {
+    public Item evaluateItem(XPathContext context)
+      throws XPathException 
+    {
+      // Construct the SQL statement.
+      String dbTab = arguments[TABLE].evaluateAsString(context);
+      String dbWhere = arguments[WHERE].evaluateAsString(context);
 
-        public static final int CONNECTION = 0;
-        public static final int TABLE = 1;
-        public static final int WHERE = 2;
+      StringBuffer statement = new StringBuffer(120);
+      statement.append("DELETE FROM " + dbTab + " WHERE " + dbWhere);
 
-        public DeleteInstruction(Expression connection, Expression table, Expression where) 
+      // Prepare the SQL statement (only do this once)
+      Item conn = arguments[CONNECTION].evaluateItem(context);
+      if (!(conn instanceof ObjectValue &&
+          ((ObjectValue)conn).getObject() instanceof Connection)) 
+      {
+        dynamicError("Value of connection expression is not a JDBC Connection",
+                     context);
+      }
+      Connection connection = (Connection)((ObjectValue)conn).getObject();
+      PreparedStatement ps = null;
+
+      @SuppressWarnings("unused")
+      int nDeleted = -1;
+
+      try 
+      {
+        ps = connection.prepareStatement(statement.toString());
+        nDeleted = ps.executeUpdate();
+        if (!connection.getAutoCommit()) {
+          connection.commit();
+        }
+      }
+      catch (SQLException ex) {
+        dynamicError("(SQL DELETE) " + ex.getMessage(), context);
+      }
+      finally {
+        if (ps != null) 
         {
-            Expression[] sub = {connection, table, where};
-            setArguments(sub);
+          try {
+            ps.close();
+          }
+          catch (SQLException ignore) {
+          }
         }
+      }
 
-        /**
-         * A subclass must provide one of the methods evaluateItem(), iterate(), or process().
-         * This method indicates which of the three is provided.
-         */
-
-        public int getImplementationMethod() {
-            return Expression.EVALUATE_METHOD;
-        }
-
-        public String getExpressionType() {
-            return "sql:delete";
-        }
-
-        public Item evaluateItem(XPathContext context) throws XPathException {
-
-            // Construct the SQL statement.
-            String dbTab = arguments[TABLE].evaluateAsString(context);
-            String dbWhere = arguments[WHERE].evaluateAsString(context);
-
-            StringBuffer statement = new StringBuffer(120);
-            statement.append("DELETE FROM " + dbTab + " WHERE " + dbWhere);
-            
-            // Prepare the SQL statement (only do this once)
-            Item conn = arguments[CONNECTION].evaluateItem(context);
-            if (!(conn instanceof ObjectValue && ((ObjectValue)conn).getObject() instanceof Connection) ) {
-                dynamicError("Value of connection expression is not a JDBC Connection", context);
-            }
-            Connection connection = (Connection)((ObjectValue)conn).getObject();
-            PreparedStatement ps = null;
-            
-            @SuppressWarnings("unused")
-            int nDeleted = -1;
-
-            try {
-                ps = connection.prepareStatement(statement.toString());
-                nDeleted = ps.executeUpdate();
-                if (!connection.getAutoCommit()) {
-                    connection.commit();
-                }
-
-            } catch (SQLException ex) {
-                dynamicError("(SQL DELETE) " + ex.getMessage(), context);
-            } finally {
-               if (ps != null) {
-                   try {
-                       ps.close();
-                   } catch (SQLException ignore) {}
-               }
-            }
-
-            // Return nothing, so that it's not necessary to re-route the result.
-            return null;
-        }
-
+      // Return nothing, so that it's not necessary to re-route the result.
+      return null;
     }
-
-
+  }
 }
 
 //

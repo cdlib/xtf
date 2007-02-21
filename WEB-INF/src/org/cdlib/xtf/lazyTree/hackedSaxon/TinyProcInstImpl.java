@@ -1,4 +1,5 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
+
 //import net.sf.saxon.om.*;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.trans.XPathException;
@@ -10,71 +11,67 @@ import net.sf.saxon.om.Navigator;
   * @author Michael H. Kay
   * @version 16 July 1999
   */
+final class TinyProcInstImpl extends TinyNodeImpl 
+{
+  public TinyProcInstImpl(TinyTree tree, int nodeNr) {
+    this.tree = tree;
+    this.nodeNr = nodeNr;
+  }
 
-
-final class TinyProcInstImpl extends TinyNodeImpl {
-
-    public TinyProcInstImpl(TinyTree tree, int nodeNr) {
-        this.tree = tree;
-        this.nodeNr = nodeNr;
+  public String getStringValue() 
+  {
+    int start = tree.alpha[nodeNr];
+    int len = tree.beta[nodeNr];
+    if (len == 0) {
+      return ""; // need to special-case this for the Microsoft JVM
     }
+    char[] dest = new char[len];
+    tree.commentBuffer.getChars(start, start + len, dest, 0);
+    return new String(dest, 0, len);
+  }
 
-    public String getStringValue() {
-        int start = tree.alpha[nodeNr];
-        int len = tree.beta[nodeNr];
-        if (len==0) {
-        	return "";	// need to special-case this for the Microsoft JVM
-        }
-        char[] dest = new char[len];
-        tree.commentBuffer.getChars(start, start+len, dest, 0);
-        return new String(dest, 0, len);
-    }
+  public final int getNodeKind() {
+    return Type.PROCESSING_INSTRUCTION;
+  }
 
-    public final int getNodeKind() {
-        return Type.PROCESSING_INSTRUCTION;
-    }
+  /**
+  * Get the base URI of this element node. This will be the same as the System ID unless
+  * xml:base has been used.
+  */
+  public String getBaseURI() {
+    return Navigator.getBaseURI(this);
+  }
 
-    /**
-    * Get the base URI of this element node. This will be the same as the System ID unless
-    * xml:base has been used.
-    */
+  /**
+  * Copy this node to a given outputter
+  */
+  public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations,
+                   int locationId)
+    throws XPathException 
+  {
+    out.processingInstruction(getDisplayName(), getStringValue(), 0, 0);
+  }
 
-    public String getBaseURI() {
-        return Navigator.getBaseURI(this);
-    }    
+  // DOM methods
 
-    /**
-    * Copy this node to a given outputter
-    */
+  /**
+   * The target of this processing instruction. XML defines this as being
+   * the first token following the markup that begins the processing
+   * instruction.
+   */
+  public String getTarget() {
+    return getDisplayName();
+  }
 
-    public void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId) throws XPathException {
-        out.processingInstruction(getDisplayName(), getStringValue(), 0, 0);
-    }
-
-    // DOM methods
-
-    /**
-     * The target of this processing instruction. XML defines this as being
-     * the first token following the markup that begins the processing
-     * instruction.
-     */
-
-    public String getTarget() {
-        return getDisplayName();
-    }
-
-    /**
-     *  The content of this processing instruction. This is from the first non
-     * white space character after the target to the character immediately
-     * preceding the <code>?&gt;</code> .
-     */
-
-    public String getData() {
-        return getStringValue();
-    }
-
+  /**
+   *  The content of this processing instruction. This is from the first non
+   * white space character after the target to the character immediately
+   * preceding the <code>?&gt;</code> .
+   */
+  public String getData() {
+    return getStringValue();
+  }
 }
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");

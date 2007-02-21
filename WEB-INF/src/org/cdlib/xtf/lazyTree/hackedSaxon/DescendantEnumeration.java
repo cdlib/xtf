@@ -1,4 +1,5 @@
 package org.cdlib.xtf.lazyTree.hackedSaxon;
+
 import net.sf.saxon.om.AxisIteratorImpl;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.SequenceIterator;
@@ -10,70 +11,71 @@ import net.sf.saxon.pattern.NodeTest;
 * It enumerates descendants of the specified node.
 * The calling code must ensure that the start node is not an attribute or namespace node.
 */
+final class DescendantEnumeration extends AxisIteratorImpl 
+{
+  private TinyTree tree;
+  private TinyNodeImpl startNode;
+  private boolean includeSelf;
+  private int nextNodeNr;
+  private int startDepth;
+  private NodeTest test;
 
-final class DescendantEnumeration extends AxisIteratorImpl {
+  /**
+   * Create an iterator over the descendant axis
+   * @param doc the containing TinyTree
+   * @param node the node whose descendants are required
+   * @param nodeTest test to be satisfied by each returned node
+   * @param includeSelf true if the start node is to be included
+   */
+  DescendantEnumeration(TinyTree doc, TinyNodeImpl node, NodeTest nodeTest,
+                        boolean includeSelf) 
+  {
+    tree = doc;
+    startNode = node;
+    this.includeSelf = includeSelf;
+    test = nodeTest;
+    nextNodeNr = node.nodeNr;
+    startDepth = doc.depth[nextNodeNr];
+  }
 
-    private TinyTree tree;
-    private TinyNodeImpl startNode;
-    private boolean includeSelf;
-    private int nextNodeNr;
-    private int startDepth;
-    private NodeTest test;
-
-    /**
-     * Create an iterator over the descendant axis
-     * @param doc the containing TinyTree
-     * @param node the node whose descendants are required
-     * @param nodeTest test to be satisfied by each returned node
-     * @param includeSelf true if the start node is to be included
-     */
-
-    DescendantEnumeration(TinyTree doc, TinyNodeImpl node, NodeTest nodeTest, boolean includeSelf) {
-        tree = doc;
-        startNode = node;
-        this.includeSelf = includeSelf;
-        test = nodeTest;
-        nextNodeNr = node.nodeNr;
-        startDepth = doc.depth[nextNodeNr];
+  public Item next() 
+  {
+    if (position == 0 && includeSelf && test.matches(startNode)) {
+      current = startNode;
+      position++;
+      return current;
     }
 
-    public Item next() {
-        if (position==0 && includeSelf && test.matches(startNode)) {
-            current = startNode;
-            position++;
-            return current;
-        }
+    do 
+    {
+      nextNodeNr++;
+      if (tree.depth[nextNodeNr] <= startDepth) {
+        nextNodeNr = -1;
+        current = null;
+        return null;
+      }
+    } while (!test.matches(tree.nodeKind[nextNodeNr],
+                           tree.nameCode[nextNodeNr],
+                           tree.getElementAnnotation(nextNodeNr)));
 
-        do {
-            nextNodeNr++;
-            if (tree.depth[nextNodeNr] <= startDepth) {
-                nextNodeNr = -1;
-                current = null;
-                return null;
-            }
-        } while (!test.matches(tree.nodeKind[nextNodeNr],
-                                tree.nameCode[nextNodeNr],
-                                tree.getElementAnnotation(nextNodeNr)));
-
-        position++;
-        if (isAtomizing() && tree.getElementAnnotation(nextNodeNr)==-1) {
-            current = tree.getUntypedAtomicValue(nextNodeNr);
-        } else {
-            current = tree.getNode(nextNodeNr);
-        }
-
-        return current;
+    position++;
+    if (isAtomizing() && tree.getElementAnnotation(nextNodeNr) == -1) {
+      current = tree.getUntypedAtomicValue(nextNodeNr);
+    }
+    else {
+      current = tree.getNode(nextNodeNr);
     }
 
-    /**
-    * Get another enumeration of the same nodes
-    */
+    return current;
+  }
 
-    public SequenceIterator getAnother() {
-        return new DescendantEnumeration(tree, startNode, test, includeSelf);
-    }
+  /**
+  * Get another enumeration of the same nodes
+  */
+  public SequenceIterator getAnother() {
+    return new DescendantEnumeration(tree, startNode, test, includeSelf);
+  }
 }
-
 
 //
 // The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
