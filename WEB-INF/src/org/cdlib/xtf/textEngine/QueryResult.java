@@ -1,17 +1,12 @@
 package org.cdlib.xtf.textEngine;
 
 import java.io.StringReader;
-
 import java.text.DecimalFormat;
-
 import java.util.Iterator;
 import java.util.Set;
-
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-
 import org.apache.lucene.search.Explanation;
-
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.facet.ResultFacet;
 import org.cdlib.xtf.textEngine.facet.ResultGroup;
@@ -110,9 +105,7 @@ public class QueryResult
    *                    block and &lt;query> block.
    * @return            XML Source containing all the hits and snippets.
    */
-  public Source hitsToSource(String mainTagName, 
-                             String extraStuff) 
-  {
+  public Source hitsToSource(String mainTagName, String extraStuff) {
     String str = hitsToString(mainTagName, extraStuff);
     return new StreamSource(new StringReader(str));
   } // hitsToSource()
@@ -128,17 +121,14 @@ public class QueryResult
    *                    block and &lt;query> block.
    * @return            XML string containing all the hits and snippets.
    */
-  public String hitsToString(String mainTagName, 
-                             String extraStuff) 
+  public String hitsToString(String mainTagName, String extraStuff) 
   {
     StringBuffer buf = new StringBuffer(1000);
 
-    buf.append("<" + mainTagName + 
-               " totalDocs=\"" + totalDocs + "\" " + 
-               " startDoc=\"" +
-               Math.min(startDoc + 1, endDoc) + "\" " + 
-               // Note above: 1-based start
-               " endDoc=\"" + endDoc + "\">");
+    buf.append(
+      "<" + mainTagName + " totalDocs=\"" + totalDocs + "\" " + " startDoc=\"" +
+      Math.min(startDoc + 1, endDoc) + "\" " + // Note above: 1-based start
+      " endDoc=\"" + endDoc + "\">");
 
     // If extra XML was specified, dump it in here.
     if (extraStuff != null)
@@ -159,9 +149,9 @@ public class QueryResult
       {
         ResultFacet facet = facets[i];
         buf.append(
-            "<facet field=\"" + facet.field + "\" " + 
-            "totalGroups=\"" + facet.rootGroup.totalSubGroups + "\" " + 
-            "totalDocs=\"" + facet.rootGroup.totalDocs + "\">");
+          "<facet field=\"" + facet.field + "\" " + "totalGroups=\"" +
+          facet.rootGroup.totalSubGroups + "\" " + "totalDocs=\"" +
+          facet.rootGroup.totalDocs + "\">");
 
         // Recursively process all the groups.
         if (facet.rootGroup.subGroups != null) {
@@ -189,11 +179,10 @@ public class QueryResult
   {
     // Do the info for the group itself.
     buf.append(
-      "<group value=\"" + group.value.replaceAll("\"", "&quot;") + "\" " + 
-      "rank=\"" + (group.rank + 1) + "\" " + 
-      "totalSubGroups=\"" + group.totalSubGroups + "\" " +
-      "totalDocs=\"" + group.totalDocs + "\" " + 
-      "startDoc=\"" + (group.endDoc > 0 ? group.startDoc + 1 : 0) + "\" " + 
+      "<group value=\"" + group.value.replaceAll("\"", "&quot;") + "\" " +
+      "rank=\"" + (group.rank + 1) + "\" " + "totalSubGroups=\"" +
+      group.totalSubGroups + "\" " + "totalDocs=\"" + group.totalDocs + "\" " +
+      "startDoc=\"" + (group.endDoc > 0 ? group.startDoc + 1 : 0) + "\" " +
       "endDoc=\"" + (group.endDoc) + "\">");
 
     // If the group has any dochits, do them now.
@@ -216,14 +205,13 @@ public class QueryResult
    * @param docHits Array of DocHits to structure
    * @param buf     Buffer to add the XML to
    */
-  private void structureDocHits(DocHit[] docHits, 
-                                int startDoc, 
-                                StringBuffer buf) 
+  private void structureDocHits(DocHit[] docHits, int startDoc, StringBuffer buf) 
   {
     if (docHits == null)
       return;
 
-    for (int i = 0; i < docHits.length; i++) {
+    for (int i = 0; i < docHits.length; i++) 
+    {
       DocHit docHit = docHits[i];
 
       String scoreStr;
@@ -235,11 +223,10 @@ public class QueryResult
         scoreStr = decFormat.format(docHit.score);
       }
 
-      buf.append("<docHit" + 
-                 " rank=\"" + (i + startDoc + 1) + "\"" + 
-                 " path=\"" + docHit.filePath() + "\"" +
-                 " score=\"" + scoreStr + "\"" +
-                 " totalHits=\"" + docHit.totalSnippets() + "\"");
+      buf.append(
+        "<docHit" + " rank=\"" + (i + startDoc + 1) + "\"" + " path=\"" +
+        docHit.filePath() + "\"" + " score=\"" + scoreStr + "\"" +
+        " totalHits=\"" + docHit.totalSnippets() + "\"");
       if (docHit.recordNum() > 0)
         buf.append(" recordNum=\"" + docHit.recordNum() + "\"");
       buf.append(">\n");
@@ -248,10 +235,10 @@ public class QueryResult
       if (explanation != null)
         structureExplanation(explanation, buf);
 
-      if (!docHit.metaData().isEmpty()) {
+      if (!docHit.metaData().isEmpty()) 
+      {
         buf.append("<meta>\n");
-        for (Iterator atts = docHit.metaData().iterator(); atts.hasNext();) 
-        {
+        for (Iterator atts = docHit.metaData().iterator(); atts.hasNext();) {
           Attrib attrib = (Attrib)atts.next();
           buf.append(attrib.value);
         } // for atts
@@ -268,9 +255,9 @@ public class QueryResult
         if (snippet.sectionType != null)
           buf.append(" sectionType=\"" + snippet.sectionType + "\"");
 
-        buf.append(">" + 
-                   TextServlet.makeHtmlString(snippet.text, true) +
-                   "</snippet>\n");
+        buf.append(
+          ">" + TextServlet.makeHtmlString(snippet.text, true) +
+          "</snippet>\n");
       } // for j
 
       buf.append("</docHit>\n");
@@ -313,12 +300,10 @@ public class QueryResult
           fieldsBuf.append(",");
         fieldsBuf.append(sugg.fields[j]);
       }
-      buf.append("  <suggestion" + 
-                 " originalTerm=\"" + sugg.origTerm + "\"" +
-                 " fields=\"" + fieldsBuf + "\"" + 
-                 " suggestedTerm=\"" + 
-                 (sugg.suggestedTerm != null ? sugg.suggestedTerm : "") + "\"" + 
-                 "/>\n");
+      buf.append(
+        "  <suggestion" + " originalTerm=\"" + sugg.origTerm + "\"" +
+        " fields=\"" + fieldsBuf + "\"" + " suggestedTerm=\"" +
+        (sugg.suggestedTerm != null ? sugg.suggestedTerm : "") + "\"" + "/>\n");
     }
 
     buf.append("</spelling>\n");

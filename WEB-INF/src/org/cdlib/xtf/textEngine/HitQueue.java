@@ -1,5 +1,6 @@
 package org.cdlib.xtf.textEngine;
 
+
 /**
  * Copyright 2004 The Apache Software Foundation
  *
@@ -15,11 +16,11 @@ package org.cdlib.xtf.textEngine;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.util.PriorityQueue;
 
-class HitQueue extends PriorityQueue {
+class HitQueue extends PriorityQueue 
+{
   HitQueue(int size) {
     initialize(size);
   }
@@ -28,7 +29,7 @@ class HitQueue extends PriorityQueue {
     ScoreDoc hitA = (ScoreDoc)a;
     ScoreDoc hitB = (ScoreDoc)b;
     if (hitA.score == hitB.score)
-      return hitA.doc > hitB.doc; 
+      return hitA.doc > hitB.doc;
     else
       return hitA.score < hitB.score;
   }

@@ -1,4 +1,5 @@
 package org.cdlib.xtf.saxonExt;
+
 import org.cdlib.xtf.saxonExt.sql.SQLClose;
 import org.cdlib.xtf.saxonExt.sql.SQLColumn;
 import org.cdlib.xtf.saxonExt.sql.SQLConnect;
@@ -7,35 +8,39 @@ import org.cdlib.xtf.saxonExt.sql.SQLInsert;
 import org.cdlib.xtf.saxonExt.sql.SQLProperty;
 import org.cdlib.xtf.saxonExt.sql.SQLQuery;
 import org.cdlib.xtf.saxonExt.sql.SQLUpdate;
-
 import net.sf.saxon.style.ExtensionElementFactory;
 
 /**
   * Class SQLElementFactory. <br>
   * A "Factory" for SQL extension nodes in the stylesheet tree. <br>
   */
-
-public class SQL implements ExtensionElementFactory {
-
-    /**
-    * Identify the class to be used for stylesheet elements with a given local name.
-    * The returned class must extend net.sf.saxon.style.StyleElement
-    * @return null if the local name is not a recognised element type in this
-    * namespace.
-    */
-
-    public Class getExtensionClass(String localname)  {
-        if (localname.equals("connect"))  return SQLConnect.class;
-        if (localname.equals("close"))    return SQLClose.class;
-        if (localname.equals("column"))   return SQLColumn.class;
-        if (localname.equals("delete"))   return SQLDelete.class;
-        if (localname.equals("insert"))   return SQLInsert.class;
-        if (localname.equals("property")) return SQLProperty.class;
-        if (localname.equals("query"))    return SQLQuery.class;
-        if (localname.equals("update"))   return SQLUpdate.class;
-        return null;
-    }
-
+public class SQL implements ExtensionElementFactory 
+{
+  /**
+  * Identify the class to be used for stylesheet elements with a given local name.
+  * The returned class must extend net.sf.saxon.style.StyleElement
+  * @return null if the local name is not a recognised element type in this
+  * namespace.
+  */
+  public Class getExtensionClass(String localname) {
+    if (localname.equals("connect"))
+      return SQLConnect.class;
+    if (localname.equals("close"))
+      return SQLClose.class;
+    if (localname.equals("column"))
+      return SQLColumn.class;
+    if (localname.equals("delete"))
+      return SQLDelete.class;
+    if (localname.equals("insert"))
+      return SQLInsert.class;
+    if (localname.equals("property"))
+      return SQLProperty.class;
+    if (localname.equals("query"))
+      return SQLQuery.class;
+    if (localname.equals("update"))
+      return SQLUpdate.class;
+    return null;
+  }
 }
 
 //

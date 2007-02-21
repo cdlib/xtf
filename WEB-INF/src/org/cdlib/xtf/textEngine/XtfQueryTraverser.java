@@ -1,5 +1,6 @@
 package org.cdlib.xtf.textEngine;
 
+
 /**
  * Copyright 2004 The Apache Software Foundation
  *
@@ -15,7 +16,6 @@ package org.cdlib.xtf.textEngine;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryTraverser;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -24,18 +24,18 @@ import org.apache.lucene.search.spans.SpanQuery;
  * Utility class for performing external rewriting, or transformation, tasks
  * on Lucene queries. The base class simply provides a framework. Derived
  * classes should override methods for those parts of a query they need to
- * rewrite, and the base will take care of gluing them together properly. 
+ * rewrite, and the base will take care of gluing them together properly.
  */
-public abstract class XtfQueryTraverser extends QueryTraverser {
-
+public abstract class XtfQueryTraverser extends QueryTraverser 
+{
   /**
    * Traverse a query of any supported type.
-   * 
+   *
    * @param q   Query to traverse
    */
   public void traverseQuery(Query q) {
     if (q instanceof SpanSectionTypeQuery)
-      traverse((SpanSectionTypeQuery) q);
+      traverse((SpanSectionTypeQuery)q);
     else if (q instanceof SpanExactQuery)
       traverse((SpanExactQuery)q);
     else if (q instanceof MoreLikeThisQuery)
@@ -58,15 +58,13 @@ public abstract class XtfQueryTraverser extends QueryTraverser {
     for (int i = 0; i < clauses.length; i++)
       traverseQuery(clauses[i]);
   }
-  
+
   /** Traverse a "more like this" query */
   protected void traverse(MoreLikeThisQuery mlt) {
     traverseQuery(mlt.getSubQuery());
   }
-  
+
   /** Traverse a numeric range query query */
   protected void traverse(NumericRangeQuery nrq) {
   }
-  
-  
 }
