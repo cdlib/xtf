@@ -26,7 +26,7 @@ package org.apache.lucene.search.spell;
 /**
  * Edit distance  class
  */
-final class TRStringDistance {
+final class TRStringDistance2 {
 
     final char[] sa;
     final int n;
@@ -37,7 +37,7 @@ final class TRStringDistance {
      * Optimized to run a bit faster than the static getDistance().
      * In one benchmark times were 5.3sec using ctr vs 8.5sec w/ static method, thus 37% faster.
      */
-    public TRStringDistance (String target) {
+    public TRStringDistance2 (String target) {
         sa=target.toCharArray();
         n=sa.length;
     }

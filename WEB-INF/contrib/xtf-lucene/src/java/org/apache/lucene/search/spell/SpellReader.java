@@ -928,8 +928,8 @@ public class SpellReader
     public Word orig;
     public int freq;
     public String metaphone;
-    private TRStringDistance wordDist;
-    private TRStringDistance mphDist;
+    private TRStringDistance2 wordDist;
+    private TRStringDistance2 mphDist;
     public float score;
     public float freqBoost;
 
@@ -989,13 +989,13 @@ public class SpellReader
 
     public int wordDist(String other) {
       if (wordDist == null)
-        wordDist = new TRStringDistance(word);
+        wordDist = new TRStringDistance2(word);
       return wordDist.getDistance(other);
     }
 
     public int mphDist(String other) {
       if (mphDist == null)
-        mphDist = new TRStringDistance(metaphone);
+        mphDist = new TRStringDistance2(metaphone);
       return mphDist.getDistance(other);
     }
 

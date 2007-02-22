@@ -257,7 +257,7 @@ public class SpellTest
       if (pos != 0) {
         System.out.print(word + " " + correction);
         System.out.print(" " +
-                         new TRStringDistance(word).getDistance(correction));
+                         new TRStringDistance2(word).getDistance(correction));
         System.out.println(" " + topSugg + " " + (pos + 1));
       }
 
