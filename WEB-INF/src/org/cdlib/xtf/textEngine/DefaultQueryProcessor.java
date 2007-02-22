@@ -305,11 +305,8 @@ public class DefaultQueryProcessor extends QueryProcessor
 
           // Record the hit.
           docHitMaker.reset(doc, score, spanSource);
-          if (req.maxDocs > 0) {
-            if (req.maxDocs >= 999999999)
-              docHitQueue.ensureCapacity(1);
+          if (req.maxDocs > 0)
             docHitMaker.insertInto(docHitQueue);
-          }
 
           // If grouping is enabled, add this document to the counts.
           if (groupCounts != null) {
@@ -863,12 +860,14 @@ public class DefaultQueryProcessor extends QueryProcessor
    * hit queue, depending on whether the query is to be sorted.
    *
    * @param reader     will be used to read the field contents
-   * @param size       size of the queue (typically startDoc + maxDocs)
+   * @param inSize     size of the queue (typically startDoc + maxDocs). If
+   *                   this number is >= 999999, an infinitely resizing
+   *                   queue will be created.
    * @param sortFields space or comma delimited list of fields to sort by
    * @param isSparse   if index is sparse (i.e. more than 5 chunks per doc)
    * @return           an appropriate hit queue
    */
-  private static PriorityQueue createHitQueue(IndexReader reader, int size,
+  private static PriorityQueue createHitQueue(IndexReader reader, int inSize,
                                               String sortFields,
                                               boolean isSparse)
     throws IOException 
@@ -876,55 +875,66 @@ public class DefaultQueryProcessor extends QueryProcessor
     // If a large size is requested, start with a small queue and expand
     // later, if necessary.
     //
-    if (size >= 999999999)
-      size = 10;
+    int size = (inSize >= 999999) ? 1 : inSize;
 
     // If no sort fields, do a simple score sort.
+    PriorityQueue ret;
     if (sortFields == null)
-      return new HitQueue(size);
-
-    // Parse out the list of fields to sort by.
-    Vector fieldNames = new Vector();
-    StringTokenizer st = new StringTokenizer(sortFields, " \t\r\n,;");
-    while (st.hasMoreTokens())
-      fieldNames.add(st.nextToken());
-
-    // If there were none, do a simple score sort.
-    if (fieldNames.size() == 0)
-      return new HitQueue(size);
-
-    // Okay, make a SortField out of each one, in priority order from 
-    // highest to lowest. After all the fields, an implicit score sorter 
-    // is added so that documents which match in all other respects
-    // will come out ordered by score.
-    //
-    // Each name can be optionally prefixed with "-" to sort in reverse,
-    // or "+" to sort in normal order (but "+" is unnecessary, since
-    // normal order is the default.)
-    //
-    SortField[] fields = new SortField[fieldNames.size() + 1];
-    for (int i = 0; i < fieldNames.size(); i++) 
+      ret = new HitQueue(size);
+    else
     {
-      String name = (String)fieldNames.elementAt(i);
-      boolean reverse = false;
-      if (name.startsWith("-")) {
-        reverse = true;
-        name = name.substring(1);
-      }
-      else if (name.startsWith("+")) {
-        reverse = false;
-        name = name.substring(1);
-      }
-
-      if (isSparse)
-        fields[i] = new SortField(name, sparseStringComparator, reverse);
+      // Parse out the list of fields to sort by.
+      Vector fieldNames = new Vector();
+      StringTokenizer st = new StringTokenizer(sortFields, " \t\r\n,;");
+      while (st.hasMoreTokens())
+        fieldNames.add(st.nextToken());
+  
+      // If there were none, do a simple score sort.
+      if (fieldNames.size() == 0)
+        ret = new HitQueue(size);
       else
-        fields[i] = new SortField(name, SortField.STRING, reverse);
+      {
+        // Okay, make a SortField out of each one, in priority order from 
+        // highest to lowest. After all the fields, an implicit score sorter 
+        // is added so that documents which match in all other respects
+        // will come out ordered by score.
+        //
+        // Each name can be optionally prefixed with "-" to sort in reverse,
+        // or "+" to sort in normal order (but "+" is unnecessary, since
+        // normal order is the default.)
+        //
+        SortField[] fields = new SortField[fieldNames.size() + 1];
+        for (int i = 0; i < fieldNames.size(); i++) 
+        {
+          String name = (String)fieldNames.elementAt(i);
+          boolean reverse = false;
+          if (name.startsWith("-")) {
+            reverse = true;
+            name = name.substring(1);
+          }
+          else if (name.startsWith("+")) {
+            reverse = false;
+            name = name.substring(1);
+          }
+    
+          if (isSparse)
+            fields[i] = new SortField(name, sparseStringComparator, reverse);
+          else
+            fields[i] = new SortField(name, SortField.STRING, reverse);
+        }
+        fields[fieldNames.size()] = SortField.FIELD_SCORE;
+    
+        // And make the final hit queue.
+        ret = new FieldSortedHitQueue(reader, fields, size);
+      }
     }
-    fields[fieldNames.size()] = SortField.FIELD_SCORE;
-
-    // And make the final hit queue.
-    return new FieldSortedHitQueue(reader, fields, size);
+    
+    // If a ton of hits is requested, make the queue into a resizing one.
+    if (inSize >= 999999)
+      ret.setExpandable();
+    
+    // All done.
+    return ret;
   } // createHitQueue()
 
   private static class DocHitMakerImpl implements GroupCounts.DocHitMaker 

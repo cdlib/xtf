@@ -23,6 +23,7 @@ public abstract class PriorityQueue {
   private Object[] heap;
   private int size;
   private int maxSize;
+  private boolean expandable = false;
 
   /** Determines the ordering of objects in this priority queue.  Subclasses
     must define this one method. */
@@ -36,18 +37,17 @@ public abstract class PriorityQueue {
     this.maxSize = maxSize;
   }
   
-  /** 
-   * Ensures that there is space to insert 'n' items, expanding the queue
-   * if necessary.
-   */
-  public final void ensureCapacity(int n) {
-    if(size+n <= maxSize)
-      return;
-    int oldSize = size;
+  /** Make the queue expandable (will resize if full) */
+  public void setExpandable() {
+    expandable = true;
+  }
+  
+  /** Make the queue bigger. */
+  private void expand() {
     Object[] oldHeap = heap;
     int newSize = Math.max(maxSize+10, maxSize*3/2);
     initialize(newSize);
-    for(int i=0; i<oldSize; i++) {
+    for (int i=0; i<oldHeap.length; i++) {
       if (oldHeap[i] != null)
         put(oldHeap[i]);
     }
@@ -72,6 +72,11 @@ public abstract class PriorityQueue {
    */
   public boolean insert(Object element){
     if(size < maxSize){
+        put(element);
+        return true;
+    }
+    else if(expandable) {
+        expand();
         put(element);
         return true;
     }
