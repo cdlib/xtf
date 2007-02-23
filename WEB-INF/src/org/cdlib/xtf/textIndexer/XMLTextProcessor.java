@@ -505,7 +505,7 @@ public class XMLTextProcessor extends DefaultHandler
         Path.createPath(indexPath);
 
         // Get a Lucene style directory.
-        FSDirectory idxDir = FSDirectory.getDirectory(indexPath, false);
+        FSDirectory idxDir = FSDirectory.getDirectory(indexPath);
 
         // If an index doesn't exist there, create it.
         if (!IndexReader.indexExists(idxDir))

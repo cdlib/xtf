@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
@@ -70,9 +70,21 @@ public class LimIndexReader extends IndexReader
       throw new ExcessiveWorkException();
   } // work()
 
-  /*************************************************************************
+  /*-----------------------------------------------------------------------*
+   * METHODS THAT DO "WORK"
+   *-----------------------------------------------------------------------*/
+  
+  public Document document(int n, FieldSelector fieldSelector) throws IOException
+  {
+    Document ret = wrapped.document(n, fieldSelector);
+    work(ret.getFields().size());
+    return ret;
+  }
+
+  /*-----------------------------------------------------------------------*
    * DELEGATED METHODS
-   *************************************************************************/
+   *-----------------------------------------------------------------------*/
+  
   public static long getCurrentVersion(File directory)
     throws IOException 
   {
@@ -162,20 +174,6 @@ public class LimIndexReader extends IndexReader
 
   public boolean equals(Object obj) {
     return wrapped.equals(obj);
-  }
-
-  @Override
-  public Collection getFieldNames()
-    throws IOException 
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Collection getFieldNames(boolean indexed)
-    throws IOException 
-  {
-    throw new UnsupportedOperationException();
   }
 
   public TermFreqVector getTermFreqVector(int docNumber, String field)
@@ -303,24 +301,23 @@ public class LimIndexReader extends IndexReader
     return wrapped.getFieldNames(opt);
   }
 
-  @Override
-  public Collection getIndexedFieldNames(TermVector vec)
-  {
-    throw new UnsupportedOperationException();
-  }
-
   public long getVersion()
   {
     return wrapped.getVersion();
   }
 
-  public boolean hasNorms(String arg0) throws IOException
+  public boolean hasNorms(String field) throws IOException
   {
-    return wrapped.hasNorms(arg0);
+    return wrapped.hasNorms(field);
   }
 
   public boolean isCurrent() throws IOException
   {
     return wrapped.isCurrent();
+  }
+
+  public boolean isOptimized()
+  {
+    return wrapped.isOptimized();
   }
 } // class LimIndexReader

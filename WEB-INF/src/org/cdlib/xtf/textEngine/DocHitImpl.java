@@ -30,7 +30,7 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Set;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
@@ -193,9 +193,8 @@ public class DocHitImpl extends DocHit
 
     // Record the ones of interest.
     metaData = new AttribList();
-    for (Enumeration e = docContents.fields(); e.hasMoreElements();) 
+    for (Field f : (List<Field>)docContents.getFields()) 
     {
-      Field f = (Field)e.nextElement();
       String name = f.name();
       String value = f.stringValue();
 

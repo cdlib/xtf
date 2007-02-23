@@ -117,7 +117,7 @@ public class XtfSearcher
     throws IOException 
   {
     this.indexPath = indexPath;
-    directory = FSDirectory.getDirectory(indexPath, false);
+    directory = FSDirectory.getDirectory(indexPath);
     curVersion = -99;
     updatePeriod = ((long)updateCheckSeconds) * 1000;
     update();

@@ -12,6 +12,6 @@
 	<classpathentry kind="lib" path="WEB-INF/lib/marc4j.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/bin/bootstrap.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet-api.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/lucene-core-1.9.1.jar" sourcepath="WEB-INF/lib/source/lucene-1.9.1"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/lucene-core-2.1.0.jar" sourcepath="WEB-INF/lib/source/lucene-2.1.0"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>

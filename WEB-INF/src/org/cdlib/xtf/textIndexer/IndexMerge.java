@@ -214,7 +214,7 @@ public class IndexMerge
             "Error: Cannot locate index in directory '" + idxPath + "'");
         }
 
-        Directory srcDir = FSDirectory.getDirectory(idxPath, false);
+        Directory srcDir = FSDirectory.getDirectory(idxPath);
         dirInfos[i] = readInfo(idxPath, srcDir);
 
         // Check for parameter compatibility
