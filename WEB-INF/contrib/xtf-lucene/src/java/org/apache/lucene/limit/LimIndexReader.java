@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
@@ -163,20 +164,18 @@ public class LimIndexReader extends IndexReader
     return wrapped.equals(obj);
   }
 
+  @Override
   public Collection getFieldNames()
     throws IOException 
   {
-    return wrapped.getFieldNames();
+    throw new UnsupportedOperationException();
   }
 
+  @Override
   public Collection getFieldNames(boolean indexed)
     throws IOException 
   {
-    return wrapped.getFieldNames(indexed);
-  }
-
-  public Collection getIndexedFieldNames(boolean storedTermVector) {
-    return wrapped.getIndexedFieldNames(storedTermVector);
+    throw new UnsupportedOperationException();
   }
 
   public TermFreqVector getTermFreqVector(int docNumber, String field)
@@ -297,5 +296,31 @@ public class LimIndexReader extends IndexReader
     throws IOException 
   {
     assert false : "method should never be called";
+  }
+
+  public Collection getFieldNames(FieldOption opt)
+  {
+    return wrapped.getFieldNames(opt);
+  }
+
+  @Override
+  public Collection getIndexedFieldNames(TermVector vec)
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  public long getVersion()
+  {
+    return wrapped.getVersion();
+  }
+
+  public boolean hasNorms(String arg0) throws IOException
+  {
+    return wrapped.hasNorms(arg0);
+  }
+
+  public boolean isCurrent() throws IOException
+  {
+    return wrapped.isCurrent();
   }
 } // class LimIndexReader

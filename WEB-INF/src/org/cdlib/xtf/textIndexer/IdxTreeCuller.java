@@ -142,7 +142,7 @@ public class IdxTreeCuller
           Trace.info("[" + relPath + "] ... ");
 
           // Delete all chunks for the missing document.
-          int nDel = indexReader.delete(new Term("key", key));
+          int nDel = indexReader.deleteDocuments(new Term("key", key));
 
           // If no chunks were deleted, something's wrong, so bail.
           if (nDel == 0) 

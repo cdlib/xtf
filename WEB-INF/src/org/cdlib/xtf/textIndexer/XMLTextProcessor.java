@@ -55,13 +55,15 @@ import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceivingContentHandler;
 import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.om.NamePool;
-import org.apache.lucene.document.DateField;
+
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
@@ -678,9 +680,9 @@ public class XMLTextProcessor extends DefaultHandler
 
       // Then add the index info chunk to it.
       Document doc = new Document();
-      doc.add(Field.Keyword("indexInfo", "1"));
-      doc.add(Field.UnIndexed("chunkSize", indexInfo.getChunkSizeStr()));
-      doc.add(Field.UnIndexed("chunkOvlp", indexInfo.getChunkOvlpStr()));
+      doc.add(new Field("indexInfo", "1", Field.Store.YES, Field.Index.UN_TOKENIZED));
+      doc.add(new Field("chunkSize", indexInfo.getChunkSizeStr(), Field.Store.YES, Field.Index.NO));
+      doc.add(new Field("chunkOvlp", indexInfo.getChunkOvlpStr(), Field.Store.YES, Field.Index.NO));
 
       // If a plural map was specified, copy it to the index directory.
       if (indexInfo.pluralMapPath != null &&
@@ -691,7 +693,7 @@ public class XMLTextProcessor extends DefaultHandler
           xtfHomePath + indexInfo.pluralMapPath);
         String targetPath = Path.normalizeFileName(indexPath + fileName);
         Path.copyFile(new File(sourcePath), new File(targetPath));
-        doc.add(Field.UnIndexed("pluralMap", fileName));
+        doc.add(new Field("pluralMap", fileName, Field.Store.YES, Field.Index.NO));
       }
 
       // If an accent map was specified, copy it to the index directory.
@@ -703,14 +705,14 @@ public class XMLTextProcessor extends DefaultHandler
           xtfHomePath + indexInfo.accentMapPath);
         String targetPath = Path.normalizeFileName(indexPath + fileName);
         Path.copyFile(new File(sourcePath), new File(targetPath));
-        doc.add(Field.UnIndexed("accentMap", fileName));
+        doc.add(new Field("accentMap", fileName, Field.Store.YES, Field.Index.NO));
       }
 
       // Copy the stopwords to the index
       String stopWords = indexInfo.stopWords;
       if (stopWords == null)
         stopWords = "";
-      doc.add(Field.UnIndexed("stopWords", stopWords));
+      doc.add(new Field("stopWords", stopWords, Field.Store.YES, Field.Index.NO));
       indexWriter.addDocument(doc);
     } // try
 
@@ -827,7 +829,7 @@ public class XMLTextProcessor extends DefaultHandler
     openIdxForReading();
 
     // If any old version of this document exists, delete it.
-    int nDeleted = indexReader.delete(new Term("key", key));
+    int nDeleted = indexReader.deleteDocuments(new Term("key", key));
 
     // If there might be a lazy file...
     if (srcFile != null) 
@@ -866,8 +868,8 @@ public class XMLTextProcessor extends DefaultHandler
     BooleanQuery query = new BooleanQuery();
     Term docInfo = new Term("docInfo", "1");
     Term srcPath = new Term("key", key);
-    query.add(new TermQuery(docInfo), true, false);
-    query.add(new TermQuery(srcPath), true, false);
+    query.add(new TermQuery(docInfo), BooleanClause.Occur.MUST);
+    query.add(new TermQuery(srcPath), BooleanClause.Occur.MUST);
 
     // Use the query to see if the document is in the index..
     Hits match = indexSearcher.search(query);
@@ -915,7 +917,7 @@ public class XMLTextProcessor extends DefaultHandler
         continue;
 
       // Okay, delete chunks from the old document, and clear the flag.
-      indexReader.delete(new Term("key", ent.idxSrc.key()));
+      indexReader.deleteDocuments(new Term("key", ent.idxSrc.key()));
       ent.deleteFirst = false;
     }
   } // public batchDelete()
@@ -2753,11 +2755,11 @@ public class XMLTextProcessor extends DefaultHandler
     // use this only as a finding aid, store the path as a non-stored, indexed,
     // non-tokenized field.
     //
-    doc.add(new Field("key", curIdxSrc.key(), false, true, false));
+    doc.add(new Field("key", curIdxSrc.key(), Field.Store.NO, Field.Index.UN_TOKENIZED));
 
     // Write the current section type as a stored, indexed, tokenized field.
     if (sectionType != null && sectionType.length() > 0)
-      doc.add(new Field("sectionType", sectionType, true, true, true));
+      doc.add(new Field("sectionType", sectionType, Field.Store.YES, Field.Index.TOKENIZED));
 
     // Convert the various integer field values to strings for writing.
     String nodeStr = Integer.toString(chunkStartNode);
@@ -2771,13 +2773,13 @@ public class XMLTextProcessor extends DefaultHandler
     Trace.untab();
 
     // Add the node number for this chunk. Store, but don't index or tokenize.
-    doc.add(new Field("node", nodeStr, true, false, false));
+    doc.add(new Field("node", nodeStr, Field.Store.YES, Field.Index.NO));
 
     // Add the word offset for this chunk. Store, but don't index or tokenize.
-    doc.add(new Field("wordOffset", wordOffsetStr, true, false, false));
+    doc.add(new Field("wordOffset", wordOffsetStr, Field.Store.YES, Field.Index.NO));
 
     // Create the text field for this document.                        
-    Field textField = new Field("text", textStr, true, true, true);
+    Field textField = new Field("text", textStr, Field.Store.YES, Field.Index.TOKENIZED);
 
     // Set the boost value for the text.
     textField.setBoost(wordBoost);
@@ -3334,19 +3336,19 @@ public class XMLTextProcessor extends DefaultHandler
     // Add a header flag as a stored, indexed, non-tokenized field 
     // to the document database.
     //
-    doc.add(new Field("docInfo", "1", true, true, false));
+    doc.add(new Field("docInfo", "1", 
+                      Field.Store.YES, Field.Index.UN_TOKENIZED));
 
     // Add the number of chunks in the index for this document.
     doc.add(new Field("chunkCount",
                       Integer.toString(chunkCount),
-                      true,
-                      false,
-                      false));
+                      Field.Store.YES, Field.Index.NO));
 
     // Add the key to the document header as a stored, indexed, 
     // non-tokenized field.
     //
-    doc.add(new Field("key", curIdxSrc.key(), true, true, false));
+    doc.add(new Field("key", curIdxSrc.key(), 
+                      Field.Store.YES, Field.Index.UN_TOKENIZED));
 
     // If record number is non-zero, write it out as a stored, non-indexed,
     // non-tokenized field.
@@ -3355,21 +3357,20 @@ public class XMLTextProcessor extends DefaultHandler
     if (recordNum > 0) {
       doc.add(new Field("recordNum",
                         Integer.toString(recordNum),
-                        true,
-                        false,
-                        false));
+                        Field.Store.YES, Field.Index.NO));
     }
 
     // Determine when the file was last modified.
     File srcPath = curIdxSrc.path();
     if (srcPath != null) 
     {
-      String fileDateStr = DateField.timeToString(srcPath.lastModified());
+      String fileDateStr = DateTools.timeToString(
+        srcPath.lastModified(), DateTools.Resolution.MILLISECOND);
 
       // Add the XML file modification date as a stored, non-indexed, 
       // non-tokenized field.
       //
-      doc.add(new Field("fileDate", fileDateStr, true, false, false));
+      doc.add(new Field("fileDate", fileDateStr, Field.Store.YES, Field.Index.NO));
     }
 
     // Get the analyzer that will be used to tokenize fields. Tell it to
@@ -3416,9 +3417,12 @@ public class XMLTextProcessor extends DefaultHandler
         //
         Field docField = new Field(metaField.name,
                                    metaField.value,
-                                   metaField.store,
-                                   metaField.index,
-                                   metaField.tokenize);
+                                   metaField.store ? Field.Store.YES : Field.Store.NO,
+                                   metaField.index ?
+                                     (metaField.tokenize ? 
+                                          Field.Index.TOKENIZED 
+                                        : Field.Index.UN_TOKENIZED)
+                                     : Field.Index.NO);
         docField.setBoost(metaField.wordBoost);
         doc.add(docField);
 
@@ -3431,9 +3435,7 @@ public class XMLTextProcessor extends DefaultHandler
           if (!tokenizedFields.contains(metaField.name)) {
             doc.add(new Field("tokenizedFields",
                               metaField.name,
-                              false, // not stored
-                              true, // indexed
-                              false)); // not tokenized itself 
+                              Field.Store.NO, Field.Index.UN_TOKENIZED));
             tokenizedFields.add(metaField.name);
           }
         }
@@ -3511,8 +3513,8 @@ public class XMLTextProcessor extends DefaultHandler
     BooleanQuery query = new BooleanQuery();
     Term docInfo = new Term("docInfo", "1");
     Term keyTerm = new Term("key", srcInfo.key());
-    query.add(new TermQuery(docInfo), true, false);
-    query.add(new TermQuery(keyTerm), true, false);
+    query.add(new TermQuery(docInfo), BooleanClause.Occur.MUST);
+    query.add(new TermQuery(keyTerm), BooleanClause.Occur.MUST);
 
     // Use the query to see if the document is in the index..
     boolean docInIndex = false;
@@ -3530,7 +3532,9 @@ public class XMLTextProcessor extends DefaultHandler
 
       // See what the date is on the actual source file right now.
       File srcPath = srcInfo.path();
-      String fileDateStr = DateField.timeToString(srcPath.lastModified());
+      String fileDateStr = DateTools.timeToString(
+        srcPath.lastModified(), 
+        DateTools.Resolution.MILLISECOND);
 
       // If the dates are different...
       if (fileDateStr.compareTo(indexDateStr) != 0) 
@@ -3675,12 +3679,7 @@ public class XMLTextProcessor extends DefaultHandler
     // This limit gives good speed, but requires quite a bit of RAM (probably
     // 100 megs is about right.)
     //
-    indexWriter.minMergeDocs = 100;
-
-    // We've been having some trouble with commit locks during indexing, so
-    // let's give a larger margin for overlap.
-    //
-    IndexWriter.COMMIT_LOCK_TIMEOUT = 60 * 1000;
+    indexWriter.setMaxBufferedDocs(100);
 
     // If requested to make a spellcheck dictionary for this index, attach 
     // a spelling writer to the text analyzer, so that tokenized words get 

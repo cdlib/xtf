@@ -617,8 +617,8 @@ public class DefaultQueryProcessor extends QueryProcessor
       {
         BooleanClause[] clauses = bq.getClauses();
         for (int i = 0; i < clauses.length; i++) {
-          if (!clauses[i].prohibited)
-            traverseQuery(clauses[i].query);
+          if (clauses[i].getOccur() != BooleanClause.Occur.MUST_NOT)
+            traverseQuery(clauses[i].getQuery());
         }
       } // traverse()
 

@@ -30,7 +30,7 @@ package org.cdlib.xtf.textEngine;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import org.apache.lucene.search.Explanation;
-import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.FieldDoc;
 import org.cdlib.xtf.util.AttribList;
 
 /**
@@ -39,7 +39,7 @@ import org.cdlib.xtf.util.AttribList;
  *
  * @author Martin Haye
  */
-public abstract class DocHit extends ScoreDoc 
+public abstract class DocHit extends FieldDoc 
 {
   /**
    * Construct a document hit. Package-private because these should only

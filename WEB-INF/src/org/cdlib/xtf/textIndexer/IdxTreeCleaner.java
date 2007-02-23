@@ -186,7 +186,7 @@ public class IdxTreeCleaner
       // Otherwise, it is a chunk from an incomplete document, so delete it.  
       try 
       {
-        indexReader.delete(lastChunk);
+        indexReader.deleteDocument(lastChunk);
       }
       catch (Exception e) {
         // Log the problem.

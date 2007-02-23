@@ -1,6 +1,5 @@
 package org.cdlib.xtf.textEngine;
 
-
 /**
  * Copyright 2004 The Apache Software Foundation
  *
@@ -22,6 +21,7 @@ package org.cdlib.xtf.textEngine;
  * was made possible by a grant from the Andrew W. Mellon Foundation,
  * as part of the Melvyl Recommender Project.
  */
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -35,6 +35,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.DefaultSimilarity;
 import org.apache.lucene.search.Explanation;
@@ -335,7 +336,7 @@ public class MoreLikeThisQuery extends Query
         fieldQuery.setBoost(fieldBoosts[i]);
 
       // And add to the main query.
-      query.add(fieldQuery, false, false);
+      query.add(fieldQuery, BooleanClause.Occur.SHOULD);
     } // for i
 
     // All done.

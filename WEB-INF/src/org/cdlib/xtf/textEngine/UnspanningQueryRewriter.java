@@ -1,6 +1,5 @@
 package org.cdlib.xtf.textEngine;
 
-
 /**
  * Copyright (c) 2006, Regents of the University of California
  * All rights reserved.
@@ -35,7 +34,10 @@ package org.cdlib.xtf.textEngine;
  * was made possible by a grant from the Andrew W. Mellon Foundation,
  * as part of the Melvyl Recommender Project.
  */
+
 import java.util.Stack;
+
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -101,7 +103,7 @@ public class UnspanningQueryRewriter extends XtfQueryRewriter
 
     SpanQuery[] clauses = oq.getClauses();
     for (int i = 0; i < clauses.length; i++)
-      newQuery.add(rewriteQuery(clauses[i]), false, false);
+      newQuery.add(rewriteQuery(clauses[i]), BooleanClause.Occur.SHOULD);
 
     // Retain the original boost, if any.
     return copyBoost(oq, newQuery);

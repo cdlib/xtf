@@ -612,7 +612,14 @@ public class QueryRequestParser
           ent.queries.add(q);
       }
       else {
-        bq.add(deChunk(q), isNot ? false : require, isNot);
+        BooleanClause.Occur occur;
+        if (isNot)
+          occur = BooleanClause.Occur.MUST_NOT;
+        else if (require)
+          occur = BooleanClause.Occur.MUST;
+        else
+          occur = BooleanClause.Occur.SHOULD;
+        bq.add(deChunk(q), occur);
       }
     }
 
@@ -652,17 +659,21 @@ public class QueryRequestParser
       //
       if (nQueries > 1 || (nQueries == 1 && nNots > 0)) {
         SpanQuery sq = processSpanJoin(name, ent.queries, ent.nots, maxSnippets);
-        bq.add(deChunk(sq), require, false);
+        bq.add(deChunk(sq), require ? BooleanClause.Occur.MUST : 
+                                      BooleanClause.Occur.SHOULD);
         continue;
       }
 
       // Otherwise, simply add these as normal boolean clauses (of course
       // applying dechunking if necessary.)
       //
-      for (int j = 0; j < ent.queries.size(); j++)
-        bq.add(deChunk((Query)ent.queries.get(j)), require, false);
+      for (int j = 0; j < ent.queries.size(); j++) {
+        bq.add(deChunk((Query)ent.queries.get(j)), 
+               require ? BooleanClause.Occur.MUST : 
+                         BooleanClause.Occur.SHOULD);
+      }
       for (int j = 0; j < ent.nots.size(); j++)
-        bq.add(deChunk((Query)ent.nots.get(j)), false, true);
+        bq.add(deChunk((Query)ent.nots.get(j)), BooleanClause.Occur.MUST_NOT);
     } // for i
 
     // If we ended up with only one clause, we may have more to do...
@@ -670,15 +681,15 @@ public class QueryRequestParser
     if (clauses.length == 1) 
     {
       // If the clause is required, just return it.
-      if (clauses[0].required)
-        return clauses[0].query;
+      if (clauses[0].getOccur() == BooleanClause.Occur.MUST)
+        return clauses[0].getQuery();
 
       // If the clause is a 'not', it needs something to 'not' against.
       // Add another clause that just returns all valid documents.
       //
-      else if (clauses[0].prohibited) {
+      else if (clauses[0].getOccur() == BooleanClause.Occur.MUST_NOT) {
         Query allDocsQuery = new TermQuery(new Term("docInfo", "1"));
-        bq.add(allDocsQuery, true, false);
+        bq.add(allDocsQuery, BooleanClause.Occur.MUST);
       }
     }
 
@@ -793,14 +804,14 @@ public class QueryRequestParser
           tq = deChunk(tq);
           if (tq instanceof SpanQuery)
             ((SpanQuery)tq).setSpanRecording(0);
-          termOrQuery.add(tq, false, false);
+          termOrQuery.add(tq, BooleanClause.Occur.SHOULD);
         }
 
         // Make sure these don't contribute to the overall score, but each
         // term must match in at least one field.
         //
         termOrQuery.setBoost(0.0f);
-        mainQuery.add(termOrQuery, true, false);
+        mainQuery.add(termOrQuery, BooleanClause.Occur.MUST);
       }
     }
 
@@ -826,7 +837,7 @@ public class QueryRequestParser
       fieldOrQuery.setSpanRecording(maxSnippets);
       if (boosts != null && i < boosts.length)
         fieldOrQuery.setBoost(boosts[i]);
-      mainQuery.add(fieldOrQuery, false, false);
+      mainQuery.add(fieldOrQuery, BooleanClause.Occur.SHOULD);
     }
 
     // All done.
@@ -853,37 +864,37 @@ public class QueryRequestParser
     {
       // See if this clause is the same as the previous one.
       if (!first &&
-          (prevRequired != clauses[i].required ||
-          prevProhibited != clauses[i].prohibited))
+          (prevRequired != (clauses[i].getOccur() == BooleanClause.Occur.MUST) ||
+           prevProhibited != (clauses[i].getOccur() == BooleanClause.Occur.MUST_NOT)))
         allSame = false;
 
-      prevRequired = clauses[i].required;
-      prevProhibited = clauses[i].prohibited;
+      prevRequired = clauses[i].getOccur() == BooleanClause.Occur.MUST;
+      prevProhibited = clauses[i].getOccur() == BooleanClause.Occur.MUST_NOT;
       first = false;
 
       // Detect any boosting
-      if (clauses[i].query.getBoost() != 1.0f)
+      if (clauses[i].getQuery().getBoost() != 1.0f)
         anyBoosting = true;
 
       // If the clause is a BooleanQuery, check the sub-clauses...
-      if (clauses[i].query instanceof BooleanQuery) 
+      if (clauses[i].getQuery() instanceof BooleanQuery) 
       {
-        BooleanQuery subQuery = (BooleanQuery)clauses[i].query;
+        BooleanQuery subQuery = (BooleanQuery)clauses[i].getQuery();
         BooleanClause[] subClauses = subQuery.getClauses();
 
         // Scan each sub-clause
         for (int j = 0; j < subClauses.length; j++) 
         {
           // Make sure it's the same as the previous clause.
-          if (prevRequired != subClauses[j].required ||
-              prevProhibited != subClauses[j].prohibited)
+          if (prevRequired != (subClauses[j].getOccur() == BooleanClause.Occur.MUST) ||
+              prevProhibited != (subClauses[j].getOccur() == BooleanClause.Occur.MUST_NOT))
             allSame = false;
 
-          prevRequired = subClauses[j].required;
-          prevProhibited = subClauses[j].prohibited;
+          prevRequired = (subClauses[j].getOccur() == BooleanClause.Occur.MUST);
+          prevProhibited = (subClauses[j].getOccur() == BooleanClause.Occur.MUST_NOT);
 
           // Detect any boosting.
-          if (subClauses[j].query.getBoost() != 1.0f)
+          if (subClauses[j].getQuery().getBoost() != 1.0f)
             anyBoosting = true;
         } // for j
 
@@ -902,8 +913,8 @@ public class QueryRequestParser
     bq = new BooleanQuery();
     for (int i = 0; i < clauses.length; i++) 
     {
-      if (clauses[i].query instanceof BooleanQuery) {
-        BooleanQuery subQuery = (BooleanQuery)clauses[i].query;
+      if (clauses[i].getQuery() instanceof BooleanQuery) {
+        BooleanQuery subQuery = (BooleanQuery)clauses[i].getQuery();
         BooleanClause[] subClauses = subQuery.getClauses();
         for (int j = 0; j < subClauses.length; j++)
           bq.add(subClauses[j]);

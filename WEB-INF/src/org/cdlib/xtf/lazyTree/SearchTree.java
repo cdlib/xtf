@@ -56,6 +56,7 @@ import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.mark.ContextMarker;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -352,10 +353,10 @@ public class SearchTree extends LazyDocument
     // giving us only the hits we want, this also makes the query faster.
     //
     BooleanQuery bq = new BooleanQuery();
-    bq.add(new TermQuery(new Term("docInfo", "1")), true, false);
+    bq.add(new TermQuery(new Term("docInfo", "1")), BooleanClause.Occur.MUST);
     Term t = new Term("key", sourceKey);
-    bq.add(new TermQuery(t), true, false);
-    bq.add(req.query, true, false);
+    bq.add(new TermQuery(t), BooleanClause.Occur.MUST);
+    bq.add(req.query, BooleanClause.Occur.MUST);
     req.query = bq;
 
     // Run the query and get the results.

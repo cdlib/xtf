@@ -82,7 +82,7 @@ public abstract class QueryTraverser
   protected void traverse(BooleanQuery bq) {
     BooleanClause[] clauses = bq.getClauses();
     for (int i = 0; i < clauses.length; i++)
-      traverseQuery(clauses[i].query);
+      traverseQuery(clauses[i].getQuery());
   } // traverse()
 
   /**

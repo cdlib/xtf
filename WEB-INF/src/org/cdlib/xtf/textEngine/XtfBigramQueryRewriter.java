@@ -226,11 +226,11 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter
         for (int i = 0; i < clauses.length; i++) {
           if (buf.length() > 1)
             buf.append(" ");
-          if (clauses[i].required)
+          if (clauses[i].getOccur() == BooleanClause.Occur.MUST)
             buf.append("+");
-          else if (clauses[i].prohibited)
+          else if (clauses[i].getOccur() == BooleanClause.Occur.MUST_NOT)
             buf.append("-");
-          buf.append(queryToText(clauses[i].query));
+          buf.append(queryToText(clauses[i].getQuery()));
         }
         buf.append(")");
         return buf.toString();
@@ -286,15 +286,15 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter
       return array;
     }
 
-    private Query bool(Query q1, boolean require1, boolean prohibit1, Query q2,
-                       boolean require2, boolean prohibit2, Query q3,
-                       boolean require3, boolean prohibit3) 
+    private Query bool(Query q1, BooleanClause.Occur occur1, 
+                       Query q2, BooleanClause.Occur occur2, 
+                       Query q3, BooleanClause.Occur occur3)
     {
       BooleanQuery q = new BooleanQuery();
-      q.add(q1, require1, prohibit1);
-      q.add(q2, require2, prohibit2);
+      q.add(q1, occur1);
+      q.add(q2, occur2);
       if (q3 != null)
-        q.add(q3, require3, prohibit3);
+        q.add(q3, occur3);
       return q;
     }
 
@@ -482,60 +482,34 @@ public class XtfBigramQueryRewriter extends BigramQueryRewriter
       ////////////////////////////////////////////////////////////////////////
       // BOOLEAN QUERIES
       ////////////////////////////////////////////////////////////////////////
-      testUnchanged(bool(regTerm("hello"),
-                         true,
-                         false,
-                         regTerm("kitty"),
-                         false,
-                         true,
-                         regTerm("pencil"),
-                         true,
-                         false));
+      testUnchanged(bool(regTerm("hello"), BooleanClause.Occur.MUST,
+                         regTerm("kitty"), BooleanClause.Occur.MUST_NOT,
+                         regTerm("pencil"), BooleanClause.Occur.MUST));
 
-      testQuery(bool(regTerm("cats"),
-                     true,
-                     false,
-                     regTerm("and"),
-                     false,
-                     true,
-                     regTerm("hats"),
-                     true,
-                     false), "(+cats +hats)");
-      testQuery(bool(regTerm("cats"),
-                     true,
-                     false,
-                     regTerm("and"),
-                     false,
-                     false,
-                     regTerm("hats"),
-                     true,
-                     false), "(+cats +hats)");
-      testQuery(bool(regTerm("is"),
-                     true,
-                     false,
-                     regTerm("it"),
-                     true,
-                     false,
-                     regTerm("fun"),
-                     false,
-                     false), "(fun)");
+      testQuery(bool(regTerm("cats"), BooleanClause.Occur.MUST,
+                     regTerm("and"), BooleanClause.Occur.MUST_NOT,
+                     regTerm("hats"), BooleanClause.Occur.MUST), 
+                "(+cats +hats)");
+      testQuery(bool(regTerm("cats"), BooleanClause.Occur.MUST,
+                     regTerm("and"), BooleanClause.Occur.SHOULD,
+                     regTerm("hats"), BooleanClause.Occur.MUST), 
+                "(+cats +hats)");
+      testQuery(bool(regTerm("is"), BooleanClause.Occur.MUST,
+                     regTerm("it"), BooleanClause.Occur.MUST,
+                     regTerm("fun"), BooleanClause.Occur.SHOULD), 
+                "(fun)");
 
       // Test BooleanQuery with non~term clauses
-      testQuery(bool(regTerm("whip"),
-                     true,
-                     false,
-                     or(terms("it them")),
-                     true,
-                     false,
-                     regTerm("good"),
-                     true,
-                     false), "(+whip +them +good)");
+      testQuery(bool(regTerm("whip"), BooleanClause.Occur.MUST,
+                     or(terms("it them")), BooleanClause.Occur.MUST,
+                     regTerm("good"), BooleanClause.Occur.MUST), 
+                "(+whip +them +good)");
 
       // Test boost propagation
       testQuery(boost(2,
-                      bool(boost(3, regTerm("it")), false, false,
-                           boost(4, regTerm("and")), false, false,
-                           boost(5, regTerm("harry")), true, false)),
+                      bool(boost(3, regTerm("it")), BooleanClause.Occur.SHOULD,
+                           boost(4, regTerm("and")), BooleanClause.Occur.SHOULD,
+                           boost(5, regTerm("harry")), BooleanClause.Occur.MUST)),
                 "harry^10");
     } // testImpl()
   }; // Tester

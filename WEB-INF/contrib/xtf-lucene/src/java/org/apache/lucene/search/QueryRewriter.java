@@ -103,14 +103,13 @@ public abstract class QueryRewriter
     for (int i = 0; i < clauses.length; i++) 
     {
       // Rewrite the clause and/or its descendants
-      Query rewrittenQuery = rewriteQuery(clauses[i].query);
-      if (rewrittenQuery != clauses[i].query) 
+      Query rewrittenQuery = rewriteQuery(clauses[i].getQuery());
+      if (rewrittenQuery != clauses[i].getQuery()) 
       {
         anyChange = true;
         if (rewrittenQuery != null) {
           newClauses.add(new BooleanClause(rewrittenQuery,
-                                           clauses[i].required,
-                                           clauses[i].prohibited));
+                                           clauses[i].getOccur()));
         }
       }
       else
@@ -129,8 +128,8 @@ public abstract class QueryRewriter
     // If we ended up with a single clause, return just that.
     if (newClauses.size() == 1 && !force) {
       BooleanClause clause = (BooleanClause)newClauses.elementAt(0);
-      if (!clause.prohibited)
-        return combineBoost(bq, clause.query);
+      if (clause.getOccur() == BooleanClause.Occur.MUST_NOT)
+        return combineBoost(bq, clause.getQuery());
     }
 
     // Otherwise, we need to construct a new BooleanQuery.

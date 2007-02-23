@@ -211,7 +211,8 @@ public class XtfSearcher
     isSparse = nChunks > (nDocs * 5);
 
     // Determine the list of all fields.
-    indexedFields = new LinkedHashSet(indexReader.getFieldNames(true));
+    indexedFields = new LinkedHashSet(
+      indexReader.getFieldNames(IndexReader.FieldOption.ALL));
 
     // Determine which fields are tokenized.
     tokenizedFields = new LinkedHashSet();

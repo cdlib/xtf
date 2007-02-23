@@ -126,28 +126,26 @@ public class BigramQueryRewriter extends QueryRewriter
     boolean anyChange = false;
     for (int i = 0; i < clauses.length; i++) 
     {
-      assert !(clauses[i].prohibited && clauses[i].required) : "clauses cannot be both prohibited and required";
-
       // Single stop words must be removed. Make sure to add them to the 
       // removed list so the user will be notified.
       //
-      if (stopSet.contains(extractTermText(clauses[i].query))) {
-        removedTerms.add(extractTermText(clauses[i].query));
+      if (stopSet.contains(extractTermText(clauses[i].getQuery()))) {
+        removedTerms.add(extractTermText(clauses[i].getQuery()));
         anyChange = true;
         continue;
       }
 
       // Rewrite the clause and/or its descendants
-      Query rewrittenQuery = rewriteQuery(clauses[i].query);
-      if (rewrittenQuery != clauses[i].query)
+      Query rewrittenQuery = rewriteQuery(clauses[i].getQuery());
+      if (rewrittenQuery != clauses[i].getQuery())
         anyChange = true;
 
       // And add it to the appropriate vector.
       if (rewrittenQuery == null)
         continue;
-      else if (clauses[i].prohibited)
+      else if (clauses[i].getOccur() == BooleanClause.Occur.MUST_NOT)
         prohibited.add(rewrittenQuery);
-      else if (clauses[i].required)
+      else if (clauses[i].getOccur() == BooleanClause.Occur.MUST)
         required.add(rewrittenQuery);
       else
         allowed.add(rewrittenQuery);
@@ -175,13 +173,13 @@ public class BigramQueryRewriter extends QueryRewriter
     bq = (BooleanQuery)copyBoost(bq, new BooleanQuery(bq.isCoordDisabled()));
 
     for (Iterator iter = required.iterator(); iter.hasNext();)
-      bq.add((Query)iter.next(), true, false);
+      bq.add((Query)iter.next(), BooleanClause.Occur.MUST);
 
     for (Iterator iter = prohibited.iterator(); iter.hasNext();)
-      bq.add((Query)iter.next(), false, true);
+      bq.add((Query)iter.next(), BooleanClause.Occur.MUST_NOT);
 
     for (Iterator iter = allowed.iterator(); iter.hasNext();)
-      bq.add((Query)iter.next(), false, false);
+      bq.add((Query)iter.next(), BooleanClause.Occur.SHOULD);
 
     return bq;
   } // rewrite()

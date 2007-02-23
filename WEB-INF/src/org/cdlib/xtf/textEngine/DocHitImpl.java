@@ -32,7 +32,7 @@ package org.cdlib.xtf.textEngine;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Set;
-import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Explanation;
@@ -201,8 +201,13 @@ public class DocHitImpl extends DocHit
 
       if (name.equals("key"))
         docKey = value;
-      else if (name.equals("fileDate"))
-        fileDate = DateField.stringToTime(value);
+      else if (name.equals("fileDate")) {
+        try {
+          fileDate = DateTools.stringToTime(value);
+        }
+        catch (java.text.ParseException e1) {
+        }
+      }
       else if (name.equals("chunkCount"))
         chunkCount = Integer.parseInt(value);
       else if (name.equals("recordNum"))
