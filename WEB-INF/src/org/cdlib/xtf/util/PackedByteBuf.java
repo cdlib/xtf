@@ -237,11 +237,11 @@ public class PackedByteBuf {
   public void writeInt(int n) 
   {
     assert n >= 0 : "Negative ints not allowed in PackedByteBuf.writeInt()";
-    ensureSize(4);
+    ensureSize(5);
 
     // Determine how big the number is
     int shift = 7;
-    while ((n >> shift) != 0)
+    while (shift < 32 && (n >> shift) != 0)
       shift += 7;
 
     // Now write out the bytes, high-order first. Why? Because it's faster
