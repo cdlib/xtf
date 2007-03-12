@@ -14,7 +14,6 @@ import net.sf.saxon.trace.InstructionInfo;
 import net.sf.saxon.trace.Location;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.SequenceType;
-import javax.xml.transform.TransformerConfigurationException;
 
 /**
 * An sql:column element in the stylesheet.
@@ -40,7 +39,7 @@ public class SQLColumn extends XSLGeneralVariable
   }
 
   public void prepareAttributes()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     getVariableFingerprint();
 
@@ -73,7 +72,7 @@ public class SQLColumn extends XSLGeneralVariable
     if (nameAtt == null) {
       reportAbsence("name");
     }
-    else if (!Name.isQName(nameAtt)) {
+    else if (!getConfiguration().getNameChecker().isQName(nameAtt)) {
       compileError("Column name must be a valid QName");
     }
 
@@ -87,7 +86,7 @@ public class SQLColumn extends XSLGeneralVariable
   }
 
   public void validate()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     if (!(getParent() instanceof SQLInsert) &&
         !(getParent() instanceof SQLUpdate)) 
@@ -112,7 +111,7 @@ public class SQLColumn extends XSLGeneralVariable
   }
 
   public Expression compile(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     ColumnInstruction inst = new ColumnInstruction(getColumnName(), evalSql);
     initializeInstruction(exec, inst);

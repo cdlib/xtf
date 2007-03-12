@@ -40,16 +40,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Pattern;
-import net.sf.saxon.om.ArrayIterator;
-import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
-import net.sf.saxon.om.EmptyIterator;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.NodeListIterator;
 import net.sf.saxon.om.StrippedNode;
-import net.sf.saxon.pattern.NameTest;
-import net.sf.saxon.pattern.NodeTest;
-import net.sf.saxon.type.Type;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardFilter;
@@ -494,10 +490,10 @@ public class SearchTree extends LazyDocument
     node = super.getNode(normNum);
     if (allPermanent)
       nodeCache.put(IntegerValues.valueOf(normNum), node);
-    assert node.parentNum >= -1;
+    assert node.parent != null || node == this;
     assert node.nextSibNum >= -1;
     assert node.prevSibNum >= -1;
-    assert node.parentNum < MARKER_BASE;
+    assert node.parent == null || ((NodeImpl)node.parent).nodeNum < MARKER_BASE;
     assert node.nextSibNum < MARKER_BASE;
     assert node.prevSibNum < MARKER_BASE;
 
@@ -567,16 +563,16 @@ public class SearchTree extends LazyDocument
    * Create an element node. Derived classes can override this to provide
    * their own element implementation.
    */
-  protected NodeImpl createElementNode() {
-    return new SearchElementImpl(this);
+  protected @Override NodeImpl createElementNode(NodeInfo parent) {
+    return new SearchElementImpl(this, parent);
   }
 
   /**
    * Create a text node. Derived classes can override this to provide their
    * own text implementation.
    */
-  protected NodeImpl createTextNode() {
-    return new SearchTextImpl(this);
+  protected @Override NodeImpl createTextNode(NodeInfo parent) {
+    return new SearchTextImpl(this, parent);
   }
 
   /**
@@ -800,7 +796,7 @@ public class SearchTree extends LazyDocument
     int nameCode = firstForHit ? hitElementCode : moreElementCode;
     int nAttrs = suppressScores ? 3 : 4;
     SearchElement el = realNotProxy
-                       ? (SearchElement)new SearchElementImpl(this)
+                       ? (SearchElement)new SearchElementImpl(this, null)
                        : (SearchElement)new ProxyElement(this);
     initElement(el, nameCode, nAttrs);
 
@@ -878,7 +874,7 @@ public class SearchTree extends LazyDocument
    * @return            The new element.
    */
   private SearchElementImpl createElement(int elNameCode, int nAttribs) {
-    SearchElementImpl el = new SearchElementImpl(this);
+    SearchElementImpl el = new SearchElementImpl(this, null);
     initElement(el, elNameCode, nAttribs);
     return el;
   } // createElement()
@@ -900,7 +896,7 @@ public class SearchTree extends LazyDocument
    * @return The newly created node.
    */
   private SearchTextImpl createText(String text) {
-    SearchTextImpl node = new SearchTextImpl(this);
+    SearchTextImpl node = new SearchTextImpl(this, null);
     initNode(node);
     node.setStringValue(text);
     return node;
@@ -917,7 +913,7 @@ public class SearchTree extends LazyDocument
     modifyNode(next);
 
     // Link it in
-    node.parentNum = ((NodeImpl)prev.getParent()).nodeNum;
+    node.parent = prev.getParent();
     node.prevSibNum = prev.nodeNum;
     node.nextSibNum = prev.nextSibNum;
     prev.nextSibNum = node.nodeNum;
@@ -935,7 +931,7 @@ public class SearchTree extends LazyDocument
     modifyNode(parent);
 
     // Link it in
-    node.parentNum = parent.nodeNum;
+    node.parent = parent;
     node.prevSibNum = -1;
     node.nextSibNum = parent.childNum;
     parent.childNum = node.nodeNum;
@@ -1002,14 +998,14 @@ public class SearchTree extends LazyDocument
     int nAttribs = 2 + (snippet.sectionType != null ? 1 : 0) +
                    (suppressScores ? 0 : 1);
     SearchElement snippetElement = realNotProxy
-                                   ? (SearchElement)new SearchElementImpl(this)
+                                   ? (SearchElement)new SearchElementImpl(this, null)
                                    : (SearchElement)new ProxyElement(this);
     initElement(snippetElement, snippetElementCode, nAttribs);
     snippetElement.setPrevSibNum((hitNum == 0) ? -1 : SNIPPET_MARKER + hitNum -
                                  1);
     snippetElement.setNextSibNum(
       (hitNum == nHits - 1) ? -1 : SNIPPET_MARKER + hitNum + 1);
-    snippetElement.setParentNum(topSnippetNode.nodeNum);
+    snippetElement.setParentNode(topSnippetNode);
 
     // Give it a special place in the node cache so we can find it again.
     snippetElement.setNodeNum(num);
@@ -1241,32 +1237,6 @@ public class SearchTree extends LazyDocument
   } // putIndex()
 
   /**
-   * Return an enumeration over the nodes reached by the given axis from this
-   * node
-   *
-   * @param axisNumber The axis to be iterated over
-   * @param nodeTest A pattern to be matched by the returned nodes
-   * @return an AxisIterator that scans the nodes reached by the axis in turn.
-   */
-  public AxisIterator iterateAxis(byte axisNumber, NodeTest nodeTest) 
-  {
-    if (axisNumber == Axis.DESCENDANT) 
-    {
-      if (nodeTest instanceof NameTest &&
-          nodeTest.getPrimitiveType() == Type.ELEMENT) 
-      {
-        return getAllElements(nodeTest.getFingerprint());
-      }
-      else if (hasChildNodes())
-        return new SearchDescendantEnumeration(this, nodeTest, false);
-      else
-        return EmptyIterator.getInstance();
-    }
-
-    return super.iterateAxis(axisNumber, nodeTest);
-  }
-
-  /**
    * Get a list of all elements with a given name. This is implemented
    * as a memo function: the first time it is called for a particular
    * element type, it remembers the result for next time.
@@ -1286,12 +1256,12 @@ public class SearchTree extends LazyDocument
       namePool.getClarkName(fingerprint) + "'...");
 
     // Both cases will result in a list of 'nHits' hits.
-    Item[] items = new Item[nHits];
+    ArrayList items = new ArrayList(nHits);
 
     // Now handle the cases.
     if (fingerprint == snippetElementFingerprint) {
       for (int i = 0; i < nHits; i++)
-        items[i] = (ProxyElement)createSnippetNode(i, false);
+        items.add(createSnippetNode(i, false));
     } // if
     else 
     {
@@ -1299,13 +1269,13 @@ public class SearchTree extends LazyDocument
       for (int i = 0; i < nHits; i++) {
         Snippet snippet = hitsByLocation[i];
         boolean lastForHit = (snippet.startNode == snippet.endNode);
-        items[i] = (ProxyElement)createHitElement(true, lastForHit, i, false);
+        items.add(createHitElement(true, lastForHit, i, false));
       }
     } // else
 
     Trace.debug("done");
 
-    return new ArrayIterator(items);
+    return new NodeListIterator(items);
   } // getAllElements()
 
   /**
@@ -1351,11 +1321,8 @@ public class SearchTree extends LazyDocument
       }
 
       // Ditto the parent.
-      if (node.parentNum >= 0) {
-        if (!nodeCache.containsKey(IntegerValues.valueOf(node.parentNum)))
-          stack[top++] = getNode(node.parentNum);
-        assert nodeCache.containsKey(IntegerValues.valueOf(node.parentNum));
-      }
+      if (node.parent != null)
+        stack[top++] = (NodeImpl) node.parent;
     } // while
 
     // Cool. We've loaded everything necessary to get to the nodes that
@@ -1370,9 +1337,6 @@ public class SearchTree extends LazyDocument
       if (node.nextSibNum >= 0 &&
           !nodeCache.containsKey(IntegerValues.valueOf(node.nextSibNum)))
         node.nextSibNum = -1;
-      if (node.parentNum >= 0 &&
-          !nodeCache.containsKey(IntegerValues.valueOf(node.parentNum)))
-        assert false : "Should have loaded parent";
       if (node instanceof ParentNodeImpl) {
         ParentNodeImpl pnode = (ParentNodeImpl)node;
         if (pnode.childNum >= 0 &&

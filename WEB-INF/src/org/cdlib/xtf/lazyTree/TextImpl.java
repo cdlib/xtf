@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.CharBuffer;
 import org.cdlib.xtf.util.PackedByteBuf;
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
 
@@ -46,8 +47,8 @@ class TextImpl extends NodeImpl
 {
   protected String text;
 
-  public TextImpl(LazyDocument document) {
-    super(document);
+  public TextImpl(LazyDocument document, NodeInfo parent) {
+    super(document, parent);
   }
 
   /** Initialize the text node, and load the text. */

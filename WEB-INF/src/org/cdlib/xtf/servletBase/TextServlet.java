@@ -64,7 +64,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.Controller;
 import net.sf.saxon.event.Receiver;
-import net.sf.saxon.event.ResultWrapper;
+import net.sf.saxon.event.SerializerFactory;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.TreeBuilder;
 import net.sf.saxon.value.StringValue;
@@ -645,9 +645,11 @@ public abstract class TextServlet extends HttpServlet
   {
     StreamResult stream = new StreamResult(res.getOutputStream());
 
-    Receiver target = ResultWrapper.getReceiver(stream,
-                                                ((Controller)trans).makePipelineConfiguration(),
-                                                trans.getOutputProperties());
+    Controller controller = (Controller)trans;
+    SerializerFactory factory = controller.getConfiguration().getSerializerFactory();
+    Receiver target = factory.getReceiver(stream,
+                                          controller.makePipelineConfiguration(),
+                                          trans.getOutputProperties());
 
     TextConfig config = getConfig();
     if (config.trackSessions)

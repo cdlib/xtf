@@ -7,9 +7,9 @@ import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.style.ExtensionInstruction;
 import net.sf.saxon.om.Item;
+import net.sf.saxon.trans.SaxonErrorCode;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.ObjectValue;
-import javax.xml.transform.TransformerConfigurationException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -21,7 +21,7 @@ public class SQLClose extends ExtensionInstruction
   Expression connection = null;
 
   public void prepareAttributes()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     String connectAtt = getAttributeList().getValue("", "connection");
     if (connectAtt == null) {
@@ -33,14 +33,14 @@ public class SQLClose extends ExtensionInstruction
   }
 
   public void validate()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     super.validate();
     connection = typeCheck("connection", connection);
   }
 
   public Expression compile(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     return new CloseInstruction(connection);
   }
@@ -78,7 +78,7 @@ public class SQLClose extends ExtensionInstruction
           ((ObjectValue)conn).getObject() instanceof Connection)) 
       {
         dynamicError("Value of connection expression is not a JDBC Connection",
-                     context);
+                     SaxonErrorCode.SXSQ0001, context);
       }
       Connection connection = (Connection)((ObjectValue)conn).getObject();
       try {
@@ -86,7 +86,7 @@ public class SQLClose extends ExtensionInstruction
       }
       catch (SQLException ex) {
         dynamicError("(SQL) Failed to close connection: " + ex.getMessage(),
-                     context);
+                     SaxonErrorCode.SXSQ0002, context);
       }
       return null;
     }

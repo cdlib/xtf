@@ -10,6 +10,7 @@ import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.Navigator;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.StandardNames;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
 import org.cdlib.xtf.util.PackedByteBuf;
@@ -17,11 +18,12 @@ import java.io.IOException;
 
 /**
  * A node in the XML parse tree representing an XML element.<P>
- * This class is an implementation of NodeInfo and also implements the
- * DOM Element interface
-  * @author Michael H. Kay
+ * This class is an implementation of NodeInfo. The object is a wrapper around
+ * one entry in the arrays maintained by the LazyTree. Note that the same node
+ * might be represented by different LazyElementImpl objects at different times.
+ * @author Michael H. Kay
  */
-class ElementImpl extends ParentNodeImpl 
+public class ElementImpl extends ParentNodeImpl 
 {
   int nameSpace;
   int[] attrNames;
@@ -30,8 +32,8 @@ class ElementImpl extends ParentNodeImpl
   /**
    * Constructor
    */
-  public ElementImpl(LazyDocument document) {
-    super(document);
+  public ElementImpl(LazyDocument document, NodeInfo parent) {
+    super(document, parent);
   }
 
   public void init(int attrOffset, int nameSpace)
@@ -81,7 +83,7 @@ class ElementImpl extends ParentNodeImpl
    * Returns Type.UNTYPED_ANY if there is no type annotation
    */
   public int getTypeAnnotation() {
-    return document.getElementAnnotation(nodeNum);
+    return document.getTypeAnnotation(nodeNum);
   }
 
   /**
@@ -92,6 +94,10 @@ class ElementImpl extends ParentNodeImpl
   public void sendNamespaceDeclarations(Receiver out, boolean includeAncestors)
     throws XPathException 
   {
+    if (!document.usesNamespaces) {
+      return;
+    }
+
     int ns = nameSpace;
     if (ns > 0) 
     {
@@ -136,6 +142,23 @@ class ElementImpl extends ParentNodeImpl
     return getDeclaredNamespaces(document, nodeNum, nameSpace, buffer);
   }
 
+  /**
+   * Static method to get all namespace undeclarations and undeclarations defined on a given element,
+   * without instantiating the node object.
+   * @param doc The lazy document containing the given element node
+   * @param nodeNr The node number of the given element node within the tinyTree
+   * @param buffer If this is non-null, and the result array fits in this buffer, then the result
+   *               may overwrite the contents of this array, to avoid the cost of allocating a new array on the heap.
+   * @return An array of integers representing the namespace declarations and undeclarations present on
+   *         this element. For a node other than an element, return null. Otherwise, the returned array is a
+   *         sequence of namespace codes, whose meaning may be interpreted by reference to the name pool. The
+   *         top half word of each namespace code represents the prefix, the bottom half represents the URI.
+   *         If the bottom half is zero, then this is a namespace undeclaration rather than a declaration.
+   *         The XML namespace is never included in the list. If the supplied array is larger than required,
+   *         then the first unused entry will be set to -1.
+   *         <p/>
+   *         <p>For a node other than an element, the method returns null.</p>
+   */
   static int[] getDeclaredNamespaces(LazyDocument doc, int nodeNr,
                                      int nameSpace, int[] buffer) 
   {
@@ -195,7 +218,7 @@ class ElementImpl extends ParentNodeImpl
                    int locationId)
     throws XPathException 
   {
-    int typeCode = (copyAnnotations ? getTypeAnnotation() : 0);
+    int typeCode = (copyAnnotations ? getTypeAnnotation() : StandardNames.XS_UNTYPED);
     if (locationId == 0 && out instanceof LocationCopier) {
       out.setSystemId(getSystemId());
       ((LocationCopier)out).setLineNumber(getLineNumber());

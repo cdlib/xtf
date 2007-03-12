@@ -1,5 +1,8 @@
 package org.cdlib.xtf.lazyTree;
 
+import net.sf.saxon.om.NodeInfo;
+
+
 
 /**
  * Copyright (c) 2004, Regents of the University of California
@@ -39,8 +42,8 @@ package org.cdlib.xtf.lazyTree;
 public class SearchTextImpl extends TextImpl implements SearchNode 
 {
   /** Default constructor; attaches to the given document */
-  public SearchTextImpl(SearchTree document) {
-    super(document);
+  public SearchTextImpl(SearchTree document, NodeInfo parent) {
+    super(document, parent);
   }
 
   /** Establish the node number */
@@ -49,8 +52,8 @@ public class SearchTextImpl extends TextImpl implements SearchNode
   }
 
   /** Establish the parent node number */
-  public void setParentNum(int num) {
-    parentNum = num;
+  public void setParentNode(NodeInfo newParent) {
+    parent = newParent;
   }
 
   /** Establish the next sibling node number */

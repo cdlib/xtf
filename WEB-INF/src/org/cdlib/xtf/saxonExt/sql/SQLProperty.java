@@ -14,7 +14,6 @@ import net.sf.saxon.trace.InstructionInfo;
 import net.sf.saxon.trace.Location;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.SequenceType;
-import javax.xml.transform.TransformerConfigurationException;
 
 /**
 * An sql:property element in the stylesheet.
@@ -38,7 +37,7 @@ public class SQLProperty extends XSLGeneralVariable
   }
 
   public void prepareAttributes()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     getVariableFingerprint();
 
@@ -64,7 +63,7 @@ public class SQLProperty extends XSLGeneralVariable
     if (nameAtt == null) {
       reportAbsence("name");
     }
-    else if (!Name.isQName(nameAtt)) {
+    else if (!getConfiguration().getNameChecker().isQName(nameAtt)) {
       compileError("Property name must be a valid QName");
     }
 
@@ -74,7 +73,7 @@ public class SQLProperty extends XSLGeneralVariable
   }
 
   public void validate()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     if (!(getParent() instanceof SQLConnect)) {
       compileError("parent node must be sql:connect");
@@ -101,7 +100,7 @@ public class SQLProperty extends XSLGeneralVariable
   }
 
   public Expression compile(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     PropertyInstruction inst = new PropertyInstruction(getPropertyName());
     initializeInstruction(exec, inst);

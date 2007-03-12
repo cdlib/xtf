@@ -2,31 +2,34 @@ package org.cdlib.xtf.lazyTree;
 
 
 // IMPORTANT NOTE: When comparing, this file is most similar to 
-//                 Saxon's net.sf.tree.NodeImpl
+//                 Saxon's net.sf.tree.LazyNodeImpl
 import java.io.IOException;
+
 import javax.xml.transform.SourceLocator;
+
+
 import net.sf.saxon.Configuration;
-import net.sf.saxon.Err;
-import net.sf.saxon.pattern.NodeTest;
-import net.sf.saxon.pattern.NameTest;
-import net.sf.saxon.pattern.AnyNodeTest;
-import net.sf.saxon.om.FingerprintedNode;
-import net.sf.saxon.om.NamespaceIterator;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.DocumentInfo;
-import net.sf.saxon.om.NamePool;
+import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
+import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.EmptyIterator;
-import net.sf.saxon.om.PrependIterator;
+import net.sf.saxon.om.FastStringBuffer;
+import net.sf.saxon.om.FingerprintedNode;
+import net.sf.saxon.om.NamePool;
+import net.sf.saxon.om.NamespaceIterator;
+import net.sf.saxon.om.Navigator;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.SingletonIterator;
-import net.sf.saxon.trans.DynamicError;
+import net.sf.saxon.om.StandardNames;
+import net.sf.saxon.pattern.AnyNodeTest;
+import net.sf.saxon.pattern.NameTest;
+import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.type.SchemaType;
 import net.sf.saxon.type.Type;
 import net.sf.saxon.value.UntypedAtomicValue;
-import net.sf.saxon.event.Receiver;
+import net.sf.saxon.value.Value;
 
 /**
   * A node in the XML parse tree representing an XML element, character content, or attribute.<P>
@@ -42,7 +45,7 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
   LazyDocument document;
   int nodeNum;
   int nameCode;
-  int parentNum;
+  NodeInfo parent;
   int prevSibNum;
   int nextSibNum;
 
@@ -56,14 +59,9 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
                                            };
 
   /** Create a new node and attach it to a document */
-  public NodeImpl(LazyDocument document) {
+  public NodeImpl(LazyDocument document, NodeInfo parent) {
     this.document = document;
-  }
-
-  /** Optional initialization function, depends on derived class */
-  public void init(int alpha, int beta)
-    throws IOException 
-  {
+    this.parent = parent;
   }
 
   /**
@@ -75,74 +73,80 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
   }
 
   /**
-  * Get the type annotation of this node, if any
-  */
+   * Get the type annotation of this node, if any
+   */
   public int getTypeAnnotation() {
-    return -1;
+    return StandardNames.XS_UNTYPED;
   }
 
   /**
-  * Get the column number of the node.
-  * The default implementation returns -1, meaning unknown
-  */
+   * Get the column number of the node.
+   * The default implementation returns -1, meaning unknown
+   */
   public int getColumnNumber() {
     return -1;
   }
 
   /**
-  * Get the public identifier of the document entity containing this node.
-  * The default implementation returns null, meaning unknown
-  */
+   * Get the public identifier of the document entity containing this node.
+   * The default implementation returns null, meaning unknown
+   */
   public String getPublicId() {
     return null;
   }
 
   /**
+   * Get the document number of the document containing this node. For a free-standing
+   * orphan node, just return the hashcode.
+   */
+  public int getDocumentNumber() {
+    return getRoot().getDocumentNumber();
+  }
+
+  /**
    * Get the typed value of this node.
    * If there is no type annotation, we return the string value, as an instance
-   * of xdt:untypedAtomic
-  */
+   * of xs:untypedAtomic
+   */
   public SequenceIterator getTypedValue()
     throws XPathException 
   {
-    int annotation = getTypeAnnotation();
-    if (annotation == -1) 
-    {
-      return SingletonIterator.makeIterator(
-        new UntypedAtomicValue(getStringValue()));
-    }
-    else {
-      SchemaType stype = getConfiguration().getSchemaType(annotation);
-      if (stype == null) {
-        String typeName = getNamePool().getDisplayName(annotation);
-        throw new DynamicError(
-          "Unknown type annotation " + Err.wrap(typeName) +
-          " in document instance");
-      }
-      else {
-        return stype.getTypedValue(this);
-      }
-    }
+    return SingletonIterator.makeIterator(
+      new UntypedAtomicValue(getStringValue()));
   }
 
   /**
-  * Set the system ID of this node. This method is provided so that a NodeInfo
-  * implements the javax.xml.transform.Source interface, allowing a node to be
-  * used directly as the Source of a transformation
-  */
+   * Get the typed value. The result of this method will always be consistent with the method
+   * {@link net.sf.saxon.om.Item#getTypedValue()}. However, this method is often more convenient and may be
+   * more efficient, especially in the common case where the value is expected to be a singleton.
+   *
+   * @return the typed value. If requireSingleton is set to true, the result will always be an
+   *         AtomicValue. In other cases it may be a Value representing a sequence whose items are atomic
+   *         values.
+   * @since 8.5
+   */
+  public Value atomize()
+    throws XPathException 
+  {
+    return new UntypedAtomicValue(getStringValue());
+  }
+
+  /**
+   * Set the system ID of this node. This method is provided so that a NodeInfo
+   * implements the javax.xml.transform.Source interface, allowing a node to be
+   * used directly as the Source of a transformation
+   */
   public void setSystemId(String uri) 
   {
-    // overridden in DocumentImpl and ElementImpl
-    if (this instanceof AttributeImpl)
-      getParent().setSystemId(uri);
-    else
-      document.setSystemId(nodeNum, uri);
+    // overridden in LazyDocument and ElementImpl
+    getParent().setSystemId(uri);
   }
 
   /**
-  * Determine whether this is the same node as another node
-  * @return true if this Node object and the supplied Node object represent the
-  * same node in the tree.
+   * Determine whether this is the same node as another node
+   *
+   * @return true if this Node object and the supplied Node object represent the
+   *         same node in the tree.
    */
   public boolean isSameNodeInfo(NodeInfo other) 
   {
@@ -161,89 +165,119 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
   }
 
   /**
+   * The equals() method compares nodes for identity. It is defined to give the same result
+   * as isSameNodeInfo().
+   * @param other the node to be compared with this node
+   * @return true if this NodeInfo object and the supplied NodeInfo object represent
+   *      the same node in the tree.
+   * @since 8.7 Previously, the effect of the equals() method was not defined. Callers
+   * should therefore be aware that third party implementations of the NodeInfo interface may
+   * not implement the correct semantics. It is safer to use isSameNodeInfo() for this reason.
+   * The equals() method has been defined because it is useful in contexts such as a Java Set or HashMap.
+   */
+  public boolean equals(Object other) 
+  {
+    if (other instanceof NodeInfo) {
+      return isSameNodeInfo((NodeInfo)other);
+    }
+    else {
+      return false;
+    }
+  }
+
+  /**
+   * The hashCode() method obeys the contract for hashCode(): that is, if two objects are equal
+   * (represent the same node) then they must have the same hashCode()
+   * @since 8.7 Previously, the effect of the equals() and hashCode() methods was not defined. Callers
+   * should therefore be aware that third party implementations of the NodeInfo interface may
+   * not implement the correct semantics.
+   */
+  public int hashCode() {
+    FastStringBuffer buff = new FastStringBuffer(20);
+    generateId(buff);
+    return buff.toString().hashCode();
+  }
+
+  /**
    * Get the nameCode of the node. This is used to locate the name in the NamePool
    */
-  public int getNameCode() {
+  public int getNameCode() 
+  {
     return nameCode;
   }
 
   /**
-  * Get the fingerprint of the node. This is used to compare whether two nodes
-  * have equivalent names. Return -1 for a node with no name.
-  */
-  public int getFingerprint() {
+   * Get the fingerprint of the node. This is used to compare whether two nodes
+   * have equivalent names. Return -1 for a node with no name.
+   */
+  public int getFingerprint() 
+  {
     int nameCode = getNameCode();
-    if (nameCode == -1)
+    if (nameCode == -1) {
       return -1;
+    }
     return nameCode & 0xfffff;
   }
 
   /**
-  * Get a character string that uniquely identifies this node within this document
-  * (The calling code will prepend a document identifier)
-  * @return a string.
+   * Get a character string that uniquely identifies this node within this document
+   * (The calling code will prepend a document identifier)
    */
-  public String generateId() {
-    return "d" + document.generateId() + NODE_LETTER[getNodeKind()] + nodeNum;
+  public void generateId(FastStringBuffer buffer) {
+    getDocumentRoot().generateId(buffer);
+    buffer.append(NODE_LETTER[getNodeKind()]);
+    buffer.append(Long.toString(getSequenceNumber()));
   }
 
   /**
-   * Get the document number of the document containing this node
-   * (Needed when the document isn't a real node, for sorting free-standing elements)
-   */
-  public int getDocumentNumber() {
-    return document.getDocumentNumber();
-  }
-
-  /**
-  * Get the system ID for the node. Default implementation for child nodes.
+   * Get the system ID for the node. Default implementation for child nodes.
    */
   public String getSystemId() {
-    return document.getSystemId(nodeNum);
+    return parent.getSystemId();
   }
 
   /**
-  * Get the base URI for the node. Default implementation for child nodes.
+   * Get the base URI for the node. Default implementation for child nodes.
    */
   public String getBaseURI() {
-    return (getParent()).getBaseURI();
+    return parent.getBaseURI();
   }
 
   /**
-  * Get the node sequence number (in document order). Sequence numbers are monotonic but not
-  * consecutive. In the current implementation, parent nodes (elements and roots) have a zero
-  * least-significant word, while namespaces, attributes, text nodes, comments, and PIs have
-  * the top word the same as their owner and the bottom half reflecting their relative position.
-  * This is the default implementation for child nodes.
+   * Get the node sequence number (in document order). Sequence numbers are monotonic but not
+   * consecutive. In the current implementation, parent nodes (elements and roots) have a zero
+   * least-significant word, while namespaces, attributes, text nodes, comments, and PIs have
+   * the top word the same as their owner and the bottom half reflecting their relative position.
+   * This is the default implementation for child nodes.
    */
-  protected long getSequenceNumber() {
+  protected long getSequenceNumber() 
+  {
     return (long)nodeNum << 32;
   }
 
   /**
-  * Determine the relative position of this node and another node, in document order.
-  * The other node will always be in the same document.
-  * @param other The other node, whose position is to be compared with this node
-  * @return -1 if this node precedes the other node, +1 if it follows the other
-  * node, or 0 if they are the same node. (In this case, isSameNode() will always
-  * return true, and the two nodes will produce the same result for generateId())
+   * Determine the relative position of this node and another node, in document order.
+   * The other node will always be in the same document.
+   *
+   * @param other The other node, whose position is to be compared with this node
+   * @return -1 if this node precedes the other node, +1 if it follows the other
+   *         node, or 0 if they are the same node. (In this case, isSameNode() will always
+   *         return true, and the two nodes will produce the same result for generateId())
    */
   public final int compareOrder(NodeInfo other) 
   {
-    long a = getSequenceNumber();
-    if (other instanceof NodeImpl) 
-    {
-      long b = ((NodeImpl)other).getSequenceNumber();
-      if (a < b)
-        return -1;
-      if (a > b)
-        return +1;
-      return 0;
-    }
-    else {
-      // it must be a namespace node
+    if (other instanceof NamespaceIterator.NamespaceNodeImpl) {
       return 0 - other.compareOrder(this);
     }
+    long a = getSequenceNumber();
+    long b = ((NodeImpl)other).getSequenceNumber();
+    if (a < b) {
+      return -1;
+    }
+    if (a > b) {
+      return +1;
+    }
+    return 0;
   }
 
   /**
@@ -257,112 +291,133 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
    * Get the NamePool
    */
   public NamePool getNamePool() {
-    return document.getNamePool();
+    return getDocumentRoot().getNamePool();
   }
 
   /**
    * Get the prefix part of the name of this node. This is the name before the ":" if any.
-  * @return the prefix part of the name. For an unnamed node, return an empty string.
+   *
+   * @return the prefix part of the name. For an unnamed node, return an empty string.
    */
-  public String getPrefix() {
-    if (nameCode < 0)
+  public String getPrefix() 
+  {
+    int nameCode = getNameCode();
+    if (nameCode == -1) {
       return "";
-    if ((nameCode >> 20 & 0xff) == 0)
+    }
+    if (NamePool.getPrefixIndex(nameCode) == 0) {
       return "";
-    return document.getNamePool().getPrefix(nameCode);
+    }
+    return getNamePool().getPrefix(nameCode);
   }
 
   /**
-  * Get the URI part of the name of this node. This is the URI corresponding to the
-  * prefix, or the URI of the default namespace if appropriate.
-  * @return The URI of the namespace of this node. For the default namespace, return an
-  * empty string. For an unnamed node, return the empty string.
+   * Get the URI part of the name of this node. This is the URI corresponding to the
+   * prefix, or the URI of the default namespace if appropriate.
+   *
+   * @return The URI of the namespace of this node. For the default namespace, return an
+   *         empty string. For an unnamed node, return the empty string.
    */
-  public String getURI() {
-    if (nameCode < 0)
+  public String getURI() 
+  {
+    int nameCode = getNameCode();
+    if (nameCode == -1) {
       return "";
-    return document.getNamePool().getURI(nameCode);
+    }
+    return getNamePool().getURI(nameCode);
   }
 
   /**
-  * Get the display name of this node. For elements and attributes this is [prefix:]localname.
-  * For unnamed nodes, it is an empty string.
-  * @return The display name of this node.
-  * For a node with no name, return an empty string.
-  */
-  public String getDisplayName() {
-    if (nameCode < 0)
+   * Get the display name of this node. For elements and attributes this is [prefix:]localname.
+   * For unnamed nodes, it is an empty string.
+   *
+   * @return The display name of this node.
+   *         For a node with no name, return an empty string.
+   */
+  public String getDisplayName() 
+  {
+    int nameCode = getNameCode();
+    if (nameCode == -1) {
       return "";
-    return document.getNamePool().getDisplayName(nameCode);
+    }
+    return getNamePool().getDisplayName(nameCode);
   }
 
   /**
    * Get the local name of this node.
    *
-   * @return The local name of this node. For a node with no name, return "".
+   * @return The local name of this node.
+   *         For a node with no name, return "",.
    */
-  public String getLocalPart() {
-    if (nameCode < 0)
+  public String getLocalPart() 
+  {
+    int nameCode = getNameCode();
+    if (nameCode == -1) {
       return "";
-    String localPart = document.getNamePool().getLocalName(nameCode);
-    return localPart;
+    }
+    return getNamePool().getLocalName(nameCode);
   }
 
   /**
-  * Get the line number of the node within its source document entity
-  */
+   * Get the line number of the node within its source document entity
+   */
   public int getLineNumber() {
-    return -1;
+    return parent.getLineNumber();
   }
 
   /**
    * Find the parent node of this node.
+   *
    * @return The Node object describing the containing element or root node.
    */
-  public NodeInfo getParent() {
-    return document.getNode(parentNum);
+  public final NodeInfo getParent() {
+    return parent;
   }
 
   /**
-  * Get the previous sibling of the node
+   * Get the previous sibling of the node
+   *
    * @return The previous sibling node. Returns null if the current node is the first
-   * child of its parent.
+   *         child of its parent.
    */
   public NodeInfo getPreviousSibling() {
     return document.getNode(prevSibNum);
   }
 
   /**
-   * Get next sibling node (DOM method)
+   * Get next sibling node
    *
-   * @return The next sibling node. Returns null if the current node is the last
-   * child of its parent.
+   * @return The next sibling node of the required type. Returns null if the current node is the last
+   *         child of its parent.
    */
   public NodeInfo getNextSibling() {
     return document.getNode(nextSibNum);
   }
 
   /**
-  * Get first child - default implementation used for leaf nodes
-  * @return null
+   * Get first child - default implementation used for leaf nodes
+   *
+   * @return null
    */
   public NodeInfo getFirstChild() {
-    return null; // overridden in ParentNodeImpl
+    return null;
   }
 
   /**
-  * Get last child - default implementation used for leaf nodes
-  * @return null
-  */
+   * Get last child - default implementation used for leaf nodes
+   *
+   * @return null
+   */
   public NodeInfo getLastChild() {
     return null;
   }
 
   /**
-  * Return an enumeration over the nodes reached by the given axis from this node
-  * @param axisNumber The axis to be iterated over
-  * @return an AxisIterator that scans the nodes reached by the axis in turn.
-  */
+   * Return an enumeration over the nodes reached by the given axis from this node
+   *
+   * @param axisNumber The axis to be iterated over
+   * @return an AxisIterator that scans the nodes reached by the axis in turn.
+   */
   public AxisIterator iterateAxis(byte axisNumber) 
   {
     // Fast path for child axis
@@ -381,14 +436,14 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
   }
 
   /**
-  * Return an enumeration over the nodes reached by the given axis from this node
-  * @param axisNumber The axis to be iterated over
-  * @param nodeTest A pattern to be matched by the returned nodes
-  * @return an AxisIterator that scans the nodes reached by the axis in turn.
-  */
-  @SuppressWarnings("cast")
-  public AxisIterator iterateAxis(byte axisNumber, NodeTest nodeTest) {
-    int type = getNodeKind();
+   * Return an enumeration over the nodes reached by the given axis from this node
+   *
+   * @param axisNumber The axis to be iterated over
+   * @param nodeTest   A pattern to be matched by the returned nodes
+   * @return an AxisIterator that scans the nodes reached by the axis in turn.
+   */
+  public AxisIterator iterateAxis(byte axisNumber, NodeTest nodeTest) 
+  {
     switch (axisNumber) 
     {
       case Axis.ANCESTOR:
@@ -396,19 +451,21 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
       case Axis.ANCESTOR_OR_SELF:
         return new AncestorEnumeration(this, nodeTest, true);
       case Axis.ATTRIBUTE:
-        if (this.getNodeKind() != Type.ELEMENT)
+        if (this.getNodeKind() != Type.ELEMENT) 
+      {
           return EmptyIterator.getInstance();
+        }
         return new AttributeEnumeration(this, nodeTest);
       case Axis.CHILD:
         if (this instanceof ParentNodeImpl) 
-        {
+      {
           return ((ParentNodeImpl)this).enumerateChildren(nodeTest);
         }
         else {
           return EmptyIterator.getInstance();
         }
       case Axis.DESCENDANT:
-        if (type == Type.DOCUMENT &&
+        if (getNodeKind() == Type.DOCUMENT &&
             nodeTest instanceof NameTest &&
             nodeTest.getPrimitiveType() == Type.ELEMENT) 
         {
@@ -427,72 +484,70 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
       case Axis.FOLLOWING_SIBLING:
         return new FollowingSiblingEnumeration(this, nodeTest);
       case Axis.NAMESPACE:
-        if (this.getNodeKind() != Type.ELEMENT)
+        if (this.getNodeKind() != Type.ELEMENT) 
+      {
           return EmptyIterator.getInstance();
-        return new NamespaceIterator((ElementImpl)this, nodeTest);
+        }
+        return NamespaceIterator.makeIterator(this, nodeTest);
       case Axis.PARENT:
         NodeInfo parent = getParent();
-        if (parent == null)
+        if (parent == null) {
           return EmptyIterator.getInstance();
-        if (nodeTest.matches(parent.getNodeKind(),
-                             parent.getFingerprint(),
-                             parent.getTypeAnnotation())) 
-        {
-          return SingletonIterator.makeIterator(parent);
         }
-        return EmptyIterator.getInstance();
+        return Navigator.filteredSingleton(parent, nodeTest);
       case Axis.PRECEDING:
         return new PrecedingEnumeration(this, nodeTest);
       case Axis.PRECEDING_SIBLING:
         return new PrecedingSiblingEnumeration(this, nodeTest);
       case Axis.SELF:
-        if (nodeTest.matches(getNodeKind(), getFingerprint(),
-                             getTypeAnnotation())) 
-        {
-          return SingletonIterator.makeIterator(this);
-        }
-        return EmptyIterator.getInstance();
+        return Navigator.filteredSingleton(this, nodeTest);
       case Axis.PRECEDING_OR_ANCESTOR:
-        if (type == Type.DOCUMENT) 
-        {
-          return EmptyIterator.getInstance();
-        }
-        else if (type == Type.ATTRIBUTE || type == Type.NAMESPACE) {
-          // See test numb32.
-          NodeImpl el = (NodeImpl)getParent();
-          return new PrependIterator(el, new PrecedingEnumeration(el, nodeTest));
-        }
-        else {
-          return new PrecedingEnumeration(this, nodeTest);
-        }
+        return new PrecedingOrAncestorEnumeration(this, nodeTest);
       default:
         throw new IllegalArgumentException("Unknown axis number " + axisNumber);
     }
   }
 
   /**
-  * Determine whether the node has any children.
-  * @return <code>true</code> if this node has any attributes,
-  *   <code>false</code> otherwise.
-  */
-  public boolean hasChildNodes() 
-  {
-    // overridden in ParentNodeImpl
-    return false;
-  }
+   * Find the value of a given attribute of this node. <BR>
+   * This method is defined on all nodes to meet XSL requirements, but for nodes
+   * other than elements it will always return null.
+   * @param uri the namespace uri of an attribute
+   * @param localName the local name of an attribute
+   * @return the value of the attribute, if it exists, otherwise null
+   */
+
+  //    public String getAttributeValue( String uri, String localName ) {
+  //        return null;
+  //    }
 
   /**
-  * Get the value of a given attribute of this node
-  * @param fingerprint The fingerprint of the attribute name
-  * @return the attribute value if it exists or null if not
-  */
+   * Find the value of a given attribute of this node. <BR>
+   * This method is defined on all nodes to meet XSL requirements, but for nodes
+   * other than elements it will always return null.
+   * @param name the name of an attribute. This must be an unqualified attribute name,
+   * i.e. one with no namespace prefix.
+   * @return the value of the attribute, if it exists, otherwise null
+   */
+
+  //public String getAttributeValue( String name ) {
+  //    return null;
+  //}
+
+  /**
+   * Get the value of a given attribute of this node
+   *
+   * @param fingerprint The fingerprint of the attribute name
+   * @return the attribute value if it exists or null if not
+   */
   public String getAttributeValue(int fingerprint) {
     return null;
   }
 
   /**
-  * Get the root node
-  * @return the NodeInfo representing the containing document
+   * Get the root node
+   *
+   * @return the NodeInfo representing the containing document
    */
   public NodeInfo getRoot() {
     return getDocumentRoot();
@@ -500,16 +555,18 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
 
   /**
    * Get the root (document) node
+   *
    * @return the DocumentInfo representing the containing document
    */
   public DocumentInfo getDocumentRoot() {
-    return document.getDocumentRoot();
+    return getParent().getDocumentRoot();
   }
 
   /**
    * Get the next node in document order
-  * @param anchor the scan stops when it reaches a node that is not a descendant of the specified
-  * anchor node
+   *
+   * @param anchor the scan stops when it reaches a node that is not a descendant of the specified
+   *               anchor node
    * @return the next node in the document, or null if there is no such node
    */
   public NodeImpl getNextInDocument(NodeImpl anchor) 
@@ -518,28 +575,36 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
     // if there is one; otherwise the next sibling of the parent, grandparent, etc, up to the anchor element.
     // If this yields no result, return null.
     NodeImpl next = (NodeImpl)getFirstChild();
-    if (next != null)
+    if (next != null) {
       return next;
-    if (this == anchor)
+    }
+    if (this == anchor) {
       return null;
+    }
     next = (NodeImpl)getNextSibling();
-    if (next != null)
+    if (next != null) {
       return next;
+    }
     NodeImpl parent = this;
-    while (true) {
+    while (true) 
+    {
       parent = (NodeImpl)parent.getParent();
-      if (parent == null)
+      if (parent == null) {
         return null;
-      if (parent == anchor)
+      }
+      if (parent == anchor) {
         return null;
+      }
       next = (NodeImpl)parent.getNextSibling();
-      if (next != null)
+      if (next != null) {
         return next;
+      }
     }
   }
 
   /**
    * Get the previous node in document order
+   *
    * @return the previous node in the document, or null if there is no such node
    */
   public NodeImpl getPreviousInDocument() 
@@ -549,28 +614,28 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
     // otherwise the parent, up to the anchor element.
     // If this reaches the document root, return null.
     NodeImpl prev = (NodeImpl)getPreviousSibling();
-    if (prev != null)
+    if (prev != null) {
       return prev.getLastDescendantOrSelf();
+    }
     return (NodeImpl)getParent();
   }
 
-  /**
-   * Get the last descendant of this node, or if it has no descendants,
-   * return the node itself.
-   */
-  private NodeImpl getLastDescendantOrSelf() {
+  private NodeImpl getLastDescendantOrSelf() 
+  {
     NodeImpl last = (NodeImpl)getLastChild();
-    if (last == null)
+    if (last == null) {
       return this;
+    }
     return last.getLastDescendantOrSelf();
   }
 
   /**
-  * Output all namespace nodes associated with this element. Does nothing if
-  * the node is not an element.
-  * @param out The relevant outputter
-  * @param includeAncestors True if namespaces declared on ancestor elements must
-  */
+   * Output all namespace nodes associated with this element. Does nothing if
+   * the node is not an element.
+   *
+   * @param out              The relevant outputter
+   * @param includeAncestors True if namespaces declared on ancestor elements must
+   */
   public void sendNamespaceDeclarations(Receiver out, boolean includeAncestors)
     throws XPathException 
   {
@@ -596,12 +661,35 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
   }
 
   /**
-  * Copy nodes. Copying type annotations is not yet supported for this tree
-  * structure, so we simply map the new interface onto the old
-  */
-  public abstract void copy(Receiver out, int whichNamespaces,
-                            boolean copyAnnotations, int locationId)
-    throws XPathException;
+   * Copy nodes. Copying type annotations is not yet supported for this tree
+   * structure, so we simply map the new interface onto the old
+   */
+
+  //    public final void copy(Receiver out, int whichNamespaces, boolean copyAnnotations, int locationId)
+  //    throws XPathException {
+  //        copy(out, whichNamespaces);
+  //    }
+  //
+  //    public abstract void copy(Receiver out, int whichNamespaces) throws XPathException;
+
+  // implement DOM Node methods
+
+  /**
+   * Determine whether the node has any children.
+   *
+   * @return <code>true</code> if the node has any children,
+   *         <code>false</code> if the node has no children.
+   */
+  public boolean hasChildNodes() {
+    return getFirstChild() != null;
+  }
+
+  /** Optional initialization function, depends on derived class */
+  public void init(int alpha, int beta)
+    throws IOException 
+  {
+  }
+
 }
 
 //

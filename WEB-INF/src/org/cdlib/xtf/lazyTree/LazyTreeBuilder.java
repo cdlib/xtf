@@ -34,12 +34,14 @@ import java.io.IOException;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.om.Axis;
+import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tinytree.HackedTinyBuilder;
+import net.sf.saxon.tinytree.TinyNodeImpl;
+import net.sf.saxon.tinytree.TinyTree;
 import net.sf.saxon.type.Type;
-import org.cdlib.xtf.lazyTree.hackedSaxon.TinyBuilder;
-import org.cdlib.xtf.lazyTree.hackedSaxon.TinyNodeImpl;
-import org.cdlib.xtf.lazyTree.hackedSaxon.TinyTree;
 import org.cdlib.xtf.util.ConsecutiveMap;
 import org.cdlib.xtf.util.IntegerValues;
 import org.cdlib.xtf.util.PackedByteBuf;
@@ -86,6 +88,7 @@ public class LazyTreeBuilder
   public LazyTreeBuilder() {
     config = new Configuration();
     config.setErrorListener(new XTFSaxonErrorListener());
+    config.setNamePool(NamePool.getDefaultNamePool());
     pipe = new PipelineConfiguration();
     pipe.setConfiguration(config);
     pipe.setErrorListener(config.getErrorListener());
@@ -146,7 +149,7 @@ public class LazyTreeBuilder
     // difference is that they're made public, and that text is accumulated
     // straight to the disk file, rather than to a memory buffer.
     //
-    TinyBuilder builder = new TinyBuilder();
+    HackedTinyBuilder builder = new HackedTinyBuilder();
     if (namePool == null)
       namePool = NamePool.getDefaultNamePool();
     builder.setPipelineConfiguration(pipe);
@@ -174,9 +177,14 @@ public class LazyTreeBuilder
    * @return              The current node number.
    */
   public int getNodeNum(Receiver inBuilder) {
-    TinyBuilder builder = (TinyBuilder)inBuilder;
+    HackedTinyBuilder builder = (HackedTinyBuilder)inBuilder;
     tree = builder.getTree();
-    return tree.numberOfNodes;
+    
+    // Don't count the stopper at the end of the tiny tree.
+    int nNodes = tree.getNumberOfNodes();
+    while (nNodes > 0 && tree.getNodeKind(nNodes-1) == Type.STOPPER)
+      nNodes--;
+    return nNodes;
   } // getNodeNum()
 
   /**
@@ -187,7 +195,7 @@ public class LazyTreeBuilder
   public void finish(Receiver inBuilder, boolean closeStore)
     throws IOException 
   {
-    TinyBuilder builder = (TinyBuilder)inBuilder;
+    HackedTinyBuilder builder = (HackedTinyBuilder)inBuilder;
     StructuredStore treeStore = builder.getTreeStore();
 
     tree = builder.getTree();
@@ -229,25 +237,32 @@ public class LazyTreeBuilder
     throws IOException 
   {
     PackedByteBuf buf = new PackedByteBuf(1000);
+    
+    // Make sure the right name pool was used.
+    assert tree.getConfiguration().getNamePool() == namePool;
 
     // Write out all the namespaces.
-    buf.writeInt(tree.numberOfNamespaces);
-    for (int i = 0; i < tree.numberOfNamespaces; i++) {
-      int code = tree.namespaceCode[i];
+    buf.writeInt(tree.getNumberOfNamespaces());
+    int[] namespaceCodes = tree.getNamespaceCodeArray();
+    int[] namespaceParents = tree.getNamespaceParentArray();
+    for (int i = 0; i < tree.getNumberOfNamespaces(); i++) {
+      int code = namespaceCodes[i];
       buf.writeString(namePool.getPrefixFromNamespaceCode(code));
       buf.writeString(namePool.getURIFromNamespaceCode(code));
-      buf.writeInt(tree.namespaceParent[i]);
+      buf.writeInt(namespaceParents[i]);
     }
 
     // Add all the namecodes from elements and attributes.
-    for (int i = 0; i < tree.numberOfNodes; i++) {
-      if (tree.nameCode[i] >= 0)
-        names.put(IntegerValues.valueOf(tree.nameCode[i]));
+    int[] nameCodes = tree.getNameCodeArray();
+    for (int i = 0; i < tree.getNumberOfNodes(); i++) {
+      if (nameCodes[i] >= 0)
+        names.put(IntegerValues.valueOf(nameCodes[i]));
     }
 
-    for (int i = 0; i < tree.numberOfAttributes; i++) {
-      if (tree.attCode[i] >= 0)
-        names.put(IntegerValues.valueOf(tree.attCode[i]));
+    int[] attCodes = tree.getAttributeNameCodeArray();
+    for (int i = 0; i < tree.getNumberOfAttributes(); i++) {
+      if (attCodes[i] >= 0)
+        names.put(IntegerValues.valueOf(attCodes[i]));
     }
 
     // Write out all the namecodes.
@@ -276,31 +291,43 @@ public class LazyTreeBuilder
   {
     // Write the root node's number
     out.writeInt(0);
+    
+    // Figure out how many nodes there are, excluding the stopper at the end
+    // of the tree.
+    //
+    int nNodes = tree.getNumberOfNodes();
+    while (nNodes > 0 && tree.getNodeKind(nNodes-1) == Type.STOPPER)
+      nNodes--;
 
     // Pack up each node. That way we can calculate the maximum size of
     // any particular one, and they can be randomly accessed by multiplying
     // the node number by that size.
     //
-    PackedByteBuf[] nodeBufs = new PackedByteBuf[tree.numberOfNodes];
+    PackedByteBuf[] nodeBufs = new PackedByteBuf[nNodes];
     int maxSize = 0;
-    tree.ensurePriorIndex();
-    for (int i = 0; i < tree.numberOfNodes; i++) 
+    int[] nameCodes = tree.getNameCodeArray();
+    int[] nexts = tree.getNextPointerArray();
+    int[] alphas = tree.getAlphaArray();
+    int[] betas = tree.getBetaArray();
+    for (int i = 0; i < nNodes; i++) 
     {
       PackedByteBuf buf = nodeBufs[i] = new PackedByteBuf(20);
-
+      
       // Kind
       buf.writeByte(tree.nodeKind[i]);
 
       // Flag
       NodeInfo node = tree.getNode(i);
-      int nameCode = tree.nameCode[i];
+      int nameCode = nameCodes[i];
       int parent = (node.getParent() != null)
-                   ? (((TinyNodeImpl)node.getParent()).nodeNr) : -1;
-      int prevSib = tree.prior[i];
-      int nextSib = (tree.next[i] > i) ? tree.next[i] : -1;
+                   ? (((TinyNodeImpl)node.getParent()).getNodeNumber()) : -1;
+      AxisIterator prevIter = node.iterateAxis(Axis.FOLLOWING_SIBLING);
+      TinyNodeImpl prevNode = (TinyNodeImpl) prevIter.next();
+      int prevSib = (prevNode == null) ? -1 : prevNode.getNodeNumber();
+      int nextSib = (nexts[i] > i) ? nexts[i] : -1;
       int child = node.hasChildNodes() ? (i + 1) : -1;
-      int alpha = tree.alpha[i];
-      int beta = tree.beta[i];
+      int alpha = alphas[i];
+      int beta = betas[i];
 
       int flags = ((nameCode != -1) ? Flag.HAS_NAMECODE : 0) |
                   ((parent != -1) ? Flag.HAS_PARENT : 0) |
@@ -311,16 +338,16 @@ public class LazyTreeBuilder
                   ((beta != -1) ? Flag.HAS_BETA : 0);
       buf.writeInt(flags);
 
+      // Parent
+      if (parent >= 0)
+        buf.writeInt(parent);
+
       // Name code
       if (nameCode >= 0) {
         int nameIdx = names.get(IntegerValues.valueOf(nameCode));
         assert nameIdx >= 0 : "A name was missed when writing name codes";
         buf.writeInt(nameIdx);
       }
-
-      // Parent
-      if (parent >= 0)
-        buf.writeInt(parent);
 
       // Prev sibling
       if (prevSib >= 0)
@@ -338,9 +365,9 @@ public class LazyTreeBuilder
 
       // Alpha and beta
       if (alpha != -1)
-        buf.writeInt(tree.alpha[i]);
+        buf.writeInt(alpha);
       if (beta != -1)
-        buf.writeInt(tree.beta[i]);
+        buf.writeInt(beta);
 
       // Now calculate the size of the buffer, and bump the max if needed
       buf.compact();
@@ -350,10 +377,10 @@ public class LazyTreeBuilder
     // Okay, we're ready to write out the node table now. First comes the
     // number of nodes, followed by the size in bytes of each one.
     //
-    out.writeInt(tree.numberOfNodes);
+    out.writeInt(tree.getNumberOfNodes());
     out.writeInt(maxSize);
 
-    for (int i = 0; i < tree.numberOfNodes; i++)
+    for (int i = 0; i < nNodes; i++)
       nodeBufs[i].output(out, maxSize);
 
     // All done.
@@ -372,12 +399,15 @@ public class LazyTreeBuilder
     // Do a dry run to figure out the max size of any entry.
     int maxSize = 0;
     PackedByteBuf buf = new PackedByteBuf(100);
-    for (int i = 0; i < tree.numberOfAttributes;) 
+    int[] attParents = tree.getAttributeParentArray();
+    int[] attCodes = tree.getAttributeNameCodeArray();
+    CharSequence[] attValues = tree.getAttributeValueArray();
+    for (int i = 0; i < tree.getNumberOfAttributes();) 
     {
       // Figure out how many attributes for this parent.
       int j;
-      for (j = i + 1; j < tree.numberOfAttributes; j++) {
-        if (tree.attParent[j] != tree.attParent[i])
+      for (j = i + 1; j < tree.getNumberOfAttributes(); j++) {
+        if (attParents[j] != attParents[i])
           break;
       }
 
@@ -389,12 +419,12 @@ public class LazyTreeBuilder
       for (j = i; j < i + nAttrs; j++) 
       {
         // Name code
-        int nameIdx = names.get(IntegerValues.valueOf(tree.attCode[j]));
+        int nameIdx = names.get(IntegerValues.valueOf(attCodes[j]));
         assert nameIdx >= 0 : "A name was missed when writing name codes";
         buf.writeInt(nameIdx);
 
         // Value
-        buf.writeString(tree.attValue[j].toString());
+        buf.writeString(attValues[j].toString());
       }
 
       // Bump the max if necessary.
@@ -408,12 +438,13 @@ public class LazyTreeBuilder
     out.writeInt(maxSize);
 
     // Write out each attrib, and record their offsets and lengths.
-    for (int i = 0; i < tree.numberOfAttributes;) 
+    int[] alphas = tree.getAlphaArray();
+    for (int i = 0; i < tree.getNumberOfAttributes();) 
     {
       // Figure out how many attributes for this parent.
       int j;
-      for (j = i + 1; j < tree.numberOfAttributes; j++) {
-        if (tree.attParent[j] != tree.attParent[i])
+      for (j = i + 1; j < tree.getNumberOfAttributes(); j++) {
+        if (attParents[j] != attParents[i])
           break;
       }
 
@@ -425,18 +456,18 @@ public class LazyTreeBuilder
       for (j = i; j < i + nAttrs; j++) 
       {
         // Name code
-        int nameIdx = names.get(IntegerValues.valueOf(tree.attCode[j]));
+        int nameIdx = names.get(IntegerValues.valueOf(attCodes[j]));
         assert nameIdx >= 0 : "A name was missed when writing name codes";
         buf.writeInt(nameIdx);
 
         // Value
-        buf.writeString(tree.attValue[j].toString());
+        buf.writeString(attValues[j].toString());
       }
 
       // Record the offset in the attribute file.
-      int parent = tree.attParent[i];
+      int parent = attParents[i];
       assert tree.nodeKind[parent] == Type.ELEMENT;
-      tree.alpha[parent] = (int)out.length();
+      alphas[parent] = (int)out.length();
 
       // Write out the data.
       buf.output(out);
@@ -462,7 +493,7 @@ public class LazyTreeBuilder
   private void checkSupport()
     throws IOException 
   {
-    if (tree.attTypeCode != null)
+    if (tree.getAttributeTypeCodeArray() != null)
       throw new IOException(
         "LazyTree does not support attribute type annotations yet");
   } // checkSupport()

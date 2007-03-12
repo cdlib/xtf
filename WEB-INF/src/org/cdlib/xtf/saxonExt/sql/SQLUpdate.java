@@ -9,10 +9,10 @@ import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.style.ExtensionInstruction;
+import net.sf.saxon.trans.SaxonErrorCode;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
 import net.sf.saxon.value.ObjectValue;
-import javax.xml.transform.TransformerConfigurationException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -29,7 +29,7 @@ public class SQLUpdate extends ExtensionInstruction
   Expression where;
 
   public void prepareAttributes()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     String connectAtt = getAttributeList().getValue("", "connection");
     if (connectAtt == null)
@@ -48,7 +48,7 @@ public class SQLUpdate extends ExtensionInstruction
   }
 
   public void validate()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     super.validate();
     connection = typeCheck("connection", connection);
@@ -57,7 +57,7 @@ public class SQLUpdate extends ExtensionInstruction
   }
 
   public Expression compile(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     return new UpdateInstruction(connection,
                                  table,
@@ -66,7 +66,7 @@ public class SQLUpdate extends ExtensionInstruction
   }
 
   public List getColumnInstructions(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     List list = new ArrayList(10);
 
@@ -160,7 +160,7 @@ public class SQLUpdate extends ExtensionInstruction
           ((ObjectValue)conn).getObject() instanceof Connection)) 
       {
         dynamicError("Value of connection expression is not a JDBC Connection",
-                     context);
+                     SaxonErrorCode.SXSQ0001, context);
       }
       Connection connection = (Connection)((ObjectValue)conn).getObject();
       PreparedStatement ps = null;
@@ -195,7 +195,7 @@ public class SQLUpdate extends ExtensionInstruction
         }
       }
       catch (SQLException ex) {
-        dynamicError("(SQL UPDATE) " + ex.getMessage(), context);
+        dynamicError("(SQL UPDATE) " + ex.getMessage(), SaxonErrorCode.SXSQ0004, context);
       }
       finally {
         if (ps != null) 

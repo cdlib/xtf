@@ -6,20 +6,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
+
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Receiver;
-import net.sf.saxon.om.ArrayIterator;
-import net.sf.saxon.om.ListIterator;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.NodeListIterator;
 import net.sf.saxon.om.StrippedNode;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.SystemIdMap;
 import net.sf.saxon.type.Type;
+
 import org.cdlib.xtf.util.DiskHashReader;
 import org.cdlib.xtf.util.DiskHashWriter;
 import org.cdlib.xtf.util.IntegerValues;
@@ -145,7 +146,7 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
    * {@link #init(NamePool, StructuredStore)} afterward.
    */
   public LazyDocument() {
-    super(null);
+    super(null, null);
   }
 
   /**
@@ -162,9 +163,8 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
     nodeNum = 0;
     document = this;
 
-    // Record the name pool, and allocate our document number.
+    // Record the name pool.
     namePool = pool;
-    documentNumber = pool.allocateDocumentNumber(this);
 
     // First, read in the names.
     synchronized (mainStore) 
@@ -362,8 +362,8 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
   public void setConfiguration(Configuration config) 
   {
     this.config = config;
-    NamePool pool = config.getNamePool();
-    documentNumber = pool.allocateDocumentNumber(this);
+    documentNumber = config.getDocumentNumberAllocator()
+                       .allocateDocumentNumber();
 
     // Check if we're being profiled.
     if (config.getTraceListener() instanceof ProfilingListener)
@@ -407,10 +407,10 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
   }
 
   /**
-   * Get the type annotation of an element node.
+   * Get the type annotation of a node.
    * -1 if there is no type annotation
    */
-  protected int getElementAnnotation(int nodeNum) {
+  protected int getTypeAnnotation(int nodeNum) {
     return -1;
   }
 
@@ -461,16 +461,22 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
       short kind = nodeBuf.readByte();
       int flags = nodeBuf.readInt();
 
+      NodeInfo parent = null;
+      if ((flags & Flag.HAS_PARENT) != 0) {
+        int parentNum = nodeBuf.readInt();
+        parent = getNode(parentNum);
+      }
+
       // Construct the node based on the kind.
       switch (kind) {
         case Type.DOCUMENT:
           node = this;
           break;
         case Type.ELEMENT:
-          node = createElementNode();
+          node = createElementNode(parent);
           break;
         case Type.TEXT:
-          node = createTextNode();
+          node = createTextNode(parent);
           break;
         case Type.COMMENT:
           assert false : "comments not yet supported";
@@ -493,11 +499,6 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
       }
       else
         node.nameCode = -1;
-
-      if ((flags & Flag.HAS_PARENT) != 0)
-        node.parentNum = nodeBuf.readInt();
-      else
-        node.parentNum = -1;
 
       if ((flags & Flag.HAS_PREV_SIBLING) != 0)
         node.prevSibNum = nodeBuf.readInt();
@@ -575,16 +576,16 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
    * Create an element node. Derived classes can override this to provide their
    * own element implementation.
    */
-  protected NodeImpl createElementNode() {
-    return new ElementImpl(this);
+  protected NodeImpl createElementNode(NodeInfo parent) {
+    return new ElementImpl(this, parent);
   }
 
   /**
    * Create a text node. Derived classes can override this to provide their
    * own text implementation.
    */
-  protected NodeImpl createTextNode() {
-    return new TextImpl(this);
+  protected NodeImpl createTextNode(NodeInfo parent) {
+    return new TextImpl(this, parent);
   }
 
   /**
@@ -694,14 +695,6 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
   }
 
   /**
-   * Find the parent node of this node.
-   * @return The Node object describing the containing element or root node.
-   */
-  public NodeInfo getParent() {
-    return null;
-  }
-
-  /**
    * Get the root node
    * @return the NodeInfo that is the root of the tree - not necessarily a document node
    */
@@ -740,14 +733,14 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
       SubStoreReader indexFile = mainStore.openSubStore(subName);
       PackedByteBuf buf = new PackedByteBuf(indexFile, (int)indexFile.length());
       int nNodes = buf.readInt();
-      Item[] nodes = new Item[nNodes];
+      ArrayList nodes = new ArrayList(nNodes);
       int curNodeNum = 0;
       for (int i = 0; i < nNodes; i++) {
         curNodeNum += buf.readInt();
-        nodes[i] = getNode(curNodeNum);
+        nodes.add(getNode(curNodeNum));
       }
       indexFile.close();
-      return new ArrayIterator(nodes);
+      return new NodeListIterator(nodes);
     }
     catch (IOException e) {
     }
@@ -794,7 +787,7 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
       Trace.debug("done");
 
     // Return the list we made (no need to re-read it).
-    return new ListIterator(nodes);
+    return new NodeListIterator(nodes);
   } // getAllElements()
 
   /**

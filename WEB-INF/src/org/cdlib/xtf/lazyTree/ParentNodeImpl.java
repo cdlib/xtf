@@ -2,37 +2,65 @@ package org.cdlib.xtf.lazyTree;
 
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
+import net.sf.saxon.om.EmptyIterator;
+import net.sf.saxon.om.FastStringBuffer;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.pattern.AnyNodeTest;
 import net.sf.saxon.pattern.NodeTest;
 
 /**
  * Represents any node that can have children.
- *
- * @author Martin Haye
+ * 
+ * Important note: when comparing for a Saxon upgrade, this code is kind of 
+ * a mix between net.sf.saxon.tinytree.TinyParentNodeImpl and
+ * net.sf.saxon.tree.ParentNodeImpl.
  */
-abstract class ParentNodeImpl extends NodeImpl 
+public abstract class ParentNodeImpl extends NodeImpl 
 {
   int childNum;
 
-  public ParentNodeImpl(LazyDocument document) {
-    super(document);
+  public ParentNodeImpl(LazyDocument document, NodeInfo parent) {
+    super(document, parent);
   }
 
-  /**
-   * Get an enumeration of the children of this node
-   *
-   * @param test A NodeTest to be satisfied by the child nodes, or null
-   * if all child node are to be returned
-   */
-  public final AxisIterator enumerateChildren(NodeTest test) {
-    return new ChildEnumeration(this, test);
+  // inherit JavaDoc
+  public final boolean hasChildNodes() {
+    return (childNum >= 0);
   }
 
-  /**
-   * Determine if the node has children.
-   */
-  public boolean hasChildNodes() {
-    return childNum >= 0;
+  // inherit JavaDoc
+  public final AxisIterator enumerateChildren(NodeTest test) 
+  {
+    if (childNum < 0)
+      return EmptyIterator.getInstance();
+    else
+      return new ChildEnumeration(this, test);
+  }
+
+  // Normally provided by NodeInfo, but it does an explicit instanceof check
+  // for ParentNodeImpl. Since we're a LazyParentNodeImpl, we don't match
+  // that check. So we do it ourselves here.
+  //
+  public AxisIterator iterateAxis(byte axisNumber) 
+  {
+    // Fast path for child axis
+    if (axisNumber == Axis.CHILD) 
+      return enumerateChildren(null);
+    else
+      return super.iterateAxis(axisNumber, AnyNodeTest.getInstance());
+  }
+
+  // Normally provided by NodeInfo, but it does an explicit instanceof check
+  // for ParentNodeImpl. Since we're a LazyParentNodeImpl, we don't match
+  // that check. So we do it ourselves here.
+  //
+  public AxisIterator iterateAxis(byte axisNumber, NodeTest nodeTest) 
+  {
+    // Fast path for child axis
+    if (axisNumber == Axis.CHILD) 
+      return enumerateChildren(nodeTest);
+    else
+      return super.iterateAxis(axisNumber, nodeTest);
   }
 
   /**
@@ -65,34 +93,31 @@ abstract class ParentNodeImpl extends NodeImpl
   * of the character content of all descendent elements and text nodes.
   * @return the accumulated character content of the element, including descendant elements.
   */
-  public final String getStringValue() {
+  public String getStringValue() {
     return getStringValueCS().toString();
   }
 
-  /**
-   * Get the value of the item as a CharSequence. This is in some cases more efficient than
-   * the version of the method that returns a String.
-   */
   public CharSequence getStringValueCS() 
   {
-    StringBuffer sb = null;
+    FastStringBuffer sb = null;
 
-    AxisIterator iter = iterateAxis(Axis.DESCENDANT);
-    while (true) {
-      NodeImpl node = (NodeImpl)iter.next();
-      if (node == null)
-        break;
-      if (!(node instanceof TextImpl))
-        continue;
-      if (sb == null)
-        sb = new StringBuffer();
-      sb.append(node.getStringValue());
+    NodeImpl next = (NodeImpl)getFirstChild();
+    while (next != null) 
+    {
+      if (next instanceof TextImpl) 
+      {
+        if (sb == null) {
+          sb = new FastStringBuffer(1024);
+        }
+        sb.append(next.getStringValueCS());
+      }
+      next = next.getNextInDocument(this);
     }
-
     if (sb == null)
       return "";
-    return sb.toString();
-  } // getStringValue()
+    return sb.condense();
+  }
+
 } // class ParentNodeImpl
 
 //

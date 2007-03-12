@@ -1,7 +1,7 @@
 package org.cdlib.xtf.util;
 
 import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.style.StandardNames;
+import net.sf.saxon.om.StandardNames;
 import net.sf.saxon.trace.InstructionInfo;
 import net.sf.saxon.trace.InstructionInfoProvider;
 import net.sf.saxon.trace.Location;

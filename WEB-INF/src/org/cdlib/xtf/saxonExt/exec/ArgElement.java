@@ -49,7 +49,6 @@ import net.sf.saxon.trace.InstructionInfo;
 import net.sf.saxon.trace.Location;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.SequenceType;
-import javax.xml.transform.TransformerConfigurationException;
 
 /**
  * Represents an &lt;arg> element below a &lt;run> instruction.
@@ -75,7 +74,7 @@ public class ArgElement extends XSLGeneralVariable
   }
 
   public void prepareAttributes()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     getVariableFingerprint();
 
@@ -100,7 +99,7 @@ public class ArgElement extends XSLGeneralVariable
   } // prepareAttributes()
 
   public void validate()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     if (!(getParent() instanceof RunElement)) {
       compileError("parent node must be exec:run");
@@ -126,7 +125,7 @@ public class ArgElement extends XSLGeneralVariable
   } // validate()
 
   public Expression compile(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     ArgInstruction inst = new ArgInstruction();
     initializeInstruction(exec, inst);

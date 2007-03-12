@@ -1,7 +1,9 @@
 package org.cdlib.xtf.lazyTree;
 
+
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.om.FastStringBuffer;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.trans.XPathException;
@@ -24,8 +26,7 @@ class ProxyAttributeImpl extends NodeImpl
    * @param index The index position of the attribute starting at zero
    */
   public ProxyAttributeImpl(ProxyElement element, int index) {
-    super(element.document);
-    parentNum = element.nodeNum;
+    super(element.document, element);
     this.element = element;
     this.index = index;
   }
@@ -66,7 +67,7 @@ class ProxyAttributeImpl extends NodeImpl
    * @return true if this Node object and the supplied Node object represent the
    * same node in the tree.
    */
-  public boolean isSameNode(NodeInfo other) {
+  public boolean isSameNodeInfo(NodeInfo other) {
     if (this == other)
       return true;
     if (!(other instanceof ProxyAttributeImpl))
@@ -127,19 +128,12 @@ class ProxyAttributeImpl extends NodeImpl
   }
 
   /**
-   * Get the next node in document order (skipping attributes)
-   */
-  public NodeImpl getNextInDocument(NodeImpl anchor) {
-    if (anchor == this)
-      return null;
-    return ((NodeImpl)getParent()).getNextInDocument(anchor);
-  }
-
-  /**
    * Get sequential key. Returns key of owning element with the attribute name as a suffix
    */
-  public String generateId() {
-    return element.generateId() + "_" + getDisplayName();
+  public void generateId(FastStringBuffer buffer) {
+    getParent().generateId(buffer);
+    buffer.append('a');
+    buffer.append(Integer.toString(index));
   }
 
   /**

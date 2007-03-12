@@ -1,5 +1,7 @@
 package org.cdlib.xtf.lazyTree;
 
+import net.sf.saxon.om.NodeInfo;
+
 
 /**
  * Copyright (c) 2004, Regents of the University of California
@@ -42,8 +44,8 @@ public interface SearchNode
   /** Establish the node's number */
   void setNodeNum(int nodeNum);
 
-  /** Establish the parent node number */
-  void setParentNum(int num);
+  /** Establish the parent node */
+  void setParentNode(NodeInfo parent);
 
   /** Establish the next sibling node number */
   void setNextSibNum(int num);

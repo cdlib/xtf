@@ -54,7 +54,6 @@ import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.SequenceType;
 import net.sf.saxon.value.Value;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
@@ -83,7 +82,7 @@ public class InputElement extends XSLGeneralVariable
   }
 
   public void prepareAttributes()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     getVariableFingerprint();
 
@@ -108,7 +107,7 @@ public class InputElement extends XSLGeneralVariable
   } // prepareAttributes()
 
   public void validate()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     if (!(getParent() instanceof RunElement)) {
       compileError("parent node must be exec:run");
@@ -134,7 +133,7 @@ public class InputElement extends XSLGeneralVariable
   } // validate()
 
   public Expression compile(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     InputInstruction inst = new InputInstruction();
     initializeInstruction(exec, inst);
@@ -227,7 +226,7 @@ public class InputElement extends XSLGeneralVariable
       catch (Exception e) {
         dynamicError(
           "Exception occurred converting input for external command: " + e,
-          context);
+          "EXEC001", context);
         return null;
       }
     } // getStream()

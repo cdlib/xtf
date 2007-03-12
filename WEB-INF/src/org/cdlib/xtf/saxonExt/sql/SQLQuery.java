@@ -5,6 +5,7 @@ import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceiverOptions;
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.SimpleExpression;
+import net.sf.saxon.expr.StringLiteral;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.om.Item;
@@ -14,7 +15,6 @@ import net.sf.saxon.trans.DynamicError;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.ObjectValue;
 import net.sf.saxon.value.StringValue;
-import javax.xml.transform.TransformerConfigurationException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,7 +54,7 @@ public class SQLQuery extends ExtensionInstruction
   boolean disable = false; // true means disable-output-escaping="yes"
 
   public void prepareAttributes()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     // Attributes for SQL-statement
     String dbCol = attributeList.getValue("", "column");
@@ -69,7 +69,7 @@ public class SQLQuery extends ExtensionInstruction
 
     String dbWhere = attributeList.getValue("", "where");
     if (dbWhere == null) {
-      where = StringValue.EMPTY_STRING;
+      where = new StringLiteral(StringValue.EMPTY_STRING);
     }
     else {
       where = makeAttributeValueTemplate(dbWhere);
@@ -117,7 +117,7 @@ public class SQLQuery extends ExtensionInstruction
   }
 
   public void validate()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     super.validate();
     column = typeCheck("column", column);
@@ -127,7 +127,7 @@ public class SQLQuery extends ExtensionInstruction
   }
 
   public Expression compile(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     QueryInstruction inst = new QueryInstruction(connection,
                                                  column,

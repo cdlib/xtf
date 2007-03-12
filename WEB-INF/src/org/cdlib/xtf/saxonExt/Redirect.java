@@ -37,7 +37,6 @@ package org.cdlib.xtf.saxonExt;
  */
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.TransformerConfigurationException;
 import org.cdlib.xtf.servletBase.TextServlet;
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.SimpleExpression;
@@ -85,7 +84,7 @@ public class Redirect implements ExtensionElementFactory
     Expression urlExp;
 
     public void prepareAttributes()
-      throws TransformerConfigurationException 
+      throws XPathException 
     {
       // Get mandatory 'url' attribute
       String urlAtt = getAttributeList().getValue("", "url");
@@ -95,7 +94,7 @@ public class Redirect implements ExtensionElementFactory
     } // prepareAttributes()
 
     public Expression compile(Executable exec)
-      throws TransformerConfigurationException 
+      throws XPathException 
     {
       return new SendInstruction(urlExp);
     }

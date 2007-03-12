@@ -15,7 +15,7 @@
   <property name="bin"     location="bin"/>
   <property name="doc"     location="javadoc"/>
   <property name="lucene-jar" location="${lib}/lucene-core-2.1.0.jar"/>
-  <property name="libs"    value="${lucene-jar}:${lib}/saxonb-8.3.jar:${lib}/servlet.jar:${lib}/PDFBox-0.7.2.jar:${lib}/log4j-1.2.9.jar:${lib}/Tidy.jar:${lib}/cql-java.jar:${lib}/marc4j.jar"/>
+  <property name="libs"    value="${lucene-jar}:${lib}/saxonb-8.9.jar:${lib}/servlet.jar:${lib}/PDFBox-0.7.2.jar:${lib}/log4j-1.2.9.jar:${lib}/Tidy.jar:${lib}/cql-java.jar:${lib}/marc4j.jar"/>
 
   <target name="init">
     <!-- Create the time stamp -->

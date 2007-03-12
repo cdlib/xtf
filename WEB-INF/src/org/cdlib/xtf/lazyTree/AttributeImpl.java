@@ -4,6 +4,7 @@ package org.cdlib.xtf.lazyTree;
 // IMPORTANT NOTE: When comparing, this file is most similar to 
 //                 Saxon's net.sf.tree.AttributeImpl
 import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.om.FastStringBuffer;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.trans.XPathException;
@@ -15,7 +16,7 @@ import net.sf.saxon.event.Receiver;
  *
  * @author Martin Haye
  */
-final class AttributeImpl extends NodeImpl 
+final class AttributeImpl extends NodeImpl
 {
   ElementImpl element;
   int index;
@@ -26,9 +27,8 @@ final class AttributeImpl extends NodeImpl
   * @param index The index position of the attribute starting at zero
   */
   public AttributeImpl(ElementImpl element, int index) {
-    super(element.document);
+    super(element.document, element);
     this.index = index;
-    parentNum = element.nodeNum;
     this.element = element;
     nameCode = element.attrNames[index];
   }
@@ -37,7 +37,7 @@ final class AttributeImpl extends NodeImpl
    * Get the root node of the tree (not necessarily a document node)
    * @return the NodeInfo representing the root of this tree
    */
-  public NodeInfo getRoot() {
+  public @Override NodeInfo getRoot() {
     return element.document.getRoot();
   }
 
@@ -45,7 +45,7 @@ final class AttributeImpl extends NodeImpl
    * Get the root (document) node
    * @return the DocumentInfo representing the containing document
    */
-  public DocumentInfo getDocumentRoot() {
+  public @Override DocumentInfo getDocumentRoot() {
     return element.document.getDocumentRoot();
   }
 
@@ -53,7 +53,7 @@ final class AttributeImpl extends NodeImpl
    * Get the NamePool for the tree containing this node
    * @return the NamePool
    */
-  public NamePool getNamePool() {
+  public @Override NamePool getNamePool() {
     return element.document.getNamePool();
   }
 
@@ -62,7 +62,7 @@ final class AttributeImpl extends NodeImpl
    * @return true if this Node object and the supplied Node object represent the
    * same node in the tree.
    */
-  public boolean isSameNodeInfo(NodeInfo other) {
+  public @Override boolean isSameNodeInfo(NodeInfo other) {
     if (!(other instanceof AttributeImpl))
       return false;
     if (this == other)
@@ -73,12 +73,23 @@ final class AttributeImpl extends NodeImpl
   }
 
   /**
+   * The hashCode() method obeys the contract for hashCode(): that is, if two objects are equal
+   * (represent the same node) then they must have the same hashCode()
+   * @since 8.7 Previously, the effect of the equals() and hashCode() methods was not defined. Callers
+   * should therefore be aware that third party implementations of the NodeInfo interface may
+   * not implement the correct semantics.
+   */
+  public int hashCode() {
+    return parent.hashCode() ^ getFingerprint();
+  }
+
+  /**
    * Get the node sequence number (in document order). Sequence numbers are monotonic but not
    * consecutive. In the current implementation, parent nodes (elements and roots) have a zero
    * least-significant word, while namespaces, attributes, text nodes, comments, and PIs have
    * the top word the same as their owner and the bottom half reflecting their relative position.
    */
-  protected long getSequenceNumber() 
+  protected @Override long getSequenceNumber() 
   {
     return element.getSequenceNumber() + 0x8000 + index;
 
@@ -104,44 +115,37 @@ final class AttributeImpl extends NodeImpl
   /**
    * Get next sibling - not defined for attributes
    */
-  public NodeInfo getNextSibling() {
+  public @Override NodeInfo getNextSibling() {
     return null;
   }
 
   /**
    * Get previous sibling - not defined for attributes
    */
-  public NodeInfo getPreviousSibling() {
+  public @Override NodeInfo getPreviousSibling() {
     return null;
   }
 
   /**
    * Get the previous node in document order (skipping attributes)
    */
-  public NodeImpl getPreviousInDocument() {
+  public @Override NodeImpl getPreviousInDocument() {
     return (NodeImpl)getParent();
-  }
-
-  /**
-   * Get the next node in document order (skipping attributes)
-   */
-  public NodeImpl getNextInDocument(NodeImpl anchor) {
-    if (anchor == this)
-      return null;
-    return ((NodeImpl)getParent()).getNextInDocument(anchor);
   }
 
   /**
    * Get sequential key. Returns key of owning element with the attribute name as a suffix
    */
-  public String generateId() {
-    return element.generateId() + "_" + getDisplayName();
+  public void generateId(FastStringBuffer buffer) {
+    getParent().generateId(buffer);
+    buffer.append('a');
+    buffer.append(Integer.toString(index));
   }
 
   /**
    * Obtain the displayable name of this attribute.
    */
-  public String getDisplayName() {
+  public @Override String getDisplayName() {
     if (getNameCode() < 0)
       return "";
     return getNamePool().getDisplayName(getNameCode());

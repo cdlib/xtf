@@ -1,16 +1,12 @@
 package org.cdlib.xtf.lazyTree;
 
-import net.sf.saxon.om.SequenceIterator;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.AxisIteratorImpl;
-import net.sf.saxon.om.Item;
-import net.sf.saxon.om.LookaheadIterator;
-import net.sf.saxon.pattern.NodeTest;
+import net.sf.saxon.om.*;
 import net.sf.saxon.pattern.NameTest;
+import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.type.Type;
 
 /**
-* Saxon: AttributeEnumeration is an enumeration of all the attribute nodes of an Element.
+* AttributeEnumeration is an enumeration of all the attribute nodes of an Element.
 */
 final class AttributeEnumeration extends AxisIteratorImpl
   implements LookaheadIterator 
@@ -116,6 +112,19 @@ final class AttributeEnumeration extends AxisIteratorImpl
   public SequenceIterator getAnother() {
     return new AttributeEnumeration(element, nodeTest);
   }
+
+  /**
+   * Get properties of this iterator, as a bit-significant integer.
+   *
+   * @return the properties of this iterator. This will be some combination of
+   *         properties such as GROUNDED, LAST_POSITION_FINDER,
+   *         and LOOKAHEAD. It is always
+   *         acceptable to return the value zero, indicating that there are no known special properties.
+   *         It is acceptable for the properties of the iterator to change depending on its state.
+   */
+  public int getProperties() {
+    return LOOKAHEAD;
+  }
 }
 
 //
@@ -127,12 +136,11 @@ final class AttributeEnumeration extends AxisIteratorImpl
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
 // See the License for the specific language governing rights and limitations under the License.
 //
-// The Original Code is: most of this file. 
+// The Original Code is: all this file.
 //
 // The Initial Developer of the Original Code is Michael H. Kay.
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-// Contributor(s): Martin Haye. 
+// Contributor(s): none.
 //

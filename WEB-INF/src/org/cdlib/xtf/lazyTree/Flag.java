@@ -33,7 +33,7 @@ package org.cdlib.xtf.lazyTree;
 /**
  * Enumeration of the flags we store for a node.
  */
-class Flag {
+public class Flag {
   public static final int HAS_NAMECODE = 1 << 0;
   public static final int HAS_PARENT = 1 << 1;
   public static final int HAS_PREV_SIBLING = 1 << 2;

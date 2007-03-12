@@ -29,10 +29,11 @@ package org.cdlib.xtf.lazyTree;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
-import net.sf.saxon.om.EmptyIterator;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.trans.XPathException;
 
@@ -47,9 +48,9 @@ public class SearchElementImpl extends ElementImpl implements SearchElement
 {
   boolean specialAttrChecked = false;
 
-  SearchElementImpl(SearchTree document) {
-    super(document);
-    prevSibNum = nextSibNum = parentNum = childNum = nameSpace = -1;
+  SearchElementImpl(SearchTree document, NodeInfo parent) {
+    super(document, parent);
+    prevSibNum = nextSibNum = childNum = nameSpace = -1;
   }
 
   /** Set the node number for this node. */
@@ -69,9 +70,9 @@ public class SearchElementImpl extends ElementImpl implements SearchElement
     attrValues[attrNum] = value;
   }
 
-  /** Establish the parent node number */
-  public void setParentNum(int num) {
-    parentNum = num;
+  /** Establish the parent node */
+  public void setParentNode(NodeInfo parent) {
+    this.parent = parent;
   }
 
   /** Establish the child node number */
@@ -109,14 +110,6 @@ public class SearchElementImpl extends ElementImpl implements SearchElement
     //
     if (axisNumber == Axis.ATTRIBUTE)
       addSpecialAttrib();
-
-    // We have to use a special iterator for the descendant axis.
-    if (axisNumber == Axis.DESCENDANT) {
-      if (hasChildNodes())
-        return new SearchDescendantEnumeration(this, nodeTest, false);
-      else
-        return EmptyIterator.getInstance();
-    }
 
     // That done, we just do the normal thing.
     return super.iterateAxis(axisNumber, nodeTest);

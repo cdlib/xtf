@@ -3,6 +3,7 @@ package org.cdlib.xtf.saxonExt.sql;
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.SimpleExpression;
 import net.sf.saxon.expr.StaticProperty;
+import net.sf.saxon.expr.StringLiteral;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.style.ExtensionInstruction;
@@ -10,11 +11,11 @@ import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.trans.SaxonErrorCode;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
 import net.sf.saxon.value.ObjectValue;
 import net.sf.saxon.value.StringValue;
-import javax.xml.transform.TransformerConfigurationException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -68,7 +69,7 @@ public class SQLConnect extends ExtensionInstruction
   }
 
   public void prepareAttributes()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     // Get mandatory database attribute
     String dbAtt = attributeList.getValue("", "database");
@@ -94,7 +95,7 @@ public class SQLConnect extends ExtensionInstruction
     // Get and expand user attribute, which defaults to empty string
     String userAtt = attributeList.getValue("", "user");
     if (userAtt == null) {
-      user = StringValue.EMPTY_STRING;
+      user = new StringLiteral(StringValue.EMPTY_STRING);
     }
     else {
       user = makeAttributeValueTemplate(userAtt);
@@ -103,7 +104,7 @@ public class SQLConnect extends ExtensionInstruction
     // Get and expand password attribute, which defaults to empty string
     String pwdAtt = attributeList.getValue("", "password");
     if (pwdAtt == null) {
-      password = StringValue.EMPTY_STRING;
+      password = new StringLiteral(StringValue.EMPTY_STRING);
     }
     else {
       password = makeAttributeValueTemplate(pwdAtt);
@@ -111,7 +112,7 @@ public class SQLConnect extends ExtensionInstruction
   }
 
   public void validate()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     super.validate();
     database = typeCheck("database", database);
@@ -121,7 +122,7 @@ public class SQLConnect extends ExtensionInstruction
   }
 
   public Expression compile(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     return new ConnectInstruction(database,
                                   driver,
@@ -131,7 +132,7 @@ public class SQLConnect extends ExtensionInstruction
   }
 
   public List getPropertyInstructions(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     List list = new ArrayList(10);
 
@@ -227,7 +228,7 @@ public class SQLConnect extends ExtensionInstruction
         addThreadConnection(connection);
       }
       catch (Exception ex) {
-        dynamicError("JDBC Connection Failure: " + ex.getMessage(), context);
+        dynamicError("JDBC Connection Failure: " + ex.getMessage(), SaxonErrorCode.SXSQ0003, context);
       }
 
       return new ObjectValue(connection);

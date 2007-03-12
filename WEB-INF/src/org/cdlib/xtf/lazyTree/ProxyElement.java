@@ -30,17 +30,21 @@ package org.cdlib.xtf.lazyTree;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import javax.xml.transform.SourceLocator;
+
+
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.om.FastStringBuffer;
 import net.sf.saxon.om.FingerprintedNode;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.value.Value;
 
 /**
  * A very lazy element. It assumes the attributes of the element can be known
@@ -54,7 +58,7 @@ import net.sf.saxon.trans.XPathException;
 public final class ProxyElement implements NodeInfo, FingerprintedNode,
                                            SourceLocator, SearchElement 
 {
-  /** The actual element (null until loaded */
+  /** The actual element (null until loaded) */
   ElementImpl element = null;
 
   /** Document to use for loading */
@@ -92,7 +96,7 @@ public final class ProxyElement implements NodeInfo, FingerprintedNode,
   }
 
   /** Establish the parent node number */
-  public void setParentNum(int num) {
+  public void setParentNode(NodeInfo newParent) {
   }
 
   /** Establish the child node number */
@@ -133,8 +137,8 @@ public final class ProxyElement implements NodeInfo, FingerprintedNode,
   }
 
   /** Loads the real node and defers to it */
-  public String generateId() {
-    return real().generateId();
+  public void generateId(FastStringBuffer buffer) {
+    real().generateId(buffer);
   }
 
   /** Loads the real node and defers to it */
@@ -300,5 +304,11 @@ public final class ProxyElement implements NodeInfo, FingerprintedNode,
     throws XPathException 
   {
     return real().getTypedValue();
+  }
+
+  // inherit JavaDoc
+  public Value atomize() throws XPathException
+  {
+    return real().atomize();
   }
 } // ProxyElement

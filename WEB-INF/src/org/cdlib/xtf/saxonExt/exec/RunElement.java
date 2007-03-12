@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.SimpleExpression;
@@ -74,7 +73,7 @@ public class RunElement extends ExtensionInstruction
   int timeoutMsec;
 
   public void prepareAttributes()
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     // Get mandatory 'command' attribute
     command = getAttributeList().getValue("", "command");
@@ -98,13 +97,13 @@ public class RunElement extends ExtensionInstruction
   } // prepareAttributes()
 
   public Expression compile(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     return new RunInstruction(command, timeoutMsec, getArgInstructions(exec));
   }
 
   public List getArgInstructions(Executable exec)
-    throws TransformerConfigurationException 
+    throws XPathException 
   {
     List list = new ArrayList(10);
 
@@ -175,7 +174,7 @@ public class RunElement extends ExtensionInstruction
       // Gather all the arguments
       for (int c = 0; c < nArgs; c++) {
         String strVal = ((ArgElement.ArgInstruction)arguments[c]).getSelectValue(
-          context).toString();
+          context).getStringValue();
         args.add(strVal);
       } // for c
 
@@ -255,7 +254,7 @@ public class RunElement extends ExtensionInstruction
         dynamicError(
           "IO exception occurred processing external command '" + command +
           "': " + e,
-          context);
+          "EXEC005", context);
       }
       catch (InterruptedException e) {
         if (stdinStuffer != null)
@@ -269,7 +268,7 @@ public class RunElement extends ExtensionInstruction
         dynamicError(
           "External command '" + command + "' exceeded timeout of " +
           (new DecimalFormat().format(timeout / 1000.0)) + " sec",
-          context);
+          "EXEC002", context);
       }
       finally {
         if (interrupter != null) 
@@ -348,7 +347,7 @@ public class RunElement extends ExtensionInstruction
         dynamicError(
           "External command '" + command + "' exited with status " +
           process.exitValue() + ". Output from stderr:\n" + errStr,
-          context);
+          "EXEC003", context);
       }
 
       // See if we got XML.
@@ -378,7 +377,7 @@ public class RunElement extends ExtensionInstruction
         dynamicError(
           "Error parsing XML output from external command '" + command + "': " +
           e,
-          context);
+          "EXEC004", context);
       }
 
       // All done.

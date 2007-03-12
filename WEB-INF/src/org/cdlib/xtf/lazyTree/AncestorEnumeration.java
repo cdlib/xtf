@@ -3,7 +3,6 @@ package org.cdlib.xtf.lazyTree;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.NodeTest;
 
-/** Saxon: Class used to enumerate the ancestors of a node */
 final class AncestorEnumeration extends TreeEnumeration 
 {
   private boolean includeSelf;
@@ -39,13 +38,11 @@ final class AncestorEnumeration extends TreeEnumeration
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
 // See the License for the specific language governing rights and limitations under the License. 
 //
-// The Original Code is: most of this file. 
+// The Original Code is: all this file. 
 //
-// The Initial Developer of the Original Code is
-// Michael Kay of International Computers Limited (michael.h.kay@ntlworld.com).
+// The Initial Developer of the Original Code is Michael H. Kay.
 //
-// Portions created by Martin Haye are Copyright (C) Regents of the University 
-// of California. All Rights Reserved. 
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved. 
 //
-// Contributor(s): Martin Haye. 
+// Contributor(s): none. 
 //
