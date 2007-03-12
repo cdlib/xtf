@@ -51,6 +51,7 @@ import net.sf.saxon.Configuration;
 import net.sf.saxon.om.AllElementStripper;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
+
 import org.cdlib.xtf.lazyTree.SearchTree;
 import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IndexUtil;
@@ -67,10 +68,7 @@ import org.cdlib.xtf.util.DiskHashWriter;
 import org.cdlib.xtf.util.FastIntCache;
 import org.cdlib.xtf.util.FastStringCache;
 import org.cdlib.xtf.util.IntHash;
-import org.cdlib.xtf.util.IntList;
 import org.cdlib.xtf.util.IntMultiMap;
-import org.cdlib.xtf.util.LongList;
-import org.cdlib.xtf.util.LongSet;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.StructuredStore;
@@ -131,9 +129,6 @@ public class RegressTest
     FastStringCache.tester.test();
     TagArray.tester.test();
     IntMultiMap.tester.test();
-    IntList.tester.test();
-    LongList.tester.test();
-    LongSet.tester.test();
 
     // Go for it.
     RegressTest test = new RegressTest();

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/src"/>
+	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/contrib/xtf-lucene/test/java"/>
 	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/contrib/xtf-lucene/src/java"/>
 	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/backport/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
@@ -13,5 +14,6 @@
 	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/lucene-core-2.1.0.jar" sourcepath="WEB-INF/lib/source/lucene-2.1.0"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/saxonb-8.9.jar" sourcepath="WEB-INF/lib/source/saxonb-8.9"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
