@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="9" startDoc="0" endDoc="0">
    <facet field="dynamicFRBR" totalGroups="5" totalDocs="9">
-      <group value="group-2" rank="1" totalSubGroups="0" totalDocs="4" startDoc="1" endDoc="4">
+      <group value="group-2" rank="1" totalSubGroups="0" totalDocs="4" startDoc="1"
+             endDoc="4">
          <docHit rank="1" file="doc3.xml" totalHits="0">
             <meta>
                <title>Opening of the Apartheid Mind [245]</title>
@@ -39,7 +40,8 @@
             </meta>
          </docHit>
       </group>
-      <group value="group-1" rank="2" totalSubGroups="0" totalDocs="2" startDoc="1" endDoc="2">
+      <group value="group-1" rank="2" totalSubGroups="0" totalDocs="2" startDoc="1"
+             endDoc="2">
          <docHit rank="1" file="doc1.xml" totalHits="0">
             <meta>
                <title>Hamlet [245]</title>
@@ -57,7 +59,8 @@
             </meta>
          </docHit>
       </group>
-      <group value="group-3" rank="3" totalSubGroups="0" totalDocs="1" startDoc="1" endDoc="1">
+      <group value="group-3" rank="3" totalSubGroups="0" totalDocs="1" startDoc="1"
+             endDoc="1">
          <docHit rank="1" file="doc5.xml" totalHits="0">
             <meta>
                <title>One Stands Apart [245]</title>
@@ -67,7 +70,8 @@
             </meta>
          </docHit>
       </group>
-      <group value="group-5" rank="4" totalSubGroups="0" totalDocs="1" startDoc="1" endDoc="1">
+      <group value="group-5" rank="4" totalSubGroups="0" totalDocs="1" startDoc="1"
+             endDoc="1">
          <docHit rank="1" file="doc9.xml" totalHits="0">
             <meta>
                <title>mao tse-tung [245]</title>
@@ -79,7 +83,8 @@
             </meta>
          </docHit>
       </group>
-      <group value="group-4" rank="5" totalSubGroups="0" totalDocs="1" startDoc="1" endDoc="1">
+      <group value="group-4" rank="5" totalSubGroups="0" totalDocs="1" startDoc="1"
+             endDoc="1">
          <docHit rank="1" file="doc8.xml" totalHits="0">
             <meta>
                <title>mao tse-tung: a critical biography [245]</title>

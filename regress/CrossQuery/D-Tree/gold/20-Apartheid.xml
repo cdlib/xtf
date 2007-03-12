@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TEI.2 xmlns:xtf="http://cdlib.org/xtf" id="ft958009mm" xtf:hitCount="9" xtf:firstHit="1">
+<TEI.2 xmlns:xtf="http://cdlib.org/xtf" id="ft958009mm" xtf:hitCount="9"
+       xtf:firstHit="1">
    <xtf:snippets totalHitCount="9" hitCount="9">
       <xtf:snippet rank="1" hitNum="1">The Opening of the <xtf:hit>
             <xtf:term>Apartheid</xtf:term>
@@ -213,7 +214,9 @@
          </div1>
       </front>
       <body xtf:hitCount="7" xtf:firstHit="3">
-         <div1 id="introduction" type="chapter" org="uniform" part="N" sample="complete" xtf:hitCount="7" xtf:firstHit="3">
+         <div1 id="introduction" type="chapter" org="uniform" part="N" sample="complete"
+               xtf:hitCount="7"
+               xtf:firstHit="3">
             <head type="main">Methodological Approaches and Political Values</head>
             <epigraph>
                <p>The most repugnant form of lying is to tell, all of it, whilst hiding the soul of facts.</p>

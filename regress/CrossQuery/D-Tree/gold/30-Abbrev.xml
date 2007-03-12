@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TEI.2 xmlns:xtf="http://cdlib.org/xtf" id="ft958009mm" xtf:hitCount="1" xtf:firstHit="1">
+<TEI.2 xmlns:xtf="http://cdlib.org/xtf" id="ft958009mm" xtf:hitCount="1"
+       xtf:firstHit="1">
    <xtf:snippets totalHitCount="1" hitCount="1">
       <xtf:snippet rank="1" hitNum="1">para a Independência &lt;Total&gt; de &amp; Angola, the <xtf:hit>
             <xtf:term>U.S.</xtf:term>
@@ -44,7 +45,8 @@
             <p>We could not have asked for more thoughtful copyeditors than Pamela Holway and Amy Einsohn in Berkeley. The end product would not be in a presentable state without the meticulous attention of Anita Mahoney, Jan MacLellan in the Dean of Art’s Office at Simon Fraser University, Peng Wong in the Multicultural Liaison Office at the University of British Columbia, and Gila van Rooyen at the Graduate School of Business at the University of Cape Town. The Canadian Social Science and Humanities Research Council (SSHRC) continued to support our research.</p>
             <byline>Cape Town, January 1993 Heribert Adam Kogila Moodley</byline>
          </div1>
-         <div1 id="abb" type="fmsec" org="uniform" part="N" sample="complete" xtf:hitCount="1" xtf:firstHit="1">
+         <div1 id="abb" type="fmsec" org="uniform" part="N" sample="complete" xtf:hitCount="1"
+               xtf:firstHit="1">
             <head type="main">Abbreviations and Acronyms</head>
             <list type="gloss" xtf:hitCount="1" xtf:firstHit="1">
                <label>AHI</label>

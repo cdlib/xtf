@@ -3,7 +3,7 @@
    <docHit rank="1" file="doc2.xml" totalHits="0">
       <meta>
          <struct attr="something">
-                  <hit rank="1">
+            <hit rank="1">
                <term>Hello</term> 
                <term>there</term>
             </hit>

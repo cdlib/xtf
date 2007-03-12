@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="0" startDoc="0" endDoc="0">
    <spelling>
-        <suggestion originalTerm="arfica" fields="title" suggestedTerm="africa"/>
-        <suggestion originalTerm="arfican" fields="text" suggestedTerm="africa"/>
+      <suggestion originalTerm="arfica" fields="title" suggestedTerm="africa"/>
+      <suggestion originalTerm="arfican" fields="text" suggestedTerm="africa"/>
    </spelling>
 </crossQueryResult>

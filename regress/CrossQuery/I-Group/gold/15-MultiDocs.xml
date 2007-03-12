@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="10" startDoc="0" endDoc="0">
    <facet field="group-subject" totalGroups="16" totalDocs="10">
-      <group value="Politics" rank="1" totalSubGroups="0" totalDocs="7" startDoc="1" endDoc="4">
+      <group value="Politics" rank="1" totalSubGroups="0" totalDocs="7" startDoc="1"
+             endDoc="4">
          <docHit rank="1" file="doc1.xml" totalHits="0">
             <meta>
                <title>XYZ: Document 1</title>
@@ -73,7 +74,8 @@
             </meta>
          </docHit>
       </group>
-      <group value="Ancient History" rank="2" totalSubGroups="0" totalDocs="3" startDoc="1" endDoc="3">
+      <group value="Ancient History" rank="2" totalSubGroups="0" totalDocs="3" startDoc="1"
+             endDoc="3">
          <docHit rank="1" file="doc4.xml" totalHits="0">
             <meta>
                <title>Why? Document 4</title>
@@ -132,7 +134,9 @@
             </meta>
          </docHit>
       </group>
-      <group value="Classical History" rank="3" totalSubGroups="0" totalDocs="3" startDoc="1" endDoc="3">
+      <group value="Classical History" rank="3" totalSubGroups="0" totalDocs="3"
+             startDoc="1"
+             endDoc="3">
          <docHit rank="1" file="doc4.xml" totalHits="0">
             <meta>
                <title>Why? Document 4</title>
@@ -195,7 +199,10 @@
             </meta>
          </docHit>
       </group>
-      <group value="Classical Religions" rank="4" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
-      <group value="Classics" rank="5" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
+      <group value="Classical Religions" rank="4" totalSubGroups="0" totalDocs="3"
+             startDoc="0"
+             endDoc="0"/>
+      <group value="Classics" rank="5" totalSubGroups="0" totalDocs="3" startDoc="0"
+             endDoc="0"/>
    </facet>
 </crossQueryResult>

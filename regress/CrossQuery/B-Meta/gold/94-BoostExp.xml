@@ -4,16 +4,16 @@
       <explanation value="16.117224" description="boosted, product of:">
          <explanation value="9.0" description="exponentBoosted">
             <explanation value="3.0" description="boostSetFactor">
-            </explanation>
+</explanation>
             <explanation value="2.0" description="boostSetExponent">
-            </explanation>
+</explanation>
          </explanation>
          <explanation value="1.7908026" description="tf(spanFreq=3.206974)">
             <explanation value="3.206974" description="weight(spans(rights:public)@245:0), product of:">
                <explanation value="5.1311584" description="idf(docFreq=3)">
-               </explanation>
+</explanation>
                <explanation value="0.625" description="fieldNorm(field=rights, doc=245)">
-               </explanation>
+</explanation>
             </explanation>
          </explanation>
       </explanation>
@@ -35,16 +35,16 @@
       <explanation value="11.501995" description="boosted, product of:">
          <explanation value="6.25" description="exponentBoosted">
             <explanation value="2.5" description="boostSetFactor">
-            </explanation>
+</explanation>
             <explanation value="2.0" description="boostSetExponent">
-            </explanation>
+</explanation>
          </explanation>
          <explanation value="1.8403193" description="tf(spanFreq=3.3867753)">
             <explanation value="3.3867753" description="weight(spans(rights:uconly)@204:0), product of:">
                <explanation value="5.4188404" description="idf(docFreq=2)">
-               </explanation>
+</explanation>
                <explanation value="0.625" description="fieldNorm(field=rights, doc=204)">
-               </explanation>
+</explanation>
             </explanation>
          </explanation>
       </explanation>
@@ -70,16 +70,16 @@
       <explanation value="7.1632104" description="boosted, product of:">
          <explanation value="4.0" description="exponentBoosted">
             <explanation value="2.0" description="boostSetFactor">
-            </explanation>
+</explanation>
             <explanation value="2.0" description="boostSetExponent">
-            </explanation>
+</explanation>
          </explanation>
          <explanation value="1.7908026" description="tf(spanFreq=3.206974)">
             <explanation value="3.206974" description="weight(spans(rights:public)@161:0), product of:">
                <explanation value="5.1311584" description="idf(docFreq=3)">
-               </explanation>
+</explanation>
                <explanation value="0.625" description="fieldNorm(field=rights, doc=161)">
-               </explanation>
+</explanation>
             </explanation>
          </explanation>
       </explanation>
@@ -102,16 +102,16 @@
       <explanation value="1.8403193" description="boosted, product of:">
          <explanation value="1.0" description="exponentBoosted">
             <explanation value="1.0" description="boostSetFactor">
-            </explanation>
+</explanation>
             <explanation value="2.0" description="boostSetExponent">
-            </explanation>
+</explanation>
          </explanation>
          <explanation value="1.8403193" description="tf(spanFreq=3.3867753)">
             <explanation value="3.3867753" description="weight(spans(rights:uconly)@120:0), product of:">
                <explanation value="5.4188404" description="idf(docFreq=2)">
-               </explanation>
+</explanation>
                <explanation value="0.625" description="fieldNorm(field=rights, doc=120)">
-               </explanation>
+</explanation>
             </explanation>
          </explanation>
       </explanation>
@@ -136,16 +136,16 @@
       <explanation value="0.44770065" description="boosted, product of:">
          <explanation value="0.25" description="exponentBoosted">
             <explanation value="0.5" description="boostSetFactor">
-            </explanation>
+</explanation>
             <explanation value="2.0" description="boostSetExponent">
-            </explanation>
+</explanation>
          </explanation>
          <explanation value="1.7908026" description="tf(spanFreq=3.206974)">
             <explanation value="3.206974" description="weight(spans(rights:public)@79:0), product of:">
                <explanation value="5.1311584" description="idf(docFreq=3)">
-               </explanation>
+</explanation>
                <explanation value="0.625" description="fieldNorm(field=rights, doc=79)">
-               </explanation>
+</explanation>
             </explanation>
          </explanation>
       </explanation>

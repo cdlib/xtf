@@ -94,9 +94,12 @@
       </meta>
    </docHit>
    <facet field="group-subject" totalGroups="6" totalDocs="3">
-      <group value="Ancient History" rank="1" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
-      <group value="Classics" rank="2" totalSubGroups="0" totalDocs="3" startDoc="0" endDoc="0"/>
-      <group value="Politics" rank="3" totalSubGroups="0" totalDocs="3" startDoc="1" endDoc="3">
+      <group value="Ancient History" rank="1" totalSubGroups="0" totalDocs="3" startDoc="0"
+             endDoc="0"/>
+      <group value="Classics" rank="2" totalSubGroups="0" totalDocs="3" startDoc="0"
+             endDoc="0"/>
+      <group value="Politics" rank="3" totalSubGroups="0" totalDocs="3" startDoc="1"
+             endDoc="3">
          <docHit rank="1" file="doc7.xml" totalHits="0">
             <meta>
                <title>Do read Document 7</title>
@@ -191,8 +194,14 @@
             </meta>
          </docHit>
       </group>
-      <group value="Classical History" rank="4" totalSubGroups="0" totalDocs="2" startDoc="0" endDoc="0"/>
-      <group value="Classical Politics" rank="5" totalSubGroups="0" totalDocs="2" startDoc="0" endDoc="0"/>
-      <group value="Classical Religions" rank="6" totalSubGroups="0" totalDocs="2" startDoc="0" endDoc="0"/>
+      <group value="Classical History" rank="4" totalSubGroups="0" totalDocs="2"
+             startDoc="0"
+             endDoc="0"/>
+      <group value="Classical Politics" rank="5" totalSubGroups="0" totalDocs="2"
+             startDoc="0"
+             endDoc="0"/>
+      <group value="Classical Religions" rank="6" totalSubGroups="0" totalDocs="2"
+             startDoc="0"
+             endDoc="0"/>
    </facet>
 </crossQueryResult>
