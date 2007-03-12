@@ -45,7 +45,7 @@ import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.spell.SpellReader;
+import org.apache.lucene.spelt.SpellReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.util.CharMap;

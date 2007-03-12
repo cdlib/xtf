@@ -38,10 +38,10 @@ package org.cdlib.xtf.textEngine.facet;
 import java.io.IOException;
 import java.util.StringTokenizer;
 import org.apache.lucene.index.IndexReader;
-import org.cdlib.xtf.util.FloatList;
-import org.cdlib.xtf.util.IntList;
-import org.cdlib.xtf.util.Prime;
-import org.cdlib.xtf.util.StringList;
+import org.apache.lucene.util.FloatList;
+import org.apache.lucene.util.IntList;
+import org.apache.lucene.util.Prime;
+import org.apache.lucene.util.StringList;
 import org.cdlib.xtf.util.TagChars;
 import org.cdlib.xtf.util.Trace;
 

@@ -50,7 +50,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
-import org.cdlib.xtf.util.CountedInputStream;
+
+import org.apache.lucene.util.CountedInputStream;
 import org.cdlib.xtf.util.StructuredStore;
 import org.marc4j.marc.MarcConstants;
 import org.marc4j.marcxml.Converter;

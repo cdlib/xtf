@@ -42,8 +42,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
-import org.cdlib.xtf.util.IntList;
-import org.cdlib.xtf.util.LongList;
+import org.apache.lucene.util.IntList;
+import org.apache.lucene.util.LongList;
 
 /**
  * Holds numeric data for a field from a Lucene index. Data is cached for a

@@ -64,7 +64,7 @@ import org.apache.lucene.search.FieldSpanSource;
 import org.apache.lucene.search.spans.SpanNotNearQuery;
 import org.apache.lucene.search.spans.SpanNotQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spell.SpellReader;
+import org.apache.lucene.spelt.SpellReader;
 import org.apache.lucene.util.PriorityQueue;
 import org.cdlib.xtf.textEngine.facet.DynamicGroupData;
 import org.cdlib.xtf.textEngine.facet.FacetSpec;

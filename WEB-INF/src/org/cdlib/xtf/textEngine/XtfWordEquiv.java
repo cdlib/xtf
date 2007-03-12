@@ -29,7 +29,7 @@ package org.cdlib.xtf.textEngine;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-import org.apache.lucene.search.spell.WordEquiv;
+import org.apache.lucene.spelt.WordEquiv;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringCache;
 import org.cdlib.xtf.util.WordMap;

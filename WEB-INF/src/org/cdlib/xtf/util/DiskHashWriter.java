@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.apache.lucene.util.Prime;
+
 /**
  * Creates a persistent string to byte buffer hash table on disk, optimized
  * for quick access. It can be read back later using a

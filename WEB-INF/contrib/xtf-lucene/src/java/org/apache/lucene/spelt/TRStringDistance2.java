@@ -1,8 +1,7 @@
-package org.apache.lucene.search.spell;
-
+package org.apache.lucene.spelt;
 
 /**
- * Copyright 2002-2004 The Apache Software Foundation
+ * Copyright 2002-2007 The Apache Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +23,12 @@ package org.apache.lucene.search.spell;
  */
 
 /**
- * Edit distance  class
+ * Calculates the edit distance between two strings. Special modifications to
+ * score transpositions and double-letter changes as less change.
+ *
+ * @author Martin Haye
  */
-final class TRStringDistance2 {
+public final class TRStringDistance2 {
 
     final char[] sa;
     final int n;

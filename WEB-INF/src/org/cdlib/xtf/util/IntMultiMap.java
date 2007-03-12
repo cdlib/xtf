@@ -37,6 +37,8 @@ package org.cdlib.xtf.util;
  */
 import java.util.Arrays;
 
+import org.apache.lucene.util.IntList;
+
 /**
  * This class efficiently implements a "one to many" relationship between
  * integer keys and multiple integer values. The maximum key ID

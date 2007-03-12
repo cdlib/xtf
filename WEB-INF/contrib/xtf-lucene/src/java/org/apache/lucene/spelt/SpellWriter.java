@@ -1,8 +1,7 @@
-package org.apache.lucene.search.spell;
-
+package org.apache.lucene.spelt;
 
 /**
- * Copyright 2002-2006 The Apache Software Foundation
+ * Copyright 2002-2007 The Apache Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +21,7 @@ package org.apache.lucene.search.spell;
  * was made possible by a grant from the Andrew W. Mellon Foundation,
  * as part of the Melvyl Recommender Project.
  */
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -39,13 +39,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.regex.Pattern;
-import org.cdlib.xtf.util.CountedInputStream;
-import org.cdlib.xtf.util.CountedOutputStream;
-import org.cdlib.xtf.util.FileSorter;
-import org.cdlib.xtf.util.IntList;
-import org.cdlib.xtf.util.IntegerValues;
-import org.cdlib.xtf.util.ProgressTracker;
-import org.cdlib.xtf.util.StringList;
+
+import org.apache.lucene.util.CountedInputStream;
+import org.apache.lucene.util.CountedOutputStream;
+import org.apache.lucene.util.FileSorter;
+import org.apache.lucene.util.IntList;
+import org.apache.lucene.util.ProgressTracker;
+import org.apache.lucene.util.StringList;
 
 /**
  * <p>
@@ -224,9 +224,9 @@ public class SpellWriter
 
       // Increment the count
       if (val == null)
-        val = IntegerValues.valueOf(1);
+        val = Integer.valueOf(1);
       else
-        val = IntegerValues.valueOf(val.intValue() + 1);
+        val = Integer.valueOf(val.intValue() + 1);
 
       // Store it, and if the hash is full, flush it.
       recentPairs.put(key, val);
@@ -240,9 +240,9 @@ public class SpellWriter
     // Bump the count for this word.
     Integer val = recentWords.get(word);
     if (val == null)
-      val = IntegerValues.valueOf(1);
+      val = Integer.valueOf(1);
     else
-      val = IntegerValues.valueOf(val.intValue() + 1);
+      val = Integer.valueOf(val.intValue() + 1);
 
     // Store it, and if the hash is full, flush it.
     recentWords.put(word, val);

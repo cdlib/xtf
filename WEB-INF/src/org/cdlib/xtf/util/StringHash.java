@@ -1,5 +1,7 @@
 package org.cdlib.xtf.util;
 
+import org.apache.lucene.util.Prime;
+
 
 /**
  * Copyright (c) 2004, Regents of the University of California

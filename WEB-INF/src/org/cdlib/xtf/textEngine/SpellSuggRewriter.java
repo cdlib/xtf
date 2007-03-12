@@ -37,7 +37,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanWildcardQuery;
-import org.cdlib.xtf.util.StringUtil;
+import org.apache.lucene.util.StringUtil;
 
 /*
  * This file created on Feb 13, 2007 by Martin Haye

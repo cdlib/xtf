@@ -1,44 +1,28 @@
-package org.cdlib.xtf.util;
-
-import java.util.Arrays;
-import java.util.Random;
+package org.apache.lucene.util;
 
 /*
- * Copyright (c) 2006, Regents of the University of California
- * All rights reserved.
+ * Copyright 2006-2007 The Apache Software Foundation.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *   and/or other materials provided with the distribution.
- * - Neither the name of the University of California nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * Acknowledgements:
- *
- * A significant amount of new and/or modified code in this module
- * was made possible by a grant from the Andrew W. Mellon Foundation,
- * as part of the Melvyl Recommender Project.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-// A fast, array-based, expandable list of ints
+import java.util.Arrays;
+
+/** 
+ * A fast, array-based, expandable list of ints.
+ * 
+ * @author Martin Haye
+ */
 public class IntList 
 {
   private int[] data;
@@ -190,25 +174,4 @@ public class IntList
 
     data = newData;
   }
-
-  /**
-   * Basic regression test
-   */
-  public static final Tester tester = new Tester("IntList") 
-  {
-    protected void testImpl() 
-    {
-      IntList list = new IntList();
-      final int SIZE = 100000;
-      Random rand = new Random(1);
-      for (int i = 0; i < SIZE; i++)
-        list.add(Math.abs(rand.nextInt()));
-
-      int[] map = list.calcSortMap();
-      list.remap(map);
-
-      for (int i = 1; i < SIZE; i++)
-        assert list.get(i - 1) <= list.get(i);
-    } // testImpl()
-  };
 } // class IntList

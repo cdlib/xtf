@@ -1,8 +1,7 @@
-package org.apache.lucene.search.spell;
-
+package org.apache.lucene.spelt;
 
 /**
- * Copyright 2002-2006 The Apache Software Foundation
+ * Copyright 2002-2007 The Apache Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +34,13 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.apache.lucene.util.Hash64;
+import org.apache.lucene.util.IntList;
+import org.apache.lucene.util.LongSet;
 import org.apache.lucene.util.PriorityQueue;
-import org.cdlib.xtf.util.Hash64;
-import org.cdlib.xtf.util.IntList;
-import org.cdlib.xtf.util.LongSet;
-import org.cdlib.xtf.util.StringList;
-import org.cdlib.xtf.util.StringUtil;
+import org.apache.lucene.util.StringList;
+import org.apache.lucene.util.StringUtil;
 
 /**
  * <p>
@@ -50,7 +50,6 @@ import org.cdlib.xtf.util.StringUtil;
  * </p>
  *
  * @author Martin Haye
- * @version 1.0
  */
 public class SpellReader 
 {

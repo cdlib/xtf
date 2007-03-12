@@ -39,7 +39,7 @@ import java.io.IOException;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.search.spell.SpellWriter;
+import org.apache.lucene.spelt.SpellWriter;
 import org.cdlib.xtf.textEngine.Constants;
 
 /**

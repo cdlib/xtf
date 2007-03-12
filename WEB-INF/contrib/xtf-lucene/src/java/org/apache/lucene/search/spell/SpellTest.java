@@ -44,7 +44,11 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import org.cdlib.xtf.util.ProgressTracker;
+
+import org.apache.lucene.spelt.SpellReader;
+import org.apache.lucene.spelt.SpellWriter;
+import org.apache.lucene.spelt.TRStringDistance2;
+import org.apache.lucene.util.ProgressTracker;
 
 /**
  * Automated test of spelling correction to determine its overall accuracy.

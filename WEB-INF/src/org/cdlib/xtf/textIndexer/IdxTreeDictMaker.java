@@ -37,9 +37,9 @@ package org.cdlib.xtf.textIndexer;
  */
 import java.io.File;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.spell.SpellWriter;
+import org.apache.lucene.spelt.SpellWriter;
+import org.apache.lucene.util.ProgressTracker;
 import org.cdlib.xtf.util.Path;
-import org.cdlib.xtf.util.ProgressTracker;
 import org.cdlib.xtf.util.Trace;
 
 ////////////////////////////////////////////////////////////////////////////////

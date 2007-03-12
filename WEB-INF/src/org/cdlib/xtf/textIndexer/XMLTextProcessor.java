@@ -68,7 +68,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.spell.SpellWriter;
+import org.apache.lucene.spelt.SpellWriter;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.bigram.BigramStopFilter;

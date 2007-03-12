@@ -35,7 +35,7 @@ import java.util.Set;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.bigram.BigramStopFilter;
-import org.apache.lucene.search.spell.SpellWriter;
+import org.apache.lucene.spelt.SpellWriter;
 import org.cdlib.xtf.textEngine.Constants;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;

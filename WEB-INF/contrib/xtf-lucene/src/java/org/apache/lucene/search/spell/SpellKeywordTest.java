@@ -45,6 +45,9 @@ import java.io.StringReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.lucene.analysis.Token;
+import org.apache.lucene.spelt.SpellReader;
+import org.apache.lucene.util.StringList;
+import org.apache.lucene.util.StringUtil;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
@@ -53,8 +56,6 @@ import org.cdlib.xtf.textEngine.XtfSearcher;
 import org.cdlib.xtf.textIndexer.tokenizer.ParseException;
 import org.cdlib.xtf.textIndexer.tokenizer.XTFTokenizer;
 import org.cdlib.xtf.util.Path;
-import org.cdlib.xtf.util.StringList;
-import org.cdlib.xtf.util.StringUtil;
 
 /**
  * Automated test of keyword spelling correction to determine its overall
