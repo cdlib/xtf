@@ -35,7 +35,8 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
                               xmlns:xs="http://www.w3.org/2001/XMLSchema"
                               xmlns:xtf="http://cdlib.org/xtf" 
-                              xmlns:cdl="http://cdlib.org">
+                              xmlns:cdl="http://cdlib.org" 
+                              exclude-result-prefixes="#all">
   
   <xsl:import href="format-query.xsl"/>
   <xsl:import href="spelling.xsl"/>

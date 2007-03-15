@@ -28,9 +28,9 @@
    POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xtf="http://cdlib.org/xtf"
-                version="2.0">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                              xmlns:xtf="http://cdlib.org/xtf" 
+                              exclude-result-prefixes="#all">
     
     <xsl:param name="keyword"/>
     <xsl:param name="fieldList"/>   
