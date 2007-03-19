@@ -42,7 +42,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermPositions;
 import org.apache.lucene.index.TermEnum;
-import org.cdlib.xtf.util.IntegerValues;
 
 /**
  * This class contains the mapping, for a given field, from documents to
@@ -137,7 +136,7 @@ public class StaticGroupData extends GroupData
 
     // Add a default root group.
     groupVec.add("".intern());
-    groupMap.put("".intern(), IntegerValues.valueOf(0));
+    groupMap.put("".intern(), Integer.valueOf(0));
 
     // Make an entry for each document and each term. Ensure that
     // there is only one term in this field per document.
@@ -173,7 +172,7 @@ public class StaticGroupData extends GroupData
         {
           // Get or create a vector for this document.
           int docId = termPositions.doc();
-          Integer docKey = IntegerValues.valueOf(docId);
+          Integer docKey = Integer.valueOf(docId);
 
           Vector docGroups = (Vector)docMap.get(docKey);
           if (docGroups == null) {
@@ -240,7 +239,7 @@ public class StaticGroupData extends GroupData
       String parentName = curName.intern();
       Integer parentKey = (Integer)groupMap.get(parentName);
       if (parentKey == null) {
-        parentKey = IntegerValues.valueOf(groupVec.size());
+        parentKey = Integer.valueOf(groupVec.size());
         groupVec.add(parentName);
         groupMap.put(parentName, parentKey);
       }

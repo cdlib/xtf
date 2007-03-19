@@ -145,9 +145,8 @@ public class DiskHashWriter
     protected void testImpl()
       throws Exception 
     {
-      // Since we depend on StructuredFile and Prime, make sure they pass.
+      // Since we depend on StructuredFile, make sure it passes.
       StructuredFile.tester.test();
-      Prime.tester.test();
 
       File testFile = new File("DiskHashTest.sf");
       StructuredFile f = null;

@@ -57,7 +57,7 @@ public class ConsecutiveMap
   {
     Integer num = (Integer)map.get(key);
     if (num == null) {
-      num = IntegerValues.valueOf(inOrder.size());
+      num = Integer.valueOf(inOrder.size());
       inOrder.add(key);
       map.put(key, num);
     }

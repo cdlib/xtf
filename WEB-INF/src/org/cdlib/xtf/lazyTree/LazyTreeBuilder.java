@@ -43,7 +43,6 @@ import net.sf.saxon.tinytree.TinyNodeImpl;
 import net.sf.saxon.tinytree.TinyTree;
 import net.sf.saxon.type.Type;
 import org.cdlib.xtf.util.ConsecutiveMap;
-import org.cdlib.xtf.util.IntegerValues;
 import org.cdlib.xtf.util.PackedByteBuf;
 import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.SubStoreWriter;
@@ -256,13 +255,13 @@ public class LazyTreeBuilder
     int[] nameCodes = tree.getNameCodeArray();
     for (int i = 0; i < tree.getNumberOfNodes(); i++) {
       if (nameCodes[i] >= 0)
-        names.put(IntegerValues.valueOf(nameCodes[i]));
+        names.put(Integer.valueOf(nameCodes[i]));
     }
 
     int[] attCodes = tree.getAttributeNameCodeArray();
     for (int i = 0; i < tree.getNumberOfAttributes(); i++) {
       if (attCodes[i] >= 0)
-        names.put(IntegerValues.valueOf(attCodes[i]));
+        names.put(Integer.valueOf(attCodes[i]));
     }
 
     // Write out all the namecodes.
@@ -344,7 +343,7 @@ public class LazyTreeBuilder
 
       // Name code
       if (nameCode >= 0) {
-        int nameIdx = names.get(IntegerValues.valueOf(nameCode));
+        int nameIdx = names.get(Integer.valueOf(nameCode));
         assert nameIdx >= 0 : "A name was missed when writing name codes";
         buf.writeInt(nameIdx);
       }
@@ -419,7 +418,7 @@ public class LazyTreeBuilder
       for (j = i; j < i + nAttrs; j++) 
       {
         // Name code
-        int nameIdx = names.get(IntegerValues.valueOf(attCodes[j]));
+        int nameIdx = names.get(Integer.valueOf(attCodes[j]));
         assert nameIdx >= 0 : "A name was missed when writing name codes";
         buf.writeInt(nameIdx);
 
@@ -456,7 +455,7 @@ public class LazyTreeBuilder
       for (j = i; j < i + nAttrs; j++) 
       {
         // Name code
-        int nameIdx = names.get(IntegerValues.valueOf(attCodes[j]));
+        int nameIdx = names.get(Integer.valueOf(attCodes[j]));
         assert nameIdx >= 0 : "A name was missed when writing name codes";
         buf.writeInt(nameIdx);
 

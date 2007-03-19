@@ -36,12 +36,12 @@ package org.cdlib.xtf.textEngine.facet;
  * as part of the Melvyl Recommender Project.
  */
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.util.FloatList;
 import org.apache.lucene.util.IntList;
 import org.apache.lucene.util.Prime;
-import org.apache.lucene.util.StringList;
+import org.cdlib.xtf.util.FloatList;
 import org.cdlib.xtf.util.TagChars;
 import org.cdlib.xtf.util.Trace;
 
@@ -100,7 +100,7 @@ public class FRBRGroupData extends DynamicGroupData
 
     // Break the string of parameters into a list of fields.
     StringTokenizer t = new StringTokenizer(params, " \t,;|");
-    StringList fields = new StringList(t.countTokens());
+    ArrayList<String> fields = new ArrayList<String>(t.countTokens());
     while (t.hasMoreTokens()) 
     {
       String tok = t.nextToken();
@@ -126,7 +126,7 @@ public class FRBRGroupData extends DynamicGroupData
     }
 
     // And fetch the doc/tag data for those fields.
-    data = FRBRData.getCachedTags(indexReader, fields.toArray());
+    data = FRBRData.getCachedTags(indexReader, fields.toArray(new String[fields.size()]));
   }
 
   /**

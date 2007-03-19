@@ -61,14 +61,13 @@ import org.apache.lucene.search.spans.SpanOrNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.util.FloatList;
-import org.apache.lucene.util.StringList;
 import org.cdlib.xtf.textEngine.facet.FacetSpec;
 import org.cdlib.xtf.textEngine.facet.GroupSelector;
 import org.cdlib.xtf.textEngine.facet.MarkSelector;
 import org.cdlib.xtf.textEngine.facet.RootSelector;
 import org.cdlib.xtf.textEngine.facet.SelectorParser;
 import org.cdlib.xtf.util.EasyNode;
+import org.cdlib.xtf.util.FloatList;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
@@ -718,7 +717,7 @@ public class QueryRequestParser
     String fieldsStr = parseStringAttrib(parent, "fields");
 
     // Parse that into an array of fields.
-    StringList fields = new StringList();
+    ArrayList<String> fields = new ArrayList<String>();
     StringTokenizer st = new StringTokenizer(fieldsStr, ";,| \t");
     while (st.hasMoreTokens())
       fields.add(st.nextToken());
@@ -764,7 +763,7 @@ public class QueryRequestParser
     SpanQuery[] subQueries = (SpanQuery[])queryList.toArray(
       new SpanQuery[queryList.size()]);
     return createMultiFieldQuery(parent,
-                                 fields.toArray(),
+                                 fields.toArray(new String[fields.size()]),
                                  boosts,
                                  subQueries,
                                  slop,

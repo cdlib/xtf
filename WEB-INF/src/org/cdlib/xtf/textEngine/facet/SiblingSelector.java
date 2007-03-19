@@ -30,7 +30,6 @@ package org.cdlib.xtf.textEngine.facet;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import java.util.HashSet;
-import org.cdlib.xtf.util.IntegerValues;
 
 /** Select the top level of the hierarchy that has a choice. */
 public class SiblingSelector extends GroupSelector 
@@ -54,7 +53,7 @@ public class SiblingSelector extends GroupSelector
     // If so, ignore it.
     //
     int parent = counts.parent(group);
-    Integer parentKey = IntegerValues.valueOf(parent);
+    Integer parentKey = Integer.valueOf(parent);
     if (parents.contains(parentKey))
       return;
 
