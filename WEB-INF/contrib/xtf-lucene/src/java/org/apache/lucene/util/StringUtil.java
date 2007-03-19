@@ -50,6 +50,8 @@ public class StringUtil
    */
   public static String join(Object[] in, String separator) 
   {
+    if (in == null)
+      return null;
     StringBuffer buf = new StringBuffer();
     for (int i = 0; i < in.length; i++) {
       if (in[i] == null)
