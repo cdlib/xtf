@@ -45,7 +45,6 @@ import org.apache.lucene.util.CountedOutputStream;
 import org.apache.lucene.util.FileSorter;
 import org.apache.lucene.util.IntList;
 import org.apache.lucene.util.ProgressTracker;
-import org.apache.lucene.util.StringList;
 
 /**
  * <p>
@@ -494,6 +493,10 @@ public class SpellWriter
           throws IOException 
         {
           out.close();
+          
+          prog.progress(nProcessed,
+                        freqSorter.nLinesAdded(),
+                        "Processed " + nProcessed + " words.");
         }
       });
   }
@@ -625,12 +628,12 @@ public class SpellWriter
     final Writer out = new OutputStreamWriter(outCounted);
 
     // Finish sorting all the edit map entries, group them, and write out the keys.
-    final StringList edKeys = new StringList();
+    final ArrayList<String> edKeys = new ArrayList<String>();
     final IntList sizes = new IntList();
     edmapSorter.finish(new FileSorter.Output() 
       {
         String curKey = null;
-        StringList curWords = new StringList();
+        ArrayList<String> curWords = new ArrayList<String>();
         IntList curFreqs = new IntList();
         int nWritten = 0;
 
@@ -707,7 +710,7 @@ public class SpellWriter
    * Perform prefix compression on a list of words for a single edit map
    * key.
    */
-  private void condenseEdmapKey(String key, StringList words, IntList freqs,
+  private void condenseEdmapKey(String key, ArrayList<String> words, IntList freqs,
                                 Writer out)
     throws IOException 
   {
@@ -844,6 +847,9 @@ public class SpellWriter
           }
         }
       } // while
+      
+      subProgs[0].progress(100, 100,
+                           "Read " + totalAdded + " pairs.");
     }
     finally {
       queueReader.close();

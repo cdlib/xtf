@@ -32,6 +32,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -39,7 +40,6 @@ import org.apache.lucene.util.Hash64;
 import org.apache.lucene.util.IntList;
 import org.apache.lucene.util.LongSet;
 import org.apache.lucene.util.PriorityQueue;
-import org.apache.lucene.util.StringList;
 import org.apache.lucene.util.StringUtil;
 
 /**
@@ -379,13 +379,13 @@ public class SpellReader
     Word[] suggs = suggestSimilar(new Word(str), numSugg + 1, 1);
 
     // Make an array, not including the original word
-    StringList out = new StringList();
+    ArrayList<String> out = new ArrayList<String>();
     for (int i = 0; i < suggs.length; i++) {
       if (suggs[i].word.equals(str))
         continue;
       out.add(suggs[i].word);
     }
-    return out.toArray();
+    return out.toArray(new String[out.size()]);
   }
 
   /**

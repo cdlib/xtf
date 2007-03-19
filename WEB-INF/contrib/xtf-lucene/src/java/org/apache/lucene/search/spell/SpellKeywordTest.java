@@ -42,11 +42,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.util.ArrayList;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.spelt.SpellReader;
-import org.apache.lucene.util.StringList;
 import org.apache.lucene.util.StringUtil;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
@@ -232,13 +233,13 @@ public class SpellKeywordTest
     throws ParseException, IOException 
   {
     XTFTokenizer toks = new XTFTokenizer(new StringReader(in));
-    StringList list = new StringList();
+    ArrayList<String> list = new ArrayList<String>();
     while (true) {
       Token t = toks.next();
       if (t == null)
         break;
       list.add(t.termText());
     }
-    return list.toArray();
+    return list.toArray(new String[list.size()]);
   }
 } // class
