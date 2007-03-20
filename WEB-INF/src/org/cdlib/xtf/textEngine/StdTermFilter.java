@@ -133,8 +133,18 @@ public class StdTermFilter
     {
       FastTokenizer toks = new FastTokenizer(new FastStringReader(nextToken));
       Token t = toks.next();
+      
+      // If it doesn't see it as a token, make our own.
       if (t == null)
-        return new Token(nextToken, 0, 0);
+        return new Token(nextToken, 0, nextToken.length());
+      
+      // If the entire text wasn't consumed, ignore the result and make our
+      // own token.
+      //
+      else if (t.startOffset() != 0 || t.endOffset() != nextToken.length()) 
+        return new Token(nextToken, 0, nextToken.length());
+      
+      // Good, it consumed the whole thing. Return the parsed token.
       else
         return t;
     }
