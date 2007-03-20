@@ -117,6 +117,7 @@ public class FastTokenizer extends Tokenizer
     charType['-'] = 'p';
     charType['/'] = 'p';
     charType[','] = 'p';
+    charType['_'] = 'p';
 
     // Currency Symbols
     charType['\u0024'] = 's'; // Dollar
