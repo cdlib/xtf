@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc11.xml" totalHits="0">
+      <meta>
+         <title>Fun with uunderscores</title>
+         <creator>The Underminer</creator>
+         <identifier>
+            <snippet rank="1">
+               <hit>
+                  <term>ucm</term>_<term>li_CF2002_097</term>
+               </hit>
+            </snippet>
+         </identifier>
+         <foo>bar</foo>
+      </meta>
+   </docHit>
+</crossQueryResult>
