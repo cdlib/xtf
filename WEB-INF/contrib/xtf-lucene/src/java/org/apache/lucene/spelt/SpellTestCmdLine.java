@@ -35,10 +35,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-import org.apache.lucene.search.spell.Dictionary;
-import org.apache.lucene.search.spell.SpellChecker;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+// old: import org.apache.lucene.search.spell.Dictionary;
+// old: import org.apache.lucene.search.spell.SpellChecker;
+// old: import org.apache.lucene.store.Directory;
+// old: import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.ProgressTracker;
 import org.apache.lucene.util.StringUtil;
 
@@ -70,11 +70,13 @@ public class SpellTestCmdLine
       for (int i=0; i<args.length; i++)
       {
         // Is the "old" (Lucene) algorithm requested?
-        if (args[i].equals("-old"))
-            alg = 1;
+// old:         if (args[i].equals("-old")) {
+// old:           alg = 1;
+// old:           continue;
+// old:         }
         
         // Is it a "build" command?
-        else if (args[i].equals("-build") && i+3 <= args.length) {
+        if (args[i].equals("-build") && i+3 <= args.length) {
           buildDictionary(alg, args[i+1], args[i+2]);
           i += 2;
         }
@@ -105,8 +107,12 @@ public class SpellTestCmdLine
   private static void printUsageAndExit()
   {
     {
-      System.err.println("Usage:  java -jar spelt.jar {-old} -build <src-files-dir> <dictionary-dir>\n" +
-                         "   or:  java -jar spelt.jar {-old} -test <test-queries-file> <dictionary-dir>\n" +
+      System.err.println("Usage:  java -jar spelt.jar " +
+                         // old: "{-old} " +
+                         "-build <src-files-dir> <dictionary-dir>\n" +
+                         "   or:  java -jar spelt.jar " +
+                         // old: "{-old} " +
+                         "-test <test-queries-file> <dictionary-dir>\n" +
                          "\n" +
                          " where  <test-queries-file> contains one or more lines like this\n" +
                          "        misspelled phrase\n" +
@@ -140,7 +146,7 @@ public class SpellTestCmdLine
     
     // Make a builder... what kind depends on the selected algorithm.
     DictBuilder builder = (alg == 0) ? new DictBuilder() /* does nothing */ :
-                          (alg == 1) ? new LuceneDictBuilder(dictDir) :
+                          //(alg == 1) ? new LuceneDictBuilder(dictDir) :
                           (alg == 2) ? new SpeltDictBuilder(dictDir) :
                           null;
     
@@ -169,7 +175,7 @@ public class SpellTestCmdLine
     throws IOException 
   {
     // Make a specific tester for the specified algorithm.
-    SuggTester suggTester = (alg == 1) ? new LuceneSuggTester(dictDir) :
+    SuggTester suggTester = //(alg == 1) ? new LuceneSuggTester(dictDir) :
                             (alg == 2) ? new SpeltSuggTester(dictDir) :
                             null;
 
@@ -260,25 +266,25 @@ public class SpellTestCmdLine
   }
 
   /** Builds an old-style Lucene spelling dictionary */
-  private static class LuceneDictBuilder extends DictBuilder
-  {
-    SpellChecker spellChecker;
-    
-    LuceneDictBuilder(String dictDir) throws IOException
-    {
-      Directory spellIndex = FSDirectory.getDirectory(new File(dictDir));
-      spellChecker = new SpellChecker(spellIndex);
-    }
-    
-    void add(final Iterator words) throws IOException
-    {
-      spellChecker.indexDictionary(new Dictionary() {
-        public Iterator getWordsIterator() {
-          return words;
-        }
-      });
-    }
-  }
+// old:   private static class LuceneDictBuilder extends DictBuilder
+// old:   {
+// old:     SpellChecker spellChecker;
+// old:     
+// old:     LuceneDictBuilder(String dictDir) throws IOException
+// old:     {
+// old:       Directory spellIndex = FSDirectory.getDirectory(new File(dictDir));
+// old:       spellChecker = new SpellChecker(spellIndex);
+// old:     }
+// old:     
+// old:     void add(final Iterator words) throws IOException
+// old:     {
+// old:       spellChecker.indexDictionary(new Dictionary() {
+// old:         public Iterator getWordsIterator() {
+// old:           return words;
+// old:         }
+// old:       });
+// old:     }
+// old:   }
   
   /** Builds a new-style Spelt spelling dictionary */
   private static class SpeltDictBuilder extends DictBuilder
@@ -445,36 +451,36 @@ public class SpellTestCmdLine
   }
   
   /** Get spelling suggestions using Lucene (old) algorithm */
-  private static class LuceneSuggTester implements SuggTester
-  {
-    SpellChecker spellChecker;
-    
-    LuceneSuggTester(String dictDir) throws IOException
-    {
-      Directory spellIndex = FSDirectory.getDirectory(new File(dictDir));
-      spellChecker = new SpellChecker(spellIndex);
-    }
-    
-    public String[] suggest(String[] origPhrase) throws IOException
-    {
-      String[] ret = new String[origPhrase.length];
-      boolean anyChange = false;
-      for (int i=0; i<ret.length; i++) {
-        String[] suggs = spellChecker.suggestSimilar(origPhrase[i], 1);
-        if (suggs.length == 0)
-          ret[i] = origPhrase[i];
-        else {
-          ret[i] = suggs[0]; 
-          anyChange |= !WordEquiv.DEFAULT.isEquivalent(ret[i], origPhrase[i]);
-        }
-      }
-      if (!anyChange)
-        return null;
-      return ret;
-    }
-    
-    public void close() { }
-  }
+// old:   private static class LuceneSuggTester implements SuggTester
+// old:   {
+// old:     SpellChecker spellChecker;
+// old:     
+// old:     LuceneSuggTester(String dictDir) throws IOException
+// old:     {
+// old:       Directory spellIndex = FSDirectory.getDirectory(new File(dictDir));
+// old:       spellChecker = new SpellChecker(spellIndex);
+// old:     }
+// old:     
+// old:     public String[] suggest(String[] origPhrase) throws IOException
+// old:     {
+// old:       String[] ret = new String[origPhrase.length];
+// old:       boolean anyChange = false;
+// old:       for (int i=0; i<ret.length; i++) {
+// old:         String[] suggs = spellChecker.suggestSimilar(origPhrase[i], 1);
+// old:         if (suggs.length == 0)
+// old:           ret[i] = origPhrase[i];
+// old:         else {
+// old:           ret[i] = suggs[0]; 
+// old:           anyChange |= !WordEquiv.DEFAULT.isEquivalent(ret[i], origPhrase[i]);
+// old:         }
+// old:       }
+// old:       if (!anyChange)
+// old:         return null;
+// old:       return ret;
+// old:     }
+// old:     
+// old:     public void close() { }
+// old:   }
   
   /** Get spelling suggestions using the Spelt (new) algorithm */
   private static class SpeltSuggTester implements SuggTester
