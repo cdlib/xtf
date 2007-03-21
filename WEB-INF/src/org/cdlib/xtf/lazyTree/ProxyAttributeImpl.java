@@ -26,7 +26,6 @@ class ProxyAttributeImpl extends NodeImpl
    * @param index The index position of the attribute starting at zero
    */
   public ProxyAttributeImpl(ProxyElement element, int index) {
-    super(element.document, element);
     this.element = element;
     this.index = index;
   }

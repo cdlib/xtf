@@ -36,7 +36,7 @@ final class PrecedingEnumeration extends TreeEnumeration
   protected void step() {
     next = next.getPreviousInDocument();
   }
-
+  
   /**
   * Get another enumeration of the same nodes
   */

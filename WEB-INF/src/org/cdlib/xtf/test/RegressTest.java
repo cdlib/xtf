@@ -48,6 +48,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.Configuration;
+import net.sf.saxon.PreparedStylesheet;
 import net.sf.saxon.om.AllElementStripper;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
@@ -345,6 +346,20 @@ public class RegressTest
                                                new File(docPath),
                                                false);
 
+        // Locate the display stylesheet, and get its configuration
+        PreparedStylesheet displaySheet = null;
+        Configuration config;
+        if (request.displayStyle == null ||
+            request.displayStyle.indexOf("NullStyle") >= 0)
+        {
+          config = new Configuration();
+        }
+        else {
+          displaySheet = (PreparedStylesheet)
+            stylesheetCache.find(request.displayStyle);
+          config = displaySheet.getConfiguration();
+        }
+    
         // Load and search the document. We suppress scores in the
         // snippets because the scoring algorithm changes often and
         // we don't really care exactly what the scores are.
@@ -354,18 +369,15 @@ public class RegressTest
                                              "all",
                                              new File(docPath));
         StructuredStore treeStore = StructuredFile.open(lazyFile);
-        SearchTree tree = new SearchTree(docKey, treeStore);
+        SearchTree tree = new SearchTree(config, docKey, treeStore);
         tree.suppressScores(true);
         tree.search(processor, request);
 
         // Output the resultant tree.
-        if (request.displayStyle == null ||
-            request.displayStyle.indexOf("NullStyle") >= 0) 
-        {
+        if (displaySheet == null)
           writeTree(testFile, tree);
-        }
         else
-          formatTree(testFile, tree, request.displayStyle);
+          formatTree(testFile, tree, displaySheet);
       }
       else {
         // Now run the query to obtain hits.
@@ -495,14 +507,11 @@ public class RegressTest
    *
    * @param outFile       Where to write the results.
    * @param tree          Tree to output from
-   * @param displayStyle  Path of the resultFormatter stylesheet
+   * @param displaySheet  The resultFormatter stylesheet
    */
-  protected void formatTree(File outFile, SearchTree tree, String displayStyle)
+  protected void formatTree(File outFile, SearchTree tree, PreparedStylesheet displaySheet)
     throws Exception 
   {
-    // Locate the display stylesheet.
-    Templates displaySheet = stylesheetCache.find(displayStyle);
-
     // Make a transformer for this specific query.
     Transformer trans = displaySheet.newTransformer();
 

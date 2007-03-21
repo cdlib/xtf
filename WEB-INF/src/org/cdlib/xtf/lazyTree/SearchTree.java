@@ -40,10 +40,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import net.sf.saxon.Configuration;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
-import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.NodeListIterator;
 import net.sf.saxon.om.StrippedNode;
 import org.apache.lucene.analysis.Token;
@@ -80,7 +81,8 @@ import org.cdlib.xtf.util.WordMap;
  * needed, leaving as much as possible on disk.</p>
  *
  * <p>To use SearchTree, simply call the constructor:
- * {@link #SearchTree(String, StructuredStore)}, passing it the key to use for index
+ * {@link #SearchTree(Configuration, String, StructuredStore)}, 
+ * passing it the key to use for index
  * lookups and the persistent file to load from. Then call the
  * {@link #search(QueryProcessor, QueryRequest)} method to perform the
  * actual search, and use the tree normally. As you access various parts of
@@ -255,12 +257,14 @@ public class SearchTree extends LazyDocument
    * the actual search, use the {@link #search(QueryProcessor, QueryRequest)}
    * method.
    */
-  public SearchTree(String sourceKey, StructuredStore treeStore)
+  public SearchTree(Configuration config, String sourceKey, StructuredStore treeStore)
     throws FileNotFoundException, IOException 
   {
+    super(config);
+    
     this.sourceKey = sourceKey;
 
-    LazyTreeBuilder builder = new LazyTreeBuilder();
+    LazyTreeBuilder builder = new LazyTreeBuilder(config);
     builder.setNamePool(NamePool.getDefaultNamePool());
     builder.load(treeStore, this);
 
@@ -487,14 +491,19 @@ public class SearchTree extends LazyDocument
 
     // Okay, load the node from disk. This also puts it into the cache.
     node = super.getNode(normNum);
+    if (node == null)
+      return null;
+    
     if (allPermanent)
       nodeCache.put(Integer.valueOf(normNum), node);
-    assert node.parent != null || node == this;
+    
+    assert node.parentNum >= 0 || node == this;
     assert node.nextSibNum >= -1;
     assert node.prevSibNum >= -1;
-    assert node.parent == null || ((NodeImpl)node.parent).nodeNum < MARKER_BASE;
+    assert node.parentNum < 0 || node.parentNum < MARKER_BASE;
     assert node.nextSibNum < MARKER_BASE;
     assert node.prevSibNum < MARKER_BASE;
+    assert node.prevSibNum != node.nextSibNum || node.prevSibNum < 0;
 
     // We need to differentiate backward references to other nodes.
     if (node.prevSibNum >= 0) {
@@ -562,16 +571,16 @@ public class SearchTree extends LazyDocument
    * Create an element node. Derived classes can override this to provide
    * their own element implementation.
    */
-  protected @Override NodeImpl createElementNode(NodeInfo parent) {
-    return new SearchElementImpl(this, parent);
+  protected @Override NodeImpl createElementNode() {
+    return new SearchElementImpl(this);
   }
 
   /**
    * Create a text node. Derived classes can override this to provide their
    * own text implementation.
    */
-  protected @Override NodeImpl createTextNode(NodeInfo parent) {
-    return new SearchTextImpl(this, parent);
+  protected @Override NodeImpl createTextNode() {
+    return new SearchTextImpl(this);
   }
 
   /**
@@ -795,7 +804,7 @@ public class SearchTree extends LazyDocument
     int nameCode = firstForHit ? hitElementCode : moreElementCode;
     int nAttrs = suppressScores ? 3 : 4;
     SearchElement el = realNotProxy
-                       ? (SearchElement)new SearchElementImpl(this, null)
+                       ? (SearchElement)new SearchElementImpl(this)
                        : (SearchElement)new ProxyElement(this);
     initElement(el, nameCode, nAttrs);
 
@@ -873,7 +882,7 @@ public class SearchTree extends LazyDocument
    * @return            The new element.
    */
   private SearchElementImpl createElement(int elNameCode, int nAttribs) {
-    SearchElementImpl el = new SearchElementImpl(this, null);
+    SearchElementImpl el = new SearchElementImpl(this);
     initElement(el, elNameCode, nAttribs);
     return el;
   } // createElement()
@@ -895,7 +904,7 @@ public class SearchTree extends LazyDocument
    * @return The newly created node.
    */
   private SearchTextImpl createText(String text) {
-    SearchTextImpl node = new SearchTextImpl(this, null);
+    SearchTextImpl node = new SearchTextImpl(this);
     initNode(node);
     node.setStringValue(text);
     return node;
@@ -912,7 +921,7 @@ public class SearchTree extends LazyDocument
     modifyNode(next);
 
     // Link it in
-    node.parent = prev.getParent();
+    node.parentNum = prev.parentNum;
     node.prevSibNum = prev.nodeNum;
     node.nextSibNum = prev.nextSibNum;
     prev.nextSibNum = node.nodeNum;
@@ -930,7 +939,7 @@ public class SearchTree extends LazyDocument
     modifyNode(parent);
 
     // Link it in
-    node.parent = parent;
+    node.parentNum = parent.nodeNum;
     node.prevSibNum = -1;
     node.nextSibNum = parent.childNum;
     parent.childNum = node.nodeNum;
@@ -997,14 +1006,14 @@ public class SearchTree extends LazyDocument
     int nAttribs = 2 + (snippet.sectionType != null ? 1 : 0) +
                    (suppressScores ? 0 : 1);
     SearchElement snippetElement = realNotProxy
-                                   ? (SearchElement)new SearchElementImpl(this, null)
+                                   ? (SearchElement)new SearchElementImpl(this)
                                    : (SearchElement)new ProxyElement(this);
     initElement(snippetElement, snippetElementCode, nAttribs);
     snippetElement.setPrevSibNum((hitNum == 0) ? -1 : SNIPPET_MARKER + hitNum -
                                  1);
     snippetElement.setNextSibNum(
       (hitNum == nHits - 1) ? -1 : SNIPPET_MARKER + hitNum + 1);
-    snippetElement.setParentNode(topSnippetNode);
+    snippetElement.setParentNum(topSnippetNode.nodeNum);
 
     // Give it a special place in the node cache so we can find it again.
     snippetElement.setNodeNum(num);
@@ -1320,8 +1329,8 @@ public class SearchTree extends LazyDocument
       }
 
       // Ditto the parent.
-      if (node.parent != null)
-        stack[top++] = (NodeImpl) node.parent;
+      if (node.parentNum != 0)
+        stack[top++] = getNode(node.parentNum);
     } // while
 
     // Cool. We've loaded everything necessary to get to the nodes that

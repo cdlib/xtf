@@ -29,13 +29,6 @@ public class ElementImpl extends ParentNodeImpl
   int[] attrNames;
   String[] attrValues;
 
-  /**
-   * Constructor
-   */
-  public ElementImpl(LazyDocument document, NodeInfo parent) {
-    super(document, parent);
-  }
-
   public void init(int attrOffset, int nameSpace)
     throws IOException 
   {

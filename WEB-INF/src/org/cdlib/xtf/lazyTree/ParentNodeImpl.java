@@ -19,10 +19,6 @@ public abstract class ParentNodeImpl extends NodeImpl
 {
   int childNum;
 
-  public ParentNodeImpl(LazyDocument document, NodeInfo parent) {
-    super(document, parent);
-  }
-
   // inherit JavaDoc
   public final boolean hasChildNodes() {
     return (childNum >= 0);

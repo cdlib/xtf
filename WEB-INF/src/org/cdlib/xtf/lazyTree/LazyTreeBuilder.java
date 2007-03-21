@@ -31,11 +31,11 @@ package org.cdlib.xtf.lazyTree;
  */
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
+
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.Receiver;
-import net.sf.saxon.om.Axis;
-import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tinytree.HackedTinyBuilder;
@@ -84,8 +84,8 @@ public class LazyTreeBuilder
   public static final String curVersion = "1.01";
 
   /** Default constructor -- sets up the configuration */
-  public LazyTreeBuilder() {
-    config = new Configuration();
+  public LazyTreeBuilder(Configuration config) {
+    this.config = config;
     config.setErrorListener(new XTFSaxonErrorListener());
     config.setNamePool(NamePool.getDefaultNamePool());
     pipe = new PipelineConfiguration();
@@ -108,7 +108,7 @@ public class LazyTreeBuilder
   public NodeInfo load(StructuredStore treeStore)
     throws FileNotFoundException, IOException 
   {
-    LazyDocument targetDoc = new LazyDocument();
+    LazyDocument targetDoc = new LazyDocument(config);
     load(treeStore, targetDoc);
     return targetDoc;
   } // load()
@@ -298,16 +298,30 @@ public class LazyTreeBuilder
     while (nNodes > 0 && tree.getNodeKind(nNodes-1) == Type.STOPPER)
       nNodes--;
 
+    // Get pointers to handy arrays we'll need
+    int[] nameCodes = tree.getNameCodeArray();
+    int[] nexts = tree.getNextPointerArray();
+    int[] alphas = tree.getAlphaArray();
+    int[] betas = tree.getBetaArray();
+    
+    // TinyTree won't provide us direct access to the 'prior' array... so
+    // let's build it ourselves.
+    int[] prior = new int[tree.getNumberOfNodes()];
+    Arrays.fill(prior, 0, tree.getNumberOfNodes(), -1);
+    for (int i = 0; i < tree.getNumberOfNodes(); i++) 
+    {
+      int nextNode = nexts[i];
+      if (nextNode > i) {
+        prior[nextNode] = i;
+      }
+    }
+
     // Pack up each node. That way we can calculate the maximum size of
     // any particular one, and they can be randomly accessed by multiplying
     // the node number by that size.
     //
     PackedByteBuf[] nodeBufs = new PackedByteBuf[nNodes];
     int maxSize = 0;
-    int[] nameCodes = tree.getNameCodeArray();
-    int[] nexts = tree.getNextPointerArray();
-    int[] alphas = tree.getAlphaArray();
-    int[] betas = tree.getBetaArray();
     for (int i = 0; i < nNodes; i++) 
     {
       PackedByteBuf buf = nodeBufs[i] = new PackedByteBuf(20);
@@ -320,9 +334,7 @@ public class LazyTreeBuilder
       int nameCode = nameCodes[i];
       int parent = (node.getParent() != null)
                    ? (((TinyNodeImpl)node.getParent()).getNodeNumber()) : -1;
-      AxisIterator prevIter = node.iterateAxis(Axis.FOLLOWING_SIBLING);
-      TinyNodeImpl prevNode = (TinyNodeImpl) prevIter.next();
-      int prevSib = (prevNode == null) ? -1 : prevNode.getNodeNumber();
+      int prevSib = prior[i];
       int nextSib = (nexts[i] > i) ? nexts[i] : -1;
       int child = node.hasChildNodes() ? (i + 1) : -1;
       int alpha = alphas[i];
@@ -336,10 +348,8 @@ public class LazyTreeBuilder
                   ((alpha != -1) ? Flag.HAS_ALPHA : 0) |
                   ((beta != -1) ? Flag.HAS_BETA : 0);
       buf.writeInt(flags);
-
-      // Parent
-      if (parent >= 0)
-        buf.writeInt(parent);
+      
+      assert prevSib != nextSib || prevSib < 0;
 
       // Name code
       if (nameCode >= 0) {
@@ -347,6 +357,10 @@ public class LazyTreeBuilder
         assert nameIdx >= 0 : "A name was missed when writing name codes";
         buf.writeInt(nameIdx);
       }
+
+      // Parent
+      if (parent >= 0)
+        buf.writeInt(parent);
 
       // Prev sibling
       if (prevSib >= 0)

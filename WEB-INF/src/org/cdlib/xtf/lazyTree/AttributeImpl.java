@@ -27,7 +27,6 @@ final class AttributeImpl extends NodeImpl
   * @param index The index position of the attribute starting at zero
   */
   public AttributeImpl(ElementImpl element, int index) {
-    super(element.document, element);
     this.index = index;
     this.element = element;
     nameCode = element.attrNames[index];
@@ -80,7 +79,7 @@ final class AttributeImpl extends NodeImpl
    * not implement the correct semantics.
    */
   public int hashCode() {
-    return parent.hashCode() ^ getFingerprint();
+    return element.hashCode() ^ getFingerprint();
   }
 
   /**

@@ -33,7 +33,6 @@ package org.cdlib.xtf.lazyTree;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
-import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.pattern.NodeTest;
 import net.sf.saxon.trans.XPathException;
 
@@ -48,9 +47,9 @@ public class SearchElementImpl extends ElementImpl implements SearchElement
 {
   boolean specialAttrChecked = false;
 
-  SearchElementImpl(SearchTree document, NodeInfo parent) {
-    super(document, parent);
+  SearchElementImpl(SearchTree tree) {
     prevSibNum = nextSibNum = childNum = nameSpace = -1;
+    document = tree;
   }
 
   /** Set the node number for this node. */
@@ -71,8 +70,8 @@ public class SearchElementImpl extends ElementImpl implements SearchElement
   }
 
   /** Establish the parent node */
-  public void setParentNode(NodeInfo parent) {
-    this.parent = parent;
+  public void setParentNum(int parentNum) {
+    this.parentNum = parentNum;
   }
 
   /** Establish the child node number */

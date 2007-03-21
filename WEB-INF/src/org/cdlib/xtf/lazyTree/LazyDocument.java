@@ -144,8 +144,14 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
    * Construct a new (empty) document. Should call
    * {@link #init(NamePool, StructuredStore)} afterward.
    */
-  public LazyDocument() {
-    super(null, null);
+  public LazyDocument(Configuration config) {
+    this.config = config;
+    documentNumber = config.getDocumentNumberAllocator()
+                       .allocateDocumentNumber();
+
+    // Check if we're being profiled.
+    if (config.getTraceListener() instanceof ProfilingListener)
+      profileListener = (ProfilingListener)config.getTraceListener();
   }
 
   /**
@@ -160,6 +166,7 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
     this.mainStore = store;
 
     nodeNum = 0;
+    parentNum = -1;
     document = this;
 
     // Record the name pool.
@@ -356,20 +363,6 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
   } // getIndex()
 
   /**
-  * Set the Configuration that contains this document
-  */
-  public void setConfiguration(Configuration config) 
-  {
-    this.config = config;
-    documentNumber = config.getDocumentNumberAllocator()
-                       .allocateDocumentNumber();
-
-    // Check if we're being profiled.
-    if (config.getTraceListener() instanceof ProfilingListener)
-      profileListener = (ProfilingListener)config.getTraceListener();
-  }
-
-  /**
    * Get the configuration previously set using setConfiguration
    */
   public Configuration getConfiguration() {
@@ -460,22 +453,16 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
       short kind = nodeBuf.readByte();
       int flags = nodeBuf.readInt();
 
-      NodeInfo parent = null;
-      if ((flags & Flag.HAS_PARENT) != 0) {
-        int parentNum = nodeBuf.readInt();
-        parent = getNode(parentNum);
-      }
-
       // Construct the node based on the kind.
       switch (kind) {
         case Type.DOCUMENT:
           node = this;
           break;
         case Type.ELEMENT:
-          node = createElementNode(parent);
+          node = createElementNode();
           break;
         case Type.TEXT:
-          node = createTextNode(parent);
+          node = createTextNode();
           break;
         case Type.COMMENT:
           assert false : "comments not yet supported";
@@ -490,6 +477,7 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
 
       // Make sure the node knows how to get back to the document.
       node.nodeNum = num;
+      node.document = this;
 
       // Read other stuff according to the flags.
       if ((flags & Flag.HAS_NAMECODE) != 0) {
@@ -498,6 +486,11 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
       }
       else
         node.nameCode = -1;
+
+      if ((flags & Flag.HAS_PARENT) != 0)
+        node.parentNum = nodeBuf.readInt();
+      else
+        node.parentNum = -1;
 
       if ((flags & Flag.HAS_PREV_SIBLING) != 0)
         node.prevSibNum = nodeBuf.readInt();
@@ -508,6 +501,10 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
         node.nextSibNum = nodeBuf.readInt();
       else
         node.nextSibNum = -1;
+      
+      assert node.prevSibNum != node.nextSibNum || node.prevSibNum < 0;
+      assert node.prevSibNum < node.nodeNum;
+      assert node.nextSibNum > node.nodeNum || node.nextSibNum < 0;
 
       if ((flags & Flag.HAS_CHILD) != 0) {
         assert node instanceof ParentNodeImpl;
@@ -575,16 +572,16 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
    * Create an element node. Derived classes can override this to provide their
    * own element implementation.
    */
-  protected NodeImpl createElementNode(NodeInfo parent) {
-    return new ElementImpl(this, parent);
+  protected NodeImpl createElementNode() {
+    return new ElementImpl();
   }
 
   /**
    * Create a text node. Derived classes can override this to provide their
    * own text implementation.
    */
-  protected NodeImpl createTextNode(NodeInfo parent) {
-    return new TextImpl(this, parent);
+  protected NodeImpl createTextNode() {
+    return new TextImpl();
   }
 
   /**
@@ -756,7 +753,7 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
 
     for (int i = 0; i < numberOfNodes; i++) {
       NodeImpl node = getNode(i);
-      if ((node.getNameCode() & 0xfffff) != fingerprint)
+      if (node == null || (node.getNameCode() & 0xfffff) != fingerprint)
         continue;
       nodes.add(node);
       nodeNums.add(Integer.valueOf(node.nodeNum));

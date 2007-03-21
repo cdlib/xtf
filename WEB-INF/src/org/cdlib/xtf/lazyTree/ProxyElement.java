@@ -96,7 +96,7 @@ public final class ProxyElement implements NodeInfo, FingerprintedNode,
   }
 
   /** Establish the parent node number */
-  public void setParentNode(NodeInfo newParent) {
+  public void setParentNum(int newParentNum) {
   }
 
   /** Establish the child node number */

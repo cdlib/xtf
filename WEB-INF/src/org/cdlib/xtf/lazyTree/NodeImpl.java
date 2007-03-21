@@ -45,7 +45,7 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
   LazyDocument document;
   int nodeNum;
   int nameCode;
-  NodeInfo parent;
+  int parentNum;
   int prevSibNum;
   int nextSibNum;
 
@@ -57,12 +57,6 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
                                              'x', 'e', 'a', 't', 'x', 'x', 'x',
                                              'p', 'c', 'r', 'x', 'x', 'x', 'n'
                                            };
-
-  /** Create a new node and attach it to a document */
-  public NodeImpl(LazyDocument document, NodeInfo parent) {
-    this.document = document;
-    this.parent = parent;
-  }
 
   /**
    * Get the value of the item as a CharSequence. This is in some cases more efficient than
@@ -233,14 +227,14 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
    * Get the system ID for the node. Default implementation for child nodes.
    */
   public String getSystemId() {
-    return parent.getSystemId();
+    return getParent().getSystemId();
   }
 
   /**
    * Get the base URI for the node. Default implementation for child nodes.
    */
   public String getBaseURI() {
-    return parent.getBaseURI();
+    return getParent().getBaseURI();
   }
 
   /**
@@ -362,7 +356,7 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
    * Get the line number of the node within its source document entity
    */
   public int getLineNumber() {
-    return parent.getLineNumber();
+    return getParent().getLineNumber();
   }
 
   /**
@@ -371,7 +365,7 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
    * @return The Node object describing the containing element or root node.
    */
   public final NodeInfo getParent() {
-    return parent;
+    return document.getNode(parentNum);
   }
 
   /**
