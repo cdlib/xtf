@@ -17,9 +17,6 @@ package org.apache.lucene.util;
  */
 
 import java.util.Arrays;
-import java.util.Random;
-
-import org.cdlib.xtf.util.Tester;
 
 /** 
  * A fast, array-based, expandable list of longs.
@@ -181,21 +178,21 @@ public class LongList
   /**
    * Basic regression test
    */
-  public static final Tester tester = new Tester("LongList") 
-  {
-    protected void testImpl() 
-    {
-      LongList list = new LongList();
-      final int SIZE = 100000;
-      Random rand = new Random(1);
-      for (int i = 0; i < SIZE; i++)
-        list.add(Math.abs(rand.nextLong()));
-
-      int[] map = list.calcSortMap();
-      list.remap(map);
-
-      for (int i = 1; i < SIZE; i++)
-        assert list.get(i - 1) <= list.get(i);
-    } // testImpl()
-  };
+//  public static final Tester tester = new Tester("LongList") 
+//  {
+//    protected void testImpl() 
+//    {
+//      LongList list = new LongList();
+//      final int SIZE = 100000;
+//      Random rand = new Random(1);
+//      for (int i = 0; i < SIZE; i++)
+//        list.add(Math.abs(rand.nextLong()));
+//
+//      int[] map = list.calcSortMap();
+//      list.remap(map);
+//
+//      for (int i = 1; i < SIZE; i++)
+//        assert list.get(i - 1) <= list.get(i);
+//    } // testImpl()
+//  };
 } // class LongList

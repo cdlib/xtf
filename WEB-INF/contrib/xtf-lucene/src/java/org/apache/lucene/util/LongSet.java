@@ -18,8 +18,6 @@ package org.apache.lucene.util;
 
 import java.util.Arrays;
 
-import org.cdlib.xtf.util.Tester;
-
 /**
  * A fast, expandible set of positive numeric values, stored as a hash.
  * Doesn't support deletion, and isn't very good at handling sequential
@@ -120,25 +118,25 @@ public class LongSet
   /**
    * Basic regression test
    */
-  public static final Tester tester = new Tester("LongSet") 
-  {
-    protected void testImpl() 
-    {
-      LongSet hash = new LongSet(2);
-
-      hash.add(100);
-      assert hash.contains(100);
-      assert !hash.contains(111);
-      assert hash.size() == 1;
-
-      hash.add(200);
-      hash.add(211);
-      assert hash.contains(100);
-      assert hash.contains(200);
-      assert hash.contains(211);
-      assert !hash.contains(111);
-      assert !hash.contains(212);
-      assert hash.size() == 3;
-    } // testImpl()
-  };
+//  public static final Tester tester = new Tester("LongSet") 
+//  {
+//    protected void testImpl() 
+//    {
+//      LongSet hash = new LongSet(2);
+//
+//      hash.add(100);
+//      assert hash.contains(100);
+//      assert !hash.contains(111);
+//      assert hash.size() == 1;
+//
+//      hash.add(200);
+//      hash.add(211);
+//      assert hash.contains(100);
+//      assert hash.contains(200);
+//      assert hash.contains(211);
+//      assert !hash.contains(111);
+//      assert !hash.contains(212);
+//      assert hash.size() == 3;
+//    } // testImpl()
+//  };
 } // class LongSet
