@@ -49,6 +49,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.sax.SAXResult;
+
+import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.PreparedStylesheet;
 import net.sf.saxon.event.Receiver;
@@ -1101,7 +1103,7 @@ public class XMLTextProcessor extends DefaultHandler
       // While we parse the source document, we're going to also build up 
       // a tree that will be written to the lazy file.
       //
-      lazyBuilder = new LazyTreeBuilder();
+      lazyBuilder = new LazyTreeBuilder(new Configuration());
       lazyReceiver = lazyBuilder.begin(lazyStore);
 
       lazyBuilder.setNamePool(namePool);

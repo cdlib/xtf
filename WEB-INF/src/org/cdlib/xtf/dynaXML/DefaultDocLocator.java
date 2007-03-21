@@ -36,6 +36,8 @@ import java.io.InputStream;
 import javax.xml.parsers.SAXParser;
 import javax.xml.transform.Templates;
 import javax.xml.transform.sax.SAXResult;
+
+import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceivingContentHandler;
 import net.sf.saxon.om.NamePool;
@@ -200,7 +202,8 @@ public class DefaultDocLocator implements DocLocator
     // While we parse the source document, we're going to also build up 
     // a tree that will be written to the lazy file.
     //
-    LazyTreeBuilder lazyBuilder = new LazyTreeBuilder();
+    Configuration config = new Configuration();
+    LazyTreeBuilder lazyBuilder = new LazyTreeBuilder(config);
     StructuredStore lazyStore = StructuredFile.create(lazyFile);
     Receiver lazyReceiver = lazyBuilder.begin(lazyStore);
 

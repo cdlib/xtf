@@ -45,6 +45,8 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXSource;
+
+import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.om.NamePool;
@@ -518,6 +520,10 @@ public class DynaXML extends TextServlet
 
     // Okay, let's use the lazy version of the document...
     Source sourceDoc = null;
+    
+    // Get the Saxon configuration to use
+    Controller controller = (Controller)transformer;
+    Configuration config = controller.getConfiguration();
 
     // If a query was specified, make a SearchTree; otherwise, make
     // a normal lazy tree.
@@ -527,12 +533,12 @@ public class DynaXML extends TextServlet
                                            new File(docInfo.indexConfig),
                                            docInfo.indexName,
                                            new File(docInfo.source));
-      SearchTree tree = new SearchTree(docKey, lazyStore);
+      SearchTree tree = new SearchTree(config, docKey, lazyStore);
       tree.search(createQueryProcessor(), docInfo.query);
       sourceDoc = tree;
     }
     else {
-      LazyTreeBuilder builder = new LazyTreeBuilder();
+      LazyTreeBuilder builder = new LazyTreeBuilder(config);
       builder.setNamePool(NamePool.getDefaultNamePool());
       sourceDoc = builder.load(lazyStore);
     }
@@ -545,11 +551,10 @@ public class DynaXML extends TextServlet
     // We need a special key manager on the lazy tree, so that we can
     // use lazily stored keys on disk.
     //
-    Controller c = (Controller)transformer;
-    Executable e = c.getExecutable();
+    Executable e = controller.getExecutable();
     KeyManager k = e.getKeyManager();
     if (!(k instanceof LazyKeyManager))
-      e.setKeyManager(new LazyKeyManager(k, c.getConfiguration()));
+      e.setKeyManager(new LazyKeyManager(k, controller.getConfiguration()));
 
     // All done.
     return sourceDoc;
