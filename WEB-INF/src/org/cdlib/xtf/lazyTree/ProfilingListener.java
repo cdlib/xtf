@@ -28,7 +28,7 @@ public class ProfilingListener implements TraceListener
   private ThreadLocal tlInstructionStack = new ThreadLocal();
 
   /** Dummy used for counting nodes when no instruction is specified */
-  private static final ProfileCount emptyInstr = new ProfileCount();
+  private static final ProfileCount emptyInstr = new ProfileCount("[Global variables]", 0);
 
   /**
    * Keeps a count of how many nodes are accessed by each instruction.
@@ -74,14 +74,6 @@ public class ProfilingListener implements TraceListener
   public void enter(InstructionInfo instruction, XPathContext context) 
   {
     LinkedList instructionStack = getInstructionStack();
-    /*
-        for( int i = 0; i < instructionStack.size(); i++ )
-            Trace.debug( "  " );
-        String s = instruction.getSystemId();
-        s = s.substring( s.lastIndexOf('/') + 1 );
-        Trace.debug( s + ":" + instruction.getLineNumber() );
-    }
-    */
     instructionStack.addLast(new ProfileCount(instruction.getSystemId(),
                                               instruction.getLineNumber()));
   }
@@ -91,6 +83,9 @@ public class ProfilingListener implements TraceListener
    * the instruction that was previously active.
    */
   public void leave(InstructionInfo instruction) {
+    LinkedList instructionStack = getInstructionStack();
+    assert !instructionStack.isEmpty();
+    instructionStack.removeLast();
   }
 
   /** Unused */
@@ -114,7 +109,7 @@ public class ProfilingListener implements TraceListener
       instr = emptyInstr;
     else
       instr = (ProfileCount)instructionStack.getLast();
-
+    
     ProfileCount pc = (ProfileCount)countMap.get(instr);
     if (pc == null) {
       pc = new ProfileCount(instr.systemId, instr.lineNum);
@@ -123,7 +118,7 @@ public class ProfilingListener implements TraceListener
 
     if (!pc.nodes.containsKey(Integer.valueOf(nodeNum))) {
       pc.count++;
-      pc.nodes.put(Integer.valueOf(nodeNum), new Boolean(true));
+      pc.nodes.put(Integer.valueOf(nodeNum), Boolean.TRUE);
     }
   } // bumpCount()
 

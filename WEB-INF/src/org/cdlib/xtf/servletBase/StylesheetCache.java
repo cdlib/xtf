@@ -92,18 +92,6 @@ public class StylesheetCache extends GeneratingCache
     //
     factory.setAttribute(FeatureKeys.SOURCE_PARSER_CLASS,
                          DTDSuppressingXMLReader.class.getName());
-
-    // Set up the profiling listener, if profiling is enabled
-    if (enableProfiling) {
-      ProfilingListener profilingListener = new ProfilingListener();
-      factory.setAttribute(FeatureKeys.TRACE_LISTENER, profilingListener);
-      factory.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
-    }
-
-    // Set a URI resolver for dependency checking, if enabled.
-    if (dependencyChecking) {
-      factory.setURIResolver(new DepResolver(this, factory.getURIResolver()));
-    }
   }
 
   /**
@@ -145,7 +133,7 @@ public class StylesheetCache extends GeneratingCache
    * @return              The parsed stylesheet
    * @throws Exception    If the stylesheet could not be loaded.
    */
-  protected Object generate(Object key)
+  protected synchronized Object generate(Object key)
     throws Exception 
   {
     assert dependencyReceiver == null : "stylesheet cache should only have dependencyReceiver " +
@@ -162,6 +150,18 @@ public class StylesheetCache extends GeneratingCache
       if (!path.startsWith("http:") && !file.canRead())
         throw new GeneralException("Cannot read stylesheet: " + path);
 
+      // Set up the profiling listener, if profiling is enabled
+      if (enableProfiling) {
+        ProfilingListener profilingListener = new ProfilingListener();
+        factory.setAttribute(FeatureKeys.TRACE_LISTENER, profilingListener);
+        factory.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
+      }
+  
+      // Set a URI resolver for dependency checking, if enabled.
+      if (dependencyChecking)
+        factory.setURIResolver(new DepResolver(this, factory.getURIResolver()));
+      
+      // Load that stylesheet!
       String url;
       if (path.startsWith("http:"))
         url = path;

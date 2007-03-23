@@ -33,8 +33,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+
+import net.sf.saxon.PreparedStylesheet;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
 import net.sf.saxon.value.StringValue;
@@ -103,7 +104,8 @@ class DocInfoCache extends GeneratingCache
     DocInfo info = new DocInfo();
 
     // First, load the lookup stylesheet.
-    Templates pss = servlet.stylesheetCache.find(config.docLookupSheet);
+    PreparedStylesheet pss = (PreparedStylesheet)
+      servlet.stylesheetCache.find(config.docLookupSheet);
 
     // Running the stylesheet may produce additional dependencies if the
     // sheet reads in extra files dependent on the document ID. To avoid
@@ -154,7 +156,7 @@ class DocInfoCache extends GeneratingCache
     //
     XMLFormatter paramBlock = new XMLFormatter();
     servlet.buildParamBlock(attrList, paramBlock, new HashMap(), null);
-    NodeInfo paramDoc = paramBlock.toNode();
+    NodeInfo paramDoc = paramBlock.toNode(pss.getConfiguration());
 
     if (Trace.getOutputLevel() >= Trace.debug) {
       Trace.debug("*** docReqParser input ***");

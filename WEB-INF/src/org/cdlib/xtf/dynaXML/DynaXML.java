@@ -389,6 +389,11 @@ public class DynaXML extends TextServlet
     if (!(transformer.getErrorListener() instanceof XTFSaxonErrorListener))
       transformer.setErrorListener(new XTFSaxonErrorListener());
 
+    // Our tree is pre-stripped, so it would be inefficient to strip it
+    // again.
+    //
+    ((Controller)transformer).getExecutable().setStripsWhitespace(false);
+
     // Now do the bulk of the work
     try 
     {

@@ -1092,13 +1092,6 @@ public class XMLTextProcessor extends DefaultHandler
     lazyStore = record.lazyStore();
     if (lazyStore != null) 
     {
-      // We need to make sure to use a special name pool that records all
-      // possible name codes. We can use it later to iterate through and
-      // find all the registered keys (it's the only way.)
-      //
-      //NamePool namePool = NamePool.getDefaultNamePool();
-      //assert namePool instanceof RecordingNamePool; // FIXME
-
       // While we parse the source document, we're going to also build up 
       // a tree that will be written to the lazy file.
       //
@@ -1334,7 +1327,8 @@ public class XMLTextProcessor extends DefaultHandler
     //
     int nKeysCreated = keyMgr.createAllKeys(doc,
                                             ((Controller)trans).newXPathContext());
-    Trace.more(Trace.info, "(" + nKeysCreated + " keys) ");
+    Trace.more(Trace.info, "(" + nKeysCreated + " stored " +
+               ((nKeysCreated == 1) ? "key" : "keys") + ") ... ");
 
     // Make sure to close it when we're done.
     doc.close();

@@ -87,7 +87,6 @@ public class LazyTreeBuilder
   public LazyTreeBuilder(Configuration config) {
     this.config = config;
     config.setErrorListener(new XTFSaxonErrorListener());
-    //config.setNamePool(NamePool.getDefaultNamePool()); // FIXME: Remove
     pipe = new PipelineConfiguration();
     pipe.setConfiguration(config);
     pipe.setErrorListener(config.getErrorListener());

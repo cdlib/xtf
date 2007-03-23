@@ -17,15 +17,15 @@ import net.sf.saxon.type.BuiltInType;
 import net.sf.saxon.type.Type;
 import net.sf.saxon.value.*;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
 /**
-  * MCH: Hacked to change some methods from "private" to "protected", to allow LazyKeyManager
-  *      to use inheritance effectively. Also, HashMap has been changed to the more general
-  *      Map.
+  * MCH: Hacked to make certain members public, to allow for LazyKeyManager to get the access
+  *      it needs to the key list, and to be able to override certain methods.
   *      
-  * HackedKeyManager manages the set of key definitions in a stylesheet, and the indexes
+  * KeyManager manages the set of key definitions in a stylesheet, and the indexes
   * associated with these key definitions. It handles xsl:sort-key as well as xsl:key
   * definitions.
   *
@@ -33,7 +33,7 @@ import java.util.*;
   * The idea is that an index should continue to exist in memory so long as both the compiled
   * stylesheet and the source document exist in memory: if either is removed, the index should
   * go too. The document itself holds no reference to the index. The compiled stylesheet (which
-  * owns the HackedKeyManager) holds a weak reference to the index. The index, of course, holds strong
+  * owns the KeyManager) holds a weak reference to the index. The index, of course, holds strong
   * references to the nodes in the document. The Controller holds a strong reference to the
   * list of indexes used for each document, so that indexes remain in memory for the duration
   * of a transformation even if the documents themselves are garbage collected.</p>
@@ -70,9 +70,9 @@ import java.util.*;
   *
   * @author Michael H. Kay
   */
-public class HackedKeyManager extends KeyManager
+public class KeyManager implements Serializable 
 {
-  protected IntHashMap keyList; // one entry for each named key; the entry contains
+  public IntHashMap keyList; // one entry for each named key; the entry contains
 
                               // a list of key definitions with that name
   private transient WeakHashMap docIndexes;
@@ -84,12 +84,10 @@ public class HackedKeyManager extends KeyManager
   // of key/value pairs.
 
   /**
-  * create a HackedKeyManager and initialise variables
+  * create a KeyManager and initialise variables
   */
-  public HackedKeyManager(Configuration config) 
+  public KeyManager(Configuration config) 
   {
-    super(config);
-    
     keyList = new IntHashMap(10);
     docIndexes = new WeakHashMap(10);
 
@@ -137,12 +135,6 @@ public class HackedKeyManager extends KeyManager
                                Configuration config)
     throws StaticError 
   {
-    // Happens because of weird order-of-initialization; we cannot create our
-    // list before the super constructor goes and adds the idRef key.
-    //
-    if (keyList == null)
-      keyList = new IntHashMap(10);
-    
     ArrayList v = (ArrayList)keyList.get(fingerprint);
     if (v == null) 
     {
@@ -221,10 +213,10 @@ public class HackedKeyManager extends KeyManager
   * @param context The dynamic context
   * @return the index in question, as a Map mapping a key value onto a ArrayList of nodes
   */
-  protected synchronized Map buildIndex(int keyNameFingerprint,
-                                            BuiltInAtomicType itemType,
-                                            Set foundItemTypes, DocumentInfo doc,
-                                            XPathContext context)
+  public synchronized Map buildIndex(int keyNameFingerprint,
+                                          BuiltInAtomicType itemType,
+                                          Set foundItemTypes, DocumentInfo doc,
+                                          XPathContext context)
     throws XPathException 
   {
     //explainKeys(context.getConfiguration(), System.out);
@@ -669,7 +661,7 @@ public class HackedKeyManager extends KeyManager
   * which returns Map giving the index for each key fingerprint. This index is itself another
   * Map.
   * The methods need to be synchronized because several concurrent transformations (which share
-  * the same HackedKeyManager) may be creating indexes for the same or different documents at the same
+  * the same KeyManager) may be creating indexes for the same or different documents at the same
   * time.
   */
   private synchronized void putIndex(DocumentInfo doc, int keyFingerprint,

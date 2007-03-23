@@ -6,10 +6,11 @@ import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.StrippedNode;
+import net.sf.saxon.pattern.NodeTestPattern;
+import net.sf.saxon.pattern.PatternFinder;
 import net.sf.saxon.sort.IntIterator;
 import net.sf.saxon.type.BuiltInAtomicType;
 import net.sf.saxon.value.StringValue;
-import net.sf.saxon.trans.HackedKeyManager;
 import net.sf.saxon.trans.KeyDefinition;
 import net.sf.saxon.trans.KeyManager;
 import net.sf.saxon.trans.XPathException;
@@ -21,7 +22,6 @@ import java.io.PrintStream;
 import java.util.Map;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.CRC32;
 
 import org.apache.lucene.util.Hash64;
 import org.cdlib.xtf.util.DiskHashReader;
@@ -32,52 +32,27 @@ import org.cdlib.xtf.util.Trace;
   * of keeping them in RAM. If the same index is accessed later, it need not
   * be recomputed.
   *
-  * KeyManager manages the set of key definitions in a stylesheet, and the indexes
-  * associated with these key definitions. It handles xsl:sort-key as well as xsl:key
-  * definitions.
-  *
-  * <p>The memory management in this class is subtle, with extensive use of weak references.
-  * The idea is that an index should continue to exist in memory so long as both the compiled
-  * stylesheet and the source document exist in memory: if either is removed, the index should
-  * go too. The document itself holds no reference to the index. The compiled stylesheet (which
-  * owns the KeyManager) holds a weak reference to the index. The index, of course, holds strong
-  * references to the nodes in the document. The Controller holds a strong reference to the
-  * list of indexes used for each document, so that indexes remain in memory for the duration
-  * of a transformation even if the documents themselves are garbage collected.</p>
-  *
-  * <p>Potentially there is a need for more than one index for a given key name, depending
-  * on the primitive type of the value provided to the key() function. An index is built
-  * corresponding to the type of the requested value; if subsequently the key() function is
-  * called with the same name and a different type of value, then a new index is built.</p>
-  *
-  * @author Michael H. Kay, Martin Haye
+  * @author Martin Haye
   */
-public class LazyKeyManager extends HackedKeyManager 
+public class LazyKeyManager extends KeyManager 
 {
-  KeyManager wrapped;
+  /** Count of keys actually stored on disk */
+  private int nKeysStored;
   
   /**
-   * create a LazyKeyManager and initialise variables
+   * Construct and initialize the manager, grabbing existing key definitions
+   * from the previous key manager.
    */
-  public LazyKeyManager(Configuration config, KeyManager toWrap) {
+  public LazyKeyManager(Configuration config, KeyManager prevMgr) {
     super(config);
-    this.wrapped = toWrap;
+    keyList = prevMgr.keyList;
   }
 
   // inherit JavaDoc
-  public List getKeyDefinitions(int fingerprint) 
-  {
-    List ret = (List) keyList.get(fingerprint);
-    if (ret != null)
-      return ret;
-    return wrapped.getKeyDefinitions(fingerprint);
-  }
-  
-  // inherit JavaDoc
-  protected synchronized Map buildIndex(int keyNameFingerprint,
-                                            BuiltInAtomicType itemType,
-                                            Set foundItemTypes, DocumentInfo doc,
-                                            XPathContext context)
+  public synchronized Map buildIndex(int keyNameFingerprint,
+                                     BuiltInAtomicType itemType,
+                                     Set foundItemTypes, DocumentInfo doc,
+                                     XPathContext context)
     throws XPathException 
   {
     // If the key name has 'dynamic' in it, this is a signal that we
@@ -102,7 +77,7 @@ public class LazyKeyManager extends HackedKeyManager
 
       // Calculate a string to uniquely describe this index.
     List definitions = getKeyDefinitions(keyNameFingerprint);
-    String indexName = calcIndexName(pool, fingerName, definitions, itemType, document.config);
+    String indexName = calcIndexName(pool, fingerName, definitions, document.config);
 
     // Do we already have a stored version of this index?
     DiskHashReader reader = document.getIndex(indexName);
@@ -130,6 +105,7 @@ public class LazyKeyManager extends HackedKeyManager
     // Store it, then return.
     try {
       document.putIndex(indexName, index);
+      nKeysStored++;
     }
     catch (IOException e) {
       Trace.error("Error storing persistent index! " + e);
@@ -143,6 +119,29 @@ public class LazyKeyManager extends HackedKeyManager
     return new LazyHashMap(document, document.getIndex(indexName));
   }
 
+  /**
+   * Optimized to use node test directly when possible, for speed.
+   */
+  protected void constructIndex(DocumentInfo doc, Map index,
+                              KeyDefinition keydef,
+                              BuiltInAtomicType soughtItemType,
+                              Set foundItemTypes, XPathContext context,
+                              boolean isFirst)
+    throws XPathException 
+  {
+    PatternFinder match = keydef.getMatch();
+    if (match instanceof NodeTestPattern) {
+      match = new FastNodeTestPattern(((NodeTestPattern)match).getNodeTest());
+      KeyDefinition oldDef = keydef;
+      keydef = new KeyDefinition(match, 
+                                 oldDef.getUse(),
+                                 oldDef.getCollationName(), 
+                                 oldDef.getCollation());
+    }
+    super.constructIndex(doc, index, keydef, soughtItemType,
+                         foundItemTypes, context, isFirst);
+  }
+  
   /**
    * Tells whether any keys have been registered.
    */
@@ -160,13 +159,15 @@ public class LazyKeyManager extends HackedKeyManager
    *
    * @return int       The number of keys created
    */
-  public int createAllKeys(LazyDocument doc, XPathContext context)
+  public synchronized int createAllKeys(LazyDocument doc, XPathContext context)
     throws XPathException 
   {
     StringValue val = new StringValue("1");
 
-    // Create a key for every definition we have
-    int nKeysCreated = 0;
+    // Create a key for every definition we have, and count how many actually
+    // get stored on disk.
+    //
+    nKeysStored = 0;
     IntIterator iter = keyList.keyIterator();
     while (iter.hasNext()) {
       int fingerprint = iter.next();
@@ -175,22 +176,10 @@ public class LazyKeyManager extends HackedKeyManager
       // This will have the effect of building the on-disk hash.
       //
       selectByKey(fingerprint, doc, val, context);
-      nKeysCreated++;
     }
 
-    return nKeysCreated;
+    return nKeysStored;
   } // createAllKeys()
-
-  /**
-   * Calculate a CRC code for the given string.
-   */
-  private String calcCRCString(String s) 
-  {
-    CRC32 crc = new CRC32();
-    crc.reset();
-    crc.update(s.getBytes());
-    return Long.toHexString(crc.getValue());
-  } // calcCRCString
 
   /**
    * Retrieve the lazy document for the given doc, if possible.
@@ -215,12 +204,13 @@ public class LazyKeyManager extends HackedKeyManager
    * @param pool          Name pool used to look up names
    * @param fingerName    Fingerprint of the key
    * @param definitions   List of key definitions
-   * @param itemType      The type of value to be stored.
+   * @param config        Associated Saxon configuration
    *
    * @return              A unique string for this xsl:key
    */
-  private String calcIndexName(NamePool pool, String fingerName,
-                               List definitions, BuiltInAtomicType itemType,
+  private String calcIndexName(NamePool pool, 
+                               String fingerName,
+                               List definitions,
                                Configuration config) 
   {
     StringBuffer sbuf = new StringBuffer();
@@ -249,30 +239,9 @@ public class LazyKeyManager extends HackedKeyManager
       }
       else
         sbuf.append("|non-exp");
-
-      // The item type
-      sbuf.append("|" + itemType);
     } // for k
 
     return sbuf.toString();
   } // calcIndexName()
 
 }
-
-//
-// The contents of this file are subject to the Mozilla Public License Version 1.0 (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy of the
-// License at http://www.mozilla.org/MPL/
-//
-// Software distributed under the License is distributed on an "AS IS" basis,
-// WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License.
-//
-// The Original Code is: all this file.
-//
-// The Initial Developer of the Original Code is Michael H. Kay.
-//
-// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
-//
-// Contributor(s): none.
-//

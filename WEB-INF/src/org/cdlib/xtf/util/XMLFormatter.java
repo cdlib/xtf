@@ -667,13 +667,12 @@ public class XMLFormatter
 
   /** Get the results as a Saxon NodeInfo.
    */
-  public NodeInfo toNode() 
+  public NodeInfo toNode(Configuration config) 
   {
     String strVersion = buf.toString();
     StreamSource src = new StreamSource(new StringReader(strVersion));
     try {
-      return TinyBuilder.build(src, new AllElementStripper(),
-                               new Configuration());
+      return TinyBuilder.build(src, new AllElementStripper(), config);
     }
     catch (XPathException e) {
       throw new RuntimeException(e);
