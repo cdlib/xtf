@@ -48,12 +48,10 @@ import java.util.zip.InflaterInputStream;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.sax.SAXSource;
-import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
 import org.cdlib.xtf.cache.Dependency;
 import org.cdlib.xtf.cache.FileDependency;
-import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.EasyNode;
@@ -149,13 +147,6 @@ public class SrcTreeProcessor
     // Open the Lucene index specified by the config info.
     textProcessor.open(cfgInfo.xtfHomePath, cfgInfo.indexInfo, cfgInfo.clean);
     cfgInfo.clean = false;
-
-    // We need to make sure to use a special name pool that records all
-    // possible name codes. We can use it later to iterate through and
-    // find all the registered keys (it's the only way.)
-    //
-    if (!(NamePool.getDefaultNamePool() instanceof RecordingNamePool))
-      NamePool.setDefaultNamePool(new RecordingNamePool());
 
     // Give some feedback.
     Trace.info("Scanning Data Directories...");

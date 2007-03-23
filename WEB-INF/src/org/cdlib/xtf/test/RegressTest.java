@@ -48,11 +48,16 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.Configuration;
+import net.sf.saxon.Controller;
 import net.sf.saxon.PreparedStylesheet;
+import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.om.AllElementStripper;
+import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.trans.KeyManager;
 import net.sf.saxon.tree.TreeBuilder;
 
+import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.SearchTree;
 import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IndexUtil;
@@ -103,7 +108,8 @@ public class RegressTest
   File filterDir;
   File filterFile;
   LinkedList failedTests = new LinkedList();
-  Configuration config = new Configuration();
+  static Configuration config = new Configuration();
+  static { config.setNamePool(NamePool.getDefaultNamePool()); }
   StylesheetCache stylesheetCache = new StylesheetCache(10, 0, false);
 
   public static void main(String[] args) 
@@ -514,6 +520,15 @@ public class RegressTest
   {
     // Make a transformer for this specific query.
     Transformer trans = displaySheet.newTransformer();
+    
+    // We need a special key manager on the lazy tree, so that we can
+    // use lazily stored keys on disk.
+    //
+    Controller controller = (Controller) trans;
+    Executable e = controller.getExecutable();
+    KeyManager k = e.getKeyManager();
+    if (!(k instanceof LazyKeyManager))
+      e.setKeyManager(new LazyKeyManager(controller.getConfiguration(), k));
 
     // Make sure errors get directed to the right place.
     if (!(trans.getErrorListener() instanceof XTFSaxonErrorListener))

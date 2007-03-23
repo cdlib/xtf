@@ -81,7 +81,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.cdlib.xtf.lazyTree.LazyDocument;
 import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
-import org.cdlib.xtf.lazyTree.RecordingNamePool;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.Constants;
 import org.cdlib.xtf.util.CharMap;
@@ -1097,16 +1096,18 @@ public class XMLTextProcessor extends DefaultHandler
       // possible name codes. We can use it later to iterate through and
       // find all the registered keys (it's the only way.)
       //
-      NamePool namePool = NamePool.getDefaultNamePool();
-      assert namePool instanceof RecordingNamePool;
+      //NamePool namePool = NamePool.getDefaultNamePool();
+      //assert namePool instanceof RecordingNamePool; // FIXME
 
       // While we parse the source document, we're going to also build up 
       // a tree that will be written to the lazy file.
       //
-      lazyBuilder = new LazyTreeBuilder(new Configuration());
+      Configuration config = new Configuration();
+      config.setNamePool(NamePool.getDefaultNamePool());
+      lazyBuilder = new LazyTreeBuilder(config);
       lazyReceiver = lazyBuilder.begin(lazyStore);
 
-      lazyBuilder.setNamePool(namePool);
+      lazyBuilder.setNamePool(config.getNamePool());
 
       lazyHandler = new ReceivingContentHandler();
       lazyHandler.setReceiver(lazyReceiver);
@@ -1321,10 +1322,8 @@ public class XMLTextProcessor extends DefaultHandler
     // Register a lazy key manager
     PreparedStylesheet pss = (PreparedStylesheet)stylesheet;
     Executable exec = pss.getExecutable();
-    if (!(exec.getKeyManager() instanceof LazyKeyManager)) {
-      exec.setKeyManager(new LazyKeyManager(exec.getKeyManager(),
-                                            pss.getConfiguration()));
-    }
+    if (!(exec.getKeyManager() instanceof LazyKeyManager))
+      exec.setKeyManager(new LazyKeyManager(pss.getConfiguration(), exec.getKeyManager()));
 
     Transformer trans = pss.newTransformer();
     LazyKeyManager keyMgr = (LazyKeyManager)exec.getKeyManager();

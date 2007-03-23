@@ -44,7 +44,6 @@ import java.util.regex.Pattern;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.Item;
-import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeListIterator;
 import net.sf.saxon.om.StrippedNode;
 import org.apache.lucene.analysis.Token;
@@ -265,7 +264,7 @@ public class SearchTree extends LazyDocument
     this.sourceKey = sourceKey;
 
     LazyTreeBuilder builder = new LazyTreeBuilder(config);
-    builder.setNamePool(NamePool.getDefaultNamePool());
+    builder.setNamePool(config.getNamePool());
     builder.load(treeStore, this);
 
     // We'll be using a special namespace.

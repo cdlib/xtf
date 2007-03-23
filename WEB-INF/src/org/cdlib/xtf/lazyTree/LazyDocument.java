@@ -5,6 +5,7 @@ import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import net.sf.saxon.Configuration;
@@ -12,6 +13,7 @@ import net.sf.saxon.event.Receiver;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.om.FastStringBuffer;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
@@ -297,7 +299,7 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
    * @param indexName Uniquely computed name
    * @param index     HashMap mapping String -> ArrayList[NodeImpl]
    */
-  public void putIndex(String indexName, HashMap index)
+  public void putIndex(String indexName, Map index)
     throws IOException 
   {
     DiskHashWriter writer = new DiskHashWriter();
@@ -590,6 +592,32 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
    */
   public long getSequenceNumber() {
     return 0;
+  }
+
+  /**
+  * Get next sibling - always null
+  * @return null
+  */
+  public final NodeInfo getNextSibling() {
+    return null;
+  }
+
+  /**
+  * Get previous sibling - always null
+  * @return null
+  */
+  public final NodeInfo getPreviousSibling() {
+    return null;
+  }
+
+  /**
+  * Get a character string that uniquely identifies this node
+  *  @param buffer a buffer into which will be placed a string based on the document number
+   *
+   */
+  public void generateId(FastStringBuffer buffer) {
+    buffer.append('d');
+    buffer.append(Integer.toString(documentNumber));
   }
 
   /**

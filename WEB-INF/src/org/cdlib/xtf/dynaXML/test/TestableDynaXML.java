@@ -220,7 +220,7 @@ public class TestableDynaXML extends DynaXML
     Executable e = c.getExecutable();
     KeyManager k = e.getKeyManager();
     if (k instanceof LazyKeyManager)
-      e.setKeyManager(((LazyKeyManager)k).getUnderlyingManager());
+      e.setKeyManager(new KeyManager(c.getConfiguration()));
 
     // A Saxon bug somewhere in last() happens when we allow stripping. Since
     // our tree is pre-stripped anyway, we can safely turn off stripping.

@@ -87,7 +87,7 @@ public class LazyTreeBuilder
   public LazyTreeBuilder(Configuration config) {
     this.config = config;
     config.setErrorListener(new XTFSaxonErrorListener());
-    config.setNamePool(NamePool.getDefaultNamePool());
+    //config.setNamePool(NamePool.getDefaultNamePool()); // FIXME: Remove
     pipe = new PipelineConfiguration();
     pipe.setConfiguration(config);
     pipe.setErrorListener(config.getErrorListener());
@@ -150,7 +150,7 @@ public class LazyTreeBuilder
     //
     HackedTinyBuilder builder = new HackedTinyBuilder();
     if (namePool == null)
-      namePool = NamePool.getDefaultNamePool();
+      namePool = config.getNamePool();
     builder.setPipelineConfiguration(pipe);
 
     // We're going to make a structured file to contain the entire tree.

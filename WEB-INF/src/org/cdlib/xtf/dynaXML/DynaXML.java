@@ -554,7 +554,7 @@ public class DynaXML extends TextServlet
     Executable e = controller.getExecutable();
     KeyManager k = e.getKeyManager();
     if (!(k instanceof LazyKeyManager))
-      e.setKeyManager(new LazyKeyManager(k, controller.getConfiguration()));
+      e.setKeyManager(new LazyKeyManager(controller.getConfiguration(), k));
 
     // All done.
     return sourceDoc;

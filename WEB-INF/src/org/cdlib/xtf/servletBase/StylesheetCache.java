@@ -36,7 +36,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.sax.SAXSource;
+
+import net.sf.saxon.Configuration;
 import net.sf.saxon.FeatureKeys;
+import net.sf.saxon.om.NamePool;
+
 import org.xml.sax.InputSource;
 import org.cdlib.xtf.cache.FileDependency;
 import org.cdlib.xtf.cache.GeneratingCache;
@@ -52,7 +56,8 @@ public class StylesheetCache extends GeneratingCache
   private boolean dependencyChecking = false;
   private GeneratingCache dependencyReceiver = null;
   private boolean enableProfiling = false;
-
+  private TransformerFactory factory;
+  
   /**
    * Constructor.
    *
@@ -65,6 +70,40 @@ public class StylesheetCache extends GeneratingCache
   public StylesheetCache(int maxEntries, int maxTime, boolean dependencyChecking) {
     super(maxEntries, maxTime);
     this.dependencyChecking = dependencyChecking;
+    
+    // Create a Saxon Configuration, and make it use the default name pool
+    // (it defaults to making a new name pool).
+    //
+    Configuration config = new Configuration();
+    config.setNamePool(NamePool.getDefaultNamePool());
+
+    // Make a factory that will compile stylesheets for us. Force it to use
+    // our centralized Configuration.
+    //
+    factory = new net.sf.saxon.TransformerFactoryImpl(config);
+    
+    // We want to report errors in a nice, servlet kind of way.
+    if (!(factory.getErrorListener() instanceof XTFSaxonErrorListener))
+      factory.setErrorListener(new XTFSaxonErrorListener());
+    
+    // Avoid loading external DTDs if possible. This not only speeds
+    // things up, but allows our service to work without depending on
+    // external servers being up and running at every moment.
+    //
+    factory.setAttribute(FeatureKeys.SOURCE_PARSER_CLASS,
+                         DTDSuppressingXMLReader.class.getName());
+
+    // Set up the profiling listener, if profiling is enabled
+    if (enableProfiling) {
+      ProfilingListener profilingListener = new ProfilingListener();
+      factory.setAttribute(FeatureKeys.TRACE_LISTENER, profilingListener);
+      factory.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
+    }
+
+    // Set a URI resolver for dependency checking, if enabled.
+    if (dependencyChecking) {
+      factory.setURIResolver(new DepResolver(this, factory.getURIResolver()));
+    }
   }
 
   /**
@@ -122,27 +161,6 @@ public class StylesheetCache extends GeneratingCache
         addDependency(new FileDependency(file));
       if (!path.startsWith("http:") && !file.canRead())
         throw new GeneralException("Cannot read stylesheet: " + path);
-
-      TransformerFactory factory = new net.sf.saxon.TransformerFactoryImpl();
-      if (!(factory.getErrorListener() instanceof XTFSaxonErrorListener))
-        factory.setErrorListener(new XTFSaxonErrorListener());
-
-      // Avoid loading external DTDs if possible. This not only speeds
-      // things up, but allows our service to work without depending on
-      // external servers being up and running at every moment.
-      //
-      factory.setAttribute(FeatureKeys.SOURCE_PARSER_CLASS,
-                           DTDSuppressingXMLReader.class.getName());
-
-      if (enableProfiling) {
-        ProfilingListener profilingListener = new ProfilingListener();
-        factory.setAttribute(FeatureKeys.TRACE_LISTENER, profilingListener);
-        factory.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
-      }
-
-      if (dependencyChecking) {
-        factory.setURIResolver(new DepResolver(this, factory.getURIResolver()));
-      }
 
       String url;
       if (path.startsWith("http:"))
