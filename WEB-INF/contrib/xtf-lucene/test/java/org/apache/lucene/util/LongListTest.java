@@ -21,16 +21,16 @@ import java.util.Random;
 import junit.framework.TestCase;
 
 /**
- * Test the {@link IntList} class.
+ * Test the {@link LongList} class.
  * 
  * @author Martin Haye
  */
-public class IntListTest extends TestCase
+public class LongListTest extends TestCase
 {
   // Test of basic methods like add, set, clear
   public void testAdd()
   {
-    IntList list = new IntList(2);
+    LongList list = new LongList(2);
     assertTrue(list.isEmpty());
 
     // Test adding
@@ -60,7 +60,7 @@ public class IntListTest extends TestCase
     assertEquals(89, list.get(1));
 
     // Make an array
-    int[] array = list.toArray();
+    long[] array = list.toArray();
     assertEquals(3, array.length);
     assertEquals(1, array[0]);
     assertEquals(89, array[1]);
@@ -81,13 +81,13 @@ public class IntListTest extends TestCase
   // Test of sort and search methods
   public void testSort() 
   {
-    IntList list = new IntList();
+    LongList list = new LongList();
     final int SIZE = 10000;
     Random rand = new Random(1);
     
     // First, try a straight sort
     for (int i = 0; i < SIZE; i++)
-      list.add(Math.abs(rand.nextInt()));
+      list.add(Math.abs(rand.nextLong()));
     
     list.sort();
     for (int i = 1; i < SIZE; i++)
@@ -96,7 +96,7 @@ public class IntListTest extends TestCase
     // Clear out, and try a remapping sort.
     list.clear();
     for (int i = 0; i < SIZE; i++)
-      list.add(Math.abs(rand.nextInt()));
+      list.add(Math.abs(rand.nextLong()));
 
     int[] map = list.calcSortMap();
     for (int i = 1; i < SIZE; i++)

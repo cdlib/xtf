@@ -123,17 +123,4 @@ public class Prime
                                      1285615151, 1414176653, 1555594373,
                                      1711153849, 1882269197, 2070496163
                                    };
-
-  // Perform a basic regression test on the Prime class.
-//  public static final Tester tester = new Tester("Prime") 
-//  {
-//    public void testImpl() {
-//      assert findAfter(2) == 3;
-//      assert findAfter(5) == 7;
-//      assert findAfter(65) == 67;
-//      assert findAfter(241) == 257;
-//      assert findAfter(505) == 541;
-//      assert findAfter(7908) == 8537;
-//    }
-//  };
 } // class Prime

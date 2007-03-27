@@ -114,29 +114,4 @@ public class LongSet
   public int size() {
     return curSize;
   } // size()
-
-  /**
-   * Basic regression test
-   */
-//  public static final Tester tester = new Tester("LongSet") 
-//  {
-//    protected void testImpl() 
-//    {
-//      LongSet hash = new LongSet(2);
-//
-//      hash.add(100);
-//      assert hash.contains(100);
-//      assert !hash.contains(111);
-//      assert hash.size() == 1;
-//
-//      hash.add(200);
-//      hash.add(211);
-//      assert hash.contains(100);
-//      assert hash.contains(200);
-//      assert hash.contains(211);
-//      assert !hash.contains(111);
-//      assert !hash.contains(212);
-//      assert hash.size() == 3;
-//    } // testImpl()
-//  };
 } // class LongSet
