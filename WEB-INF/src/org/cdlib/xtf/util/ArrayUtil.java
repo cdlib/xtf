@@ -1,4 +1,4 @@
-package org.apache.lucene.util;
+package org.cdlib.xtf.util;
 
 /*
  * Copyright 2006-2007 The Apache Software Foundation.

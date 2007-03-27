@@ -18,7 +18,6 @@ package org.cdlib.xtf.util;
 
 import java.util.Arrays;
 
-import org.apache.lucene.util.ArrayUtil;
 
 /** 
  * A fast, array-based, expandable list of floats.
