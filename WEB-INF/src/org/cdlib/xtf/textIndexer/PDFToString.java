@@ -34,9 +34,6 @@ import java.io.InputStream;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
 import org.cdlib.xtf.util.*;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
-import org.apache.log4j.BasicConfigurator;
 
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -51,11 +48,6 @@ import org.apache.log4j.BasicConfigurator;
 public class PDFToString 
 {
   static boolean mustConfigureLogger = true;
-
-  /** Reference to the Log4j root logger. Used to squelch PDFBox
-   *  output messages.
-   */
-  static Logger logger = Logger.getRootLogger();
 
   /** PDFBox text stripper. Created once to save time. */
   static PDFTextStripper stripper;
@@ -75,21 +67,6 @@ public class PDFToString
   static String convert(InputStream PDFInputStream)
     throws IOException 
   {
-    // If the Log4j logger needs to be configured, do so now.
-    if (mustConfigureLogger) 
-    {
-      // Configure the logger (whatever that means.)
-      BasicConfigurator.configure();
-
-      // Turn off the logging so it doesn't interfere with
-      // our output logging.
-      //
-      logger.setLevel(Level.OFF);
-
-      // Flag that the logger is configured.
-      mustConfigureLogger = false;
-    }
-
     // Make a stripper if we haven't already.
     if (stripper == null)
       stripper = new PDFTextStripper();
