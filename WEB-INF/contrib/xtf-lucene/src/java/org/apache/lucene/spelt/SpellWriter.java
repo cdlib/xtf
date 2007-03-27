@@ -338,7 +338,7 @@ public class SpellWriter
     flushPhase2(phaseProgs[1]);
 
     // All done.
-    prog.progress(100, 100, "Done.");
+    prog.progress(100, 100, "Done.", true);
   } // flushQueuedWords()
 
   /**
@@ -496,7 +496,8 @@ public class SpellWriter
           
           prog.progress(nProcessed,
                         freqSorter.nLinesAdded(),
-                        "Processed " + nProcessed + " words.");
+                        "Processed " + nProcessed + " words.",
+                        true);
         }
       });
   }
@@ -626,6 +627,8 @@ public class SpellWriter
     final CountedOutputStream outCounted = new CountedOutputStream(
       new BufferedOutputStream(new FileOutputStream(outFile)));
     final Writer out = new OutputStreamWriter(outCounted);
+    
+    prog.progress(0, 100, "Building word map.", true);
 
     // Finish sorting all the edit map entries, group them, and write out the keys.
     final ArrayList<String> edKeys = new ArrayList<String>();
@@ -849,7 +852,8 @@ public class SpellWriter
       } // while
       
       subProgs[0].progress(100, 100,
-                           "Read " + totalAdded + " pairs.");
+                           "Read " + totalAdded + " pairs.",
+                           true);
     }
     finally {
       queueReader.close();
@@ -859,7 +863,7 @@ public class SpellWriter
     // Write out the resulting data and replace the old data file, if any.
     File newPairFreqFile = new File(spellIndexDir, "pairs.dat.new");
     newPairFreqFile.delete();
-    subProgs[1].progress(50, 100, "Writing pair data.");
+    subProgs[1].progress(50, 100, "Writing pair data.", true);
     pairData.save(newPairFreqFile);
     if (pairFreqFile.canRead() && !pairFreqFile.delete())
       throw new IOException(
