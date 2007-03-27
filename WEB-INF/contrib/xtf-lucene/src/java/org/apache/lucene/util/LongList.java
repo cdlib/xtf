@@ -53,8 +53,7 @@ public class LongList
 
   /** Resize the array so it exactly fits the current elements */
   public final void compact() {
-    if (size != data.length)
-      resize(size);
+    resize(size);
   }
 
   /** 
@@ -63,7 +62,7 @@ public class LongList
    */
   public final void resize(int newSize) 
   {
-    if (newSize != size) {
+    if (newSize != data.length) {
       long[] oldData = data;
       data = new long[newSize];
       System.arraycopy(oldData, 0, data, 0, Math.min(size, newSize));

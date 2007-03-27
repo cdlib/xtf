@@ -53,8 +53,7 @@ public class IntList
 
   /** Resize the array so it exactly fits the current elements */
   public final void compact() {
-    if (size != data.length)
-      resize(size);
+    resize(size);
   }
 
   /** 
@@ -63,7 +62,7 @@ public class IntList
    */
   public final void resize(int newSize) 
   {
-    if (newSize != size) {
+    if (newSize != data.length) {
       int[] oldData = data;
       data = new int[newSize];
       System.arraycopy(oldData, 0, data, 0, Math.min(size, newSize));
