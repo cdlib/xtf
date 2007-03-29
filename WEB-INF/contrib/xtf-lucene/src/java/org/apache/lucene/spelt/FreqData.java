@@ -256,6 +256,11 @@ public class FreqData
       }
       count += counts.get(sp);
     }
+    
+    // Be sure to do the last one.
+    keys.set(dp, key);
+    counts.set(dp, count);
+    dp++;
 
     // Chop off any unused space caused by merging.
     keys.resize(dp);
