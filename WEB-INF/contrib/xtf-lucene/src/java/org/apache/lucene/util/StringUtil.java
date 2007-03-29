@@ -133,12 +133,24 @@ public class StringUtil
 
   /** Check if the given string is all upper-case */
   public static boolean isUpperCase(String in) {
-    return in.equals(in.toUpperCase());
+    if (in == null || in.length() == 0)
+      return false;
+    for (int i=0; i<in.length(); i++) {
+      if (!Character.isUpperCase(in.charAt(i)))
+        return false;
+    }
+    return true;
   }
 
   /** Check if the given string is all lower-case */
   public static boolean isLowerCase(String in) {
-    return in.equals(in.toLowerCase());
+    if (in == null || in.length() == 0)
+      return false;
+    for (int i=0; i<in.length(); i++) {
+      if (!Character.isLowerCase(in.charAt(i)))
+        return false;
+    }
+    return true;
   }
 
   /**
@@ -148,6 +160,10 @@ public class StringUtil
    */
   public static boolean isTitleCase(String in) 
   {
+    // Basic punts.
+    if (in == null || in.length() == 0)
+      return false;
+    
     // Break the string up into words
     String[] words = splitWords(in);
 
@@ -186,7 +202,7 @@ public class StringUtil
       String word = words[0];
       if (word.length() < 1)
         return word;
-      return Character.toUpperCase(word.charAt(0)) + word.substring(1);
+      return Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase();
     }
 
     // If a series of words, convert them all, then join.
@@ -203,8 +219,11 @@ public class StringUtil
    * @return an array of the words in the string
    */
   public static String[] splitWords(String in) {
-    if (in.trim().length() == 0)
+    if (in == null)
       return new String[0];
-    return spacePat.split(in.trim());
+    String trimmed = in.trim();
+    if (trimmed.length() == 0)
+      return new String[0];
+    return spacePat.split(trimmed);
   }
 }
