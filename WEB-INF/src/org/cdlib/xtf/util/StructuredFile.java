@@ -106,25 +106,35 @@ public class StructuredFile implements StructuredStore
     if (!create && !file.exists())
       throw new FileNotFoundException(file.toString());
     realFile = new RandomAccessFile(file, "rw");
-    if (create) 
+    
+    try 
     {
-      realFile.setLength(0);
-
-      // Now write the header. First the identifier.
-      realFile.writeByte('s');
-      realFile.writeByte('s');
-      realFile.writeByte('f');
-      realFile.writeByte(0);
-
-      // Write a placeholder for the directory position.
-      realFile.writeInt(0);
-
-      // Now write a new directory.
-      dir = new Directory();
-      writeDirectory();
+      if (create) 
+      {
+        realFile.setLength(0);
+  
+        // Now write the header. First the identifier.
+        realFile.writeByte('s');
+        realFile.writeByte('s');
+        realFile.writeByte('f');
+        realFile.writeByte(0);
+  
+        // Write a placeholder for the directory position.
+        realFile.writeInt(0);
+  
+        // Now write a new directory.
+        dir = new Directory();
+        writeDirectory();
+      }
+      else
+        readHeader();
     }
-    else
-      readHeader();
+    catch (IOException e) {
+      if (realFile != null)
+        realFile.close();
+      file.delete();
+      throw e;
+    }
   } // constructor
 
   /** Get the full path to the file */

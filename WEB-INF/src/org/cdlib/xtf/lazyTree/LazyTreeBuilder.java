@@ -203,7 +203,6 @@ public class LazyTreeBuilder
 
     // If the build failed, delete the file.
     if (tree == null) {
-      treeStore.close();
       treeStore.delete();
       return;
     }
@@ -225,6 +224,25 @@ public class LazyTreeBuilder
     names = null;
   }
 
+  /**
+   * Like finish() above, but aborts the tree building process and removes the
+   * file. Should be called if normal processing cannot complete.
+   */
+  public void abort(Receiver inBuilder) {
+    HackedTinyBuilder builder = (HackedTinyBuilder)inBuilder;
+    try {
+      if (builder.getTextStore() != null)
+        builder.getTextStore().close();
+      StructuredStore treeStore = builder.getTreeStore();
+      if (treeStore != null)
+        treeStore.delete();
+    }
+    catch (IOException e) {
+      // We're aborting, which means some more important exception came first.
+      // So ignore problems during the abort itself.
+    }
+   }
+  
   /**
    * Build and write out the table of names referenced by the tree. Also
    * includes the namespaces.

@@ -1275,6 +1275,17 @@ public class XMLTextProcessor extends DefaultHandler
 
     catch (Throwable t) 
     {
+      // Abort the lazy tree building so we don't leave a half-cooked lazy
+      // tree file laying around.
+      //
+      if (lazyReceiver != null) 
+      {
+        lazyBuilder.abort(lazyReceiver);
+        lazyBuilder = null;
+        lazyReceiver = null;
+        lazyHandler = null;
+      }
+      
       // Tell the caller (and the user) that ther was an error..      
       Trace.more(Trace.info, "Skipping Due to Errors");
 

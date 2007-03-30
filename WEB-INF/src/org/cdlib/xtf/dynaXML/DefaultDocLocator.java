@@ -207,57 +207,65 @@ public class DefaultDocLocator implements DocLocator
     StructuredStore lazyStore = StructuredFile.create(lazyFile);
     Receiver lazyReceiver = lazyBuilder.begin(lazyStore);
 
-    lazyBuilder.setNamePool(NamePool.getDefaultNamePool());
-
-    ReceivingContentHandler lazyHandler = new ReceivingContentHandler();
-    lazyHandler.setReceiver(lazyReceiver);
-    lazyHandler.setPipelineConfiguration(lazyReceiver.getPipelineConfiguration());
-
-    // Instantiate a new XML parser, being sure to get the right one.
-    SAXParser xmlParser = IndexUtil.createSAXParser();
-
-    // Open the source file for reading
-    InputStream inStream = new FileInputStream(sourcePath);
-
-    // Apply the standard set of document filters.
-    InputSource inSrc = new InputSource(IndexUtil.filterXMLDocument(
-                                                                    inStream,
-                                                                    xmlParser,
-                                                                    removeDoctypeDecl));
-
-    // Put a proper system ID onto the InputSource.
-    inSrc.setSystemId(new File(sourcePath).toURL().toString());
-
-    // Make a DefaultHandler that will pass events to the lazy receiver.
-    LazyPassthru passthru = new LazyPassthru(lazyHandler, stripWhitespace);
-
-    // Apply a prefilter if one was specified.
-    if (preFilter == null) 
+    try
     {
-      try {
-        xmlParser.parse(inSrc, passthru);
+      lazyBuilder.setNamePool(NamePool.getDefaultNamePool());
+  
+      ReceivingContentHandler lazyHandler = new ReceivingContentHandler();
+      lazyHandler.setReceiver(lazyReceiver);
+      lazyHandler.setPipelineConfiguration(lazyReceiver.getPipelineConfiguration());
+  
+      // Instantiate a new XML parser, being sure to get the right one.
+      SAXParser xmlParser = IndexUtil.createSAXParser();
+  
+      // Open the source file for reading
+      InputStream inStream = new FileInputStream(sourcePath);
+  
+      // Apply the standard set of document filters.
+      InputSource inSrc = new InputSource(IndexUtil.filterXMLDocument(
+                                                                      inStream,
+                                                                      xmlParser,
+                                                                      removeDoctypeDecl));
+  
+      // Put a proper system ID onto the InputSource.
+      inSrc.setSystemId(new File(sourcePath).toURL().toString());
+  
+      // Make a DefaultHandler that will pass events to the lazy receiver.
+      LazyPassthru passthru = new LazyPassthru(lazyHandler, stripWhitespace);
+  
+      // Apply a prefilter if one was specified.
+      if (preFilter == null) 
+      {
+        try {
+          xmlParser.parse(inSrc, passthru);
+        }
+        catch (Exception e) {
+          throw new RuntimeException(e);
+        }
       }
-      catch (Exception e) {
-        throw new RuntimeException(e);
+      else {
+        // Apply the pre-filter.
+        try {
+          Templates[] array = new Templates[1];
+          array[0] = preFilter;
+          IndexUtil.applyPreFilters(array,
+                                    xmlParser.getXMLReader(),
+                                    inSrc,
+                                    new SAXResult(passthru));
+        }
+        catch (Exception e) {
+          lazyBuilder.abort(lazyReceiver);
+          throw new RuntimeException(e);
+        }
       }
+  
+      // Finish off the lazy file.
+      lazyBuilder.finish(lazyReceiver, true);
     }
-    else {
-      // Apply the pre-filter.
-      try {
-        Templates[] array = new Templates[1];
-        array[0] = preFilter;
-        IndexUtil.applyPreFilters(array,
-                                  xmlParser.getXMLReader(),
-                                  inSrc,
-                                  new SAXResult(passthru));
-      }
-      catch (Exception e) {
-        throw new RuntimeException(e);
-      }
+    catch (IOException e) {
+      lazyBuilder.abort(lazyReceiver);
+      throw e;
     }
-
-    // Finish off the lazy file.
-    lazyBuilder.finish(lazyReceiver, true);
   } // buildLazyStore()
 
   /**
