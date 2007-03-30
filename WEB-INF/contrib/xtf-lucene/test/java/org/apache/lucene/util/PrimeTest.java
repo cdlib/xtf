@@ -31,7 +31,11 @@ package org.apache.lucene.util;
 
 import junit.framework.TestCase;
 
-/** Test the {@link Prime} class */
+/**
+ * Test the {@link Prime} class 
+ *
+ * @author Martin Haye
+ */
 public class PrimeTest extends TestCase
 {
   public void testPrime() 

@@ -36,6 +36,11 @@ import java.io.RandomAccessFile;
 
 import junit.framework.TestCase;
 
+/**
+ * Test the {@link RandomAccessInputStream} class.
+ *
+ * @author Martin Haye
+ */
 public class RandomAccessInputStreamTest extends TestCase
 {
   private File testFile;  

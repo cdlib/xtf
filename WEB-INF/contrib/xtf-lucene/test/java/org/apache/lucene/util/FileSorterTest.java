@@ -40,7 +40,11 @@ import java.util.Random;
 
 import junit.framework.TestCase;
 
-/** Test the {@link FileSorter} class */
+/** 
+ * Test the {@link FileSorter} class
+ * 
+ * @author Martin Haye
+ */
 public class FileSorterTest extends TestCase
 {
   public void testSort() throws IOException

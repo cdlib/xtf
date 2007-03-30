@@ -34,7 +34,11 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-/** Test the {@link FreqData} class */
+/** 
+ * Test the {@link FreqData} class 
+ *
+ * @author Martin Haye
+ */
 public class FreqDataTest extends TestCase
 {
   public void testFreqData() throws IOException

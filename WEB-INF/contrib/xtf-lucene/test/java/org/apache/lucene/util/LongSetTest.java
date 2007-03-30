@@ -31,7 +31,11 @@ package org.apache.lucene.util;
 
 import junit.framework.TestCase;
 
-/** Test the {@link LongSet} class */
+/** 
+ * Test the {@link LongSet} class
+ * 
+ * @author Martin Haye
+ */
 public class LongSetTest extends TestCase
 {
   public void testSet()

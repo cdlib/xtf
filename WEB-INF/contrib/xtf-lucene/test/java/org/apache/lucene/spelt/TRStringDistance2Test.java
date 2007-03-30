@@ -31,7 +31,11 @@ package org.apache.lucene.spelt;
 
 import junit.framework.TestCase;
 
-/** Test the {@link TRStringDistance2} class */
+/** 
+ * Test the {@link TRStringDistance2} class 
+ *
+ * @author Martin Haye
+ */
 public class TRStringDistance2Test extends TestCase
 {
   public void testDist()

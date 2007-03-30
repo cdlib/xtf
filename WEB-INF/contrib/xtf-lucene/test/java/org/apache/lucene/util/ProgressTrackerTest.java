@@ -33,7 +33,11 @@ import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
-/** Test the {@link ProgressTracker} class */
+/** 
+ * Test the {@link ProgressTracker} class 
+ *
+ * @author Martin Haye
+ */
 public class ProgressTrackerTest extends TestCase
 {
   /** Test the functions of a single, non-split tracker */

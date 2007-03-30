@@ -31,7 +31,11 @@ package org.apache.lucene.util;
 
 import junit.framework.TestCase;
 
-/** Test for the {@link Hash64} class */
+/** 
+ * Test the {@link Hash64} class
+ * 
+ * @author Martin Haye
+ */
 public class Hash64Test extends TestCase
 {
   public void testHash()

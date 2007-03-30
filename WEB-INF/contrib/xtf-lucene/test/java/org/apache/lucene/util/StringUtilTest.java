@@ -33,7 +33,11 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
-/** Test the {@link StringUtil} class */
+/** 
+ * Test the {@link StringUtil} class 
+ *
+ * @author Martin Haye
+ */
 public class StringUtilTest extends TestCase
 {
   public void testJoin()

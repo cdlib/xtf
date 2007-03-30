@@ -31,7 +31,11 @@ package org.apache.lucene.spelt;
 
 import junit.framework.TestCase;
 
-/** Test the {@link DoubleMetaphone} class */
+/** 
+ * Test the {@link DoubleMetaphone} class 
+ *
+ * @author Martin Haye
+ */
 public class DoubleMetaphoneTest extends TestCase
 {
   public void testDoubleMetaphone()
