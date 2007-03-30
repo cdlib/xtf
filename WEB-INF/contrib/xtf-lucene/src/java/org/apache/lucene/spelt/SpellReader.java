@@ -89,8 +89,8 @@ public class SpellReader
   /** Word equivalency checker */
   private WordEquiv wordEquiv;
 
-  /** Protected constructor -- use {@link #open} instead. */
-  protected SpellReader() {
+  /** Private constructor -- use {@link #open} instead. */
+  private SpellReader() {
   }
 
   /** Check if there's a valid dictionary in the given directory */
@@ -450,7 +450,7 @@ public class SpellReader
     // Load pair frequency data if we haven't already.
     openPairFreqs();
 
-    // Start with a null change, but reduce it's score so we hopefully end
+    // Start with a null change, but reduce its score so we hopefully end
     // up suggesting something.
     //
     Phrase in = new Phrase();
@@ -521,6 +521,10 @@ public class SpellReader
   private Phrase subWord(Phrase in, int pos)
     throws IOException 
   {
+    // Don't suggest anything for stop words (which aren't in the dictionary)
+    if (stopSet != null && stopSet.contains(in.words[pos].word))
+      return in;
+    
     // Get a suggestion for replacing the word.
     int origFreq = wordFreqs.get(in.words[pos].word);
     Word[] suggs = suggestSimilar(in.words[pos], 1, origFreq + 1);
@@ -594,7 +598,7 @@ public class SpellReader
           continue;
 
         // Skip stop words
-        if (stopSet != null && stopSet.contains(w.word.toLowerCase()))
+        if (stopSet != null && stopSet.contains(w.word))
           continue;
 
         // Skip words that are the product of splitting.

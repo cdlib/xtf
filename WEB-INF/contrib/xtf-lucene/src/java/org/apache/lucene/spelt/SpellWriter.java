@@ -124,10 +124,10 @@ public class SpellWriter
   private StringBuffer edmapBuf = new StringBuffer();
 
   /**
-   * Protected constructor -- do not construct directly; rather, use the
+   * Private constructor -- do not construct directly; rather, use the
    * static open() method.
    */
-  protected SpellWriter() {
+  private SpellWriter() {
   }
 
   /**
@@ -208,6 +208,11 @@ public class SpellWriter
   public synchronized void queueWord(String word)
     throws IOException 
   {
+    // Map all words to lower case. That way, we can easily strip out stop
+    // words, and we can do case copying when reading the dictionary.
+    //
+    word = word.toLowerCase();
+    
     // If the word is a stop word, for now we simply ignore it. This way, we
     // can still accumulate pair data for words on either side of it.
     //
@@ -323,6 +328,13 @@ public class SpellWriter
     throws IOException 
   {
     closeQueueWriters();
+    
+    // If no progress messages are desired, use a stub.
+    if (prog == null) {
+      prog = new ProgressTracker() {
+        @Override public void report(int pctDone, String descrip) { }
+      };
+    }
 
     // Approximately calculate how much work there is to do, so we can report
     // progress in a rational way.
