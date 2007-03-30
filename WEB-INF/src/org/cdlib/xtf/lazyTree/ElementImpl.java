@@ -222,6 +222,9 @@ public class ElementImpl extends ParentNodeImpl
     if (whichNamespaces != NO_NAMESPACES)
       sendNamespaceDeclarations(out, whichNamespaces == ALL_NAMESPACES);
 
+    // indicate start of content
+    out.startContent();
+
     // output the attributes
     if (attrNames != null) 
     {
