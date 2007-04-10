@@ -40,7 +40,6 @@ import javax.xml.transform.sax.SAXResult;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceivingContentHandler;
-import net.sf.saxon.om.NamePool;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.IndexUtil;
@@ -48,6 +47,8 @@ import org.cdlib.xtf.util.DocTypeDeclRemover;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.StructuredStore;
+import org.cdlib.xtf.util.SubStoreReader;
+import org.cdlib.xtf.util.SubStoreWriter;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -119,6 +120,18 @@ public class DefaultDocLocator implements DocLocator
                                            indexName,
                                            new File(sourcePath),
                                            false);
+    
+    // If the lazy file is out of date (and we created it), rebuild it. Note
+    // that it's not safe to rebuild lazy files created by the indexer, since
+    // it would cause hit highlighting to fail due to a mismatch between
+    // node numbers stored in the index vs. stored in the lazy file.
+    //
+    if (lazyFile.canRead() &&
+        sourceFile.lastModified() > lazyFile.lastModified() &&
+        isPostIndexLazyFile(lazyFile))
+    {
+      lazyFile.delete();
+    }
 
     // If we can't read it, try to build it instead.
     if (!lazyFile.canRead()) 
@@ -198,19 +211,30 @@ public class DefaultDocLocator implements DocLocator
     // If not, we need to create it now before making the lazy file.
     //
     Path.createPath(lazyFile.getParent());
+    
+    // Build a temp file, and when it's finished, rename it.
+    File tmpFile = new File(lazyFile.getAbsolutePath() + ".tmp");
 
     // While we parse the source document, we're going to also build up 
     // a tree that will be written to the lazy file.
     //
     Configuration config = new Configuration();
     LazyTreeBuilder lazyBuilder = new LazyTreeBuilder(config);
-    StructuredStore lazyStore = StructuredFile.create(lazyFile);
+    StructuredStore lazyStore = StructuredFile.create(tmpFile);
+    
+    // Put a special marker subfile within the store so we know it was created
+    // outside of the indexing process. That way, we can identify files that
+    // are okay to update when the timestamp of the original changes.
+    //
+    SubStoreWriter sub = lazyStore.createSubStore("isPostIndexLazyFile");
+    sub.writeByte(1);
+    sub.close();
+    
+    // Start the build process.
     Receiver lazyReceiver = lazyBuilder.begin(lazyStore);
 
     try
     {
-      lazyBuilder.setNamePool(NamePool.getDefaultNamePool());
-  
       ReceivingContentHandler lazyHandler = new ReceivingContentHandler();
       lazyHandler.setReceiver(lazyReceiver);
       lazyHandler.setPipelineConfiguration(lazyReceiver.getPipelineConfiguration());
@@ -261,12 +285,44 @@ public class DefaultDocLocator implements DocLocator
   
       // Finish off the lazy file.
       lazyBuilder.finish(lazyReceiver, true);
+      
+      // And rename the temp file.
+      tmpFile.renameTo(lazyFile);
     }
     catch (IOException e) {
       lazyBuilder.abort(lazyReceiver);
       throw e;
     }
   } // buildLazyStore()
+  
+  /**
+   * Check if the given lazy file was created after the indexing process
+   * (i.e. by this doc locator)
+   */
+  private boolean isPostIndexLazyFile(File f)
+  {
+    StructuredStore store = null;
+    SubStoreReader sub = null;
+    boolean ret = false;
+    try {
+      store = StructuredFile.open(f);
+      sub = store.openSubStore("isPostIndexLazyFile");
+      if (sub.readByte() == 1)
+        ret = true;
+    }
+    catch (IOException e) { }
+    finally {
+      try {
+        if (sub != null)
+          sub.close();
+        if (store != null)
+          store.close();
+      }
+      catch (IOException e) { }
+    }
+    
+    return ret;
+  }
 
   /**
    * Passes SAX events to a ContentHandler. Also performs character
