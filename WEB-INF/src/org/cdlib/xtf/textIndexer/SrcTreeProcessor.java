@@ -50,6 +50,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.sax.SAXSource;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
+
+import org.apache.lucene.util.StringUtil;
 import org.cdlib.xtf.cache.Dependency;
 import org.cdlib.xtf.cache.FileDependency;
 import org.cdlib.xtf.servletBase.StylesheetCache;
@@ -375,7 +377,7 @@ public class SrcTreeProcessor
     dirBuf.setLength(0);
 
     String dirPath = Path.normalizePath(currFile.toString());
-    docBuf.append("<directory dirPath=\"" + dirPath + "\">\n");
+    docBuf.append("<directory dirPath=\"" + StringUtil.escapeHTMLChars(dirPath) + "\">\n");
     int nFiles = 0;
     for (Iterator i = list.iterator(); i.hasNext();) 
     {
@@ -383,10 +385,10 @@ public class SrcTreeProcessor
       if (!subFile.getAbsoluteFile().isDirectory()) 
       {
         docBuf.append("  <file fileName=\"");
-        docBuf.append(subFile.getName());
+        docBuf.append(StringUtil.escapeHTMLChars(subFile.getName()));
         docBuf.append("\"/>\n");
 
-        dirBuf.append(subFile.getName());
+        dirBuf.append(StringUtil.escapeHTMLChars(subFile.getName()));
         dirBuf.append(':');
         dirBuf.append(subFile.lastModified());
         dirBuf.append("\n");

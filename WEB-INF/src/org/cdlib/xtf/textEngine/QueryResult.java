@@ -224,8 +224,10 @@ public class QueryResult
       }
 
       buf.append(
-        "<docHit" + " rank=\"" + (i + startDoc + 1) + "\"" + " path=\"" +
-        docHit.filePath() + "\"" + " score=\"" + scoreStr + "\"" +
+        "<docHit" + 
+        " rank=\"" + (i + startDoc + 1) + "\"" + 
+        " path=\"" + TextServlet.makeHtmlString(docHit.filePath()) + "\"" + 
+        " score=\"" + scoreStr + "\"" +
         " totalHits=\"" + docHit.totalSnippets() + "\"");
       if (docHit.recordNum() > 0)
         buf.append(" recordNum=\"" + docHit.recordNum() + "\"");
