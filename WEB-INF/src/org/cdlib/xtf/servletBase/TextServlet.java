@@ -1320,7 +1320,12 @@ public abstract class TextServlet extends HttpServlet
    * Wraps a servlet request, substituting a different parameter set that
    * allows ';' in addition to '&' as a separator. Also, removes any session
    * ID in the URL.
+   * 
+   * Note: Some deprecated methods are included in HttpServletRequestWrapper.
+   * Since there's nothing we can do about that, we simply suppress warnings
+   * about that.
    */
+  @SuppressWarnings("deprecation")
   private class RequestWrapper extends HttpServletRequestWrapper 
   {
     HttpServletRequest inReq;
@@ -1400,7 +1405,12 @@ public abstract class TextServlet extends HttpServlet
 
   /**
    * Wraps a servlet response, substituting a different output stream
+   * 
+   * Note: Some deprecated methods are included in HttpServletResponseWrapper.
+   * Since there's nothing we can do about that, we simply suppress warnings
+   * about that.
    */
+  @SuppressWarnings("deprecation")
   private class ResponseWrapper extends HttpServletResponseWrapper 
   {
     private ServletOutputStream substOutStream;
