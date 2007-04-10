@@ -226,4 +226,42 @@ public class StringUtil
       return new String[0];
     return spacePat.split(trimmed);
   }
+  
+  /**
+   * Replaces 'special' HTML characters with their corresponding character
+   * entity references. For instance, '&lt;' is replaced by '&amp;lt;'.
+   * 
+   * @param in  The string to work on
+   * @return    A modified version with special characters replaced
+   */
+  public static String escapeHTMLChars(String in) {
+    StringBuffer buf = new StringBuffer(in.length());
+    for (int i=0; i<in.length(); i++) {
+      char c = in.charAt(i);
+      switch (c) {
+        case '<':
+          buf.append("&lt;");
+          break;
+        case '>':
+          buf.append("&gt;");
+          break;
+        case '&':
+          buf.append("&amp;");
+          break;
+        case '\'':
+          buf.append("&apos;");
+          break;
+        case '\"':
+          buf.append("&quot;");
+          break;
+        case '\\':
+          buf.append("&#092;");
+          break;
+        default:
+          buf.append(c);
+          break;
+      }
+    }
+    return buf.toString();
+  }
 }

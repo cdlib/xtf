@@ -137,5 +137,11 @@ public class StringUtilTest extends TestCase
     assertTrue(Arrays.deepEquals(StringUtil.splitWords(null),
                                  new String[0]));
   }
+  
+  public void testHtml()
+  {
+    assertEquals("This &lt;tag&gt; is &quot;great&quot; and it&apos;s cool!",
+                 StringUtil.escapeHTMLChars("This <tag> is \"great\" and it's cool!"));
+  }
 
 }
