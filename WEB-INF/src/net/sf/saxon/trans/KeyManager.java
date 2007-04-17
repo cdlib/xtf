@@ -484,7 +484,7 @@ public class KeyManager implements Serializable
     }
     else {
       // If the key value is numeric, promote it to a double
-      // TODO: this could result in two decimals comparing equal because they convert to the same double
+      // SAXONTODO: this could result in two decimals comparing equal because they convert to the same double
       BuiltInAtomicType itemType = soughtValue.getPrimitiveType();
       if (itemType.equals(BuiltInAtomicType.INTEGER) ||
           itemType.equals(BuiltInAtomicType.DECIMAL) ||
@@ -721,7 +721,7 @@ public class KeyManager implements Serializable
   */
 
   //    private synchronized IntSet getIndexedTypes(DocumentInfo doc, int keyFingerprint) {
-  //        IntSet set = new IntHashSet(4);  // TODO: since the set of indexed types is very small, and we iterate over it, an array would be better
+  //        IntSet set = new IntHashSet(4);  // SAXONTODO: since the set of indexed types is very small, and we iterate over it, an array would be better
   //        if (docIndexes==null) {
   //            return set;
   //        }

@@ -184,7 +184,7 @@ public class SQLInsert extends ExtensionInstruction
           AtomicValue v = (AtomicValue)((SQLColumn.ColumnInstruction)arguments[c]).getSelectValue(
             context);
 
-          // TODO: the values are all strings. There is no way of adding to a numeric column
+          // SAXONTODO: the values are all strings. There is no way of adding to a numeric column
           String val = v.getStringValue();
 
           // another hack: setString() doesn't seem to like single-character string values

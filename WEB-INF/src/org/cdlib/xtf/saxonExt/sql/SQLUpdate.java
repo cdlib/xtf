@@ -180,7 +180,7 @@ public class SQLUpdate extends ExtensionInstruction
           if (colInst.evalSql())
             continue;
 
-          // TODO: the values are all strings. There is no way of adding to a numeric column
+          // SAXONTODO: the values are all strings. There is no way of adding to a numeric column
           String val = ((AtomicValue)colInst.getSelectValue(context)).getStringValue();
 
           // another hack: setString() doesn't seem to like single-character string values
