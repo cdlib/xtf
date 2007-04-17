@@ -76,6 +76,26 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       </ul>
       <br/>
     </li>
+    <li> <b><a href="#Spelling">Spelling Correction</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#Spelling_Strategy">Choosing an Index-based Strategy</a></li>
+        <li><a href="#Spelling_CorrectionAlg">Correction Algorithm</a></li><li>
+          <ul class="NoBullets">
+            <li><a href="#Spelling_Candidates">Which Words to Consider?</a></li>
+            <li><a href="#Spelling_Scoring">Ranking the Candidates</a></li>
+            <li><a href="#Spelling_MultiWord">Multi-word Correction</a></li>
+            <li><a href="#Spelling_Sanity">Sanity Checks</a></li>
+          </ul>
+        </li>
+        <li><a href="#Spelling_DictCreation">Dictionary Creation</a></li><li>
+          <ul class="NoBullets">
+            <li><a href="#Spelling_Incremental">Incremental Approach</a></li>
+            <li><a href="#Spelling_DataStruct">Data Structures</a></li>
+          </ul>
+        </li>
+      </ul>
+      <br/>
+    </li>
     <li> <b><a href="#LazyFiles">Lazy Trees</a></b> 
       <ul class="NoBullets">
         <li><a href="#Large_Documents">The Problem of Large Documents</a></li>
@@ -88,8 +108,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   </ul>
   <p class="Heading1">Introduction<a name="Introduction"></a></p>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
-  This document goes into moderate depth on the actual operation of the E<b>X</b>tensible 
-  <b>T</b>ext <b>F</b> ramework (<b><i>XTF</i></b>.) This document is <i>not</i> 
+  This document goes into moderate depth on the actual operation of the e<b>X</b>tensible 
+  <b>T</b>ext <b>F</b>ramework (<b><i>XTF</i></b>.) This document is <i>not</i> 
   an overview of the <b><i>XTF</i></b> system, but rather delves into some nitty-gritty 
   details of how the system performs its tasks. The reader is encouraged to first 
   read the <a href="deployment.html"> XTF Deployment 
@@ -1297,6 +1317,515 @@ to fill its bottomless gullet.</pre>
       <br/>
       where <b>metaScore</b> and <b>textScore</b> are computed as outlined in 
       the previous two sections. </div>
+  </div>
+  <!-- IndentL --> 
+  <p class="Heading1">Spelling Correction<a name="Spelling"></a></p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+  <p> 
+    Everybody likes Google's "did you mean" suggestions. Users often misspell words when
+    they're querying an XTF index, and it would be nice if the system could catch the most
+    obvious errors and automatically suggest an appropriate spelling correction. The XTF team
+    did extensive work to create a fast and accurate facility for doing this, involving minimal
+    work for those deploying XTF. 
+  </p>
+  <p>
+    In the following sections, we'll discuss some strategies that were
+    considered and the final strategy selected, the methods that XTF uses
+    to come up with high-quality suggestions, and details on how the
+    dictionary is created and stored.
+  </p>
+  <div class="IndentL"> 
+    <p class="Heading2">Choosing an Index-based Strategy<a name="Spelling_Strategy"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p> 
+      We considered three strategies for spelling correction, each deriving suggestions from
+      a different kind of source data.
+    </p>
+    <ol>
+      <li>
+        <i>Fixed Dictionary</i>: Available software, such as GNU Aspell, makes spelling corrections 
+        based on one or more fixed, pre-constructed dictionaries. But the
+        bibliographic data in our test bed and a our of sample queries from the live Melvyl
+        catalog were multilingual and contained a substantial proportion of proper nouns (e.g.
+        names of people or places). This ruled out a fixed dictionary, since
+        many of these proper nouns and foreign words wouldn't be present in any standard
+        dictionary.<br/><br/>
+      </li>
+      <li>
+        <i>Query Logs</i>: In this method, we would compare the user's query to an extensive
+        set of prior queries, and suggest alternative queries which resulted in more hits.
+        Unfortunately, our test system has a limited number of users, there was
+        no feasible way to get hold of the millions of representative queries this strategy
+        would require, so it was ruled out as well.<br/><br/>
+      </li>
+      <li>
+        <i>Index-based Dictionary</i>: Here, we make
+        suggestions using an algorithm that draws on terms and term frequency data from the XTF
+        index itself. It resembles the first approach above except that the dictionary
+        is dynamic, being derived from the actual documents and their text.
+      </li>
+    </ol>
+    <p>
+      We opted to pursue the index-based approach, and feel it is best for most collections in most
+      situations, as it adapts to the documents on hand and doesn't require a long query history
+      to become effective.
+    </p>
+    <p> 
+      Our goal was to get the correct suggestion in the number 1 position 80% of the time, and
+      with several iterations and many tweaks to the algorithm, we were able to achieve this for
+      our sample data set and set of queries derived from real query logs. We have a fair degree
+      of confidence that the algorithm is quite general and should be applicable to many other
+      data sets and types of queries. 
+    </p>
+  </div>
+  <div class="IndentLR"> 
+    <p class="Heading2">Correction Algorithm<a name="Spelling_CorrectionAlg"></a></p>
+    <p>
+      <b><i>XTF</i></b> builds a spelling correction dictionary at index-time. Then when a query is
+      sent to <b><i>crossQuery</i></b> that results in a small number of hits (the
+      threshold is configurable), XTF consults the dictionary to make an alternative
+      spelling suggestion. Here's a brief outline of the algorithm for making a suggestion:
+    </p>
+    <ol>
+      <li>For each word in the query, make a list of candidate suggestions</li>
+      <li>Rank the suggestions and pick the best one</li>
+      <li>For multi-word queries, consider pair frequencies to improve quality</li>
+      <li>Suppress near-identical suggestions, and ensure that the final suggestion 
+        increases the number of hits</li>
+    </ol>
+    Each of these will be considered in more detail below.
+    
+    <div class="IndentL"> 
+      <p class="Heading3">Which Words to Consider?<a name="Spelling_Candidates"></a></p>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+      <p>
+        Most spelling algorithms, including this one, rely on a sort of "shot-gun"
+        approach: for each potentially mispelled word in the query, they make a long
+        list of "candidate" words, that is, words that could be suggested as a
+        correction for the original (misspelled) word. 
+        Then the list of candidates is ranked using some sort of
+        scoring formula, and finally the top-ranked candidate is presented to the user.
+      </p>
+      <p>
+        One might naively attempt to scan <i>every</i> word in the dictionary as a
+        candidate. Unfortunately, the cost of scoring each one becomes prohibitive
+        when the dictionary grows beyond, say, ten thousand words. So a strategy is needed
+        to quickly come up with a list of a few hundred pretty good candidates. XTF
+        uses a novel approach that gives good speed and accuracy.
+      </p>
+      <p>
+        We began with a base of existing Java spelling correction code that had been contributed 
+        to the Lucene project (written by Nicolas Maisonneuve, based on code originally 
+        contributed by David Spencer).  The base Lucene algorithm first breaks up the word 
+        we're looking for into 2, 3, or 4-character "n-grams" (for instance, the word <span class="Code">primer</span> might end up as: 
+        <span class="Code">~pri prim rime imer mer~</span> ). Next, it performs a Lucene OR query on
+        the dictionary (also built with n-grams), retaining the top 100 hits (where a hit 
+        represents a correctly spelled word that shares some n-grams with the target word). 
+        Finally, it ranks the suggestions according to their "edit distance" to the original 
+        misspelled word. Those that are closest appear at the top. (“Edit distance" is a
+        standard numerical measure of how far two words are from each other, and is
+        defined as the number of insert, replace, and delete operations needed to transform 
+        one word into the other.)
+      </p>
+      <p>
+        Unfortunately, the base method was quite slow, and often didn't find the
+        correct word, especially in the case of short words. However, we made one
+        critical observation: In
+        perhaps 85-90% of the cases we examined, the correct word had an edit distance of 1 or 2
+        from the misspelled query word; another 5-10% had edit distance 3, and the extra edit 
+        was usually toward the end of the word. This observation intuitively rings true:
+        the suggested word should be relatively "close" to the
+        query word, and those that are "far" away needn't even be considered.
+      </p>
+      <a name="Spelling_EditKeys"/>
+      <p>
+        Still, one wouldn't want to consider <i>all possible</i> one- and two-letter
+        edits as it would still take a long time to check if all those possible
+        edits were actually in the dictionary. Instead, XTF checks all
+        words in which four of the first six characters match in order. This effectively checks
+        for an edit distance of two or less at the start of the word.
+      </p>
+      <p>
+        Take for example the word <span class="Code">GLOBALISM</span>. Here are the 15 keys that
+        can be created by deleting two of the first six characters:
+      </p>
+      <div class="Sample">
+        <ol>
+          <li><span class="Code">OBAL</span> <span class="MacroCode">(deleted characters 1 and 2)</span></li>
+          <li><span class="Code">LBAL</span> <span class="MacroCode">(deleted characters 1 and 3)</span></li>
+          <li><span class="Code">LOAL</span> <span class="MacroCode">(deleted characters 1 and 4)</span></li>
+          <li><span class="Code">LOBL</span> <span class="MacroCode">(deleted characters 1 and 5)</span></li>
+          <li><span class="Code">LOBA</span> <span class="MacroCode">(deleted characters 1 and 6)</span></li>
+          <li><span class="Code">GBAL</span> <span class="MacroCode">(deleted characters 2 and 3)</span></li>
+          <li><span class="Code">GOAL</span> <span class="MacroCode">(deleted characters 2 and 4)</span></li>
+          <li><span class="Code">GOBL</span> <span class="MacroCode">(deleted characters 2 and 5)</span></li>
+          <li><span class="Code">GOBA</span> <span class="MacroCode">(deleted characters 2 and 6)</span></li>
+          <li><span class="Code">GLAL</span> <span class="MacroCode">(deleted characters 3 and 4)</span></li>
+          <li><span class="Code">GLBL</span> <span class="MacroCode">(deleted characters 3 and 5)</span></li>
+          <li><span class="Code">GLBA</span> <span class="MacroCode">(deleted characters 3 and 6)</span></li>
+          <li><span class="Code">GLOL</span> <span class="MacroCode">(deleted characters 4 and 5)</span></li>
+          <li><span class="Code">GLOA</span> <span class="MacroCode">(deleted characters 4 and 6)</span></li>
+          <li><span class="Code">GLOB</span> <span class="MacroCode">(deleted characters 5 and 6)</span></li>
+        </ol>
+      </div>
+      <p>
+        So, XTF checks each of the 15 possible 4-letter keys for a given
+        query word, and makes a merged list of all the words that share those same keys.
+        This combined list is usually only a few hundred words long, and almost always contains
+        within it the golden "correct" word we're looking for.
+      </p>
+    </div>
+    
+    <div class="IndentL"> 
+      <p class="Heading3">Ranking the Candidates<a name="Spelling_Scoring"></a></p>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+      <p>
+        Given a list of candidate words, how does one find the "right" suggestion?
+        This is the heart of most spelling algorithms, and the area that needs
+        the most "tweaking" to achieve good results. XTF's ranking algorithm is
+        no exception, and makes decisions by assigning a score to each candidate word. 
+        The score is a sum of the following factors:
+      </p>
+      <ol>
+        <li>
+          <b>Edit distance.</b> The base score is calculated from the edit distance 
+          between the query word and the candidate word. The usual edit distance 
+          algorithm (which considers only insertion, deletion, and replacement) is 
+          supplemented by reducing the
+          "cost" of transposition and double-letter errors. Those types
+          of errors are very common spelling mistakes, and reducing their
+          cost was shown by our testing to improve suggestion accuracy. In math terms,
+          base score is calculated as 1.0 - (editDistance / queryWord.length).
+          <br/><br/>
+        </li>
+        <li>
+          <b>Metaphone.</b> If the metaphone of the candidate word matches that of the query word,
+          the score is nudged upward by 0.1. 
+          Originally developed by Lawrence Philips, the Double Metaphone algorithm is a simple 
+          phonetic mapping that transforms any English word into a 4 character code (metaphone). 
+          Words that have the same code are assumed to be phonetically similar. Philips'
+          algorithm actually produces two codes, primary and secondary, for a given
+          input word; XTF only compares the primary code.
+          <br/><br/>
+        </li>
+        <li>
+          <b>First/last letter.</b> If the first letter of the candidate word matches the query word,
+          and the last letter of the candidate word matches the query word, then
+          the score is nudged upward by 0.1. Again, testing showed that this
+          approach boosted overall accuracy.
+          <br/><br/>
+        </li>
+        <li>
+          <b>Frequency.</b> Because the indexes do contain misspelled words, we further boost the score 
+          if the suggested word is very common. The boost ranges from 0.01 to 0.2, and
+          is arrived at by a slightly complex method, but basically more frequent candidate 
+          words get higher boosts. This has the effect of favoring common words over
+          uncommon words (other factors being equal), which helps to avoid ridiculous suggestions.
+        </li>
+      </ol>
+      <p>
+        By the way, the original query word itself is always considered as one of the canidates.
+        This is to reduce the problem of suggesting replacements for correctly spelled
+        words. However, the score of the query word is reduced slightly in case a more
+        common word is found that is very similar.
+      </p>
+      <p>
+        In summary: for a single-word query, the list of all candidates is ranked by score, and the one 
+        with the highest score wins and is considered the "best" suggestion for the user.
+      </p>
+    </div>
+    
+    <div class="IndentL"> 
+      <p class="Heading3">Multi-word Correction<a name="Spelling_MultiWord"></a></p>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+      <p>
+        But what about queries with multiple words? Testing showed that considering each
+        word independently and forming the suggestion for that word got plenty of
+        important cases wrong. For instance, consider the query <span class="Code">untied states</span>. Actually,
+        each of these words is spelled correctly, but it's clear the user probably meant
+        to query for <span class="Code">united states</span>. Also, consider the word <span class="Code">harrypotter</span>... the best
+        single-word replacement might be <span class="Code">hairy</span>, but that's not what the user meant.
+        How do we go beyond single-word suggestions?
+      </p>
+      <p>
+        We need to know more than just the frequency of the words in the index: we need
+        to know how often they occur <i>together</i>. So when XTF builds the spelling
+        dictionary, it additionally tracks the frequency of each pair of words as they occur
+        in sequence.
+      </p>
+      <p>
+        Using the pair frequency data, we can take a more sophisticated approach to
+        multi-word correction. Specifically, XTF tries the following additional
+        strategies to see if they yield better suggestions:
+      </p>
+      <ol>
+        <li>
+          For each single word (e.g. <span class="Code">harrypotter</span>) we consider splitting it up into
+          pairs and see if any of those pairs has a high frequency. For example
+          we'd check &lt;<span class="Code">har rypotter</span>&gt;, 
+          &lt;<span class="Code">harr ypotter</span>&gt;, 
+          &lt;<span class="Code">harry potter</span>&gt;, etc. and get
+          a nice hit on that last one. That "hitting" takes the form of considering the
+          pair as a replacement for the query word, with a score boost based on the
+          pair frequency.
+          <br/><br/>
+        </li>
+        <li>
+          For each pair of words, we fetch the top 100 single-word suggestions for
+          each word in the pair. Then we consider all possible combinations of these
+          (that's 10,000 combinations) to see if any of them are high-frequency
+          pairs. So in the example of &lt;<span class="Code">untied states</span>&gt;, one of the suggestions for
+          <span class="Code">untied</span> will certainly be <span class="Code">united</span> 
+          and we'll discover that &lt;<span class="Code">united states</span>&gt;
+          as a pair has a high frequency. So we boost the score for <span class="Code">united</span>, and
+          it ends up winning out against the other candidates.
+          <br/><br/>
+        </li>  
+        <li>
+          Finally, we consider joining each pair of words together. So if a user
+          accidentally queries for &lt;<span class="Code">uni lateralism</span>&gt;, we have a good chance of
+          suggesting <span class="Code">unilateralism</span>.
+        </li>
+      </ol>
+      All of these strategies are attempted and, just as in single-word candidate
+      selection, each potential suggestion is scored and ranked. The highest 
+      scoring suggestion wins.
+    </div>
+    
+    <div class="IndentL"> 
+      <p class="Heading3">Sanity Checks<a name="Spelling_Sanity"></a></p>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+      <p>
+        Despite all the effort above, sometimes the spelling system makes bad
+        suggestions. A couple of methods are used to minimize these.
+      </p>
+      <p>
+        First, a filter is applied to avoid suggesting "equivalent" words. In XTF, the indexer
+        performs several mapping functions, such as converting plural words to singular
+        words, and mapping accented characters to their unaccented equivalents. It would
+        be silly for the spelling system to suggest <span class="Code">cat</span> if the user entered <span class="Code">cats</span>,
+        even if <span class="Code">cat</span> would normally be considered a better suggestion because it has
+        higher frequency. The final suggestion is checked, and if it's equivalent (i.e.
+        maps to the same words) to the user's initial query, no suggestion is made.
+      </p>
+      <p>
+        Second, it's quite possible for the spelling correction system to make a 
+        suggestion that
+        will yield fewer results than the user's original query. While this isn't
+        common, it happens often enough that it could be annoying. So after the
+        spelling system comes up with a suggestion, XTF automatically runs the 
+        resulting modified query, and if fewer results are obtained, the suggestion is
+        simply suppressed.
+      </p>
+    </div>
+  </div>
+  <div class="IndentL"> 
+    <p class="Heading2">Dictionary Creation<a name="Spelling_DictCreation"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+    <p>
+      Now we turn to the dictionary used by the algorithm above to produce
+      suggestions. How is it created during the XTF indexing process?
+      Let's find out.
+    </p>
+    <div class="IndentL"> 
+      <p class="Heading3">Incremental Approach<a name="Spelling_Incremental"></a></p>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+      <p>
+        One of the best features of the XTF indexer is incremental indexing, the
+        ability to quickly add a few documents to an existing index. So we needed
+        an incremental spelling dictionary build process to stay true to the
+        indexer's design. To do this we phase the work, with a low-overhead
+        collection pass added to the main index process, and then a phase of
+        intensive dictionary generation (of course optimized as much as we could.)
+      </p>
+      <p>
+        During the main index run, XTF simply
+        collects information on which words are present, their frequencies,
+        and the frequency of pairs. Data is collected in a fairly small
+        RAM cache and periodically sorted and written to disk.
+        Two filters assure that we avoid accumulating
+        counts for rare words and rare word pairs. Words that occur only
+        once or twice are disregarded (though this limit is configurable);
+        likewise, pairs that occur only once or twice are not written
+        to disk. Collection adds minimal CPU overhead to indexing.
+      </p>
+      <p>
+        Then comes the dictionary creation phase, which processes
+        the queued word and pair counts to form the final
+        dictionary (this can optionally be delayed until another index run).
+        Here are the processing steps:
+      </p>
+      <ol>
+        <li>
+          Read in the list of words and their frequencies, merging any existing
+          list with new words added since the last dictionary build.
+          <br/><br/>
+        </li>
+        <li>
+          Sort the word list and sum up frequency counts for identical words.
+          <br/><br/>
+        </li>
+        <li>
+          Sample the frequency distribution of the words.
+          This enables the correction algorithm to quickly
+          decide how much boost a given word should receive, by ranking its
+          frequency in relation to the rest of the words in the dictionary.
+          <br/><br/>
+        </li>
+        <li>
+          Create the "edit map" file. For each word, calculate each of the
+          15 edit keys, and add the word to the list for that key. 
+          Key calculation is discussed 
+          <a href="#Spelling_EditKeys">above</a>.
+          This file is created and then sorted on disk, and the lists 
+          for duplicate entries are merged together.
+          <br/><br/>
+        </li>
+        <li>
+          Finally, any existing pair data from a previous dictionary
+          creation run is read in, and then new pairs are added from the
+          most recent main index phase. Unlike the other parts of
+          dictionary creation, this work is all done in RAM, for reasons
+          outlined in the next section covering data structures.
+        </li>
+      </ol>
+    </div>
+    <div class="IndentL"> 
+      <p class="Heading3">Data Structures<a name="Spelling_DataStruct"></a></p>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
+      <p>
+        The data structures used to store the dictionary are motivated by the
+        needs of the spelling correction algorithm. In particular, it needs
+        the following information to make good suggestions:
+      </p>
+      <ol>
+        <li>
+          The list of words that are "similar" to a given word (i.e. whose
+          beginning is edit distance 2 or less.)
+        </li>
+        <li>
+          The frequency of a given candidate word (i.e. how often that word
+          occurs within the documents in an index.)
+        </li>
+        <li>
+          The frequency of a given pair of words (i.e. how often the two
+          words appear together, in sequence, in the index.)
+        </li>
+      </ol>
+      To support these needs, the dictionary consists of three main
+      data structures, each of which is discussed below.
+      <ul>
+        <li>
+          <p>
+            <b>Edit Map.</b> Since at most
+            15 keys need to be read for a given input word, this data structure
+            is mainly disk-based (it's never read entirely into RAM.) The disk
+            file consists of one line per 4-letter key, listing all the words
+            that share that key. At the end of the file is an index giving
+            the length (in bytes) for each key, so that the correction
+            engine can quickly and randomly access the entries.
+          </p>
+          <p>
+            The words in each list are <i>prefix-compressed</i> to conserve
+            disk space. This is a way of compressing a list of words when
+            many of them share prefixes. For example, say we have three
+            words in the list for a key:
+          </p>
+          <div class="Sample">
+            <span class="CodeNorm">apple application aplomb</span>
+          </div>
+          <p>
+            We always store
+            the first word in its entirety; each word after that is stored
+            as the number of characters it has in common with the previous word,
+            plus the characters it doesn't share. For long lists of similar words, the
+            compression becomes quite significant. In our example the compressed list is:
+          </p>
+          <div class="Sample">
+            <span class="CodeNorm">apple <b>4</b>ication <b>2</b>lomb</span>
+          </div>   
+          <p>
+            Here are some lines from a real edit map file, with the keys in <b>bold</b>:
+          </p>
+          <div class="Sample">
+            <span class="CodeNorm">
+              <b>abrd</b>|aboard|2road|2surd|6ist|7ty|6ly<br/>
+              <b>abre</b>|abbreviated|9ions|0fabre|0laborer|7s<br/>
+              <b>abrg</b>|aboriginal<br/>
+              <b>abrh</b>|abraham|7son<br/>
+              <b>abri</b>|aboriginal|4tion|8s|0cambridge|0fabric|6ated|0labyrinth<br/>
+              <span class="MacroCode">... and the random-access index at the end of the file ...</span><br/>
+              <b>abrd</b>|37<br/>
+              <b>abre</b>|42<br/>
+              <b>abrg</b>|16<br/>
+              <b>abrh</b>|18<br/>
+              <b>abri</b>|61<br/>
+            </span>
+          </div>
+        </li>
+        <li>
+          <p>
+            <b>Word Frequency Table.</b> On disk
+            this is stored as a simple text file with one line per word giving its 
+            frequency. The lines are sorted in ascending word order. This structure
+            is read completely into RAM by the correction engine, as we need to
+            potentially evaluate tens of thousands of candidate words per second in a
+            high-volume application.
+          </p>
+          <p>
+            Here are some lines from a real word frequency file:
+          </p>
+          <div class="Sample">
+            <span class="CodeNorm">
+              aboard|10<br/>
+              abolished|19<br/>
+              abolishing|9<br/>
+              abolish|8<br/>
+              abolition|34<br/>
+              abomination|6<br/>
+            </span>
+          </div>
+        </li>
+        <li>
+          <p>
+            <b>Pair Frequency Table.</b> The correction engine needs to check the frequency of
+            hundreds of thousands of word pairs per second. This implies a need for
+            extremely fast access, so we need to pull the entire data structure
+            into RAM and search it very quickly.
+          </p>
+          <p>
+            The table exists only in binary (rather than text) form, in a very simple
+            structure. A "hash code" is computed for each pair of words. The hash code is
+            a 64-bit integer that does a good job of characterizing the pair; for
+            two different pairs, the chance of getting the same hash code is
+            vanishingly small. The structure consists of a large array of the
+            all the pairs' hash codes, sorted numerically, plus a frequency count per pair. 
+            This sorted data is amenable to a fast in-memory binary search.
+          </p>
+          <p>
+            Here's the disk layout:
+          </p>
+          <table border="1" cellpadding="5" class="Sample">
+            <tr><td><b># bytes</b></td><td><b>Description</b></td></tr>
+            <tr><td>8</td><td>Magic number (identifies this as a pair frequency file)</td></tr>
+            <tr><td>4</td><td>Total number of pairs in the file</td></tr>
+            <tr><td>8</td><td>Hash code of pair 1</td></tr>
+            <tr><td>4</td><td>... and frequency of pair 1</td></tr>
+            <tr><td>8</td><td>Hash code of pair 2</td></tr>
+            <tr><td>4</td><td>... and frequency of pair 2</td></tr>
+            <tr><td>8</td><td>Hash code of pair 3</td></tr>
+            <tr><td>...</td><td>etc.</td></tr>
+          </table>
+          <p>
+            As you can see, we store each pair with exactly 12 bytes: 8 bytes
+            for the 64-bit hash code, and 4 bytes for the 32-bit count. Working with
+            fixed-size chunks makes the code simple, and also keeps
+            the pair data file (and corresponding RAM footprint) relatively small.
+          </p>
+        </li>
+      </ul>
+      
+    </div>
   </div>
   <!-- BaseStyle --> 
   <p class="Heading1">Lazy Trees<a name="LazyFiles"></a></p>
