@@ -323,6 +323,23 @@ public class SpellWriter
 
   /**
    * Ensures that all words in the queue are written to the dictionary on disk.
+   * Note that this can take quite some time; if you want to print out progress
+   * messages during the process, use {@link #flushQueuedWords(ProgressTracker)}
+   * below.
+   */
+  public synchronized void flushQueuedWords()
+    throws IOException 
+  {
+    flushQueuedWords(null);
+  }
+  
+  /**
+   * Ensures that all words in the queue are written to the dictionary on disk.
+   * 
+   * @param prog    A tracker that will be called periodically during the
+   *                process; generally you'll want to supply one that
+   *                prints out progress messages.
+   *                If null, no progress will be reported.
    */
   public synchronized void flushQueuedWords(ProgressTracker prog)
     throws IOException 
@@ -343,7 +360,7 @@ public class SpellWriter
       (freqFile.length() + wordQueueFile.length()) * 10,
       pairQueueFile.length());
 
-    // Phase 1: Add words and their ngrams to the Lucene index
+    // Phase 1: Accumulate word frequencies
     flushPhase1(phaseProgs[0]);
 
     // Phase 2: Accumulate pairs into the pair data file
@@ -495,7 +512,7 @@ public class SpellWriter
           out.append('\n');
 
           // Add combinations to the edit map.
-          addCombos(curWord, curFreq, edmapSorter);
+          addCombos(curWord, edmapSorter);
 
           // Prepare for the next word.
           curFreq = 0;
@@ -518,32 +535,32 @@ public class SpellWriter
    * Add combinations of the first six letters of the word, capturing all the
    * possibilities that represent an edit distance of 2 or less.
    */
-  private void addCombos(String word, int freq, FileSorter edMapSorter)
+  private void addCombos(String word, FileSorter edMapSorter)
     throws IOException 
   {
     // Add combinations to the edit map
-    addCombo(word, freq, edMapSorter, 0, 1, 2, 3);
-    addCombo(word, freq, edMapSorter, 0, 1, 2, 4);
-    addCombo(word, freq, edMapSorter, 0, 1, 2, 5);
-    addCombo(word, freq, edMapSorter, 0, 1, 3, 4);
-    addCombo(word, freq, edMapSorter, 0, 1, 3, 5);
-    addCombo(word, freq, edMapSorter, 0, 1, 4, 5);
-    addCombo(word, freq, edMapSorter, 0, 2, 3, 4);
-    addCombo(word, freq, edMapSorter, 0, 2, 3, 5);
-    addCombo(word, freq, edMapSorter, 0, 2, 4, 5);
-    addCombo(word, freq, edMapSorter, 0, 3, 4, 5);
+    addCombo(word, edMapSorter, 0, 1, 2, 3);
+    addCombo(word, edMapSorter, 0, 1, 2, 4);
+    addCombo(word, edMapSorter, 0, 1, 2, 5);
+    addCombo(word, edMapSorter, 0, 1, 3, 4);
+    addCombo(word, edMapSorter, 0, 1, 3, 5);
+    addCombo(word, edMapSorter, 0, 1, 4, 5);
+    addCombo(word, edMapSorter, 0, 2, 3, 4);
+    addCombo(word, edMapSorter, 0, 2, 3, 5);
+    addCombo(word, edMapSorter, 0, 2, 4, 5);
+    addCombo(word, edMapSorter, 0, 3, 4, 5);
     if (word.length() > 1) {
-      addCombo(word, freq, edMapSorter, 1, 2, 3, 4);
-      addCombo(word, freq, edMapSorter, 1, 2, 3, 5);
-      addCombo(word, freq, edMapSorter, 1, 2, 4, 5);
-      addCombo(word, freq, edMapSorter, 1, 3, 4, 5);
+      addCombo(word, edMapSorter, 1, 2, 3, 4);
+      addCombo(word, edMapSorter, 1, 2, 3, 5);
+      addCombo(word, edMapSorter, 1, 2, 4, 5);
+      addCombo(word, edMapSorter, 1, 3, 4, 5);
       if (word.length() > 2)
-        addCombo(word, freq, edMapSorter, 2, 3, 4, 5);
+        addCombo(word, edMapSorter, 2, 3, 4, 5);
     }
   }
 
   /** Add a combination of letters to the edit map */
-  private void addCombo(String word, int freq, FileSorter edmapSorter, int p0,
+  private void addCombo(String word, FileSorter edmapSorter, int p0,
                         int p1, int p2, int p3)
     throws IOException 
   {
@@ -551,8 +568,6 @@ public class SpellWriter
     edmapBuf.append(comboKey(word, p0, p1, p2, p3));
     edmapBuf.append('|');
     edmapBuf.append(word);
-    edmapBuf.append('|');
-    edmapBuf.append(freq);
     String line = edmapBuf.toString();
     edmapSorter.addLine(line);
   }
@@ -649,26 +664,19 @@ public class SpellWriter
       {
         String curKey = null;
         ArrayList<String> curWords = new ArrayList<String>();
-        IntList curFreqs = new IntList();
         int nWritten = 0;
 
         public void writeLine(String line)
           throws IOException 
         {
           String[] tokens = splitPat.split(line);
-          assert tokens.length == 3 : "invalid edmap line";
+          assert tokens.length == 2 : "invalid edmap line";
           if (!tokens[0].equals(curKey)) {
             if (curKey != null)
               flushKey();
             curKey = tokens[0];
           }
           curWords.add(tokens[1]);
-          try {
-            curFreqs.add(Integer.parseInt(tokens[2]));
-          }
-          catch (NumberFormatException e) {
-            assert false : "invalid edmap line";
-          }
 
           // Give progress every once in a while.
           if ((nWritten++ & 0xFFF) == 0)
@@ -682,16 +690,15 @@ public class SpellWriter
         {
           // Write out the condensed key
           long prevPos = outCounted.nWritten();
-          condenseEdmapKey(curKey, curWords, curFreqs, out);
+          condenseEdmapKey(curKey, curWords, out);
           out.flush();
 
           // Record the key and its size on disk
           edKeys.add(curKey);
           sizes.add((int)(outCounted.nWritten() - prevPos));
 
-          // Clear the word and frequency lists in preparation for the next word
+          // Clear the word list in preparation for the next word
           curWords.clear();
-          curFreqs.clear();
         }
 
         public void close() {
@@ -725,25 +732,21 @@ public class SpellWriter
    * Perform prefix compression on a list of words for a single edit map
    * key.
    */
-  private void condenseEdmapKey(String key, ArrayList<String> words, IntList freqs,
+  private void condenseEdmapKey(String key, ArrayList<String> words, 
                                 Writer out)
     throws IOException 
   {
     String prev = words.get(0);
-    int freq = freqs.get(0);
 
     // Write the key and the first word in full
     out.append(key);
     out.append('|');
     out.append(prev);
-    out.append('|');
-    out.append(Integer.toString(freq));
 
     // Prefix-compress the list.
     for (int j = 1; j < words.size(); j++) 
     {
       String word = words.get(j);
-      freq = freqs.get(j);
 
       // Skip duplicates
       if (word.equals(prev))
@@ -756,12 +759,10 @@ public class SpellWriter
           break;
       }
 
-      // Write it the prefix length, suffix, and frequency
+      // Write the prefix length and suffix
       out.append('|');
       out.append((char)('0' + k));
       out.append(word.substring(k));
-      out.append('|');
-      out.append(Integer.toString(freq));
 
       // Next...
       prev = word;

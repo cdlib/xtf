@@ -251,9 +251,9 @@ public class SpellReader
     // Decode the string data from UTF-8
     String line = edMapDecoder.decode(ByteBuffer.wrap(bytes)).toString().trim();
 
-    // Break up all the tokens.
+    // Break up all the tokens, and validate the amount.
     String[] tokens = splitPat.split(line);
-    if (tokens.length < 3 || ((tokens.length - 1) % 2) != 0)
+    if (tokens.length < 2)
       throw new IOException("edmap file corrupt");
 
     // Make sure we got the right key!
@@ -262,16 +262,9 @@ public class SpellReader
 
     // Record each word in the list (and their frequencies)
     String prev = null;
-    for (int j = 1; j < tokens.length; j += 2) 
+    for (int j = 1; j < tokens.length; j++) 
     {
       String word = tokens[j];
-      int freq;
-      try {
-        freq = Integer.parseInt(tokens[j + 1]);
-      }
-      catch (NumberFormatException e) {
-        throw new IOException("edmap file corrupt");
-      }
 
       // Handle prefix compression
       if (prev != null) {
@@ -287,6 +280,7 @@ public class SpellReader
       checked.add(hash);
 
       // If the frequency is too low, skip it.
+      int freq = wordFreqs.get(hash);
       if (freq < minFreq)
         continue;
 
