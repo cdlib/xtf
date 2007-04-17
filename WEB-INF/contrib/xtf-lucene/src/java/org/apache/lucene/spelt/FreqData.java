@@ -122,8 +122,8 @@ public class FreqData
     return get(Hash64.hash(word1, word2));
   }
 
-  /** Get the count for a given hash code and count, or zero if not found */
-  private int get(long hash) 
+  /** Get the count for a given hash code, or zero if not found */
+  public final int get(long hash) 
   {
     // Before using binary search, ensure the data is sorted.
     sort();
