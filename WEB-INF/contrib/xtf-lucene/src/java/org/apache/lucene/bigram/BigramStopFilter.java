@@ -254,8 +254,6 @@ public class BigramStopFilter extends TokenFilter
   /**
    * Basic regression test
    */
-
-  // FIXME: Make this into a Lucene-style junit test.
   public static final Object tester = new Object() 
   {
     /**
