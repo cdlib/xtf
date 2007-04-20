@@ -138,7 +138,8 @@ public class IdxTreeDictMaker
       // Open the SpellWriter. We don't have to specify a stopword set for
       // this phase (it's only used during queuing.)
       //
-      spellWriter = SpellWriter.open(spellIdxPath, null, 3);
+      spellWriter = SpellWriter.open(new File(spellIdxPath));
+      spellWriter.setMinWordFreq(3);
 
       // Perform the update.
       spellWriter.flushQueuedWords(new ProgressTracker() 

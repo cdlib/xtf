@@ -3692,8 +3692,11 @@ public class XMLTextProcessor extends DefaultHandler
     // passed to it and queued.
     //
     if (indexInfo.createSpellcheckDict) {
-      if (spellWriter == null)
-        spellWriter = SpellWriter.open(indexPath + "spellDict/", stopSet, 3);
+      if (spellWriter == null) {
+        spellWriter = SpellWriter.open(new File(indexPath + "spellDict/"));
+        spellWriter.setStopwords(stopSet);
+        spellWriter.setMinWordFreq(3);
+      }
       analyzer.setSpellWriter(spellWriter);
     }
   } // private openIdxForWriting()  
