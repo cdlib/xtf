@@ -1329,10 +1329,13 @@ to fill its bottomless gullet.</pre>
     work for those deploying XTF. 
   </p>
   <p>
-    In the following sections, we'll discuss some strategies that were
+    In the following sections, we'll discuss the guts of XTF's spelling correction
+    system, detailing some strategies that were
     considered and the final strategy selected, the methods that XTF uses
-    to come up with high-quality suggestions, and details on how the
-    dictionary is created and stored.
+    to come up with high-quality suggestions, and how the
+    dictionary is created and stored. If you're looking for information
+    on configuring and using the system, see the 
+    <a href="programming.html">Programming Guide</a>.
   </p>
   <div class="IndentL"> 
     <p class="Heading2">Choosing an Index-based Strategy<a name="Spelling_Strategy"></a></p>
@@ -1345,8 +1348,8 @@ to fill its bottomless gullet.</pre>
       <li>
         <i>Fixed Dictionary</i>: Available software, such as GNU Aspell, makes spelling corrections 
         based on one or more fixed, pre-constructed dictionaries. But the
-        bibliographic data in our test bed and a our of sample queries from the live Melvyl
-        catalog were multilingual and contained a substantial proportion of proper nouns (e.g.
+        bibliographic data in our test bed and our sample queries from a live university
+        library catalog were multilingual and contained a substantial proportion of proper nouns (e.g.
         names of people or places). This ruled out a fixed dictionary, since
         many of these proper nouns and foreign words wouldn't be present in any standard
         dictionary.<br/><br/>
@@ -1354,26 +1357,29 @@ to fill its bottomless gullet.</pre>
       <li>
         <i>Query Logs</i>: In this method, we would compare the user's query to an extensive
         set of prior queries, and suggest alternative queries which resulted in more hits.
-        Unfortunately, our test system has a limited number of users, there was
+        Unfortunately, our test system has a limited number of users, and there was
         no feasible way to get hold of the millions of representative queries this strategy
         would require, so it was ruled out as well.<br/><br/>
       </li>
       <li>
-        <i>Index-based Dictionary</i>: Here, we make
+        <i>Index-based Dictionary</i>: Here we would make
         suggestions using an algorithm that draws on terms and term frequency data from the XTF
-        index itself. It resembles the first approach above except that the dictionary
-        is dynamic, being derived from the actual documents and their text.
+        index itself. It resembles the first approach except that the dictionary
+        is dynamically derived from the actual documents and their text.
       </li>
     </ol>
     <p>
-      We opted to pursue the index-based approach, and feel it is best for most collections in most
-      situations, as it adapts to the documents on hand and doesn't require a long query history
+      Because of the issues identified with the other strategies, we opted to pursue the index-based approach.
+      We feel it is best for most collections in most
+      situations, as it adapts to the documents most germane to the application and users,
+      and doesn't require a long query history
       to become effective.
     </p>
     <p> 
-      Our goal was to get the correct suggestion in the number 1 position 80% of the time, and
-      with several iterations and many tweaks to the algorithm, we were able to achieve this for
-      our sample data set and set of queries derived from real query logs. We have a fair degree
+      We set ourselves a goal of getting the correct suggestion in the number 1 position 80% of the time,
+      which seemed a good threshold for the system to be truly useful.
+      With several iterations and many tweaks to the algorithm, we were able to achieve this goal for
+      our sample data set and our sample queries (drawn from real query logs). We have a fair degree
       of confidence that the algorithm is quite general and should be applicable to many other
       data sets and types of queries. 
     </p>
@@ -1381,17 +1387,17 @@ to fill its bottomless gullet.</pre>
   <div class="IndentLR"> 
     <p class="Heading2">Correction Algorithm<a name="Spelling_CorrectionAlg"></a></p>
     <p>
-      <b><i>XTF</i></b> builds a spelling correction dictionary at index-time. Then when a query is
-      sent to <b><i>crossQuery</i></b> that results in a small number of hits (the
+      <b><i>XTF</i></b> builds a spelling correction dictionary at index-time. If a query is
+      sent to <b><i>crossQuery</i></b> and results in only a small number of hits (the
       threshold is configurable), XTF consults the dictionary to make an alternative
-      spelling suggestion. Here's a brief outline of the algorithm for making a suggestion:
+      spelling suggestion. Here is a brief outline of the algorithm for making a suggestion:
     </p>
     <ol>
-      <li>For each word in the query, make a list of candidate suggestions</li>
-      <li>Rank the suggestions and pick the best one</li>
-      <li>For multi-word queries, consider pair frequencies to improve quality</li>
+      <li>For each word in the query, make a list of candidate suggestions.</li>
+      <li>Rank the suggestions and pick the best one (details below).</li>
+      <li>For multi-word queries, consider pair frequencies to improve quality.</li>
       <li>Suppress near-identical suggestions, and ensure that the final suggestion 
-        increases the number of hits</li>
+        increases the number of hits.</li>
     </ol>
     Each of these will be considered in more detail below.
     
@@ -1402,14 +1408,14 @@ to fill its bottomless gullet.</pre>
         Most spelling algorithms, including this one, rely on a sort of "shot-gun"
         approach: for each potentially mispelled word in the query, they make a long
         list of "candidate" words, that is, words that could be suggested as a
-        correction for the original (misspelled) word. 
+        correction for the original misspelled word. 
         Then the list of candidates is ranked using some sort of
         scoring formula, and finally the top-ranked candidate is presented to the user.
       </p>
       <p>
         One might naively attempt to scan <i>every</i> word in the dictionary as a
         candidate. Unfortunately, the cost of scoring each one becomes prohibitive
-        when the dictionary grows beyond, say, ten thousand words. So a strategy is needed
+        when the dictionary grows beyond about ten thousand words. So a strategy is needed
         to quickly come up with a list of a few hundred pretty good candidates. XTF
         uses a novel approach that gives good speed and accuracy.
       </p>
@@ -1422,8 +1428,8 @@ to fill its bottomless gullet.</pre>
         the dictionary (also built with n-grams), retaining the top 100 hits (where a hit 
         represents a correctly spelled word that shares some n-grams with the target word). 
         Finally, it ranks the suggestions according to their "edit distance" to the original 
-        misspelled word. Those that are closest appear at the top. (“Edit distance" is a
-        standard numerical measure of how far two words are from each other, and is
+        misspelled word. Those that are closest appear at the top. ("Edit distance" is a
+        standard numerical measure of how far two words are from each other and is
         defined as the number of insert, replace, and delete operations needed to transform 
         one word into the other.)
       </p>
@@ -1432,10 +1438,10 @@ to fill its bottomless gullet.</pre>
         correct word, especially in the case of short words. However, we made one
         critical observation: In
         perhaps 85-90% of the cases we examined, the correct word had an edit distance of 1 or 2
-        from the misspelled query word; another 5-10% had edit distance 3, and the extra edit 
+        from the misspelled query word; another 5-10% had an edit distance of 3, and the extra edit 
         was usually toward the end of the word. This observation intuitively rings true:
         the suggested word should be relatively "close" to the
-        query word, and those that are "far" away needn't even be considered.
+        query word and those that are "far" away needn't even be considered.
       </p>
       <a name="Spelling_EditKeys"/>
       <p>
@@ -1481,7 +1487,7 @@ to fill its bottomless gullet.</pre>
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
       <p>
         Given a list of candidate words, how does one find the "right" suggestion?
-        This is the heart of most spelling algorithms, and the area that needs
+        This is the heart of most spelling algorithms and the area that needs
         the most "tweaking" to achieve good results. XTF's ranking algorithm is
         no exception, and makes decisions by assigning a score to each candidate word. 
         The score is a sum of the following factors:
@@ -1495,24 +1501,24 @@ to fill its bottomless gullet.</pre>
           "cost" of transposition and double-letter errors. Those types
           of errors are very common spelling mistakes, and reducing their
           cost was shown by our testing to improve suggestion accuracy. In math terms,
-          base score is calculated as 1.0 - (editDistance / queryWord.length).
+          the base score is calculated as 1.0 - (editDistance / queryWord.length).
           <br/><br/>
         </li>
         <li>
-          <b>Metaphone.</b> If the metaphone of the candidate word matches that of the query word,
-          the score is nudged upward by 0.1. 
+          <b>Metaphone.</b> 
           Originally developed by Lawrence Philips, the Double Metaphone algorithm is a simple 
           phonetic mapping that transforms any English word into a 4 character code (metaphone). 
-          Words that have the same code are assumed to be phonetically similar. Philips'
+          Words that have the same code are assumed to be phonetically similar. In XTF's
+          spelling system, if the metaphone of the candidate word matches that of the query word,
+          the score is nudged upward by 0.1. (Note: Philips'
           algorithm actually produces two codes, primary and secondary, for a given
-          input word; XTF only compares the primary code.
+          input word; XTF only compares the primary code.)
           <br/><br/>
         </li>
         <li>
-          <b>First/last letter.</b> If the first letter of the candidate word matches the query word,
-          and the last letter of the candidate word matches the query word, then
-          the score is nudged upward by 0.1. Again, testing showed that this
-          approach boosted overall accuracy.
+          <b>First/last letter.</b> If the first and last letters of the candidate word 
+          match those of the query word, then the score is nudged upward by 0.1. Again, testing 
+          showed that this approach boosted overall accuracy.
           <br/><br/>
         </li>
         <li>
@@ -1524,13 +1530,13 @@ to fill its bottomless gullet.</pre>
         </li>
       </ol>
       <p>
-        By the way, the original query word itself is always considered as one of the canidates.
+        The original query word itself is always considered as one of the candidates.
         This is to reduce the problem of suggesting replacements for correctly spelled
         words. However, the score of the query word is reduced slightly in case a more
         common word is found that is very similar.
       </p>
       <p>
-        In summary: for a single-word query, the list of all candidates is ranked by score, and the one 
+        In summary, for a single-word query, the list of all candidates is ranked by score, and the one 
         with the highest score wins and is considered the "best" suggestion for the user.
       </p>
     </div>
@@ -1540,7 +1546,7 @@ to fill its bottomless gullet.</pre>
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
       <p>
         But what about queries with multiple words? Testing showed that considering each
-        word independently and forming the suggestion for that word got plenty of
+        word of a phrase independently and concatenating the result got plenty of
         important cases wrong. For instance, consider the query <span class="Code">untied states</span>. Actually,
         each of these words is spelled correctly, but it's clear the user probably meant
         to query for <span class="Code">united states</span>. Also, consider the word <span class="Code">harrypotter</span>... the best
@@ -1548,7 +1554,7 @@ to fill its bottomless gullet.</pre>
         How do we go beyond single-word suggestions?
       </p>
       <p>
-        We need to know more than just the frequency of the words in the index: we need
+        We need to know more than just the frequency of the words in the index; we need
         to know how often they occur <i>together</i>. So when XTF builds the spelling
         dictionary, it additionally tracks the frequency of each pair of words as they occur
         in sequence.
@@ -1565,15 +1571,15 @@ to fill its bottomless gullet.</pre>
           we'd check &lt;<span class="Code">har rypotter</span>&gt;, 
           &lt;<span class="Code">harr ypotter</span>&gt;, 
           &lt;<span class="Code">harry potter</span>&gt;, etc. and get
-          a nice hit on that last one. That "hitting" takes the form of considering the
-          pair as a replacement for the query word, with a score boost based on the
-          pair frequency.
+          a solid hit on that last one. That "hitting" takes the form of a higher
+          score boost based on the pair frequency.
           <br/><br/>
         </li>
         <li>
-          For each pair of words, we fetch the top 100 single-word suggestions for
-          each word in the pair. Then we consider all possible combinations of these
-          (that's 10,000 combinations) to see if any of them are high-frequency
+          For each consecutive pair of words, we fetch the top 100 single-word suggestions for
+          both words in the pair. Then we consider all possible combinations of a word from
+          the first list vs. a word from the second list
+          (that's 10,000 combinations) to see if any of the combinations are high-frequency
           pairs. So in the example of &lt;<span class="Code">untied states</span>&gt;, one of the suggestions for
           <span class="Code">untied</span> will certainly be <span class="Code">united</span> 
           and we'll discover that &lt;<span class="Code">united states</span>&gt;
@@ -1588,15 +1594,15 @@ to fill its bottomless gullet.</pre>
         </li>
       </ol>
       All of these strategies are attempted and, just as in single-word candidate
-      selection, each potential suggestion is scored and ranked. The highest 
-      scoring suggestion wins.
+      selection, each phrase candidate is scored and ranked. The highest 
+      scoring phrase wins.
     </div>
     
     <div class="IndentL"> 
       <p class="Heading3">Sanity Checks<a name="Spelling_Sanity"></a></p>
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
       <p>
-        Despite all the effort above, sometimes the spelling system makes bad
+        Despite all the above efforts, sometimes the spelling system makes bad
         suggestions. A couple of methods are used to minimize these.
       </p>
       <p>
@@ -1635,8 +1641,8 @@ to fill its bottomless gullet.</pre>
         ability to quickly add a few documents to an existing index. So we needed
         an incremental spelling dictionary build process to stay true to the
         indexer's design. To do this we phase the work, with a low-overhead
-        collection pass added to the main index process, and then a phase of
-        intensive dictionary generation (of course optimized as much as we could.)
+        collection pass added to the main indexing process, and then a phase of
+        intensive dictionary generation, optimized as much as possible.
       </p>
       <p>
         During the main index run, XTF simply
@@ -1668,7 +1674,7 @@ to fill its bottomless gullet.</pre>
         <li>
           Sample the frequency distribution of the words.
           This enables the correction algorithm to quickly
-          decide how much boost a given word should receive, by ranking its
+          decide how much boost a given word should receive by ranking its
           frequency in relation to the rest of the words in the dictionary.
           <br/><br/>
         </li>
@@ -1677,13 +1683,13 @@ to fill its bottomless gullet.</pre>
           15 edit keys, and add the word to the list for that key. 
           Key calculation is discussed 
           <a href="#Spelling_EditKeys">above</a>.
-          This file is created and then sorted on disk, and the lists 
+          This file is created and then sorted on disk and the lists 
           for duplicate entries are merged together.
           <br/><br/>
         </li>
         <li>
           Finally, any existing pair data from a previous dictionary
-          creation run is read in, and then new pairs are added from the
+          creation run is read in and then new pairs are added from the
           most recent main index phase. Unlike the other parts of
           dictionary creation, this work is all done in RAM, for reasons
           outlined in the next section covering data structures.
@@ -1701,7 +1707,7 @@ to fill its bottomless gullet.</pre>
       <ol>
         <li>
           The list of words that are "similar" to a given word (i.e. whose
-          beginning is edit distance 2 or less.)
+          beginning is an edit distance of 2 or less.)
         </li>
         <li>
           The frequency of a given candidate word (i.e. how often that word
