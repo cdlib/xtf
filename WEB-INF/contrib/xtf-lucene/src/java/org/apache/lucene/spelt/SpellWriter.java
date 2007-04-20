@@ -48,10 +48,24 @@ import org.apache.lucene.util.ProgressTracker;
 
 /**
  * <p>
- * Spell Writer class <br/>(very distantly based on Nicolas Maisonneuve /
- * David Spencer code).
- *
- * Provides efficient, high-volume updates to a spelling correction index.
+ * Writes spelling dictionaries, which can later be used by {@link SpellReader}
+ * to obtain spelling suggestions. Provides efficient, high-volume updates 
+ * to a spelling correction dictionary. Typical steps for creating a dictionary:
+ * </p>
+ * <ol>
+ *   <li>First, {@linkplain #open(File) open} a new writer.</li>
+ *   <li>Repeatedly {@linkplain #queueWord(String) queue} words to be added
+ *       to the dictionary. This writes the words and pairs to a simple
+ *       disk file.
+ *   </li>
+ *   <li>Optionally {@linkplain #flushQueuedWords() flush} the queued words,
+ *       processing them into a final dictionary.
+ *   </li>
+ *   <li>Finally, {@linkplain #close()} the writer.
+ * </ol>
+ * <p>
+ * Inspired by and very distantly based on Nicolas Maisonneuve / David Spencer 
+ * code.
  * </p>
  *
  * @author Martin Haye

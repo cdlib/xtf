@@ -23,12 +23,13 @@ package org.apache.lucene.spelt;
  */
 
 /**
- * Calculates the edit distance between two strings. Special modifications to
- * score transpositions and double-letter changes as less change.
+ * Calculates the edit distance between two strings, with special modifications to
+ * score transpositions and double-letter changes as lower cost than
+ * insertion/deletion/replacement.
  *
  * @author Martin Haye
  */
-public final class TRStringDistance2 {
+final class TRStringDistance2 {
 
     final char[] sa;
     final int n;

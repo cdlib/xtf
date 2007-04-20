@@ -29,7 +29,7 @@ package org.apache.lucene.spelt;
  *
  * @author Apache Software Foundation
  */
-public class DoubleMetaphone 
+class DoubleMetaphone 
 {
   /**
    * "Vowels" to test for

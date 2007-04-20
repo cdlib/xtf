@@ -35,7 +35,7 @@ import org.apache.lucene.util.LongList;
  *
  * @author Martin Haye
  */
-public class FreqData 
+class FreqData 
 {
   /** List of keys */
   private LongList keys = new LongList();

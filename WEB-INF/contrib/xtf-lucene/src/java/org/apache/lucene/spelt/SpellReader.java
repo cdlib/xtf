@@ -44,9 +44,20 @@ import org.apache.lucene.util.StringUtil;
 
 /**
  * <p>
- * Spell Reader class <br/>(built on Nicolas Maisonneuve / David Spencer code).
- * Provides efficient, high-volume suggestions from a spelling correction
- * index.
+ * Reads a spelling dictionary created by {@link SpellWriter}, and provides
+ * fast single- and multi-word spelling suggestions. Typical usage:
+ * </p>
+ * <ol>
+ *   <li>First, {@linkplain #open(File) open} a new reader.</li>
+ *   <li>For each potentially mispelled query, gather the keywords
+ *       and {@linkplain #suggestKeywords(String[]) get suggestions}
+ *       for them.
+ *   </li>
+ *   <li>When done with all queries, {@linkplain #close()} the reader.
+ * </ol>
+ * <p>
+ * Inspired by and very distantly based on Nicolas Maisonneuve / David Spencer 
+ * code.
  * </p>
  *
  * @author Martin Haye

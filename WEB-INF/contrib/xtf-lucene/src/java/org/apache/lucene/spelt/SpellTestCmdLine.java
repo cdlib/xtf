@@ -37,8 +37,8 @@ import org.apache.lucene.util.ProgressTracker;
 import org.apache.lucene.util.StringUtil;
 
 /**
- * A command-line driver class to test out the old and new spelling 
- * correction engines.
+ * A command-line driver class to test out the spelling correction 
+ * engine.
  * 
  * @author Martin Haye
  */
