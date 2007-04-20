@@ -14,12 +14,6 @@ package org.apache.lucene.spelt;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Acknowledgements:
- *
- * A significant amount of new and/or modified code in this module
- * was made possible by a grant from the Andrew W. Mellon Foundation,
- * as part of the Melvyl Recommender Project.
  */
 
 import java.io.BufferedReader;
@@ -147,7 +141,7 @@ public class SpellTestCmdLine
     // Make a builder... what kind depends on the selected algorithm.
     DictBuilder builder = (alg == 0) ? new DictBuilder() /* does nothing */ :
                           //(alg == 1) ? new LuceneDictBuilder(dictDir) :
-                          (alg == 2) ? new SpeltDictBuilder(dictDir) :
+                          (alg == 2) ? new SpeltDictBuilder(dictDirFile) :
                           null;
     
     // Rip all the text.
@@ -291,10 +285,10 @@ public class SpellTestCmdLine
   {
     SpellWriter spellWriter;
 
-    SpeltDictBuilder(String dictDir) throws IOException
+    SpeltDictBuilder(File dictDir) throws IOException
     {
-      final int minWordFreq = 2;
-      spellWriter = SpellWriter.open(dictDir, makeStopSet(), minWordFreq);
+      spellWriter = SpellWriter.open(dictDir);
+      spellWriter.setStopwords(makeStopSet());
     }
     
     void add(Iterator words) throws IOException
@@ -489,9 +483,8 @@ public class SpellTestCmdLine
     
     SpeltSuggTester(String dictDir) throws IOException
     {
-      spellReader = SpellReader.open(new File(dictDir), 
-                                     makeStopSet(), 
-                                     WordEquiv.DEFAULT);
+      spellReader = SpellReader.open(new File(dictDir));
+      spellReader.setStopwords(makeStopSet());
     }
     
     public String[] suggest(String[] origPhrase) throws IOException

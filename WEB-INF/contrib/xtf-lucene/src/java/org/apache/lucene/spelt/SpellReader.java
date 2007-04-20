@@ -1,7 +1,7 @@
 package org.apache.lucene.spelt;
 
 /**
- * Copyright 2002-2007 The Apache Software Foundation
+ * Copyright 2006-2007 The Apache Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public class SpellReader
   /** Word equivalency checker */
   private WordEquiv wordEquiv;
 
-  /** Private constructor -- use {@link #open} instead. */
+  /** Private constructor -- use {@link #open(File)} instead. */
   private SpellReader() {
   }
 
@@ -102,25 +102,49 @@ public class SpellReader
   }
 
   /**
-   * Open a reader for the given spelling index directory. Also associates
-   * the given stop-word set and word equivalency.
+   * Open a reader for the given spelling index directory. Does no stop word
+   * processing, and uses default word equivalency (just case insensitive.)
+   * To specify a stopword set (which you must if you did when building the
+   * dictionary), call {@link #setStopwords(Set)}. To specify a non-default
+   * word equivalency, call {@link #setWordEquiv(WordEquiv)}.
    *
    * @param spellIndexDir   directory containing the spelling dictionary
-   * @param stopSet         set of stop-words to use, or null for none
-   * @param wordEquiv       word equivalency checker, or null for default
    */
-  public static SpellReader open(File spellIndexDir, Set stopSet,
-                                 WordEquiv wordEquiv)
+  public static SpellReader open(File spellIndexDir)
     throws IOException 
   {
     SpellReader reader = new SpellReader();
     reader.spellDir = spellIndexDir;
-    reader.stopSet = stopSet;
-    reader.wordEquiv = (wordEquiv == null) ? WordEquiv.DEFAULT : wordEquiv;
+    reader.stopSet = null;
+    reader.wordEquiv = WordEquiv.DEFAULT;
     reader.openEdmap();
     reader.loadFreqSamples();
     reader.loadWordFreqs();
     return reader;
+  }
+  
+  /**
+   * Establishes a list of stopwords (e.g. "the", "and", "an", etc.). This
+   * list should be identical to that which was used to create the
+   * dictionary.
+   * 
+   * @param set Set of stop-words; all should be lower-case.
+   */
+  public void setStopwords(Set set) {
+    this.stopSet = set;
+  }
+
+  /**
+   * Establishes a word equivalency checker. This is used to prevent the 
+   * correction algorithm from making suggestions that won't change the
+   * query result. For instance, if words in the main index are all
+   * converted from plural to singular, it would be silly for the checker
+   * to suggest "cats" to replace "cat".
+   * 
+   * @param eq  the equivalency checker to use
+   */
+  public void setWordEquiv(WordEquiv eq) {
+    this.wordEquiv = eq;
   }
 
   /** Read the index for the edit map file */
@@ -213,7 +237,10 @@ public class SpellReader
   public void close()
     throws IOException 
   {
-    edMapFile.close();
+    if (edMapFile != null) {
+      edMapFile.close();
+      edMapFile = null;
+    }
   }
 
   /** Establishes a destination for detailed debugging output */

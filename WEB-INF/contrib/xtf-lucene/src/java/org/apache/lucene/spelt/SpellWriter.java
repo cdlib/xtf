@@ -1,7 +1,7 @@
 package org.apache.lucene.spelt;
 
 /**
- * Copyright 2002-2007 The Apache Software Foundation
+ * Copyright 2006-2007 The Apache Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,8 @@ public class SpellWriter
   /** Directory to store the spelling dictionary in */
   private File spellIndexDir;
 
-  /** Set of stop words in use */
-  private Set stopSet;
+  /** Set of stop words in use; default is null for no stop set */
+  private Set stopSet = null;
 
   /** File to queue words into */
   private File wordQueueFile;
@@ -104,9 +104,18 @@ public class SpellWriter
   /** For counting pair frequencies prior to write */
   private HashMap<String, Integer> recentPairs = new HashMap<String, Integer>(
     MAX_RECENT_PAIRS);
+  
+  /** Default minimum word frequency = 2 */
+  private static final int DEFAULT_MIN_WORD_FREQ = 2;
 
-  /** Minimum frequency to retain in frequency data file */
-  private int minWordFreq;
+  /** Minimum frequency for words to retain */
+  private int minWordFreq = DEFAULT_MIN_WORD_FREQ;
+
+  /** Default minimum pair frequency = 2 */
+  private static final int DEFAULT_MIN_PAIR_FREQ = 2;
+
+  /** Minimum frequency for pairs to retain */
+  private int minPairFreq = DEFAULT_MIN_PAIR_FREQ;
 
   /** Used for calculating double metaphone keys */
   private static DoubleMetaphone doubleMetaphone = new DoubleMetaphone();
@@ -125,52 +134,91 @@ public class SpellWriter
 
   /**
    * Private constructor -- do not construct directly; rather, use the
-   * static open() method.
+   * static {@link #open(File)} method.
    */
   private SpellWriter() {
   }
 
   /**
    * Creates a SpellWriter, and establishes the directory to store the
-   * dictionary in.
+   * dictionary in. 
+   * 
+   * If you want stop-words to be recognized and discarded (especially
+   * important if the dictionary will be large), call
+   * {@link #setStopwords(Set)} after opening a writer.
+   * 
+   * The minimum word frequency defaults to 2; if you want to
+   * override that, call {@link #setMinWordFreq(int)}.
    *
-   * @param spellIndexPath  Path to store the spelling dictionary in
-   * @param stopSet  Set of stop words to use (or null for none)
-   * @param minWordFreq  Minumum frequency for words to be retained
+   * A similar threhold exists for pairs; the minimum pair frequency defaults 
+   * to 2; if you want to override that, call {@link #setMinPairFreq(int)}.
+   *
+   * @param spellIndexDir  Directory in which to store the spelling dictionary
    */
-  public static SpellWriter open(String spellIndexPath, Set stopSet,
-                                 int minWordFreq)
+  public static SpellWriter open(File spellIndexDir)
     throws IOException 
   {
     SpellWriter writer = new SpellWriter();
-    writer.openInternal(spellIndexPath, stopSet, minWordFreq);
+    writer.openInternal(spellIndexDir);
     return writer;
   }
 
   /**
    * Establishes the directory to store the dictionary in.
    */
-  private void openInternal(String spellIndexPath, Set stopSet, int minWordFreq)
+  private void openInternal(File spellIndexDir)
     throws IOException 
   {
-    this.minWordFreq = minWordFreq;
-    this.spellIndexDir = new File(spellIndexPath);
-    this.stopSet = stopSet;
+    this.spellIndexDir = spellIndexDir;
 
     // Figure out the files we're going to store stuff in
-    wordQueueFile = new File(spellIndexPath, "newWords.txt");
-    pairQueueFile = new File(spellIndexPath, "newPairs.txt");
-    freqFile = new File(spellIndexPath, "words.dat");
-    sampleFile = new File(spellIndexPath, "freqSamples.dat");
-    edmapFile = new File(spellIndexPath, "edmap.dat");
-    pairFreqFile = new File(spellIndexPath, "pairs.dat");
+    wordQueueFile = new File(spellIndexDir, "newWords.txt");
+    pairQueueFile = new File(spellIndexDir, "newPairs.txt");
+    freqFile = new File(spellIndexDir, "words.dat");
+    sampleFile = new File(spellIndexDir, "freqSamples.dat");
+    edmapFile = new File(spellIndexDir, "edmap.dat");
+    pairFreqFile = new File(spellIndexDir, "pairs.dat");
 
     // If the index directory doesn't exist, make it.
-    File dir = new File(spellIndexPath);
-    if (!dir.isDirectory()) {
-      if (!dir.mkdir())
+    if (!spellIndexDir.isDirectory()) {
+      if (!spellIndexDir.mkdir())
         throw new IOException("Error creating spelling index directory");
     }
+  }
+  
+  /**
+   * Establishes a set of stop words (e.g. "the", "and", "a", etc.) to
+   * receive special handling. This can significantly decrease the size of
+   * the dictionary.
+   * 
+   * @param set the set of stop words to use
+   */
+  public void setStopwords(Set set) {
+    this.stopSet = set;
+  }
+  
+  /**
+   * Establish a minimum word frequency. When the in-memory cache is flushed
+   * to disk (every 20,000 words or so) those with a frequency below this
+   * threshold will be discarded; those at or above this threshold will be
+   * written to the disk queue.
+   * 
+   * @param freq    the new minimum word frequency
+   */
+  public void setMinWordFreq(int freq) {
+    this.minWordFreq = freq;
+  }
+
+  /**
+   * Establish a minimum pair frequency. When the in-memory cache is flushed
+   * to disk (every 200,000 pairs or so) those with a frequency below this
+   * threshold will be discarded; those at or above this threshold will be
+   * written to the disk queue.
+   * 
+   * @param freq    the new minimum pair frequency
+   */
+  public void setMinPairFreq(int freq) {
+    this.minPairFreq = freq;
   }
 
   /**
@@ -283,7 +331,7 @@ public class SpellWriter
     for (int i = 0; i < list.size(); i++) {
       String key = list.get(i);
       int count = recentPairs.get(key).intValue();
-      if (count > 1)
+      if (count >= minPairFreq)
         pairQueueWriter.println(key + "|" + count);
     }
     pairQueueWriter.flush();

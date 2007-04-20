@@ -67,21 +67,24 @@ public class SpellReadWriteTest extends TestCase
     dictDir = File.createTempFile("SpellReadWriteTest", null);
     dictDir.delete(); // Get rid of normal file, so we can make directory
     
-    dictDir = new File("/tmp/spellTest"); // FIXME: remove debug line
     if (dictDir.isDirectory())
       for (File f : dictDir.listFiles()) f.delete();
     dictDir.delete();
     
-    SpellWriter writer = SpellWriter.open(dictDir.getAbsolutePath(), STOP_SET, 1);
+    SpellWriter writer = SpellWriter.open(dictDir);
+    writer.setStopwords(STOP_SET);
+    writer.setMinWordFreq(1);
+    
     try 
     {
       // Simplest possible tokenization
       for (String word : CALL_OF_THE_WILD.split("\\W+"))
         writer.queueWord(word);
-      writer.flushQueuedWords(null);
+      writer.flushQueuedWords();
       
       // Open a reader for the tests to use.
-      reader = SpellReader.open(dictDir, STOP_SET, WordEquiv.DEFAULT);
+      reader = SpellReader.open(dictDir);
+      reader.setStopwords(STOP_SET);
       
       // For debugging purposes, this gives a view into the guts.
       debugWriter = new PrintWriter(new FileWriter(
@@ -98,7 +101,7 @@ public class SpellReadWriteTest extends TestCase
   {
     reader.close();
     debugWriter.close();
-    if (false /*FIXME*/ && dictDir.isDirectory()) {
+    if (dictDir.isDirectory()) {
       for (File f : dictDir.listFiles())
         f.delete();
       dictDir.delete();
