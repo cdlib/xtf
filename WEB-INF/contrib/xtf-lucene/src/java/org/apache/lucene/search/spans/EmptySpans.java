@@ -28,7 +28,7 @@ public class EmptySpans implements Spans
   /** Static instance; there's no need to ever create a new EmptySpans() */
   public static EmptySpans theInstance = new EmptySpans();
 
-  /** Don't create a new instance... use {@link #theInstance}. */
+  /** Don't create a new instance... use {@link EmptySpans#theInstance}. */
   private EmptySpans() {
   }
 

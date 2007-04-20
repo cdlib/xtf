@@ -220,7 +220,7 @@ public class SpanRangeQuery extends SpanQuery
   }
 
   /** Should never be called on this query itself, only on the result of
-   *  {@link #rewrite(IndexReader)}.
+   *  {@link SpanRangeQuery#rewrite(IndexReader)}.
    */
   public Spans getSpans(IndexReader reader, Searcher searcher)
     throws IOException 
@@ -229,7 +229,7 @@ public class SpanRangeQuery extends SpanQuery
   }
 
   /** Should never be called on this query itself, only on the result of
-   *  {@link #rewrite(IndexReader)}.
+   *  {@link SpanRangeQuery#rewrite(IndexReader)}.
    */
   public Collection getTerms() {
     throw new UnsupportedOperationException();

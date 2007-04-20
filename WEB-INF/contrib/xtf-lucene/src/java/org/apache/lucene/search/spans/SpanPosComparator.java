@@ -24,7 +24,7 @@ import java.util.Comparator;
  */
 public class SpanPosComparator implements Comparator 
 {
-  /** Don't create an instance; the {@link #theInstance}. */
+  /** Don't create an instance; the {@link EmptySpans#theInstance}. */
   private SpanPosComparator() {
   }
 

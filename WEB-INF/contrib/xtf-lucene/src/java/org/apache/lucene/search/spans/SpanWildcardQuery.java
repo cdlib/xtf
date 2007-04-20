@@ -117,7 +117,7 @@ public class SpanWildcardQuery extends SpanTermQuery
   }
 
   /** Should never be called on the wildcard query itself, only on the
-   *  result of {@link #rewrite(IndexReader)}.
+   *  result of {@link SpanWildcardQuery#rewrite(IndexReader)}.
    */
   public Spans getSpans(final IndexReader reader, final Searcher searcher)
     throws IOException 

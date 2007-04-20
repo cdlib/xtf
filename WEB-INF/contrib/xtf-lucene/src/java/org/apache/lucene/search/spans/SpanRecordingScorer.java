@@ -49,7 +49,7 @@ public class SpanRecordingScorer extends SpanScorer
   /** Last document that was scored */
   int scoredDoc;
 
-  /** Total deduped, not limited by {@link #maxSpans} */
+  /** Total deduped, not limited by {@link SpanRecordingScorer#maxSpans} */
   int totalDeduped;
 
   /** Array of recorded spans, in position order */
@@ -111,7 +111,10 @@ public class SpanRecordingScorer extends SpanScorer
     }
   }
 
-  /** Worker method used by {@link #next()} and {@link #skipTo(int)}. */
+  /** 
+   * Worker method used by {@link SpanRecordingScorer#next()} and 
+   * {@link SpanRecordingScorer#skipTo(int)}. 
+   */
   protected boolean advance()
     throws IOException 
   {
