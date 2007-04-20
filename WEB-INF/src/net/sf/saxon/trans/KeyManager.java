@@ -199,7 +199,7 @@ public class KeyManager implements Serializable
   * Get all the key definitions that match a particular fingerprint
   * @param fingerprint The fingerprint of the name of the required key
   * @return The list of key definitions of the named key if there are any, or null otherwise.
-  * The members of the list will be instances of {@link KeyDefinition}
+  * The members of the list will be instances of KeyDefinition
   */
   public List getKeyDefinitions(int fingerprint) {
     return (List)keyList.get(fingerprint);
