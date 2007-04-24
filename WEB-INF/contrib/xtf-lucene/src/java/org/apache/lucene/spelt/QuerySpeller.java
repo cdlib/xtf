@@ -18,174 +18,114 @@ package org.apache.lucene.spelt;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
 
-class QuerySpeller extends QueryParser
+class QuerySpeller extends SimpleQueryRewriter
 {
   /** Used to get spelling suggestions */
   private SpellReader spellReader;
   
-  /** List of terms collected during parse */
-  private ArrayList<String> terms;
+  /** Set of fields we're allowed to collect terms for */
+  private HashSet<String> fieldSet;
   
-  /** Parsing can be in one of three different modes */
-  private enum Mode { NORMAL, COLLECT_TERMS, REPLACE_TERMS };
+  /** List of terms collected */
+  private LinkedHashSet<String> terms;
   
-  /** The parsing mode we're currently in */
-  private Mode mode;
-  
-  /** Replacements to be made */
+  /** Mapping of terms to replace */
   private HashMap<String, String> suggestMap;
-  
-    
+      
   /** 
-   * Construct a new speller using a given dictionary and Lucene query
-   * parser.
+   * Construct a new speller using a given dictionary reader.
    *
-   * @param field       the default field for query terms.
-   * @param analyzer    used to find tokenize in the query text.
    * @param spellReader source for spelling suggestions -- see
    *                    {@link SpellReader#open(File)}.
    */
-  public QuerySpeller(String field, Analyzer analyzer, SpellReader spellReader)
+  public QuerySpeller(SpellReader spellReader)
   {
-    super(field, analyzer);
     this.spellReader = spellReader;
   }
   
-  /** Parse a query as normal, with no spelling correction */
-  public synchronized Query parse(String query) 
-    throws ParseException
+  /**
+   * Suggest alternate spellings for terms in a Lucene query. By default,
+   * we consider terms in any field. If you need to specify a subset of fields 
+   * to consider, use the 
+   * {@linkplain #suggest(Query, String[]) alternate method} below.
+   * 
+   * @param     inQuery the original query to scan
+   * @return    an query with some suggested spelling corrections, or
+   *            null if no suggestions could be found. 
+   */
+  public synchronized Query suggest(Query inQuery) 
+    throws ParseException, IOException
   {
-    mode = Mode.NORMAL;
-    return super.parse(query);
+    return suggest(inQuery, null);
   }
   
   /**
    * Suggest alternate spellings for terms in a Lucene query.
    * 
    * @param     inQuery the original query to scan
-   * @return    an query with some suggested spelling corrections, or
+   * @param     fields to consider for correction, or null for all
+   * @return    a query with some suggested spelling corrections, or
    *            null if no suggestions could be found. 
    */
-  public synchronized String suggest(String inQuery) 
+  public synchronized Query suggest(Query inQuery, String[] fields) 
     throws ParseException, IOException
   {
-    // Okay, parse the query once to get a list of the terms in it.
-    terms = new ArrayList<String>();
-    mode = Mode.COLLECT_TERMS;
-    super.parse(inQuery);
+    // Record the set of fields to consider.
+    if (fields == null)
+      fieldSet = null;
+    else {
+      fieldSet = new HashSet(fields.length);
+      for (String f : fields)
+        fieldSet.add(f);
+    }
+      
+    // Okay, traverse the query once, but don't make any changes.
+    suggestMap = new HashMap<String, String>();
+    rewriteQuery(inQuery);
     
     // No terms found? Then we can't make a suggestion.
     if (terms.isEmpty())
       return null;
     
     // Get some suggestions for these terms. If none found, we're outta here.
-    String[] suggTerms = spellReader.suggestKeywords(terms.toArray(new String[0]));
+    String[] oldTerms = terms.toArray(new String[0]);
+    String[] suggTerms = spellReader.suggestKeywords(oldTerms);
     if (suggTerms == null)
       return null;
     
     // Make a mapping of the suggestions.
-    suggestMap = new HashMap<String, String>();
-    for (int i=0; i<terms.size(); i++)
-      suggestMap.put(terms.get(i), suggTerms[i]);
+    for (int i=0; i<oldTerms.length; i++)
+      suggestMap.put(oldTerms[i], suggTerms[i]);
     
-    // Replace the terms and we're done.
-    mode = Mode.REPLACE_TERMS;
-    Query outQuery = super.parse(inQuery);
-    return outQuery.toString();
+    // Rewrite the query, replacing the suggested words.
+    return rewriteQuery(inQuery);
   }
   
-  /** This is the way we slip in and grab term queries */
-  protected Query getFieldQuery(String field, String queryText) 
-    throws ParseException
+  /** This is the way we slip in to grab or rewrite terms */
+  @Override
+  protected Term rewrite(Term t) 
   {
-    Query ret = super.getFieldQuery(field, queryText);
+    // Skip fields we're not supposed to look at.
+    if (fieldSet == null || !fieldSet.contains(t.field()))
+      return t;
     
-    // In normal mode, just return whatever we got.
-    if (mode == Mode.NORMAL)
-      return ret;
+    // Add this term to our accumulating list (if it's not already there)
+    String text = t.text();
+    terms.add(text);
     
-    // In collection mode, accumulate a list of terms found.
-    if (mode == Mode.COLLECT_TERMS) {
-      collectTerms(ret);
-      return ret;
-    }
-    
-    // In replacement mode, replace terms if possible.
-    return replaceTerms(ret);
-  }
-  
-  /** Collect terms if possible from a Lucene query */
-  protected void collectTerms(Query q)
-  {
-    if (q instanceof TermQuery)
-      collectTerms((TermQuery)q);
-    else if (q instanceof PhraseQuery)
-      collectTerms((PhraseQuery)q);
-  }
-  
-  /** Collect terms from a normal term query */
-  protected void collectTerms(TermQuery tq) {
-    terms.add(tq.getTerm().text());
-  }
-  
-  /** Collect terms from a phrase query */
-  protected void collectTerms(PhraseQuery pq) {
-    for (Term t : pq.getTerms())
-      terms.add(t.text());
-  }
-  
-  /** Replace terms if possible within a Lucene query */
-  protected Query replaceTerms(Query q)
-  {
-    if (q instanceof TermQuery)
-      return replaceTerms((TermQuery)q);
-    else if (q instanceof PhraseQuery)
-      return replaceTerms((PhraseQuery)q);
+    // If there's a suggestion, implement it.
+    String suggText = suggestMap.get(text);
+    if (suggText != null)
+      return new Term(suggText, t.field());
     else
-      return q;
-  }
-  
-  /** Replace terms within a normal term query */
-  protected Query replaceTerms(TermQuery tq) 
-  {
-    // See if there's a suggestion.
-    String sugg = suggestMap.get(tq.getTerm().text());
-    if (sugg == null)
-      return tq;
-    
-    // 
-    Term newTerm = new Term(tq.getTerm().field(),
-                            suggestTerm(tq.getTerm().text()));
-    TermQuery newQ = new TermQuery(newTerm);
-    newQ.setBoost(tq.getBoost());
-    return newQ;
-  }
-  
-  /** Replace terms within a phrase query */
-  protected Query replaceTerms(PhraseQuery pq) 
-  {
-    //String[] oldTerms = pq.getTerms();
-    //ArrayList<String> newTerms
-    return null;
-  }
-  
-  /** Look up a suggested term, or return original if none */
-  private String suggestTerm(String term)
-  {
-    String found = suggestMap.get(term);
-    if (found != null)
-      return found;
-    return term;
+      return t;
   }
 }
