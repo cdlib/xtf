@@ -50,11 +50,13 @@ class TextImpl extends NodeImpl
   public void init(int textOffset, int textLen)
     throws IOException 
   {
-    byte[] bytes = new byte[textLen];
-    document.textFile.seek(textOffset);
-    document.textFile.read(bytes);
-    PackedByteBuf buf = new PackedByteBuf(bytes);
-    text = buf.readString();
+    if (textLen > 0) {
+      byte[] bytes = new byte[textLen];
+      document.textFile.seek(textOffset);
+      document.textFile.read(bytes);
+      PackedByteBuf buf = new PackedByteBuf(bytes);
+      text = buf.readString();
+    }
   }
 
   /**
