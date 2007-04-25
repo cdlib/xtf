@@ -200,6 +200,7 @@ public class LazyTreeBuilder
 
     // Done with the text file now.
     builder.getTextStore().close();
+    builder.setTextStore(null);
 
     // If the build failed, delete the file.
     if (tree == null) {
@@ -343,6 +344,18 @@ public class LazyTreeBuilder
     {
       PackedByteBuf buf = nodeBufs[i] = new PackedByteBuf(20);
       
+      // Check for un-handled node types.
+      byte kind = tree.nodeKind[i];
+      if (kind == Type.COMMENT || kind == Type.PROCESSING_INSTRUCTION) 
+      {
+        // It appears to be safe to throw these away. So we just replace them
+        // with zero-length text nodes to keep node counts from changing.
+        //
+        tree.nodeKind[i] = Type.TEXT;
+        alphas[i] = -1;
+        betas[i]  = -1; // length = 0
+      }
+
       // Kind
       buf.writeByte(tree.nodeKind[i]);
 
@@ -523,8 +536,11 @@ public class LazyTreeBuilder
   private void checkSupport()
     throws IOException 
   {
-    if (tree.getAttributeTypeCodeArray() != null)
-      throw new IOException(
-        "LazyTree does not support attribute type annotations yet");
+    if (tree.getAttributeTypeCodeArray() != null ||
+        tree.getTypeCodeArray() != null)
+    {
+      // We don't actually care. At the moment, it appears to be safe to
+      // simply throw these away.
+    }
   } // checkSupport()
 } // class LazyTreeBuilder
