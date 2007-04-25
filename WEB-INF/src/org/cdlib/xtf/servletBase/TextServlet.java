@@ -410,6 +410,18 @@ public abstract class TextServlet extends HttpServlet
     throws IOException;
 
   /**
+   * Derived classes may optionally supply this method. If not supplied, 
+   * {@link #doGet(HttpServletRequest, HttpServletResponse)}
+   * is called and the parameters are decoded automatically by the
+   * {@link HttpServletRequest}, assuming they're URL encoded..
+   */
+  public void doPost(HttpServletRequest req, HttpServletResponse resp)
+    throws IOException, ServletException
+  {   
+    doGet(req, resp);
+  }
+  
+  /**
    * Derived classes must supply this method. Simply returns the relative
    * path name of the configuration file (e.g. "conf/dynaXml.conf").
    */
