@@ -750,68 +750,68 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
    */
   protected AxisIterator getAllElements(int fingerprint) 
   {
-    // See if there's already a subfile for this name.
-    String subName = "all-" + namePool.getDisplayName(fingerprint);
-    try 
+    synchronized(mainStore)
     {
-      SubStoreReader indexFile = mainStore.openSubStore(subName);
-      PackedByteBuf buf = new PackedByteBuf(indexFile, (int)indexFile.length());
-      int nNodes = buf.readInt();
-      ArrayList nodes = new ArrayList(nNodes);
-      int curNodeNum = 0;
-      for (int i = 0; i < nNodes; i++) {
-        curNodeNum += buf.readInt();
-        nodes.add(getNode(curNodeNum));
+      // See if there's already a subfile for this name.
+      String subName = "all-" + namePool.getDisplayName(fingerprint);
+      try 
+      {
+        SubStoreReader indexFile = mainStore.openSubStore(subName);
+        PackedByteBuf buf = new PackedByteBuf(indexFile, (int)indexFile.length());
+        int nNodes = buf.readInt();
+        ArrayList nodes = new ArrayList(nNodes);
+        int curNodeNum = 0;
+        for (int i = 0; i < nNodes; i++) {
+          curNodeNum += buf.readInt();
+          nodes.add(getNode(curNodeNum));
+        }
+        indexFile.close();
+        return new NodeListIterator(nodes);
       }
-      indexFile.close();
+      catch (IOException e) {
+      }
+  
+      if (debug) {
+        Trace.debug(
+          "Building list of elements named '" +
+          namePool.getDisplayName(fingerprint) + "'.");
+      }
+  
+      // Okay, we need to build a list.
+      ArrayList nodes = new ArrayList(numberOfNodes / 8);
+      Vector nodeNums = new Vector(numberOfNodes / 8);
+  
+      for (int i = 0; i < numberOfNodes; i++) {
+        NodeImpl node = getNode(i);
+        if (node == null || (node.getNameCode() & 0xfffff) != fingerprint)
+          continue;
+        nodes.add(node);
+        nodeNums.add(Integer.valueOf(node.nodeNum));
+      }
+  
+      // Pack up the results.
+      PackedByteBuf buf = new PackedByteBuf(nodeNums.size() * 3);
+      buf.writeInt(nodeNums.size());
+      int curNum = 0;
+      for (int i = 0; i < nodeNums.size(); i++) {
+        int num = ((Integer)nodeNums.get(i)).intValue();
+        buf.writeInt(num - curNum);
+        curNum = num;
+      }
+  
+      try 
+      {
+        // Now write a new sub-file.
+        SubStoreWriter indexFile = mainStore.createSubStore(subName);
+        buf.output(indexFile);
+        indexFile.close();
+      }
+      catch (IOException e) {
+      }
+  
+      // Return the list we made (no need to re-read it).
       return new NodeListIterator(nodes);
     }
-    catch (IOException e) {
-    }
-
-    if (debug) {
-      Trace.debug(
-        "    Building list of elements named '" +
-        namePool.getDisplayName(fingerprint) + "'...");
-    }
-
-    // Okay, we need to build a list.
-    ArrayList nodes = new ArrayList(numberOfNodes / 8);
-    Vector nodeNums = new Vector(numberOfNodes / 8);
-
-    for (int i = 0; i < numberOfNodes; i++) {
-      NodeImpl node = getNode(i);
-      if (node == null || (node.getNameCode() & 0xfffff) != fingerprint)
-        continue;
-      nodes.add(node);
-      nodeNums.add(Integer.valueOf(node.nodeNum));
-    }
-
-    // Pack up the results.
-    PackedByteBuf buf = new PackedByteBuf(nodeNums.size() * 3);
-    buf.writeInt(nodeNums.size());
-    int curNum = 0;
-    for (int i = 0; i < nodeNums.size(); i++) {
-      int num = ((Integer)nodeNums.get(i)).intValue();
-      buf.writeInt(num - curNum);
-      curNum = num;
-    }
-
-    try 
-    {
-      // Now write a new sub-file.
-      SubStoreWriter indexFile = mainStore.createSubStore(subName);
-      buf.output(indexFile);
-      indexFile.close();
-    }
-    catch (IOException e) {
-    }
-
-    if (debug)
-      Trace.debug("done");
-
-    // Return the list we made (no need to re-read it).
-    return new NodeListIterator(nodes);
   } // getAllElements()
 
   /**
