@@ -34,7 +34,7 @@ import junit.framework.TestCase;
 public class SpellReadWriteTest extends TestCase
 {
   private File dictDir;
-  private SpellReader reader;
+  protected SpellReader reader;
   private PrintWriter debugWriter;
   
   static final HashSet STOP_SET = new HashSet();
