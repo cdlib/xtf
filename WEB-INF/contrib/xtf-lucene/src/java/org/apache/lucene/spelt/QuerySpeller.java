@@ -34,7 +34,14 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 
-// TODO: QuerySpeller javadoc
+/**
+ * Handles spelling correction for simple queries produced by the Lucene
+ * {@link QueryParser}. Allows a custom {@link QueryParser} to be supplied,
+ * though it must retain the case of the input tokens, so that we can supply
+ * spelling corrections using the same case the user did.
+ *  
+ * @author Martin Haye
+ */
 class QuerySpeller extends SimpleQueryRewriter
 {
   /** Used to get spelling suggestions */
