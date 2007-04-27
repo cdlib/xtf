@@ -20,9 +20,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
 
 import junit.framework.TestCase;
 
@@ -49,6 +47,7 @@ public class SimpleQueryRewriterTest extends TestCase
     testQuery("abxyz", "\"ab yz\"");
     testQuery("abxyz^5", "\"ab yz\"^5.0");
     testQuery("a:mxn b:pxq", "a:\"m n\" b:\"p q\"");
+    testQuery("\"axb pxq\"", "\"a b p q\"");
   }
   
   public void testDropping() throws ParseException
@@ -76,19 +75,15 @@ public class SimpleQueryRewriterTest extends TestCase
   
   private class SplittingRewriter extends SimpleQueryRewriter
   {
-    public Query rewrite(TermQuery q)
+    public Term rewrite(Term t)
     {
-      String field = q.getTerm().field();
-      String text = q.getTerm().text();
+      String text = t.text();
       int pos = text.indexOf('x');
       if (pos < 0)
-        return q;
+        return t;
       
-      PhraseQuery pq = new PhraseQuery();
-      pq.setBoost(q.getBoost());
-      pq.add(new Term(field, text.substring(0, pos)));
-      pq.add(new Term(field, text.substring(pos+1)));
-      return pq;
+      String newText = text.replace('x', ' ');
+      return new Term(t.field(), text.replace('x', ' '));
     }
   }
   
