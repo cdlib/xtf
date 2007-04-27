@@ -118,10 +118,8 @@ public abstract class SimpleQueryRewriter
   protected Query rewrite(PhraseQuery pq) 
   {
     Term[] oldTerms = pq.getTerms();
-    int[] oldPositions = pq.getPositions();
     
     ArrayList<Term> newTerms = new ArrayList<Term>();
-    ArrayList<Integer> newPositions = new ArrayList<Integer>();
     
     // Rewrite each term in turn.
     boolean anyChange = false;
@@ -129,14 +127,20 @@ public abstract class SimpleQueryRewriter
       Term newTerm = rewrite(oldTerms[i]);
       if (newTerm != oldTerms[i]) {
         anyChange = true;
-        if (newTerm != null) {
-          newTerms.add(newTerm);
-          newPositions.add(oldPositions[i]);
+        if (newTerm != null) 
+        {
+          // If the term is splitting, make it into two terms.
+          int spacePos = newTerm.text().indexOf(' ');
+          if (oldTerms[i].text().indexOf(' ') < 0 && spacePos >= 0) {
+            newTerms.add(new Term(newTerm.field(), newTerm.text().substring(0, spacePos)));
+            newTerms.add(new Term(newTerm.field(), newTerm.text().substring(spacePos+1)));
+          }
+          else
+            newTerms.add(newTerm);
         }
       }
       else {
         newTerms.add(oldTerms[i]);
-        newPositions.add(oldPositions[i]);
       }
     }
     
@@ -160,7 +164,7 @@ public abstract class SimpleQueryRewriter
     newq.setBoost(pq.getBoost());
     newq.setSlop(pq.getSlop());
     for (int i=0; i<newTerms.size(); i++)
-      newq.add(newTerms.get(i), newPositions.get(i));
+      newq.add(newTerms.get(i));
     return newq;
   }
 
@@ -182,6 +186,16 @@ public abstract class SimpleQueryRewriter
     // If the term is going away, inform the caller
     if (newTerm == null)
       return null;
+    
+    // If the term is splitting, make it into two terms.
+    int spacePos = newTerm.text().indexOf(' ');
+    if (oldTerm.text().indexOf(' ') < 0 && spacePos >= 0) {
+      PhraseQuery pq = new PhraseQuery();
+      pq.add(new Term(newTerm.field(), newTerm.text().substring(0, spacePos)));
+      pq.add(new Term(newTerm.field(), newTerm.text().substring(spacePos+1)));
+      pq.setBoost(q.getBoost());
+      return pq;
+    }
     
     // Make a new query for the new term.
     TermQuery newQuery = new TermQuery(newTerm);
