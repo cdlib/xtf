@@ -9,20 +9,63 @@
   This package provides a facility for creating a spelling correction
   dictionary, and for generating spelling suggestions from it. 
 </p>
-<p>Here are the general steps to use this functionality:</p>
-<ol>
+<p>To build a spelling correction dictionary, you may use any of the following methods:</p>
+<ul>
   <li>
-    Create a dictionary using the <a href="SpellWriter.html">SpellWriter</a> class. Begin by opening
-    a SpellWriter, then
+    <p>
+      <b>Easiest:</b> 
+      If you already have a Lucene index, you may simply use 
+      <a href="LuceneIndexToDict.html">LuceneIndexToDict</a> to re-analyze the contents
+      of your index and create a dictionary. Note that only <i>stored</i> fields are
+      added to the dictionary. Overall this method is inefficient since fields have to
+      be tokenized twice, but it's an easy way to start. This class even includes a 
+      command-line driver, used like this:
+    </p>
+    <pre class="Sample">java <span class="MacroCode">...</span> org.apache.lucene.spelt.LuceneIndexToDict 
+         &lt;luceneIndexDir> &lt;targetDictDir></pre>
+  </li>
+  <li>
+    <b>More control:</b> 
+    You can use <a href="SpellWritingAnalyzer.html">SpellWritingAnalyzer</a> in place of
+    Lucene's <b>StandardAnalyzer</b> when you are creating a Lucene index. This analyzer
+    performs the normal analysis tasks, plus queues words to a spelling dictionary.
+    You'll need to construct a <a href="SpellWriter.html">SpellWriter</a> to give to
+    the analyzer, and when you're finished adding all the Lucene documents, call its
+    flush method to build the final dictionary.
+    <br/><br/>
+  </li>
+  <li>
+    <b>Total flexibility:</b> 
+    Create a dictionary just using the <a href="SpellWriter.html">SpellWriter</a> class. 
+    Begin by opening a SpellWriter, then
     queue each word from the source document set, and finally flush those words (processing
-    them and creating the final dictionary).
+    them to create the final dictionary).
+  </li>
+</ul>
+  
+<p>
+  Once you've built the dictionary, there are a couple of ways to get spelling
+  suggestions from it:
+</p>
+
+<ul>
   <li>
-    Use the dictionary by opening a <a href="SpellReader.html">SpellReader</a>, and asking it 
+    <b>Simple method:</b>
+    If you normally use the Lucene QueryParser to parse queries, Spelt provides a handy
+    class called <a href="QuerySpeller.html">QuerySpeller</a> which can automatically
+    get suggestions and re-build the query with the suggested replacement words. You'll
+    need to open a <a href="SpellReader.html">SpellReader</a> for the QuerySpeller
+    to use.
+    <br/><br/>
+  </li>
+  <li>
+    <b>More flexibilty:</b>
+    Open a <a href="SpellReader.html">SpellReader</a>, and ask it 
     for suggestions. You can get suggestions for a single word, or for a series of keywords 
     (the latter is recommended if you have a list of keywords, rather than repeatedly
     getting single-word suggestions).
   </li>
-</ol>
+</ul>
 
 <style type="text/css">
   
