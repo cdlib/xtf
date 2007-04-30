@@ -18,7 +18,6 @@ package org.apache.lucene.spelt;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,8 +26,6 @@ import java.util.LinkedHashSet;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardFilter;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -211,17 +208,5 @@ class QuerySpeller extends SimpleQueryRewriter
     }
     else
       return t;
-  }
-
-  /** 
-   * Performs minimal token processing, without case conversion. 
-   */
-  public static class MinimalAnalyzer extends Analyzer
-  {
-    public TokenStream tokenStream(String fieldName, Reader reader) {
-      TokenStream result = new StandardTokenizer(reader);
-      result = new StandardFilter(result);
-      return result;
-    }
   }
 }

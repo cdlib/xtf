@@ -17,11 +17,7 @@ package org.apache.lucene.spelt;
  */
 
 import java.io.IOException;
-import java.io.Reader;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 
@@ -32,7 +28,7 @@ import org.apache.lucene.queryParser.QueryParser;
  */
 public class QuerySpellerTest extends SpellReadWriteTest
 {
-  private QueryParser parser = new QueryParser("text", new NulLAnalyzer());
+  private QueryParser parser = new QueryParser("text", new MinimalAnalyzer());
   private QuerySpeller speller;
   
   protected @Override void setUp() throws Exception
@@ -87,15 +83,6 @@ public class QuerySpellerTest extends SpellReadWriteTest
     }
     catch (ParseException e) {
       throw new IOException(e.toString());
-    }
-  }
-  
-  /** A Lucene analyzer that doesn't filter the output tokens at all */
-  private class NulLAnalyzer extends Analyzer
-  {
-    public @Override TokenStream tokenStream(String fieldName, Reader reader)
-    {
-      return new StandardTokenizer(reader);
     }
   }
 }
