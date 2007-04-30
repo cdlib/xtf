@@ -33,9 +33,9 @@ import junit.framework.TestCase;
  */
 public class SpellReadWriteTest extends TestCase
 {
-  private File dictDir;
+  protected File dictDir;
   protected SpellReader reader;
-  private PrintWriter debugWriter;
+  protected PrintWriter debugWriter;
   
   static final HashSet STOP_SET = new HashSet();
   static {
@@ -50,14 +50,7 @@ public class SpellReadWriteTest extends TestCase
   {
     super.setUp();
     
-    // Create a spelling dictionary to test with
-    dictDir = File.createTempFile("SpellReadWriteTest", null);
-    dictDir.delete(); // Get rid of normal file, so we can make directory
-    
-    if (dictDir.isDirectory())
-      for (File f : dictDir.listFiles()) f.delete();
-    dictDir.delete();
-    
+    createDictDir("SpellReadWriteTest");
     SpellWriter writer = SpellWriter.open(dictDir);
     writer.setStopwords(STOP_SET);
     writer.setMinWordFreq(1);
@@ -82,12 +75,30 @@ public class SpellReadWriteTest extends TestCase
       writer.close();
     }
   }
+
+  /**
+   * Creates a temporary directory for the spelling dictionary, and ensures
+   * that it's empty.
+   */
+  protected void createDictDir(String name) throws IOException
+  {
+    // Create a spelling dictionary to test with
+    dictDir = File.createTempFile(name, null);
+    dictDir.delete(); // Get rid of normal file, so we can make directory
+    
+    if (dictDir.isDirectory())
+      for (File f : dictDir.listFiles()) f.delete();
+    dictDir.delete();
+  }
   
   /** Blow away the temporary spelling dictionary */
   protected @Override void tearDown() throws IOException
   {
-    reader.close();
-    debugWriter.close();
+    if (reader != null)
+      reader.close();
+    if (debugWriter != null)
+      debugWriter.close();
+    
     if (dictDir.isDirectory()) {
       for (File f : dictDir.listFiles())
         f.delete();
