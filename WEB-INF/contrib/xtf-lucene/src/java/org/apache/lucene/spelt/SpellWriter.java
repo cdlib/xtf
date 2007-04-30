@@ -246,7 +246,7 @@ public class SpellWriter
   }
 
   /** Delete all words in the dictionary (including those queued on disk) */
-  public synchronized void clearIndex()
+  public synchronized void clearDictionary()
     throws IOException 
   {
     close();
