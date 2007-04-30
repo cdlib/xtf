@@ -32,6 +32,13 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       <ul class="NoBullets">
         <li><a href="#crossQuery_QueryParser_Prog">Query Parser Programming</a></li>
         <li><a href="#crossQuery_ResultFormatter_Prog">Result Formatter Programming</a></li>
+        <li><a href="#Spelling">Spelling Correction</a><br/>
+          <ul class="NoBullets">
+            <li> <a href="#Spelling_Dict">Creating a Spelling Correction Dictionary</a></li>
+            <li> <a href="#Spelling_Activation">Activating Spelling Correction</a></li>
+            <li> <a href="#Spelling_Formatting">Formatting the Suggestions</a></li>
+          </ul>
+        </li>
         <li><a href="#Faceted_Browsing">Faceted Browsing</a><br/>
           <ul class="NoBullets">
             <li><a href="#Faceted_MetaReq">Meta-data Requirements</a></li>
@@ -1084,7 +1091,111 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       to the <a href="tagRef.html#crossQuery_ResultFormatter_Tags">Result 
       Formatter Tag Reference</a>.<br/>
     </p>
-  
+    
+  <p class="Heading1">Spelling Correction<a name="Spelling"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  <p>
+    Users often misspell words when they're querying an XTF index, and it
+    would be nice if the system could catch the most obvious errors and
+    automatically suggest an appropriate spelling correction. XTF provides
+    a facility for easily achieving this "Did you mean...?" functionality.
+  </p>
+  <p>
+    The following sections discuss how to add a spelling
+    dictionary at index time, conditionally activate spelling correction at query
+    time, and how the resulting suggestions make it to the result formatter.
+    If you're interested in the details of the algorithm or
+    data structures used, please see 
+    <a href="underHood.html#Spelling">XTF Under the Hood</a>.
+  </p>
+  <div class="IndentL"> 
+    <!-- - - - - - - - - - - - - - --> 
+    <p class="Heading2">Creating a Spelling Correction Dictionary<a name="Spelling_Dict"></a></p>
+    <p>
+      Before spelling correction can be activated in <span class="Keyword">crossQuery</span>,
+      XTF needs a specially calculated spelling correction dictionary. This dictionary is
+      calculated at the time the XTF index is created, and is based on the words found
+      in the indexed documents (rather than on a standard word dictionary.) The advantage of
+      this dynamic process is that proper names and foreign words that wouldn't appear in
+      a standard dictionary can and will be included in the XTF spelling dictionary.
+    </p>
+    <p>
+      To turn on spelling dictionary generation, it must be enabled in the
+      <span class="Keyword">textIndexer</span> configuration file:
+      <span class="Code">conf/textIndexer.conf</span>. Simply add a tag like this:
+    </p>
+    <p class="Sample">
+       <span class="Code">&lt;spellcheck createDict="yes"></span>
+    </p>
+    Now when the indexer runs, it will accumulate words from the document text, and at
+    the end of the indexing run it will generate the spelling correction dictionary.
+    Note that dictionary generation is quite fast, generally a small fraction of the
+    overall indexing time and disk space, so it usually makes sense to leave spelling correction
+    enabled (it is by default.)
+  </div>
+    
+  <!-- - - - - - - - - - - - - - --> 
+  <!-- Activating spell-check --> 
+  <div class="IndentL"> 
+    <!-- - - - - - - - - - - - - - --> 
+    <p class="Heading2">Activating Spelling Correction<a name="Spelling_Activation"></a></p>
+      <p>
+        To turn on spelling correction in <span class="Keyword">crossQuery</span>,
+        modify the <b>Query Parser</b> stylesheet to add a new element just under
+        the top-level <span class="Code">&lt;query></span> tag:
+      </p>
+      <p class="Sample">
+        <span class="Code">&lt;spellcheck/></span>
+      </p>
+      <p>
+        This requests that the servlet use its default parameters to decide 
+        when a query is probably misspelled (i.e. 10 or fewer document hits),
+        which terms in a user's query are probably misspelled, and the best
+        suggestions for those terms. If you wish to exert finer control over
+        the process, see the 
+        <a href="tagRef.html#crossQuery_QueryParser_Output_Spellcheck">Spelling Correction Tag</a> 
+        reference for details.
+      </p>
+      <p>
+        If the documents that result from a query are of insufficient quantity
+        or score (controlled by attributes above), the <b>Text Engine</b> will
+        check each query term for possible spelling correction. If any corrections
+        are found, they're ranked for "best fit" and the best suggestion
+        sent to the Result Formatter (see below).
+      </p>
+    </div>
+    <div class="IndentL"> 
+      <!-- - - - - - - - - - - - - - --> 
+      <p class="Heading2">Formatting the Suggestions<a name="Spelling_Formatting"></a></p>
+      <p>
+        Spelling corrections appear in the results under a special 
+        <a href="tagRef.html#crossQuery_ResultFormatter_Spelling">Spelling Result</a>
+        tag, with one 
+        <a href="tagRef.html#crossQuery_ResultFormatter_SpellingSuggestion">Spelling Suggestion</a> 
+        tag per misspelled word in the original query.
+        The <b>Result Formatter</b> stylesheet needs to recognize
+        these tags and display
+        the suggestions in the final HTML result sent to the user's browser.
+      </p>
+      <p>
+        For example, if the user queried for 
+        <span class="Code">who kiled harrypotter</span> (and your index documents have
+        something to do with Mr. Potter), then crossQuery might send the following to
+        your Result Formatter:
+      </p>
+      <pre class="Sample">&lt;spelling&gt;
+  &lt;suggestion origTerm="kiled" suggestedTerm="killed"&gt; 
+  &lt;suggestion origTerm="harrypotter" suggestedTerm="harry potter"&gt; 
+&lt;/spelling&gt;</pre>
+      <p>
+        Your job then is to take these suggestions, display them to the user, and
+        give them a link that implements the changed query. The default stylesheets
+        that come with the XTF distribution do this, but if you have customized
+        the query parsing and result formatting, you may need to modify this
+        XSLT code to match your customizations.
+      </p>
+    </div>
+
     <p class="Heading2">Faceted Browsing<a name="Faceted_Browsing"></a></p>
     <!-- - - - - - - - - - - - - - --> 
     <p><b><i>crossQuery</i></b> provides a good general-purpose solution for searching 

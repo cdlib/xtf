@@ -760,6 +760,7 @@ and configured, the XTF system may be installed and run.
         &lt;docselector path="<span class="MacroCode">LocationOfDocSelector</span>"/&gt;
         &lt;pluralmap path="<span class="MacroCode">LocationOfPluralMapFile</span>"/&gt;
         &lt;accentmap path="<span class="MacroCode">LocationOfAccentMapFile</span>"/&gt;
+        &lt;spellcheck createdict="<span class="MacroCode">YesOrNo</span>"/&gt;
     &lt;/index&gt;
         …
     &lt;index name="<span class="MacroCode">NameOfIndexN</span>"/&gt;
@@ -968,6 +969,22 @@ and configured, the XTF system may be installed and run.
           supported. A future version of the XTF system will allow multiple letter 
           mappings like the German mapping of <b><i>&ouml;</i></b> to <span class="Keyword">oe</span></span>.</p>
         </div>
+    </div>
+    <div class="GreyList"> <span class="Code"> &lt;spellcheck createDict="<span class="MacroCode">YesOrNo</span>"&gt; 
+      </span><br/>
+      <div class="IndentLR"> 
+        <p>
+          This tag tells the indexer whether to create/update the spelling correction
+          dictionary when the main indexing phase is complete. If no dictionary is created,
+          then spelling correction will not be available in <span class="Keyword">crossQuery</span>.
+          For more information on how to produce spelling suggestions, please see the
+          <a href="programming.html#Spelling">Programming Guide</a>.
+        </p>
+        <p>
+          Note that dictionary creation does take some time, though it is generally a small
+          proportion of the total indexing time..
+        </p>
+      </div>
     </div>
     <br/>
     An example of a working <span class="Keyword">textIndexer</span> configuration file is the 

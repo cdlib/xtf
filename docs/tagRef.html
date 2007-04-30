@@ -162,6 +162,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Range">&lt;range&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_SectionType">&lt;sectionType&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Facet">&lt;facet&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_Spellcheck">&lt;spellcheck&gt;</a></span></font></li>
                 <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryParser_Output_ResultData">&lt;resultData&gt;</a></span></font></li>
               </ul>
             </li>
@@ -179,6 +180,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Explanation">&lt;explanation&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Facet">&lt;facet&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Group">&lt;group&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_Spelling">&lt;spelling&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_ResultFormatter_SpellingSuggestion">&lt;suggestion&gt;</a></span></font></li>
           </ul>
           <br/>
         </li>
@@ -2058,7 +2061,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <a href="#crossQuery_QueryParser_Output_Or">or</a></span>,<span class="Code"> <a href="#crossQuery_QueryParser_Output_OrNear">orNear</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Near">near</a></span>,<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Range">range</a></span>,<span class="Code">
-          <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>, or<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_ResultData">resultData</a></span>,<span class="Code"> 
+          <a href="#crossQuery_QueryParser_Output_Spellcheck">spellcheck</a></span>, or<span class="Code"> 
           <a href="#crossQuery_QueryParser_Output_Not">not</a> </span>tag.<br/>
           <br/>
           Note that the <b>Query Parser</b> stylesheet can issue a single top-level<span class="Code"> 
@@ -3418,8 +3422,80 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <p>Note that only one facet query is allowed per meta-data field. Trying 
             to specify more than one will result in an error message.
           </p>
-      </div><br/>
-  
+        </div><br/>
+        
+    <div class="Sample"> <b><u>Spelling Correction Tag<a name="crossQuery_QueryParser_Output_Spellcheck"></a></u></b><br/>
+    <!-- - - - - - - - - - - - - - --> 
+      <p>
+        This tag specifies that the <span class="Keyword">Text Engine</span> should
+        evaluate whether terms of the query were likely misspelled, and to suggest
+        likely correction(s) for each term. This tag should appear directly within
+        a <a href="#crossQuery_QueryParser_Output_Query">Query Tag</a>.
+      </p><br/>
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;spellcheck <i>{</i>fields               = "<span class="MacroCode">FieldNames</span>"<i>}</i>
+            <i>{</i>docScoreCutoff       = "<span class="MacroCode">MaxDocScore</span>"<i>}</i>
+            <i>{</i>totalDocsCutoff      = "<span class="MacroCode">MaxDocCount</span>"<i>}</i>/&gt;</pre>
+      </div>
+      where <br/>
+      <div class="IndentLR"> 
+        <table cellspacing="12" cellpadding="0">
+          <tr> 
+            <td width="16%" align="right" valign="top" class="Code"> 
+              fields="<span class="MacroCode">FieldNames</span>"
+            </td>
+            <td valign="baseline">
+              is an optional attribute that restricts spelling correction to the
+              specified set of fields. The field names can be separated by commas,
+              semicolons, pipe symbols (<span class="Code">|</span>), or spaces. 
+              If not specified, or if set to the special value <span class="Code">#all</span>,
+              then all tokenized fields in the index will be checked for spelling
+               (including the special field <span class="Code">text</span> 
+              which contains all words not marked as meta-data.)
+              <br/><br/>
+              Specifying a subset of fields can speed up query processing
+              if the <b>Query Parser</b> stylesheet introduces extra
+              fields that the user didn't explicitly type, and thus needn't be
+              checked for spelling. 
+            </td>
+          </tr>
+          <tr> 
+            <td width="16%" align="right" valign="top" class="Code"> 
+              docScoreCutoff="<span class="MacroCode">MaxDocScore</span>"
+            </td>
+            <td valign="baseline">
+              is an optional attribute that controls whether XTF performs
+              spelling correction. If any document resulting from the query
+              scores higher than this number, no correction will be performed.
+              If not specified, this attribute defaults to
+              <span class="Code">0.0</span>, which disables the score
+              cutoff.
+            </td>
+          </tr>
+          <tr> 
+            <td width="16%" align="right" valign="top" class="Code"> 
+              totalDocsCutoff="<span class="MacroCode">MaxDocCount</span>"
+            </td>
+            <td valign="baseline">
+              is an optional attribute that controls whether XTF performs
+              spelling correction. If the number of documents resulting from
+              the query exceeds this number, spelling correction
+              will not be performed. If set to zero, the document
+              count cutoff is disabled (correction will always be considered.)
+              If not specified, this attribute defaults to
+              <span class="Code">10</span>, meaning that if less than
+              10 documents are found by a query, spelling correction is
+              applied.
+            </td>
+          </tr>
+        </table>
+      </div>
+      <p>
+        If spelling corrections are found, the <b>Result Formatter</b> stylesheet
+        will receive a <a href="#crossQuery_ResultFormatter_Spelling">Spelling Result</a> tag.
+      </p>
+    </div><br/>
+
       <div class="Sample">
         <b><u>Result Data Tag<a name="crossQuery_QueryParser_Output_ResultData"></a></u></b><br/>
         <!-- - - - - - - - - - - - - - --> 
@@ -3461,9 +3537,9 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                   totalDocs = "<span class="MacroCode">NumberOfDocs</span>" 
                   startDoc  = "<span class="MacroCode">FirstDocNumber</span>" 
                   endDoc    = "<span class="MacroCode">LastDocNumber</span>"&gt;
-    <span class="MacroCode"><a href="#Parser_Input_Parameters">Parameters</a>
-</span>    <span class="MacroCode"><a href="#crossQuery_QueryParser_Output_Query">Query</a></span><span class="MacroCode">
-</span>
+    <span class="MacroCode"><a href="#Parser_Input_Parameters">Parameters</a></span>
+    <span class="MacroCode"><a href="#crossQuery_QueryParser_Output_Query">Query</a></span><span class="MacroCode"></span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Spelling">Spelling</a></span><span class="MacroCode"></span>
     <span class="MacroCode"><a href="#crossQuery_ResultFormatter_DocHit">DocumentHit</a></span>
     <span class="MacroCode"><a href="#crossQuery_ResultFormatter_DocHit">DocumentHit</a></span>
      …
@@ -3515,7 +3591,14 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           &lt;parameters&gt; </span>block that was sent to the Query Parser stylesheet, 
           and also includes the<span class="Code"> &lt;query&gt; </span>block 
           output by that stylesheet. These may be useful to the <b>Search Result 
-          Formatter</b> stylesheet in formulating its output.<br/>
+            Formatter</b> stylesheet in formulating its output.<br/>
+          <br/>
+          The <span class="Code">&lt;spelling&gt;</span> tag will only appear if
+          spell checking was <a href="#crossQuery_QueryParser_Output_Spellcheck">enabled</a> 
+          in the query, <i>and</i> a spelling correction dictionary was 
+          created at index time (i.e. enabled in <span class="Code">textIndexer.conf</span>), 
+          <i>and</i> the engine detected likely misspelled words and suitable
+          suggested replacements.
         </div>
       </div>
       <br/>
@@ -3871,7 +3954,84 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             Result Tag. If any document hits were selected, then one or more <a href="#crossQuery_ResultFormatter_DocHit">Document 
               Hit Tags</a> will also be included.
         </p>
+      </div><br/>
+      
+    <div class="Sample"> <b><u>Spelling Correction Result Tag<a name="crossQuery_ResultFormatter_Spelling"></a></u></b><br/>
+    <!-- - - - - - - - - - - - - - --> 
+      <p>
+        This tag contains the suggestions resulting from spelling correction
+        performed on a user query. It will only appear directly within a
+        <a href="#crossQuery_ResultFormatter_CrossQRes">Query Result</a> tag.
+      </p><br/>
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;spelling&gt;
+          
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Suggestion">SpellingSuggestion</a></span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Suggestion">SpellingSuggestion</a></span>
+       …
+
+&lt;/spelling></pre>
       </div>
+      <p>
+        Within the Spelling Tag, one ore more 
+        <a href="#crossQuery_ResultFormatter_SpellingSuggestion">Spelling Suggestion</a> tags will
+        appear, one for each potentially misspelled term in the original
+        query submitted to the engine.
+      </p>
+      <p>
+        Note that this tag will only appear if
+        spell checking was <a href="#crossQuery_QueryParser_Output_Spellcheck">enabled</a> 
+        in the query, <i>and</i> a spelling correction dictionary was 
+        created at index time (i.e. enabled in <span class="Code">textIndexer.conf</span>), 
+        <i>and</i> the engine detected likely misspelled words and suitable
+        suggested replacements.
+      </p>
+    </div><br/>
+    
+    <div class="Sample"> <b><u>Spelling Suggestion<a name="crossQuery_ResultFormatter_SpellingSuggestion"></a></u></b><br/>
+    <!-- - - - - - - - - - - - - - --> 
+      <p>
+        This tag contains a spelling suggestion for a single term
+        from the original query submitted to the <b>Text Engine</b>. 
+        It will appear directly within a
+        <a href="#crossQuery_ResultFormatter_Spelling">Spelling Correction Result</a> tag.
+      </p><br/>
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;suggestion origTerm      = "<span class="MacroCode">OriginalWord</span>"
+            suggestedTerm = "<span class="MacroCode">ReplacementWord</span>"/&gt;</pre>
+      </div>
+      where <br/>
+      <div class="IndentLR"> 
+        <table cellspacing="12" cellpadding="0">
+          <tr> 
+            <td width="16%" align="right" valign="top" class="Code"> 
+              origTerm="<span class="MacroCode">OriginalWord</span>"
+            </td>
+            <td valign="baseline">
+              is the (potentially) misspelled term found in the original query.
+            </td>
+          </tr>
+          <tr> 
+            <td width="16%" align="right" valign="top" class="Code"> 
+              suggestedTerm="<span class="MacroCode">ReplacementWord</span>"
+            </td>
+            <td valign="baseline">
+              is the best correction that the spelling engine could find
+              for the original term. This may be two words if the original
+              word should be split (e.g. "<span class="Code">harrypotter</span>" ->
+              "<span class="Code">harry potter</span>").
+              
+              This may be an empty string, indicating that the original word
+              should be removed from the query (e.g. "<span class="Code">usa</span>" 
+              "<span class="Code">bility</span>"
+              -> "<span class="Code">usability</span>" "<span class="MacroCode">empty</span>"
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div><br/>
+    
+    
     </div>
 
 <div class="IndentL">
