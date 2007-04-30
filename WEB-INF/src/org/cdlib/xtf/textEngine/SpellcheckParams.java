@@ -42,9 +42,6 @@ import java.util.Set;
  */
 public class SpellcheckParams 
 {
-  /** Maximum number of suggestions to provide per term. Required. */
-  public int suggestionsPerTerm;
-
   /**
    * Fields to scan in the query for possibly misspelled terms. If null,
    * all tokenized fields are considered.
@@ -62,21 +59,5 @@ public class SpellcheckParams
    * this, no suggestions will be made.
    */
   public int totalDocsCutoff = 10;
-
-  /**
-   * Term occurrence factor. If this is greater than zero, suggested terms
-   * must occur more frequently than the original term. For instance, if the
-   * factor is set to 2.0, suggested terms must occur at least twice as
-   * frequently as the original term.
-   */
-  public float termOccurrenceFactor = 2.0f;
-
-  /**
-   * Edit-distance accuracy. A score is calculated based on the "edit distance"
-   * between the original term and each suggested term. If that score falls
-   * below this accuracy threshhold, the suggested term is removed from
-   * consideration. A value of 0.5 is generally pretty good. Lower values
-   * will allow looser matches; higher values restrict to closer matches.
-   */
-  public float accuracy = 0.5f;
+  
 } // class SpellcheckParams

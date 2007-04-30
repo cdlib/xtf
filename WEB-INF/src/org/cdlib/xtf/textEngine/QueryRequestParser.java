@@ -374,10 +374,7 @@ public class QueryRequestParser
     {
       String attr = el.attrName(i);
 
-      if (attr.equalsIgnoreCase("suggestionsPerTerm"))
-        params.suggestionsPerTerm = parseIntAttrib(el, attr);
-      else if (attr.equalsIgnoreCase("fields") ||
-               attr.equalsIgnoreCase("field")) 
+      if (attr.equalsIgnoreCase("fields") || attr.equalsIgnoreCase("field")) 
       {
         String fieldsStr = parseStringAttrib(el, attr);
         if (!fieldsStr.equals("#all")) {
@@ -391,23 +388,10 @@ public class QueryRequestParser
         params.docScoreCutoff = parseFloatAttrib(el, attr);
       else if (attr.equalsIgnoreCase("totalDocsCutoff"))
         params.totalDocsCutoff = parseIntAttrib(el, attr);
-      else if (attr.equalsIgnoreCase("termOccurrenceFactor") ||
-               attr.equalsIgnoreCase("termOcurrenceFactor") ||
-               attr.equalsIgnoreCase("termOccurenceFactor")) 
-      {
-        params.termOccurrenceFactor = parseFloatAttrib(el, attr);
-      }
-      else if (attr.equalsIgnoreCase("accuracy"))
-        params.accuracy = parseFloatAttrib(el, attr);
       else
         error("Unknown attribute '" + attr + "' on '" + el.name() +
               "' element");
     } // for i
-
-    // Make sure the number of suggestions was specified.
-    if (params.suggestionsPerTerm <= 0)
-      error("'" + el.name() +
-            "' element requires 'suggestionsPerTerm' attribute");
 
     // Finally, add the new params to the query.
     req.spellcheckParams = params;
