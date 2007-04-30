@@ -163,7 +163,12 @@ public class LuceneIndexToDict
         continue;
 
       // Iterate every stored field in the document.
-      for (Field field : (List<Field>) doc.getFields()) {
+      for (Field field : (List<Field>) doc.getFields()) 
+      {
+        // Skip fields that aren't tokenized.
+        if (!field.isTokenized())
+          continue;
+        
         // Iterate every value of that field.
         String[] values = doc.getValues(field.name());
         if (values == null)
