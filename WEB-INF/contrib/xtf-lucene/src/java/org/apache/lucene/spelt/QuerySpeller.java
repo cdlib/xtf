@@ -39,7 +39,7 @@ import org.apache.lucene.search.Query;
  *  
  * @author Martin Haye
  */
-class QuerySpeller extends SimpleQueryRewriter
+public class QuerySpeller extends SimpleQueryRewriter
 {
   /** Used to get spelling suggestions */
   private SpellReader spellReader;
@@ -77,19 +77,19 @@ class QuerySpeller extends SimpleQueryRewriter
    * that the analyzer should do MINIMAL token filtering, without any case
    * conversion).
    * 
-   * @param spellReader
-   *          source for spelling suggestions -- see {@link SpellReader#open(File)}.
-   * @param minimalQueryParser
-   *          used to parse queries; note that the analyzer it uses should do
-   *          only MINIMAL token filtering, not even conversion to lower case,
-   *          so that suggestions can be made in the same case the user typed
-   *          them. In particular, StandardAnalyzer should not be used.
+   * @param spellReader source for spelling suggestions -- see
+   *          {@link SpellReader#open(File)}.
+   * @param queryParser used to parse queries; note that the analyzer it uses
+   *          should do only MINIMAL token filtering, not even conversion to
+   *          lower case, so that suggestions can be made in the same case the
+   *          user typed them. In particular, StandardAnalyzer should not be
+   *          used.
    */
   public QuerySpeller(SpellReader spellReader, 
-                      QueryParser minimalQueryParser)
+                      QueryParser queryParser)
   {
     this.spellReader = spellReader;
-    this.queryParser = minimalQueryParser;
+    this.queryParser = queryParser;
     
     // Test out the query parser's analyzer to make sure it preserves
     // the case of input tokens.
@@ -138,7 +138,8 @@ class QuerySpeller extends SimpleQueryRewriter
   }
   
   /**
-   * Suggest alternate spellings for terms in a Lucene query.
+   * Suggest alternate spellings for terms in a Lucene query, limiting 
+   * suggestions to the specified fields only.
    * 
    * @param     inQuery the original query to scan
    * @param     fields to consider for correction, or null for all
