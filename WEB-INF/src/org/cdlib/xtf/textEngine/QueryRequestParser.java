@@ -388,6 +388,8 @@ public class QueryRequestParser
         params.docScoreCutoff = parseFloatAttrib(el, attr);
       else if (attr.equalsIgnoreCase("totalDocsCutoff"))
         params.totalDocsCutoff = parseIntAttrib(el, attr);
+      else if (attr.equalsIgnoreCase("suggestionsPerTerm"))
+        ; // for backward compatibility
       else
         error("Unknown attribute '" + attr + "' on '" + el.name() +
               "' element");
