@@ -526,6 +526,16 @@ public class XMLTextProcessor extends DefaultHandler
         throw new RuntimeException("Index missing indexInfo");
 
       Document doc = match.doc(0);
+      
+      // Ensure that the version is compatible.
+      String indexVersion = doc.get("xtfIndexVersion");
+      if (indexVersion == null)
+        indexVersion = "1.0";
+      if (indexVersion.compareTo(TextIndexer.REQUIRED_VERSION) < 0) {
+        throw new RuntimeException(
+          "Incompatible index version " + indexVersion + "; require at least " + 
+          TextIndexer.REQUIRED_VERSION + "... consider re-indexing with '-clean'.");
+      }
 
       // Ensure that the chunk size and overlap are the same.
       if (Integer.parseInt(doc.get("chunkSize")) != indexInfo.getChunkSize()) {
@@ -682,6 +692,7 @@ public class XMLTextProcessor extends DefaultHandler
       // Then add the index info chunk to it.
       Document doc = new Document();
       doc.add(new Field("indexInfo", "1", Field.Store.YES, Field.Index.UN_TOKENIZED));
+      doc.add(new Field("xtfIndexVersion", TextIndexer.CURRENT_VERSION, Field.Store.YES, Field.Index.NO));
       doc.add(new Field("chunkSize", indexInfo.getChunkSizeStr(), Field.Store.YES, Field.Index.NO));
       doc.add(new Field("chunkOvlp", indexInfo.getChunkOvlpStr(), Field.Store.YES, Field.Index.NO));
 
@@ -1658,7 +1669,7 @@ public class XMLTextProcessor extends DefaultHandler
     // out as chunks to the index if needed.
     // 
     flushCharacters();
-
+    
     // And add the accumulated text to the "lazy tree" representation as well.
     if (lazyHandler != null)
       lazyHandler.endElement(uri, localName, qName);

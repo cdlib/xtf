@@ -111,6 +111,12 @@ import org.cdlib.xtf.util.*;
  */
 public class TextIndexer 
 {
+  /** The version of the text indexer (placed into any indexes created */
+  public static final String CURRENT_VERSION = "2.0";
+  
+  /** The minimum index version that we can read */
+  public static final String REQUIRED_VERSION = "2.0";
+  
   //////////////////////////////////////////////////////////////////////////////
 
   /** Main entry-point for the Text Indexer. <br><br>
@@ -151,7 +157,7 @@ public class TextIndexer
       long startTime = System.currentTimeMillis();
 
       // Regardless of whether we succeed or fail, say our name.
-      Trace.info("TextIndexer v" + 1.9);
+      Trace.info("TextIndexer v" + CURRENT_VERSION);
       Trace.info("");
       Trace.tab();
 
