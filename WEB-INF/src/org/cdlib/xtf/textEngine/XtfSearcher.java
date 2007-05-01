@@ -48,6 +48,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.spelt.SpellReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.cdlib.xtf.textIndexer.TextIndexer;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.WordMap;
 
@@ -151,7 +152,7 @@ public class XtfSearcher
     close();
     indexReader = IndexReader.open(directory);
 
-    // Fetch the chunk size and overlap from the index.
+    // Fetch the index information chunk.
     Hits match = new IndexSearcher(indexReader).search(
       new TermQuery(new Term("indexInfo", "1")));
     if (match.length() == 0)
@@ -159,9 +160,19 @@ public class XtfSearcher
     assert match.id(0) == 0 : "indexInfo chunk must be first in index";
     Document doc = match.doc(0);
 
+    // Ensure that the index version is compatible.
+    String indexVersion = doc.get("xtfIndexVersion");
+    if (indexVersion == null)
+      indexVersion = "1.0";
+    if (indexVersion.compareTo(TextIndexer.REQUIRED_VERSION) < 0) {
+      throw new IOException(
+        "Incompatible index version " + indexVersion + "; require at least " + 
+        TextIndexer.REQUIRED_VERSION + "... consider re-indexing with '-clean'.");
+    }
+
+    // Validate the chunk size and overlap
     chunkSize = Integer.parseInt(doc.get("chunkSize"));
     chunkOverlap = Integer.parseInt(doc.get("chunkOvlp"));
-
     if (chunkSize <= 0 || chunkOverlap <= 0 || chunkOverlap >= chunkSize)
       throw new IOException("Invalid chunkSize/overlap in index");
 
