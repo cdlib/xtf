@@ -45,17 +45,21 @@ import org.cdlib.xtf.util.SubStoreWriter;
  * Used to put off actually creating a structured store until it is needed.
  * Essentially, all methods are delegated to a StructuredFile that is created
  * when the first time a method is called. The file is released after a
- * close() or delete() operation.
+ * close() or delete() operation. As an additional precaution, the store is
+ * created under a temporary file name, and only renamed to the final filename
+ * when the file is closed.
  *
  * @author Martin Haye
  */
 public class StructuredFileProxy implements StructuredStore 
 {
-  private File path;
+  private File finalPath;
+  private File tmpPath;
   private StructuredFile realStore = null;
 
   public StructuredFileProxy(File path) {
-    this.path = path;
+    this.finalPath = path;
+    this.tmpPath = new File(path.toString() + ".tmp");
   }
 
   public SubStoreWriter createSubStore(String name)
@@ -75,8 +79,10 @@ public class StructuredFileProxy implements StructuredStore
   {
     if (realStore != null)
       realStore.close();
+    if (tmpPath != null && !tmpPath.renameTo(finalPath))
+      throw new IOException("Error renaming temporary store to final: " + finalPath);
     realStore = null;
-    path = null;
+    finalPath = tmpPath = null;
   }
 
   public void delete()
@@ -84,8 +90,10 @@ public class StructuredFileProxy implements StructuredStore
   {
     if (realStore != null)
       realStore.delete();
+    if (tmpPath.canRead())
+      tmpPath.delete();
     realStore = null;
-    path = null;
+    finalPath = tmpPath = null;
   }
 
   public String getSystemId() {
@@ -107,10 +115,12 @@ public class StructuredFileProxy implements StructuredStore
     try 
     {
       if (realStore == null) {
-        if (path.canRead())
-          path.delete();
-        Path.createPath(path.getParent());
-        realStore = StructuredFile.create(path);
+        if (finalPath.canRead())
+          finalPath.delete();
+        if (tmpPath.canRead())
+          tmpPath.delete();
+        Path.createPath(finalPath.getParent());
+        realStore = StructuredFile.create(tmpPath);
       }
       return realStore;
     }
