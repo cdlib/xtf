@@ -81,7 +81,10 @@ public class LazyTreeBuilder
   private PipelineConfiguration pipe;
 
   /** File version stored in the persistent file. */
-  public static final String curVersion = "1.01";
+  public static final String CURRENT_VERSION = "2.0";
+
+  /** Minimum version we can read. */
+  public static final String REQUIRED_VERSION = "2.0";
 
   /** Default constructor -- sets up the configuration */
   public LazyTreeBuilder(Configuration config) {
@@ -124,8 +127,10 @@ public class LazyTreeBuilder
   {
     // Don't use it if the version number is old.
     String fileVer = treeStore.getUserVersion();
-    if (fileVer.compareTo(curVersion) < 0)
-      throw new IOException("Cannot use old version of LazyTree file");
+    if (fileVer.compareTo(REQUIRED_VERSION) < 0) {
+      throw new IOException("Cannot use old version of LazyTree file... " +
+          "consider re-indexing with '-clean'.");
+    }
 
     // Now init the document (which loads the root node.)
     emptyDoc.init(namePool, treeStore);
@@ -158,7 +163,7 @@ public class LazyTreeBuilder
     //
     builder.setTreeStore(treeStore);
 
-    treeStore.setUserVersion(curVersion);
+    treeStore.setUserVersion(CURRENT_VERSION);
 
     SubStoreWriter textFile = treeStore.createSubStore("text");
     builder.setTextStore(textFile);
