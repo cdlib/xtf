@@ -6,7 +6,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 <html xmlns="http://www.w3.org/1999/xhtml" lang="EN">
   
 <head>
-  <title>XTF Stylesheet Tag Reference</title>
+  <title>XTF Tag Reference</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link rel="stylesheet" href="library/xtfDocStyle.css" type="text/css" />
 </head>
@@ -47,26 +47,28 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         </li>
         <li><a href="#textIndexer_PreFilter_Tags">Pre-Filter</a> 
           <ul class="NoBullets">
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Index">&lt;xsl:attribute 
-              name="xtf:index"&gt;</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_NoIndex">&lt;xsl:attribute 
-              name="xtf:noindex"/&gt;</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Meta">&lt;xsl:attribute 
-              name="xtf:meta"/&gt;</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Store">&lt;xsl:attribute 
-              name="xtf:store"/&gt;</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Tokenize">&lt;xsl:attribute 
-              name="xtf:tokenize"/&gt;</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_ProxBreak">&lt;xsl:attribute 
-              name="xtf:proximitybreak"/&gt;</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SentBump">&lt;xsl:attribute 
-              name="xtf:sentenceBump"/&gt;</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SectType">&lt;xsl:attribute 
-              name="xtf:sectionType"/&gt;</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SectBump">&lt;xsl:attribute 
-              name="xtf:sectionBump"/&gt;</a></span></font></li>
-            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_WordBoost">&lt;xsl:attribute 
-              name="xtf:wordBoost"/&gt;</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Index"> 
+              xtf:index</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_NoIndex"> 
+              xtf:noindex</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Meta"> 
+              xtf:meta</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Store"> 
+              xtf:store</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_Tokenize"> 
+              xtf:tokenize</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_ProxBreak"> 
+              xtf:proximitybreak</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SentBump"> 
+              xtf:sentenceBump</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SectType"> 
+              xtf:sectionType</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SectTypeAdd"> 
+              xtf:sectionTypeAdd</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_SectBump"> 
+              xtf:sectionBump</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#textIndexer_PreFilt_WordBoost"> 
+              xtf:wordBoost</a></span></font></li>
           </ul>
         </li>
       </ul>
@@ -599,6 +601,27 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           <div class="Note"> (Note: If not explicitly set, nested sub-tags for a document 
             inherit the section type name from the closest parent tag for which a 
             section name is defined.) </div>
+        </div>
+      </div>
+      <br/>
+      <div class="GreyList"> <span class="Code"> &lt;xsl:attribute name="xtf:sectionTypeAdd" 
+        select="'<span class="MacroCode">TypeName</span>'"/&gt;<a name="textIndexer_PreFilt_SectTypeAdd"></a> </span> <br/>
+        <br/>
+        <div class="IndentLR"> This attribute appends a section type name to the
+          section type already associated with a tag (or one of its ancestors which
+          has a section type), with the <span class="MacroCode">TypeName</span> parameter identifying 
+          the section name to append. Assigning a section name to a tag allows grouped 
+          searches to be performed on tags that have the same section names, by 
+          inserting a <a href="#crossQuery_QueryParser_Output_SectionType">Section 
+          Type Tag</a> into a query. And appending a section type allows child
+          tags to inherit their parent's sectionType and then add additional type
+          information. This can be very useful for representing hierarchical information
+          using section types.<br/>
+          <br/>
+          <div class="Note"> (Note: If not explicitly set, nested sub-tags for a document 
+            inherit the section type name from the closest parent tag for which a 
+            section name is defined, including any section type which has been appended
+            to that parent tag.) </div>
         </div>
       </div>
       <br/>

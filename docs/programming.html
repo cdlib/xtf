@@ -427,7 +427,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       <p class="Heading3">Sectioning Documents</p>
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
       Another attribute that can be added to document tags is the<span class="Code"> 
-      sectionType </span>attribute. This attribute allows you to assign names 
+      <a href="tagRef.html#textIndexer_PreFilt_SectType">xtf:sectionType</a> </span>attribute. This attribute allows you to assign names 
       to tags within a document. Doing so would allow permit advanced user queries 
       that only search for text in specific section types. Consider the following 
       example: <br/>
@@ -451,7 +451,10 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       One other thing to mention about <span class="Code">sectionType</span> attributes 
       is that they may be used in nested tags. The <b><i>textIndexer</i></b> maintains 
       an internal stack of nested section types, and correctly restores previous 
-      section types when a given section/tag ends. 
+      section types when a given section/tag ends. If you are trying to represent
+      hierarchical information in a section type, you can use the
+      <span class="Code"><a href="tagRef.html#textIndexer_PreFilt_SectTypeAdd">xtf:sectionTypeAdd</a></span> 
+      attribute on child elements to append to their parents' section type information.
       <p class="Heading3">Relevance Boost</p>
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --> 
       There may be times when it is useful to boost or de-emphasize the relevance 
