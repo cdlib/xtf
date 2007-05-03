@@ -31,6 +31,13 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       </ul>
       <br/>
     </li>
+    <li> <b><a href="#Optimizing">Optimizing Performance</a></b> 
+      <ul class="NoBullets">
+        <li><a href="#OptimizingStylesheets">Optimizing Stylesheets</a></li>
+        <li><a href="#OptimizingMemory">Tweaking Java Memory Settings</a></li>
+      </ul>
+      <br/>
+    </li>
     <li> <b><a href="#ExternalTools">Setting up External Tools</a></b> 
       <ul class="NoBullets">
         <li><a href="#SetupOxygen">Using &lt;oXygen/> with XTF</a></li>
@@ -390,6 +397,106 @@ $</pre>
       of your data to index. Here's a sample command doing just that:
     </p>
     <p class="Sample"><span class="Code">$ textIndexer -dir tei/ft958009mm -index default</span></p>
+  </div>
+  
+  <p class="Heading1">Optimizing Performance<a name="Optimizing"></a></p>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <p>
+    When speed issues arise, it can be challenging to track down what parts of
+    an XTF system are causing the slowness. This section discusses a few tips
+    for optimizing the performance of XTF.
+  </p>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Optimizing Stylesheets<a name="OptimizingStylesheets"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <p>
+      It's unfortunately quite easy to write a stylesheet in XSLT that will
+      run <i>very</i> slowly. XSLT is a very powerful language and attempts
+      to isolate programmers from the details of how the XML document is
+      stored and processed in memory. But reality eventually catches up with us.
+    </p>
+    <p>
+      One important practice is to avoid using XPath expressions that traverse
+      every element in the entire document. In particular, avoid expressions
+      like these:
+    </p>
+    <ul class="Code">
+      <li>//*[<span class="MacroCode">SomeComplicatedExpression</span>]</li>
+      <li>descendant::<span class="MacroCode">...</span></li>
+      <li>descendant-or-self::<span class="MacroCode">...</span></li>
+      <li>preceding::<span class="MacroCode">...</span></li>
+      <li>following::<span class="MacroCode">...</span></li>
+    </ul>
+    <p>
+      Instead, try replacing them with these much more efficient forms:
+    </p>
+    <ul class="Code">
+      <li>//<span class="MacroCode">SimpleName</span>/<span class="MacroCode">...</span></li>
+      <li>key(<span class="MacroCode">KeyName</span>, <span class="MacroCode">Value</span>)<span class="MacroCode">...</span></li>
+      <li>child::<span class="MacroCode">...</span></li>
+      <li>ancestor::<span class="MacroCode">...</span></li>
+      <li>ancestor-or-self::<span class="MacroCode">...</span></li>
+      <li>preceding-sibling::<span class="MacroCode">...</span></li>
+      <li>following-sibling::<span class="MacroCode">...</span></li>
+    </ul>
+    <p>
+      These techniques will fix most stylesheet performance problems. However,
+      if you're still unclear where a stylesheet is spending its time, XTF
+      provides a profiling tool that will help. In the configuration file for
+      the servlet you're using, turn on stylesheetProfiling like this:
+    </p>
+    <p class="Sample">
+      <span class="Code">&lt;stylesheetProfiling profile="yes"&gt;</span>      
+    </p>
+    <p>
+      Then run your request through, and profile information will appear in
+      the servlet container's log file. At the top it'll tell you the file
+      and line number of the most time-consuming part of your stylesheets.
+      Unfortunately (due to Saxon's aggressive optimization) the line number
+      is only a hint; you'll have to look nearby to find the actual source
+      of the problem. Try commenting things out near that point and see if
+      you can narrow down the problem.
+    </p>
+    <p>
+      <span class="Note">Note:</span> Remember to turn off profiling when you're done, as it does slow
+      down XTF processing.
+    </p>
+  </div>
+  
+  <div class="IndentL"> 
+    <p class="Heading2">Tweaking Java Memory Settings<a name="OptimizingMemory"></a></p>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <p>
+      If your system starts out fast and gets slower over time, or if you
+      experience long pauses at fairly random intervals, chances are your
+      Java Virtual Machine is running low on memory. To make sure, turn on
+      the handy garbage collection option by passing the following to your
+      Java VM:
+    </p>
+    <p class="Sample">
+      <span class="Code">-Xloggc:<span class="MacroCode">LogFileLocation</span></span>
+    </p>
+    <p>
+      The method of passing this varies between servlet containers. For Tomcat
+      you set the <span class="Code">JAVA_OPTS</span> environment variable. 
+      For Resin you modify the <span class="Code">resin.sh</span> script. In either case, you have to
+      restart the servlet container for the change to take effect. Verify that
+      messages are appearing in the log file you specified.
+    </p>
+    <p>
+      Now examine the log file. If you see lots of "Full" garbage collection
+      events that are taking a long time, that's a signal that you need to
+      increase the amount of memory avaiable. To do this, 
+      pass it a <span class="Code">-Xmx</span> flag. The following example
+      allocates 2048 megabytes (2 gigabytes) for the Java VM:
+    </p>
+    <p class="Sample">
+      <span class="Code">-Xmx2048m</span>
+    </p>
+    Of course, you need to be sure that your machine has enough <i>physical</i>
+    RAM to accomodate your increased virtual memory limit. 
+    RAM is cheap and your time isn't, so upgrade the machine if necessary.
   </div>
   
   <p class="Heading1">Setting up External Tools<a name="ExternalTools"></a></p>

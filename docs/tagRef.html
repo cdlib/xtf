@@ -95,7 +95,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       <br/>
       <ul class="NoBullets">
         <li><a href="#Common_Parser_Input_Tags">Common Parser Input Tags (Query 
-          Parser / Document Request Parser)</a><br/>
+          Router / Query Parser / Document Request Parser)</a><br/>
           <ul class="NoBullets">
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#Parser_Input_Parameters">&lt;parameters&gt;</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#Parser_Input_Param">&lt;param&gt;</a></span></font></li>
@@ -144,6 +144,21 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       Reference</font></b></a><br/>
       <br/>
       <ul class="NoBullets">
+        <li><a href="#crossQuery_QueryRouter_Tags">Query Router</a><br/>
+          <ul class="NoBullets">
+            <li class="ListItem"><a href="#crossQuery_QueryRouter_Input_Tags">Input 
+              Tags and Parameters</a></li>
+            <li class="ListItem"><a href="#crossQuery_QueryRouter_Output_Tags">Output 
+              Tags</a> 
+              <ul class="NoBullets">
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryRouter_Output_Route">&lt;route&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryRouter_Output_QueryParser">&lt;queryParser&gt;</a></span></font></li>
+                <li class="ListItem"><font size="-1"><span class="Code"><a href="#crossQuery_QueryRouter_Output_ErrorGen">&lt;errorGen&gt;</a></span></font></li>
+              </ul>
+            </li>
+          </ul>
+          <br/>
+        </li>
         <li><a href="#crossQuery_QueryParser_Tags">Query Parser</a><br/>
           <ul class="NoBullets">
             <li class="ListItem"><a href="#crossQuery_QueryParser_Input_Tags">Input 
@@ -943,15 +958,15 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 </div>
       
 <div class="IndentL"> 
-  <p class="Heading2">Common Parser Input Tags (Query Parser / Document Request 
+  <p class="Heading2">Common Parser Input Tags (Query Router / Query Parser / Document Request 
     Parser)<a name="Common_Parser_Input_Tags"></a></p>
-  <p>The following tags make up the XML input for both the <b>Query Parser</b> 
+  <p>The following tags make up the XML input for the <b>Query Router</b>, <b>Query Parser</b>, 
     and <b>Document Request Parser</b> stylesheets. They constitute a simple XML 
     representation of the query URL supplied to the <span class="Keyword">crossQuery</span> or 
     <span class="Keyword">dynaXML </span>servlet. </p>
         <br/>
         <div class="Sample"> <b><u>Container Tag</u></b><a name="Parser_Input_Parameters"></a><br/>
-      This tag is the outermost tag for the XML input fragment sent to the parser 
+      This tag is the outermost tag for the XML input fragment sent to the router or parser 
       stylesheet for translation. It has the form:<br/>
           <br/>
           <div class="IndentLR"> 
@@ -1757,26 +1772,113 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 
   <hr/>
   <p class="Heading1">crossQuery Stylesheet Reference<a name="crossQuery_Tag_Ref"></a></p>
+  <!-- - - - - - - - - - - - - - --> 
+  <p>This section summarizes the XTF specific tags for the <span class="Keyword">crossQuery</span> 
+  <a href="#crossQuery_QueryRouter_Tags"><b>Query Router</b></a> stylesheet, 
+  the <a href="#crossQuery_QueryParser_Tags"><b>Query Parser</b></a> stylesheet, 
+  and the <b><a href="#crossQuery_ResultFormatter_Tags">Result Formatter</a></b> 
+  stylesheet. </p>
+  <div class="IndentL"> 
+    
+    <p class="Heading2">Query Router<a name="crossQuery_QueryRouter_Tags"></a></p>
     <!-- - - - - - - - - - - - - - --> 
-    <p>This section summarizes the XTF specific tags for the <span class="Keyword">crossQuery</span> 
-    <a href="#crossQuery_QueryParser_Tags"><b>Query Parser</b></a> stylesheet 
-    and the <b><a href="#crossQuery_ResultFormatter_Tags">Result Formatter</a></b> 
-    stylesheet. </p>
+    The tags listed here are XML tags associated with the <b>Query Router</b> 
+    stylesheet. The tags are divided into two categories: <a href="#crossQuery_QueryRouter_Input_Tags">input 
+    tags</a> and <a href="#crossQuery_QueryRouter_Output_Tags">output tags</a>. 
+    The input tags are used by the <span class="Keyword">crossQuery</span> Servlet to translate 
+    the original query URL into a simple XML representation that can act as 
+    input to the <b>Query Router</b> stylesheet. The output tags are then used 
+    by the <b>Query Router</b> stylesheet to form the actual XML query passed 
+    to the <span class="Keyword">crossQuery</span> servlet's <b>Text Search Engine</b> for 
+    processing. <br/>
     <div class="IndentL"> 
+      <p class="Heading3">Input Tags and Parameters<a name="crossQuery_QueryRouter_Input_Tags"></a></p>
       
-  <p class="Heading2">Query Parser<a name="crossQuery_QueryParser_Tags"></a></p>
-      <!-- - - - - - - - - - - - - - --> 
-      The tags listed here are XML tags associated with the <b>Query Parser</b> 
-      stylesheet. The tags are divided into two categories: <a href="#crossQuery_QueryParser_Input_Tags">input 
-      tags</a> and <a href="#crossQuery_QueryParser_Output_Tags">output tags</a>. 
-      The input tags are used by the <span class="Keyword">crossQuery</span> Servlet to translate 
-      the original query URL into a simple XML representation that can act as 
-      input to the <b>Query Parser</b> stylesheet. The output tags are then used 
-      by the <b>Query Parser</b> stylesheet to form the actual XML query passed 
-      to the <span class="Keyword">crossQuery</span> servlet's <b>Text Search Engine</b> for 
-      processing. <br/>
-      <div class="IndentL"> 
-        <p class="Heading3">Input Tags and Parameters<a name="crossQuery_QueryParser_Input_Tags"></a></p>
+      <p>The XML input to the Query Router stylesheet is a simple XML representation 
+        of the query URL supplied to the <span class="Keyword">crossQuery</span> servlet from the 
+        user query web-page. The XML input and XSL parameters are the same as 
+        those for the <b>Query Parser</b> and <b>Document Request Parser</b>, and are documented 
+        in the <a href="#Common_Parser_Input_Tags">Common Parser Input Tags</a> 
+        and <a href="#Common_Stylesheet_Parameters">Common Stylesheet Parameters</a> 
+        sections above. </p>
+      
+      <p class="Heading3">Output Tags<a name="crossQuery_QueryRouter_Output_Tags"></a></p>
+      <p>These tags are used by the <b>Query Router</b> stylesheet to form the 
+        XML response telling the <span class="Keyword">crossQuery</span> servlet the
+        particular query parser stylesheet to use. The top-level tag is the Route Tag below.<br/>
+      </p>
+      <div class="Sample"> 
+        <b><u>Route Tag</u></b><a name="crossQuery_QueryRouter_Output_Route"></a><br/>
+        This tag is outermost tag in the query route sent to the <span class="Keyword">crossQuery</span> servlet's 
+        query routing logic. It has the form:<br/>
+        <br/>
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;route&gt;
+
+    <span class="MacroCode">QueryParserTag</span>
+   <i>{</i><span class="MacroCode">ErrorGenTag</span><i>}</i>
+
+&lt;/route&gt;</pre>
+        </div>
+        The <span class="MacroCode"><b><a href="#crossQuery_QueryRouter_Output_QueryParser">QueryParserTag</a></b></span> specified within this 
+        tag identifies the Query Parser stylesheet to use. If specified, the
+        <span class="MacroCode"><b><a href="#crossQuery_QueryRouter_Output_ErrorGen">ErrorGenTag</a></b></span> identifies an Error Generator
+        stylesheet to use instead of the default specified in the
+        <span class="CodeNorm">crossQuery.conf</span> file.<br/>
+      </div>
+      <br/>
+      
+      <div class="Sample"> 
+        <b><u>QueryParser Tag</u></b><a name="crossQuery_QueryRouter_Output_QueryParser"></a><br/>
+        This tag appears directly within a <a href="#crossQuery_QueryRouter_Output_Route">Route Tag</a>. 
+        It has the form:<br/>
+        <br/>
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;queryParser path="<span class="MacroCode">QueryParserLocation</span>"/&gt;</pre>
+        </div>
+        This tag identifies which Query Parser stylesheet should be utilized by
+        <span class="Keyword">crossQuery</span> to parse the URL parameters and
+        produce an XTF query.
+        If this path is not specified as an absolute path, it is assumed 
+        to be relative to the XTF base installation directory (i.e., 
+        <span class="Code">XTF_HOME</span>.)
+        <br/>
+      </div>
+      <br/>
+
+      <div class="Sample"> 
+        <b><u>ErrorGen Tag</u></b><a name="crossQuery_QueryRouter_Output_ErrorGen"></a><br/>
+        This tag appears directly within a <a href="#crossQuery_QueryRouter_Output_Route">Route Tag</a>. 
+        It has the form:<br/>
+        <br/>
+        <div class="IndentLR"> 
+          <pre class="Code">&lt;errorGen path="<span class="MacroCode">ErrorGeneratorLocation</span>"/&gt;</pre>
+        </div>
+        This tag identifies which stylesheet should be used in case unexpected
+        errors occur during query parsing or processing. This overrides the
+        default error generator specified in the <span class="CodeNorm">crossQuery.conf</span>
+        configuration file.
+        If this path is not specified as an absolute path, it is assumed 
+        to be relative to the XTF base installation directory (i.e., 
+        <span class="Code">XTF_HOME</span>.)
+        <br/>
+      </div>
+      <br/>
+    </div>
+      
+    <p class="Heading2">Query Parser<a name="crossQuery_QueryParser_Tags"></a></p>
+    <!-- - - - - - - - - - - - - - --> 
+    The tags listed here are XML tags associated with the <b>Query Parser</b> 
+    stylesheet. The tags are divided into two categories: <a href="#crossQuery_QueryParser_Input_Tags">input 
+    tags</a> and <a href="#crossQuery_QueryParser_Output_Tags">output tags</a>. 
+    The input tags are used by the <span class="Keyword">crossQuery</span> Servlet to translate 
+    the original query URL into a simple XML representation that can act as 
+    input to the <b>Query Parser</b> stylesheet. The output tags are then used 
+    by the <b>Query Parser</b> stylesheet to form the actual XML query passed 
+    to the <span class="Keyword">crossQuery</span> servlet's <b>Text Search Engine</b> for 
+    processing. <br/>
+    <div class="IndentL"> 
+      <p class="Heading3">Input Tags and Parameters<a name="crossQuery_QueryParser_Input_Tags"></a></p>
         
     <p>The XML input to the Query Parser stylesheet is a simple XML representation 
       of the query URL supplied to the <span class="Keyword">crossQuery</span> servlet from the 
@@ -1890,7 +1992,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               attribute is used primarily to prevent wildcard expansions like<span class="Code"> 
               &lt;term&gt;a*&lt;/term&gt; </span>from overloading the <span class="Keyword">crossQuery</span> 
               servlet. If the query does in fact exceed the limit specified by 
-              this attribute, a<span class="Code"> <a href="#ErrorGen_TermLimit">TermLimit</a> 
+              this attribute, a<span class="Code"> <a href="#ErrorGenerator_TermLimit">TermLimit</a> 
               </span>error is sent to the <b>Error Generator</b> stylesheet for 
               the offending query. </span> </td>
               </tr>
@@ -1906,7 +2008,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
               This attribute is used primarily to prevent queries from overloading 
               the <span class="Keyword">crossQuery</span> servlet, which would adversely impact 
               the responsiveness of the XTF system. If a query exceeds the work 
-              limit set by this attribute, a<span class="Code"> <a href="#ErrorGen_TermLimit">WorkLimit</a> 
+              limit set by this attribute, a<span class="Code"> <a href="#ErrorGenerator_TermLimit">WorkLimit</a> 
               </span>error is sent to the <b>Error Generator</b> stylesheet for 
               the offending query. <br/>
                   <br/>
@@ -3540,8 +3642,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   </div>
   
   <!-- Input/Output Tags indent --></div>
-    <!-- queryParser Tags indent --> 
-    <div class="IndentL"> 
+
+  <div class="IndentL"> 
       <p class="Heading2">Search Result Formatter<a name="crossQuery_ResultFormatter_Tags"></a></p>
       <!-- - - - - - - - - - - - - - --> 
       The following tags make up the XML input for the <b>Search Result Formatter</b> 
@@ -3989,8 +4091,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       <div class="IndentLR"> 
         <pre class="Code">&lt;spelling&gt;
           
-    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Suggestion">SpellingSuggestion</a></span>
-    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_Suggestion">SpellingSuggestion</a></span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_SpellingSuggestion">SpellingSuggestion</a></span>
+    <span class="MacroCode"><a href="#crossQuery_ResultFormatter_SpellingSuggestion">SpellingSuggestion</a></span>
        …
 
 &lt;/spelling></pre>
@@ -4210,7 +4312,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       servlet will include a<span class="Code"> <a href="#dynaXML_ReqParser_Output_Query">query</a> 
       </span>tag. Using the<span class="Code"> <a href="#dynaXML_ReqParser_Output_Query">query</a> 
       </span>tag in a document request without an<span class="Code"> index </span>tag 
-      will result in an <a href="#ErrorGen_UnsupportedQuery">Unsupported Query 
+      will result in an <a href="#ErrorGenerator_UnsupportedQuery">Unsupported Query 
       Error</a> being sent to the <b>Error Generator</b> stylesheet. <br/>
           <br/>
           Placing this tag in a document request will also enable lazy loading of 
@@ -4246,7 +4348,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         in a document request, the<span class="Code"> <a href="#dynaXML_ReqParser_Output_Index">index</a> 
         </span>tag <b>must</b> also be present in the document request. If the<span class="Code"> 
         <a href="#dynaXML_ReqParser_Output_Index">index</a> </span>tag is not 
-        present in the document request, an <a href="#ErrorGen_UnsupportedQuery">Unsupported 
+        present in the document request, an <a href="#ErrorGenerator_UnsupportedQuery">Unsupported 
         Query</a> error will be sent to the <b>Error Generator</b> stylesheet. 
       </div>
         </div>
