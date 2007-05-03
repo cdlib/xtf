@@ -485,6 +485,20 @@ $</pre>
       messages are appearing in the log file you specified.
     </p>
     <p>
+      XTF has been developed to minimize its memory use, but some activities
+      simply require lots of memory to work efficiently. Rather than worry,
+      it's best just to give XTF the memory it needs, but if you're curious
+      what kinds of activities need RAM, here are the main ones:
+    </p>
+    <ul>
+      <li>Sorting large query sets (sort by title, author, etc.)</li>
+      <li>Faceting with many groups or documents</li>
+      <li>Large number of documents (millions)</li>
+      <li>Handling many simultaneous requests, especially long-running ones</li>
+      <li>Spelling correction</li>
+      <li>Dynamic FRBR (experimental)</li>
+    </ul>
+    <p>
       Now examine the log file. If you see lots of "Full" garbage collection
       events that are taking a long time, that's a signal that you need to
       increase the amount of memory avaiable. To do this, 
@@ -494,9 +508,18 @@ $</pre>
     <p class="Sample">
       <span class="Code">-Xmx2048m</span>
     </p>
-    Of course, you need to be sure that your machine has enough <i>physical</i>
-    RAM to accomodate your increased virtual memory limit. 
-    RAM is cheap and your time isn't, so upgrade the machine if necessary.
+    <p>
+      Of course, you need to be sure that your machine has enough <i>physical</i>
+      RAM to accomodate your increased virtual memory limit. 
+      RAM is cheap and your time isn't, so upgrade the machine if necessary.
+    </p>
+    <p>
+      You may be tempted to play with the other Java virtual memory and garbage
+      collection parameters; however, these generally have very little positive
+      impact and may even degrade your performance. It's best to stick to
+      adjusting the maximum memory, and let the excellent Java memory system
+      handle the rest.
+    </p>
   </div>
   
   <p class="Heading1">Setting up External Tools<a name="ExternalTools"></a></p>

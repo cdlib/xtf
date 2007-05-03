@@ -131,6 +131,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#FileUtils_Exists">FileUtils:exists()</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#FileUtils_Length">FileUtils:length()</a></span></font></li>
             <li class="ListItem"><font size="-1"><span class="Code"><a href="#FileUtils_LastModified">FileUtils:lastModified()</a></span></font></li>
+            <li class="ListItem"><font size="-1"><span class="Code"><a href="#FileUtils_CurDateTime">FileUtils:curDateTime()</a></span></font></li>
           </ul>
           <br/>
         </li>
@@ -1705,8 +1706,45 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         which files are newer than others, processing all files newer than a certain date, etc.
       </p>
     </div>
-
     <br/>
+  
+  <div class="Sample"><b><u>Current Date &amp; Time Function<a name="FileUtils_CurDateTime"></a></u></b><br/>
+      <!-- - - - - - - - - - - - - - --> 
+      This extension function can be used within a stylesheet to find out the current
+      date and time known to the system, like this:<br/>
+      <br/>
+      <div class="IndentLR"> 
+        <pre class="Code">&lt;xsl:variable name="myTime" 
+              select="FileUtils:curDateTime(<span class="MacroCode">DateFormat</span>)">...</pre> 
+      </div>
+      <p>where
+      </p>
+      <div class="IndentLR"> 
+        <table cellspacing="12">
+          <tr> 
+            <td align="right" valign="top" class="Code">FileUtils:</td>
+            <td><span class="BaseStyle">is a namespace prefix identifying this
+              set of Saxon extension functions.</span> The namespace URI for this 
+              prefix must be: <span class="Code"><b>java:org.cdlib.xtf.xslt.FileUtils</b></span>.</td>
+          </tr>
+          <tr> 
+            <td align="right" valign="top" class="Code"><span class="MacroCode">DateFormat</span></td>
+            <td>is a string representing the format that the date and/or time
+              should be returned in. This uses codes from Java's 
+              <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html"><span class="Code">SimpleDateFormat</span></a>
+              class such as <span class="Code">yyyy-MM-dd:HH:mm:ss</span>.
+            </td>
+          </tr>
+        </table>
+      </div>
+      <p>
+        The extension function returns a formatted version of the current date and/or time (depending on
+        format). This can be useful for constructing time-based queries, displaying the
+        time or date on a result page, etc.
+      </p>
+    </div>
+    <br/>
+  
     <p class="Heading2">Redirecting to Another URL<a name="Redirect"></a></p>
     <!-- - - - - - - - - - - - - - --> 
     <p>XTF provides an extension element that immediately redirects the user's
