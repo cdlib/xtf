@@ -77,7 +77,7 @@ public class IndexMerge
    */
   public static void main(String[] args) 
   {
-    Trace.info("IndexMerge v. 1.9");
+    Trace.info("IndexMerge v. 2.0");
 
     try 
     {

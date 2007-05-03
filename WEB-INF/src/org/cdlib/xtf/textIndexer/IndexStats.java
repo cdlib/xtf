@@ -85,7 +85,7 @@ public class IndexStats
       boolean showUsage = false;
 
       // Regardless of whether we succeed or fail, say our name.
-      Trace.info("IndexStats v" + 1.9);
+      Trace.info("IndexStats v" + 2.0);
       Trace.info("");
 
       // Make sure the XTF_HOME environment variable is specified.
