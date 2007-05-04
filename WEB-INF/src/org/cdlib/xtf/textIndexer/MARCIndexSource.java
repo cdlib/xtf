@@ -52,6 +52,7 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 
 import org.apache.lucene.util.CountedInputStream;
+import org.cdlib.xtf.util.Normalizer;
 import org.cdlib.xtf.util.StructuredStore;
 import org.marc4j.marc.MarcConstants;
 import org.marc4j.marcxml.Converter;
@@ -62,7 +63,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import sun.text.Normalizer;
 
 /**
  * Supplies MARC data to an XTF index, breaking it up into individual MARCXML
@@ -526,7 +526,7 @@ public class MARCIndexSource extends IndexSource
       if (needNormalize) 
       {
         s = new String(ch, start, length);
-        String s2 = Normalizer.normalize(s, Normalizer.COMPOSE, 0);
+        String s2 = Normalizer.normalize(s);
         if (!s.equals(s2)) 
         {
           //System.out.println( "Translated non-normalized Unicode in record " + (numCompleted + 1) +

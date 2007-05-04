@@ -43,11 +43,11 @@ import java.io.InputStream;
 import javax.xml.parsers.SAXParser;
 import javax.xml.transform.Templates;
 import org.cdlib.xtf.textEngine.IndexUtil;
+import org.cdlib.xtf.util.Normalizer;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredStore;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import sun.text.Normalizer;
 
 /**
  * Supplies a single file containing a single record to the
@@ -278,7 +278,7 @@ public class XMLIndexSource extends IndexSource
 
     if (needNormalize) 
     {
-      String s2 = Normalizer.normalize(s, Normalizer.COMPOSE, 0);
+      String s2 = Normalizer.normalize(s);
       if (!s.equals(s2)) {
         s = s2;
         ch = s2.toCharArray();
