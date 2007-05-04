@@ -15,7 +15,8 @@
   <property name="bin"     location="bin"/>
   <property name="doc"     location="javadoc"/>
   <property name="lucene-jar" location="${lib}/lucene-core-2.1.0.jar"/>
-  <property name="libs"    value="${lucene-jar}:${lib}/saxonb-8.9.jar:${lib}/servlet.jar:${lib}/PDFBox-0.7.2.jar:${lib}/log4j-1.2.9.jar:${lib}/Tidy.jar:${lib}/cql-java.jar:${lib}/marc4j.jar"/>
+  <property name="saxon-jar" location="${lib}/saxonb-8.9.jar"/>
+  <property name="libs"    value="${lucene-jar}:${saxon-jar}:${lib}/servlet.jar:${lib}/PDFBox-0.7.2.jar:${lib}/log4j-1.2.9.jar:${lib}/Tidy.jar:${lib}/cql-java.jar:${lib}/marc4j.jar"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -49,12 +50,28 @@
   <!-- ================================================== jar -->
   <target name="jar" depends="compile"
           description="generate a JAR file">
-    <!-- Copy the Lucene jar -->
+
     <mkdir dir="${dist}"/>
-    <copy file="${lucene-jar}" tofile="${dist}/xtf.jar"/>
+
+    <!-- Copy the Lucene class files -->
+    <delete dir="jar-tmp" quiet="true"/>
+    <mkdir dir="jar-tmp"/>
+
+    <unzip src="${lucene-jar}" dest="jar-tmp"/>
+
+    <!-- Copy the Saxon class files -->
+    <unzip src="${saxon-jar}" dest="jar-tmp"/>
 
     <!-- Add/overwrite with the XTF classes -->
-    <jar jarfile="${dist}/xtf.jar" basedir="${classes}" update="true"/>
+    <copy todir="jar-tmp" overwrite="true">
+      <fileset dir="${classes}"/>
+    </copy>
+
+    <!-- Add/overwrite with the XTF classes -->
+    <delete file="${dist}/xtf.jar" quiet="true"/>
+    <jar jarfile="${dist}/xtf.jar" basedir="jar-tmp"/>
+
+    <delete dir="jar-tmp" quiet="true"/>
   </target>
 
   <!-- ================================================== dist -->
@@ -91,7 +108,9 @@
       <fileset dir="." includes="src/**/*.html"/>
       <fileset dir="." includes="backport/**/*.java"/>
       <fileset dir="." includes="contrib/**/*.java"/>
-      <fileset dir="." includes="lib/lucene-*.jar"/>
+      <fileset dir="." includes="contrib/**/*.html"/>
+      <fileset dir="." includes="lib/lucene*.jar"/>
+      <fileset dir="." includes="lib/saxon*.jar"/>
     </zip>
 
     <!-- Zip up the JavaDocs -->
@@ -111,6 +130,7 @@
         <exclude name="**/.DS_Store"/>
         <exclude name="style/crossQuery/complexQueryParser.xsl"/>
 
+        <include name="bin/classpath.pl"/>
         <include name="bin/textIndexer"/>
         <include name="bin/indexStats"/>
         <include name="bin/indexDump"/>
@@ -144,6 +164,7 @@
         <include name="WEB-INF/lib/*.jar"/>
         <exclude name="WEB-INF/lib/servlet.jar"/>
         <exclude name="WEB-INF/lib/lucene-*.jar"/> <!-- Included in xtf.jar -->
+        <exclude name="WEB-INF/lib/saxon*.jar"/> <!-- Included in xtf.jar -->
 
       </fileset>
     </copy>
