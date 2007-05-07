@@ -1,98 +1,14 @@
+Changes in 2.0
+================
+
+Please see http://xtf.sourceforge.net/docs/index.html#WhatsNew_2_0
+for a complete list of the changes in this release.
+
 Changes in 1.9
 ================
 
-- Lots up documentation updates. See docs/index.html for details.
-  [Support #1548143 1542336, 1524668, 1493134, 1487452,
-  1470971, 1430268, 1365117, 1298253, 1292469, 1289172,
-  1289092, 1289091, 1285432, 1285208, 1285201, 1285189,
-  1269967]
-
-- Stylesheets can now cause a real HTTP redirect, to send the
-  user's browser to a different URL. [Feature 1568108]
-
-- New query operator: multi-field AND, that requires *all* terms
-  to be present, but in *any* of the listed fields. Default
-  stylesheets now use this for basic "keyword" search.
-  [Feature 1607168]
-
-- New query operator: orNear. This is like a typical OR query,
-  except that when multiple terms are present in the same meta-
-  data field, their proximity is taken into account when
-  scoring. [Feature 1607170]
-
-- Added Saxon extension functions to check a file's existence,
-  and get its length or timestamp. [Features 1118097, 1306981]
-
-- Fixed bug: Scoring of hits in the full text ("text" field)
-  was not normalizing based on the length of the document,
-  causing full-text documents to dominate meta-data-only docs in
-  keyword searches that include both. [Bug 1607181]
-
-- Fixed bug: The original EAD stylesheets didn't show hits
-  in context. Also, the output was very different from the TEI
-  display. EAD formatting is now much better. [Bug 1548258]
-
-- Fixed bug: Some links in the TEI navigation bar were broken.
-  [Bug 1607175]
-
-- Fixed bug: wildcards containing accented characters were not
-  working properly. [Bug 1571681]
-
-- Fixed bug: Diacritic characters in URLs weren't always being 
-  properly decoded by the servlets. [Bug 1570248]
-
-- Fixed bug: The XTF query parser was rejecting <sectionType> 
-  queries within <near> queries. [Bug 1570262]
-
-- Fixed bug: Pass-through tags had stopped working, with the
-  servlets rejecting them. [Bug 1554410]
-
-- Fixed bug: "Exact" queries beginning or ending with stop
-  words failed to match. [Bug 1548289]
-
-- Fixed bug: the year parsing in the default textIndexer
-  prefilters was failing to parse dates with repeated years
-  such as "December 1999, copyright (C) 1999". [Bug 1548260]
-
-- Fixed bug: Synthetic queries (such as "more like this") were
-  using the Lucene "coordination factor" and thus getting
-  artificially low scores. The coord factor is only for user-
-  generated queries. [Bug 1607177]
-
-- Fixed bug: Default crossQuery result formatter was jamming all
-  text snippets together on one line. [Bug 1607173]
-
-- Fixed bug: XTF query parser wasn't recognizing the "maxSnippets"
-  attribute on the main <query> element, only on sub-elements.
-  [Bug 1591585]
-
-- Fixed bug: phrase queries containing repeated terms failed to
-  match at all. [Bug 1523473]
-
-- Added experimental dynamic FRBR mode... see docs/
-  experimental.html for details.
-
-- To aid in searching fine-grained numeric data (such as
-  timestamps), a new mode for the <range> operator has been
-  added that that allows for very efficient searching on numeric
-  data. [Feature 1541643]
-
-- A couple of jar files have been removed, as they were no longer
-  necessary. [Bug 1585405]
-
-- The web.xml file included should now be more compatible with
-  Jetty. [Bug 1585408]
-
-- A batch file for running the textIndexer under Windows is now
-  included in the distribution. [Feature 1595965]
-
-- Added support for TEI tables in 
-  style/dynaXML/docFormatter/tei/table.xsl [Bug 1607153]
-
-- Acknowledgement messages for the generous support from the
-  Andrew W. Mellon Foundation have been placed in the various
-  source code modules that were primarily impacted by the
-  grant-funded work. [Feature 1607184]
+Please see http://xtf.sourceforge.net/docs/index.html#WhatsNew_1_9
+for a complete list of the changes in this release.
 
 Changes in 1.8
 ==============
