@@ -7,7 +7,6 @@
   <!-- set global properties for this build -->
   <property name="src1"    location="src"/>
   <property name="src2"    location="contrib/xtf-lucene/src/java"/>
-  <property name="src3"    location="backport/src/java"/>
   <property name="classes" location="classes"/>
   <property name="dist"    location="dist"/>
   <property name="lib"     location="lib"/>
@@ -38,7 +37,6 @@
            destdir="${classes}">
       <src path="${src1}"/>
       <src path="${src2}"/>
-      <src path="${src3}"/>
     </javac>
   </target>
                 
@@ -96,21 +94,22 @@
         <exclude name="regress/**/IndexDB/**/*"/>
         <exclude name="regress/**/*-test.xml"/>
         <include name="bin/regressTest"/>
-        <include name="WEB-INF/lib/servlet.jar"/>
       </fileset>
     </zip>
 
-    <!-- Make a zip file of all the source code -->
+    <!-- Make a zip file of all the source code, plus the extra
+         libraries needed to build it.
+    -->
     <zip zipfile="build-tmp/WEB-INF/src.zip">
       <fileset dir="." includes="src/**/*.java"/>
       <fileset dir="." includes="src/**/*.xml"/>
       <fileset dir="." includes="src/**/*.jj"/>
       <fileset dir="." includes="src/**/*.html"/>
-      <fileset dir="." includes="backport/**/*.java"/>
       <fileset dir="." includes="contrib/**/*.java"/>
       <fileset dir="." includes="contrib/**/*.html"/>
-      <fileset dir="." includes="lib/lucene*.jar"/>
-      <fileset dir="." includes="lib/saxon*.jar"/>
+      <fileset dir="." includes="lib/lucene*.jar"/> <!-- Normally part of xtf.jar, needed for build -->
+      <fileset dir="." includes="lib/saxon*.jar"/> <!-- Normally part of xtf.jar, needed for build -->
+      <fileset dir="." includes="lib/servlet.jar"/> <!-- Only needed for source build -->
     </zip>
 
     <!-- Zip up the JavaDocs -->
@@ -162,7 +161,7 @@
         <include name="WEB-INF/build.xml"/>
         <include name="WEB-INF/web.xml"/>
         <include name="WEB-INF/lib/*.jar"/>
-        <exclude name="WEB-INF/lib/servlet.jar"/>
+        <exclude name="WEB-INF/lib/servlet.jar"/> <!-- only needed in src.zip -->
         <exclude name="WEB-INF/lib/lucene-*.jar"/> <!-- Included in xtf.jar -->
         <exclude name="WEB-INF/lib/saxon*.jar"/> <!-- Included in xtf.jar -->
 
@@ -236,11 +235,6 @@
         <exclude name="**/.cdl/**"/>
       </packageset>
 
-      <packageset dir="${src3}">
-        <include name="**"/>
-        <exclude name="**/.sf/**"/>
-        <exclude name="**/.cdl/**"/>
-      </packageset>
     </javadoc>
   </target>
 
