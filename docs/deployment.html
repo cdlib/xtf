@@ -339,6 +339,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <br/>
     <div class="Sample"> <span class="Code"> C:<span class="MacroCode">...</span>\> set XTF_HOME=C:\<span class="MacroCode">servlet-container-directory</span>\webapps\xtf </span> </div>
     <br/>
+    <div class="Note"> (<u>Warning</u>: Do not put quotes around the path when setting XTF_HOME, even if the path contains spaces.)<br/><br/>
+    </div>
     <div class="Note"> (<u>Note</u>: To avoid having to repeatedly set 
       the<span class="Code"> XTF_HOME </span> environment variable, 
       you may wish to add it to the list of system environment variables
@@ -576,6 +578,11 @@ and configured, the XTF system may be installed and run.
     programs such as <span class="Keyword">textIndexer</span> complain about missing
     class files, the most likely explanation is that <span class="Code">XTF_HOME</span>
     has not been set correctly.
+  </p>
+  <p>
+   <span class="Note">Note: On Unix-like platforms,
+    the command-line scripts can make a good guess of XTF_HOME based on the directory
+    they are in; you may be able to avoid setting XTF_HOME explicitly.</span>
   </p>
 </div>
   
