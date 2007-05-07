@@ -3,7 +3,6 @@
 	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/src"/>
 	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/contrib/xtf-lucene/test/java"/>
 	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/contrib/xtf-lucene/src/java"/>
-	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/backport/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/PDFBox-0.7.2.jar" sourcepath="WEB-INF/lib/source/PDFBox-0.7.2/"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/Tidy.jar" sourcepath="WEB-INF/lib/source/jtidy-04aug2000r7-dev"/>
