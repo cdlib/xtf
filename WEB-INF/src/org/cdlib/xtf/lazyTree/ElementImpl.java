@@ -222,9 +222,6 @@ public class ElementImpl extends ParentNodeImpl
     if (whichNamespaces != NO_NAMESPACES)
       sendNamespaceDeclarations(out, whichNamespaces == ALL_NAMESPACES);
 
-    // indicate start of content
-    out.startContent();
-
     // output the attributes
     if (attrNames != null) 
     {
@@ -235,6 +232,9 @@ public class ElementImpl extends ParentNodeImpl
                                         locationId);
       } // for i
     } // if
+
+    // indicate start of content
+    out.startContent();
 
     // output the children
     AxisIterator children = iterateAxis(Axis.CHILD);
