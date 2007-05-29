@@ -261,7 +261,7 @@ public class SpellWriter
     recentWords.clear();
     recentPairs.clear();
   }
-
+  
   /**
    * Queue the given word. The queue can later be flushed by calling
    * flushQueuedWords(); this is typically put off until the end of an indexing
@@ -497,7 +497,7 @@ public class SpellWriter
     CountedInputStream countedIn = new CountedInputStream(
       new FileInputStream(inFile));
     BufferedReader freqReader = new BufferedReader(
-      new InputStreamReader(countedIn));
+      new InputStreamReader(countedIn, "UTF-8"));
     int lineCt = 0;
     while (true) 
     {
@@ -715,7 +715,7 @@ public class SpellWriter
   {
     final CountedOutputStream outCounted = new CountedOutputStream(
       new BufferedOutputStream(new FileOutputStream(outFile)));
-    final Writer out = new OutputStreamWriter(outCounted);
+    final Writer out = new OutputStreamWriter(outCounted, "UTF-8");
     
     prog.progress(0, 100, "Building word map.", true);
 
@@ -813,7 +813,7 @@ public class SpellWriter
       // Skip duplicates
       if (word.equals(prev))
         continue;
-
+      
       // Figure out how many characters overlap.
       int k;
       for (k = 0; k < Math.min(prev.length(), word.length()); k++) {
