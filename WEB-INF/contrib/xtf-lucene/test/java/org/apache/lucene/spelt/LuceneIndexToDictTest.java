@@ -75,6 +75,9 @@ public class LuceneIndexToDictTest extends SpellReadWriteTest
   {
     // Divide the text into paragraphs.
     String[] paras = CALL_OF_THE_WILD.split("\n\n");
+    
+    // Stick in some accented chars to test end-to-end accent preservation
+    paras[0] = paras[0] + " europ\u00e4ische europ\u00e4ische europ\u00e4ische";
 
     // Put the paragraphs into the Lucene index, splitting them up into a few
     // fields and documents.

@@ -60,6 +60,13 @@ public class SpellReadWriteTest extends TestCase
       // Simplest possible tokenization
       for (String word : CALL_OF_THE_WILD.split("\\W+"))
         writer.queueWord(word);
+      
+      // Add in some accented chars to test that.
+      writer.queueWord("europ\u00e4ische");
+      writer.queueWord("europ\u00e4ische");
+      writer.queueWord("europ\u00e4ische");
+      
+      // Finish the dictionary
       writer.flushQueuedWords();
       
       // Open a reader for the tests to use.
@@ -123,6 +130,9 @@ public class SpellReadWriteTest extends TestCase
     checkSuggestion("newspaper", "newspapers");
     checkSuggestion("bck", "buck");
     checkSuggestion("bcuk", "buck");
+    
+    // Check that accents come back correctly
+    checkSuggestion("europbische", "europ\u00e4ische");
     
     // Check the case copying facility
     checkSuggestion("Newpapers", "Newspapers");
