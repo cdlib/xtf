@@ -63,6 +63,7 @@ import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.textEngine.Snippet;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.CheckingTokenStream;
+import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
 import org.cdlib.xtf.util.StructuredStore;
@@ -110,13 +111,13 @@ public class SearchTree extends LazyDocument
   DocHit docHit;
 
   /** Total number of text hits within this document */
-  int nHits;
+  int nHits = 0;
 
   /** Array of snippets sorted by descending score */
-  Snippet[] hitsByScore;
+  Snippet[] hitsByScore = new Snippet[0];
 
   /** Array of snippets sorted in document order */
-  Snippet[] hitsByLocation;
+  Snippet[] hitsByLocation = new Snippet[0];
 
   /** Mapping from hitsByScore -> hitsByLocation */
   int[] hitRankToNum;
@@ -544,10 +545,24 @@ public class SearchTree extends LazyDocument
       xtfURI);
     namespaceParent[numberOfNamespaces - 1] = 1;
 
-    ElementImpl rootKid = (ElementImpl)getNode(1);
+    ElementImpl rootKid = getRootKid();
     modifyNode(rootKid);
     rootKid.nameSpace = numberOfNamespaces - 1;
   } // addXTFNamespace()
+  
+  /**
+   * Get the top-level element that can actually be modified.
+   */
+  private ElementImpl getRootKid()
+  {
+    EasyNode root = new EasyNode(this);
+    for (int i=0; i<root.nChildren(); i++) {
+      EasyNode kid = root.child(i);
+      if (kid.isElement())
+        return (ElementImpl) kid.getWrappedNode();
+    }
+    throw new RuntimeException("Internal error: Search tree does not appear to have a root element");
+  }
 
   /**
    * Given a hit number, this method retrieves the synthetic hit node for it.
@@ -976,7 +991,7 @@ public class SearchTree extends LazyDocument
    */
   private void addSnippets() 
   {
-    ElementImpl rootKid = (ElementImpl)getNode(1);
+    ElementImpl rootKid = getRootKid();
     topSnippetNode = addElement(rootKid, snippetsElementCode, 2, true);
     topSnippetNode.setAttribute(0,
                                 totalHitCountAttrCode,
