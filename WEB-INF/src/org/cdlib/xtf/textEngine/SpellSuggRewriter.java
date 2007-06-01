@@ -61,6 +61,11 @@ public class SpellSuggRewriter extends XtfQueryRewriter
     this.fields = fields;
   }
 
+  /** Do not rewrite within 'exact' queries */
+  protected Query rewrite(SpanExactQuery q) {
+    return q; // do nothing
+  }
+  
   /**
    * Rewrite a term query. This is only called for artificial queries
    * introduced by XTF system itself, and therefore we don't map here.

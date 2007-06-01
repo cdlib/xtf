@@ -612,6 +612,10 @@ public class DefaultQueryProcessor extends QueryProcessor
       protected void traverse(SpanTermQuery q) {
         add(q.getTerm());
       }
+      
+      protected void traverse(SpanExactQuery q) {
+        // Do not correct inside "exact" queries
+      }
 
       protected void traverse(BooleanQuery bq) 
       {
