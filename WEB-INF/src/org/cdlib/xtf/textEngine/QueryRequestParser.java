@@ -1288,7 +1288,7 @@ public class QueryRequestParser
     // Establish the span recording, and we're done.
     nq.setSpanRecording(maxSnippets);
     return nq;
-  } // processTextNots();
+  } // processSpanNots()
 
   /**
    * Generate a proximity query on a field. This uses the de-duplicating span
