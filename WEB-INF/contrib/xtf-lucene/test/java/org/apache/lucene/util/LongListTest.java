@@ -78,6 +78,30 @@ public class LongListTest extends TestCase
     assertTrue(list.isEmpty());
   }
   
+  // Test a small list.
+  public void testSmall()
+  {
+    LongList list = new LongList(0);
+    list.add(1);
+    assertFalse(list.isEmpty());
+
+    list.add(2);
+    assertEquals(2, list.size());
+    assertEquals(1, list.get(0));
+    assertEquals(2, list.get(1));
+    assertEquals(2, list.getLast());
+    
+    list = new LongList(1);
+    list.add(1);
+    assertFalse(list.isEmpty());
+
+    list.add(2);
+    assertEquals(2, list.size());
+    assertEquals(1, list.get(0));
+    assertEquals(2, list.get(1));
+    assertEquals(2, list.getLast());
+  }
+  
   // Test of sort and search methods
   public void testSort() 
   {

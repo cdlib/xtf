@@ -53,7 +53,7 @@ public class ArrayUtil
   }
 
   public static float[] expand(float[] in) {
-    return resize(in, in.length * 3 / 2);
+    return resize(in, Math.max(in.length + 5, in.length * 3 / 2));
   }
 
   // Functions for String arrays

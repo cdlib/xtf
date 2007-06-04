@@ -23,7 +23,7 @@ import java.util.Arrays;
  * 
  * @author Martin Haye
  */
-public class IntList 
+public class IntList
 {
   private int[] data;
   private int size = 0;
@@ -41,7 +41,7 @@ public class IntList
   /** Add a value to the end of the list, expanding the array if necessary */
   public final void add(int value) {
     if (size == data.length)
-      resize(size * 3 / 2);
+      resize(Math.max(size + 5, size * 3 / 2));
     data[size++] = value;
   }
 
@@ -212,4 +212,4 @@ public class IntList
 
     data = newData;
   }
-}
+ }

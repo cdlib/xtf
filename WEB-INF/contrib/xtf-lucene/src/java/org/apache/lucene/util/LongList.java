@@ -41,7 +41,7 @@ public class LongList
   /** Add a value to the end of the list, expanding the array if necessary */
   public final void add(long value) {
     if (size == data.length)
-      resize(size * 3 / 2);
+      resize(Math.max(size + 5, size * 3 / 2));
     data[size++] = value;
   }
 
