@@ -40,15 +40,21 @@ import org.cdlib.xtf.util.Trace;
 
 /**
  * Derived version of the crossQuery servlet, used to abuse crossQuery during
- * load tests. The only difference is that it throws exceptions upward instead
+ * load tests. The main difference is that it throws exceptions upward instead
  * of formatting an error page. This ensures that exceptions don't get hidden
  * in the noise.
+ * 
+ * Also, for each thread we track the number of hits returned by the last
+ * request.
  *
  * @author Martin Haye
  */
 public class TestableCrossQuery extends CrossQuery 
 {
-  public int nHits;
+  private ThreadLocal<Integer> nHits = new ThreadLocal<Integer>();
+  
+  /** Return the number of hits in the last request processed by this thread */
+  public int nHits() { return nHits.get(); }
 
   // inherit JavaDoc
   protected TextConfig readConfig(String configPath) 
@@ -66,7 +72,7 @@ public class TestableCrossQuery extends CrossQuery
                             long startTime)
     throws Exception 
   {
-    nHits = queryResult.totalDocs;
+    nHits.set(queryResult.totalDocs);
     super.formatHits(mainTagName,
                      req,
                      res,
@@ -80,7 +86,7 @@ public class TestableCrossQuery extends CrossQuery
   protected void genErrorPage(HttpServletRequest req, HttpServletResponse res,
                               Exception exc) 
   {
-    nHits = -1;
+    nHits.set(-1);
     Trace.error("Exception occurred in crossQuery: " + exc);
     throw new RuntimeException(exc);
   } // genErrorPage()
