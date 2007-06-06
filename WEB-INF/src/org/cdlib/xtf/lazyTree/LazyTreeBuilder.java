@@ -353,12 +353,10 @@ public class LazyTreeBuilder
       byte kind = tree.nodeKind[i];
       if (kind == Type.COMMENT || kind == Type.PROCESSING_INSTRUCTION) 
       {
-        // It appears to be safe to throw these away. So we just replace them
-        // with zero-length text nodes to keep node counts from changing.
-        //
-        tree.nodeKind[i] = Type.TEXT;
-        alphas[i] = -1;
-        betas[i]  = -1; // length = 0
+        // These should have been filtered out by HackedTinyBuilder
+        throw new RuntimeException(
+            "Internal error: processing instructions and comments " +
+            "should have been filtered out");
       }
 
       // Kind
