@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="http://ead.diglib.ku.edu/xml/KU.xsl"?>
 
 <document xmlns:xtf="http://cdlib.org/xtf">
     <testMeta xtf:meta="yes">Some test data</testMeta>
