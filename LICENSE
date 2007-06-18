@@ -1,18 +1,40 @@
-
 XTF - eXtensible Text Framework
 License Information
 
-The bulk of this package is original code distributed under a BSD-style
-license. See LICENSE_XTF for details.
+XTF itself
+  The bulk of this package is original code distributed under a BSD-style
+  license. See licenses/XTF_license.txt for details.
 
-Portions contain modified code from the Jakarta Lucene project, distributed
-under the Apache License, Version 2.0. See LICENSE_LUCENE for details.
+Lucene
+  The Apache Lucene text index/search engine is included, and is distributed
+  under the Apache License, Version 2.0. See licenses/Lucene_license.txt for 
+  details.
 
-Portions contain modified code from Michael Kay's Saxon project, distributed
-under the Mozilla Public License 1.1. See LICENSE_SAXON for details.
+Saxon
+  Michael Kay's Saxon XSLT processor is included, and is under the Mozilla 
+  Public License 1.1. See licenses/Saxon_license.txt for details.
 
-The CQL parsing library "cql-java" is included, distributed under the
-Lesser Gnu Public License 2.1. See LICENSE_CQL for details.
+PDFBox
+  The PDFBox library for extracting text from PDF files is included, and is
+  under a BSD-style license. In turn, PDFBox includes a few other libraries
+  under open-source compatible licenses. See licenses/PDFBox_license.txt 
+  and/or www.pdfbox.org for details.
 
-The MARC4J API for working with MARC data "marc4j" is included, distributed under the
-Lesser Gnu Public License 2.1. See LICENSE_MARC4J for details.
+FontBox
+  The FontBox library is used by PDFBox for font-related tasks, and is under
+  a BSD-style license. In turn it includes a couple of other libraries under
+  open-source compatible licenses. See licenses/FontBox_license.txt and/or
+  www.fontbox.org for details.
+
+CQL
+  The CQL parsing library "cql-java" is included, distributed under the Lesser
+  Gnu Public License 2.1. See licenses/CQL_license.txt for details.
+
+Marc4J
+  The MARC4J API for working with MARC data is included, distributed under the
+  Lesser Gnu Public License 2.1. See licenses/Marc4J_license.txt for details.
+
+JTidy
+  The JTidy library for normalizing HTML documents is included, and is under
+  a custom BSD-style license. See licenses/JTidy_license.txt for details.
+

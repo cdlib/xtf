@@ -1,10 +1,9 @@
 
-Portions of this package derive from Michael Kay's Saxon project and are
-distributed under the Mozilla Public License. Each derivative source file
-contains a license notice similar to the one below. You may obtain 
-more information and the complete Saxon distribution by visiting:
-	//http://saxon.sourceforge.net
-
+Michael Kay's Saxon XSLT library is included in this package, as well
+as code modified from it. This is distributed under the Mozilla Public
+License 1.0. Each derivative source file contains a license notice 
+similar to the one below. You may obtain more information and the 
+complete Saxon distribution by visiting: http://saxon.sourceforge.net
 
 The contents of this file are subject to the Mozilla Public License Version 
 1.0 (the "License"); you may not use this file except in compliance with the 
