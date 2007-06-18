@@ -451,7 +451,7 @@ public abstract class QueryRewriter
     // If only one clause (and we're allowed to shunt), just return the single
     // clause instead of a wrapping query.
     //
-    if (newClauses.size() == 1) 
+    if (newClauses.size() == 1 && promoteSingle) 
     {
       // Since we're getting rid of the parent, pass on its boost to the
       // child.
