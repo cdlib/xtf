@@ -55,11 +55,17 @@ public class LazyKeyManager extends KeyManager
                                      XPathContext context)
     throws XPathException 
   {
+    // If the document isn't a lazy tree, just do normal index building
+    // (we can't store keys for a non-lazy tree).
+    //
+    LazyDocument document = getDocumentImpl(doc);
+    if (document == null)
+      return super.buildIndex(keyNameFingerprint, itemType, foundItemTypes, doc, context);
+    
     // If the key name has 'dynamic' in it, this is a signal that we
     // shouldn't store the index...
     //
     NamePool pool = context.getController().getNamePool();
-    LazyDocument document = getDocumentImpl(doc);
     String fingerName = pool.getDisplayName(keyNameFingerprint);
     if (fingerName.indexOf("dynamic") >= 0)
     {
