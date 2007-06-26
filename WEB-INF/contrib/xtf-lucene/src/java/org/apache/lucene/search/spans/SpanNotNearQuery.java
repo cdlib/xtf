@@ -106,7 +106,7 @@ public class SpanNotNearQuery extends SpanQuery
       private Spans includeSpans = include.getSpans(reader, searcher);
       private boolean moreInclude = true;
       private Spans excludeSpans = exclude.getSpans(reader, searcher);
-      private boolean moreExclude = true;
+      private boolean moreExclude = excludeSpans.next();
 
       public boolean next()
         throws IOException 
