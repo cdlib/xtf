@@ -196,7 +196,7 @@ public abstract class Cache
   protected synchronized void cleanup() 
   {
     // Do we have a size constraint?
-    if (maxEntries > 0) 
+    if (maxEntries >= 0) 
     {
       // Remove entries until we meet the maxEntries restriction.
       while (ageList.getCount() > maxEntries) {
