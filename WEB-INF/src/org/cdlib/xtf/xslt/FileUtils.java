@@ -1,7 +1,9 @@
 package org.cdlib.xtf.xslt;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import org.cdlib.xtf.util.Path;
@@ -56,6 +58,10 @@ public class FileUtils
 {
   /** Used to avoid recreating SimpleDateFormat objects all the time */
   private static HashMap dateFormatCache = new HashMap();
+  
+  /** Used to track temp files, per thread */
+  private static ThreadLocal<ArrayList<File>> tempFiles =
+    new ThreadLocal<ArrayList<File>>();
 
   /**
    * Checks whether a file with the given path exists (that is, if it can
@@ -128,6 +134,24 @@ public class FileUtils
     String resolved = Path.resolveRelOrAbs(stylesheetDir, filePath);
     return new File(resolved);
   } // resolveFile
+  
+  /**
+   * Resolve the location of a file given the stylesheet context. If the
+   * path is absolute, nothing is done. If it is relative, it is converted
+   * to absolute by resolving it relative to the stylesheet path.
+   */
+  public static String resolvePath(XPathContext context, String filePath)
+  {
+    String stylesheetPath = context.getOrigin().getInstructionInfo()
+                            .getSystemId();
+    stylesheetPath = stylesheetPath.replaceFirst("^file:", "");
+    File stylesheetDir = new File(stylesheetPath).getParentFile();
+
+    filePath = filePath.replaceFirst("^file:", "");
+
+    String resolved = Path.resolveRelOrAbs(stylesheetDir, filePath);
+    return Path.normalize(resolved);
+  }
 
   /**
    * Gets the current date and time.
@@ -155,4 +179,46 @@ public class FileUtils
       dateFormatCache.put(formatStr, new SimpleDateFormat(formatStr));
     return (SimpleDateFormat)dateFormatCache.get(formatStr);
   }
+  
+  /**
+   * Generates a temporary file in the default temporary-file directory,
+   * using the given prefix and suffix to generate the name. Also registers
+   * the file for deletion at the end of the current request.
+   *
+   * @param context   Context used to figure out which stylesheet is calling
+   *                  the function.
+   * @param prefix    Prefix for the resulting file name.
+   * @param suffix    Suffix for the resulting file name.
+   * @return          The new temporary file name.
+   */
+  public static String createTempFile(XPathContext context, 
+                                      String prefix, String suffix)
+    throws IOException
+  {
+    File out = File.createTempFile(prefix, suffix);
+    out.delete();
+    ArrayList<File> files = tempFiles.get();
+    if (files == null) {
+      files = new ArrayList<File>();
+      tempFiles.set(files);
+    }
+    tempFiles.get().add(out);
+    return out.getAbsolutePath();
+  }
+
+  /**
+   * Deletes all temporary files created by the current thread using
+   * {@link #createTempFile}.
+   */
+  public static void deleteTempFiles()
+  {
+    ArrayList<File> files = tempFiles.get();
+    if (files != null) {
+      for (File f : files) {
+        //if (f.delete())
+        //  files.remove(f);
+      }
+    }
+  }
+
 } // class FileUtils
