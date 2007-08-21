@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  
+  <!-- Test spelling on one field, with others correctly specified -->
+  <spellcheck suggestionsPerTerm="1"/>
+  <and>
+    <and field="title">
+      <term>africa</term>
+    </and>
+  	<and field="relation">
+      <term>http://escholarship.cdlib.org/</term>
+    </and>
+  	<and field="text" maxSnippets="3" maxContext="100">
+      <term>arfica</term>
+    </and>
+  </and>
+  
+</query>
