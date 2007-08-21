@@ -77,8 +77,10 @@ public class RunElement extends ExtensionInstruction
   {
     // Get mandatory 'command' attribute
     command = getAttributeList().getValue("", "command");
-    if (command == null)
+    if (command == null) {
       reportAbsence("command");
+      return;
+    }
 
     // Get optional 'timeout' attribute
     String timeoutStr = getAttributeList().getValue("", "timeout");
@@ -344,9 +346,11 @@ public class RunElement extends ExtensionInstruction
       //
       if (process.exitValue() != 0 && stderrGrabber.outBytes.length > 0) {
         String errStr = new String(stderrGrabber.outBytes);
+        String outStr = new String(stdoutGrabber.outBytes);
         dynamicError(
           "External command '" + command + "' exited with status " +
-          process.exitValue() + ". Output from stderr:\n" + errStr,
+          process.exitValue() + ". Output from stderr:\n" + errStr +
+          "\nOutput from stdout:\n" + outStr,
           "EXEC003", context);
       }
 
