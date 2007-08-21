@@ -38,6 +38,6 @@ public class InvalidDocumentException extends DynaXMLException
 {
   /** Default constructor */
   public InvalidDocumentException() {
-    super("Invalid document identifier (docId) specified");
+    super("Invalid document path output from docReqParser stylesheet");
   }
 } // class InvalidDocumentException
