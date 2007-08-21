@@ -84,6 +84,7 @@ import org.cdlib.xtf.util.ThreadWatcher;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLFormatter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
+import org.cdlib.xtf.xslt.FileUtils;
 import org.z3950.zing.cql.CQLNode;
 import org.z3950.zing.cql.CQLParser;
 
@@ -388,7 +389,13 @@ public abstract class TextServlet extends HttpServlet
           "Latency" + extraText + ": " + latency + " msec for request: " +
           requestUrl);
       } // if
+      
+      // If any temporary files were created while processing this request,
+      // close them now.
+      //
+      FileUtils.deleteTempFiles();
 
+      // Clean up.
       curServlet.set(null);
       curRequest.set(null);
       curResponse.set(null);
@@ -1174,7 +1181,9 @@ public abstract class TextServlet extends HttpServlet
     String mime = details.getProperty(OutputKeys.MEDIA_TYPE);
     if (mime == null) {
       String method = details.getProperty(OutputKeys.METHOD);
-      if (method.equalsIgnoreCase("xml"))
+      if (method == null)
+        mime = "text/html"; // Take a guess.
+      else if (method.equalsIgnoreCase("xml"))
         mime = "text/xml";
       else if (method.equalsIgnoreCase("xhtml"))
         mime = "application/xhtml+xml";
