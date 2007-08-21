@@ -136,8 +136,7 @@ class DocInfoCache extends GeneratingCache
     }
 
     // Stuff the transformer full of parameters. Note that the parameters 
-    // come only from the config file, not from the specific HTTP request 
-    // being processed. 
+    // are a subset of the full HTTP request, to help cache efficiency.
     //
     AttribList attrList = new AttribList();
     for (Iterator iter = params.iterator(); iter.hasNext();) {
@@ -146,6 +145,10 @@ class DocInfoCache extends GeneratingCache
       trans.setParameter(paramName, new StringValue(paramVal));
       attrList.put(paramName, paramVal);
     }
+    
+    // Allow access to the usual global parameters as well.
+    TextServlet.getCurServlet().stuffSpecialAttribs(
+        TextServlet.getCurRequest(), trans);
 
     // Make sure errors get directed to the right place.
     if (!(trans.getErrorListener() instanceof XTFSaxonErrorListener))
