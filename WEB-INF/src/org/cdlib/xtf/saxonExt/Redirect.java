@@ -88,8 +88,10 @@ public class Redirect implements ExtensionElementFactory
     {
       // Get mandatory 'url' attribute
       String urlAtt = getAttributeList().getValue("", "url");
-      if (urlAtt == null)
+      if (urlAtt == null) {
         reportAbsence("url");
+        return;
+      }
       urlExp = makeAttributeValueTemplate(urlAtt);
     } // prepareAttributes()
 
