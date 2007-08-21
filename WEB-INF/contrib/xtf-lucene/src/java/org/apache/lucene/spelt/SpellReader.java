@@ -99,7 +99,7 @@ public class SpellReader
 
   /** Word equivalency checker */
   private WordEquiv wordEquiv;
-
+  
   /** Private constructor -- use {@link #open(File)} instead. */
   private SpellReader() {
   }
@@ -297,7 +297,7 @@ public class SpellReader
     // Make sure we got the right key!
     if (key != comboKey(tokens[0], 0, 1, 2, 3))
       throw new IOException("edmap index incorrect");
-
+    
     // Record each word in the list (and their frequencies)
     String prev = null;
     for (int j = 1; j < tokens.length; j++) 
@@ -644,11 +644,11 @@ public class SpellReader
           bestPhrase = max(bestPhrase, subSplit(in, i));
 
         // Consider operations on multiple words (as long as we haven't changed
-        // either of them already.)
+        // both of them already.)
         //
         if (prev >= 0) 
         {
-          if (in.words[i].orig == in.words[i] &&
+          if (in.words[i].orig == in.words[i] ||
               in.words[prev].orig == in.words[prev]) 
           {
             bestPhrase = max(bestPhrase, subPair(in, prev, i));
@@ -687,15 +687,17 @@ public class SpellReader
         in.words[pos2].word);
     }
 
-    // Get a list of independent suggestions for both words.
+    // Get a list of independent suggestions for both words. If we've already
+    // made a choice, don't override it.
+    //
     final int NUM_SUG = 100;
-    Word[] list1 = suggestSimilar(word1, NUM_SUG, 0);
-    Word[] list2 = suggestSimilar(word2, NUM_SUG, 0);
+    Word[] list1 = (word1.orig == word1) ? suggestSimilar(word1, NUM_SUG, 0) : null;
+    Word[] list2 = (word2.orig == word2) ? suggestSimilar(word2, NUM_SUG, 0) : null;
 
     // If either list is empty, substitute the original.
-    if (list1.length == 0)
+    if (list1 == null || list1.length == 0)
       list1 = new Word[] { in.words[pos1] };
-    if (list2.length == 0)
+    if (list2 == null || list2.length == 0)
       list2 = new Word[] { in.words[pos2] };
 
     // Now score all possible combinations, looking for the best one.
@@ -706,12 +708,16 @@ public class SpellReader
     {
       Word sugg1 = list1[p1];
       boolean change1 = !wordEquiv.isEquivalent(in.words[pos1].word, sugg1.word);
+      if (!change1)
+        sugg1 = word1;
 
       for (int p2 = 0; p2 < list2.length; p2++) 
       {
         Word sugg2 = list2[p2];
         boolean change2 = !wordEquiv.isEquivalent(in.words[pos2].word,
                                                   sugg2.word);
+        if (!change2)
+          sugg2 = word2;
 
         // Change at least one word
         if (!change1 && !change2)
