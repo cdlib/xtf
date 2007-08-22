@@ -14,5 +14,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/PDFBox-0.7.3.jar" sourcepath="WEB-INF/lib/source/PDFBox-0.7.3"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/FontBox-0.1.0.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/mail.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
