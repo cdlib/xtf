@@ -34,38 +34,27 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import org.cdlib.xtf.servletBase.TextServlet;
 
-import net.sf.saxon.Configuration;
+import org.cdlib.xtf.servletBase.TextServlet;
+import org.cdlib.xtf.saxonExt.InstructionWithContent;
+
 import net.sf.saxon.expr.Expression;
-import net.sf.saxon.expr.ExpressionTool;
-import net.sf.saxon.expr.Optimizer;
-import net.sf.saxon.expr.PromotionOffer;
-import net.sf.saxon.expr.StaticContext;
-import net.sf.saxon.expr.StaticProperty;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.instruct.Executable;
-import net.sf.saxon.instruct.Instruction;
 import net.sf.saxon.instruct.TailCall;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
-import net.sf.saxon.om.StandardNames;
-import net.sf.saxon.pattern.EmptySequenceTest;
 import net.sf.saxon.style.ExtensionInstruction;
 import net.sf.saxon.trans.DynamicError;
 import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.type.ItemType;
 import net.sf.saxon.type.Type;
-import net.sf.saxon.type.TypeHierarchy;
 
 /**
  * Implements a Saxon instruction that reads an image from the filesystem,
@@ -114,132 +103,19 @@ public class OutputElement extends ExtensionInstruction
     throws XPathException 
   {
     Expression content = compileSequenceConstructor(exec, iterateAxis(Axis.CHILD), true);
-    return new OutputInstruction(srcExp, flipY, content);
+    HashMap<String, Expression> attribs = new HashMap<String, Expression>();
+    attribs.put("src", srcExp);
+    return new OutputInstruction(attribs, flipY, content);
   }
 
-  private class OutputInstruction extends Instruction 
+  private static class OutputInstruction extends InstructionWithContent 
   {
-    private Expression srcExp;
     private boolean    flipY;
-    private Expression content;
 
-    public OutputInstruction(Expression srcExp, boolean flipY, Expression content) 
+    public OutputInstruction(HashMap<String, Expression> attribs, boolean flipY, Expression content) 
     {
-      this.srcExp = srcExp;
+      super("image:output", attribs, content);
       this.flipY = flipY;
-      this.content = content;
-      adoptChildExpression(srcExp);
-      adoptChildExpression(content);
-    }
-
-    /**
-     * Simplify an expression. This performs any static optimization (by rewriting the expression
-     * as a different expression). The default implementation does nothing.
-     * @return the simplified expression
-     * @throws net.sf.saxon.trans.XPathException
-     *          if an error is discovered during expression rewriting
-     */
-    public Expression simplify(StaticContext env) throws XPathException {
-        srcExp = srcExp.simplify(env);
-        if (content != null) {
-            content = content.simplify(env);
-        }
-        return this;
-    }
-
-    public Expression typeCheck(StaticContext env, ItemType contextItemType) throws XPathException {
-        srcExp = srcExp.typeCheck(env, contextItemType);
-        adoptChildExpression(srcExp);
-        if (content != null) {
-            content = content.typeCheck(env, contextItemType);
-            adoptChildExpression(content);
-        }
-        return this;
-    }
-
-   public Expression optimize(Optimizer opt, StaticContext env, ItemType contextItemType) throws XPathException {
-        srcExp = srcExp.optimize(opt, env, contextItemType);
-        adoptChildExpression(srcExp);
-        if (content != null) {
-            content = content.optimize(opt, env, contextItemType);
-            adoptChildExpression(content);
-        }
-        return this;
-    }
-
-    /**
-    * Get the name of this instruction for diagnostic and tracing purposes
-    */
-
-    public int getInstructionNameCode() {
-        return StandardNames.XSL_MESSAGE;
-    }
-
-    public ItemType getItemType(TypeHierarchy th) {
-        return EmptySequenceTest.getInstance();
-    }
-
-    public int getCardinality() {
-        return StaticProperty.EMPTY;
-    }
-
-    /**
-     * Determine whether this instruction creates new nodes.
-     * This implementation returns true.
-     */
-    public final boolean createsNewNodes() {
-        return true;
-    }
-    
-    /**
-     * Handle promotion offers, that is, non-local tree rewrites.
-     * @param offer The type of rewrite being offered
-     * @throws XPathException
-     */
-    protected void promoteInst(PromotionOffer offer) throws XPathException {
-        if (srcExp != null) {
-            srcExp = doPromotion(srcExp, offer);
-        }
-        if (content != null) {
-            content = doPromotion(content, offer);
-        }
-    }
-
-    /**
-     * Get all the XPath expressions associated with this instruction
-     * (in XSLT terms, the expression present on attributes of the instruction,
-     * as distinct from the child instructions in a sequence construction)
-     */
-
-    public Iterator iterateSubExpressions() {
-        ArrayList list = new ArrayList(2);
-        if (srcExp != null) {
-            list.add(srcExp);
-        }
-        if (content != null) {
-            list.add(content);
-        }
-        return list.iterator();
-    }
-
-    /**
-     * Replace one subexpression by a replacement subexpression
-     * @param original the original subexpression
-     * @param replacement the replacement subexpression
-     * @return true if the original subexpression is found
-     */
-
-    public boolean replaceSubExpression(Expression original, Expression replacement) {
-        boolean found = false;
-        if (srcExp == original) {
-            srcExp = replacement;
-            found = true;
-        }
-        if (content == original) {
-            content = replacement;
-            found = true;
-        }
-        return found;
     }
 
     public TailCall processLeavingTail(XPathContext context) throws XPathException 
@@ -247,7 +123,7 @@ public class OutputElement extends ExtensionInstruction
       try 
       {
         // First, load the source image.
-        String src = srcExp.evaluateAsString(context);
+        String src = attribs.get("src").evaluateAsString(context);
         String srcPath = TextServlet.getCurServlet().getRealPath(src);
         BufferedImage bi = ImageIO.read(new File(srcPath));
 
@@ -405,19 +281,6 @@ public class OutputElement extends ExtensionInstruction
         data[i] = (r<<16) | (g<<8) | b;
       }
       bi.setRGB(rect.left, rect.top, rect.width(), rect.height(), data, 0, w);
-    }
-    
-    /**
-     * Diagnostic print of expression structure. The expression is written to the System.err
-     * output stream
-     *
-     * @param level indentation level for this expression
-     * @param out
-     * @param config
-     */
-
-    public void display(int level, PrintStream out, Configuration config) {
-        out.println(ExpressionTool.indent(level) + "output");
     }
   }
 
