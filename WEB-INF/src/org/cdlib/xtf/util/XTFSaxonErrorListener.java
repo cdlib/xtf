@@ -1,5 +1,7 @@
 package org.cdlib.xtf.util;
 
+import java.util.ArrayList;
+
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.StandardNames;
 import net.sf.saxon.trace.InstructionInfo;
@@ -22,6 +24,10 @@ import javax.xml.transform.dom.DOMLocator;
  */
 public class XTFSaxonErrorListener implements ErrorListener 
 {
+  // Records errors that have occurred in each thread
+  private static ThreadLocal<ArrayList<String>> threadErrors = 
+      new ThreadLocal<ArrayList<String>>();
+  
   /**
    * Receive notification of a warning.
    *
@@ -80,6 +86,16 @@ public class XTFSaxonErrorListener implements ErrorListener
                      getLocationMessage(exception) + ": " +
                      wordWrap(getExpandedMessage(exception));
     Trace.error(message);
+    
+    // Record this error in the thread-local list, so it can later be
+    // retrieved by getThreadErrors().
+    //
+    ArrayList<String> list = threadErrors.get();
+    if (list == null) {
+      list = new ArrayList<String>();
+      threadErrors.set(list);
+    }
+    list.add(message);
   }
 
   /**
@@ -131,6 +147,27 @@ public class XTFSaxonErrorListener implements ErrorListener
       context = ((DynamicError)err).getXPathContext();
     }
     return getLocationMessage(loc, context);
+  }
+  
+  /**
+   * Retrieve an array of the Saxon errors that have occurred in the current thread
+   * since the last call to {@link #clearThreadErrors}
+   */
+  public static String[] getThreadErrors()
+  {
+    ArrayList<String> errors = threadErrors.get();
+    if (errors == null)
+      return null;
+    else
+      return errors.toArray(new String[0]);
+  }
+  
+  /**
+   * Clear the thread-specific list of Saxon errors that have occurred.
+   */
+  public static void clearThreadErrors()
+  {
+    threadErrors.set(null);
   }
 
   private static String getLocationMessage(SourceLocator loc,

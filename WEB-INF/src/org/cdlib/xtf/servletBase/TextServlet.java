@@ -326,7 +326,7 @@ public abstract class TextServlet extends HttpServlet
     // strip out the jsessionid if present.
     //
     req = new RequestWrapper(req);
-
+    
     // If a latency cut-off is specified, substitute a counting output 
     // stream.
     //
@@ -346,6 +346,11 @@ public abstract class TextServlet extends HttpServlet
     curServlet.set(this);
     curRequest.set(req);
     curResponse.set(res);
+    
+    // Clear any Saxon errors that have previously occurred, so we can accurately
+    // report any that occur while processing this request.
+    //
+    XTFSaxonErrorListener.clearThreadErrors();
 
     // Default the error generator stylesheet to use
     errorGenSheet.set(config.errorGenSheet);
@@ -1214,6 +1219,16 @@ public abstract class TextServlet extends HttpServlet
     ByteArrayOutputStream traceStream = new ByteArrayOutputStream();
     exc.printStackTrace(new PrintStream(traceStream));
     String strStackTrace = traceStream.toString();
+    
+    // If Saxon errors occurred, put those at the top of the trace.
+    String[] saxonErrors = XTFSaxonErrorListener.getThreadErrors();
+    if (saxonErrors != null) {
+      StringBuffer buf = new StringBuffer();
+      for (String s : saxonErrors)
+        buf.append(s + "\n");
+      buf.append("\n");
+      strStackTrace = buf.toString() + strStackTrace;
+    }
 
     String htmlStackTrace = makeHtmlString(strStackTrace);
 
