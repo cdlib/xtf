@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- Sort using the optional ':ascending' modifier -->
 <query style="NullStyle.xsl" startDoc="0" maxDocs="10" 
-       indexPath="IndexDB" sortMetaFields="special">
+       indexPath="IndexDB" sortMetaFields="special:ascending">
   <term field="description" maxSnippets="0">the</term>
 </query>
