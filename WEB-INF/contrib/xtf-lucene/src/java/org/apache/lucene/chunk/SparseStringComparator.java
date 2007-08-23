@@ -71,10 +71,19 @@ public class SparseStringComparator implements SortComparatorSource
   private class SparseComp implements ScoreDocComparator 
   {
     ArrayList entries = new ArrayList(500);
+    boolean flipEmpty = false;
 
     SparseComp(IndexReader reader, String field)
       throws IOException 
     {
+      // Grab the flipEmpty modifier if present
+      if (field.endsWith(":flipEmpty")) {
+        flipEmpty = true;
+        field = field.replace(":flipEmpty", "");
+      }
+      field = field.intern();
+        
+      // Iterators for documents and terms.
       TermDocs termDocs = reader.termDocs();
       TermEnum termEnum = reader.terms(new Term(field, ""));
       int t = 0; // current term number
@@ -159,8 +168,8 @@ public class SparseStringComparator implements SortComparatorSource
       Entry e1 = findEntry(d1.doc);
       Entry e2 = findEntry(d2.doc);
 
-      int o1 = (e1 != null) ? e1.order : Integer.MAX_VALUE;
-      int o2 = (e2 != null) ? e2.order : Integer.MAX_VALUE;
+      int o1 = (e1 != null) ? e1.order : (flipEmpty ? Integer.MIN_VALUE : Integer.MAX_VALUE);
+      int o2 = (e2 != null) ? e2.order : (flipEmpty ? Integer.MIN_VALUE : Integer.MAX_VALUE);
 
       if (o1 < o2)
         return -1;

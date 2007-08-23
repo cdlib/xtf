@@ -54,6 +54,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.FieldSortedHitQueue;
+import org.apache.lucene.search.FlippableStringComparator;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RecordingSearcher;
 import org.apache.lucene.search.SortField;
@@ -126,8 +127,11 @@ public class DefaultQueryProcessor extends QueryProcessor
   /** Document normalization factor (calculated from {@link #maxDocScore}) */
   private float docScoreNorm;
 
-  /** Comparator used for sorting strings */
+  /** Comparator used for sorting strings in "sparse" indexes */
   private static final SparseStringComparator sparseStringComparator = new SparseStringComparator();
+
+  /** Comparator used for sorting strings in "compact" indexes */
+  private static final FlippableStringComparator compactStringComparator = new FlippableStringComparator();
 
   /**
    * This is main entry point. Takes a pre-parsed query request and handles
@@ -858,7 +862,7 @@ public class DefaultQueryProcessor extends QueryProcessor
 
     return score;
   }
-
+  
   /**
    * Creates either a standard score-sorting hit queue, or a field-sorting
    * hit queue, depending on whether the query is to be sorted.
@@ -907,26 +911,87 @@ public class DefaultQueryProcessor extends QueryProcessor
         // or "+" to sort in normal order (but "+" is unnecessary, since
         // normal order is the default.)
         //
-        SortField[] fields = new SortField[fieldNames.size() + 1];
+        // There's also a more verbose and powerful way to affect sort order: 
+        // modifiers. Possible modifiers are ":ascending", ":descending", 
+        // ":emptyFirst", and ":emptyLast".
+        //
+        SortField[] fields = new SortField[fieldNames.size() + 2];
         for (int i = 0; i < fieldNames.size(); i++) 
         {
           String name = (String)fieldNames.elementAt(i);
-          boolean reverse = false;
+          boolean ascending = false;
+          boolean descending = false;
+          boolean emptyFirst = false;
+          boolean emptyLast = false;
+          
+          // Check for the short-hand "-" and "+" prefixes
           if (name.startsWith("-")) {
-            reverse = true;
+            descending = true;
             name = name.substring(1);
           }
           else if (name.startsWith("+")) {
-            reverse = false;
+            ascending = true;
             name = name.substring(1);
           }
-    
-          if (isSparse)
-            fields[i] = new SortField(name, sparseStringComparator, reverse);
+
+          // Check for more verbose ":" modifiers after the field name
+          String[] parts = name.split(":");
+          name = parts[0];
+          for (int j=1; j<parts.length; j++) 
+          {
+            if (parts[j].equalsIgnoreCase("ascending"))
+              ascending = true;
+            else if (parts[j].equalsIgnoreCase("descending"))
+              descending = true;
+            else if (parts[j].equalsIgnoreCase("emptyFirst"))
+              emptyFirst = true;
+            else if (parts[j].equalsIgnoreCase("emptyLast"))
+              emptyLast = true;
+            else
+              throw new IOException("Unknown sort modifier: '" + parts[j] + "'");
+          }
+          
+          // Check for conflicting modifiers.
+          if ((ascending && descending) || (emptyFirst && emptyLast))
+            throw new IOException("Conflicting sort modifiers");
+          
+          // Interpret the modifiers.
+          boolean reverse;
+          if (ascending)
+            reverse = false;
+          else if (descending)
+            reverse = true;
           else
-            fields[i] = new SortField(name, SortField.STRING, reverse);
+            reverse = false; // default
+          
+          boolean flipEmpty;
+          if (!reverse) {
+            if (emptyFirst)
+              flipEmpty = true;
+            else if (emptyLast)
+              flipEmpty = false;
+            else
+              flipEmpty = false; // default
+          }
+          else {
+            if (emptyFirst)
+              flipEmpty = false;
+            else if (emptyLast)
+              flipEmpty = true;
+            else
+              flipEmpty = true; // default
+          }
+    
+          String finalName = flipEmpty ? (name + ":flipEmpty") : name;
+          if (isSparse)
+            fields[i] = new SortField(finalName, sparseStringComparator, reverse);
+          else
+            fields[i] = new SortField(finalName, compactStringComparator, reverse);
         }
-        fields[fieldNames.size()] = SortField.FIELD_SCORE;
+        
+        // Default tie-breakers: first, score. If score is equal, sort by doc ID.
+        fields[fieldNames.size()]   = SortField.FIELD_SCORE;
+        fields[fieldNames.size()+1] = SortField.FIELD_DOC;
     
         // And make the final hit queue.
         ret = new FieldSortedHitQueue(reader, fields, size);
