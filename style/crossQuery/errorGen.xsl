@@ -51,7 +51,7 @@
 
     The stylesheet receives one of the following mini-documents as input:
 
-        <UnsupporedQuery>
+        <UnsupportedQuery>
           <message>error message</message>
         </UnsupportedQuery>
 
