@@ -122,6 +122,14 @@ public class OutputElement extends ExtensionInstruction
     {
       try 
       {
+        // Interesting workaround: using BufferedImage normally results in a Window
+        // being created. However, since we're running in a servlet container, this
+        // isn't generally desirable (and often isn't possible.) So we let AWT know
+        // that it's running in "headless" mode, and this prevents the window from
+        // being created.
+        //
+        System.setProperty("java.awt.headless", "true");
+        
         // First, load the source image.
         String src = attribs.get("src").evaluateAsString(context);
         String srcPath = TextServlet.getCurServlet().getRealPath(src);
