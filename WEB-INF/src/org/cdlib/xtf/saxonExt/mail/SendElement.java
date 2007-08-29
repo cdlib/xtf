@@ -70,21 +70,30 @@ public class SendElement extends ExtensionInstruction
     throws XPathException 
   {
     // Parse the attributes.
-    String[] mandatoryAtts = {
-        "smtpHost", "smtpUser", "smtpPassword", "useSSL",
-        "from", "to", "subject"
-    };
+    String[] mandatoryAtts = { "smtpHost", "from", "to", "subject" };
+    String[] optionalAtts = { "smtpUser", "smtpPassword", "useSSL" };
     
     AttributeCollection inAtts = getAttributeList();
-    for (String attName : mandatoryAtts)
+    for (int i = 0; i < inAtts.getLength(); i++) 
     {
-      String attValue = inAtts.getValue("", attName);
-      if (attValue == null) {
-        reportAbsence(attName);
-        return;
+      String attName = inAtts.getLocalName(i);
+      for (String m : mandatoryAtts) {
+          if (m.equals(attName))
+            outAtts.put(attName, makeAttributeValueTemplate(inAtts.getValue(i)));
       }
-      outAtts.put(attName, makeAttributeValueTemplate(attValue));
+      for (String m : optionalAtts) {
+          if (m.equals(attName))
+            outAtts.put(attName, makeAttributeValueTemplate(inAtts.getValue(i)));
+      }
     }
+    
+    // Make sure all manditory attributes were specified
+    for (String m : mandatoryAtts) {
+        if (!outAtts.containsKey(m)) {
+          reportAbsence(m);
+          return;
+        }
+    }    
   } // prepareAttributes()
 
   /**
@@ -111,43 +120,51 @@ public class SendElement extends ExtensionInstruction
 
     public TailCall processLeavingTail(final XPathContext context) throws XPathException 
     {
-      boolean debug = true;
+      boolean debug = false;
       
       try 
       {
         // Determine the proper protocol
         String protocol = "";
         String useSSL = attribs.get("useSSL").evaluateAsString(context);
-        if (useSSL.matches("^(yes|Yes|true|True|1)$"))
+        if (useSSL != null && useSSL.matches("^(yes|Yes|true|True|1)$"))
           protocol = "smtps";
-        else if (useSSL.matches("^(no|No|false|False|0)$"))
-          protocol = "smtp";
         else
-          dynamicError("'useSSL' attribute must be a yes/no/true/false value", "XTFSE01", context);
+          protocol = "smtp";
+        
+        // If user name and password were specified, do authentication.
+        boolean doAuth = attribs.containsKey("smtpUser") && attribs.containsKey("smtpPassword");
         
         // Set up SMTP host and authentication information
         Properties props = new Properties();
         String server = attribs.get("smtpHost").evaluateAsString(context); 
         props.put("mail." + protocol + ".host", server);
-        props.put("mail." + protocol + ".auth", "true");
+        props.put("mail." + protocol + ".auth", doAuth ? "true" : "false");
         
-        Authenticator auth = new Authenticator() 
+        // Create the mail session, with authentication if appropriate.
+        Session session;
+        if (doAuth)
         {
-          public PasswordAuthentication getPasswordAuthentication() 
+          Authenticator auth = new Authenticator() 
           {
-            try {
-              String username = attribs.get("smtpUser").evaluateAsString(context);
-              String password = attribs.get("smtpPassword").evaluateAsString(context);
-              return new PasswordAuthentication(username, password);
+            public PasswordAuthentication getPasswordAuthentication() 
+            {
+              try {
+                String username = attribs.get("smtpUser").evaluateAsString(context);
+                String password = attribs.get("smtpPassword").evaluateAsString(context);
+                return new PasswordAuthentication(username, password);
+              }
+              catch (XPathException e) {
+                throw new RuntimeException(e);
+              }
             }
-            catch (XPathException e) {
-              throw new RuntimeException(e);
-            }
-          }
-        };
+          };
+          session = Session.getInstance(props, auth);
+        }
+        else
+          session = Session.getInstance(props);
         
-        // Create the mail session
-        Session session = Session.getInstance(props, auth);
+        // Set the debug mode on the session.
         session.setDebug(debug);
         
         // Create a message and specify who it's from
