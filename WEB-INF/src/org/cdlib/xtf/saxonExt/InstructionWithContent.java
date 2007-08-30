@@ -184,7 +184,7 @@ public abstract class InstructionWithContent extends Instruction
 
   public Iterator iterateSubExpressions() 
   {
-      ArrayList list = new ArrayList(attribs.size() + 1);
+      ArrayList<Expression> list = new ArrayList<Expression>(attribs.size() + 1);
       for (Expression exp : attribs.values())
         list.add(exp);
       if (content != null) {
