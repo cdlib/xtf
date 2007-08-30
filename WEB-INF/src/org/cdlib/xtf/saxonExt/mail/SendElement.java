@@ -184,11 +184,16 @@ public class SendElement extends ExtensionInstruction
         msg.setRecipients(Message.RecipientType.TO, 
                           addressTo.toArray(new InternetAddress[addressTo.size()]));
         
-        // Set the subject and content Type
+        // Set the subject
         msg.setSubject(attribs.get("subject").evaluateAsString(context));
-        msg.setContent(content.evaluateAsString(context), "text/plain");
+        
+        // Convert the content to a string (we can't use evaluateAsString() since
+        // it only pays attention to the first item in a sequence.)
+        //
+        msg.setContent(sequenceToString(content, context), "text/plain");
         msg.saveChanges();
         
+        // Finally, send the message.
         Transport tr = session.getTransport(protocol);
         tr.connect();
         tr.sendMessage(msg, msg.getAllRecipients());
@@ -208,5 +213,6 @@ public class SendElement extends ExtensionInstruction
  
       return null;
     }
+
   }
 } // class SendElement

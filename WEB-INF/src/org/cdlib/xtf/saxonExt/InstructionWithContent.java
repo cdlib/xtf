@@ -48,6 +48,8 @@ import net.sf.saxon.expr.StaticProperty;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.instruct.Instruction;
 import net.sf.saxon.instruct.TailCall;
+import net.sf.saxon.om.Item;
+import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pattern.EmptySequenceTest;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.ItemType;
@@ -220,6 +222,21 @@ public abstract class InstructionWithContent extends Instruction
    * this method.
    */
   public abstract TailCall processLeavingTail(XPathContext context) throws XPathException; 
+  
+  /**
+   * Utility function to convert an expression (which might be a sequence) to a string
+   * value.
+   */
+  protected static String sequenceToString(Expression exp, XPathContext context) 
+    throws XPathException
+  {
+    StringBuffer buf = new StringBuffer();
+    SequenceIterator iter = exp.iterate(context);
+    Item item;
+    while ((item = iter.next()) != null)
+      buf.append(item.getStringValue());
+    return buf.toString();
+  }
   
   /**
    * Diagnostic print of expression structure. The expression is written to the System.err
