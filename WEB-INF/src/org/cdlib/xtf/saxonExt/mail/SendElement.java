@@ -168,7 +168,7 @@ public class SendElement extends ExtensionInstruction
         session.setDebug(debug);
         
         // Create a message and specify who it's from
-        Message msg = new MimeMessage(session);
+        MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(attribs.get("from").evaluateAsString(context)));
         
         // Parse a list of recipients, separated by commas.
@@ -190,7 +190,7 @@ public class SendElement extends ExtensionInstruction
         // Convert the content to a string (we can't use evaluateAsString() since
         // it only pays attention to the first item in a sequence.)
         //
-        msg.setContent(sequenceToString(content, context), "text/plain");
+        msg.setText(sequenceToString(content, context), "UTF-8");
         msg.saveChanges();
         
         // Finally, send the message.
