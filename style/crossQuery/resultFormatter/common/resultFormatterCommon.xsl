@@ -200,12 +200,20 @@
   <xsl:param name="brand.links" select="$brand.file//links/*"/>
   <xsl:param name="brand.header" select="$brand.file//header/*"/>
   <xsl:param name="brand.footer" select="$brand.file//footer/*"/>
+   
+  <!-- Special Robot Parameter -->
+  <xsl:param name="http.User-Agent"/>
+  <!-- CHANGE: make this a list of robot names -->
+  <xsl:param name="robots" select="'Googlebot|Slurp|msnbot|Teoma|wget|Wget'"/>
 
   <!-- Paging Parameters-->  
   <xsl:param name="startDoc" as="xs:integer" select="1"/>
   <!-- Documents per Page -->
   <xsl:param name="docsPerPage" as="xs:integer">
-    <xsl:choose>
+     <xsl:choose>
+      <xsl:when test="matches($http.User-Agent,$robots)">
+         <xsl:value-of select="90"/><!-- maximum amount allowed by google is 100 -->
+      </xsl:when>
       <xsl:when test="$smode = 'test' or $raw">
         <xsl:value-of select="10000"/>
       </xsl:when>
