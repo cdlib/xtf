@@ -30,9 +30,8 @@ package org.cdlib.xtf.saxonExt.image;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
@@ -46,6 +45,7 @@ import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.instruct.TailCall;
+import net.sf.saxon.om.AttributeCollection;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.Item;
@@ -65,29 +65,32 @@ import net.sf.saxon.type.Type;
  */
 public class OutputElement extends ExtensionInstruction 
 {
-  Expression srcExp;
+  HashMap<String, Expression> attribs = new HashMap<String, Expression>();
   boolean flipY = false;
+  
+  private final static int        outColorBase = 32;
+  private final static ImageCache imageCache = new ImageCache(outColorBase);
 
   public void prepareAttributes()
     throws XPathException 
   {
-    // Get mandatory 'src' attribute
-    String srcAtt = getAttributeList().getValue("", "src");
-    if (srcAtt == null) {
-      reportAbsence("src");
-      return;
-    }
-    srcExp = makeAttributeValueTemplate(srcAtt);
-    
-    // Get optional 'flipY' attribute
-    String flipYStr = getAttributeList().getValue("", "flipY");
-    if (flipYStr != null) {
-      if ("no".equalsIgnoreCase(flipYStr))
-        flipY = false;
-      else if ("yes".equalsIgnoreCase(flipYStr))
-        flipY = true;
+    // Check the attributes.
+    AttributeCollection inAtts = getAttributeList();
+    for (int i=0; i<inAtts.getLength(); i++) {
+      String attName = inAtts.getLocalName(i);
+      String attVal = inAtts.getValue(i);
+      if (attName.matches("^(src|xBias|xScale|yBias|yScale)$"))
+        attribs.put(attName, makeAttributeValueTemplate(attVal));
+      else if (attName.equals("flipY")) {
+        if (attVal.matches("^(1|true|yes)$"))
+          flipY = true;
+        else if (attVal.matches("^(0|false|no)$"))
+          flipY = false;
+        else
+          this.compileError("'flipy' attribute must be 'yes' or 'no'");
+      }
       else
-        this.compileError("'flipy' attribute must be 'yes' or 'no'");
+        this.compileError("Unrecogized attribute '" + attName + "'for image:output element");
     }
   } // prepareAttributes()
 
@@ -103,14 +106,19 @@ public class OutputElement extends ExtensionInstruction
     throws XPathException 
   {
     Expression content = compileSequenceConstructor(exec, iterateAxis(Axis.CHILD), true);
-    HashMap<String, Expression> attribs = new HashMap<String, Expression>();
-    attribs.put("src", srcExp);
     return new OutputInstruction(attribs, flipY, content);
   }
 
   private static class OutputInstruction extends InstructionWithContent 
   {
     private boolean    flipY;
+    private float      xBias;
+    private float      xScale;
+    private float      yBias;
+    private float      yScale;
+    private int        origHeight;
+    private int        cropOffX;
+    private int        cropOffY;
 
     public OutputInstruction(HashMap<String, Expression> attribs, boolean flipY, Expression content) 
     {
@@ -120,6 +128,8 @@ public class OutputElement extends ExtensionInstruction
 
     public TailCall processLeavingTail(XPathContext context) throws XPathException 
     {
+      cropOffX = cropOffY = 0;
+      
       try 
       {
         // Interesting workaround: using BufferedImage normally results in a Window
@@ -130,14 +140,28 @@ public class OutputElement extends ExtensionInstruction
         //
         System.setProperty("java.awt.headless", "true");
         
-        // First, load the source image.
+        // Get the bias and scale factors, if any.
+        xBias  = getFloatAttrib(context, "xBias",  0);
+        xScale = getFloatAttrib(context, "xScale", 1);
+        yBias  = getFloatAttrib(context, "yBias",  0);
+        yScale = getFloatAttrib(context, "yScale", 1);
+        
+        // First, load the source image. The ImageCache will automatically take
+        // care of mapping the palette for us.
+        //
         String src = attribs.get("src").evaluateAsString(context);
         String srcPath = TextServlet.getCurServlet().getRealPath(src);
-        BufferedImage bi = ImageIO.read(new File(srcPath));
-
-        Graphics g = bi.getGraphics();
-        int imgWidth = bi.getWidth();
-        int imgHeight = bi.getHeight();
+        BufferedImage bi;
+        try {
+          bi = imageCache.find(srcPath);
+        }
+        catch (Exception e) { throw new RuntimeException(e); }
+        
+        // Make a copy of the image so we don't mess up the original.
+        bi = new BufferedImage(bi.getColorModel(), (WritableRaster) bi.getData(), false, null);
+            
+        // Record the original height (needed for flipY mode)
+        origHeight = bi.getHeight();
         
         // Highlight specified areas, if any.
         if (content != null) 
@@ -157,15 +181,20 @@ public class OutputElement extends ExtensionInstruction
             
             // Parse the coordinate attributes
             NodeInfo node = (NodeInfo) item;
-            Rect rect = parseRect(context, node, flipY, imgWidth, imgHeight);
-              
-            // Highlight the area
-            if (node.getLocalPart().equals("yellowBackground"))
-              makeBackgroundYellow(bi, rect);
-            else if (node.getLocalPart().equals("redForeground"))
-              makeForegroundRed(bi, rect);
-            else
-              bi = bi.getSubimage(rect.left, rect.top, rect.width(), rect.height());
+            Rect rect = parseRect(context, node, bi.getWidth(), bi.getHeight());
+            if (!rect.isEmpty())
+            {
+              // Highlight the area
+              if (node.getLocalPart().equals("yellowBackground"))
+                makeBackgroundYellow(bi, rect);
+              else if (node.getLocalPart().equals("redForeground"))
+                makeForegroundRed(bi, rect);
+              else {
+                bi = bi.getSubimage(rect.left, rect.top, rect.width(), rect.height());
+                cropOffX += rect.left;
+                cropOffY += rect.top;
+              }
+            }
           }
         }
         
@@ -183,55 +212,86 @@ public class OutputElement extends ExtensionInstruction
     }
     
     /**
+     * Get an attribute value and convert to floating point. If not present,
+     * the default value is used instead.
+     * @throws XPathException 
+     */
+    private float getFloatAttrib(XPathContext context, String attName, float defaultVal) 
+      throws XPathException
+    {
+      String strVal = attribs.get(attName).evaluateAsString(context);
+      if (strVal == null)
+        return defaultVal;
+      try {
+        return Float.parseFloat(strVal);
+      }
+      catch (NumberFormatException e) {
+        return defaultVal;
+      }
+    }
+
+    /**
      * Parse the "left", "top", "right", and "bottom" attributes from a 
      * "highlight" element.
      * 
      * @param node  The element containing the attributes
-     * @param flipY Whether to flip vertical coordinates
      * @param imgHeight The height to use when flipping
      * @return A rectangle containing the coordinates (flipped if necessary)
      * @throws DynamicError 
      */
-    private Rect parseRect(XPathContext context, NodeInfo node, 
-                           boolean flipY, int imgWidth, int imgHeight) 
+    private Rect parseRect(XPathContext context, NodeInfo node, int imgWidth, int imgHeight) 
       throws DynamicError
     {
       AxisIterator atts = node.iterateAxis(Axis.ATTRIBUTE);
       Item att;
-      int left = -1;
-      int top = -1;
-      int right = -1;
-      int bottom = -1;
+      int left = 0, top = 0, right = 0, bottom = 0;
+      boolean leftFound = false, rightFound = false, topFound = false, bottomFound = false;
       while ((att = atts.next()) != null)
       {
         String name = ((NodeInfo)att).getLocalPart();
         String value = ((NodeInfo)att).getStringValue();
-        if ("left".equals(name))
-          left = Integer.parseInt(value);
-        else if ("top".equals(name))
-          top = Integer.parseInt(value);
-        else if ("right".equals(name))
-          right = Integer.parseInt(value);
-        else if ("bottom".equals(name))
-          bottom = Integer.parseInt(value);
+        if ("left".equals(name)) {
+          left = Integer.parseInt(value); leftFound = true;
+        }
+        else if ("top".equals(name)) {
+          top = Integer.parseInt(value); topFound = true;
+        }
+        else if ("right".equals(name)) { 
+          right = Integer.parseInt(value); rightFound = true;
+        }
+        else if ("bottom".equals(name)) {
+          bottom = Integer.parseInt(value); bottomFound = true;
+        }
         else
-          dynamicError("Unknown attribute '" + name + "' to 'highlight' element", "XTFimgHAU", context);
+          dynamicError("Unknown attribute '" + name + "' to '" + node.getLocalPart() + "' element", "XTFimgHAU", context);
       }
       
-      if (left < 0 || top < 0 || right < 0 || bottom < 0)
-        dynamicError("'highlight' element must specify 'left', 'top', 'right', and 'bottom' attributes", "XTFimgHAltrb", context);
+      if (!(leftFound && rightFound && topFound && bottomFound))
+        dynamicError("'" + node.getLocalPart() + "' element must specify 'left', 'top', 'right', and 'bottom' attributes", "XTFimgHAltrb", context);
       
-      // Clamp the values to the valid range.
+      // Apply bias and scale factors.
+      left    = (int) ((left    + xBias) * xScale);
+      top     = (int) ((top     + yBias) * yScale);
+      right   = (int) ((right   + xBias) * xScale);
+      bottom  = (int) ((bottom  + yBias) * yScale);
+      
+      // Flip the Y values if requested
+      if (flipY) {
+        top    = origHeight - top;
+        bottom = origHeight - bottom;
+      }
+      
+      // If cropping has been done, adjust the coordinates.
+      left   -= cropOffX;
+      top    -= cropOffY;
+      right  -= cropOffX;
+      bottom -= cropOffY;
+      
+      // Clamp the values to be completely within the image.
       left   = Math.max(Math.min(left,   imgWidth),  0);
       top    = Math.max(Math.min(top,    imgHeight), 0);
       right  = Math.max(Math.min(right,  imgWidth), 0);
       bottom = Math.max(Math.min(bottom, imgHeight),  0);
-      
-      // Flip the Y values if requested
-      if (flipY) {
-        top    = imgHeight - top;
-        bottom = imgHeight - bottom;
-      }
       
       // Reverse values that are backwards.
       int tmp;
@@ -253,13 +313,11 @@ public class OutputElement extends ExtensionInstruction
     {
       int w = rect.width();
       int h = rect.height();
-      int[] data = new int[w*h];
-      bi.getRGB(rect.left, rect.top, rect.width(), rect.height(), data, 0, w);
-      for (int i=0; i<w*h; i++) 
-      {
-        data[i] &= 0xffffff00;
-      }
-      bi.setRGB(rect.left, rect.top, rect.width(), rect.height(), data, 0, w);
+      byte[] data = new byte[w*h];
+      bi.getRaster().getDataElements(rect.left, rect.top, rect.width(), rect.height(), data);
+      for (int i=0; i<w*h; i++)
+        data[i] |= (outColorBase * 1);
+      bi.getRaster().setDataElements(rect.left, rect.top, rect.width(), rect.height(), data);
     }
 
     /**
@@ -269,26 +327,11 @@ public class OutputElement extends ExtensionInstruction
     {
       int w = rect.width();
       int h = rect.height();
-      int[] data = new int[w*h];
-      bi.getRGB(rect.left, rect.top, rect.width(), rect.height(), data, 0, w);
+      byte[] data = new byte[w*h];
+      bi.getRaster().getDataElements(rect.left, rect.top, rect.width(), rect.height(), data);
       for (int i=0; i<w*h; i++)
-      {
-        int d = data[i];
-        
-        int r = (d >> 16) & 0xff;
-        int g = (d >>  8) & 0xff;
-        int b = (d >>  0) & 0xff;
-
-        int f1 = g;
-        int f2 = 255 - f1; 
-          
-        r = ((r * f1) + (192 * f2)) / 255;
-        g = ((g * f1) + (  0 * f2)) / 255;
-        b = ((b * f1) + (  0 * f2)) / 255;
-        
-        data[i] = (r<<16) | (g<<8) | b;
-      }
-      bi.setRGB(rect.left, rect.top, rect.width(), rect.height(), data, 0, w);
+        data[i] |= (outColorBase * 2);
+      bi.getRaster().setDataElements(rect.left, rect.top, rect.width(), rect.height(), data);
     }
   }
 
@@ -299,6 +342,10 @@ public class OutputElement extends ExtensionInstruction
       left = l; top = t; right = r; bottom = b;
     }
     
+    public boolean isEmpty() {
+      return (width() <= 0 || height() <= 0);
+    }
+
     public int left;
     public int top;
     public int right;
