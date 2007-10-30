@@ -41,7 +41,7 @@ import org.cdlib.xtf.util.LinkableImpl;
  * a cache, expiring entries based on age or count, checking dependencies,
  * and checking for a key.
  */
-public abstract class Cache 
+public abstract class Cache<K,V> 
 {
   /**
    * Constructor - sets up the parameters of the cache.
@@ -71,7 +71,7 @@ public abstract class Cache
    * @param key   The key to look for.
    * @return      true iff the key has a valid entry in the cache.
    */
-  public synchronized boolean has(Object key) 
+  public synchronized boolean has(K key) 
   {
     cleanup();
 
@@ -106,7 +106,7 @@ public abstract class Cache
    * @return      The time (in milliseconds from the epoch) that the entry
    *              was created, or zero if not present.
    */
-  public synchronized long lastSet(Object key) {
+  public synchronized long lastSet(K key) {
     ListEntry ent = (ListEntry)keyMap.get(key);
     return (ent == null) ? 0 : ent.setTime;
   } // lastSet()
@@ -117,7 +117,7 @@ public abstract class Cache
    * @param key   The key to check
    * @return      true iff the cache entry for the key is still valid.
    */
-  public synchronized boolean dependenciesValid(Object key) 
+  public synchronized boolean dependenciesValid(K key) 
   {
     cleanup();
 
@@ -142,7 +142,7 @@ public abstract class Cache
    * @return      An iterator that will produce each dependency, or
    *              null if no dependencies.
    */
-  public synchronized Iterator getDependencies(Object key) 
+  public synchronized Iterator getDependencies(K key) 
   {
     cleanup();
 
@@ -156,7 +156,7 @@ public abstract class Cache
    * @param key   The key to look up
    * @return      The value that was held for the key, or null if not found.
    */
-  public synchronized Object remove(Object key) 
+  public synchronized V remove(K key) 
   {
     cleanup();
 
@@ -240,7 +240,7 @@ public abstract class Cache
    * @param key       The key involved in the action
    * @param value     The value involved in the action
    */
-  protected void logAction(String action, Object key, Object value) {
+  protected void logAction(String action, K key, V value) {
   }
 
   /** Used to return an iterator that does nothing */
@@ -262,10 +262,10 @@ public abstract class Cache
   protected class ListEntry extends LinkableImpl 
   {
     /** The key being tracked */
-    Object key;
+    K key;
 
     /** The generated or set value for that key */
-    Object value;
+    V value;
 
     /** The time (millis since epoch) since the entry was used */
     long lastUsedTime;
@@ -287,7 +287,7 @@ public abstract class Cache
   private int maxTime;
 
   /** Maintains a mapping of key to ListEntry, for fast key lookups */
-  protected HashMap keyMap;
+  protected HashMap<K,ListEntry> keyMap;
 
   /**
    * A list, kept sorted by descending age, of all the entries. This is

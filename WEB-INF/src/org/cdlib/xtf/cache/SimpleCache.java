@@ -34,7 +34,7 @@ package org.cdlib.xtf.cache;
  * A cache that holds key/value pairs. The value is specifed when a key is
  * added to the cache.
  */
-public class SimpleCache extends Cache 
+public class SimpleCache<K,V> extends Cache<K,V> 
 {
   /**
    * Constructor - sets up the parameters of the cache.
@@ -55,7 +55,7 @@ public class SimpleCache extends Cache
    * @param key   Key to set the value for
    * @param value Value for that key.
    */
-  public void set(Object key, Object value) {
+  public void set(K key, V value) {
     set(key, value, null);
   }
 
@@ -67,7 +67,7 @@ public class SimpleCache extends Cache
    * @param value         The value to associate with that key
    * @param dependency    A dependency to add to the key, or null for none.
    */
-  public synchronized void set(Object key, Object value, Dependency dependency) 
+  public synchronized void set(K key, V value, Dependency dependency) 
   {
     ListEntry entry;
 
@@ -110,7 +110,7 @@ public class SimpleCache extends Cache
    * @return          The value for that key, or null if the key isn't
    *                  in the cache.
    */
-  public synchronized Object get(Object key) {
+  public synchronized V get(K key) {
     if (has(key))
       return ((ListEntry)keyMap.get(key)).value;
     else
@@ -124,7 +124,7 @@ public class SimpleCache extends Cache
    * @param key       The key to add a dependency to
    * @param d         The dependency to add to it.
    */
-  public synchronized void addDependency(Object key, Dependency d) {
+  public synchronized void addDependency(K key, Dependency d) {
     if (!has(key))
       return;
     ((ListEntry)keyMap.get(key)).dependencies.add(d);
