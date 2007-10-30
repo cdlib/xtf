@@ -747,26 +747,55 @@ public abstract class TextServlet extends HttpServlet
         }
       }
 
-      // Translate special characters to known HTML entities     
       switch (c) {
-        case '<':
-          buf.append("&lt;");
-          break;
-        case '>':
-          buf.append("&gt;");
-          break;
-        case '&':
-          buf.append("&amp;");
-          break;
-        case '\'':
-          buf.append("&apos;");
-          break;
-        case '\"':
-          buf.append("&quot;");
-          break;
-        case '\n':
-          buf.append("<br/>\n");
-          break;
+        // Translate special characters to known HTML entities     
+        case '<':  buf.append("&lt;");    break;
+        case '>':  buf.append("&gt;");    break;
+        case '&':  buf.append("&amp;");   break;
+        case '\'': buf.append("&apos;");  break;
+        case '\"': buf.append("&quot;");  break;
+        case '\n': buf.append("<br/>\n"); break;
+        
+        // Characters 128-159 are not legal in HTML (nor generally in Unicode).
+        // We have no way of knowing where they came from, so we make a 
+        // reasonable guess and treat them as ANSI. The equivalency below comes
+        // from http://www.alanwood.net/demos/ansi.html, accessed on 
+        // 30-Oct-2007.
+        //
+        case 128:  buf.append("\u20ac");  break;
+        case 129:  buf.append("\u0081");  break;
+        case 130:  buf.append("\u201A");  break;
+        case 131:  buf.append("\u0192");  break;
+        case 132:  buf.append("\u201E");  break;
+        case 133:  buf.append("\u2026");  break;
+        case 134:  buf.append("\u2020");  break;
+        case 135:  buf.append("\u2021");  break;
+        case 136:  buf.append("\u02C6");  break;
+        case 137:  buf.append("\u2030");  break;
+        case 138:  buf.append("\u0160");  break;
+        case 139:  buf.append("\u2039");  break;
+        case 140:  buf.append("\u0152");  break;
+        case 141:  buf.append("\u008D");  break;
+        case 142:  buf.append("\u017D");  break;
+        case 143:  buf.append("\u008F");  break;
+        case 144:  buf.append("\u0090");  break;
+        case 145:  buf.append("\u2018");  break;
+        case 146:  buf.append("\u2019");  break;
+        case 147:  buf.append("\u201C");  break;
+        case 148:  buf.append("\u201D");  break;
+        case 149:  buf.append("\u2022");  break;
+        case 150:  buf.append("\u2013");  break;
+        case 151:  buf.append("\u2014");  break;
+        case 152:  buf.append("\u02DC");  break;
+        case 153:  buf.append("\u2122");  break;
+        case 154:  buf.append("\u0161");  break;
+        case 155:  buf.append("\u203A");  break;
+        case 156:  buf.append("\u0153");  break;
+        case 157:  buf.append("\u009D");  break;
+        case 158:  buf.append("\u017E");  break;
+        case 159:  buf.append("\u0178");  break;
+        
+        // All other characters need no translation.
         default:
           buf.append(c);
           break;
