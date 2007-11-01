@@ -1,13 +1,24 @@
 package org.cdlib.xtf.xslt;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
+
 import org.cdlib.xtf.util.Path;
+
+import org.xml.sax.InputSource;
+
 import net.sf.saxon.expr.XPathContext;
+import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.trans.XPathException;
 
 /*
  * Copyright (c) 2006, Regents of the University of California
@@ -220,5 +231,30 @@ public class FileUtils
       }
     }
   }
-
+  
+  /**
+   * Reads in the first part of an XML file, stopping at the first
+   * close-element marker. Generally this captures enough information to
+   * identify which kind of XML data is inside the file.
+   * @throws IOException if the file can't be read
+   * @throws XPathException if the document cannot be parsed
+   */
+  public static DocumentInfo readXMLStub(XPathContext context, String filePath)
+    throws IOException, XPathException
+  {
+    // First, locate the file
+    File file = resolveFile(context, filePath);
+    if (!file.canRead())
+      throw new IOException("Cannot read file '" + file.toString() + "'");
+    
+    // Now read it in, up to the first close-element marker.
+    XMLStubReader xmlReader = new XMLStubReader();
+    BufferedInputStream bufStream = new BufferedInputStream(new FileInputStream(file));
+    InputSource inputSrc = new InputSource(bufStream);
+    inputSrc.setSystemId(file.toURI().toString());
+    Source saxSrc = new SAXSource(xmlReader, inputSrc);
+    DocumentInfo doc = context.getConfiguration().buildDocument(saxSrc);
+    return doc;
+  }
+  
 } // class FileUtils
