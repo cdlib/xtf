@@ -581,7 +581,7 @@ public class RegressTest
       return true;
 
     if (result1.startsWith("Exception encountered") &&
-        result1.startsWith("Exception encountered")) 
+        result2.startsWith("Exception encountered")) 
     {
       Trace.warning("\nExceptions differ: " + result1 + "\nvs\n" + result2);
       return true;
