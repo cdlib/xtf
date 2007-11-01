@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Transformed with lcp_dao_1.xsl -->
+<!-- Transformed with v1v2002_4.xsl -->
+<!DOCTYPE ead PUBLIC "+//ISBN 1-931666-00-8//DTD ead.dtd (Encoded Archival Description (EAD) Version 2002)//EN" "http://lcweb2.loc.gov/xmlcommon/dtds/ead2002/ead.dtd" [
+<!ENTITY lcseal SYSTEM "http://lcweb2.loc.gov/xmlcommon/lcseal.jpg" NDATA jpeg>
+]>
+<ead>
+   <eadheader countryencoding="iso3166-1" dateencoding="iso8601" langencoding="iso639-2b" relatedencoding="MARC21" repositoryencoding="iso15511" scriptencoding="iso15924">
+      <eadid countrycode="us" encodinganalog="856$u" identifier="hdl:loc.mss/eadmss.ms000011" mainagencycode="dlc">http://hdl.loc.gov/loc.mss/eadmss.ms000011</eadid>
+      <filedesc>
+         <titlestmt>
+            <titleproper encodinganalog="245$a">Alexander Graham Bell Family</titleproper>
+            <subtitle>A Register of Its Papers in the Library of Congress</subtitle>
+            <author encodinganalog="245$c">Prepared by Grover Batts, Paul Colton, David Mathiesen, and Thelma Queen<lb/>Revised and expanded by Bradley E. Gernand and Margaret McAleer</author>
+         </titlestmt>
+         <snip/>
+      </filedesc>
+      <snip/>
+   </eadheader>
+   <archdesc level="collection" relatedencoding="MARC21" type="register">
+      <snip/>
+   </archdesc>
+</ead>

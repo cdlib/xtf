@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<?oxygen RNGSchema="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rnc" type="compact"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:id="ft1n39n7wg">
+   <teiHeader type="text">
+      <fileDesc>
+         <titleStmt>
+            <title>The Nuclear<lb/> Seduction: Why the Arms Race<lb/> Doesn't Matter—<lb/> and What Does</title>
+         </titleStmt>
+         <publicationStmt>
+            <idno type="ARK">ark:/13030/ft1n39n7wg</idno>
+            <idno type="LOCAL">4916</idno>
+            <availability>
+               <p>Distributed by the California Digital Library.</p>
+            </availability>
+         </publicationStmt>
+         <sourceDesc>
+            <p>Originally published by the University of California Press.</p>
+         </sourceDesc>
+      </fileDesc>
+      <profileDesc>
+         <textClass>
+            <keywords scheme="http://authorities.loc.gov">
+               <list>
+                  <item>Nuclear War</item>
+               </list>
+            </keywords>
+         </textClass>
+      </profileDesc>
+   </teiHeader>
+   <snip/>
+</TEI>

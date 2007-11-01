@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE TEI.2 SYSTEM "http://content.cdlib.org/stwg/dtd/tei2.dtd" [
+<!ENTITY % TEI.XML "INCLUDE">
+<!ENTITY % TEI.prose "INCLUDE">
+<!ENTITY % TEI.figures "INCLUDE">
+<!ENTITY % TEI.linking "INCLUDE">
+
+<!NOTATION GIF SYSTEM "">
+
+<!ENTITY ft2g5004sk_00000.gif SYSTEM "ft2g5004sk_00000.gif" NDATA GIF>
+<!ENTITY ft2g5004sk_00001.gif SYSTEM "ft2g5004sk_00001.gif" NDATA GIF>
+<!ENTITY ft2g5004sk_00002.gif SYSTEM "ft2g5004sk_00002.gif" NDATA GIF>
+<!ENTITY ft2g5004sk_00003.gif SYSTEM "ft2g5004sk_00003.gif" NDATA GIF>
+
+]>
+
+<TEI.2 id="ft2g5004sk">
+   <teiHeader>
+      <fileDesc>
+         <titleStmt>
+            <title>The Voice in the Margin: Native American Literature and the Canon</title>
+         </titleStmt>
+         <publicationStmt>
+            <idno type="ARK">ark:/13030/ft2g5004sk</idno>
+            <idno type="LOCAL">2425</idno>
+            <availability>
+               <p>Distributed by the California Digital Library.</p>
+            </availability>
+         </publicationStmt>
+         <sourceDesc>
+            <p>Originally published by the University of California Press.</p>
+         </sourceDesc>
+      </fileDesc>
+      <profileDesc>
+         <textClass>
+            <keywords>
+               <list>
+                  <item>American Literature</item>
+                  <item>Native Americans</item>
+               </list>
+            </keywords>
+         </textClass>
+      </profileDesc>
+   </teiHeader>
+   <snip/>
+</TEI.2>

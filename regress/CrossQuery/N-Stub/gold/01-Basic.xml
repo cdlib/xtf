@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documents xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils">
+   <doc name="filesToID/bell.xml"
+        DOCTYPE.publicID="+//ISBN 1-931666-00-8//DTD ead.dtd (Encoded Archival Description (EAD) Version 2002)//EN"
+        DOCTYPE.uri="http://lcweb2.loc.gov/xmlcommon/dtds/ead2002/ead.dtd">
+      <ead>
+         <eadheader countryencoding="iso3166-1" dateencoding="iso8601" langencoding="iso639-2b"
+                    relatedencoding="MARC21"
+                    repositoryencoding="iso15511"
+                    scriptencoding="iso15924">
+            <eadid countrycode="us" encodinganalog="856$u"
+                   identifier="hdl:loc.mss/eadmss.ms000011"
+                   mainagencycode="dlc">http://hdl.loc.gov/loc.mss/eadmss.ms000011</eadid>
+         </eadheader>
+      </ead>
+   </doc>
+   <doc name="filesToID/bmc.xml"
+        DOCTYPE.publicID="-//NLM//DTD Journal Archiving and Interchange DTD v2.3 20070202//EN"
+        DOCTYPE.uri="http://dtd.nlm.nih.gov/publishing/2.3/journalpublishing.dtd">
+      <article xmlns:xlink="http://www.w3.org/1999/xlink" article-type="research-article">
+         <front>
+            <journal-meta>
+               <journal-id journal-id-type="nlm-ta">BMC Bioinformatics</journal-id>
+            </journal-meta>
+         </front>
+      </article>
+   </doc>
+   <doc name="filesToID/ft1n39n7wg.xml">
+      <TEI xmlns="http://www.tei-c.org/ns/1.0" xml:id="ft1n39n7wg">
+         <teiHeader type="text">
+            <fileDesc>
+               <titleStmt>
+                  <title>The Nuclear<lb/>
+                  </title>
+               </titleStmt>
+            </fileDesc>
+         </teiHeader>
+      </TEI>
+   </doc>
+   <doc name="filesToID/ft2g5004sk.xml"
+        DOCTYPE.uri="http://content.cdlib.org/stwg/dtd/tei2.dtd">
+      <TEI.2 id="ft2g5004sk">
+         <teiHeader>
+            <fileDesc>
+               <titleStmt>
+                  <title>The Voice in the Margin: Native American Literature and the Canon</title>
+               </titleStmt>
+            </fileDesc>
+         </teiHeader>
+      </TEI.2>
+   </doc>
+   <doc name="filesToID/ft6p3007r2.dc.xml">
+      <x>
+         <dc>
+            <title>Fifteen Jugglers, Five Believers: Literary Politics and the Poetics of American Social Movements</title>
+         </dc>
+      </x>
+   </doc>
+</documents>
