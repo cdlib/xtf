@@ -53,7 +53,7 @@ import org.xml.sax.XMLReader;
 public class DTDSuppressingXMLReader implements XMLReader 
 {
   /** The wrapped XML reader to which all methods are delegated */
-  private XMLReader reader;
+  protected XMLReader reader;
 
   /**
    * Construct the XML reader and set a flag on it to avoid loading
