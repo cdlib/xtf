@@ -27,6 +27,7 @@ final class AttributeImpl extends NodeImpl
   * @param index The index position of the attribute starting at zero
   */
   public AttributeImpl(ElementImpl element, int index) {
+    this.document = element.document; // for NodeImpl methods to use.
     this.index = index;
     this.element = element;
     nameCode = element.attrNames[index];
