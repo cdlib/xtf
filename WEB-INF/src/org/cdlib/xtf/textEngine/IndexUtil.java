@@ -303,6 +303,19 @@ public class IndexUtil
         xmlReader.setFeature("http://xml.org/sax/features/namespaces", true);
         xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes",
                              false);
+        
+        // For speed, and to make indexing utterly reliable, don't load external
+        // DTDs. If this fails, we ignore it (at least we tried.)
+        //
+        try {
+          xmlReader.setFeature(
+              "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+              false);
+        }
+        catch (SAXException err) {
+        }
+        
+        // All done
         return xmlParser;
       }
       catch (SAXException e) {
