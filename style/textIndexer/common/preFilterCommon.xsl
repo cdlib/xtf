@@ -37,315 +37,315 @@
    POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<!-- ====================================================================== -->
-<!-- Templates                                                              -->
-<!-- ====================================================================== -->
-  
-  <!-- Fetch meta-data from a Dublin Core record, if present -->
-  <xsl:template name="get-dc-meta">
-    <xsl:variable name="docpath" select="saxon:system-id()"/>
-    <xsl:variable name="base" select="replace($docpath, '(.*)\.[^\.]+$', '$1')"/>
-    <xsl:variable name="dcpath" select="concat($base, '.dc.xml')"/>
-    <xsl:if test="FileUtils:exists($dcpath)">
-      <xsl:apply-templates select="document($dcpath)" mode="inmeta"/>
-    </xsl:if>
-  </xsl:template>
-  
-  <!-- Process DC -->
-  <xsl:template match="dc" mode="inmeta">
-    
-    <!-- Copy all metadata fields -->
-    <xsl:for-each select="*">
-      <xsl:element name="{name()}">
-        <xsl:attribute name="xtf:meta" select="'true'"/>
-        <xsl:copy-of select="@*"/>
-        <xsl:value-of select="string()"/>
-      </xsl:element>
-    </xsl:for-each>
-     
-  </xsl:template>
-  
-  <!-- Add sort fields to DC meta-data -->
-  <xsl:template name="add-fields">
-    <xsl:param name="meta"/>
-    <xsl:param name="display-kind"/>
-    
-    <xtf:meta>
-      <!-- Copy all the original fields -->
-      <xsl:copy-of select="$meta/*"/>
+   <!-- ====================================================================== -->
+   <!-- Templates                                                              -->
+   <!-- ====================================================================== -->
+   
+   <!-- Fetch meta-data from a Dublin Core record, if present -->
+   <xsl:template name="get-dc-meta">
+      <xsl:variable name="docpath" select="saxon:system-id()"/>
+      <xsl:variable name="base" select="replace($docpath, '(.*)\.[^\.]+$', '$1')"/>
+      <xsl:variable name="dcpath" select="concat($base, '.dc.xml')"/>
+      <xsl:if test="FileUtils:exists($dcpath)">
+         <xsl:apply-templates select="document($dcpath)" mode="inmeta"/>
+      </xsl:if>
+   </xsl:template>
+   
+   <!-- Process DC -->
+   <xsl:template match="dc" mode="inmeta">
       
-      <!-- Add a field to record the document kind -->
-      <display-kind xtf:meta="true" xtf:tokenize="no">
-        <xsl:value-of select="$display-kind"/>
-      </display-kind>
+      <!-- Copy all metadata fields -->
+      <xsl:for-each select="*">
+         <xsl:element name="{name()}">
+            <xsl:attribute name="xtf:meta" select="'true'"/>
+            <xsl:copy-of select="@*"/>
+            <xsl:value-of select="string()"/>
+         </xsl:element>
+      </xsl:for-each>
       
-      <!-- Parse the date field to create a year (or range of years) -->
-      <xsl:apply-templates select="$meta/date" mode="year"/>
+   </xsl:template>
+   
+   <!-- Add sort fields to DC meta-data -->
+   <xsl:template name="add-fields">
+      <xsl:param name="meta"/>
+      <xsl:param name="display-kind"/>
       
-      <!-- Create sort fields -->
-      <xsl:apply-templates select="$meta/title[1]" mode="sort"/>    
-      <xsl:apply-templates select="$meta/creator[1]" mode="sort"/>
-      <xsl:apply-templates select="$meta/date[1]" mode="sort"/>
-    </xtf:meta>
-  </xsl:template>
-  
-  <!-- Parse the date to determine the year (or range of years) -->
-  <xsl:template match="date" mode="year">
-    <year xtf:meta="yes">
-      <xsl:copy-of select="parse:year(string(.))"/>
-    </year>
-  </xsl:template>
-  
-  <!-- Generate sort-title -->
-  <xsl:template match="title" mode="sort">
-    <sort-title xtf:meta="yes" xtf:tokenize="no">
-      <xsl:value-of select="parse:title(string(.))"/>
-    </sort-title>
-  </xsl:template>
-  
-  <!-- Generate sort-creator -->
-  <xsl:template match="creator" mode="sort">
-    <sort-creator xtf:meta="yes" xtf:tokenize="no">
-      <xsl:copy-of select="parse:name(string(.))"/>
-    </sort-creator>
-  </xsl:template>
-  
-  <!-- Generate sort-year (if range, only use first year) -->
-  <xsl:template match="date" mode="sort">
-    <sort-year xtf:meta="true" xtf:tokenize="no">
-      <xsl:value-of select="parse:year(string(.))[1]"/>
-    </sort-year>
-  </xsl:template>
-  
-<!-- ====================================================================== -->
-<!-- Functions                                                              -->
-<!-- ====================================================================== -->  
-  
-  <!-- Function to parse normalized titles out of dc:title -->  
-  <xsl:function name="parse:title">
-    
-    <xsl:param name="title"/>
-    
-    <!-- Normalize Spaces & Case-->
-    <xsl:variable name="lower-title">
-      <xsl:value-of select="translate(normalize-space($title), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
-    </xsl:variable>
-    
-    <!-- Remove Punctuation -->
-    <xsl:variable name="parse-title">
-      <xsl:value-of select="replace($lower-title, '[^a-z0-9 ]', '')"/>
-    </xsl:variable>
-    
-    <!-- Remove Leading Articles -->
-    <xsl:choose>
-      <xsl:when test="matches($parse-title, '^a ')">
-        <xsl:value-of select="replace($parse-title, '^a (.+)', '$1')"/>
-      </xsl:when>
-      <xsl:when test="matches($parse-title, '^an ')">
-        <xsl:value-of select="replace($parse-title, '^an (.+)', '$1')"/>
-      </xsl:when>
-      <xsl:when test="matches($parse-title, '^the ')">
-        <xsl:value-of select="replace($parse-title, '^the (.+)', '$1')"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="$parse-title"/>
-      </xsl:otherwise>
-    </xsl:choose>
-
-  </xsl:function>  
-  
-  <!-- Function to parse last names out of various dc:creator formats -->  
-  <xsl:function name="parse:name">
-    
-    <xsl:param name="creator"/>
-    
-    <!-- Normalize Spaces & Case-->
-    <xsl:variable name="lower-name">
-      <xsl:value-of select="translate(normalize-space($creator), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
-    </xsl:variable>
-    
-    <!-- Remove additional authors and information -->
-    <xsl:variable name="first-creator">
+      <xtf:meta>
+         <!-- Copy all the original fields -->
+         <xsl:copy-of select="$meta/*"/>
+         
+         <!-- Add a field to record the document kind -->
+         <display-kind xtf:meta="true" xtf:tokenize="no">
+            <xsl:value-of select="$display-kind"/>
+         </display-kind>
+         
+         <!-- Parse the date field to create a year (or range of years) -->
+         <xsl:apply-templates select="$meta/date" mode="year"/>
+         
+         <!-- Create sort fields -->
+         <xsl:apply-templates select="$meta/title[1]" mode="sort"/>    
+         <xsl:apply-templates select="$meta/creator[1]" mode="sort"/>
+         <xsl:apply-templates select="$meta/date[1]" mode="sort"/>
+      </xtf:meta>
+   </xsl:template>
+   
+   <!-- Parse the date to determine the year (or range of years) -->
+   <xsl:template match="date" mode="year">
+      <year xtf:meta="yes">
+         <xsl:copy-of select="parse:year(string(.))"/>
+      </year>
+   </xsl:template>
+   
+   <!-- Generate sort-title -->
+   <xsl:template match="title" mode="sort">
+      <sort-title xtf:meta="yes" xtf:tokenize="no">
+         <xsl:value-of select="parse:title(string(.))"/>
+      </sort-title>
+   </xsl:template>
+   
+   <!-- Generate sort-creator -->
+   <xsl:template match="creator" mode="sort">
+      <sort-creator xtf:meta="yes" xtf:tokenize="no">
+         <xsl:copy-of select="parse:name(string(.))"/>
+      </sort-creator>
+   </xsl:template>
+   
+   <!-- Generate sort-year (if range, only use first year) -->
+   <xsl:template match="date" mode="sort">
+      <sort-year xtf:meta="true" xtf:tokenize="no">
+         <xsl:value-of select="parse:year(string(.))[1]"/>
+      </sort-year>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Functions                                                              -->
+   <!-- ====================================================================== -->  
+   
+   <!-- Function to parse normalized titles out of dc:title -->  
+   <xsl:function name="parse:title">
+      
+      <xsl:param name="title"/>
+      
+      <!-- Normalize Spaces & Case-->
+      <xsl:variable name="lower-title">
+         <xsl:value-of select="translate(normalize-space($title), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+      </xsl:variable>
+      
+      <!-- Remove Punctuation -->
+      <xsl:variable name="parse-title">
+         <xsl:value-of select="replace($lower-title, '[^a-z0-9 ]', '')"/>
+      </xsl:variable>
+      
+      <!-- Remove Leading Articles -->
       <xsl:choose>
-        <!-- Pattern:  NAME and NAME -->
-        <xsl:when test="matches($lower-name, '[^,]+ and.+')">
-          <xsl:value-of select="replace($lower-name, '(.+?) and.+', '$1')"/>
-        </xsl:when>
-        <!-- Pattern:  NAME, NAME and NAME -->
-        <xsl:when test="matches($lower-name, ', .+ and')">
-          <xsl:value-of select="replace($lower-name, '(.+?), .+', '$1')"/>
-        </xsl:when>
-        <!-- Pattern:  NAME -->
-        <xsl:otherwise>
-          <xsl:value-of select="$lower-name"/>
-        </xsl:otherwise>
+         <xsl:when test="matches($parse-title, '^a ')">
+            <xsl:value-of select="replace($parse-title, '^a (.+)', '$1')"/>
+         </xsl:when>
+         <xsl:when test="matches($parse-title, '^an ')">
+            <xsl:value-of select="replace($parse-title, '^an (.+)', '$1')"/>
+         </xsl:when>
+         <xsl:when test="matches($parse-title, '^the ')">
+            <xsl:value-of select="replace($parse-title, '^the (.+)', '$1')"/>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="$parse-title"/>
+         </xsl:otherwise>
       </xsl:choose>
-    </xsl:variable>
-
-    <xsl:choose>
-      <!-- Pattern:  NAME, NAME -->
-      <xsl:when test="matches($first-creator, ', ')">
-        <xsl:value-of select="replace($first-creator, '(.+?), .+', '$1')"/>
-      </xsl:when>
-      <!-- Pattern:  'X. NAME' or ' NAME' -->
-      <xsl:when test="matches($first-creator, '^.+\.? (\w{2,100})')">
-        <xsl:value-of select="replace($first-creator, '^.+\.? (\w{2,100})', '$1')"/>
-      </xsl:when>
-      <!-- Pattern:  Everything else -->
-      <xsl:otherwise>
-        <xsl:value-of select="$first-creator"/>
-      </xsl:otherwise>
-    </xsl:choose>
-    
-  </xsl:function>
-
-  <!-- Function to parse years out of various date formats -->  
-  <xsl:function name="parse:year">
-    <xsl:param name="date"/>
-    
-    <xsl:choose>
       
-      <!-- Pattern: 1980 - 1984 -->
-      <xsl:when test="matches($date, '([^0-9]|^)([12]\d\d\d)[^0-9]*-[^0-9]*([12]\d\d\d)([^0-9]|$)')">
-        <xsl:analyze-string select="$date" regex="([^0-9]|^)([12]\d\d\d)[^0-9]*-[^0-9]*([12]\d\d\d)([^0-9]|$)">
-          <xsl:matching-substring>
-            <xsl:copy-of select="parse:output-range(regex-group(2), regex-group(3))"/>
-          </xsl:matching-substring>
-        </xsl:analyze-string>
-      </xsl:when>
+   </xsl:function>  
+   
+   <!-- Function to parse last names out of various dc:creator formats -->  
+   <xsl:function name="parse:name">
       
-      <!-- Pattern: 1980 - 84 -->
-      <xsl:when test="matches($date, '([^0-9]|^)([12]\d\d\d)[^0-9]*-[^0-9]*(\d\d)([^0-9]|$)')">
-        <xsl:analyze-string select="$date" regex="([^0-9]|^)([12]\d\d\d)[^0-9]*-[^0-9]*(\d\d)([^0-9]|$)">
-          <xsl:matching-substring>
-            <xsl:variable name="year1" select="number(regex-group(2))"/>
-            <xsl:variable name="century" select="floor($year1 div 100) * 100"/>
-            <xsl:variable name="pyear2" select="number(regex-group(3))"/>
-            <xsl:variable name="year2" select="$pyear2 + $century"/>
-            <xsl:copy-of select="parse:output-range($year1, $year2)"/>
-          </xsl:matching-substring>
-        </xsl:analyze-string>
-      </xsl:when>
+      <xsl:param name="creator"/>
       
-      <!-- Pattern: 1-12-89 -->
-      <xsl:when test="matches($date, '([^0-9]|^)\d\d?[^0-9]*[\-/][^0-9]*\d\d?[^0-9]*[\-/][^0-9]*(\d\d)([^0-9]|$)')">
-        <xsl:analyze-string select="$date" regex="([^0-9]|^)\d\d?[^0-9]*[\-/][^0-9]*\d\d?[^0-9]*[\-/][^0-9]*(\d\d)([^0-9]|$)">
-          <xsl:matching-substring>
-            <xsl:copy-of select="number(regex-group(2)) + 1900"/>
-          </xsl:matching-substring>
-        </xsl:analyze-string>
-      </xsl:when>
+      <!-- Normalize Spaces & Case-->
+      <xsl:variable name="lower-name">
+         <xsl:value-of select="translate(normalize-space($creator), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+      </xsl:variable>
       
-      <!-- Pattern: 19890112 -->
-      <xsl:when test="matches($date, '([^0-9]|^)([12]\d\d\d)[01]\d[0123]\d')">
-        <xsl:analyze-string select="$date" regex="([^0-9]|^)([12]\d\d\d)[01]\d[0123]\d">
-          <xsl:matching-substring>
-            <xsl:copy-of select="number(regex-group(2))"/>
-          </xsl:matching-substring>
-        </xsl:analyze-string>
-      </xsl:when>
+      <!-- Remove additional authors and information -->
+      <xsl:variable name="first-creator">
+         <xsl:choose>
+            <!-- Pattern:  NAME and NAME -->
+            <xsl:when test="matches($lower-name, '[^,]+ and.+')">
+               <xsl:value-of select="replace($lower-name, '(.+?) and.+', '$1')"/>
+            </xsl:when>
+            <!-- Pattern:  NAME, NAME and NAME -->
+            <xsl:when test="matches($lower-name, ', .+ and')">
+               <xsl:value-of select="replace($lower-name, '(.+?), .+', '$1')"/>
+            </xsl:when>
+            <!-- Pattern:  NAME -->
+            <xsl:otherwise>
+               <xsl:value-of select="$lower-name"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </xsl:variable>
       
-      <!-- Pattern: 890112 -->
-      <xsl:when test="matches($date, '([^0-9]|^)([4-9]\d)[01]\d[0123]\d')">
-        <xsl:analyze-string select="$date" regex="([^0-9]|^)(\d\d)[01]\d[0123]\d">
-          <xsl:matching-substring>
-            <xsl:copy-of select="number(regex-group(2)) + 1900"/>
-          </xsl:matching-substring>
-        </xsl:analyze-string>
-      </xsl:when>
+      <xsl:choose>
+         <!-- Pattern:  NAME, NAME -->
+         <xsl:when test="matches($first-creator, ', ')">
+            <xsl:value-of select="replace($first-creator, '(.+?), .+', '$1')"/>
+         </xsl:when>
+         <!-- Pattern:  'X. NAME' or ' NAME' -->
+         <xsl:when test="matches($first-creator, '^.+\.? (\w{2,100})')">
+            <xsl:value-of select="replace($first-creator, '^.+\.? (\w{2,100})', '$1')"/>
+         </xsl:when>
+         <!-- Pattern:  Everything else -->
+         <xsl:otherwise>
+            <xsl:value-of select="$first-creator"/>
+         </xsl:otherwise>
+      </xsl:choose>
       
-      <!-- Pattern: 011291 -->
-      <xsl:when test="matches($date, '([^0-9]|^)[01]\d[0123]\d(\d\d)')">
-        <xsl:analyze-string select="$date" regex="([^0-9]|^)[01]\d[0123]\d(\d\d)">
-          <xsl:matching-substring>
-            <xsl:copy-of select="number(regex-group(2)) + 1900"/>
-          </xsl:matching-substring>
-        </xsl:analyze-string>
-      </xsl:when>
+   </xsl:function>
+   
+   <!-- Function to parse years out of various date formats -->  
+   <xsl:function name="parse:year">
+      <xsl:param name="date"/>
       
-      <!-- Pattern: 1980 -->
-      <xsl:when test="matches($date, '([^0-9]|^)([12]\d\d\d)([^0-9]|$)')">
-        <xsl:analyze-string select="$date" regex="([^0-9]|^)([12]\d\d\d)([^0-9]|$)">
-          <xsl:matching-substring>
-            <xsl:copy-of select="regex-group(2)"/>            
-          </xsl:matching-substring>
-        </xsl:analyze-string>
-      </xsl:when>
+      <xsl:choose>
+         
+         <!-- Pattern: 1980 - 1984 -->
+         <xsl:when test="matches($date, '([^0-9]|^)([12]\d\d\d)[^0-9]*-[^0-9]*([12]\d\d\d)([^0-9]|$)')">
+            <xsl:analyze-string select="$date" regex="([^0-9]|^)([12]\d\d\d)[^0-9]*-[^0-9]*([12]\d\d\d)([^0-9]|$)">
+               <xsl:matching-substring>
+                  <xsl:copy-of select="parse:output-range(regex-group(2), regex-group(3))"/>
+               </xsl:matching-substring>
+            </xsl:analyze-string>
+         </xsl:when>
+         
+         <!-- Pattern: 1980 - 84 -->
+         <xsl:when test="matches($date, '([^0-9]|^)([12]\d\d\d)[^0-9]*-[^0-9]*(\d\d)([^0-9]|$)')">
+            <xsl:analyze-string select="$date" regex="([^0-9]|^)([12]\d\d\d)[^0-9]*-[^0-9]*(\d\d)([^0-9]|$)">
+               <xsl:matching-substring>
+                  <xsl:variable name="year1" select="number(regex-group(2))"/>
+                  <xsl:variable name="century" select="floor($year1 div 100) * 100"/>
+                  <xsl:variable name="pyear2" select="number(regex-group(3))"/>
+                  <xsl:variable name="year2" select="$pyear2 + $century"/>
+                  <xsl:copy-of select="parse:output-range($year1, $year2)"/>
+               </xsl:matching-substring>
+            </xsl:analyze-string>
+         </xsl:when>
+         
+         <!-- Pattern: 1-12-89 -->
+         <xsl:when test="matches($date, '([^0-9]|^)\d\d?[^0-9]*[\-/][^0-9]*\d\d?[^0-9]*[\-/][^0-9]*(\d\d)([^0-9]|$)')">
+            <xsl:analyze-string select="$date" regex="([^0-9]|^)\d\d?[^0-9]*[\-/][^0-9]*\d\d?[^0-9]*[\-/][^0-9]*(\d\d)([^0-9]|$)">
+               <xsl:matching-substring>
+                  <xsl:copy-of select="number(regex-group(2)) + 1900"/>
+               </xsl:matching-substring>
+            </xsl:analyze-string>
+         </xsl:when>
+         
+         <!-- Pattern: 19890112 -->
+         <xsl:when test="matches($date, '([^0-9]|^)([12]\d\d\d)[01]\d[0123]\d')">
+            <xsl:analyze-string select="$date" regex="([^0-9]|^)([12]\d\d\d)[01]\d[0123]\d">
+               <xsl:matching-substring>
+                  <xsl:copy-of select="number(regex-group(2))"/>
+               </xsl:matching-substring>
+            </xsl:analyze-string>
+         </xsl:when>
+         
+         <!-- Pattern: 890112 -->
+         <xsl:when test="matches($date, '([^0-9]|^)([4-9]\d)[01]\d[0123]\d')">
+            <xsl:analyze-string select="$date" regex="([^0-9]|^)(\d\d)[01]\d[0123]\d">
+               <xsl:matching-substring>
+                  <xsl:copy-of select="number(regex-group(2)) + 1900"/>
+               </xsl:matching-substring>
+            </xsl:analyze-string>
+         </xsl:when>
+         
+         <!-- Pattern: 011291 -->
+         <xsl:when test="matches($date, '([^0-9]|^)[01]\d[0123]\d(\d\d)')">
+            <xsl:analyze-string select="$date" regex="([^0-9]|^)[01]\d[0123]\d(\d\d)">
+               <xsl:matching-substring>
+                  <xsl:copy-of select="number(regex-group(2)) + 1900"/>
+               </xsl:matching-substring>
+            </xsl:analyze-string>
+         </xsl:when>
+         
+         <!-- Pattern: 1980 -->
+         <xsl:when test="matches($date, '([^0-9]|^)([12]\d\d\d)([^0-9]|$)')">
+            <xsl:analyze-string select="$date" regex="([^0-9]|^)([12]\d\d\d)([^0-9]|$)">
+               <xsl:matching-substring>
+                  <xsl:copy-of select="regex-group(2)"/>            
+               </xsl:matching-substring>
+            </xsl:analyze-string>
+         </xsl:when>
+         
+         <!-- Pattern: any 4 digits starting with 1 or 2 -->
+         <xsl:when test="matches($date, '([12]\d\d\d)')">
+            <xsl:analyze-string select="$date" regex="([12]\d\d\d)">
+               <xsl:matching-substring>
+                  <xsl:copy-of select="regex-group(1)"/>            
+               </xsl:matching-substring>
+            </xsl:analyze-string>
+         </xsl:when>
+         
+      </xsl:choose>
       
-      <!-- Pattern: any 4 digits starting with 1 or 2 -->
-      <xsl:when test="matches($date, '([12]\d\d\d)')">
-        <xsl:analyze-string select="$date" regex="([12]\d\d\d)">
-          <xsl:matching-substring>
-            <xsl:copy-of select="regex-group(1)"/>            
-          </xsl:matching-substring>
-        </xsl:analyze-string>
-      </xsl:when>
+   </xsl:function>
+   
+   <!-- Function to parse year ranges -->
+   <xsl:function name="parse:output-range">
+      <xsl:param name="year1-in"/>
+      <xsl:param name="year2-in"/>
       
-    </xsl:choose>
-    
-  </xsl:function>
-
-  <!-- Function to parse year ranges -->
-  <xsl:function name="parse:output-range">
-    <xsl:param name="year1-in"/>
-    <xsl:param name="year2-in"/>
-    
-    <xsl:variable name="year1" select="number($year1-in)"/>
-    <xsl:variable name="year2" select="number($year2-in)"/>
-    
-    <xsl:choose>
+      <xsl:variable name="year1" select="number($year1-in)"/>
+      <xsl:variable name="year2" select="number($year2-in)"/>
       
-      <xsl:when test="$year2 > $year1 and ($year2 - $year1) &lt; 500">
-        <xsl:for-each select="(1 to 500)">
-          <xsl:if test="$year1 + position() - 1 &lt;= $year2">
-            <xsl:value-of select="$year1 + position() - 1"/>
+      <xsl:choose>
+         
+         <xsl:when test="$year2 > $year1 and ($year2 - $year1) &lt; 500">
+            <xsl:for-each select="(1 to 500)">
+               <xsl:if test="$year1 + position() - 1 &lt;= $year2">
+                  <xsl:value-of select="$year1 + position() - 1"/>
+                  <xsl:value-of select="' '"/>
+               </xsl:if>
+            </xsl:for-each>
+         </xsl:when>
+         
+         <xsl:otherwise>
+            <xsl:value-of select="$year1"/>
             <xsl:value-of select="' '"/>
-          </xsl:if>
-        </xsl:for-each>
-      </xsl:when>
-      
-      <xsl:otherwise>
-        <xsl:value-of select="$year1"/>
-        <xsl:value-of select="' '"/>
-        <xsl:value-of select="$year2"/>
-      </xsl:otherwise>
-      
-    </xsl:choose>
-    
-  </xsl:function>
-  
-  <!-- function to expand date strings -->
-  <xsl:function name="expand:date">
-    <xsl:param name="date"/>
-    
-    <xsl:variable name="year" select="replace($date, '[0-9]+/[0-9]+/([0-9]+)', '$1')"/>
-    
-    <xsl:variable name="month">
-      <xsl:choose>
-        <xsl:when test="matches($date,'^[0-9]/[0-9]+/[0-9]+')">
-          <xsl:value-of select="0"/>
-          <xsl:value-of select="replace($date, '^([0-9])/[0-9]+/[0-9]+', '$1')"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="replace($date, '([0-9]+)/[0-9]+/[0-9]+', '$1')"/>
-        </xsl:otherwise>
+            <xsl:value-of select="$year2"/>
+         </xsl:otherwise>
+         
       </xsl:choose>
-    </xsl:variable>  
-    
-    <xsl:variable name="day">
-      <xsl:choose>
-        <xsl:when test="matches($date,'[0-9]+/[0-9]/[0-9]+')">
-          <xsl:value-of select="0"/>
-          <xsl:value-of select="replace($date, '[0-9]+/([0-9])/[0-9]+', '$1')"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="replace($date, '[0-9]+/([0-9]+)/[0-9]+', '$1')"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    
-    <xsl:value-of select="concat($year, '::', $month, '::', $day)"/>
-    
-  </xsl:function>
+      
+   </xsl:function>
+   
+   <!-- function to expand date strings -->
+   <xsl:function name="expand:date">
+      <xsl:param name="date"/>
+      
+      <xsl:variable name="year" select="replace($date, '[0-9]+/[0-9]+/([0-9]+)', '$1')"/>
+      
+      <xsl:variable name="month">
+         <xsl:choose>
+            <xsl:when test="matches($date,'^[0-9]/[0-9]+/[0-9]+')">
+               <xsl:value-of select="0"/>
+               <xsl:value-of select="replace($date, '^([0-9])/[0-9]+/[0-9]+', '$1')"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:value-of select="replace($date, '([0-9]+)/[0-9]+/[0-9]+', '$1')"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </xsl:variable>  
+      
+      <xsl:variable name="day">
+         <xsl:choose>
+            <xsl:when test="matches($date,'[0-9]+/[0-9]/[0-9]+')">
+               <xsl:value-of select="0"/>
+               <xsl:value-of select="replace($date, '[0-9]+/([0-9])/[0-9]+', '$1')"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:value-of select="replace($date, '[0-9]+/([0-9]+)/[0-9]+', '$1')"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </xsl:variable>
+      
+      <xsl:value-of select="concat($year, '::', $month, '::', $day)"/>
+      
+   </xsl:function>
   
 </xsl:stylesheet>
