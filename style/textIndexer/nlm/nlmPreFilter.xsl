@@ -1,6 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
         xmlns:saxon="http://saxon.sf.net/"
         xmlns:xtf="http://cdlib.org/xtf"
+        xmlns:xlink="http://www.w3.org/TR/xlink/"
         exclude-result-prefixes="#all">
 
 <!--
@@ -71,12 +72,20 @@
    </xsl:template>
    
    <!-- ====================================================================== -->
-   <!-- EAD Indexing                                                           -->
+   <!-- NLM Indexing                                                           -->
    <!-- ====================================================================== -->
    
    <!-- Ignored Elements -->
    
-   <xsl:template match="eadheader">
+   <xsl:template match="journal-meta">
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>
+         <xsl:attribute name="xtf:index" select="'no'"/>
+         <xsl:apply-templates/>
+      </xsl:copy>
+   </xsl:template>
+   
+   <xsl:template match="article-meta">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
          <xsl:attribute name="xtf:index" select="'no'"/>
@@ -87,7 +96,7 @@
    
    <!-- sectionType Indexing and Element Boosting -->
    
-   <xsl:template match="unittitle[parent::did]">
+   <xsl:template match="title[parent::sec]">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
          <xsl:attribute name="xtf:sectionType" select="concat('head ', @type)"/>
@@ -96,7 +105,7 @@
       </xsl:copy>
    </xsl:template>
    
-   <xsl:template match="titleproper[parent::titlestmt]">
+   <xsl:template match="article-title[parent::title-group]">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
          <xsl:attribute name="xtf:wordBoost" select="100.0"/>
@@ -114,137 +123,109 @@
          <xsl:call-template name="get-dc-meta"/>
       </xsl:variable>
       
-      <!-- If no Dublin Core present, then extract meta-data from the EAD -->
+      <!-- If no Dublin Core present, then extract meta-data from the NLM -->
       <xsl:variable name="meta">
          <xsl:choose>
             <xsl:when test="$dcMeta/*">
                <xsl:copy-of select="$dcMeta"/>
             </xsl:when>
             <xsl:otherwise>
-               <xsl:call-template name="get-ead-title"/>
-               <xsl:call-template name="get-ead-creator"/>
-               <xsl:call-template name="get-ead-subject"/>
-               <xsl:call-template name="get-ead-description"/>
-               <xsl:call-template name="get-ead-publisher"/>
-               <xsl:call-template name="get-ead-contributor"/>
-               <xsl:call-template name="get-ead-date"/>
-               <xsl:call-template name="get-ead-type"/>
-               <xsl:call-template name="get-ead-format"/>
-               <xsl:call-template name="get-ead-identifier"/>
-               <xsl:call-template name="get-ead-source"/>
-               <xsl:call-template name="get-ead-language"/>
-               <xsl:call-template name="get-ead-relation"/>
-               <xsl:call-template name="get-ead-coverage"/>
-               <xsl:call-template name="get-ead-rights"/>
+               <xsl:call-template name="get-nlm-title"/>
+               <xsl:call-template name="get-nlm-creator"/>
+               <xsl:call-template name="get-nlm-subject"/>
+               <xsl:call-template name="get-nlm-description"/>
+               <xsl:call-template name="get-nlm-publisher"/>
+               <xsl:call-template name="get-nlm-contributor"/>
+               <xsl:call-template name="get-nlm-date"/>
+               <xsl:call-template name="get-nlm-type"/>
+               <xsl:call-template name="get-nlm-format"/>
+               <xsl:call-template name="get-nlm-identifier"/>
+               <xsl:call-template name="get-nlm-source"/>
+               <xsl:call-template name="get-nlm-language"/>
+               <xsl:call-template name="get-nlm-relation"/>
+               <xsl:call-template name="get-nlm-coverage"/>
+               <xsl:call-template name="get-nlm-rights"/>
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
       
       <!-- Add doc kind and sort fields to the data, and output the result. -->
       <xsl:call-template name="add-fields">
-         <xsl:with-param name="display-kind" select="'dynaXML/EAD'"/>
+         <xsl:with-param name="display-kind" select="'dynaXML/NLM'"/>
          <xsl:with-param name="meta" select="$meta"/>
       </xsl:call-template>    
    </xsl:template>
    
-   <!-- title --> 
-   <xsl:template name="get-ead-title">
+   <xsl:template name="get-nlm-title">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/unittitle">
+         <xsl:when test="/article/front/article-meta/title-group/article-title">
             <title xtf:meta="true">
-               <xsl:value-of select="/ead/archdesc/did/unittitle"/>
+               <xsl:value-of select="string(/article/front/article-meta/title-group/article-title[1])"/>
             </title>
          </xsl:when>
-         <xsl:when test="/ead/eadheader/filedesc/titlestmt/titleproper">
-            <xsl:variable name="titleproper" select="string(/ead/eadheader/filedesc/titlestmt/titleproper)"/>
-            <xsl:variable name="subtitle" select="string(/ead/eadheader/filedesc/titlestmt/subtitle)"/>
+         <xsl:otherwise>
             <title xtf:meta="true">
-               <xsl:value-of select="$titleproper"/>
-               <xsl:if test="$subtitle">
-                  <!-- Put a colon between main and subtitle, if none present already -->
-                  <xsl:if test="not(matches($titleproper, ':\s*$') or matches($subtitle, '^\s*:'))">
+               <xsl:value-of select="'unknown'"/>
+            </title>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="get-nlm-creator">
+      <xsl:choose>
+         <xsl:when test="/article/front/article-meta/contrib-group/contrib/name">
+            <xsl:for-each select="/article/front/article-meta/contrib-group/contrib/name">
+               <creator xtf:meta="true">
+                  <xsl:value-of select="surname"/>
+                  <xsl:text>, </xsl:text>
+                  <xsl:value-of select="given-names"/>
+               </creator>
+            </xsl:for-each>
+         </xsl:when>
+         <xsl:otherwise>
+            <creator xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </creator>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="get-nlm-subject">
+      <xsl:choose>
+         <xsl:when test="/article/front/article-meta/article-categories/subj-group">
+            <xsl:for-each select="/article/front/article-meta/article-categories/subj-group">
+               <subject xtf:meta="true">
+                  <xsl:value-of select="subject"/>
+                  <xsl:if test="subj-group">
                      <xsl:text>: </xsl:text>
-                  </xsl:if>  
-                  <xsl:value-of select="$subtitle"/>
-               </xsl:if>
-            </title>
-         </xsl:when>
-         <xsl:otherwise>
-            <title xtf:meta="true">
-               <xsl:value-of select="'unknown'"/>
-            </title>
-         </xsl:otherwise>
-      </xsl:choose>
-   </xsl:template>
-   
-   <!-- creator --> 
-   <xsl:template name="get-ead-creator">
-      <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/origination[starts-with(@label, 'Creator')]">
-            <creator xtf:meta="true">
-               <xsl:value-of select="string(/ead/archdesc/did/origination[@label, 'Creator'][1])"/>
-            </creator>
-         </xsl:when>
-         <xsl:when test="/ead/eadheader/filedesc/titlestmt/author">
-            <creator xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/filedesc/titlestmt/author[1])"/>
-            </creator>
-         </xsl:when>
-         <xsl:otherwise>
-            <creator xtf:meta="true">
-               <xsl:value-of select="'unknown'"/>
-            </creator>
-         </xsl:otherwise>
-      </xsl:choose>
-   </xsl:template>
-   
-   <!-- subject --> 
-   <xsl:template name="get-ead-subject">
-      <xsl:choose>
-         <xsl:when test="/ead/archdesc/controlaccess/subject">
-            <xsl:for-each select="/ead/archdesc/controlaccess/subject">
-               <subject xtf:meta="true">
-                  <xsl:value-of select="."/>
-               </subject>
-            </xsl:for-each>
-         </xsl:when>
-         <xsl:when test="/ead/eadheader/filedesc/notestmt/subject">
-            <xsl:for-each select="/ead/eadheader/filedesc/notestmt/subject">
-               <subject xtf:meta="true">
-                  <xsl:value-of select="."/>
+                     <xsl:value-of select="subj-group/subject"/>
+                  </xsl:if>
                </subject>
             </xsl:for-each>
          </xsl:when>
       </xsl:choose>
    </xsl:template>
    
-   <!-- description --> 
-   <xsl:template name="get-ead-description">
+   <xsl:template name="get-nlm-description">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/abstract">
+         <xsl:when test="/article/front/article-meta/abstract">
             <description xtf:meta="true">
-               <xsl:value-of select="string(/ead/archdesc/did/abstract[1])"/>
+               <xsl:value-of select="string(/article/front/article-meta/abstract[1])"/>
             </description>
          </xsl:when>
-         <xsl:when test="/ead/eadheader/filedesc/notestmt/note">
+         <xsl:otherwise>
             <description xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/filedesc/notestmt/note[1])"/>
+               <xsl:value-of select="/article/body/p[1]"/>
             </description>
-         </xsl:when>
+         </xsl:otherwise>
       </xsl:choose>
    </xsl:template>
    
-   <!-- publisher -->
-   <xsl:template name="get-ead-publisher">
+   <xsl:template name="get-nlm-publisher">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/repository">
+         <xsl:when test="/article/front/journal-meta/publisher">
             <publisher xtf:meta="true">
-               <xsl:value-of select="string(/ead/archdesc/did/repository[1])"/>
-            </publisher>
-         </xsl:when>
-         <xsl:when test="/ead/eadheader/filedesc/publicationstmt/publisher">
-            <publisher xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/filedesc/publicationstmt/publisher[1])"/>
+               <xsl:value-of select="string(/article/front/journal-meta/publisher[1])"/>
             </publisher>
          </xsl:when>
          <xsl:otherwise>
@@ -255,13 +236,16 @@
       </xsl:choose>
    </xsl:template>
    
-   <!-- contributor -->
-   <xsl:template name="get-ead-contributor">
+   <xsl:template name="get-nlm-contributor">
       <xsl:choose>
-         <xsl:when test="/ead/eadheader/filedesc/titlestmt/author">
-            <contributor xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/filedesc/titlestmt/author[1])"/>
-            </contributor>
+         <xsl:when test="/article/front/article-meta/contrib-group/contrib/name">
+            <xsl:for-each select="/article/front/article-meta/contrib-group/contrib/name">
+               <contributor xtf:meta="true">
+                  <xsl:value-of select="surname"/>
+                  <xsl:text>, </xsl:text>
+                  <xsl:value-of select="given-names"/>
+               </contributor>
+            </xsl:for-each>
          </xsl:when>
          <xsl:otherwise>
             <contributor xtf:meta="true">
@@ -271,12 +255,24 @@
       </xsl:choose>
    </xsl:template>
    
-   <!-- date --> 
-   <xsl:template name="get-ead-date">
+   <xsl:template name="get-nlm-date">
       <xsl:choose>
-         <xsl:when test="/ead/eadheader/filedesc/publicationstmt/date">
+         <xsl:when test="/article/front/article-meta/pub-date[@pub-type='pub']">
             <date xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/filedesc/publicationstmt/date[1])"/>
+               <xsl:value-of select="/article/front/article-meta/pub-date[@pub-type='pub'][1]/day"/>
+               <xsl:text>-</xsl:text>
+               <xsl:value-of select="/article/front/article-meta/pub-date[@pub-type='pub'][1]/month"/>
+               <xsl:text>-</xsl:text>
+               <xsl:value-of select="/article/front/article-meta/pub-date[@pub-type='pub'][1]/year"/>
+            </date>
+         </xsl:when>
+         <xsl:when test="/article/front/article-meta/pub-date">
+            <date xtf:meta="true">
+               <xsl:value-of select="/article/front/article-meta/pub-date[1]/day"/>
+               <xsl:text>-</xsl:text>
+               <xsl:value-of select="/article/front/article-meta/pub-date[1]/month"/>
+               <xsl:text>-</xsl:text>
+               <xsl:value-of select="/article/front/article-meta/pub-date[1]/year"/>
             </date>
          </xsl:when>
          <xsl:otherwise>
@@ -287,27 +283,24 @@
       </xsl:choose>
    </xsl:template>
    
-   <!-- type -->
-   <xsl:template name="get-ead-type">
-      <type xtf:meta="true">ead</type>
+   <xsl:template name="get-nlm-type">
+      <type xtf:meta="true">nlm</type>
    </xsl:template>
    
-   <!-- format -->
-   <xsl:template name="get-ead-format">
+   <xsl:template name="get-nlm-format">
       <format xtf:meta="true">xml</format>
    </xsl:template>
    
-   <!-- identifier --> 
-   <xsl:template name="get-ead-identifier">
+   <xsl:template name="get-nlm-identifier">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/unitid">
+         <xsl:when test="/article/front/article-meta/article-id[@pub-id-type='doi']">
             <identifier xtf:meta="true">
-               <xsl:value-of select="string(/ead/archdesc/did/unitid[1])"/>
+               <xsl:value-of select="string(/article/front/article-meta/article-id[@pub-id-type='doi'][1])"/>
             </identifier>
          </xsl:when>
-         <xsl:when test="/ead/eadheader/eadid">
+         <xsl:when test="/article/front/article-meta/article-id">
             <identifier xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/eadid[1])"/>
+               <xsl:value-of select="string(/article/front/article-meta/article-id[1])"/>
             </identifier>
          </xsl:when>
          <xsl:otherwise>
@@ -318,51 +311,57 @@
       </xsl:choose>
    </xsl:template>
    
-   <!-- source -->
-   <xsl:template name="get-ead-source">
-      <source xtf:meta="true">unknown</source>
-   </xsl:template>
-   
-   <!-- language -->
-   <xsl:template name="get-ead-language">
+   <xsl:template name="get-nlm-source">
       <xsl:choose>
-         <xsl:when test="/ead/eadheader/profiledesc/langusage/language">
-            <language xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/profiledesc/langusage/language[1])"/>
-            </language>
+         <xsl:when test="/article/front/journal-meta/journal-title">
+            <source xtf:meta="true">
+               <xsl:value-of select="string(/article/front/journal-meta/journal-title[1])"/>
+            </source>
          </xsl:when>
          <xsl:otherwise>
-            <language xtf:meta="true">
-               <xsl:value-of select="'english'"/>
-            </language>
-         </xsl:otherwise>
-      </xsl:choose>
-   </xsl:template>
-   
-   <!-- relation -->
-   <xsl:template name="get-ead-relation">
-      <relation xtf:meta="true">unknown</relation>
-   </xsl:template>
-   
-   <!-- coverage -->
-   <xsl:template name="get-ead-coverage">
-      <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/unittitle/unitdate">
-            <coverage xtf:meta="true">
-               <xsl:value-of select="string(/ead/archdesc/did/unittitle/unitdate[1])"/>
-            </coverage>
-         </xsl:when>
-         <xsl:otherwise>
-            <coverage xtf:meta="true">
+            <source xtf:meta="true">
                <xsl:value-of select="'unknown'"/>
-            </coverage>
+            </source>
          </xsl:otherwise>
       </xsl:choose>
    </xsl:template>
    
-   <!-- rights -->
-   <xsl:template name="get-ead-rights">
-      <rights xtf:meta="true">public</rights>
+   <xsl:template name="get-nlm-language">
+      <language xtf:meta="true">english</language>
    </xsl:template>
    
+   <xsl:template name="get-nlm-relation">
+      <xsl:choose>
+         <xsl:when test="/article/front/article-meta/ext-link">
+            <relation xtf:meta="true">
+               <xsl:value-of select="string(/article/front/article-meta/ext-link[1]/@xlink:href)"/>
+            </relation>
+         </xsl:when>
+         <xsl:otherwise>
+            <relation xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </relation>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="get-nlm-coverage">
+      <coverage xtf:meta="true">unknown</coverage>
+   </xsl:template>
+   
+   <xsl:template name="get-nlm-rights">
+      <xsl:choose>
+         <xsl:when test="/article/front/article-meta/permissions">
+            <rights xtf:meta="true">
+               <xsl:value-of select="string(/article/front/article-meta/permissions[1])"/>
+            </rights>
+         </xsl:when>
+         <xsl:otherwise>
+            <rights xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </rights>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+  
 </xsl:stylesheet>

@@ -92,6 +92,9 @@ POSSIBILITY OF SUCH DAMAGE.
         <xsl:when test="contains($docId, 'ead/') or contains($docId, '.ead')">
           <xsl:attribute name="path">style/dynaXML/docFormatter/ead/eadDocFormatter.xsl</xsl:attribute>
         </xsl:when>
+         <xsl:when test="contains($docId, 'nlm/') or contains($docId, '.nlm')">
+            <xsl:attribute name="path">style/dynaXML/docFormatter/nlm/nlmDocFormatter.xsl</xsl:attribute>
+         </xsl:when>
         <xsl:otherwise>
           <xsl:attribute name="path">style/dynaXML/docFormatter/default/docFormatter.xsl</xsl:attribute>
         </xsl:otherwise>

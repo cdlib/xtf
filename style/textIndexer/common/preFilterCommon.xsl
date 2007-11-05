@@ -86,6 +86,11 @@
          <xsl:apply-templates select="$meta/title[1]" mode="sort"/>    
          <xsl:apply-templates select="$meta/creator[1]" mode="sort"/>
          <xsl:apply-templates select="$meta/date[1]" mode="sort"/>
+         
+         <!-- Create facets -->
+         <xsl:apply-templates select="$meta/date" mode="facet"/>
+         <xsl:apply-templates select="$meta/subject" mode="facet"/>
+         
       </xtf:meta>
    </xsl:template>
    
@@ -115,6 +120,31 @@
       <sort-year xtf:meta="true" xtf:tokenize="no">
          <xsl:value-of select="parse:year(string(.))[1]"/>
       </sort-year>
+   </xsl:template>
+   
+   <!-- Generate facet-date -->
+   <xsl:template match="date" mode="facet">
+      <facet-date>
+         <xsl:attribute name="xtf:meta" select="'true'"/>
+         <xsl:attribute name="xtf:tokenize" select="'no'"/>
+         <xsl:choose>
+            <xsl:when test="matches(.,'[0-9]{2}-[0-9]{2}-[0-9]{4}')">
+               <xsl:value-of select="replace(.,'-','::')"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:value-of select="concat('0::0::',parse:year(string(.)))"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </facet-date>
+   </xsl:template>
+   
+   <!-- Generate facet-subject -->
+   <xsl:template match="subject" mode="facet">
+      <facet-subject>
+         <xsl:attribute name="xtf:meta" select="'true'"/>
+         <xsl:attribute name="xtf:tokenize" select="'no'"/>
+         <xsl:value-of select="string(.)"/>
+      </facet-subject>
    </xsl:template>
    
    <!-- ====================================================================== -->

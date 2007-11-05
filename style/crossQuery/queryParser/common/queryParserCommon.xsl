@@ -108,9 +108,6 @@
       
       <xsl:variable name="op">
          <xsl:choose>
-            <xsl:when test="$metaField = 'keyword'">
-               <xsl:value-of select="'or'"/>
-            </xsl:when>
             <xsl:when test="$max/@value != ''">
                <xsl:value-of select="'range'"/>
             </xsl:when>       
@@ -134,9 +131,14 @@
          
          <!-- Specify the field name for meta-data queries -->
          <xsl:choose>
-            <xsl:when test="matches(@name, 'keyword')"/>
-            <xsl:when test="not(matches(@name, 'text|query'))">
+            <xsl:when test="not(matches(@name, 'text|query|keyword'))">
                <xsl:attribute name="field" select="$metaField"/>
+            </xsl:when>
+            <xsl:when test="matches(@name, 'keyword')">
+               <xsl:attribute name="fields" select="$fieldList"/>
+               <xsl:attribute name="slop" select="'10'"/>
+               <xsl:attribute name="maxTextSnippets" select="'3'"/>
+               <xsl:attribute name="maxMetaSnippets" select="'all'"/>
             </xsl:when>
             <xsl:when test="matches(@name, 'text')">
                <xsl:attribute name="field" select="'text'"/>
@@ -150,41 +152,20 @@
             </xsl:when>
          </xsl:choose>
          
-         <xsl:choose>
-            <xsl:when test="matches(@name, 'keyword')">
-               <xsl:call-template name="keyQuery">
-                  <xsl:with-param name="fieldList">
-                     <xsl:choose>
-                        <xsl:when test="$fieldList != ''">
-                           <xsl:value-of select="concat($fieldList, ' ')"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                           <xsl:value-of select="'text title creator subject description publisher or contributor date type format identifier source language relation coverage rights year '"/>
-                        </xsl:otherwise>
-                     </xsl:choose>
-                  </xsl:with-param>
-                  <xsl:with-param name="prox" select="$prox"/>
-                  <xsl:with-param name="join" select="$join"/>
-                  <xsl:with-param name="exclude" select="$exclude"/>
-               </xsl:call-template>
-            </xsl:when>
-            <xsl:otherwise>
-               <!-- Specify the maximum term separation for a proximity query -->
-               <xsl:if test="$prox/@value != ''">
-                  <xsl:attribute name="slop" select="$prox/@value"/>
-               </xsl:if>
-               
-               <!-- Process all the phrases and/or terms -->
-               <xsl:apply-templates/>
-               
-               <!-- If there is an 'exclude' parameter for this field, process it -->
-               <xsl:if test="$exclude/@value != ''">
-                  <not>
-                     <xsl:apply-templates select="$exclude/*"/>
-                  </not>
-               </xsl:if>
-            </xsl:otherwise>
-         </xsl:choose>
+         <!-- Specify the maximum term separation for a proximity query -->
+         <xsl:if test="$prox/@value != ''">
+            <xsl:attribute name="slop" select="$prox/@value"/>
+         </xsl:if>
+         
+         <!-- Process all the phrases and/or terms -->
+         <xsl:apply-templates/>
+         
+         <!-- If there is an 'exclude' parameter for this field, process it -->
+         <xsl:if test="$exclude/@value != ''">
+            <not>
+               <xsl:apply-templates select="$exclude/*"/>
+            </not>
+         </xsl:if>
          
          <!-- If there is a sectionType parameter, process it -->
          <xsl:if test="matches($metaField, 'text|query') and (//param[@name='sectionType']/@value != '')">
@@ -194,70 +175,6 @@
          </xsl:if>
          
       </xsl:element>
-      
-   </xsl:template>
-   
-   <!-- ====================================================================== -->
-   <!-- Keyword query template                                                 -->
-   <!--                                                                        -->
-   <!-- Constructs a full combined text and metadata query from the following  -->
-   <!-- URL constructs: keyword=foo, keyword-prox=20, keyword-exclude=bar.     -->
-   <!-- ====================================================================== -->
-   
-   <xsl:template name="keyQuery">
-      
-      <xsl:param name="fieldList"/>
-      <xsl:param name="prox"/>
-      <xsl:param name="join"/>
-      <xsl:param name="exclude"/>
-      
-      <xsl:variable name="op">
-         <xsl:choose>   
-            <xsl:when test="$prox/@value != ''">
-               <xsl:value-of select="'near'"/>
-            </xsl:when>
-            <xsl:when test="$join/@value != ''">
-               <xsl:value-of select="$join/@value"/>
-            </xsl:when>
-            <xsl:otherwise>
-               <xsl:value-of select="'and'"/>
-            </xsl:otherwise>
-         </xsl:choose>
-      </xsl:variable>    
-      
-      <xsl:variable name="field" select="substring-before($fieldList, ' ')"/>
-      
-      <xsl:if test="$field != ''">
-         <xsl:element name="{$op}">
-            
-            <xsl:attribute name="field" select="$field"/>
-            
-            <xsl:if test="$field = 'text'">
-               <xsl:attribute name="maxSnippets" select="'3'"/>
-               <xsl:attribute name="maxContext" select="'100'"/>
-            </xsl:if>
-            
-            <xsl:if test="$prox/@value != ''">
-               <xsl:attribute name="slop" select="$prox/@value"/>
-            </xsl:if>
-            
-            <xsl:apply-templates/>
-            
-            <xsl:if test="$exclude/@value != ''">
-               <not>
-                  <xsl:apply-templates select="$exclude/*"/>
-               </not>
-            </xsl:if>
-            
-         </xsl:element>
-         
-         <xsl:call-template name="keyQuery">
-            <xsl:with-param name="fieldList" select="replace(substring-after($fieldList, $field), '^ ', '')"/>
-            <xsl:with-param name="prox" select="$prox"/>
-            <xsl:with-param name="join" select="$join"/>
-            <xsl:with-param name="exclude" select="$exclude"/>
-         </xsl:call-template>
-      </xsl:if>
       
    </xsl:template>
    

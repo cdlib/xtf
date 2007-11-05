@@ -85,10 +85,10 @@
       <xsl:with-param name="display-kind">
         <xsl:variable name="path" select="saxon:system-id()"/>
         <xsl:choose>
-          <xsl:when test="ends-with($path, '.pdf')">PDF</xsl:when>
-          <xsl:when test="ends-with($path, '.txt')">Text</xsl:when>
-          <xsl:when test="ends-with($path, '.htm')">HTML</xsl:when>
-          <xsl:when test="ends-with($path, '.html')">HTML</xsl:when>
+          <xsl:when test="ends-with($path, '.pdf')">pdf</xsl:when>
+          <xsl:when test="ends-with($path, '.txt')">text</xsl:when>
+          <xsl:when test="ends-with($path, '.htm')">html</xsl:when>
+          <xsl:when test="ends-with($path, '.html')">html</xsl:when>
           <xsl:otherwise>unknown</xsl:otherwise>
         </xsl:choose>
       </xsl:with-param>

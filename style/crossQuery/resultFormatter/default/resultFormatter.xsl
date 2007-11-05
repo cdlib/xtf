@@ -78,7 +78,8 @@
         <xsl:apply-templates select="crossQueryResult" mode="form"/>
       </xsl:when>
       <xsl:when test="
-        $text or 
+         $text or 
+         $keyword or 
         $title or 
         $creator or 
         $subject or 
@@ -837,6 +838,7 @@
   <!-- ====================================================================== -->
   <!-- More Like This Template                                                -->
   <!-- ====================================================================== -->
+   
   <xsl:template match="crossQueryResult" mode="moreLike">
     <xsl:choose>
       <xsl:when test="docHit">

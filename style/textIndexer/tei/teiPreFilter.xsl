@@ -37,181 +37,324 @@
    POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<!-- ====================================================================== -->
-<!-- Import Common Templates and Functions                                  -->
-<!-- ====================================================================== -->
-  
-  <xsl:import href="../common/preFilterCommon.xsl"/>
-  
-<!-- ====================================================================== -->
-<!-- Output parameters                                                      -->
-<!-- ====================================================================== -->
-  
-  <xsl:output method="xml" 
-              indent="yes" 
-              encoding="UTF-8"/>
-  
-<!-- ====================================================================== -->
-<!-- Default: identity transformation                                       -->
-<!-- ====================================================================== -->
-
-  <xsl:template match="@*|node()">
-    <xsl:copy>
-      <xsl:apply-templates select="@*|node()"/>
-    </xsl:copy>
-  </xsl:template>
-
-<!-- ====================================================================== -->
-<!-- Root Template                                                          -->
-<!-- ====================================================================== -->
-
-  <xsl:template match="/*">
-    <xsl:copy>
-      <xsl:namespace name="xtf" select="'http://cdlib.org/xtf'"/>
-      <xsl:copy-of select="@*"/>
-      <xsl:call-template name="get-meta"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
-
-<!-- ====================================================================== -->
-<!-- TEI Indexing                                                           -->
-<!-- ====================================================================== -->
-
-  <!-- Ignored Elements -->
-  
-  <xsl:template match="teiHeader">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:attribute name="xtf:index" select="'no'"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
-
-  <!-- sectionType Indexing and Element Boosting -->
-  
-  <xsl:template match="head[parent::*[self::div1 or self::div2 or self::div3 or self::div4 or self::div5 or self::div6 or self::div7]]">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:attribute name="xtf:sectionType" select="concat('head ', @type)"/>
-      <xsl:attribute name="xtf:wordBoost" select="2.0"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
-  
-  <xsl:template match="titlePart[ancestor::titlePage]">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:attribute name="xtf:wordBoost" select="100.0"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
-  
-<!-- ====================================================================== -->
-<!-- Metadata Indexing                                                      -->
-<!-- ====================================================================== -->
-
-  <xsl:template name="get-meta">
-    <!-- Access Dublin Core Record (if present) -->
-    <xsl:variable name="dcMeta">
-      <xsl:call-template name="get-dc-meta"/>
-    </xsl:variable>
-    
-    <!-- If no Dublin Core present, then extract meta-data from the TEI -->
-    <xsl:variable name="meta">
+   <!-- ====================================================================== -->
+   <!-- Import Common Templates and Functions                                  -->
+   <!-- ====================================================================== -->
+   
+   <xsl:import href="../common/preFilterCommon.xsl"/>
+   
+   <!-- ====================================================================== -->
+   <!-- Output parameters                                                      -->
+   <!-- ====================================================================== -->
+   
+   <xsl:output method="xml" 
+      indent="yes" 
+      encoding="UTF-8"/>
+   
+   <!-- ====================================================================== -->
+   <!-- Default: identity transformation                                       -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template match="@*|node()">
+      <xsl:copy>
+         <xsl:apply-templates select="@*|node()"/>
+      </xsl:copy>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Root Template                                                          -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template match="/*">
+      <xsl:copy>
+         <xsl:namespace name="xtf" select="'http://cdlib.org/xtf'"/>
+         <xsl:copy-of select="@*"/>
+         <xsl:call-template name="get-meta"/>
+         <xsl:apply-templates/>
+      </xsl:copy>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- TEI Indexing                                                           -->
+   <!-- ====================================================================== -->
+   
+   <!-- Ignored Elements -->
+   
+   <xsl:template match="*[local-name()='teiHeader']">
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>
+         <xsl:attribute name="xtf:index" select="'no'"/>
+         <xsl:apply-templates/>
+      </xsl:copy>
+   </xsl:template>
+   
+   <!-- sectionType Indexing and Element Boosting -->
+   
+   <xsl:template match="*[local-name()='head'][parent::*[matches(local-name(),'^div')]]">
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>
+         <xsl:attribute name="xtf:sectionType" select="concat('head ', @type)"/>
+         <xsl:attribute name="xtf:wordBoost" select="2.0"/>
+         <xsl:apply-templates/>
+      </xsl:copy>
+   </xsl:template>
+   
+   <xsl:template match="*[local-name()='titlePart'][ancestor::*[local-name()='titlePage']]">
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>
+         <xsl:attribute name="xtf:wordBoost" select="100.0"/>
+         <xsl:apply-templates/>
+      </xsl:copy>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Metadata Indexing                                                      -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="get-meta">
+      <!-- Access Dublin Core Record (if present) -->
+      <xsl:variable name="dcMeta">
+         <xsl:call-template name="get-dc-meta"/>
+      </xsl:variable>
+      
+      <!-- If no Dublin Core present, then extract meta-data from the TEI -->
+      <xsl:variable name="meta">
+         <xsl:choose>
+            <xsl:when test="$dcMeta/*">
+               <xsl:copy-of select="$dcMeta"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:call-template name="get-tei-title"/>
+               <xsl:call-template name="get-tei-creator"/>
+               <xsl:call-template name="get-tei-subject"/>
+               <xsl:call-template name="get-tei-description"/>
+               <xsl:call-template name="get-tei-publisher"/>
+               <xsl:call-template name="get-tei-contributor"/>
+               <xsl:call-template name="get-tei-date"/>
+               <xsl:call-template name="get-tei-type"/>
+               <xsl:call-template name="get-tei-format"/>
+               <xsl:call-template name="get-tei-identifier"/>
+               <xsl:call-template name="get-tei-source"/>
+               <xsl:call-template name="get-tei-language"/>
+               <xsl:call-template name="get-tei-relation"/>
+               <xsl:call-template name="get-tei-coverage"/>
+               <xsl:call-template name="get-tei-rights"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </xsl:variable>
+      
+      <!-- Add doc kind and sort fields to the data, and output the result. -->
+      <xsl:call-template name="add-fields">
+         <xsl:with-param name="display-kind" select="'dynaXML/TEI'"/>
+         <xsl:with-param name="meta" select="$meta"/>
+      </xsl:call-template>    
+   </xsl:template>
+   
+   <!-- Fetch title info from the titleStmt or the titlePage. --> 
+   <xsl:template name="get-tei-title">
       <xsl:choose>
-        <xsl:when test="$dcMeta/*">
-          <xsl:copy-of select="$dcMeta"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:call-template name="get-tei-title"/>
-          <xsl:call-template name="get-tei-author"/>
-          <xsl:call-template name="get-tei-date"/>
-          <xsl:call-template name="get-tei-description"/>
-          <xsl:call-template name="get-tei-identifier"/>
-        </xsl:otherwise>
+         <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='titleStmt']/*[local-name()='title']">
+            <title xtf:meta="true">
+               <xsl:value-of select="string(//*[local-name()='fileDesc']/*[local-name()='titleStmt']/*[local-name()='title'][1])"/>
+            </title>
+         </xsl:when>
+         <xsl:when test="//*[local-name()='titlePage']/*[local-name()='titlePart'][@type='main']">
+            <title xtf:meta="true">
+               <xsl:value-of select="string(//*[local-name()='titlePage']/*[local-name()='titlePart'][@type='main'])"/>
+               <xsl:if test="//*[local-name()='titlePage']/*[local-name()='titlePart'][@type='subtitle']">
+                  <xsl:text>: </xsl:text>
+                  <xsl:value-of select="string(//*[local-name()='titlePage']/*[local-name()='titlePart'][@type='subtitle'][1])"/>
+               </xsl:if>
+            </title>
+         </xsl:when>
+         <xsl:otherwise>
+            <title xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </title>
+         </xsl:otherwise>
       </xsl:choose>
-    </xsl:variable>
-
-    <!-- Add doc kind and sort fields to the data, and output the result. -->
-    <xsl:call-template name="add-fields">
-      <xsl:with-param name="display-kind" select="'dynaXML/TEI'"/>
-      <xsl:with-param name="meta" select="$meta"/>
-    </xsl:call-template>    
-  </xsl:template>
-  
-  <!-- Fetch title info from the titleStmt or the titlePage. --> 
-  <xsl:template name="get-tei-title">
-    <xsl:choose>
-      <xsl:when test="//fileDesc/titleStmt/title">
-        <title xtf:meta="true">
-          <xsl:value-of select="string(//fileDesc/titleStmt/title)"/>
-        </title>
-      </xsl:when>
-      <xsl:when test="//titlePage/titlePart[@type='main']">
-        <title xtf:meta="true">
-          <xsl:value-of select="string(//titlePage/titlePart[@type='main'])"/>
-          <xsl:if test="//titlePage/titlePart[@type='subtitle']">
-            <xsl:text>: </xsl:text>
-            <xsl:value-of select="string(//titlePage/titlePart[@type='subtitle'])"/>
-          </xsl:if>
-        </title>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:template>
-
-  <!-- Fetch creator (author) info from the titleStmt or the titlePage. --> 
-  <xsl:template name="get-tei-author">
-    <xsl:choose>
-      <xsl:when test="//fileDesc/titleStmt/author">
-        <creator xtf:meta="true">
-          <xsl:value-of select="string(//fileDesc/titleStmt/author)"/>
-        </creator>
-      </xsl:when>
-      <xsl:when test="//titlePage/docAuthor">
-        <creator xtf:meta="true">
-          <xsl:value-of select="string(//titlePage/docAuthor)"/>
-        </creator>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:template>
-  
-  <!-- Fetch date info from the publicationStmt or the titlePage. --> 
-  <xsl:template name="get-tei-date">
-    <xsl:choose>
-      <xsl:when test="//fileDesc/publicationStmt/date">
-        <date xtf:meta="true">
-          <xsl:value-of select="string(//fileDesc/publicationStmt/date)"/>
-        </date>
-      </xsl:when>
-      <xsl:when test="//titlePage/docImprint/docDate">
-        <date xtf:meta="true">
-          <xsl:value-of select="//titlePage/docImprint/docDate"/>
-        </date>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:template>
-  
-  <!-- Fetch description info from the TEI, if possible. --> 
-  <xsl:template name="get-tei-description">
-    <xsl:choose>
-      <xsl:when test="//text/body/div1[1]/p">
-        <description xtf:meta="true">
-          <xsl:value-of select="//text/body/div1[1]/p[1]"/>
-        </description>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:template>
-  
-  <!-- Fetch identifier info from the TEI, if possible. --> 
-  <xsl:template name="get-tei-identifier">
-    <xsl:choose>
-      <xsl:when test="//fileDesc/publicationStmt/idno">
-        <identifier xtf:meta="true">
-          <xsl:value-of select="//fileDesc/publicationStmt/idno[1]"/>
-        </identifier>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:template>
-  
+   </xsl:template>
+   
+   <!-- Fetch creator (author) info from the titleStmt or the titlePage. --> 
+   <xsl:template name="get-tei-creator">
+      <xsl:choose>
+         <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='titleStmt']/*[local-name()='author']">
+            <creator xtf:meta="true">
+               <xsl:value-of select="string(//*[local-name()='fileDesc']/*[local-name()='titleStmt']/*[local-name()='author'][1])"/>
+            </creator>
+         </xsl:when>
+         <xsl:when test="//*[local-name()='titlePage']/*[local-name()='docAuthor']">
+            <creator xtf:meta="true">
+               <xsl:value-of select="string(//*[local-name()='titlePage']/*[local-name()='docAuthor'][1])"/>
+            </creator>
+         </xsl:when>
+         <xsl:otherwise>
+            <creator xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </creator>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <!-- Fetch subject info from the TEI, if possible. --> 
+   <xsl:template name="get-tei-subject">
+      <xsl:choose>
+         <xsl:when test="//*[local-name()='keywords']/*[local-name()='list']/*[local-name()='item']">
+            <xsl:for-each select="//*[local-name()='keywords']/*[local-name()='list']/*[local-name()='item']">
+               <subject xtf:meta="true">
+                  <xsl:value-of select="."/>
+               </subject>
+            </xsl:for-each>
+         </xsl:when>
+      </xsl:choose>
+   </xsl:template>
+   
+   <!-- Fetch description info from the TEI, if possible. --> 
+   <xsl:template name="get-tei-description">
+      <xsl:choose>
+         <xsl:when test="//*[local-name()='text']/*[local-name()='body']/*[local-name()='div1'][1]/*[local-name()='p']">
+            <description xtf:meta="true">
+               <xsl:value-of select="//*[local-name()='text']/*[local-name()='body']/*[local-name()='div1'][1]/*[local-name()='p'][1]"/>
+            </description>
+         </xsl:when>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="get-tei-publisher">
+      <xsl:choose>
+         <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='publisher']">
+            <publisher xtf:meta="true">
+               <xsl:value-of select="string(//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='publisher'][1])"/>
+            </publisher>
+         </xsl:when>
+         <xsl:when test="//*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']//*[local-name()='publisher']">
+            <publisher xtf-meta="true">
+               <xsl:value-of select="string(//*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']//*[local-name()='publisher'][1])"/>
+            </publisher>
+         </xsl:when>
+         <xsl:otherwise>
+            <publisher xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </publisher>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="get-tei-contributor"><!-- here -->
+      <xsl:choose>
+         <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='respStmt']/*[local-name()='name']">
+            <contributor xtf-meta="true">
+               <xsl:value-of select="string(//*[local-name()='fileDesc']/*[local-name()='respStmt']/*[local-name()='name'][1])"/>
+            </contributor>
+         </xsl:when>
+         <xsl:otherwise>
+            <contributor xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </contributor>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <!-- Fetch date info from the publicationStmt or the titlePage. --> 
+   <xsl:template name="get-tei-date">
+      <xsl:choose>
+         <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='date']">
+            <date xtf:meta="true">
+               <xsl:value-of select="string(//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='date'])"/>
+            </date>
+         </xsl:when>
+         <xsl:when test="//*[local-name()='titlePage']/*[local-name()='docImprint']/*[local-name()='docDate']">
+            <date xtf:meta="true">
+               <xsl:value-of select="string(//*[local-name()='titlePage']/*[local-name()='docImprint']/*[local-name()='docDate'])"/>
+            </date>
+         </xsl:when>
+         <xsl:otherwise>
+            <date xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </date>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="get-tei-type">
+      <type xtf:meta="true">tei</type>
+   </xsl:template>
+   
+   <xsl:template name="get-tei-format">
+      <format xtf:meta="true">xml</format>
+   </xsl:template>
+   
+   <!-- Fetch identifier info from the TEI, if possible. --> 
+   <xsl:template name="get-tei-identifier">
+      <xsl:choose>
+         <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='idno']">
+            <identifier xtf:meta="true">
+               <xsl:value-of select="string(//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='idno'][1])"/>
+            </identifier>
+         </xsl:when>
+         <xsl:otherwise>
+            <identifier xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </identifier>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="get-tei-source">
+      <xsl:choose>
+         <xsl:when test="//*[local-name()='sourceDesc']/*[local-name()='bibl']">
+            <source xtf-meta="true">
+               <xsl:value-of select="string(//*[local-name()='sourceDesc']/*[local-name()='bibl'][1])"/>
+            </source>
+         </xsl:when>
+         <xsl:otherwise>
+            <source xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </source>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="get-tei-language">
+      <xsl:choose>
+         <xsl:when test="//*[local-name()='profileDesc']/*[local-name()='langUsage']/*[local-name()='language']">
+            <language xtf-meta="true">
+               <xsl:value-of select="string(//*[local-name()='profileDesc']/*[local-name()='langUsage']/*[local-name()='language'][1])"/>
+            </language>
+         </xsl:when>
+         <xsl:otherwise>
+            <language xtf:meta="true">
+               <xsl:value-of select="'english'"/>
+            </language>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="get-tei-relation">
+      <xsl:choose>
+         <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='seriesStmt']/*[local-name()='title']">
+            <relation xtf-meta="true">
+               <xsl:value-of select="string(//*[local-name()='fileDesc']/*[local-name()='seriesStmt']/*[local-name()='title'])"/>
+            </relation>
+         </xsl:when>
+         <xsl:otherwise>
+            <relation xtf:meta="true">
+               <xsl:value-of select="'unknown'"/>
+            </relation>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="get-tei-coverage">
+      <coverage xtf:meta="true">
+         <xsl:value-of select="'unknown'"/>
+      </coverage>
+   </xsl:template>
+   
+   <xsl:template name="get-tei-rights">
+      <rights xtf-meta="true">
+         <xsl:value-of select="'public'"/>
+      </rights>
+   </xsl:template>
+   
 </xsl:stylesheet>

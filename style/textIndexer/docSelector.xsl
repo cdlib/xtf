@@ -6,6 +6,7 @@
         xmlns:saxon="http://saxon.sf.net/"
         xmlns:xtf="http://cdlib.org/xtf"
         xmlns:date="http://exslt.org/dates-and-times"
+        xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils"
         extension-element-prefixes="date"
         exclude-result-prefixes="#all">
 
@@ -105,66 +106,96 @@
 <!-- Templates                                                              -->
 <!-- ====================================================================== -->
   
-  <xsl:template match="directory">
-    <indexFiles>
-      <xsl:apply-templates/>
-    </indexFiles>
-  </xsl:template>
-
-  <xsl:template match="file">
-    <xsl:variable name="dirPath" select="parent::*/@dirPath"/>
-    <xsl:choose>
-      <!-- XML files -->
-      <xsl:when test="ends-with(@fileName, '.xml')">
-        <xsl:choose>
-          <!-- Skip document-less METS and DC files -->
-          <xsl:when test="ends-with(@fileName, '.mets.xml') or ends-with(@fileName, '.dc.xml')"/>
-          
-          <!-- Look for TEI XML file -->
-          <xsl:when test="contains($dirPath, '/tei') or contains(fileName, '.tei')">
-            <indexFile fileName="{@fileName}"
-                       preFilter="style/textIndexer/tei/teiPreFilter.xsl"
-                       displayStyle="style/dynaXML/docFormatter/tei/teiDocFormatter.xsl"/>
-          </xsl:when>
-          
-          <!-- Look for EAD XML files -->
-          <xsl:when test="contains($dirPath, '/ead') or contains(fileName, '.ead')">
-            <indexFile fileName="{@fileName}"
-                       preFilter="style/textIndexer/ead/eadPreFilter.xsl"
-                       displayStyle="style/dynaXML/docFormatter/ead/eadDocFormatter.xsl"/>
-          </xsl:when>
-          
-          <!-- Default processing for XML files -->
-          <xsl:otherwise>
+   <xsl:template match="directory">
+      <indexFiles>
+         <xsl:apply-templates/>
+      </indexFiles>
+   </xsl:template>
+   
+   <xsl:template match="file">
+      <xsl:variable name="dirPath" select="parent::*/@dirPath"/>
+      <xsl:choose>
+         <!-- XML files -->
+         <xsl:when test="ends-with(@fileName, '.xml')">
+            
+            <xsl:choose>
+               <!-- Skip document-less METS and DC files -->
+               <xsl:when test="ends-with(@fileName, '.mets.xml') or ends-with(@fileName, '.dc.xml')"/>
+               
+               <xsl:otherwise>
+                  
+                  <xsl:variable name="fileName" select="@fileName"/>
+                  <xsl:variable name="file" select="concat($dirPath,$fileName)"/>
+                  
+                  <xsl:for-each select="FileUtils:readXMLStub($file)">
+                     
+                     <xsl:variable name="root-element-name" select="name(*[1])"/>
+                     <xsl:variable name="pid" select="unparsed-entity-public-id($root-element-name)"/>
+                     <xsl:variable name="uri" select="unparsed-entity-uri($root-element-name)"/>
+                     <xsl:variable name="ns" select="namespace-uri(*[1])"/>
+                     
+                     <xsl:choose>
+                        <!-- Look for TEI XML file -->
+                        <xsl:when test="matches($root-element-name,'^TEI') or 
+                                        matches($pid,'TEI') or 
+                                        matches($uri,'tei2\.dtd') or 
+                                        matches($ns,'tei')">
+                           <indexFile fileName="{$fileName}"
+                              preFilter="style/textIndexer/tei/teiPreFilter.xsl"
+                              displayStyle="style/dynaXML/docFormatter/tei/teiDocFormatter.xsl"/>
+                        </xsl:when>
+                        <!-- Look for EAD XML files -->
+                        <xsl:when test="matches($root-element-name,'^ead$') or
+                                        matches($pid,'EAD') or 
+                                        matches($uri,'ead\.dtd') or 
+                                        matches($ns,'ead')">
+                           <indexFile fileName="{$fileName}"
+                              preFilter="style/textIndexer/ead/eadPreFilter.xsl"
+                              displayStyle="style/dynaXML/docFormatter/ead/eadDocFormatter.xsl"/>
+                        </xsl:when>
+                        <!-- Look for NLM XML files -->
+                        <xsl:when test="matches($root-element-name,'^article$') or
+                                        matches($pid,'NLM') or 
+                                        matches($uri,'journalpublishing\.dtd') or 
+                                        matches($ns,'nlm')">
+                           <indexFile fileName="{$fileName}"
+                              preFilter="style/textIndexer/nlm/nlmPreFilter.xsl"
+                              displayStyle="style/dynaXML/docFormatter/nlm/nlmDocFormatter.xsl"/>
+                        </xsl:when>
+                        <!-- Default processing for XML files -->
+                        <xsl:otherwise>
+                           <indexFile fileName="{$fileName}" 
+                              type="XML"
+                              preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+                        </xsl:otherwise>
+                     </xsl:choose>
+                  </xsl:for-each>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:when>
+         
+         <!-- PDF files -->
+         <xsl:when test="ends-with(@fileName, '.pdf')">
             <indexFile fileName="{@fileName}" 
-              type="XML"
-              preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:when>
+               type="PDF"
+               preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+         </xsl:when>
+         
+         <!-- HTML files -->
+         <xsl:when test="ends-with(@fileName, '.htm') or ends-with(@fileName, '.html')">
+            <indexFile fileName="{@fileName}" 
+               type="HTML"
+               preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+         </xsl:when>
+         
+         <!-- Plain text files -->
+         <xsl:when test="ends-with(@fileName, '.txt')">
+            <indexFile fileName="{@fileName}" 
+               type="text"
+               preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+         </xsl:when>
+      </xsl:choose>
       
-      <!-- PDF files -->
-      <xsl:when test="ends-with(@fileName, '.pdf')">
-        <indexFile fileName="{@fileName}" 
-                   type="PDF"
-                   preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
-      </xsl:when>
-      
-      <!-- HTML files -->
-      <xsl:when test="ends-with(@fileName, '.htm') or ends-with(@fileName, '.html')">
-        <indexFile fileName="{@fileName}" 
-          type="HTML"
-          preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
-      </xsl:when>
-      
-      <!-- Plain text files -->
-      <xsl:when test="ends-with(@fileName, '.txt')">
-        <indexFile fileName="{@fileName}" 
-          type="text"
-          preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
-      </xsl:when>
-    </xsl:choose>
-    
-  </xsl:template>
+   </xsl:template>
 
 </xsl:stylesheet>
