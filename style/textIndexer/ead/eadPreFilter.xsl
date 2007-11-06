@@ -201,8 +201,8 @@
    <!-- subject --> 
    <xsl:template name="get-ead-subject">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/controlaccess/subject">
-            <xsl:for-each select="/ead/archdesc/controlaccess/subject">
+         <xsl:when test="/ead/archdesc//controlaccess/subject">
+            <xsl:for-each select="/ead/archdesc//controlaccess/subject">
                <subject xtf:meta="true">
                   <xsl:value-of select="."/>
                </subject>

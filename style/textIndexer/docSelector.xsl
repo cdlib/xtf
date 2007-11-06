@@ -174,17 +174,17 @@
             </xsl:choose>
          </xsl:when>
          
-         <!-- PDF files -->
-         <xsl:when test="ends-with(@fileName, '.pdf')">
-            <indexFile fileName="{@fileName}" 
-               type="PDF"
-               preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
-         </xsl:when>
-         
          <!-- HTML files -->
          <xsl:when test="ends-with(@fileName, '.htm') or ends-with(@fileName, '.html')">
             <indexFile fileName="{@fileName}" 
                type="HTML"
+               preFilter="style/textIndexer/html/htmlPreFilter.xsl"/>
+         </xsl:when>
+         
+         <!-- PDF files -->
+         <xsl:when test="ends-with(@fileName, '.pdf')">
+            <indexFile fileName="{@fileName}" 
+               type="PDF"
                preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
          </xsl:when>
          

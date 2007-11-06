@@ -605,22 +605,6 @@
         </span>
       </td>
     </tr>
-    <xsl:if test="meta/relation">
-      <tr>
-        <td align="right">
-          <xsl:text>&#160;</xsl:text>
-        </td>
-        <td align="right">
-          <span class="heading">Collection:&#160;&#160;</span>
-        </td>
-        <td align="left">
-          <xsl:apply-templates select="meta/relation[1]"/>
-        </td>
-        <td align="right">
-          <xsl:text>&#160;</xsl:text>
-        </td>
-      </tr>
-    </xsl:if>
     <tr>
       <td align="right">
         <xsl:text>&#160;</xsl:text>
@@ -629,7 +613,14 @@
         <span class="heading">Published:&#160;&#160;</span>
       </td>
       <td align="left">
-        <xsl:apply-templates select="meta/year"/>
+         <xsl:choose>
+            <xsl:when test="meta/year">
+               <xsl:value-of select="replace(meta/year,'^.+ ','')"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:apply-templates select="meta/date"/>
+            </xsl:otherwise>
+         </xsl:choose>
       </td>
       <td align="right">
         <xsl:text>&#160;</xsl:text>

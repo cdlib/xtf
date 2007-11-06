@@ -3,6 +3,7 @@
         xmlns:xtf="http://cdlib.org/xtf"
         xmlns:parse="http://cdlib.org/xtf/parse"
         xmlns:expand="http://cdlib.org/xtf/expand"
+        xmlns:dc="http://purl.org/dc/elements/1.1/"
         xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils"
         extension-element-prefixes="FileUtils"
         exclude-result-prefixes="#all">
@@ -52,7 +53,7 @@
    </xsl:template>
    
    <!-- Process DC -->
-   <xsl:template match="dc" mode="inmeta">
+   <xsl:template match="*" mode="inmeta">
       
       <!-- Copy all metadata fields -->
       <xsl:for-each select="*">
@@ -129,6 +130,9 @@
          <xsl:attribute name="xtf:tokenize" select="'no'"/>
          <xsl:choose>
             <xsl:when test="matches(.,'[0-9]{2}-[0-9]{2}-[0-9]{4}')">
+               <xsl:value-of select="replace(.,'-','::')"/>
+            </xsl:when>
+            <xsl:when test="matches(.,'[0-9]{4}-[0-9]{2}-[0-9]{2}')">
                <xsl:value-of select="replace(.,'-','::')"/>
             </xsl:when>
             <xsl:otherwise>
