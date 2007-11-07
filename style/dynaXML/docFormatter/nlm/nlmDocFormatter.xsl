@@ -403,6 +403,11 @@
 		<!-- value 'allauthors' puts no string out -->
 	</util:map>
 
+   <xsl:param name="root.path"/>
+   <xsl:param name="xtfURL" select="$root.path"/>
+   <xsl:param name="docId"/>
+   <xsl:param name="ID" select="replace($docId,'[A-Za-z0-9]+\.xml$','')"/>
+
 
 	<!-- ============================================================= -->
 	<!--  2. ROOT TEMPLATE - HANDLES HTML FRAMEWORK                    -->
@@ -602,7 +607,7 @@
 	<xsl:template name="make-src">
 		<xsl:if test="@xlink:href">
 			<xsl:attribute name="src">
-				<xsl:value-of select="@xlink:href"/>
+				<xsl:value-of select="concat($xtfURL,'data/',$ID,'figures/',@xlink:href)"/>
 			</xsl:attribute>
 		</xsl:if>
 	</xsl:template>
