@@ -34,6 +34,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
@@ -79,7 +80,7 @@ class ImageCache extends GeneratingCache<String, BufferedImage>
    * versions of the colors.
    * 
    * @param inImg    The image to remap
-   * @return      A new image with reduced and normalized palette
+   * @return         A new image with reduced and normalized palette
    */
   private BufferedImage remapPalette(BufferedImage inImg)
     throws DynamicError
@@ -113,7 +114,7 @@ class ImageCache extends GeneratingCache<String, BufferedImage>
       outColors[2][i + outColorBase*1] = 0;         // blue
       
       // Make a set: white->white, black->red
-      byte redMapped = (byte) Math.max(192, ((int)greyVal) & 0xff); 
+      byte redMapped = (byte) Math.max(160, ((int)greyVal) & 0xff); 
       outColors[0][i + outColorBase*2] = redMapped; // red
       outColors[1][i + outColorBase*2] = greyVal;   // green
       outColors[2][i + outColorBase*2] = greyVal;   // blue
@@ -156,7 +157,7 @@ class ImageCache extends GeneratingCache<String, BufferedImage>
     
     // Map all the input pixels to their new values.
     for (int i=0; i<w*h; i++)
-      outPixels[i] = mapping[inPixels[i]];
+      outPixels[i] = mapping[((int)inPixels[i]) & 0xFF];
     outRast.setDataElements(0, 0, w, h, outPixels);
     
     // All done!
