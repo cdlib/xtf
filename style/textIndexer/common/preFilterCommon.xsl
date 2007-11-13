@@ -69,16 +69,16 @@
    <!-- Add sort fields to DC meta-data -->
    <xsl:template name="add-fields">
       <xsl:param name="meta"/>
-      <xsl:param name="display-kind"/>
+      <xsl:param name="display"/>
       
       <xtf:meta>
          <!-- Copy all the original fields -->
          <xsl:copy-of select="$meta/*"/>
          
          <!-- Add a field to record the document kind -->
-         <display-kind xtf:meta="true" xtf:tokenize="no">
-            <xsl:value-of select="$display-kind"/>
-         </display-kind>
+         <display xtf:meta="true" xtf:tokenize="no">
+            <xsl:value-of select="$display"/>
+         </display>
          
          <!-- Parse the date field to create a year (or range of years) -->
          <xsl:apply-templates select="$meta/date" mode="year"/>

@@ -571,7 +571,7 @@
         <a>
           <xsl:attribute name="href">
             <xsl:choose>
-              <xsl:when test="starts-with(meta/display-kind, 'dynaXML/')">
+              <xsl:when test="matches(meta/display, 'dynaxml')">
                 <xsl:call-template name="dynaxml.url">
                   <xsl:with-param name="path" select="$path"/>
                 </xsl:call-template>
@@ -589,9 +589,9 @@
             </xsl:when>
             <xsl:otherwise>none</xsl:otherwise>
           </xsl:choose>
-          <xsl:if test="not(starts-with(meta/display-kind, 'dynaXML/'))">
+          <xsl:if test="not(matches(meta/display, 'dynaxml'))">
             <xsl:text> [</xsl:text>
-            <xsl:value-of select="meta/display-kind"/>
+            <xsl:value-of select="meta/type"/>
             <xsl:text>]</xsl:text>
           </xsl:if>
         </a>
@@ -769,7 +769,7 @@
  
   <xsl:template match="term" mode="text">
     <xsl:variable name="path" select="ancestor::docHit/@path"/>
-    <xsl:variable name="display-kind" select="ancestor::docHit/meta/display-kind"/>
+    <xsl:variable name="display" select="ancestor::docHit/meta/display"/>
     <xsl:variable name="collection" select="string(meta/collection)"/>
     <xsl:variable name="hit.rank"><xsl:value-of select="ancestor::snippet/@rank"/></xsl:variable>
     <xsl:variable name="snippet.link">    
@@ -781,7 +781,7 @@
     
     <xsl:choose>
       <xsl:when test="ancestor::query"/>
-      <xsl:when test="not(ancestor::snippet) or not(starts-with($display-kind, 'dynaXML/'))">
+      <xsl:when test="not(ancestor::snippet) or not(matches($display, 'dynaxml'))">
         <span class="term">
           <xsl:apply-templates/>
         </span>
@@ -848,7 +848,7 @@
     <a>
       <xsl:attribute name="href">
         <xsl:choose>
-          <xsl:when test="starts-with(meta/display-kind, 'dynaXML/')">
+          <xsl:when test="matches(meta/display, 'dynaxml')">
             <xsl:call-template name="dynaxml.url">
               <xsl:with-param name="path" select="$path"/>
             </xsl:call-template>

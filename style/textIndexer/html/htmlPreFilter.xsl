@@ -107,7 +107,7 @@
       
       <!-- Add doc kind and sort fields to the data, and output the result. -->
       <xsl:call-template name="add-fields">
-         <xsl:with-param name="display-kind" select="'html'"/>
+         <xsl:with-param name="display" select="'raw'"/>
          <xsl:with-param name="meta" select="$meta"/>
       </xsl:call-template>    
    </xsl:template>
