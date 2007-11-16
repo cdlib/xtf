@@ -92,6 +92,10 @@ public class StylesheetCache extends GeneratingCache
     //
     factory.setAttribute(FeatureKeys.SOURCE_PARSER_CLASS,
                          DTDSuppressingXMLReader.class.getName());
+
+    // Set a URI resolver for dependency checking, if enabled.
+    if (dependencyChecking)
+      factory.setURIResolver(new DepResolver(this, factory.getURIResolver()));
   }
 
   /**
@@ -157,10 +161,6 @@ public class StylesheetCache extends GeneratingCache
         factory.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
       }
   
-      // Set a URI resolver for dependency checking, if enabled.
-      if (dependencyChecking)
-        factory.setURIResolver(new DepResolver(this, factory.getURIResolver()));
-      
       // Load that stylesheet!
       String url;
       if (path.startsWith("http:"))
