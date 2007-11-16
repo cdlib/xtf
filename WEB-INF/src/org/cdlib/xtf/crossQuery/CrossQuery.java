@@ -32,6 +32,7 @@ package org.cdlib.xtf.crossQuery;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.SocketException;
 import java.text.DecimalFormat;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -146,7 +147,7 @@ public class CrossQuery extends TextServlet
       apply(attribs, req, res);
     }
     catch (Exception e) {
-      if (!(e instanceof RedirectException)) 
+      if (!(e instanceof RedirectException) && !(e instanceof SocketException)) 
       {
         try {
           genErrorPage(req, res, e);

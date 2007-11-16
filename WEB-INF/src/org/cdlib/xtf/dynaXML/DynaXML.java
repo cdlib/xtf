@@ -34,6 +34,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -275,7 +276,7 @@ public class DynaXML extends TextServlet
       apply(docInfo, req, res);
     }
     catch (Exception e) {
-      if (!(e instanceof RedirectException)) 
+      if (!(e instanceof RedirectException) && !(e instanceof SocketException)) 
       {
         try {
           genErrorPage(req, res, e);
@@ -400,7 +401,9 @@ public class DynaXML extends TextServlet
       transformer.transform(sourceDoc,
                             createFilteredReceiver(transformer, req, res));
     }
-    catch (Exception e) {
+    finally 
+    {
+      // Clean up.
       if (config.stylesheetProfiling) {
         Trace.info("Profile for request: " + getRequestURL(req));
         Trace.tab();
@@ -408,6 +411,8 @@ public class DynaXML extends TextServlet
         Trace.untab();
         Trace.info("End of profile.");
       }
+
+      // Debugging: dump search tree.
       if (dump && sourceDoc instanceof SearchTree) {
         ((SearchTree)sourceDoc).pruneUnused();
         File file = new File("C:\\tmp\\tree.dump");
@@ -417,32 +422,11 @@ public class DynaXML extends TextServlet
         outWriter.println(XMLWriter.toString(sourceDoc));
         outWriter.close();
       }
-      throw e;
-    }
 
-    // Clean up.
-    if (config.stylesheetProfiling) {
-      Trace.info("Profile for request: " + getRequestURL(req));
-      Trace.tab();
-      ((PersistentTree)sourceDoc).printProfile();
-      Trace.untab();
-      Trace.info("End of profile.");
+      // It's a good idea to close disk-based trees when done using them.
+      if (sourceDoc instanceof PersistentTree)
+        ((PersistentTree)sourceDoc).close();
     }
-
-    // Debugging: dump search tree.
-    if (dump && sourceDoc instanceof SearchTree) {
-      ((SearchTree)sourceDoc).pruneUnused();
-      File file = new File("C:\\tmp\\tree.dump");
-      Trace.info("Dumping " + file.getAbsolutePath());
-      PrintWriter outWriter = new PrintWriter(
-        new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-      outWriter.println(XMLWriter.toString(sourceDoc));
-      outWriter.close();
-    }
-
-    // It's a good idea to close disk-based trees when done using them.
-    if (sourceDoc instanceof PersistentTree)
-      ((PersistentTree)sourceDoc).close();
   } // apply()
 
   /**
