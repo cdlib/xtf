@@ -1265,25 +1265,13 @@ public abstract class TextServlet extends HttpServlet
     {
       ServletOutputStream out = res.getOutputStream();
 
-      // First, load the error generating stylesheet.
-      TextConfig config = getConfig();
-      Templates pss = stylesheetCache.find(errorGenSheet.get());
-
-      // Figure out the output mime type
-      res.setContentType(calcMimeType(pss));
-
-      // Make a trans and put attributes from the HTTP request
-      // and from the global config file into it as attributes that
-      // the stylesheet can use.
-      //
-      Transformer trans = pss.newTransformer();
-      stuffAttribs(trans, req);
-      stuffAttribs(trans, config.attribs);
-
       // If we are in raw mode, use a null transform instead of the
       // stylesheet.
       //
+      Transformer trans;
       String raw = req.getParameter("raw");
+      if (raw == null)
+        raw = (String) req.getAttribute("org.cdlib.xtf.servlet.raw");
       if ("yes".equals(raw) || "true".equals(raw) || "1".equals(raw)) 
       {
         res.setContentType("text/xml");
@@ -1293,6 +1281,23 @@ public abstract class TextServlet extends HttpServlet
         props.put("indent", "yes");
         props.put("method", "xml");
         trans.setOutputProperties(props);
+      }
+      else
+      {
+        // First, load the error generating stylesheet.
+        TextConfig config = getConfig();
+        Templates pss = stylesheetCache.find(errorGenSheet.get());
+
+        // Figure out the output mime type
+        res.setContentType(calcMimeType(pss));
+
+        // Make a trans and put attributes from the HTTP request
+        // and from the global config file into it as attributes that
+        // the stylesheet can use.
+        //
+        trans = pss.newTransformer();
+        stuffAttribs(trans, req);
+        stuffAttribs(trans, config.attribs);
       }
 
       // Figure out just the last part of the exception class name.

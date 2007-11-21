@@ -436,14 +436,37 @@ public class CrossQuery extends TextServlet
                             long startTime)
     throws Exception 
   {
-    // Locate the display stylesheet.
-    Templates displaySheet = stylesheetCache.find(queryRequest.displayStyle);
+    // If we are in raw mode (or on step 4 in step mode), use a null 
+    // transform instead of the stylesheet.
+    //
+    Transformer trans;
+    String raw = req.getParameter("raw");
+    if (raw == null)
+      raw = (String) req.getAttribute("org.cdlib.xtf.servlet.raw");
+    String step = req.getParameter("debugStep");
+    if ("yes".equals(raw) ||
+        "true".equals(raw) ||
+        "1".equals(raw) ||
+        "4b".equals(step)) 
+    {
+      res.setContentType("text/xml");
 
-    // Figure out the output mime type
-    res.setContentType(calcMimeType(displaySheet));
+      trans = IndexUtil.createTransformer();
+      Properties props = trans.getOutputProperties();
+      props.put("indent", "yes");
+      props.put("method", "xml");
+      trans.setOutputProperties(props);
+    }
+    else {
+      // Locate the display stylesheet.
+      Templates displaySheet = stylesheetCache.find(queryRequest.displayStyle);
 
-    // Make a transformer for this specific query.
-    Transformer trans = displaySheet.newTransformer();
+      // Figure out the output mime type
+      res.setContentType(calcMimeType(displaySheet));
+      
+      // Make a transformer for this specific query.
+      trans = displaySheet.newTransformer();
+    }
 
     // Stuff all the common config properties into the transformer in
     // case the query generator needs access to them.
@@ -474,25 +497,6 @@ public class CrossQuery extends TextServlet
     hitsString = prefix + "queryTime=\"" + formattedTime + "\" " +
                  hitsString.substring(prefix.length());
     Source sourceDoc = new StreamSource(new StringReader(hitsString));
-
-    // If we are in raw mode (or on step 4 in step mode), use a null 
-    // transform instead of the stylesheet.
-    //
-    String raw = req.getParameter("raw");
-    String step = req.getParameter("debugStep");
-    if ("yes".equals(raw) ||
-        "true".equals(raw) ||
-        "1".equals(raw) ||
-        "4b".equals(step)) 
-    {
-      res.setContentType("text/xml");
-
-      trans = IndexUtil.createTransformer();
-      Properties props = trans.getOutputProperties();
-      props.put("indent", "yes");
-      props.put("method", "xml");
-      trans.setOutputProperties(props);
-    }
 
     // Make sure errors get directed to the right place.
     if (!(trans.getErrorListener() instanceof XTFSaxonErrorListener))
