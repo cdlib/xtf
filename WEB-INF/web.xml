@@ -12,6 +12,11 @@
         </servlet>
         
         <servlet>
+            <servlet-name>rawQuery</servlet-name>
+            <servlet-class>org.cdlib.xtf.crossQuery.raw.RawQuery</servlet-class>
+        </servlet>
+        
+        <servlet>
             <servlet-name>dynaXML</servlet-name>
             <servlet-class>org.cdlib.xtf.dynaXML.DynaXML</servlet-class>
         </servlet>
@@ -52,6 +57,11 @@
         </servlet-mapping>
         
         <servlet-mapping>
+            <servlet-name>rawQuery</servlet-name>
+            <url-pattern>/rawQuery</url-pattern>
+        </servlet-mapping>
+
+        <servlet-mapping>
             <servlet-name>dynaXML</servlet-name>
             <url-pattern>/view</url-pattern>
         </servlet-mapping>
@@ -59,11 +69,6 @@
         <servlet-mapping>
             <servlet-name>SRU</servlet-name>
             <url-pattern>/SRU</url-pattern>
-        </servlet-mapping>
-        
-        <servlet-mapping>
-            <servlet-name>previewXML</servlet-name>
-            <url-pattern>/preview</url-pattern>
         </servlet-mapping>
         
         <servlet-mapping>
@@ -80,6 +85,5 @@
             <servlet-name>org.cdlib.xtf.zing.SRU</servlet-name>
             <url-pattern>/servlet/org.cdlib.xtf.zing.SRU</url-pattern>
         </servlet-mapping>
-
     
     </web-app>
