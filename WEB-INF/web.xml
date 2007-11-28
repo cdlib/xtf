@@ -27,11 +27,6 @@
         </servlet>
         
         <servlet>
-            <servlet-name>previewXML</servlet-name>
-            <servlet-class>org.cdlib.xtf.web.PreviewXML</servlet-class>
-        </servlet>
-
-        <servlet>
             <servlet-name>org.cdlib.xtf.dynaXML.DynaXML</servlet-name>
             <servlet-class>org.cdlib.xtf.dynaXML.DynaXML</servlet-class>
         </servlet>
