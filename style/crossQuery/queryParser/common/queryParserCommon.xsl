@@ -78,6 +78,9 @@
    <!-- documents per page -->
    <xsl:param name="docsPerPage">
       <xsl:choose>
+         <xsl:when test="matches($http.User-Agent,$robots)">
+            <xsl:value-of select="90"/><!-- maximum amount allowed by google is 100 -->
+         </xsl:when>
          <xsl:when test="($smode = 'test') or $raw">
             <xsl:value-of select="10000"/>
          </xsl:when>
@@ -86,6 +89,11 @@
          </xsl:otherwise>
       </xsl:choose>
    </xsl:param>
+   
+   <!-- Special Robot Parameter -->
+   <xsl:param name="http.User-Agent"/>
+   <!-- WARNING: Inclusion of 'Wget' is for testing only, please remove before going into production -->
+   <xsl:param name="robots" select="'Googlebot|Slurp|msnbot|Teoma|Wget'"/>
    
    <!-- list of keyword search fields -->
    <xsl:param name="fieldList"/>
@@ -285,6 +293,19 @@
       <moreLike fields="title,subject">
          <term field="identifier"><xsl:value-of select="$identifier"/></term>
       </moreLike>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Robot Template                                                         -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="robot">
+      <and>
+         <or field="display">
+            <term>dynaxml</term>
+            <term>raw</term>
+         </or>
+      </and>
    </xsl:template>
    
 </xsl:stylesheet>

@@ -38,7 +38,12 @@ to work with EAD 2002.-->
     frameset.-->
   <xsl:template match="/ead">
     <xsl:choose>
-      
+       
+       <!-- robot solution -->
+       <xsl:when test="matches($http.User-Agent,$robots)">
+          <xsl:call-template name="robot"/>
+       </xsl:when>
+       
       <!-- Creates the button bar.-->
       <xsl:when test="$doc.view = 'bbar'">
         <xsl:call-template name="bbar"/>

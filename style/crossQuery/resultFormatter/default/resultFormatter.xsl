@@ -61,7 +61,10 @@
   <!-- ====================================================================== -->
   
   <xsl:template match="/">
-    <xsl:choose>
+     <xsl:choose>
+        <xsl:when test="matches($http.User-Agent,$robots)">
+           <xsl:apply-templates select="crossQueryResult" mode="robot"/>
+        </xsl:when>
       <xsl:when test="$smode = 'addToBag'">
         <span class="highlight">Added to bag.</span>
       </xsl:when>

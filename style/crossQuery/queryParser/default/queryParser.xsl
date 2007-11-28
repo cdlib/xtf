@@ -106,6 +106,9 @@
          
          <!-- process query -->
          <xsl:choose>
+            <xsl:when test="matches($http.User-Agent,$robots)">
+               <xsl:call-template name="robot"/>
+            </xsl:when>
             <xsl:when test="$smode = 'addToBag'">
                <xsl:call-template name="addToBag"/>
             </xsl:when>

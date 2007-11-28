@@ -363,6 +363,8 @@
 <xsl:transform version="2.0" id="ViewNLM-v2-04.xsl" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:util="http://dtd.nlm.nih.gov/xsl/util"
 	xmlns:mml="http://www.w3.org/1998/Math/MathML" exclude-result-prefixes="util xsl xlink mml">
+   
+   <xsl:import href="../common/docFormatterCommon.xsl"/>
 
 	<xsl:output method="html" indent="yes" encoding="UTF-8" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
 		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
@@ -415,22 +417,24 @@
 
 	<xsl:template match="/">
 
-		<xsl:call-template name="nl-1"/>
-		<html>
-
-			<!-- HTML header -->
-			<xsl:call-template name="nl-2"/>
-			<xsl:call-template name="make-html-header"/>
-			<xsl:call-template name="nl-2"/>
-
-			<body bgcolor="#f8f8f8">
-
-				<xsl:apply-templates/>
-
-			</body>
-
-		</html>
-
+	   <xsl:choose>
+	      <!-- robot solution -->
+	      <xsl:when test="matches($http.User-Agent,$robots)">
+	         <xsl:call-template name="robot"/>
+	      </xsl:when>
+	      <xsl:otherwise>
+	         <xsl:call-template name="nl-1"/>
+	         <html>
+	            <!-- HTML header -->
+	            <xsl:call-template name="nl-2"/>
+	            <xsl:call-template name="make-html-header"/>
+	            <xsl:call-template name="nl-2"/>
+	            <body bgcolor="#f8f8f8">
+	               <xsl:apply-templates/>
+	            </body>
+	         </html>
+	      </xsl:otherwise>
+	   </xsl:choose>
 	</xsl:template>
 
 	<!-- ============================================================= -->

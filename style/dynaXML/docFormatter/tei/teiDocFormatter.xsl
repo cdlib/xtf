@@ -85,27 +85,30 @@
 <!-- ====================================================================== -->
 
 <xsl:template match="/">
-
-  <xsl:choose>
-    <xsl:when test="$doc.view='bbar'">
-      <xsl:call-template name="bbar"/>
-    </xsl:when>
-    <xsl:when test="$doc.view='toc'">
-      <xsl:call-template name="toc"/>
-    </xsl:when>
-    <xsl:when test="$doc.view='content'">
-      <xsl:call-template name="content"/>
-    </xsl:when>
-    <xsl:when test="$doc.view='popup'">
-      <xsl:call-template name="popup"/>
-    </xsl:when>
-    <xsl:when test="$doc.view='print'">
-      <xsl:call-template name="print"/>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:call-template name="frames"/>
-    </xsl:otherwise>
-  </xsl:choose>
+   <xsl:choose>
+      <!-- robot solution -->
+      <xsl:when test="matches($http.User-Agent,$robots)">
+         <xsl:call-template name="robot"/>
+      </xsl:when>
+      <xsl:when test="$doc.view='bbar'">
+         <xsl:call-template name="bbar"/>
+      </xsl:when>
+      <xsl:when test="$doc.view='toc'">
+         <xsl:call-template name="toc"/>
+      </xsl:when>
+      <xsl:when test="$doc.view='content'">
+         <xsl:call-template name="content"/>
+      </xsl:when>
+      <xsl:when test="$doc.view='popup'">
+         <xsl:call-template name="popup"/>
+      </xsl:when>
+      <xsl:when test="$doc.view='print'">
+         <xsl:call-template name="print"/>
+      </xsl:when>
+      <xsl:otherwise>
+         <xsl:call-template name="frames"/>
+      </xsl:otherwise>
+   </xsl:choose>
 </xsl:template>
   
 <!-- ====================================================================== -->

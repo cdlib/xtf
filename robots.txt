@@ -1,0 +1,22 @@
+User-agent: *
+Disallow: /
+
+# Google
+User-agent: googlebot
+Disallow:
+
+# MSN
+User-agent: msnbot
+Disallow:
+
+# Yahoo
+User-agent: slurp
+Disallow:
+
+# Ask Jeeves
+User-agent: teoma
+Disallow:
+
+# Wget
+User-agent: wget
+Disallow:

@@ -262,6 +262,11 @@
        ';+', ';'),
       ';startDoc=[0-9]+', '')"/>
   </xsl:param> 
+   
+   <!-- Special Robot Parameters -->
+   <xsl:param name="http.User-Agent"/>
+   <!-- WARNING: Inclusion of 'Wget' is for testing only, please remove before going into production -->
+   <xsl:param name="robots" select="'Googlebot|Slurp|msnbot|Teoma|Wget'"></xsl:param>
   
   <!-- Hidden Query String -->
 
@@ -939,5 +944,62 @@
       </search>
     </xsl:result-document>
   </xsl:template>
-  
+   
+   <!-- ====================================================================== -->
+   <!-- Robot Browse Template                                                  -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template match="crossQueryResult" mode="robot">
+      <html>
+         <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+            <title>XTF: Results</title>
+         </head>
+         <body>
+            <xsl:variable name="TD" select="@totalDocs"/>
+            <xsl:variable name="SD">
+               <xsl:choose>
+                  <xsl:when test="$startDoc">
+                     <xsl:value-of select="$startDoc + 90"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:value-of select="1" />
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:variable>
+            <xsl:if test="($TD - $SD) > 0">
+               <a href="{$xtfURL}search?startDoc={$SD};style=mtp">NEXT</a>
+            </xsl:if>
+            <ol>
+               <xsl:apply-templates select="docHit" mode="robot"/>
+            </ol>
+         </body>
+      </html>
+   </xsl:template>
+   
+   <xsl:template match="docHit" mode="robot">
+      
+      <xsl:variable name="path" select="@path"/>
+      
+      <li>
+         <a>
+            <xsl:attribute name="href">
+               <xsl:choose>
+                  <xsl:when test="matches(meta/display, 'dynaxml')">
+                     <xsl:call-template name="dynaxml.url">
+                        <xsl:with-param name="path" select="$path"/>
+                     </xsl:call-template>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:call-template name="rawDisplay.url">
+                        <xsl:with-param name="path" select="$path"/>
+                     </xsl:call-template>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:attribute>
+            <xsl:value-of select="meta/title[1]"/>
+         </a>
+      </li>
+   </xsl:template>
+   
 </xsl:stylesheet>

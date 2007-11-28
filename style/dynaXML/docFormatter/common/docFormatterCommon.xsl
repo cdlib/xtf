@@ -154,7 +154,12 @@
   <xsl:param name="brand.header" select="$brand.file//header/*"/>
   <xsl:param name="brand.header.dynaxml.header" select="$brand.file//header.dynaxml.header/*"/>
   <xsl:param name="brand.footer" select="$brand.file//footer/*"/>
-  
+   
+   <!-- Special Robot Parameters -->
+   <xsl:param name="http.User-Agent"/>
+   <!-- WARNING: Inclusion of 'Wget' is for testing only, please remove before going into production -->
+   <xsl:param name="robots" select="'Googlebot|Slurp|msnbot|Teoma|Wget'"/>
+   
   <!-- URL Encoding Map -->
 
   <xtf:encoding-map>
@@ -239,5 +244,27 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Robot Template                                                         -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="robot">
+      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+         <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+            <title>XTF: <xsl:value-of select="xtf:meta/title[1]"/></title>
+         </head>
+         <body>
+            <div>
+               <xsl:apply-templates select="//text()" mode="robot"/>
+            </div>
+         </body>
+      </html>
+   </xsl:template>
+   
+   <xsl:template match="text()" mode="robot">
+      <xsl:value-of select="."/><xsl:text> </xsl:text>
+   </xsl:template>
 
 </xsl:stylesheet>
