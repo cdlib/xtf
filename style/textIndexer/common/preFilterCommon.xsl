@@ -49,6 +49,15 @@
       <xsl:variable name="dcpath" select="concat($base, '.dc.xml')"/>
       <xsl:if test="FileUtils:exists($dcpath)">
          <xsl:apply-templates select="document($dcpath)" mode="inmeta"/>
+         <xsl:if test="not(document($dcpath)//*[matches(local-name(),'identifier')])">
+            <identifier xtf:meta="true">
+               <xsl:value-of select="$docpath"/>
+            </identifier>
+         </xsl:if>
+         <!-- special field for OAI -->
+         <set xtf:meta="true">
+            <xsl:value-of select="'public'"/>
+         </set>
       </xsl:if>
    </xsl:template>
    
@@ -62,6 +71,19 @@
             <xsl:copy-of select="@*"/>
             <xsl:value-of select="string()"/>
          </xsl:element>
+         <!-- special fields for OAI -->
+         <xsl:choose>
+            <xsl:when test="matches(name(),'date')">
+               <dateStamp xtf:meta="true" xtf:tokenize="no">
+                  <xsl:value-of select="concat(parse:year(string(.)),'-01-01')"/>
+               </dateStamp>
+            </xsl:when>
+            <xsl:when test="matches(name(),'subject')">
+               <set xtf:meta="true">
+                  <xsl:value-of select="string()"/>
+               </set>
+            </xsl:when>
+         </xsl:choose>
       </xsl:for-each>
       
    </xsl:template>
@@ -238,6 +260,16 @@
       <xsl:param name="date"/>
       
       <xsl:choose>
+         
+         
+         <!-- Pattern: 1989-12-1 -->
+         <xsl:when test="matches($date, '([^0-9]|^)(\d\d\d\d)[^0-9]*[\-/][^0-9]*\d\d?[^0-9]*[\-/][^0-9]*\d\d?([^0-9]|$)')">
+            <xsl:analyze-string select="$date" regex="([^0-9]|^)(\d\d\d\d)[^0-9]*[\-/][^0-9]*\d\d?[^0-9]*[\-/][^0-9]*\d\d?([^0-9]|$)">
+               <xsl:matching-substring>
+                  <xsl:copy-of select="number(regex-group(2)) + 1900"/>
+               </xsl:matching-substring>
+            </xsl:analyze-string>
+         </xsl:when>
          
          <!-- Pattern: 1980 - 1984 -->
          <xsl:when test="matches($date, '([^0-9]|^)([12]\d\d\d)[^0-9]*-[^0-9]*([12]\d\d\d)([^0-9]|$)')">

@@ -50,17 +50,27 @@
 <!-- Root Template                                                          -->
 <!-- ====================================================================== -->
   
-  <xsl:template match="/">
-
-    <!-- This is the main output of the stylesheet -->
-    <route>
-    
-      <!-- If you want to implement more than one query parser, replace the
-        the line below with an <xsl:choose> based on some URL parameter. -->
+   <xsl:param name="http.URL"/>
+   
+   <xsl:template match="/">
       
-      <queryParser path="style/crossQuery/queryParser/default/queryParser.xsl"/>
-      
-    </route>
-  </xsl:template>
+      <!-- This is the main output of the stylesheet -->
+      <route>
+         <xsl:choose>
+            <!-- for OAI requests -->
+            <xsl:when test="matches($http.URL,'oai\?')">
+               <xsl:if test="matches($http.URL,'resumptionToken=http://')">
+                  <xsl:variable name="newURL" select="replace(replace($http.URL,'.+resumptionToken=(.+)','$1'),'::',';resumptionToken=')"/>
+                  <redirect:send url="{$newURL}" xmlns:redirect="java:/org.cdlib.xtf.saxonExt.Redirect" xsl:extension-element-prefixes="redirect"/>
+               </xsl:if>
+               <queryParser path="style/crossQuery/queryParser/oai/queryParser.xsl"/>
+               <errorGen path="style/crossQuery/oaiErrorGen.xsl"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <queryParser path="style/crossQuery/queryParser/default/queryParser.xsl"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </route>
+   </xsl:template>
 
 </xsl:stylesheet>

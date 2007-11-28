@@ -139,6 +139,9 @@
                <xsl:call-template name="get-tei-relation"/>
                <xsl:call-template name="get-tei-coverage"/>
                <xsl:call-template name="get-tei-rights"/>
+               <!-- special values for OAI -->
+               <xsl:call-template name="oai-datestamp"/>
+               <xsl:call-template name="oai-set"/>
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
@@ -355,6 +358,31 @@
       <rights xtf-meta="true">
          <xsl:value-of select="'public'"/>
       </rights>
+   </xsl:template>
+   
+   <xsl:template name="oai-datestamp">
+      <dateStamp xtf:meta="true" xtf:tokenize="no">
+         <xsl:choose>
+            <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='date']">
+               <xsl:value-of select="concat(parse:year(string(//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='date'][1])),'-01-01')"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <!-- I don't know, what would you put? -->
+               <xsl:value-of select="'1950-01-01'"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </dateStamp>
+   </xsl:template>
+   
+   <xsl:template name="oai-set">
+      <xsl:for-each select="//*[local-name()='keywords']/*[local-name()='list']/*[local-name()='item']">
+         <set xtf:meta="true">
+            <xsl:value-of select="."/>
+         </set>
+      </xsl:for-each>
+      <set xtf:meta="true">
+         <xsl:value-of select="'public'"/>
+      </set>
    </xsl:template>
    
 </xsl:stylesheet>

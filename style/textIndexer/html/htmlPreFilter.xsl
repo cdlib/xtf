@@ -1,6 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
         xmlns:saxon="http://saxon.sf.net/"
         xmlns:xtf="http://cdlib.org/xtf"
+        xmlns:parse="http://cdlib.org/xtf/parse"
         exclude-result-prefixes="#all">
 
 <!--
@@ -101,6 +102,9 @@
                <xsl:call-template name="get-htm-relation"/>
                <xsl:call-template name="get-htm-coverage"/>
                <xsl:call-template name="get-htm-rights"/>
+               <!-- special values for OAI -->
+               <xsl:call-template name="oai-datestamp"/>
+               <xsl:call-template name="oai-set"/>
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
@@ -205,6 +209,11 @@
                <xsl:value-of select="//*[local-name()='meta'][@name='dc.identifier'][1]/@content"/>
             </identifier>
          </xsl:when>
+         <xsl:otherwise>
+            <identifier xtf:meta="true">
+               <xsl:value-of select="saxon:system-id()"/>
+            </identifier>
+         </xsl:otherwise>
       </xsl:choose>
    </xsl:template>
    
@@ -256,6 +265,31 @@
             </rights>
          </xsl:when>
       </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="oai-datestamp">
+      <dateStamp xtf:meta="true" xtf:tokenize="no">
+         <xsl:choose>
+            <xsl:when test="//*[local-name()='meta'][@name='dc.date']">
+               <xsl:value-of select="concat(parse:year(string(//*[local-name()='meta'][@name='dc.date'][1]/@content)),'-01-01')"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <!-- I don't know, what would you put? -->
+               <xsl:value-of select="'1950-01-01'"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </dateStamp>
+   </xsl:template>
+   
+   <xsl:template name="oai-set">
+      <xsl:for-each select="//*[local-name()='meta'][@name='dc.subject']">
+         <set xtf:meta="true">
+            <xsl:value-of select="@content"/>
+         </set>
+      </xsl:for-each>
+      <set xtf:meta="true">
+         <xsl:value-of select="'public'"/>
+      </set>
    </xsl:template>
 
 </xsl:stylesheet>

@@ -83,14 +83,7 @@
     <!-- Add doc kind and sort fields to the data, and output the result. -->
     <xsl:call-template name="add-fields">
       <xsl:with-param name="display">
-        <xsl:variable name="path" select="saxon:system-id()"/>
-        <xsl:choose>
-          <xsl:when test="ends-with($path, '.pdf')">pdf</xsl:when>
-          <xsl:when test="ends-with($path, '.txt')">text</xsl:when>
-          <xsl:when test="ends-with($path, '.htm')">html</xsl:when>
-          <xsl:when test="ends-with($path, '.html')">html</xsl:when>
-          <xsl:otherwise>unknown</xsl:otherwise>
-        </xsl:choose>
+         <xsl:value-of select="'raw'"/>
       </xsl:with-param>
       <xsl:with-param name="meta" select="$dcMeta"/>
     </xsl:call-template>    

@@ -1,6 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
         xmlns:saxon="http://saxon.sf.net/"
         xmlns:xtf="http://cdlib.org/xtf"
+        xmlns:parse="http://cdlib.org/xtf/parse"
         xmlns:xlink="http://www.w3.org/TR/xlink/"
         exclude-result-prefixes="#all">
 
@@ -145,6 +146,9 @@
                <xsl:call-template name="get-nlm-relation"/>
                <xsl:call-template name="get-nlm-coverage"/>
                <xsl:call-template name="get-nlm-rights"/>
+               <!-- special values for OAI -->
+               <xsl:call-template name="oai-datestamp"/>
+               <xsl:call-template name="oai-set"/>
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
@@ -362,6 +366,53 @@
             </rights>
          </xsl:otherwise>
       </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template name="oai-datestamp">
+      <dateStamp xtf:meta="true" xtf:tokenize="no">
+         <xsl:choose>
+            <xsl:when test="/article/front/article-meta/pub-date[@pub-type='epub']">
+               <xsl:value-of select="/article/front/article-meta/pub-date[@pub-type='epub'][1]/year"/>
+               <xsl:text>-</xsl:text>
+               <xsl:value-of select="/article/front/article-meta/pub-date[@pub-type='epub'][1]/month"/>
+               <xsl:text>-</xsl:text>
+               <xsl:value-of select="/article/front/article-meta/pub-date[@pub-type='epub'][1]/day"/>
+            </xsl:when>
+            <xsl:when test="/article/front/article-meta/pub-date[@pub-type='pub']">
+               <xsl:value-of select="/article/front/article-meta/pub-date[@pub-type='pub'][1]/year"/>
+               <xsl:text>-</xsl:text>
+               <xsl:value-of select="/article/front/article-meta/pub-date[@pub-type='pub'][1]/month"/>
+               <xsl:text>-</xsl:text>
+               <xsl:value-of select="/article/front/article-meta/pub-date[@pub-type='pub'][1]/day"/>
+            </xsl:when>
+            <xsl:when test="/article/front/article-meta/pub-date">
+               <xsl:value-of select="/article/front/article-meta/pub-date[1]/year"/>
+               <xsl:text>-</xsl:text>
+               <xsl:value-of select="/article/front/article-meta/pub-date[1]/month"/>
+               <xsl:text>-</xsl:text>
+               <xsl:value-of select="/article/front/article-meta/pub-date[1]/day"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <!-- I don't know, what would you put? -->
+               <xsl:value-of select="'1950-01-01'"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </dateStamp>
+   </xsl:template>
+   
+   <xsl:template name="oai-set">
+      <xsl:for-each select="/article/front/article-meta/article-categories/subj-group">
+         <set xtf:meta="true">
+            <xsl:value-of select="subject"/>
+            <xsl:if test="subj-group">
+               <xsl:text>: </xsl:text>
+               <xsl:value-of select="subj-group/subject"/>
+            </xsl:if>
+         </set>
+      </xsl:for-each>
+      <set xtf:meta="true">
+         <xsl:value-of select="'public'"/>
+      </set>
    </xsl:template>
   
 </xsl:stylesheet>

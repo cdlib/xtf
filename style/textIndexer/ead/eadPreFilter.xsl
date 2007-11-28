@@ -1,6 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
         xmlns:saxon="http://saxon.sf.net/"
         xmlns:xtf="http://cdlib.org/xtf"
+        xmlns:parse="http://cdlib.org/xtf/parse"
         exclude-result-prefixes="#all">
 
 <!--
@@ -136,6 +137,9 @@
                <xsl:call-template name="get-ead-relation"/>
                <xsl:call-template name="get-ead-coverage"/>
                <xsl:call-template name="get-ead-rights"/>
+               <!-- special values for OAI -->
+               <xsl:call-template name="oai-datestamp"/>
+               <xsl:call-template name="oai-set"/>
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
@@ -363,6 +367,36 @@
    <!-- rights -->
    <xsl:template name="get-ead-rights">
       <rights xtf:meta="true">public</rights>
+   </xsl:template>
+   
+   <xsl:template name="oai-datestamp">
+      <dateStamp xtf:meta="true" xtf:tokenize="no">
+         <xsl:choose>
+            <xsl:when test="/ead/eadheader/filedesc/publicationstmt/date">
+               <xsl:value-of select="concat(parse:year(string(/ead/eadheader/filedesc/publicationstmt/date[1])),'-01-01')"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <!-- I don't know, what would you put? -->
+               <xsl:value-of select="'1950-01-01'"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </dateStamp>
+   </xsl:template>
+   
+   <xsl:template name="oai-set">
+      <xsl:for-each select="/ead/archdesc//controlaccess/subject">
+         <set xtf:meta="true">
+            <xsl:value-of select="."/>
+         </set>
+      </xsl:for-each>
+      <xsl:for-each select="/ead/eadheader/filedesc/notestmt/subject">
+         <set xtf:meta="true">
+            <xsl:value-of select="."/>
+         </set>
+      </xsl:for-each>
+      <set xtf:meta="true">
+         <xsl:value-of select="'public'"/>
+      </set>
    </xsl:template>
    
 </xsl:stylesheet>
