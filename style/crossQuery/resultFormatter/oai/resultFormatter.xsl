@@ -176,11 +176,11 @@
             <xsl:value-of select="$http.URL"/>
          </request>
          <Identify>
-            <repositoryName>eScholarship Repository</repositoryName>
+            <repositoryName>XTF Sample Repository</repositoryName>
             <!-- CHANGE -->
-            <baseURL>http://ibapah.ucop.edu/xtf-eschol/oai</baseURL>
+            <baseURL>http://hopper.cdlib.org:8088/default/oai</baseURL>
             <protocolVersion>2.0</protocolVersion>
-            <adminEmail>kirk.hastings@ucop.edu</adminEmail>
+            <adminEmail>sys.admim@domain.org</adminEmail>
             <earliestDatestamp>
                <xsl:value-of select="$earliestDateStamp"/>
             </earliestDatestamp>

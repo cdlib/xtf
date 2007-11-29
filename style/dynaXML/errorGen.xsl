@@ -114,7 +114,7 @@
 
 
 <xsl:variable name="project-name">
-   <xsl:text>eScholarship Edition</xsl:text>
+   <xsl:text>XTF</xsl:text>
 </xsl:variable>
 
 <xsl:variable name="reason">
@@ -166,8 +166,6 @@
 <xsl:template match="InvalidDocument">
   <h1>Document Not Found</h1>
   <p>Document <b><xsl:value-of select="$docId"/></b> is not available. Please check that you have typed the address correctly or that the referring page does not have an error in its link.</p>
-  <p>For assistance in finding the book you are looking for also try the eScholarship Editions <a href="http://texts.cdlib.org/escholarship">home page</a> or the Online Archive of California Texts <a href="http://www.oac.cdlib.org/texts">home page</a></p>
-  <p>If you have questions, need further technical assistance, or believe that you have reached this page in error, send email to the CDL (<a href="mailto:cdl@www.cdlib.org?subject=Access denied - {$reason}">cdl@www.cdlib.org</a>) or call the CDL Helpline (510.987.0555). Be sure to include the following information in your communication:</p>
   <p>Document ID: <b><xsl:value-of select="$docId"/></b></p>
 </xsl:template>
 

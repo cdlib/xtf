@@ -968,7 +968,7 @@
                </xsl:choose>
             </xsl:variable>
             <xsl:if test="($TD - $SD) > 0">
-               <a href="{$xtfURL}search?startDoc={$SD};style=mtp">NEXT</a>
+               <a href="{$xtfURL}search?startDoc={$SD}">NEXT</a>
             </xsl:if>
             <ol>
                <xsl:apply-templates select="docHit" mode="robot"/>
