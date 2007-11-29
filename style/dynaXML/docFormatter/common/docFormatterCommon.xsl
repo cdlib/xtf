@@ -39,6 +39,8 @@
   xmlns:xlink="http://www.w3.org/TR/xlink"
   xmlns:parse="http://cdlib.org/parse"
   exclude-result-prefixes="xsl dc mets mods xlink parse">
+   
+  <xsl:key name="hit-rank-dynamic" match="xtf:hit" use="@rank"/>
 
   <!-- Path Parameters -->
   <xsl:param name="servlet.path"/>
