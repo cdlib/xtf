@@ -178,9 +178,10 @@
          <Identify>
             <repositoryName>XTF Sample Repository</repositoryName>
             <!-- CHANGE -->
-            <baseURL>http://hopper.cdlib.org:8088/default/oai</baseURL>
+            <baseURL>http://oaiservice.org</baseURL>
             <protocolVersion>2.0</protocolVersion>
-            <adminEmail>sys.admim@domain.org</adminEmail>
+            <!-- CHANGE -->
+            <adminEmail>admin@oaiserver.org</adminEmail>
             <earliestDatestamp>
                <xsl:value-of select="$earliestDateStamp"/>
             </earliestDatestamp>
