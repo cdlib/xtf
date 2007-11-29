@@ -300,8 +300,7 @@
       <record xmlns="http://www.openarchives.org/OAI/2.0/">
          <header>
             <identifier>
-               <!--<xsl:value-of select="replace($identifier,'.+/','')"/>-->
-               <xsl:value-of select="$identifier"/>
+               <xsl:value-of select="replace($identifier,'.+/','')"/>
             </identifier>
             <datestamp>
                <xsl:value-of select="$dateStamp"/>
@@ -326,8 +325,7 @@
       
       <header xmlns="http://www.openarchives.org/OAI/2.0/">
          <identifier>
-            <!--<xsl:value-of select="replace($identifier,'.+/','')"/>-->
-            <xsl:value-of select="$identifier"/>
+            <xsl:value-of select="replace($identifier,'.+/','')"/>
          </identifier>
          <datestamp>
             <xsl:value-of select="$dateStamp"/>
@@ -388,8 +386,7 @@
       <search count="{@totalDocs}" queryString="{$queryString}">
         <xsl:for-each select="docHit">
           <xsl:sort select="number(@rank)" />
-           <!--<xsl:variable name="identifier" select="replace(meta/identifier[1],'.+/','')"/>-->
-           <xsl:variable name="identifier" select="meta/identifier[1]"/>
+           <xsl:variable name="identifier" select="replace(meta/identifier[1],'.+/','')"/>
            <hit identifier="{$identifier}"
             rank="{@rank}"
             score="{@score}">
