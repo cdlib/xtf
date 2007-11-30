@@ -258,7 +258,7 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
    *         node, or 0 if they are the same node. (In this case, isSameNode() will always
    *         return true, and the two nodes will produce the same result for generateId())
    */
-  public final int compareOrder(NodeInfo other) 
+  public int compareOrder(NodeInfo other) 
   {
     if (other instanceof NamespaceIterator.NamespaceNodeImpl) {
       return 0 - other.compareOrder(this);
@@ -364,7 +364,7 @@ public abstract class NodeImpl implements NodeInfo, FingerprintedNode,
    *
    * @return The Node object describing the containing element or root node.
    */
-  public final NodeInfo getParent() {
+  public NodeInfo getParent() {
     return document.getNode(parentNum);
   }
 
