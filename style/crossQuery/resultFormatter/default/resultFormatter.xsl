@@ -448,34 +448,9 @@
                 <!-- need to make sure that the chosen subject is retained in modify -->
                 <select size="1" name="subject">
                   <option value="">Select</option>
-                  <option value="African History">African History</option>
-                  <option value="African Studies">African Studies</option>
-                  <option value="American Literature">American Literature</option>
-                  <option value="American Studies">American Studies</option>
-                  <option value="Anthropology">Anthropology</option>
-                  <option value="Asian Studies">Asian Studies</option>
-                  <option value="Cinema and Performance Arts">Cinema and Performance Arts</option>
-                  <option value="Cultural Anthropology">Cultural Anthropology</option>
-                  <option value="English Literature">English Literature</option>
-                  <option value="Ethnic Studies">Ethnic Studies</option>
-                  <option value="Gender Studies">Gender Studies</option>
-                  <option value="Intellectual History">Intellectual History</option>
-                  <option value="Law">Law</option>
-                  <option value="Literary Theory and Criticism">Literary Theory and Criticism</option>
-                  <option value="Literature">Literature</option>
-                  <option value="Media Studies">Media Studies</option>
-                  <option value="Middle Eastern History">Middle Eastern History</option>
-                  <option value="Middle Eastern Studies">Middle Eastern Studies</option>
-                  <option value="Music">Music</option>
-                  <option value="Native American Studies">Native American Studies</option>
-                  <option value="Politics">Politics</option>
-                  <option value="Postcolonial Studies">Postcolonial Studies</option>
-                  <option value="Public Policy">Public Policy</option>
-                  <option value="Renaissance Literature">Renaissance Literature</option>
-                  <option value="Science">Science</option>
-                  <option value="Social Problems">Social Problems</option>
-                  <option value="Sociology">Sociology</option>
-                  <option value="Urban Studies">Urban Studies</option>
+                  <xsl:for-each select="//facet/group">
+                    <option value="{@value}"><xsl:value-of select="replace(@value,'(.{40}).*','$1')"/></option>
+                  </xsl:for-each>
                 </select>
               </td>
             </tr>
@@ -486,6 +461,21 @@
                 <input type="text" name="year" size="40" value="{$year}"/>
               </td>
             </tr>
+             <tr>
+                <td width="200"><b>Type</b></td>
+                <td width="40"/>
+                <td>
+                   <select size="1" name="type">
+                      <option value="">All</option>
+                      <option value="ead">EAD</option>
+                      <option value="html">HTML</option>
+                      <option value="nlm">NLM</option>
+                      <option value="pdf">PDF</option>
+                      <option value="tei">TEI</option>
+                      <option value="text">Text</option>
+                   </select>
+                </td>
+             </tr>
             <tr>
               <td width="120" colspan="2"/>
               <td height="40">

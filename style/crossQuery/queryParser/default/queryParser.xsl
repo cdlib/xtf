@@ -127,6 +127,10 @@
             </xsl:otherwise>
          </xsl:choose>
          
+         <facet field="facet-subject" sortGroupsBy="value">
+            <xsl:attribute name="select" select="'*'"/>
+         </facet>
+         
       </query>
    </xsl:template>
    
@@ -169,7 +173,7 @@
          </xsl:for-each>  
          <!-- If there are no meta, text queries, or unary nots, output a dummy -->
          <xsl:if test="count($metaParams) = 0 and count($textParam) = 0 and not(param[matches(@name, '.*-exclude')])">
-            <term field="text">$!@$$@!$</term>
+            <or field="display"><term>dynaxml</term><term>raw</term></or>
          </xsl:if>
       </and>
       
