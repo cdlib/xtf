@@ -93,7 +93,7 @@
    <!-- ====================================================================== -->
    
    <!-- earliestDatestamp param -->
-   <xsl:param name="earliestDatestamp" select="'1942-01-01'"/>
+   <xsl:param name="earliestDatestamp" select="'1950-01-01'"/>
    
    <xsl:param name="maxDocs">
       <xsl:choose>
