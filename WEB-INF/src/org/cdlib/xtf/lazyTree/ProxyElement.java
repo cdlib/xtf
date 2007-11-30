@@ -55,7 +55,7 @@ import net.sf.saxon.value.Value;
  *
  * @author Martin Haye
  */
-public final class ProxyElement implements NodeInfo, FingerprintedNode,
+public final class ProxyElement extends NodeImpl implements NodeInfo, FingerprintedNode,
                                            SourceLocator, SearchElement 
 {
   /** The actual element (null until loaded) */
@@ -123,51 +123,51 @@ public final class ProxyElement implements NodeInfo, FingerprintedNode,
   } // real()
 
   /** Loads the real node and defers to it */
-  public long getSequenceNumber() {
+  public @Override long getSequenceNumber() {
     return real().getSequenceNumber();
   }
 
   /** Loads the real node and defers to it */
-  public int compareOrder(NodeInfo other) {
+  public @Override int compareOrder(NodeInfo other) {
     return real().compareOrder(other);
   }
 
-  public Configuration getConfiguration() {
+  public @Override Configuration getConfiguration() {
     return real().getConfiguration();
   }
 
   /** Loads the real node and defers to it */
-  public void generateId(FastStringBuffer buffer) {
+  public @Override void generateId(FastStringBuffer buffer) {
     real().generateId(buffer);
   }
 
   /** Loads the real node and defers to it */
-  public String getAttributeValue(int fingerprint) {
+  public @Override String getAttributeValue(int fingerprint) {
     return real().getAttributeValue(fingerprint);
   }
 
   /** Loads the real node and defers to it */
-  public String getBaseURI() {
+  public @Override String getBaseURI() {
     return real().getBaseURI();
   }
 
   /** Loads the real node and defers to it */
-  public int getFingerprint() {
+  public @Override int getFingerprint() {
     return real().getFingerprint();
   }
 
   /** Loads the real node and defers to it */
-  public String getLocalPart() {
+  public @Override String getLocalPart() {
     return real().getLocalPart();
   }
 
   /** Loads the real node and defers to it */
-  public int getNameCode() {
+  public @Override int getNameCode() {
     return real().getNameCode();
   }
 
   /** Loads the real node and defers to it */
-  public NodeInfo getParent() {
+  public @Override NodeInfo getParent() {
     return real().getParent();
   }
 
@@ -177,22 +177,22 @@ public final class ProxyElement implements NodeInfo, FingerprintedNode,
   }
 
   /** Loads the real node and defers to it */
-  public String getSystemId() {
+  public @Override String getSystemId() {
     return real().getSystemId();
   }
 
   /** Loads the real node and defers to it */
-  public String getURI() {
+  public @Override String getURI() {
     return real().getURI();
   }
 
   /** Loads the real node and defers to it */
-  public boolean hasChildNodes() {
+  public @Override boolean hasChildNodes() {
     return real().hasChildNodes();
   }
 
   /** Loads the real node and defers to it */
-  public boolean isSameNodeInfo(NodeInfo other) {
+  public @Override boolean isSameNodeInfo(NodeInfo other) {
     return real().isSameNodeInfo(other);
   }
 
@@ -201,7 +201,7 @@ public final class ProxyElement implements NodeInfo, FingerprintedNode,
    * to serve up the pre-computed attributes. Otherwise, we load the real
    * element and defer to it.
    */
-  public AxisIterator iterateAxis(byte axisNumber, NodeTest nodeTest) 
+  public @Override AxisIterator iterateAxis(byte axisNumber, NodeTest nodeTest) 
   {
     if (axisNumber == Axis.ATTRIBUTE) {
       return new ProxyAttributeEnumeration(this, nodeTest);
@@ -210,7 +210,7 @@ public final class ProxyElement implements NodeInfo, FingerprintedNode,
   }
 
   /** Loads the real node and defers to it */
-  public String getPrefix() {
+  public @Override String getPrefix() {
     return real().getPrefix();
   }
 
@@ -223,7 +223,7 @@ public final class ProxyElement implements NodeInfo, FingerprintedNode,
   }
 
   /** Loads the real node and defers to it */
-  public NamePool getNamePool() {
+  public @Override NamePool getNamePool() {
     return real().getNamePool();
   }
 
@@ -233,81 +233,81 @@ public final class ProxyElement implements NodeInfo, FingerprintedNode,
   }
 
   /** Loads the real node and defers to it */
-  public AxisIterator iterateAxis(byte axisNumber) {
+  public @Override AxisIterator iterateAxis(byte axisNumber) {
     return real().iterateAxis(axisNumber);
   }
 
   /** Loads the real node and defers to it */
-  public void setSystemId(String systemId) {
+  public @Override void setSystemId(String systemId) {
     real().setSystemId(systemId);
   }
 
   /** Loads the real node and defers to it */
-  public String getDisplayName() {
+  public @Override String getDisplayName() {
     return real().getDisplayName();
   }
 
   /** Loads the real node and defers to it */
-  public int getDocumentNumber() {
+  public @Override int getDocumentNumber() {
     return real().getDocumentNumber();
   }
 
   /** Loads the real node and defers to it */
-  public DocumentInfo getDocumentRoot() {
+  public @Override DocumentInfo getDocumentRoot() {
     return real().getDocumentRoot();
   }
 
   /** Loads the real node and defers to it */
-  public NodeInfo getRoot() {
+  public @Override NodeInfo getRoot() {
     return real().getRoot();
   }
 
   /** Loads the real node and defers to it */
-  public int getTypeAnnotation() {
+  public @Override int getTypeAnnotation() {
     return real().getTypeAnnotation();
   }
 
   /** Loads the real node and defers to it */
-  public void sendNamespaceDeclarations(Receiver out, boolean includeAncestors)
+  public @Override void sendNamespaceDeclarations(Receiver out, boolean includeAncestors)
     throws XPathException 
   {
     real().sendNamespaceDeclarations(out, includeAncestors);
   }
 
   /** Loads the real node and defers to it */
-  public int getColumnNumber() {
+  public @Override int getColumnNumber() {
     return real().getColumnNumber();
   }
 
   /** Loads the real node and defers to it */
-  public int[] getDeclaredNamespaces(int[] buffer) {
+  public @Override int[] getDeclaredNamespaces(int[] buffer) {
     return real().getDeclaredNamespaces(buffer);
   }
 
   /** Loads the real node and defers to it */
-  public int getLineNumber() {
+  public @Override int getLineNumber() {
     return real().getLineNumber();
   }
 
   /** Loads the real node and defers to it */
-  public String getPublicId() {
+  public @Override String getPublicId() {
     return real().getPublicId();
   }
 
   /** Loads the real node and defers to it */
-  public CharSequence getStringValueCS() {
+  public @Override CharSequence getStringValueCS() {
     return real().getStringValueCS();
   }
 
   /** Loads the real node and defers to it */
-  public SequenceIterator getTypedValue()
+  public @Override SequenceIterator getTypedValue()
     throws XPathException 
   {
     return real().getTypedValue();
   }
 
   // inherit JavaDoc
-  public Value atomize() throws XPathException
+  public @Override Value atomize() throws XPathException
   {
     return real().atomize();
   }
