@@ -1,12 +1,8 @@
 /* dynaXML CONTENT stylesheet */
 
-@import url("base.css");
+@import url("content.css");
 
 span.topnav {font-size: 75%;}
-
-/* Change Font Size */
-
-BODY {font-size: 110%;}
 
 /* DIVS */
 
@@ -356,21 +352,6 @@ background-color: silver;
 .bibl-hi  {
 font-weight: bold;
 background-color: #E9EEF4;
-}
-
-.hit  {
-background-color: #D6DCE5; 
-color: red; 
-font-weight: bold;
-}
-
-.subhit  {
-color: red; 
-font-weight: bold;
-}
-
-.hitsection  {
-background-color: #D6DCE5;
 }
 
 .run-head  { 

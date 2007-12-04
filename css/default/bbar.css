@@ -2,6 +2,4 @@
  
 /* Applies only to the top navigation bar that appears in the frames view */
 
-@import url("base.css");
-
 span.topnav {font-size: 75%;}

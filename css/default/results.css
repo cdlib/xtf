@@ -1,21 +1,8 @@
-/* crossQuery results stylesheet */
+/* crossQuery form and results stylesheet */
 
 /* FORMATTING */
 
-SPAN.heading {
-  font-weight: bold;
-}
-
-.select {
- color: green;
-}
-
 .highlight {
-  background-color: yellow;
+  background-color: silver;
 }
 
-/* HITS */
-
-.term {
-  color: red;
-}
