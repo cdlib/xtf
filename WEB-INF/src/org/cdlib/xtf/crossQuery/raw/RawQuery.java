@@ -142,7 +142,7 @@ public class RawQuery extends CrossQuery
 
     // Fill in the auxiliary info
     queryReq.parserInput = null;
-    queryReq.parserOutput = null;
+    queryReq.parserOutput = queryText;
 
     // Process it to generate result document hits
     QueryProcessor proc = createQueryProcessor();
