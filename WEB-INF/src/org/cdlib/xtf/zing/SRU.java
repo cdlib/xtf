@@ -52,7 +52,7 @@ import org.cdlib.xtf.util.XMLWriter;
 public class SRU extends CrossQuery 
 {
   // inherit JavaDoc
-  protected String getConfigName() {
+  public String getConfigName() {
     return "conf/sru.conf";
   }
 
@@ -67,7 +67,7 @@ public class SRU extends CrossQuery
   } // readConfig()
 
   // inherit JavaDoc
-  protected TextConfig getConfig() {
+  public TextConfig getConfig() {
     return config;
   }
 

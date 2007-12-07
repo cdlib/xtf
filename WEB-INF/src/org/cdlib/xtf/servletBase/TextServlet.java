@@ -40,10 +40,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -60,6 +60,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.Controller;
@@ -437,7 +438,7 @@ public abstract class TextServlet extends HttpServlet
    * Derived classes must supply this method. Simply returns the relative
    * path name of the configuration file (e.g. "conf/dynaXml.conf").
    */
-  protected abstract String getConfigName();
+  public abstract String getConfigName();
 
   /**
    * Derived classes must supply this method. It reads in the servlet's
@@ -453,7 +454,7 @@ public abstract class TextServlet extends HttpServlet
    * Derived classes must supply this method. It simply returns the
    * configuration info that was read previously by readConfig()
    */
-  protected abstract TextConfig getConfig();
+  public abstract TextConfig getConfig();
 
   /** Tells whether session tracking was enabled in the config file */
   public boolean isSessionTrackingEnabled() {
@@ -956,7 +957,7 @@ public abstract class TextServlet extends HttpServlet
    * parameter.
    */
   public void buildParamBlock(AttribList atts, XMLFormatter fmt,
-                              HashMap tokenizerMap, String extra) 
+                              Map tokenizerMap, String extra) 
   {
     // The top-level node marks the fact that this is the parameter list.
     fmt.beginTag("parameters");
@@ -1003,7 +1004,7 @@ public abstract class TextServlet extends HttpServlet
    * @param tokenizerMap tells which parameters to tokenize, and how
    */
   protected void addParam(XMLFormatter fmt, String name, String val,
-                          HashMap tokenizerMap) 
+                          Map tokenizerMap) 
   {
     // Create the parameter node and assign its name and value.
     fmt.beginTag("param");
@@ -1022,11 +1023,46 @@ public abstract class TextServlet extends HttpServlet
       }
       else if (tokenizer.equalsIgnoreCase("CQL"))
         cqlTokenize(fmt, name, val);
+      else if (tokenizer.equalsIgnoreCase("raw"))
+        rawTokenize(fmt, name, val);
     }
 
     // All done.
     fmt.endTag();
   } // addParam()
+  
+  /**
+   * Interpret 'val' as a raw XML element, and output it.
+   *
+   * @param fmt formatter to add to
+   * @param name Name of the URL parameter
+   * @param val value to tokenize
+   * @throws TransformerException 
+   */
+  protected void rawTokenize(XMLFormatter fmt, String name, String val) 
+  {
+    // First, we need to parse the text as an XML document. That way we can be
+    // really sure that it *is* XML.
+    //
+    StringWriter strOut = new StringWriter();
+    try 
+    {
+      Transformer trans = IndexUtil.createTransformer();
+      Properties props = trans.getOutputProperties();
+      props.put("indent", "yes");
+      props.put("method", "xml");
+      props.put("omit-xml-declaration", "yes");
+      trans.setOutputProperties(props);
+      
+      trans.transform(new StreamSource(new StringReader(val)), new StreamResult(strOut));
+    }
+    catch (TransformerException e) {
+      throw new RuntimeException(e);
+    }
+    
+    // Then copy that XML to the output.
+    fmt.rawText(strOut.toString());
+  }
 
   /**
    * Break 'val' up into its component tokens and add elements for them.

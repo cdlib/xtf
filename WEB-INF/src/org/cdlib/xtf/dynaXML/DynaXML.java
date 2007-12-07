@@ -116,7 +116,7 @@ public class DynaXML extends TextServlet
    * Called by the superclass to find out the name of our specific config
    * file.
    */
-  protected String getConfigName() {
+  public String getConfigName() {
     return "conf/dynaXML.conf";
   }
 
@@ -143,7 +143,7 @@ public class DynaXML extends TextServlet
    * Retrieves the current configuration information (that was read in by
    * readConfig()).
    */
-  protected TextConfig getConfig() {
+  public TextConfig getConfig() {
     return config;
   }
 

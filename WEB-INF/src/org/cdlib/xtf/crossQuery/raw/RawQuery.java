@@ -68,7 +68,7 @@ public class RawQuery extends CrossQuery
   }
   
   // inherit JavaDoc
-  protected String getConfigName() {
+  public String getConfigName() {
     return "no config file";
   }
   

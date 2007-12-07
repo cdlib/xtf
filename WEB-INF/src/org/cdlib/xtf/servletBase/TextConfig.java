@@ -30,6 +30,8 @@ package org.cdlib.xtf.servletBase;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.xml.transform.stream.StreamSource;
@@ -95,6 +97,12 @@ public abstract class TextConfig
   /** Whether session tracking is enabled. Default: false */
   public boolean trackSessions = false;
 
+  /** 
+   * List of parameters to tokenize specially. Default: empty (meaning use
+   * default tokenizer for all parameters.)
+   */
+  public Map tokenizerMap = new HashMap();
+  
   /**
    * Which URLs to apply encoding to, if session tracking enabled and
    * user doesn't allow cookies.
@@ -106,6 +114,10 @@ public abstract class TextConfig
 
   /** Configuration used for parsing XML files */
   private Configuration config = new Configuration();
+  
+  /* Private temporaries for use during parsing */
+  private String tokenizeParam;
+  private String tokenizeTokenizer;
 
   /** Create a configuration and attach it to a servlet */
   public TextConfig(TextServlet servlet) {
@@ -256,6 +268,20 @@ public abstract class TextConfig
         throw new GeneralException(
           "Config file property " + tagAttr +
           " must be a valid regular expression");
+      }
+      return true;
+    }
+    else if (tagAttr.equalsIgnoreCase("tokenize.param") ||
+             tagAttr.equalsIgnoreCase("tokenize.tokenizer"))
+    {
+      if (tagAttr.equalsIgnoreCase("tokenize.param"))
+        tokenizeParam = strVal;
+      else
+        tokenizeTokenizer = strVal;
+      if (tokenizeParam != null && tokenizeTokenizer != null) {
+        tokenizerMap.put(tokenizeParam, tokenizeTokenizer);
+        tokenizeParam = null;
+        tokenizeTokenizer = null;
       }
       return true;
     }

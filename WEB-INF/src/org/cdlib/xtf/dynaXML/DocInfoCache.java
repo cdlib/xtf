@@ -30,7 +30,6 @@ package org.cdlib.xtf.dynaXML;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import java.io.File;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import javax.xml.transform.Transformer;
@@ -158,7 +157,9 @@ class DocInfoCache extends GeneratingCache
     // of the parameters (typically useful for queries.)
     //
     XMLFormatter paramBlock = new XMLFormatter();
-    servlet.buildParamBlock(attrList, paramBlock, new HashMap(), null);
+    servlet.buildParamBlock(attrList, paramBlock, 
+                            TextServlet.getCurServlet().getConfig().tokenizerMap,
+                            null);
     NodeInfo paramDoc = paramBlock.toNode(pss.getConfiguration());
 
     if (Trace.getOutputLevel() >= Trace.debug) {
