@@ -34,8 +34,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
-import java.io.IOException;
-
 import javax.imageio.ImageIO;
 
 import net.sf.saxon.trans.DynamicError;
