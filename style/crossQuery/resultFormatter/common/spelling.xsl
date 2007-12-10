@@ -106,22 +106,22 @@
 <!-- ====================================================================== -->
     
     <xsl:template match="term" mode="spelling">
-        <span class="search-term">
+        <font color="red">
             <xsl:value-of select="cdl:fix-terms(., //spelling)"/>
-        </span>
+        </font>
     </xsl:template>
   
     <xsl:template match="phrase" mode="spelling">
         <xsl:text>&quot;</xsl:text>
-        <span class="search-term">
+        <font color="red">
           <xsl:value-of select="cdl:fix-terms(term, //spelling)"/>
-        </span>
+        </font>
         <xsl:text>&quot;</xsl:text>
     </xsl:template>
     
     <xsl:template match="exact" mode="spelling">
         <xsl:text>'</xsl:text>
-        <span class="search-term"><xsl:value-of select="cdl:fix-terms(term, //spelling)"/></span>
+        <font color="red"><xsl:value-of select="cdl:fix-terms(term, //spelling)"/></font>
         <xsl:text>'</xsl:text>
     </xsl:template>
     

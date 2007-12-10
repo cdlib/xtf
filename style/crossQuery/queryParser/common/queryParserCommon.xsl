@@ -78,11 +78,11 @@
    <!-- documents per page -->
    <xsl:param name="docsPerPage">
       <xsl:choose>
-         <xsl:when test="matches($http.User-Agent,$robots)">
-            <xsl:value-of select="90"/><!-- maximum amount allowed by google is 100 -->
-         </xsl:when>
          <xsl:when test="($smode = 'test') or $raw">
             <xsl:value-of select="10000"/>
+         </xsl:when>
+         <xsl:when test="matches($http.User-Agent,$robots)">
+            <xsl:value-of select="90"/><!-- maximum amount allowed by google is 100 -->
          </xsl:when>
          <xsl:otherwise>
             <xsl:value-of select="20"/>

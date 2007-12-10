@@ -50,13 +50,13 @@
                     <!-- if they did not search all fields, tell them which are in the fieldList -->
                     <xsl:when test="$fieldList">
                         <xsl:text> in </xsl:text>
-                        <span class="search-type">
+                        <b>
                             <xsl:value-of select="replace($fieldList,'\s',', ')"/>
-                        </span>
+                        </b>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text> in </xsl:text>
-                        <span class="search-type"> keywords</span>
+                        <b> keywords</b>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
@@ -75,7 +75,7 @@
                 </xsl:if>
                 <xsl:apply-templates mode="query"/>
                 <xsl:text> in </xsl:text>
-                <span class="search-type">
+                <b>
                     <xsl:choose>
                         <xsl:when test="@field = 'text'">
                             <xsl:text> the full text </xsl:text>
@@ -84,7 +84,7 @@
                           <xsl:value-of select="@field"/>
                         </xsl:otherwise>
                     </xsl:choose>
-                </span>
+                </b>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:apply-templates mode="query"/>
@@ -97,27 +97,27 @@
             <xsl:value-of select="name(..)"/>
             <xsl:text> </xsl:text>
         </xsl:if>
-        <span class="search-term">
+        <font color="red">
             <xsl:value-of select="."/>
-        </span>
+        </font>
         <xsl:text> </xsl:text>
     </xsl:template>
     
     <xsl:template match="phrase" mode="query">
         <xsl:text>&quot;</xsl:text>
-        <span class="search-term">
+        <font color="red">
             <xsl:value-of select="term"/>
-        </span>
+        </font>
         <xsl:text>&quot;</xsl:text>
     </xsl:template>
     
     <xsl:template match="exact" mode="query">
         <xsl:text>'</xsl:text>
-        <span class="search-term"><xsl:value-of select="term"/></span>
+        <font color="red"><xsl:value-of select="term"/></font>
         <xsl:text>'</xsl:text>
         <xsl:if test="@field">
             <xsl:text> in </xsl:text>
-            <span class="search-type"><xsl:value-of select="@field"/></span>
+            <b><xsl:value-of select="@field"/></b>
         </xsl:if>
     </xsl:template>
     

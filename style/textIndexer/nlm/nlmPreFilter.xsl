@@ -299,12 +299,12 @@
       <xsl:choose>
          <xsl:when test="/article/front/article-meta/article-id[@pub-id-type='doi']">
             <identifier xtf:meta="true">
-               <xsl:value-of select="string(/article/front/article-meta/article-id[@pub-id-type='doi'][1])"/>
+               <xsl:value-of select="replace(string(/article/front/article-meta/article-id[@pub-id-type='doi'][1]),'^.+/','')"/>
             </identifier>
          </xsl:when>
          <xsl:when test="/article/front/article-meta/article-id">
             <identifier xtf:meta="true">
-               <xsl:value-of select="string(/article/front/article-meta/article-id[1])"/>
+               <xsl:value-of select="replace(string(/article/front/article-meta/article-id[1]),'^.+/','')"/>
             </identifier>
          </xsl:when>
          <xsl:otherwise>

@@ -335,10 +335,10 @@
   <xsl:variable name="target">
     <xsl:text>_top</xsl:text>
   </xsl:variable>
+   
+   <xsl:copy-of select="$brand.header"/>
 
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
-    
-    <xsl:copy-of select="$brand.header.dynaxml.header"/>
 
     <!-- BEGIN TOPNAV ROW -->
     <tr  width="100%">

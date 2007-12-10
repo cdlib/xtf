@@ -51,7 +51,7 @@
          <xsl:apply-templates select="document($dcpath)" mode="inmeta"/>
          <xsl:if test="not(document($dcpath)//*[matches(local-name(),'identifier')])">
             <identifier xtf:meta="true">
-               <xsl:value-of select="$docpath"/>
+               <xsl:value-of select="replace(replace($docpath,'^.+/',''),'\.[A-Za-z]+$','')"/>
             </identifier>
          </xsl:if>
          <!-- special field for OAI -->
@@ -66,11 +66,21 @@
       
       <!-- Copy all metadata fields -->
       <xsl:for-each select="*">
-         <xsl:element name="{name()}">
-            <xsl:attribute name="xtf:meta" select="'true'"/>
-            <xsl:copy-of select="@*"/>
-            <xsl:value-of select="string()"/>
-         </xsl:element>
+            <xsl:choose>
+               <xsl:when test="matches(name(),'identifier')">
+                  <identifier xtf:meta="true">
+                     <xsl:copy-of select="@*"/>
+                     <xsl:value-of select="replace(replace(string(),'^.+/',''),'\.[A-Za-z]+$','')"/>
+                  </identifier>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:element name="{name()}">
+                     <xsl:attribute name="xtf:meta" select="'true'"/>
+                     <xsl:copy-of select="@*"/>
+                     <xsl:value-of select="string()"/>
+                  </xsl:element>
+               </xsl:otherwise>
+            </xsl:choose>
          <!-- special fields for OAI -->
          <xsl:choose>
             <xsl:when test="matches(name(),'date')">
@@ -103,69 +113,69 @@
          </display>
          
          <!-- Parse the date field to create a year (or range of years) -->
-         <xsl:apply-templates select="$meta/date" mode="year"/>
+         <xsl:apply-templates select="$meta/*[matches(local-name(),'^date$')]" mode="year"/>
          
          <!-- Create sort fields -->
-         <xsl:apply-templates select="$meta/title[1]" mode="sort"/>    
-         <xsl:apply-templates select="$meta/creator[1]" mode="sort"/>
-         <xsl:apply-templates select="$meta/date[1]" mode="sort"/>
+         <xsl:apply-templates select="$meta/*[matches(local-name(),'^title$')][1]" mode="sort"/>    
+         <xsl:apply-templates select="$meta/*[matches(local-name(),'^creator$')][1]" mode="sort"/>
+         <xsl:apply-templates select="$meta/*[matches(local-name(),'^date$')][1]" mode="sort"/>
          
          <!-- Create facets -->
-         <xsl:apply-templates select="$meta/date" mode="facet"/>
-         <xsl:apply-templates select="$meta/subject" mode="facet"/>
+         <xsl:apply-templates select="$meta/*[matches(local-name(),'^date$')]" mode="facet"/>
+         <xsl:apply-templates select="$meta/*[matches(local-name(),'^subject$')]" mode="facet"/>
          
       </xtf:meta>
    </xsl:template>
    
    <!-- Parse the date to determine the year (or range of years) -->
-   <xsl:template match="date" mode="year">
+   <xsl:template match="*[matches(local-name(),'^date$')]" mode="year">
       <year xtf:meta="yes">
          <xsl:copy-of select="parse:year(string(.))"/>
       </year>
    </xsl:template>
    
    <!-- Generate sort-title -->
-   <xsl:template match="title" mode="sort">
+   <xsl:template match="*[matches(local-name(),'^title$')]" mode="sort">
       <sort-title xtf:meta="yes" xtf:tokenize="no">
          <xsl:value-of select="parse:title(string(.))"/>
       </sort-title>
    </xsl:template>
    
    <!-- Generate sort-creator -->
-   <xsl:template match="creator" mode="sort">
+   <xsl:template match="*[matches(local-name(),'^creator$')]" mode="sort">
       <sort-creator xtf:meta="yes" xtf:tokenize="no">
          <xsl:copy-of select="parse:name(string(.))"/>
       </sort-creator>
    </xsl:template>
    
    <!-- Generate sort-year (if range, only use first year) -->
-   <xsl:template match="date" mode="sort">
+   <xsl:template match="*[matches(local-name(),'^date$')]" mode="sort">
       <sort-year xtf:meta="true" xtf:tokenize="no">
          <xsl:value-of select="parse:year(string(.))[1]"/>
       </sort-year>
    </xsl:template>
    
    <!-- Generate facet-date -->
-   <xsl:template match="date" mode="facet">
+   <xsl:template match="*[matches(local-name(),'^date$')]" mode="facet">
       <facet-date>
          <xsl:attribute name="xtf:meta" select="'true'"/>
          <xsl:attribute name="xtf:tokenize" select="'no'"/>
          <xsl:choose>
             <xsl:when test="matches(.,'[0-9]{2}-[0-9]{2}-[0-9]{4}')">
-               <xsl:value-of select="replace(.,'-','::')"/>
+               <xsl:value-of select="replace(.,'([0-9]{2})-([0-9]{2})-([0-9]{4})','$3::$1::$2')"/>
             </xsl:when>
             <xsl:when test="matches(.,'[0-9]{4}-[0-9]{2}-[0-9]{2}')">
                <xsl:value-of select="replace(.,'-','::')"/>
             </xsl:when>
             <xsl:otherwise>
-               <xsl:value-of select="concat('0::0::',parse:year(string(.)))"/>
+               <xsl:value-of select="concat(parse:year(string(.)),'::01::01')"/>
             </xsl:otherwise>
          </xsl:choose>
       </facet-date>
    </xsl:template>
    
    <!-- Generate facet-subject -->
-   <xsl:template match="subject" mode="facet">
+   <xsl:template match="*[matches(local-name(),'^subject$')]" mode="facet">
       <facet-subject>
          <xsl:attribute name="xtf:meta" select="'true'"/>
          <xsl:attribute name="xtf:tokenize" select="'no'"/>
@@ -261,12 +271,11 @@
       
       <xsl:choose>
          
-         
          <!-- Pattern: 1989-12-1 -->
          <xsl:when test="matches($date, '([^0-9]|^)(\d\d\d\d)[^0-9]*[\-/][^0-9]*\d\d?[^0-9]*[\-/][^0-9]*\d\d?([^0-9]|$)')">
             <xsl:analyze-string select="$date" regex="([^0-9]|^)(\d\d\d\d)[^0-9]*[\-/][^0-9]*\d\d?[^0-9]*[\-/][^0-9]*\d\d?([^0-9]|$)">
                <xsl:matching-substring>
-                  <xsl:copy-of select="number(regex-group(2)) + 1900"/>
+                  <xsl:copy-of select="number(regex-group(2))"/>
                </xsl:matching-substring>
             </xsl:analyze-string>
          </xsl:when>

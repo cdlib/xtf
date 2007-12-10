@@ -75,7 +75,7 @@ to work with EAD 2002.-->
     
     <html>
       <head>
-        <link rel="stylesheet" type="text/css" href="{$css.path}content.css"/>
+        <link rel="stylesheet" type="text/css" href="{$css.path}ead.css"/>
         
         <title>
           <xsl:value-of select="eadheader/filedesc/titlestmt/titleproper"/>
@@ -152,10 +152,10 @@ to work with EAD 2002.-->
     <xsl:variable name="target">
       <xsl:text>_top</xsl:text>
     </xsl:variable>
+     
+     <xsl:copy-of select="$brand.header"/>
     
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
-      
-      <xsl:copy-of select="$brand.header.dynaxml.header"/>
       
       <!-- BEGIN TOPNAV ROW -->
       <tr  width="100%">
@@ -543,7 +543,7 @@ to work with EAD 2002.-->
     </xsl:variable>
     <html>
       <head>
-        <link rel="stylesheet" type="text/css" href="{$css.path}content.css"/>
+        <link rel="stylesheet" type="text/css" href="{$css.path}ead.css"/>
         
         <title>
           <xsl:value-of select="eadheader/filedesc/titlestmt/titleproper"/>

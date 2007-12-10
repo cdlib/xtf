@@ -38,7 +38,7 @@
 
   <xsl:param name="css.path" select="concat($xtfURL, 'css/default/')"/>
 
-  <xsl:param name="content.css" select="'content.css'"/>
+  <xsl:param name="content.css" select="'tei.css'"/>
 
   <xsl:param name="fig.ent" select="'0'"/>
 

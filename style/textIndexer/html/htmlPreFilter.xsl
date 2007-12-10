@@ -206,12 +206,12 @@
       <xsl:choose>
          <xsl:when test="//*[local-name()='meta'][@name='dc.identifier']">
             <identifier xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.identifier'][1]/@content"/>
+               <xsl:value-of select="replace(replace(//*[local-name()='meta'][@name='dc.identifier'][1]/@content,'^.+/',''),'\.[A-Za-z]+$','')"/>
             </identifier>
          </xsl:when>
          <xsl:otherwise>
             <identifier xtf:meta="true">
-               <xsl:value-of select="saxon:system-id()"/>
+               <xsl:value-of select="replace(replace(saxon:system-id(),'^.+/',''),'\.[A-Za-z]+$','')"/>
             </identifier>
          </xsl:otherwise>
       </xsl:choose>

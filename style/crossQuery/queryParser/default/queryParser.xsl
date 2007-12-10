@@ -59,6 +59,7 @@
    <!-- ====================================================================== -->
    
    <xsl:param name="fieldList" select="'text title creator subject description publisher contributor date type format identifier source language relation coverage rights year '"/>
+   <xsl:param name="facet-date"/>
    
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
@@ -104,6 +105,28 @@
             <xsl:attribute name="explainScores" select="$explainScores"/>
          </xsl:if>
          
+         <!-- flat facet -->
+         <facet field="facet-subject" sortGroupsBy="value">
+            <xsl:attribute name="select" select="'*'"/>
+         </facet>
+         
+         <!-- hierarchical facet -->
+         <facet field="facet-date" sortGroupsBy="value">
+            <xsl:attribute name="select">
+               <xsl:choose>
+                  <xsl:when test="matches($facet-date,'[0-9]+::[0-9]+::[0-9]+')">
+                     <xsl:attribute name="select" select="$facet-date"/>
+                  </xsl:when>
+                  <xsl:when test="$facet-date">
+                     <xsl:attribute name="select" select="concat($facet-date,'::*')"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:attribute name="select" select="'*'"/>       
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:attribute>
+         </facet>
+         
          <!-- process query -->
          <xsl:choose>
             <xsl:when test="matches($http.User-Agent,$robots)">
@@ -127,10 +150,6 @@
             </xsl:otherwise>
          </xsl:choose>
          
-         <facet field="facet-subject" sortGroupsBy="value">
-            <xsl:attribute name="select" select="'*'"/>
-         </facet>
-         
       </query>
    </xsl:template>
    
@@ -151,7 +170,8 @@
       <xsl:variable name="textParam" select="$queryParams[matches(@name, 'text|query')]"/>
       
       <!-- Find the meta-data queries, if any -->
-      <xsl:variable name="metaParams" select="$queryParams[not(matches(@name, 'text*|query*|style|smode|rmode|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|.*-ignore'))]"/>
+      <xsl:variable name="metaParams"
+         select="$queryParams[not(matches(@name,'text*|query*|style|smode|rmode|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|.*-ignore'))]"/>
       
       <and>
          <!-- Process the meta-data queries, if any -->
@@ -162,6 +182,25 @@
          <xsl:if test="count($textParam) &gt; 0">
             <xsl:apply-templates select="$textParam"/>
          </xsl:if>
+         <!-- Process special facet query params -->
+         <!-- flat facets -->
+         <xsl:for-each select="//param[matches(@name,'f[0-9]+-.+')]">
+            <xsl:variable name="field" select="replace(@name,'f[0-9]+-','facet-')"/>
+            <and field="{$field}">
+               <term maxSnippets="0">
+                  <xsl:value-of select="@value"/>
+               </term>
+            </and>
+         </xsl:for-each>
+         <!-- hierarchical facets -->
+         <xsl:for-each select="//param[matches(@name,'facet-.+')]">
+            <xsl:variable name="field" select="@name"/>
+            <and field="{$field}">
+               <term maxSnippets="0">
+                  <xsl:value-of select="concat(@value,'*')"/>
+               </term>
+            </and>
+         </xsl:for-each>
          <!-- Unary Not -->
          <xsl:for-each select="param[contains(@name, '-exclude')]">
             <xsl:variable name="field" select="replace(@name, '-exclude', '')"/>

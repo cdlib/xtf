@@ -292,7 +292,7 @@
       <xsl:choose>
          <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='idno']">
             <identifier xtf:meta="true">
-               <xsl:value-of select="string(//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='idno'][1])"/>
+               <xsl:value-of select="replace(string(//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='idno'][1]),'^.+/','')"/>
             </identifier>
          </xsl:when>
          <xsl:otherwise>

@@ -48,7 +48,7 @@
   <xsl:output method="xhtml" indent="yes" encoding="UTF-8" media-type="text/html" 
               doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
               doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" 
-              omit-xml-declaration="yes"/>
+              exclude-result-prefixes="#all"/>
   
   <xsl:output name="xml" method="xml" indent="yes" media-type="text/xml" encoding="UTF-8"/>
 
@@ -167,6 +167,9 @@
   <xsl:param name="year-prox"/>
   <xsl:param name="year-exclude"/>
   <xsl:param name="year-max"/>
+   
+  <!-- Special XTF siplay field -->
+  <xsl:param name="display"/>
 
   <!-- Structural Search -->
   <xsl:param name="sectionType"/>
@@ -250,18 +253,19 @@
   <!-- Query String -->
   <!-- grab url -->
   <xsl:param name="http.URL"/>
-  <!-- extract query string and clean it up -->
-  <xsl:param name="queryString">
-    <xsl:value-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace($http.URL, '.+search\?|.+oai\?', ''), 
-      '[0-9A-Za-z\-]+=&amp;', '&amp;'), 
-      '&amp;[0-9A-Za-z\-]+=$', '&amp;'), 
-       '&amp;+', '&amp;'),
-       '&amp;startDoc=[0-9]+', ''),
-       '[0-9A-Za-z\-]+=;', ';'), 
-       ';[0-9A-Za-z\-]+=$', ';'), 
-       ';+', ';'),
-      ';startDoc=[0-9]+', '')"/>
-  </xsl:param> 
+   <!-- extract query string and clean it up -->
+   <xsl:param name="queryString">
+      <xsl:value-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($http.URL, '.+search\?|.+oai\?', ''), 
+         '[0-9A-Za-z\-]+=&amp;', '&amp;'), 
+         '&amp;[0-9A-Za-z\-]+=$', '&amp;'), 
+         '&amp;startDoc=[0-9]+', ''),
+         '[0-9A-Za-z\-]+=;', ';'), 
+         ';[0-9A-Za-z\-]+=$', ';'), 
+         ';startDoc=[0-9]+', ''),
+         '[;&amp;]+', ';'),
+         '^[;&amp;]', ''),
+         '[;&amp;]$', '')"/>
+   </xsl:param> 
    
    <!-- Special Robot Parameters -->
    <xsl:param name="http.User-Agent"/>
@@ -445,10 +449,10 @@
     <xsl:variable name="pageQueryString">
       <xsl:choose>
         <xsl:when test="$groups">
-          <xsl:value-of select="replace(replace($queryString, ';startGroup=[0-9]+', ''), ';group=[0-9A-Za-z\-\+''%% ]+', '')"/>
+           <xsl:value-of select="replace(replace(replace($queryString, '[;&amp;]startGroup=[0-9]+', ''), '[;&amp;]group=[0-9A-Za-z\-\+''%% ]+', ''),'[;&amp;]$','')"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="replace($queryString, ';startDoc=[0-9]+', '')"/>
+           <xsl:value-of select="replace(replace($queryString, '[;&amp;]startDoc=[0-9]+', ''),'[;&amp;]$','')"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>   
