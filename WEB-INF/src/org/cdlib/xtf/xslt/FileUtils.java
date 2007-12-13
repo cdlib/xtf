@@ -4,6 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +15,9 @@ import java.util.HashMap;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
 
+import org.cdlib.xtf.textIndexer.HTMLToString;
 import org.cdlib.xtf.util.Path;
 
 import org.xml.sax.InputSource;
@@ -254,6 +260,38 @@ public class FileUtils
     inputSrc.setSystemId(file.toURI().toString());
     Source saxSrc = new SAXSource(xmlReader, inputSrc);
     DocumentInfo doc = context.getConfiguration().buildDocument(saxSrc);
+    return doc;
+  }
+  
+  /**
+   * Reads in an HTML page (specified by URL), and uses JTidy to make it into
+   * XML that can be subsequently processed by a stylesheet.
+   * 
+   * @throws IOException if the file can't be read
+   * @throws XPathException if the document cannot be parsed
+   */
+  public static DocumentInfo readHTMLPage(XPathContext context, String urlStr)
+    throws IOException, XPathException
+  {
+    // Read the HTML page, and convert it to an XML string
+    URL url;
+    URLConnection connection;
+    InputStream inStream = null;
+    String pageStr;
+    try {
+      url = new URL(urlStr);
+      connection = url.openConnection();
+      inStream = connection.getInputStream();
+      pageStr = HTMLToString.convert(inStream);
+    }
+    finally {
+      if (inStream != null)
+        inStream.close();
+    }
+    
+    // And convert that string to an in-memory XML document.
+    DocumentInfo doc = context.getConfiguration().buildDocument(
+        new StreamSource(new StringReader(pageStr), urlStr));
     return doc;
   }
   
