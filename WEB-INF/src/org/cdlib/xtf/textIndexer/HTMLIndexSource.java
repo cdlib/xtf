@@ -75,4 +75,4 @@ public class HTMLIndexSource extends XMLIndexSource
     finalSrc.setSystemId(htmlFile.toURL().toString());
     return finalSrc;
   } // filterInput()
-} // class HTMLSrcFile
+} // class HTMLIndexSource
