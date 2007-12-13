@@ -33,7 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import org.w3c.tidy.Configuration;
+
 import org.w3c.tidy.Tidy;
 import org.cdlib.xtf.util.*;
 
@@ -57,14 +57,14 @@ public class HTMLToString
 
   /** Convert an HTML file into an HTMLTidy style XML string.
    *
-   *  @param HTMLInputStream  Stream of HTML text to convert to an XML string.
+   *  @param htmlInputStream  Stream of HTML text to convert to an XML string.
    *
    *  @return
    *      If successful, a string containing the XML equivalent of the source
    *      HTML file. If an error occurred, this method returns <code>null</code>.
    *
    */
-  static public String convert(InputStream HTMLInputStream) 
+  static public String convert(InputStream htmlInputStream) 
   {
     // Tell Tidy to supress warning and other output messsages.
     if (Trace.getOutputLevel() == Trace.debug) {
@@ -77,24 +77,26 @@ public class HTMLToString
       tidy.setShowWarnings(false);
     }
 
-    // Tell Tidy to make XML as it output.
+    // Tell Tidy to make XML as it outputs.
     tidy.setXmlOut(true);
-
+    
     // Output non-breaking spaces as "&nbsp;" so we can easily detect them
-    // replace them with &#160; below to avoid problems parsing the XML.
+    // and replace them with &#160; below to avoid problems parsing the XML.
     //
     tidy.setQuoteNbsp(true);
-
-    // Default to UTF-8 character encoding.
-    tidy.setCharEncoding(Configuration.UTF8);
-
+    
+    // Make sure we get something, even if errors are found. Our goal is to
+    // index after all, not to fix the world's HTML.
+    //
+    tidy.setForceOutput(true);
+    
     try 
     {
       // Create a buffer to output the XML to.
       ByteArrayOutputStream out = new ByteArrayOutputStream();
 
       // Convert the HTML to XML.
-      tidy.parse(HTMLInputStream, out);
+      tidy.parse(htmlInputStream, out);
 
       // Get a string version of the resulting XML.
       String retStr = out.toString();
@@ -124,7 +126,7 @@ public class HTMLToString
       // space. Likewise for other non-XML codes.
       // 
       retStr = replaceHtmlCodes(retStr);
-
+      
       // Finally, return the XML string to the caller.
       return retStr;
     } //try
@@ -251,7 +253,7 @@ public class HTMLToString
     "9002", "loz", "9674", "spades", "9824",
     "clubs", "9827", "hearts", "9829", "diams",
     "9830",
-  };
+};
 
   /** Build a HashMap from the code table above */
   private static HashMap htmlCodeMap = new HashMap();
@@ -277,9 +279,7 @@ public class HTMLToString
     while (i < inChars.length) 
     {
       // Look for an ampersand code (but not "&#xxx;")
-      if (inChars[i] != '&' ||
-          (i < inChars.length - 1 && inChars[i + 1] == '#')) 
-      {
+      if (inChars[i] != '&') { 
         out.append(inChars[i++]);
         continue;
       }
@@ -287,9 +287,70 @@ public class HTMLToString
       // Find the end of the code.
       int start = i + 1;
       int end = start;
-      while (end < inChars.length && Character.isLetterOrDigit(inChars[end]))
+      while (end < inChars.length && 
+             (inChars[end] == '#' || Character.isLetterOrDigit(inChars[end])))
+      {
         end++;
+      }
+      
       if (end == inChars.length || inChars[end] != ';') {
+        out.append(inChars[i++]);
+        continue;
+      }
+      
+      // If it's numeric, check for the invalid range.
+      if (inChars[start] == '#') 
+      {
+        String code = in.substring(start+1, end);
+        try {
+          int codeNum = Integer.parseInt(in.substring(start+1, end));
+          if (codeNum >= 128 && codeNum <= 159)
+          {
+            out.append("&#");
+            int outNum = 0;
+            switch (codeNum)
+            {
+              case 128:  outNum = 0x20ac;  break;
+              case 129:  outNum = 0x0081;  break;
+              case 130:  outNum = 0x201A;  break;
+              case 131:  outNum = 0x0192;  break;
+              case 132:  outNum = 0x201E;  break;
+              case 133:  outNum = 0x2026;  break;
+              case 134:  outNum = 0x2020;  break;
+              case 135:  outNum = 0x2021;  break;
+              case 136:  outNum = 0x02C6;  break;
+              case 137:  outNum = 0x2030;  break;
+              case 138:  outNum = 0x0160;  break;
+              case 139:  outNum = 0x2039;  break;
+              case 140:  outNum = 0x0152;  break;
+              case 141:  outNum = 0x008D;  break;
+              case 142:  outNum = 0x017D;  break;
+              case 143:  outNum = 0x008F;  break;
+              case 144:  outNum = 0x0090;  break;
+              case 145:  outNum = 0x2018;  break;
+              case 146:  outNum = 0x2019;  break;
+              case 147:  outNum = 0x201C;  break;
+              case 148:  outNum = 0x201D;  break;
+              case 149:  outNum = 0x2022;  break;
+              case 150:  outNum = 0x2013;  break;
+              case 151:  outNum = 0x2014;  break;
+              case 152:  outNum = 0x02DC;  break;
+              case 153:  outNum = 0x2122;  break;
+              case 154:  outNum = 0x0161;  break;
+              case 155:  outNum = 0x203A;  break;
+              case 156:  outNum = 0x0153;  break;
+              case 157:  outNum = 0x009D;  break;
+              case 158:  outNum = 0x017E;  break;
+              case 159:  outNum = 0x0178;  break;
+            }
+            out.append(Integer.toString(outNum) + ";");
+            i = end + 1;
+            continue;
+          }
+        }
+        catch (NumberFormatException e) { }
+
+        // Number not parseable, or not a problem.
         out.append(inChars[i++]);
         continue;
       }
@@ -320,4 +381,5 @@ public class HTMLToString
     // Convert the result back to a string.
     return out.toString();
   } // replaceHtmlCodes()
+
 } // class HTMLToString
