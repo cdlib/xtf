@@ -290,7 +290,7 @@
          <xsl:choose>
             <xsl:when test="$verb='GetRecord'">
                <and field="identifier">
-                  <term><xsl:value-of select="concat('13030/',$identifier)"/></term>
+                  <term><xsl:value-of select="$identifier"/></term>
                </and>
             </xsl:when>
             <xsl:when test="$verb='ListIdentifiers' or $verb='ListRecords'">
@@ -308,10 +308,9 @@
                         </range>
                      </xsl:when>
                      <xsl:otherwise>
-                        <or field="display">
-                           <term>dynaxml</term>
-                           <term>raw</term>
-                        </or>
+                        <and field="all">
+                           <term>all</term>
+                        </and>
                      </xsl:otherwise>
                   </xsl:choose>
                   <xsl:if test="$set">
@@ -327,24 +326,22 @@
                <xsl:choose>
                   <xsl:when test="$identifier">
                      <and field="identifier">
-                        <term><xsl:value-of select="concat('13030/',$identifier)"/></term>
+                        <term><xsl:value-of select="$identifier"/></term>
                      </and>
                   </xsl:when>
                   <xsl:otherwise>
-                     <or field="display">
-                        <term>dynaxml</term>
-                        <term>raw</term>
-                     </or>
+                     <and field="display">
+                        <term>all</term>
+                     </and>
                   </xsl:otherwise>
                </xsl:choose>
             </xsl:when>
             <xsl:when test="$verb='ListSets'">
                <facet field="facet-subject" sortGroupsBy="value" sortDocsBy="dateStamp" select="*"/>
                <and>
-                  <or field="display">
-                     <term>dynaxml</term>
-                     <term>raw</term>
-                  </or>
+                  <and field="display">
+                     <term>all</term>
+                  </and>
                </and>
             </xsl:when>
             <xsl:when test="$verb='Identify'">
