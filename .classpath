@@ -4,7 +4,6 @@
 	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/contrib/xtf-lucene/test/java"/>
 	<classpathentry excluding="**/.DS_Store|**/.cdl/**|**/.sf/**|**/CVS/**" kind="src" path="WEB-INF/contrib/xtf-lucene/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/Tidy.jar" sourcepath="WEB-INF/lib/source/jtidy-04aug2000r7-dev"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/cql-java.jar" sourcepath="WEB-INF/lib/source/cql-java-0.7"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/marc4j.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/bin/bootstrap.jar"/>
@@ -16,5 +15,6 @@
 	<classpathentry kind="lib" path="WEB-INF/lib/FontBox-0.1.0.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/activation.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/Tidy.jar" sourcepath="WEB-INF/lib/source/jtidy-20060730"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
