@@ -50,7 +50,7 @@
       <xsl:if test="FileUtils:exists($dcpath)">
          <xsl:apply-templates select="document($dcpath)" mode="inmeta"/>
          <xsl:if test="not(document($dcpath)//*[matches(local-name(),'identifier')])">
-            <identifier xtf:meta="true">
+            <identifier xtf:meta="true" xtf:tokenize="no">
                <xsl:value-of select="replace(replace($docpath,'^.+/',''),'\.[A-Za-z]+$','')"/>
             </identifier>
          </xsl:if>
@@ -68,7 +68,7 @@
       <xsl:for-each select="*">
             <xsl:choose>
                <xsl:when test="matches(name(),'identifier')">
-                  <identifier xtf:meta="true">
+                  <identifier xtf:meta="true" xtf:tokenize="no">
                      <xsl:copy-of select="@*"/>
                      <xsl:value-of select="replace(replace(string(),'^.+/',''),'\.[A-Za-z]+$','')"/>
                   </identifier>
@@ -111,6 +111,8 @@
          <display xtf:meta="true" xtf:tokenize="no">
             <xsl:value-of select="$display"/>
          </display>
+         
+         <all xtf:meta="true">all</all>
          
          <!-- Parse the date field to create a year (or range of years) -->
          <xsl:apply-templates select="$meta/*[matches(local-name(),'^date$')]" mode="year"/>

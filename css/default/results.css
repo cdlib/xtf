@@ -1,6 +1,20 @@
 /* crossQuery RESULTS stylesheet */
 
-.highlight {
-  background-color: silver;
+body {
+  font-family: Arial, sans-serif
 }
 
+.hit  {
+background-color: #D6DCE5; 
+color: red; 
+font-weight: bold;
+}
+
+.subhit  {
+color: red; 
+font-weight: bold;
+}
+
+.hitsection  {
+background-color: #D6DCE5;
+}

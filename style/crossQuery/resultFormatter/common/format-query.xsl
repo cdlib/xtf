@@ -29,103 +29,131 @@
 -->
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                              xmlns:xtf="http://cdlib.org/xtf" 
-                              exclude-result-prefixes="#all">
-    
-    <xsl:param name="keyword"/>
-    <xsl:param name="fieldList"/>   
-    <xsl:param name="query"/>
-    
-<!-- ====================================================================== -->
-<!-- Format Query for Display                                               -->
-<!-- ====================================================================== -->
-    
-    <xsl:template name="format-query">
-        
-        <xsl:choose>
-            <xsl:when test="$keyword">
-                <!-- probably very fragile -->
-                <xsl:apply-templates select="(query//*[@fields])[1]/*" mode="query"/>
-                <xsl:choose>
-                    <!-- if they did not search all fields, tell them which are in the fieldList -->
-                    <xsl:when test="$fieldList">
-                        <xsl:text> in </xsl:text>
-                        <b>
-                            <xsl:value-of select="replace($fieldList,'\s',', ')"/>
-                        </b>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text> in </xsl:text>
-                        <b> keywords</b>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates select="query" mode="query"/>
-            </xsl:otherwise>
-        </xsl:choose>
-        
-    </xsl:template>
-    
-    <xsl:template match="and | or | exact | near | range | not" mode="query">
-        <xsl:choose>
-            <xsl:when test="@field">    
-                <xsl:if test="not(position() = 2)">
-                    <xsl:value-of select="name(..)"/><xsl:text> </xsl:text>
-                </xsl:if>
-                <xsl:apply-templates mode="query"/>
-                <xsl:text> in </xsl:text>
-                <b>
-                    <xsl:choose>
-                        <xsl:when test="@field = 'text'">
-                            <xsl:text> the full text </xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                          <xsl:value-of select="@field"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </b>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates mode="query"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    
-    <xsl:template match="term" mode="query">
-        <xsl:if test="preceding-sibling::term and (. != $keyword)">
-            <xsl:value-of select="name(..)"/>
+   xmlns:xtf="http://cdlib.org/xtf" 
+   exclude-result-prefixes="#all">
+   
+   <xsl:param name="keyword"/>
+   <xsl:param name="fieldList"/>   
+   <xsl:param name="query"/>
+   <xsl:param name="noShow" select="'all|display'"/>
+   
+   <!-- ====================================================================== -->
+   <!-- Format Query for Display                                               -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="format-query">
+      
+      <xsl:choose>
+         <xsl:when test="$keyword">
+            <!-- probably very fragile -->
+            <xsl:apply-templates select="(query//*[@fields])[1]/*" mode="query"/>
+            <xsl:choose>
+               <!-- if they did not search all fields, tell them which are in the fieldList -->
+               <xsl:when test="$fieldList">
+                  <xsl:text> in </xsl:text>
+                  <b>
+                     <xsl:value-of select="replace($fieldList,'\s',', ')"/>
+                  </b>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:text> in </xsl:text>
+                  <b> keywords</b>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:apply-templates select="query" mode="query"/>
+         </xsl:otherwise>
+      </xsl:choose>
+      
+   </xsl:template>
+   
+   <xsl:template match="and|or|exact|near|range" mode="query">
+      <xsl:variable name="pos" select="count(preceding-sibling::*[not(matches(@field,$noShow))]) + 1"/>
+      <xsl:choose>
+         <xsl:when test="matches(@field,$noShow)"/>
+         <xsl:when test="@field"> 
+            <xsl:if test="$pos > 1">
+               <xsl:value-of select="name(..)"/>
+            </xsl:if>
             <xsl:text> </xsl:text>
-        </xsl:if>
-        <font color="red">
-            <xsl:value-of select="."/>
-        </font>
-        <xsl:text> </xsl:text>
-    </xsl:template>
-    
-    <xsl:template match="phrase" mode="query">
-        <xsl:text>&quot;</xsl:text>
-        <font color="red">
-            <xsl:value-of select="term"/>
-        </font>
-        <xsl:text>&quot;</xsl:text>
-    </xsl:template>
-    
-    <xsl:template match="exact" mode="query">
-        <xsl:text>'</xsl:text>
-        <font color="red"><xsl:value-of select="term"/></font>
-        <xsl:text>'</xsl:text>
-        <xsl:if test="@field">
-            <xsl:text> in </xsl:text>
-            <b><xsl:value-of select="@field"/></b>
-        </xsl:if>
-    </xsl:template>
-    
-    <xsl:template match="upper" mode="query">
-        <xsl:if test="../lower != .">
-            <xsl:text> - </xsl:text>
             <xsl:apply-templates mode="query"/>
-        </xsl:if>
-    </xsl:template>
-
+            <xsl:text> in </xsl:text>
+            <b>
+               <xsl:choose>
+                  <xsl:when test="child::sectionType">
+                     <xsl:text> the </xsl:text>
+                     <xsl:value-of select="sectionType/term"/>
+                     <xsl:text> element</xsl:text>
+                  </xsl:when>
+                  <xsl:when test="@field = 'text'">
+                     <xsl:text> the full text </xsl:text>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:value-of select="replace(@field,'facet-','')"/>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </b>
+            <!-- keep? -->
+            <br/>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:apply-templates mode="query"/>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+   
+   <xsl:template match="term" mode="query">
+      <xsl:if test="preceding-sibling::term and (. != $keyword)">
+         <xsl:value-of select="name(..)"/>
+         <xsl:text> </xsl:text>
+      </xsl:if>
+      <span class="subhit">
+         <xsl:value-of select="."/>
+      </span>
+      <xsl:text> </xsl:text>
+   </xsl:template>
+   
+   <xsl:template match="phrase" mode="query">
+      <xsl:text>&quot;</xsl:text>
+      <span class="subhit">
+         <xsl:value-of select="term"/>
+      </span>
+      <xsl:text>&quot;</xsl:text>
+   </xsl:template>
+   
+   <xsl:template match="exact" mode="query">
+      <xsl:text>'</xsl:text>
+      <span class="subhit">
+         <xsl:value-of select="term"/>
+      </span>
+      <xsl:text>'</xsl:text>
+      <xsl:if test="@field">
+         <xsl:text> in </xsl:text>
+         <b><xsl:value-of select="@field"/></b>
+      </xsl:if>
+   </xsl:template>
+   
+   <xsl:template match="lower" mode="query">
+      <span class="subhit">
+         <xsl:value-of select="."/>
+      </span>
+   </xsl:template>
+   
+   <xsl:template match="upper" mode="query">
+      <xsl:if test="../lower != .">
+         <xsl:text> - </xsl:text>
+         <span class="subhit">
+            <xsl:value-of select="."/>
+         </span>
+      </xsl:if>
+   </xsl:template>
+   
+   <xsl:template match="not" mode="query">
+      <xsl:text> not </xsl:text>
+      <xsl:apply-templates mode="query"/>
+   </xsl:template>
+   
+   <xsl:template match="sectionType" mode="query"/>
+   
 </xsl:stylesheet>

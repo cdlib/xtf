@@ -160,7 +160,7 @@
   <xsl:param name="rights-prox"/>
   <xsl:param name="rights-exclude"/>
   <xsl:param name="rights-max"/>
-
+   
   <!-- Special XTF Metadata Field based on Date -->
   <xsl:param name="year"/>
   <xsl:param name="year-join"/>
@@ -168,8 +168,8 @@
   <xsl:param name="year-exclude"/>
   <xsl:param name="year-max"/>
    
-  <!-- Special XTF siplay field -->
-  <xsl:param name="display"/>
+  <!-- Special XTF all field -->
+  <xsl:param name="all"/>
 
   <!-- Structural Search -->
   <xsl:param name="sectionType"/>

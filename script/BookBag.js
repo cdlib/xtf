@@ -8,7 +8,7 @@
 // Asynchronously add a book to the bag.
 addToBag = function( ark, url ) 
 {
-  var target = document.getElementById( ark + "-add" );
+  var target = document.getElementById( "add-" + ark );
   target.innerHTML = "Adding...";
   var loader = new net.AsyncLoader( url, 
       function() { target.innerHTML = this.req.responseText; },
@@ -18,8 +18,8 @@ addToBag = function( ark, url )
 // Asynchronously remove a book from the bag
 removeFromBag = function( ark, url )
 {
-  var littleElement = document.getElementById( ark + "-remove" );
-  var bigElement = document.getElementById( ark + "-main" );
+  var littleElement = document.getElementById( "remove-" + ark );
+  var bigElement = document.getElementById( "main-" + ark );
   var countElement = document.getElementById( "itemCount" );
   littleElement.innerHTML = "Removing...";
   var loader = new net.AsyncLoader( url, 

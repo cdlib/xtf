@@ -298,17 +298,17 @@
    <xsl:template name="get-nlm-identifier">
       <xsl:choose>
          <xsl:when test="/article/front/article-meta/article-id[@pub-id-type='doi']">
-            <identifier xtf:meta="true">
+            <identifier xtf:meta="true" xtf:tokenize="no">
                <xsl:value-of select="replace(string(/article/front/article-meta/article-id[@pub-id-type='doi'][1]),'^.+/','')"/>
             </identifier>
          </xsl:when>
          <xsl:when test="/article/front/article-meta/article-id">
-            <identifier xtf:meta="true">
+            <identifier xtf:meta="true" xtf:tokenize="no">
                <xsl:value-of select="replace(string(/article/front/article-meta/article-id[1]),'^.+/','')"/>
             </identifier>
          </xsl:when>
          <xsl:otherwise>
-            <identifier xtf:meta="true">
+            <identifier xtf:meta="true" xtf:tokenize="no">
                <xsl:value-of select="'unknown'"/>
             </identifier>
          </xsl:otherwise>

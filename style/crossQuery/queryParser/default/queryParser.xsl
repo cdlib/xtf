@@ -212,7 +212,7 @@
          </xsl:for-each>  
          <!-- If there are no meta, text queries, or unary nots, output a dummy -->
          <xsl:if test="count($metaParams) = 0 and count($textParam) = 0 and not(param[matches(@name, '.*-exclude')])">
-            <or field="display"><term>dynaxml</term><term>raw</term></or>
+            <and field="all"><term>all</term></and>
          </xsl:if>
       </and>
       

@@ -52,7 +52,7 @@ moreLike = function( ark, url )
   url = addTextParam( ark, "maxQueryTerms", url );
   url = addFieldsParam( ark, url );
 
-  var element = document.getElementById( ark + "-moreLike" );
+  var element = document.getElementById( "moreLike-" + ark );
   //element.innerHTML = url; return;
   element.innerHTML = "Fetching...";
   var loader = new net.AsyncLoader( url, 

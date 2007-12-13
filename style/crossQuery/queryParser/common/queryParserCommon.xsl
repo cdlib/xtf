@@ -301,10 +301,9 @@
    
    <xsl:template name="robot">
       <and>
-         <or field="display">
-            <term>dynaxml</term>
-            <term>raw</term>
-         </or>
+         <and field="display">
+            <term>all</term>
+         </and>
       </and>
    </xsl:template>
    

@@ -291,12 +291,12 @@
    <xsl:template name="get-tei-identifier">
       <xsl:choose>
          <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='idno']">
-            <identifier xtf:meta="true">
+            <identifier xtf:meta="true" xtf:tokenize="no">
                <xsl:value-of select="replace(string(//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='idno'][1]),'^.+/','')"/>
             </identifier>
          </xsl:when>
          <xsl:otherwise>
-            <identifier xtf:meta="true">
+            <identifier xtf:meta="true" xtf:tokenize="no">
                <xsl:value-of select="'unknown'"/>
             </identifier>
          </xsl:otherwise>

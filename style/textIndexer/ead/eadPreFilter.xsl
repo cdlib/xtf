@@ -305,17 +305,17 @@
    <xsl:template name="get-ead-identifier">
       <xsl:choose>
          <xsl:when test="/ead/archdesc/did/unitid">
-            <identifier xtf:meta="true">
+            <identifier xtf:meta="true" xtf:tokenize="no">
                <xsl:value-of select="string(/ead/archdesc/did/unitid[1])"/>
             </identifier>
          </xsl:when>
-         <xsl:when test="/ead/eadheader/eadid">
-            <identifier xtf:meta="true">
+         <xsl:when test="/ead/eadheader/eadid" xtf:tokenize="no">
+            <identifier xtf:meta="true" xtf:tokenize="no">
                <xsl:value-of select="string(/ead/eadheader/eadid[1])"/>
             </identifier>
          </xsl:when>
          <xsl:otherwise>
-            <identifier xtf:meta="true">
+            <identifier xtf:meta="true" xtf:tokenize="no">
                <xsl:value-of select="'unknown'"/>
             </identifier>
          </xsl:otherwise>
