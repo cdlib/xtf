@@ -38,10 +38,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
 
@@ -226,8 +228,32 @@ public class FakeServletRequest implements HttpServletRequest
 
   public HttpSession getSession(boolean create) {
     if (create)
-      throw new RuntimeException("Cannot create session");
-    return null;
+    {
+      HttpServletRequest req = this;
+      return new HttpSession() 
+      {
+        public Object getAttribute(String arg0) { return null; }
+        public Enumeration getAttributeNames() { return null; }
+        public long getCreationTime() { return 0; }
+        public String getId() { return "asdfkjh"; }
+        public long getLastAccessedTime() { return 0; }
+        public int getMaxInactiveInterval() { return 0; }
+        public ServletContext getServletContext() { return null; }
+        @SuppressWarnings("deprecation")
+        public javax.servlet.http.HttpSessionContext getSessionContext() { return null; }
+        public Object getValue(String arg0) { return null; }
+        public String[] getValueNames() { return new String[0]; }
+        public void invalidate() { }
+        public boolean isNew() { return true; }
+        public void putValue(String arg0, Object arg1) { }
+        public void removeAttribute(String arg0) { }
+        public void removeValue(String arg0) { }
+        public void setAttribute(String arg0, Object arg1) { }
+        public void setMaxInactiveInterval(int arg0) { }
+      };
+    }
+    else
+      return null;
   }
 
   public Principal getUserPrincipal() {
