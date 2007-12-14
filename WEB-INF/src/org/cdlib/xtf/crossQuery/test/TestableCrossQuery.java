@@ -32,7 +32,6 @@ package org.cdlib.xtf.crossQuery.test;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cdlib.xtf.crossQuery.CrossQuery;
-import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.util.AttribList;
@@ -55,15 +54,6 @@ public class TestableCrossQuery extends CrossQuery
   
   /** Return the number of hits in the last request processed by this thread */
   public int nHits() { return nHits.get(); }
-
-  // inherit JavaDoc
-  protected TextConfig readConfig(String configPath) 
-  {
-    // Turn off session tracking, since we don't support it in test mode.
-    TextConfig config = super.readConfig(configPath);
-    config.trackSessions = false;
-    return config;
-  }
 
   // inherit Javadoc
   protected void formatHits(String mainTagName, HttpServletRequest req,
