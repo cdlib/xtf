@@ -56,6 +56,9 @@
    <!-- search mode -->
    <xsl:param name="smode"/>
    
+   <!-- facet expand mode -->
+   <xsl:param name="expand"/>  
+   
    <!-- result mode -->
    <xsl:param name="rmode"/>  
    

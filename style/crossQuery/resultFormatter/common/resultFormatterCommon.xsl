@@ -170,7 +170,10 @@
    
   <!-- Special XTF all field -->
   <xsl:param name="all"/>
-
+   
+  <!-- facet expand field -->
+  <xsl:param name="expand"/>
+   
   <!-- Structural Search -->
   <xsl:param name="sectionType"/>
 

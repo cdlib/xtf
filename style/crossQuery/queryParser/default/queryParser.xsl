@@ -106,8 +106,51 @@
          </xsl:if>
          
          <!-- flat facet -->
-         <facet field="facet-subject" sortGroupsBy="value">
-            <xsl:attribute name="select" select="'*'"/>
+         <facet field="facet-creator">
+            <xsl:attribute name="sortGroupsBy">
+               <xsl:choose>
+                  <xsl:when test="$expand='creator'">
+                     <xsl:value-of select="'value'"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:value-of select="'totalDocs'"/>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:attribute>
+            <xsl:attribute name="select">
+               <xsl:choose>
+                  <xsl:when test="$expand='creator'">
+                     <xsl:value-of select="'*'"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:value-of select="'*[1-10]'"/>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:attribute>
+         </facet>
+         
+         <!-- flat facet -->
+         <facet field="facet-subject">
+            <xsl:attribute name="sortGroupsBy">
+               <xsl:choose>
+                  <xsl:when test="$expand='subject'">
+                     <xsl:value-of select="'value'"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:value-of select="'totalDocs'"/>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:attribute>
+            <xsl:attribute name="select">
+               <xsl:choose>
+                  <xsl:when test="$expand='subject'">
+                     <xsl:value-of select="'*'"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:value-of select="'*[1-10]'"/>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:attribute>
          </facet>
          
          <!-- hierarchical facet -->
@@ -171,7 +214,7 @@
       
       <!-- Find the meta-data queries, if any -->
       <xsl:variable name="metaParams"
-         select="$queryParams[not(matches(@name,'text*|query*|style|smode|rmode|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|.*-ignore'))]"/>
+         select="$queryParams[not(matches(@name,'text*|query*|style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|.*-ignore'))]"/>
       
       <and>
          <!-- Process the meta-data queries, if any -->

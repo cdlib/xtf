@@ -35,7 +35,7 @@
    <xsl:param name="keyword"/>
    <xsl:param name="fieldList"/>   
    <xsl:param name="query"/>
-   <xsl:param name="noShow" select="'all|display'"/>
+   <xsl:param name="noShow" select="'all|display|facet-[a-z]+'"/>
    
    <!-- ====================================================================== -->
    <!-- Format Query for Display                                               -->
@@ -90,10 +90,35 @@
                      <xsl:text> the full text </xsl:text>
                   </xsl:when>
                   <xsl:otherwise>
-                     <xsl:value-of select="replace(@field,'facet-','')"/>
+                     <xsl:value-of select="@field"/>
                   </xsl:otherwise>
                </xsl:choose>
             </b>
+            <xsl:text> </xsl:text>
+            <xsl:variable name="field" select="@field"/> 
+            <xsl:variable name="terms">
+               <xsl:for-each select=".//term/text()">
+                  <xsl:value-of select="."/>
+                  <text>%20</text>
+               </xsl:for-each>
+            </xsl:variable>
+            <xsl:variable name="removeString">
+               <xsl:analyze-string select="$queryString" regex="[;&amp;]*([^;&amp;]+)=[^;&amp;']+">
+                  <xsl:matching-substring>
+                     <xsl:variable name="param" select="regex-group(1)"/>
+                     <xsl:choose>
+                        <xsl:when test="matches($param,$field)"/>
+                        <xsl:otherwise>
+                           <xsl:value-of select="."/>
+                        </xsl:otherwise>
+                     </xsl:choose>
+                  </xsl:matching-substring>
+                  <xsl:non-matching-substring>
+                     <xsl:value-of select="."/>
+                  </xsl:non-matching-substring>
+               </xsl:analyze-string>
+            </xsl:variable>
+            <a href="{$xtfURL}{$crossqueryPath}?{replace($removeString,'^[;&amp;]+','')}">[X]</a>
             <!-- keep? -->
             <br/>
          </xsl:when>
