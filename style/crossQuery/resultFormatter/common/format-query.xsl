@@ -60,6 +60,8 @@
                   <b> keywords</b>
                </xsl:otherwise>
             </xsl:choose>
+            <xsl:variable name="removeString" select="replace($queryString,'[;&amp;]*keyword=[^;&amp;]+','')"/>
+            <a href="{$xtfURL}{$crossqueryPath}?{replace($removeString,'^[;&amp;]+','')}">[X]</a>
          </xsl:when>
          <xsl:otherwise>
             <xsl:apply-templates select="query" mode="query"/>

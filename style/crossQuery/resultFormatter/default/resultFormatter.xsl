@@ -314,6 +314,7 @@
                         <td/>
                         <td/>
                         <td>
+                           <input type="hidden" name="all" value="all"/>
                            <input type="submit" value="Search"/>
                            <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
                         </td>
