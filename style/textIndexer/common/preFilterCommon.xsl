@@ -128,6 +128,9 @@
          <xsl:apply-templates select="$meta/*[matches(local-name(),'^title$')]" mode="facet"/>
          <xsl:apply-templates select="$meta/*[matches(local-name(),'^creator$')]" mode="facet"/>
          
+         <xsl:apply-templates select="$meta/*[matches(local-name(),'^title$')][1]" mode="browse"/>    
+         <xsl:apply-templates select="$meta/*[matches(local-name(),'^creator$')][1]" mode="browse"/>
+         
       </xtf:meta>
    </xsl:template>
    
@@ -203,6 +206,24 @@
          <xsl:attribute name="xtf:tokenize" select="'no'"/>
          <xsl:value-of select="string(.)"/>
       </facet-creator>
+   </xsl:template>
+   
+   <!-- Generate browse-title -->
+   <xsl:template match="*[matches(local-name(),'^title$')]" mode="browse">
+      <browse-title>
+         <xsl:attribute name="xtf:meta" select="'true'"/>
+         <xsl:attribute name="xtf:tokenize" select="'no'"/>
+         <xsl:value-of select="parse:alpha(parse:title(.))"/>
+      </browse-title>
+   </xsl:template>
+   
+   <!-- Generate browse-creator -->
+   <xsl:template match="*[matches(local-name(),'^creator$')]" mode="browse">
+      <browse-creator>
+         <xsl:attribute name="xtf:meta" select="'true'"/>
+         <xsl:attribute name="xtf:tokenize" select="'no'"/>
+         <xsl:value-of select="parse:alpha(parse:name(.))"/>
+      </browse-creator>
    </xsl:template>
    
    <!-- ====================================================================== -->
@@ -444,5 +465,99 @@
       <xsl:value-of select="concat($year, '::', $month, '::', $day)"/>
       
    </xsl:function>
-  
+   
+   <xsl:function name="parse:alpha">
+      
+      <xsl:param name="string"/>
+      
+      <xsl:variable name="cleanString" select="lower-case(string($string))"/>
+      
+      <xsl:choose>
+         <xsl:when test="matches($cleanString,'^[0-9]')">
+            <xsl:value-of select="'other'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*a')">
+            <xsl:value-of select="'aa'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*b')">
+            <xsl:value-of select="'bb'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*c')">
+            <xsl:value-of select="'cc'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*d')">
+            <xsl:value-of select="'dd'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*e')">
+            <xsl:value-of select="'ee'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*f')">
+            <xsl:value-of select="'ff'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*g')">
+            <xsl:value-of select="'gg'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*h')">
+            <xsl:value-of select="'hh'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*i')">
+            <xsl:value-of select="'ii'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*j')">
+            <xsl:value-of select="'jj'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*k')">
+            <xsl:value-of select="'kk'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*l')">
+            <xsl:value-of select="'ll'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*m')">
+            <xsl:value-of select="'mm'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*n')">
+            <xsl:value-of select="'nn'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*o')">
+            <xsl:value-of select="'oo'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*p')">
+            <xsl:value-of select="'pp'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*q')">
+            <xsl:value-of select="'qq'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*r')">
+            <xsl:value-of select="'rr'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*s')">
+            <xsl:value-of select="'ss'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*t')">
+            <xsl:value-of select="'tt'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*u')">
+            <xsl:value-of select="'uu'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*v')">
+            <xsl:value-of select="'vv'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*w')">
+            <xsl:value-of select="'ww'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*x')">
+            <xsl:value-of select="'xx'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*y')">
+            <xsl:value-of select="'yy'"/>
+         </xsl:when>
+         <xsl:when test="matches($cleanString,'^\W*z')">
+            <xsl:value-of select="'zz'"/>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="'other'"/>
+         </xsl:otherwise>
+      </xsl:choose>
+      
+   </xsl:function>
 </xsl:stylesheet>

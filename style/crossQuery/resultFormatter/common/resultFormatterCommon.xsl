@@ -176,6 +176,10 @@
    
   <!-- Structural Search -->
   <xsl:param name="sectionType"/>
+  
+  <!-- alpha browse parameters -->
+  <xsl:param name="browse-title"/>
+  <xsl:param name="browse-creator"/>
 
   <!-- Search and Result Behavior URL Parameters -->
   <xsl:param name="style"/>

@@ -103,6 +103,8 @@
             $rights or 
             $year or
             $all or
+            $browse-title or
+            $browse-creator or
             $smode ='showBag'">
             <xsl:apply-templates select="crossQueryResult" mode="results"/>
          </xsl:when>
@@ -117,23 +119,6 @@
    <!-- ====================================================================== -->
    
    <xsl:template match="crossQueryResult" mode="results" exclude-result-prefixes="#all">
-      
-      <xsl:variable name="alpha-list" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
-      
-      <xsl:variable name="anchor-list">
-         <xsl:choose>
-            <xsl:when test="$sort = 'creator'">
-               <xsl:for-each select="//meta">
-                  <xsl:value-of select="substring(string(creator), 1, 1)"/>
-               </xsl:for-each>
-            </xsl:when>
-            <xsl:when test="$sort = 'title'">
-               <xsl:for-each select="//meta">
-                  <xsl:value-of select="substring(string(title), 1, 1)"/>
-               </xsl:for-each>
-            </xsl:when>
-         </xsl:choose>
-      </xsl:variable>
       
       <xsl:variable name="modifyString">
          <xsl:choose>
@@ -246,6 +231,46 @@
                         </xsl:if>
                      </td>
                   </tr>
+                  
+                  <xsl:choose>
+                     <xsl:when test="$browse-title or $browse-creator">
+                        
+                        <xsl:variable name="alphaList" select="'A B C D E F G H I J K L M N O P Q R S T U V W Y Z OTHER'"/>
+                        
+                        <tr>
+                           <td colspan="3" align="center">
+                              <xsl:text>Browse by </xsl:text>
+                              <xsl:choose>
+                                 <xsl:when test="$browse-title">
+                                    <xsl:text>Title | </xsl:text>
+                                    <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
+                                 </xsl:when>
+                                 <xsl:otherwise>
+                                    <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
+                                    <xsl:text>  | Author</xsl:text>
+                                 </xsl:otherwise>
+                              </xsl:choose>
+                           </td>
+                        </tr>
+                        
+                        <tr>
+                           <td colspan="3" align="center">
+                              <xsl:call-template name="alphaList">
+                                 <xsl:with-param name="alphaList" select="$alphaList"/>
+                              </xsl:call-template>
+                           </td>
+                        </tr>
+                        
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <tr>
+                           <td colspan="3" align="center">
+                              <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Browse</a>
+                           </td>
+                        </tr>
+                     </xsl:otherwise>
+                  </xsl:choose>
+
                </table>
             </div>
             
@@ -1126,6 +1151,64 @@
          <xsl:apply-templates select="meta/title[1]"/>
       </a>
       (<xsl:apply-templates select="meta/creator[1]"/>)<br/>
+   </xsl:template>
+   
+   <!-- new alpha list generator -->
+   
+   <xsl:template name="alphaList">
+      
+      <xsl:param name="alphaList"/>
+      
+      <xsl:variable name="browse-name">
+         <xsl:choose>
+            <xsl:when test="$browse-creator">
+               <xsl:value-of select="'creator'"/>
+            </xsl:when>
+            <xsl:when test="$browse-title">
+               <xsl:value-of select="'title'"/>
+            </xsl:when>
+         </xsl:choose>
+      </xsl:variable>
+      
+      <xsl:variable name="browse-value">
+         <xsl:choose>
+            <xsl:when test="$browse-creator">
+               <xsl:value-of select="$browse-creator"/>
+            </xsl:when>
+            <xsl:when test="$browse-title">
+               <xsl:value-of select="$browse-title"/>
+            </xsl:when>
+         </xsl:choose>
+      </xsl:variable>
+      
+      <xsl:variable name="alpha" select="replace($alphaList,' .+$','')"/>
+      
+      <xsl:variable name="browse-link">
+         <xsl:choose>
+            <xsl:when test="matches($alpha,'^.$')">
+               <xsl:value-of select="lower-case(concat($alpha,$alpha))"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:value-of select="lower-case($alpha)"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </xsl:variable>
+      
+      <xsl:choose>
+         <xsl:when test="lower-case($browse-link) = $browse-value">
+            <xsl:value-of select="upper-case($alpha)"/>
+         </xsl:when>
+         <xsl:otherwise>
+            <a href="{$xtfURL}{$crossqueryPath}?browse-{$browse-name}={$browse-link};sort={$browse-name}"><xsl:value-of select="$alpha"/></a>
+         </xsl:otherwise>
+      </xsl:choose>
+      
+      <xsl:if test="contains($alphaList,' ')">
+         <xsl:text> | </xsl:text>
+         <xsl:call-template name="alphaList">
+            <xsl:with-param name="alphaList" select="replace($alphaList,'^[A-Z]+ ','')"/>
+         </xsl:call-template>
+      </xsl:if>
    </xsl:template>
    
 </xsl:stylesheet>
