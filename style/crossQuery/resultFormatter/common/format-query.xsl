@@ -35,7 +35,7 @@
    <xsl:param name="keyword"/>
    <xsl:param name="fieldList"/>   
    <xsl:param name="query"/>
-   <xsl:param name="noShow" select="'all|display|facet-[a-z]+'"/>
+   <xsl:param name="noShow" select="'all|display|facet-[a-z]+|browse-[a-z]+'"/>
    
    <!-- ====================================================================== -->
    <!-- Format Query for Display                                               -->

@@ -106,30 +106,6 @@
          </xsl:if>
          
          <!-- flat facet -->
-         <facet field="facet-creator">
-            <xsl:attribute name="sortGroupsBy">
-               <xsl:choose>
-                  <xsl:when test="$expand='creator'">
-                     <xsl:value-of select="'value'"/>
-                  </xsl:when>
-                  <xsl:otherwise>
-                     <xsl:value-of select="'totalDocs'"/>
-                  </xsl:otherwise>
-               </xsl:choose>
-            </xsl:attribute>
-            <xsl:attribute name="select">
-               <xsl:choose>
-                  <xsl:when test="$expand='creator'">
-                     <xsl:value-of select="'*'"/>
-                  </xsl:when>
-                  <xsl:otherwise>
-                     <xsl:value-of select="'*[1-10]'"/>
-                  </xsl:otherwise>
-               </xsl:choose>
-            </xsl:attribute>
-         </facet>
-         
-         <!-- flat facet -->
          <facet field="facet-subject">
             <xsl:attribute name="sortGroupsBy">
                <xsl:choose>

@@ -125,8 +125,6 @@
          <!-- Create facets -->
          <xsl:apply-templates select="$meta/*[matches(local-name(),'^date$')]" mode="facet"/>
          <xsl:apply-templates select="$meta/*[matches(local-name(),'^subject$')]" mode="facet"/>
-         <xsl:apply-templates select="$meta/*[matches(local-name(),'^title$')]" mode="facet"/>
-         <xsl:apply-templates select="$meta/*[matches(local-name(),'^creator$')]" mode="facet"/>
          
          <xsl:apply-templates select="$meta/*[matches(local-name(),'^title$')][1]" mode="browse"/>    
          <xsl:apply-templates select="$meta/*[matches(local-name(),'^creator$')][1]" mode="browse"/>
@@ -188,24 +186,6 @@
          <xsl:attribute name="xtf:tokenize" select="'no'"/>
          <xsl:value-of select="string(.)"/>
       </facet-subject>
-   </xsl:template>
-   
-   <!-- Generate facet-title -->
-   <xsl:template match="*[matches(local-name(),'^title$')]" mode="facet">
-      <facet-title>
-         <xsl:attribute name="xtf:meta" select="'true'"/>
-         <xsl:attribute name="xtf:tokenize" select="'no'"/>
-         <xsl:value-of select="string(.)"/>
-      </facet-title>
-   </xsl:template>
-   
-   <!-- Generate facet-creator -->
-   <xsl:template match="*[matches(local-name(),'^creator$')]" mode="facet">
-      <facet-creator>
-         <xsl:attribute name="xtf:meta" select="'true'"/>
-         <xsl:attribute name="xtf:tokenize" select="'no'"/>
-         <xsl:value-of select="string(.)"/>
-      </facet-creator>
    </xsl:template>
    
    <!-- Generate browse-title -->

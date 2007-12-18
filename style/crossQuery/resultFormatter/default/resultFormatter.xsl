@@ -157,7 +157,7 @@
             <xsl:copy-of select="$brand.header"/>
             
             <div class="resultsHeader">
-               <table width="100%" cellpadding="0" cellspacing="0">
+               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
                      <td align="right" width="10%" valign="top">
                         <b>Search:&#160;</b>
@@ -172,7 +172,23 @@
                            </xsl:otherwise>
                         </xsl:choose>
                      </td>
-                     <td/>
+                     <td align="right" valign="top">
+                        <xsl:if test="$smode != 'showBag'">
+                           <a href="{$xtfURL}{$crossqueryPath}?{$modifyString}">
+                              <xsl:text>Modify Search</xsl:text>
+                           </a>
+                           <xsl:text>&#160;|&#160;</xsl:text>
+                        </xsl:if>
+                        <a href="{$xtfURL}{$crossqueryPath}">
+                           <xsl:text>New Search</xsl:text>
+                        </a>
+                        <xsl:if test="$smode = 'showBag'">
+                           <xsl:text>&#160;|&#160;</xsl:text>
+                           <a href="{session:getData('queryURL')}">
+                              <xsl:text>Return to Search Results</xsl:text>
+                           </a>
+                        </xsl:if>
+                     </td>
                   </tr>
                   <xsl:if test="//spelling">
                      <tr>
@@ -197,7 +213,27 @@
                         <xsl:text> Item(s)</xsl:text>
                      </td>
                      <td align="right">
-                        <xsl:call-template name="pages"/>
+                        <xsl:choose>
+                           <xsl:when test="$browse-title or $browse-creator">
+                              <xsl:text>Browse by </xsl:text>
+                              <xsl:choose>
+                                 <xsl:when test="$browse-title">
+                                    <xsl:text>Title | </xsl:text>
+                                    <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
+                                 </xsl:when>
+                                 <xsl:otherwise>
+                                    <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
+                                    <xsl:text>  | Author</xsl:text>
+                                 </xsl:otherwise>
+                              </xsl:choose>
+                           </xsl:when>
+                           <xsl:otherwise>
+                              <xsl:text>Browse by </xsl:text>
+                              <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
+                              <xsl:text> | </xsl:text>
+                              <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
+                           </xsl:otherwise>
+                        </xsl:choose>
                      </td>
                   </tr>
                   <tr>
@@ -214,63 +250,21 @@
                         </form>
                      </td>
                      <td align="right">
-                        <xsl:if test="$smode != 'showBag'">
-                           <a href="{$xtfURL}{$crossqueryPath}?{$modifyString}">
-                              <xsl:text>Modify Search</xsl:text>
-                           </a>
-                           <xsl:text>&#160;|&#160;</xsl:text>
-                        </xsl:if>
-                        <a href="{$xtfURL}{$crossqueryPath}">
-                           <xsl:text>New Search</xsl:text>
-                        </a>
-                        <xsl:if test="$smode = 'showBag'">
-                           <xsl:text>&#160;|&#160;</xsl:text>
-                           <a href="{session:getData('queryURL')}">
-                              <xsl:text>Return to Search Results</xsl:text>
-                           </a>
-                        </xsl:if>
+                        <xsl:call-template name="pages"/>
                      </td>
                   </tr>
                   
-                  <xsl:choose>
-                     <xsl:when test="$browse-title or $browse-creator">
-                        
-                        <xsl:variable name="alphaList" select="'A B C D E F G H I J K L M N O P Q R S T U V W Y Z OTHER'"/>
-                        
-                        <tr>
-                           <td colspan="3" align="center">
-                              <xsl:text>Browse by </xsl:text>
-                              <xsl:choose>
-                                 <xsl:when test="$browse-title">
-                                    <xsl:text>Title | </xsl:text>
-                                    <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
-                                 </xsl:when>
-                                 <xsl:otherwise>
-                                    <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
-                                    <xsl:text>  | Author</xsl:text>
-                                 </xsl:otherwise>
-                              </xsl:choose>
-                           </td>
-                        </tr>
-                        
-                        <tr>
-                           <td colspan="3" align="center">
-                              <xsl:call-template name="alphaList">
-                                 <xsl:with-param name="alphaList" select="$alphaList"/>
-                              </xsl:call-template>
-                           </td>
-                        </tr>
-                        
-                     </xsl:when>
-                     <xsl:otherwise>
-                        <tr>
-                           <td colspan="3" align="center">
-                              <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Browse</a>
-                           </td>
-                        </tr>
-                     </xsl:otherwise>
-                  </xsl:choose>
-
+                  <xsl:if test="$browse-title or $browse-creator">
+                     <xsl:variable name="alphaList" select="'A B C D E F G H I J K L M N O P Q R S T U V W Y Z OTHER'"/>
+                     <tr>
+                        <td colspan="3" align="center">
+                           <xsl:call-template name="alphaList">
+                              <xsl:with-param name="alphaList" select="$alphaList"/>
+                           </xsl:call-template>
+                        </td>
+                     </tr>
+                  </xsl:if>
+                  
                </table>
             </div>
             
@@ -279,15 +273,23 @@
                   <div class="results">
                      <table width="100%" cellpadding="5" cellspacing="0" border="1">
                         <tr>
-                           <xsl:if test="not($smode='showBag')">
+                           <xsl:if test="not($smode='showBag') and not($browse-title or $browse-creator)">
                               <td width="25%" valign="top">
-                                 <xsl:apply-templates select="facet"/>
+                                 <xsl:apply-templates select="facet[@field='facet-subject']"/>
+                                 <xsl:apply-templates select="facet[@field='facet-date']"/>
                               </td>
                            </xsl:if>
                            <td valign="top">
                               <xsl:apply-templates select="docHit"/>
                            </td>
                         </tr>
+                        <xsl:if test="@totalDocs > $docsPerPage">
+                           <tr>
+                              <td align="center" colspan="2">
+                                 <xsl:call-template name="pages"/>
+                              </td>
+                           </tr>
+                        </xsl:if>
                      </table>
                   </div>
                </xsl:when>
@@ -297,6 +299,14 @@
                         <tr>
                            <td align="center">
                               <p>Sorry, no results...</p>
+                              <xsl:choose>
+                                 <xsl:when test="$keyword">
+                                    <xsl:call-template name="simpleForm"/>
+                                 </xsl:when>
+                                 <xsl:otherwise>
+                                    <xsl:call-template name="advancedForm"/>
+                                 </xsl:otherwise>
+                              </xsl:choose>
                            </td>
                         </tr>
                      </table>
@@ -323,250 +333,254 @@
          <body>
             <xsl:copy-of select="$brand.header"/>
             <div class="form">
-               <form method="get" action="{$xtfURL}{$crossqueryPath}">
-                  <table width="50%" cellpadding="0" cellspacing="0" border="0">
-                     <tr>
-                        <td colspan="3"><h4>Keyword Search</h4></td>
-                     </tr>
-                     <tr>
-                        <td width="5%"/>
-                        <td width="30%"/>
-                        <td>
-                           <input type="text" name="keyword" size="30" value="{$keyword}"/>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td/>
-                        <td/>
-                        <td>
-                           <input type="hidden" name="all" value="all"/>
-                           <input type="submit" value="Search"/>
-                           <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
-                        </td>
-                     </tr>
-                  </table>
-               </form>
-               <form method="get" action="{$xtfURL}{$crossqueryPath}">
-                  <table width="50%" cellpadding="0" cellspacing="0" border="0">
-                     <tr>
-                        <td colspan="3"><h4>Advanced Search</h4></td>
-                     </tr>
-                     <tr>
-                        <td width="5%"/>
-                        <td width="30%"><b>Full Text</b></td>
-                        <td>
-                           <input type="text" name="text" size="30" value="{$text}"/>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td/>
-                        <td/>
-                        <td>
-                           <xsl:choose>
-                              <xsl:when test="$text-join = 'or'">
-                                 <b>all</b><input type="radio" name="text-join" value=""/>
-                                 <xsl:text> or </xsl:text>
-                                 <b>any</b><input type="radio" name="text-join" value="or" checked="checked"/>
-                                 <xsl:text>words</xsl:text>
-                              </xsl:when>
-                              <xsl:otherwise>
-                                 <b>all</b><input type="radio" name="text-join" value="" checked="checked"/>
-                                 <xsl:text> or </xsl:text>
-                                 <b>any</b><input type="radio" name="text-join" value="or"/>
-                                 <xsl:text>words</xsl:text>
-                              </xsl:otherwise>
-                           </xsl:choose>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td/>
-                        <td>&#160;&#160;&#160;&#160;<i><b>Exclude</b></i></td>
-                        <td>
-                           <input type="text" name="text-exclude" size="30" value="{$text-exclude}"/>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td/>
-                        <td>&#160;&#160;&#160;&#160;<i><b>Proximity</b></i></td>
-                        <td>
-                           <select size="1" name="text-prox">
-                              <xsl:choose>
-                                 <xsl:when test="$text-prox = '1'">
-                                    <option value=""></option>
-                                    <option value="1" selected="selected">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="10">10</option>
-                                    <option value="20">20</option>
-                                 </xsl:when>
-                                 <xsl:when test="$text-prox = '2'">
-                                    <option value=""></option>
-                                    <option value="1">1</option>
-                                    <option value="2" selected="selected">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="10">10</option>
-                                    <option value="20">20</option>
-                                 </xsl:when>
-                                 <xsl:when test="$text-prox = '3'">
-                                    <option value=""></option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3" selected="selected">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="10">10</option>
-                                    <option value="20">20</option>
-                                 </xsl:when>
-                                 <xsl:when test="$text-prox = '4'">
-                                    <option value=""></option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4" selected="selected">4</option>
-                                    <option value="5">5</option>
-                                    <option value="10">10</option>
-                                    <option value="20">20</option>
-                                 </xsl:when>
-                                 <xsl:when test="$text-prox = '5'">
-                                    <option value=""></option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5" selected="selected">5</option>
-                                    <option value="10">10</option>
-                                    <option value="20">20</option>
-                                 </xsl:when>
-                                 <xsl:when test="$text-prox = '10'">
-                                    <option value=""></option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="10" selected="selected">10</option>
-                                    <option value="20">20</option>
-                                 </xsl:when>
-                                 <xsl:when test="$text-prox = '20'">
-                                    <option value=""></option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="10">10</option>
-                                    <option value="20" selected="selected">20</option>
-                                 </xsl:when>
-                                 <xsl:otherwise>
-                                    <option value="" selected="selected"></option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="10">10</option>
-                                    <option value="20">20</option>
-                                 </xsl:otherwise>
-                              </xsl:choose>
-                           </select>
-                           <xsl:text> word(s)</xsl:text>
-                        </td>
-                     </tr>           
-                     <tr>
-                        <td/>
-                        <td>&#160;&#160;&#160;&#160;<i><b>Search Area(s)</b></i></td>
-                        <td>
-                           <xsl:choose>
-                              <xsl:when test="$sectionType = 'head'">
-                                 <xsl:text>All</xsl:text><input type="radio" name="sectionType" value=""/> 
-                                 <xsl:text>Titles</xsl:text><input type="radio" name="sectionType" value="head" checked="checked"/> 
-                              </xsl:when>
-                              <xsl:otherwise>
-                                 <xsl:text>All</xsl:text><input type="radio" name="sectionType" value="" checked="checked"/> 
-                                 <xsl:text>Titles</xsl:text><input type="radio" name="sectionType" value="head"/> 
-                              </xsl:otherwise>
-                           </xsl:choose>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td colspan="3">&#160;</td>
-                     </tr>
-                     <tr>
-                        <td/>
-                        <td ><b>Title</b></td>
-                        <td>
-                           <input type="text" name="title" size="30" value="{$title}"/>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td/>
-                        <td ><b>Author</b></td>
-                        <td>
-                           <input type="text" name="creator" size="30" value="{$creator}"/>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td/>
-                        <td ><b>Subject</b></td>
-                        <td>
-                           <!-- need to make sure that the chosen subject is retained in modify -->
-                           <select size="1" name="subject">
-                              <option value="">Select</option>
-                              <xsl:for-each select="//facet[@field='facet-subject']/group">
-                                 <option value="{@value}"><xsl:value-of select="replace(@value,'(.{30}).*','$1')"/></option>
-                              </xsl:for-each>
-                           </select>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td/>
-                        <td ><b>Year(s)</b></td>
-                        <td>
-                           <xsl:text>From </xsl:text>
-                           <input type="text" name="year" size="5" value="{$year}"/>
-                           <xsl:text> to </xsl:text>
-                           <input type="text" name="year-max" size="5" value="{$year-max}"/>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td/>
-                        <td ><b>Type</b></td>
-                        <td>
-                           <select size="1" name="type">
-                              <option value="">All</option>
-                              <option value="ead">EAD</option>
-                              <option value="html">HTML</option>
-                              <option value="nlm">NLM</option>
-                              <option value="pdf">PDF</option>
-                              <option value="tei">TEI</option>
-                              <option value="text">Text</option>
-                           </select>
-                        </td>
-                     </tr>
-                     <tr>
-                        <td colspan="3">&#160;</td>
-                     </tr>
-                     <tr>
-                        <td/>
-                        <td/>
-                        <td>
-                           <input type="hidden" name="all" value="all"/>
-                           <input type="submit" value="Search"/>
-                           <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
-                        </td>
-                     </tr>
-                  </table>
-               </form>
+               <h4>Keyword Search</h4>
+               <xsl:call-template name="simpleForm"/>
             </div>
-            
+            <div class="form">
+               <h4>Advanced Search</h4>
+               <xsl:call-template name="advancedForm"/>
+            </div>
             <xsl:copy-of select="$brand.footer"/>
-            
          </body>
       </html>
+   </xsl:template>
+   
+   <xsl:template name="simpleForm">
+      <form method="get" action="{$xtfURL}{$crossqueryPath}">
+         <table width="50%" cellpadding="0" cellspacing="5" border="0" style="border-style: solid; border-color: blue; border-width: 1px 1px 1px 1px;">
+            <tr>
+               <td width="5%"/>
+               <td width="30%"><b>Terms</b></td>
+               <td>
+                  <input type="text" name="keyword" size="30" value="{$keyword}"/>
+               </td>
+            </tr>
+            <tr>
+               <td/>
+               <td/>
+               <td>
+                  <input type="hidden" name="all" value="all"/>
+                  <input type="submit" value="Search"/>
+                  <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
+               </td>
+            </tr>
+         </table>
+      </form>
+   </xsl:template>
+   
+   <xsl:template name="advancedForm">
+      <form method="get" action="{$xtfURL}{$crossqueryPath}">
+         <table width="50%" cellpadding="0" cellspacing="5" border="0" style="border-style: solid; border-color: blue; border-width: 1px 1px 1px 1px;">
+            <tr>
+               <td width="5%"/>
+               <td width="30%"><b>Full Text</b></td>
+               <td>
+                  <input type="text" name="text" size="30" value="{$text}"/>
+               </td>
+            </tr>
+            <tr>
+               <td/>
+               <td/>
+               <td>
+                  <xsl:choose>
+                     <xsl:when test="$text-join = 'or'">
+                        <b>all</b><input type="radio" name="text-join" value=""/>
+                        <xsl:text> or </xsl:text>
+                        <b>any</b><input type="radio" name="text-join" value="or" checked="checked"/>
+                        <xsl:text>words</xsl:text>
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <b>all</b><input type="radio" name="text-join" value="" checked="checked"/>
+                        <xsl:text> or </xsl:text>
+                        <b>any</b><input type="radio" name="text-join" value="or"/>
+                        <xsl:text>words</xsl:text>
+                     </xsl:otherwise>
+                  </xsl:choose>
+               </td>
+            </tr>
+            <tr>
+               <td/>
+               <td>&#160;&#160;&#160;&#160;<i><b>Exclude</b></i></td>
+               <td>
+                  <input type="text" name="text-exclude" size="30" value="{$text-exclude}"/>
+               </td>
+            </tr>
+            <tr>
+               <td/>
+               <td>&#160;&#160;&#160;&#160;<i><b>Proximity</b></i></td>
+               <td>
+                  <select size="1" name="text-prox">
+                     <xsl:choose>
+                        <xsl:when test="$text-prox = '1'">
+                           <option value=""></option>
+                           <option value="1" selected="selected">1</option>
+                           <option value="2">2</option>
+                           <option value="3">3</option>
+                           <option value="4">4</option>
+                           <option value="5">5</option>
+                           <option value="10">10</option>
+                           <option value="20">20</option>
+                        </xsl:when>
+                        <xsl:when test="$text-prox = '2'">
+                           <option value=""></option>
+                           <option value="1">1</option>
+                           <option value="2" selected="selected">2</option>
+                           <option value="3">3</option>
+                           <option value="4">4</option>
+                           <option value="5">5</option>
+                           <option value="10">10</option>
+                           <option value="20">20</option>
+                        </xsl:when>
+                        <xsl:when test="$text-prox = '3'">
+                           <option value=""></option>
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                           <option value="3" selected="selected">3</option>
+                           <option value="4">4</option>
+                           <option value="5">5</option>
+                           <option value="10">10</option>
+                           <option value="20">20</option>
+                        </xsl:when>
+                        <xsl:when test="$text-prox = '4'">
+                           <option value=""></option>
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                           <option value="3">3</option>
+                           <option value="4" selected="selected">4</option>
+                           <option value="5">5</option>
+                           <option value="10">10</option>
+                           <option value="20">20</option>
+                        </xsl:when>
+                        <xsl:when test="$text-prox = '5'">
+                           <option value=""></option>
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                           <option value="3">3</option>
+                           <option value="4">4</option>
+                           <option value="5" selected="selected">5</option>
+                           <option value="10">10</option>
+                           <option value="20">20</option>
+                        </xsl:when>
+                        <xsl:when test="$text-prox = '10'">
+                           <option value=""></option>
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                           <option value="3">3</option>
+                           <option value="4">4</option>
+                           <option value="5">5</option>
+                           <option value="10" selected="selected">10</option>
+                           <option value="20">20</option>
+                        </xsl:when>
+                        <xsl:when test="$text-prox = '20'">
+                           <option value=""></option>
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                           <option value="3">3</option>
+                           <option value="4">4</option>
+                           <option value="5">5</option>
+                           <option value="10">10</option>
+                           <option value="20" selected="selected">20</option>
+                        </xsl:when>
+                        <xsl:otherwise>
+                           <option value="" selected="selected"></option>
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                           <option value="3">3</option>
+                           <option value="4">4</option>
+                           <option value="5">5</option>
+                           <option value="10">10</option>
+                           <option value="20">20</option>
+                        </xsl:otherwise>
+                     </xsl:choose>
+                  </select>
+                  <xsl:text> word(s)</xsl:text>
+               </td>
+            </tr>           
+            <tr>
+               <td/>
+               <td>&#160;&#160;&#160;&#160;<i><b>Search Area(s)</b></i></td>
+               <td>
+                  <xsl:choose>
+                     <xsl:when test="$sectionType = 'head'">
+                        <xsl:text>All</xsl:text><input type="radio" name="sectionType" value=""/> 
+                        <xsl:text>Titles</xsl:text><input type="radio" name="sectionType" value="head" checked="checked"/> 
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <xsl:text>All</xsl:text><input type="radio" name="sectionType" value="" checked="checked"/> 
+                        <xsl:text>Titles</xsl:text><input type="radio" name="sectionType" value="head"/> 
+                     </xsl:otherwise>
+                  </xsl:choose>
+               </td>
+            </tr>
+            <tr>
+               <td colspan="3">&#160;</td>
+            </tr>
+            <tr>
+               <td/>
+               <td ><b>Title</b></td>
+               <td>
+                  <input type="text" name="title" size="30" value="{$title}"/>
+               </td>
+            </tr>
+            <tr>
+               <td/>
+               <td ><b>Author</b></td>
+               <td>
+                  <input type="text" name="creator" size="30" value="{$creator}"/>
+               </td>
+            </tr>
+            <tr>
+               <td/>
+               <td ><b>Subject</b></td>
+               <td>
+                  <!-- need to make sure that the chosen subject is retained in modify -->
+                  <select size="1" name="subject">
+                     <option value="">Select</option>
+                     <xsl:for-each select="//facet[@field='facet-subject']/group">
+                        <option value="{@value}"><xsl:value-of select="replace(@value,'(.{30}).*','$1')"/></option>
+                     </xsl:for-each>
+                  </select>
+               </td>
+            </tr>
+            <tr>
+               <td/>
+               <td ><b>Year(s)</b></td>
+               <td>
+                  <xsl:text>From </xsl:text>
+                  <input type="text" name="year" size="5" value="{$year}"/>
+                  <xsl:text> to </xsl:text>
+                  <input type="text" name="year-max" size="5" value="{$year-max}"/>
+               </td>
+            </tr>
+            <tr>
+               <td/>
+               <td ><b>Type</b></td>
+               <td>
+                  <select size="1" name="type">
+                     <option value="">All</option>
+                     <option value="ead">EAD</option>
+                     <option value="html">HTML</option>
+                     <option value="nlm">NLM</option>
+                     <option value="pdf">PDF</option>
+                     <option value="tei">TEI</option>
+                     <option value="text">Text</option>
+                  </select>
+               </td>
+            </tr>
+            <tr>
+               <td colspan="3">&#160;</td>
+            </tr>
+            <tr>
+               <td/>
+               <td/>
+               <td>
+                  <input type="hidden" name="all" value="all"/>
+                  <input type="submit" value="Search"/>
+                  <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
+               </td>
+            </tr>
+         </table>
+      </form>
    </xsl:template>
    
    <!-- ====================================================================== -->
@@ -584,10 +598,10 @@
       <xsl:variable name="anchor">
          <xsl:choose>
             <xsl:when test="$sort = 'creator'">
-               <xsl:value-of select="substring(string(meta/creator), 1, 1)"/>
+               <xsl:value-of select="substring(string(meta/creator[1]), 1, 1)"/>
             </xsl:when>
             <xsl:when test="$sort = 'title'">
-               <xsl:value-of select="substring(string(meta/title), 1, 1)"/>
+               <xsl:value-of select="substring(string(meta/title[1]), 1, 1)"/>
             </xsl:when>
          </xsl:choose>
       </xsl:variable>
@@ -689,7 +703,7 @@
                   <td align="right">
                      <xsl:text>&#160;</xsl:text>
                   </td>
-                  <td align="right">
+                  <td align="right" valign="top">
                      <b>Subjects:&#160;&#160;</b>
                   </td>
                   <td align="left">
@@ -707,6 +721,8 @@
                   </td>
                   <td align="right" valign="top">
                      <b>Matches:&#160;&#160;</b>
+                     <br/>
+                     <i>(<xsl:value-of select="@totalHits"/> hits)&#160;&#160;&#160;&#160;</i>
                   </td>
                   <td align="left">
                      <xsl:apply-templates select="snippet" mode="text"/>
@@ -815,33 +831,6 @@
    <!-- ====================================================================== -->
    <!-- Facet and Groups                                                       -->
    <!-- ====================================================================== -->
-   
-   <xsl:template match="facet[@field='facet-creator']" exclude-result-prefixes="#all">
-      <xsl:variable name="expandString" select="replace($queryString,'[;&amp;]expand=[^;&amp;]+','')"/>
-      <div class="facet">
-         <h4>
-            <xsl:choose>
-               <xsl:when test="not($expand='creator')">
-                  <a href="{$xtfURL}{$crossqueryPath}?{$expandString};expand=creator">
-                     <img src="{$icon.path}/i_expand.gif" border="0" alt="expand"/>
-                  </a>
-               </xsl:when>
-               <xsl:otherwise>
-                  <a href="{$xtfURL}{$crossqueryPath}?{$expandString}">
-                     <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
-                  </a>
-               </xsl:otherwise>
-            </xsl:choose>
-            <xsl:text> Author</xsl:text>
-         </h4>
-         <ul>
-            <xsl:apply-templates/>
-         </ul>
-         <xsl:if test="not($expand='creator') and (@totalDocs > 10)">
-            <a href="{$xtfURL}{$crossqueryPath}?{$expandString};expand=creator">more</a>
-         </xsl:if>
-      </div>
-   </xsl:template>
    
    <xsl:template match="facet[@field='facet-date']" exclude-result-prefixes="#all">
       <div class="facet">
@@ -964,58 +953,6 @@
             <xsl:when test="//param[matches(@name,'f[0-9]+-subject')]/@value=$value">
                <xsl:variable name="removeString">
                   <xsl:analyze-string select="$queryString" regex="f[0-9]+-subject=([^;&amp;]+)">
-                     <xsl:matching-substring>
-                        <xsl:variable name="check" select="regex-group(1)"/>
-                        <xsl:choose>
-                           <xsl:when test="$value=$check"/>
-                           <xsl:otherwise>
-                              <xsl:value-of select="."/>
-                           </xsl:otherwise>
-                        </xsl:choose>  
-                     </xsl:matching-substring>
-                     <xsl:non-matching-substring>
-                        <xsl:value-of select="."/>
-                     </xsl:non-matching-substring>
-                  </xsl:analyze-string>
-               </xsl:variable>
-               <i><xsl:value-of select="$value"/></i> <a href="{$xtfURL}{$crossqueryPath}?{replace($removeString,'^[;&amp;]+','')}">[X]</a>
-            </xsl:when>
-            <xsl:otherwise>
-               <a href="{$xtfURL}{$crossqueryPath}?{$queryString};{$name}={$value}">
-                  <xsl:value-of select="$value"/>
-               </a>
-               &#160;(<xsl:value-of select="@totalDocs"/>)
-            </xsl:otherwise>
-         </xsl:choose>
-      </li>
-      
-   </xsl:template>
-   
-   <xsl:template match="group[parent::facet[@field='facet-creator']]" exclude-result-prefixes="#all">
-      
-      <xsl:variable name="nextNum">
-         <xsl:choose>
-            <xsl:when test="//param[matches(@name,'f[0-9]+-creator')]">
-               <xsl:for-each select="//param[matches(@name,'f[0-9]+-creator')]">
-                  <xsl:variable name="num" select="number(replace(@name,'f([0-9]+)-creator','$1')) + 1"/>
-                  <xsl:if test="not(//param[@name=concat('f',$num,'-creator')])">
-                     <xsl:value-of select="$num"/>
-                  </xsl:if>
-               </xsl:for-each>
-            </xsl:when>
-            <xsl:otherwise>
-               <xsl:value-of select="'1'"/>
-            </xsl:otherwise>
-         </xsl:choose>
-      </xsl:variable>
-      <xsl:variable name="name" select="concat('f',$nextNum,'-creator')"/>
-      <xsl:variable name="value" select="@value"/>
-      
-      <li>
-         <xsl:choose>
-            <xsl:when test="//param[matches(@name,'f[0-9]+-creator')]/@value=$value">
-               <xsl:variable name="removeString">
-                  <xsl:analyze-string select="$queryString" regex="f[0-9]+-creator=([^;&amp;]+)">
                      <xsl:matching-substring>
                         <xsl:variable name="check" select="regex-group(1)"/>
                         <xsl:choose>

@@ -104,6 +104,8 @@
 <!-- ====================================================================== -->
 <!-- Format Terms with Spelling Corrections                                 -->
 <!-- ====================================================================== -->
+   
+    <xsl:template match="*[@field='all']" mode="spelling"/>
     
     <xsl:template match="term" mode="spelling">
         <font color="red">
