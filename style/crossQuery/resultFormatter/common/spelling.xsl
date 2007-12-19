@@ -15,7 +15,6 @@
     <xsl:param name="spelling"/>
     
     <xsl:variable name="newURL" select="cdl:replace-misspellings($baseURL, $spelling/*)"/>
-    <br/>
     <b>Did you mean to search for
     <a href="{$newURL}">
       <xsl:apply-templates select="query" mode="spelling"/>

@@ -157,7 +157,7 @@
             <xsl:copy-of select="$brand.header"/>
             
             <div class="resultsHeader">
-               <table width="100%" cellpadding="0" cellspacing="0" border="0">
+               <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
                      <td align="right" width="10%" valign="top">
                         <b>Search:&#160;</b>
@@ -198,8 +198,6 @@
                               <xsl:with-param name="baseURL" select="concat($xtfURL, $crossqueryPath, '?', $queryString)"/>
                               <xsl:with-param name="spelling" select="//spelling"/>
                            </xsl:call-template>
-                           <br/>
-                           <br/>
                         </td>
                         <td/>
                      </tr>
