@@ -3,15 +3,12 @@
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
-        xmlns:saxon="http://saxon.sf.net/"
-        xmlns:xtf="http://cdlib.org/xtf"
-        xmlns:date="http://exslt.org/dates-and-times"
-        xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils"
-        extension-element-prefixes="date"
-        exclude-result-prefixes="#all">
+   xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils"
+   extension-element-prefixes="FileUtils"
+   exclude-result-prefixes="#all">
 
 <!--
-   Copyright (c) 2005, Regents of the University of California
+   Copyright (c) 2008, Regents of the University of California
    All rights reserved.
  
    Redistribution and use in source and binary forms, with or without 
@@ -99,7 +96,6 @@
     The 'displayStyle' attribute simply specifies a stylesheet that the
     text indexer will look in to gather XSLT key definitions. Then it will
     pre-compute all of these keys for the document and store them on disk.
-    
 -->
 
 <!-- ====================================================================== -->
@@ -135,15 +131,6 @@
                      <xsl:variable name="ns" select="namespace-uri(*[1])"/>
                      
                      <xsl:choose>
-                        <!-- Look for TEI XML file -->
-                        <xsl:when test="matches($root-element-name,'^TEI') or 
-                                        matches($pid,'TEI') or 
-                                        matches($uri,'tei2\.dtd') or 
-                                        matches($ns,'tei')">
-                           <indexFile fileName="{$fileName}"
-                              preFilter="style/textIndexer/tei/teiPreFilter.xsl"
-                              displayStyle="style/dynaXML/docFormatter/tei/teiDocFormatter.xsl"/>
-                        </xsl:when>
                         <!-- Look for EAD XML files -->
                         <xsl:when test="matches($root-element-name,'^ead$') or
                                         matches($pid,'EAD') or 
@@ -162,6 +149,15 @@
                               preFilter="style/textIndexer/nlm/nlmPreFilter.xsl"
                               displayStyle="style/dynaXML/docFormatter/nlm/nlmDocFormatter.xsl"/>
                         </xsl:when>
+                        <!-- Look for TEI XML file -->
+                        <xsl:when test="matches($root-element-name,'^TEI') or 
+                           matches($pid,'TEI') or 
+                           matches($uri,'tei2\.dtd') or 
+                           matches($ns,'tei')">
+                           <indexFile fileName="{$fileName}"
+                              preFilter="style/textIndexer/tei/teiPreFilter.xsl"
+                              displayStyle="style/dynaXML/docFormatter/tei/teiDocFormatter.xsl"/>
+                        </xsl:when>
                         <!-- Default processing for XML files -->
                         <xsl:otherwise>
                            <indexFile fileName="{$fileName}" 
@@ -175,7 +171,7 @@
          </xsl:when>
          
          <!-- HTML files -->
-         <xsl:when test="ends-with(@fileName, '.htm') or ends-with(@fileName, '.html')">
+         <xsl:when test="ends-with(@fileName, 'html') or ends-with(@fileName, '.xhtml')">
             <indexFile fileName="{@fileName}" 
                type="HTML"
                preFilter="style/textIndexer/html/htmlPreFilter.xsl"/>

@@ -1,40 +1,39 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
-        xmlns:saxon="http://saxon.sf.net/"
-        xmlns:xtf="http://cdlib.org/xtf"
-        xmlns:parse="http://cdlib.org/xtf/parse"
-        xmlns:xlink="http://www.w3.org/TR/xlink/"
-        exclude-result-prefixes="#all">
-
-<!--
-   Copyright (c) 2005, Regents of the University of California
-   All rights reserved.
- 
-   Redistribution and use in source and binary forms, with or without 
-   modification, are permitted provided that the following conditions are 
-   met:
-
-   - Redistributions of source code must retain the above copyright notice, 
-     this list of conditions and the following disclaimer.
-   - Redistributions in binary form must reproduce the above copyright 
-     notice, this list of conditions and the following disclaimer in the 
-     documentation and/or other materials provided with the distribution.
-   - Neither the name of the University of California nor the names of its
-     contributors may be used to endorse or promote products derived from 
-     this software without specific prior written permission.
-
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-   POSSIBILITY OF SUCH DAMAGE.
--->
-
+   xmlns:parse="http://cdlib.org/xtf/parse"
+   xmlns:xlink="http://www.w3.org/TR/xlink/"
+   xmlns:xtf="http://cdlib.org/xtf"
+   exclude-result-prefixes="#all">
+   
+   <!--
+      Copyright (c) 2008, Regents of the University of California
+      All rights reserved.
+      
+      Redistribution and use in source and binary forms, with or without 
+      modification, are permitted provided that the following conditions are 
+      met:
+      
+      - Redistributions of source code must retain the above copyright notice, 
+      this list of conditions and the following disclaimer.
+      - Redistributions in binary form must reproduce the above copyright 
+      notice, this list of conditions and the following disclaimer in the 
+      documentation and/or other materials provided with the distribution.
+      - Neither the name of the University of California nor the names of its
+      contributors may be used to endorse or promote products derived from 
+      this software without specific prior written permission.
+      
+      THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+      AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+      IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+      ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+      LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+      CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+      SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+      INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+      CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+      ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+      POSSIBILITY OF SUCH DAMAGE.
+   -->
+   
    <!-- ====================================================================== -->
    <!-- Import Common Templates and Functions                                  -->
    <!-- ====================================================================== -->
@@ -77,7 +76,6 @@
    <!-- ====================================================================== -->
    
    <!-- Ignored Elements -->
-   
    <xsl:template match="journal-meta">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
@@ -96,7 +94,6 @@
    
    
    <!-- sectionType Indexing and Element Boosting -->
-   
    <xsl:template match="title[parent::sec]">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
@@ -160,6 +157,7 @@
       </xsl:call-template>    
    </xsl:template>
    
+   <!-- title -->
    <xsl:template name="get-nlm-title">
       <xsl:choose>
          <xsl:when test="/article/front/article-meta/title-group/article-title">
@@ -175,6 +173,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- creator -->
    <xsl:template name="get-nlm-creator">
       <xsl:choose>
          <xsl:when test="/article/front/article-meta/contrib-group/contrib/name">
@@ -194,6 +193,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- subject -->
    <xsl:template name="get-nlm-subject">
       <xsl:choose>
          <xsl:when test="/article/front/article-meta/article-categories/subj-group">
@@ -210,6 +210,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- description -->
    <xsl:template name="get-nlm-description">
       <xsl:choose>
          <xsl:when test="/article/front/article-meta/abstract">
@@ -225,6 +226,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- publisher -->
    <xsl:template name="get-nlm-publisher">
       <xsl:choose>
          <xsl:when test="/article/front/journal-meta/publisher">
@@ -240,6 +242,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- contributor -->
    <xsl:template name="get-nlm-contributor">
       <xsl:choose>
          <xsl:when test="/article/front/article-meta/contrib-group/contrib/name">
@@ -259,6 +262,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- date -->
    <xsl:template name="get-nlm-date">
       <xsl:choose>
          <xsl:when test="/article/front/article-meta/pub-date[@pub-type='pub']">
@@ -287,14 +291,17 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- type -->
    <xsl:template name="get-nlm-type">
       <type xtf:meta="true">nlm</type>
    </xsl:template>
    
+   <!-- format -->
    <xsl:template name="get-nlm-format">
       <format xtf:meta="true">xml</format>
    </xsl:template>
    
+   <!-- identifier -->
    <xsl:template name="get-nlm-identifier">
       <xsl:choose>
          <xsl:when test="/article/front/article-meta/article-id[@pub-id-type='doi']">
@@ -315,6 +322,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- source -->
    <xsl:template name="get-nlm-source">
       <xsl:choose>
          <xsl:when test="/article/front/journal-meta/journal-title">
@@ -330,6 +338,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- language -->
    <xsl:template name="get-nlm-language">
       <language xtf:meta="true">english</language>
    </xsl:template>
@@ -349,10 +358,12 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- coverage -->
    <xsl:template name="get-nlm-coverage">
       <coverage xtf:meta="true">unknown</coverage>
    </xsl:template>
    
+   <!-- rights -->
    <xsl:template name="get-nlm-rights">
       <xsl:choose>
          <xsl:when test="/article/front/article-meta/permissions">
@@ -368,6 +379,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- OAI dateStamp -->
    <xsl:template name="oai-datestamp">
       <dateStamp xtf:meta="true" xtf:tokenize="no">
          <xsl:choose>
@@ -400,6 +412,7 @@
       </dateStamp>
    </xsl:template>
    
+   <!-- OAI sets -->
    <xsl:template name="oai-set">
       <xsl:for-each select="/article/front/article-meta/article-categories/subj-group">
          <set xtf:meta="true">
@@ -414,5 +427,5 @@
          <xsl:value-of select="'public'"/>
       </set>
    </xsl:template>
-  
+   
 </xsl:stylesheet>

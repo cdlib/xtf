@@ -1,42 +1,40 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
-        xmlns:saxon="http://saxon.sf.net/"
-        xmlns:xtf="http://cdlib.org/xtf"
-        xmlns:date="http://exslt.org/dates-and-times"
-        xmlns:parse="http://cdlib.org/xtf/parse"
-        xmlns:mets="http://www.loc.gov/METS/"
-        extension-element-prefixes="date"
-        exclude-result-prefixes="#all">
-
-<!--
-   Copyright (c) 2005, Regents of the University of California
-   All rights reserved.
- 
-   Redistribution and use in source and binary forms, with or without 
-   modification, are permitted provided that the following conditions are 
-   met:
-
-   - Redistributions of source code must retain the above copyright notice, 
-     this list of conditions and the following disclaimer.
-   - Redistributions in binary form must reproduce the above copyright 
-     notice, this list of conditions and the following disclaimer in the 
-     documentation and/or other materials provided with the distribution.
-   - Neither the name of the University of California nor the names of its
-     contributors may be used to endorse or promote products derived from 
-     this software without specific prior written permission.
-
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-   POSSIBILITY OF SUCH DAMAGE.
--->
-
+   xmlns:date="http://exslt.org/dates-and-times"
+   xmlns:parse="http://cdlib.org/xtf/parse"
+   xmlns:xtf="http://cdlib.org/xtf"
+   extension-element-prefixes="date"
+   exclude-result-prefixes="#all">
+   
+   <!--
+      Copyright (c) 2008, Regents of the University of California
+      All rights reserved.
+      
+      Redistribution and use in source and binary forms, with or without 
+      modification, are permitted provided that the following conditions are 
+      met:
+      
+      - Redistributions of source code must retain the above copyright notice, 
+      this list of conditions and the following disclaimer.
+      - Redistributions in binary form must reproduce the above copyright 
+      notice, this list of conditions and the following disclaimer in the 
+      documentation and/or other materials provided with the distribution.
+      - Neither the name of the University of California nor the names of its
+      contributors may be used to endorse or promote products derived from 
+      this software without specific prior written permission.
+      
+      THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+      AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+      IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+      ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+      LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+      CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+      SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+      INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+      CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+      ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+      POSSIBILITY OF SUCH DAMAGE.
+   -->
+   
    <!-- ====================================================================== -->
    <!-- Import Common Templates and Functions                                  -->
    <!-- ====================================================================== -->
@@ -79,7 +77,6 @@
    <!-- ====================================================================== -->
    
    <!-- Ignored Elements -->
-   
    <xsl:template match="*[local-name()='teiHeader']">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
@@ -89,7 +86,6 @@
    </xsl:template>
    
    <!-- sectionType Indexing and Element Boosting -->
-   
    <xsl:template match="*[local-name()='head'][parent::*[matches(local-name(),'^div')]]">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
@@ -153,7 +149,7 @@
       </xsl:call-template>    
    </xsl:template>
    
-   <!-- Fetch title info from the titleStmt or the titlePage. --> 
+   <!-- title --> 
    <xsl:template name="get-tei-title">
       <xsl:choose>
          <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='titleStmt']/*[local-name()='title']">
@@ -178,7 +174,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <!-- Fetch creator (author) info from the titleStmt or the titlePage. --> 
+   <!-- creator --> 
    <xsl:template name="get-tei-creator">
       <xsl:choose>
          <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='titleStmt']/*[local-name()='author']">
@@ -199,7 +195,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <!-- Fetch subject info from the TEI, if possible. --> 
+   <!-- subject --> 
    <xsl:template name="get-tei-subject">
       <xsl:choose>
          <xsl:when test="//*[local-name()='keywords']/*[local-name()='list']/*[local-name()='item']">
@@ -212,7 +208,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <!-- Fetch description info from the TEI, if possible. --> 
+   <!-- description --> 
    <xsl:template name="get-tei-description">
       <xsl:choose>
          <xsl:when test="//*[local-name()='text']/*[local-name()='body']/*[local-name()='div1'][1]/*[local-name()='p']">
@@ -223,6 +219,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- publisher -->
    <xsl:template name="get-tei-publisher">
       <xsl:choose>
          <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='publisher']">
@@ -243,7 +240,8 @@
       </xsl:choose>
    </xsl:template>
    
-   <xsl:template name="get-tei-contributor"><!-- here -->
+   <!-- contributor -->
+   <xsl:template name="get-tei-contributor">
       <xsl:choose>
          <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='respStmt']/*[local-name()='name']">
             <contributor xtf-meta="true">
@@ -258,7 +256,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <!-- Fetch date info from the publicationStmt or the titlePage. --> 
+   <!-- date --> 
    <xsl:template name="get-tei-date">
       <xsl:choose>
          <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='date']">
@@ -279,15 +277,17 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- type -->
    <xsl:template name="get-tei-type">
       <type xtf:meta="true">tei</type>
    </xsl:template>
    
+   <!-- format -->
    <xsl:template name="get-tei-format">
       <format xtf:meta="true">xml</format>
    </xsl:template>
    
-   <!-- Fetch identifier info from the TEI, if possible. --> 
+   <!-- identifier --> 
    <xsl:template name="get-tei-identifier">
       <xsl:choose>
          <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='publicationStmt']/*[local-name()='idno']">
@@ -303,6 +303,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- source -->
    <xsl:template name="get-tei-source">
       <xsl:choose>
          <xsl:when test="//*[local-name()='sourceDesc']/*[local-name()='bibl']">
@@ -318,6 +319,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- language -->
    <xsl:template name="get-tei-language">
       <xsl:choose>
          <xsl:when test="//*[local-name()='profileDesc']/*[local-name()='langUsage']/*[local-name()='language']">
@@ -333,6 +335,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- relation -->
    <xsl:template name="get-tei-relation">
       <xsl:choose>
          <xsl:when test="//*[local-name()='fileDesc']/*[local-name()='seriesStmt']/*[local-name()='title']">
@@ -348,18 +351,21 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- coverage -->
    <xsl:template name="get-tei-coverage">
       <coverage xtf:meta="true">
          <xsl:value-of select="'unknown'"/>
       </coverage>
    </xsl:template>
    
+   <!-- rights -->
    <xsl:template name="get-tei-rights">
       <rights xtf-meta="true">
          <xsl:value-of select="'public'"/>
       </rights>
    </xsl:template>
    
+   <!-- OAI dateStamp -->
    <xsl:template name="oai-datestamp">
       <dateStamp xtf:meta="true" xtf:tokenize="no">
          <xsl:choose>
@@ -374,6 +380,7 @@
       </dateStamp>
    </xsl:template>
    
+   <!-- OAI sets -->
    <xsl:template name="oai-set">
       <xsl:for-each select="//*[local-name()='keywords']/*[local-name()='list']/*[local-name()='item']">
          <set xtf:meta="true">
