@@ -1,55 +1,52 @@
-<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-<!-- Simple query parser stylesheet                                         -->
-<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
-<!--
-   Copyright (c) 2006, Regents of the University of California
-   All rights reserved.
- 
-   Redistribution and use in source and binary forms, with or without 
-   modification, are permitted provided that the following conditions are 
-   met:
-
-   - Redistributions of source code must retain the above copyright notice, 
-     this list of conditions and the following disclaimer.
-   - Redistributions in binary form must reproduce the above copyright 
-     notice, this list of conditions and the following disclaimer in the 
-     documentation and/or other materials provided with the distribution.
-   - Neither the name of the University of California nor the names of its
-     contributors may be used to endorse or promote products derived from 
-     this software without specific prior written permission.
-
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-   POSSIBILITY OF SUCH DAMAGE.
--->
-
-<!--
-  This stylesheet implements a simple query parser which does not handle any
-  complex queries (boolean and/or/not, ranges, nested queries, etc.) An
-  experimental parser is available that does parse these constructs; see
-  complexQueryParser.xsl.
-  
-  For details on the input and output expected of this stylesheet, see the
-  comment section at the bottom of this file.
--->
-
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" >
+   
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!-- Simple query parser stylesheet                                         -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   
+   <!--
+      Copyright (c) 2008, Regents of the University of California
+      All rights reserved.
+      
+      Redistribution and use in source and binary forms, with or without 
+      modification, are permitted provided that the following conditions are 
+      met:
+      
+      - Redistributions of source code must retain the above copyright notice, 
+      this list of conditions and the following disclaimer.
+      - Redistributions in binary form must reproduce the above copyright 
+      notice, this list of conditions and the following disclaimer in the 
+      documentation and/or other materials provided with the distribution.
+      - Neither the name of the University of California nor the names of its
+      contributors may be used to endorse or promote products derived from 
+      this software without specific prior written permission.
+      
+      THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+      AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+      IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+      ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+      LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+      CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+      SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+      INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+      CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+      ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+      POSSIBILITY OF SUCH DAMAGE.
+   -->
+   
+   <!--
+      This stylesheet implements a simple query parser for handling OAI 
+      harvesting requests. It is far from perfect, but does pass all of 
+      the tests at http://www.openarchives.org/Register/ValidateSite
+      Unfortunately I had to hard code some dates to make it all work. You'll 
+      have to change these or think of a better solution.
+   -->
    
    <!-- ====================================================================== -->
    <!-- Output                                                                 -->
    <!-- ====================================================================== -->
    
    <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
-   
    <xsl:strip-space elements="*"/>
    
    <!-- ====================================================================== -->
@@ -74,6 +71,7 @@
    <!-- until param -->
    <xsl:param name="until"/>
    
+   <!-- startDoc param -->
    <xsl:param name="startDoc">
       <xsl:choose>
          <xsl:when test="$resumptionToken">
@@ -84,25 +82,24 @@
          </xsl:otherwise>
       </xsl:choose>
    </xsl:param>
-  
-   <!-- to support QA script -->
-   <xsl:param name="smode"/>
    
    <!-- ====================================================================== -->
    <!-- Local parameters                                                       -->
    <!-- ====================================================================== -->
    
    <!-- earliestDatestamp param -->
+   <!-- this is a real kludge, please reset to the earliest date in your collection -->
    <xsl:param name="earliestDatestamp" select="'1950-01-01'"/>
    
+   <!-- maxDocs param -->
    <xsl:param name="maxDocs">
       <xsl:choose>
-        <xsl:when test="$smode='test'">2000</xsl:when>
          <xsl:when test="$verb='Identify' or $verb='ListIdentifiers' or $verb='ListRecords'">20</xsl:when>
          <xsl:otherwise>1</xsl:otherwise>
       </xsl:choose>
    </xsl:param>
    
+   <!-- error messages -->
    <xsl:variable name="badArgumentMessage">
       <xsl:text>The request includes illegal arguments, is missing required arguments, includes a repeated argument, or values for arguments have an illegal syntax.</xsl:text>
    </xsl:variable>
@@ -139,8 +136,7 @@
          and not(@name='resumptionToken') 
          and not(@name='set') 
          and not(@name='from') 
-         and not(@name='until')
-         and not(@name='smode')]"/><!-- to support QA script -->
+         and not(@name='until')]"/>
       
       <!-- Error Handling -->
       
@@ -177,6 +173,7 @@
             <error message="OAI::{$verb}::badArgument::{$badArgumentMessage}"/>
          </xsl:when>
          
+         <!-- verb: GetRecord -->
          <xsl:when test="$verb='GetRecord'">
             <xsl:choose>
                <xsl:when test="not($identifier) or not($metadataPrefix)">
@@ -194,6 +191,7 @@
             </xsl:choose>
          </xsl:when>
          
+         <!-- verb: Identify -->
          <xsl:when test="$verb='Identify'">
             <xsl:choose>
                <xsl:when test="$identifier or $metadataPrefix or $resumptionToken or $set or $from or $until">
@@ -205,6 +203,7 @@
             </xsl:choose>
          </xsl:when>
          
+         <!-- verb: ListIdentifiers -->
          <xsl:when test="$verb='ListIdentifiers'">
             <xsl:choose>
                <xsl:when test="($from and not($until)) or ($until and not($from))">
@@ -225,6 +224,7 @@
             </xsl:choose>
          </xsl:when>
          
+         <!-- verb: ListMetadataFormats -->
          <xsl:when test="$verb='ListMetadataFormats'">
             <xsl:choose>
                <xsl:when test="$metadataPrefix or $resumptionToken or $set or $from or $until">
@@ -239,6 +239,7 @@
             </xsl:choose>
          </xsl:when>
          
+         <!-- verb: ListRecords -->
          <xsl:when test="$verb='ListRecords'">
             <xsl:choose>
                <xsl:when test="($from and not($until)) or ($until and not($from))">
@@ -259,6 +260,7 @@
             </xsl:choose>
          </xsl:when>
          
+         <!-- verb: ListSets -->
          <xsl:when test="$verb='ListSets'">
             <xsl:choose>
                <xsl:when test="$identifier or $metadataPrefix or $from or $until">
@@ -270,6 +272,7 @@
             </xsl:choose>
          </xsl:when>
          
+         <!-- error: illegal or missing verb -->
          <xsl:when test="$verb">
             <error message="OAI::badVerb::badVerb::{$badVerbMessage}"/>
          </xsl:when>
@@ -284,7 +287,7 @@
    <!-- Query Template                                                         -->
    <!-- ====================================================================== -->
    
-   <!-- more error handling can go here -->
+   <!-- construct query -->
    <xsl:template name="query">
       <query indexPath="index" maxDocs="{$maxDocs}" startDoc="{$startDoc}" sortMetaFields="dateStamp" style="style/crossQuery/resultFormatter/oai/resultFormatter.xsl" termLimit="1000" workLimit="1000000">
          <xsl:choose>
@@ -296,7 +299,6 @@
             <xsl:when test="$verb='ListIdentifiers' or $verb='ListRecords'">
                <and>
                   <xsl:choose>
-                     <!-- can they specify only one? -->
                      <xsl:when test="$from or $until">
                         <range field="dateStamp" numeric="yes">
                            <xsl:if test="$until">
@@ -344,6 +346,7 @@
                   </and>
                </and>
             </xsl:when>
+            <!-- I really hate using these hard-coded dates -->
             <xsl:when test="$verb='Identify'">
                <range field="dateStamp" numeric="yes">
                   <upper>1970-01-01</upper>
@@ -355,6 +358,8 @@
    
    <!-- ====================================================================== -->
    <!-- Tokenizing Template                                                    -->
+   <!--                                                                        -->
+   <!-- For tokenizing space delimited strings                                 -->
    <!-- ====================================================================== -->
    
    <xsl:template name="tokenize">

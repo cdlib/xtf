@@ -1,46 +1,55 @@
-<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-<!-- Query result formatter stylesheet                                      -->
-<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
-<!--
-   Copyright (c) 2005, Regents of the University of California
-   All rights reserved.
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+   xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils"
+   extension-element-prefixes="FileUtils"
+   exclude-result-prefixes="#all" 
+   version="2.0">
    
-   Redistribution and use in source and binary forms, with or without 
-   modification, are permitted provided that the following conditions are 
-   met:
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!-- Query result formatter stylesheet                                      -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    
-   - Redistributions of source code must retain the above copyright notice, 
-   this list of conditions and the following disclaimer.
-   - Redistributions in binary form must reproduce the above copyright 
-   notice, this list of conditions and the following disclaimer in the 
-   documentation and/or other materials provided with the distribution.
-   - Neither the name of the University of California nor the names of its
-   contributors may be used to endorse or promote products derived from 
-   this software without specific prior written permission.
+   <!--
+      Copyright (c) 2008, Regents of the University of California
+      All rights reserved.
+      
+      Redistribution and use in source and binary forms, with or without 
+      modification, are permitted provided that the following conditions are 
+      met:
+      
+      - Redistributions of source code must retain the above copyright notice, 
+      this list of conditions and the following disclaimer.
+      - Redistributions in binary form must reproduce the above copyright 
+      notice, this list of conditions and the following disclaimer in the 
+      documentation and/or other materials provided with the distribution.
+      - Neither the name of the University of California nor the names of its
+      contributors may be used to endorse or promote products derived from 
+      this software without specific prior written permission.
+      
+      THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+      AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+      IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+      ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+      LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+      CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+      SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+      INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+      CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+      ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+      POSSIBILITY OF SUCH DAMAGE.
+   -->
    
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-   POSSIBILITY OF SUCH DAMAGE.
--->
-
-<xsl:stylesheet exclude-result-prefixes="#all" version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  
+   <!-- 
+      This stylesheet implements a simple OAI response mechanism. 
+      Be sure to change the values marked "CHANGE" below or you will produce 
+      an invalid response.
+   -->
+   
    <!-- ====================================================================== -->
-   <!-- Output Parameters                                                      -->
+   <!-- Output                                                                 -->
    <!-- ====================================================================== -->
-  
-   <xsl:output encoding="UTF-8" indent="yes" method="xml" media-type="text/xml"/>
-   <xsl:output name="xml" method="xml" indent="yes" media-type="text/xml" encoding="UTF-8"/>
-
+   
+   <xsl:output method="xml" encoding="UTF-8" media-type="text/xml" indent="yes" exclude-result-prefixes="#all"/>
+   
    <!-- ====================================================================== -->
    <!-- Global parameters (specified in the URL)                               -->
    <!-- ====================================================================== -->
@@ -77,20 +86,6 @@
    <!-- cursor param -->
    <xsl:param name="cursor" select="$nextPage - 21"/>
    
-   <!-- test parameters -->
-   <xsl:param name="smode"/>
-   <xsl:param name="queryString">
-      <xsl:value-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace($http.URL, '.+search\?|.+oai\?', ''), 
-         '[0-9A-Za-z\-]+=&amp;', '&amp;'), 
-         '&amp;[0-9A-Za-z\-]+=$', '&amp;'), 
-         '&amp;+', '&amp;'),
-         '&amp;startDoc=[0-9]+', ''),
-         '[0-9A-Za-z\-]+=;', ';'), 
-         ';[0-9A-Za-z\-]+=$', ';'), 
-         ';+', ';'),
-         ';startDoc=[0-9]+', '')"/>
-   </xsl:param>
-   
    <!-- ====================================================================== -->
    <!-- Local parameters                                                       -->
    <!-- ====================================================================== -->
@@ -100,6 +95,7 @@
       <xsl:value-of select="replace(replace(FileUtils:curDateTime('yyyy-MM-dd::HH:mm:ss'),'::','T'),'([0-9])$','$1Z')" xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils"/>
    </xsl:variable>
    
+   <!-- error messages -->
    <xsl:variable name="idDoesNotExistMessage">
       <xsl:text>The value of the identifier argument is unknown or illegal in this repository.</xsl:text>
    </xsl:variable>
@@ -112,10 +108,8 @@
    <!-- ====================================================================== -->
    
    <xsl:template match="/">
-     <xsl:choose>
-         <xsl:when test="$smode = 'test'">
-           <xsl:apply-templates select="crossQueryResult" mode="test"/>
-         </xsl:when>
+      <!-- select verb -->
+      <xsl:choose>
          <xsl:when test="$verb='GetRecord'">
             <xsl:call-template name="GetRecord"/>
          </xsl:when>
@@ -137,6 +131,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- verb: getRecord -->
    <xsl:template name="GetRecord">
       
       <xsl:choose>
@@ -164,6 +159,7 @@
       
    </xsl:template>
    
+   <!-- verb: Identify -->
    <xsl:template name="Identify">
       
       <xsl:variable name="earliestDateStamp" select="//docHit[1]/meta/dateStamp[1]"/>
@@ -192,6 +188,7 @@
       
    </xsl:template>
    
+   <!-- verb: ListIdentifiers -->
    <xsl:template name="ListIdentifiers">
       
       <xsl:choose>
@@ -224,7 +221,7 @@
       
    </xsl:template>
    
-   
+   <!-- verb: ListMetadataFormats -->
    <xsl:template name="ListMetadataFormats">
       
       <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
@@ -245,6 +242,7 @@
       
    </xsl:template>
    
+   <!-- verb: ListRecords -->
    <xsl:template name="ListRecords">
       
       <xsl:choose>
@@ -276,6 +274,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- verb: ListSets -->
    <xsl:template name="ListSets">
       
       <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
@@ -292,6 +291,7 @@
       
    </xsl:template>
    
+   <!-- Formatting of individual reocrds -->
    <xsl:template match="docHit">
       
       <xsl:variable name="identifier" select="meta/identifier[1]"/>
@@ -318,6 +318,7 @@
       
    </xsl:template>
    
+   <!-- records as displayed for ListIdentifiers -->
    <xsl:template match="docHit" mode="idOnly">
       
       <xsl:variable name="identifier" select="meta/identifier[1]"/>
@@ -334,14 +335,17 @@
       
    </xsl:template>
    
+   <!-- Add namespace to metadata elements -->
    <xsl:template match="title|creator|subject|description|publisher|contributor|date|type|format|identifier|source|language|relation|coverage|rights" mode="DC">
       <xsl:element name="{concat('dc:',local-name())}" namespace="http://purl.org/dc/elements/1.1/">
          <xsl:apply-templates/>
       </xsl:element>
    </xsl:template>
    
+   <!-- skip non-standard dublin core elements -->
    <xsl:template match="*" mode="DC"/>
    
+   <!-- set formatting -->
    <xsl:template match="group">
       <set xmlns="http://www.openarchives.org/OAI/2.0/">
          <setSpec>
@@ -353,6 +357,7 @@
       </set>
    </xsl:template>   
    
+   <!-- error template -->
    <xsl:template name="oaiError">
       
       <xsl:param name="message"/>
@@ -362,7 +367,7 @@
       <xsl:variable name="code" select="replace($message,'.+::(.+)::.+','$1')"/>
       <xsl:variable name="messageText" select="replace($message,'.+::.+::(.+)','$1')"/>
       
-      <xsl:result-document method="xml" encoding="UTF-8" media-type="text/xml" exclude-result-prefixes="#all">
+      <xsl:result-document method="xml" encoding="UTF-8" media-type="text/xml" indent="yes" exclude-result-prefixes="#all">
          <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
@@ -373,37 +378,5 @@
       </xsl:result-document>
       
    </xsl:template>
-  
-  
-  <!-- ====================================================================== -->
-  <!-- Generate ARK List for Testing                                          -->
-  <!-- ====================================================================== -->
-  
-  <!-- Leave indenting as is in the following template! -->
-  
-  <xsl:template match="crossQueryResult" mode="test">
-    <xsl:result-document format="xml" exclude-result-prefixes="#all">
-      <search count="{@totalDocs}" queryString="{$queryString}">
-        <xsl:for-each select="docHit">
-          <xsl:sort select="number(@rank)" />
-           <xsl:variable name="identifier" select="replace(meta/identifier[1],'.+/','')"/>
-           <hit identifier="{$identifier}"
-            rank="{@rank}"
-            score="{@score}">
-            <xsl:attribute name="totalHits">
-              <xsl:choose>
-                <xsl:when test="matches($queryString,'text=|keyword=')">
-                  <xsl:value-of select="@totalHits"/>
-                </xsl:when>
-                <xsl:otherwise>
-                  <xsl:value-of select="count(.//hit)"/>
-                </xsl:otherwise>
-              </xsl:choose>
-            </xsl:attribute>
-          </hit>
-        </xsl:for-each>
-      </search>
-    </xsl:result-document>
-  </xsl:template>
-  
+   
 </xsl:stylesheet>
