@@ -117,14 +117,9 @@ public class SessionURLRewriter extends ProxyReceiver
       return;
     }
 
-    // If the URL is absolute and a pattern has been specified, only encode it
-    // if a pattern was specified and the URL matches the pattern.
-    //
+    // If the URL doesn't match the pattern, don't rewrite it.
     String strVal = value.toString();
-    if (strVal.startsWith("http") &&
-        (encodeURLPattern == null ||
-        !encodeURLPattern.matcher(strVal).matches())) 
-    {
+    if (!encodeURLPattern.matcher(strVal).matches()) {
       super.attribute(nameCode, typeCode, value, locationId, properties);
       return;
     }
