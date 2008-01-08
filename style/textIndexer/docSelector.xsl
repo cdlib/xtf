@@ -123,6 +123,18 @@
                   <xsl:variable name="fileName" select="@fileName"/>
                   <xsl:variable name="file" select="concat($dirPath,$fileName)"/>
                   
+                  <!-- We need to determine what kind of XML file we're looking at. XTF provides a
+                       handy function that quickly reads in only the first part of an XML file
+                       (up to the first close element tag, e.g. </element>). We make our decision
+                       based on the name of the root element, the entity information, and namespace.
+                       
+                       Note that the "unparsed-entity-public-id" and "unparsed-entity-uri" XPath
+                       functions operate on whatever document is the current context. We use
+                       <xsl:for-each> to switch to the target document's context, rather than the
+                       context of the input we received from the textIndexer. In this case,
+                       "for-each" is a bit of a misnomer, since the stub is a single document
+                       so the code below runs only once.
+                  -->
                   <xsl:for-each select="FileUtils:readXMLStub($file)">
                      
                      <xsl:variable name="root-element-name" select="name(*[1])"/>
