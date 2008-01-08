@@ -125,13 +125,14 @@ public class Session
     return mappedURL;
   } // encodeURL()
 
+  /** Function to get the current session's identifier */
   public static String getID() 
   {
     // Make sure session tracking is enabled in the servlet.
     if (!TextServlet.getCurServlet().isSessionTrackingEnabled()) {
       throw new RuntimeException(
         "Error: session tracking must be enabled in servlet config file " +
-        "before storing session data");
+        "before getting session ID");
     }
 
     // Now get the session ID.
@@ -139,6 +140,18 @@ public class Session
     HttpSession session = req.getSession(true);
     return session.getId();
   } // getSessionID()
+  
+  /** Function to detect if cookies are turned off */
+  public static boolean noCookie() 
+  {
+    // Make sure session tracking is enabled in the servlet.
+    if (!TextServlet.getCurServlet().isSessionTrackingEnabled())
+      return false;
+    
+    // Now check whether the ID is from a URL instead of a cookie.
+    HttpServletRequest req = TextServlet.getCurRequest();
+    return !req.isRequestedSessionIdFromCookie();
+  }
 
   /**
    * Gets a proper string for the value. If the value is simply a string, we
