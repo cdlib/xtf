@@ -414,14 +414,7 @@
          <head>
             <title>XTF: Search Results</title>
             <xsl:copy-of select="$brand.links"/>
-            
-            <!-- If session tracking enabled, load bag tracking scripts -->
-            <script src="script/AsyncLoader.js" type="application/javascript"/>
-            <script src="script/MoreLike.js" type="application/javascript"/>
-            <xsl:if test="session:isEnabled()">
-               <script src="script/BookBag.js" type="application/javascript"/>
-            </xsl:if>
-            
+            <script src="script/prototype.js" type="application/javascript"/> <!-- AJAX support -->
          </head>
          <body>
             
@@ -480,7 +473,7 @@
                         <b>Results:&#160;</b>
                      </td>
                      <td align="left">
-                        <xsl:value-of select="@totalDocs"/>
+                        <span id="itemCount"><xsl:value-of select="@totalDocs"/></span>
                         <xsl:text> Item(s)</xsl:text>
                      </td>
                      <td align="right">
@@ -617,7 +610,7 @@
          </xsl:choose>
       </xsl:variable>
       
-      <div id="main-{$identifier}" class="docHit">    
+      <div id="main_{@rank}" class="docHit">    
          <table width="100%" cellpadding="0" cellspacing="0">          
             <tr>
                <td align="right" width="4%">
@@ -756,25 +749,46 @@
                      
                      <xsl:choose>
                         <xsl:when test="$smode = 'showBag'">
-                           <xsl:variable name="removeURL" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=removeFromBag;identifier-join=exact;identifier=', $identifier))"/>
-                           <span id="remove-{$identifier}">
-                              <a href="{concat('javascript:removeFromBag(', $quotedID, ', &quot;', $removeURL, '&quot;)')}">
-                                 Remove from bag
-                              </a>
+                           <script type="text/javascript">
+                              remove_<xsl:value-of select="@rank"/> = function() {
+                                 var span = $('remove_<xsl:value-of select="@rank"/>');
+                                 span.innerHTML = "Removing...";
+                                 new Ajax.Request('<xsl:value-of select="concat($xtfURL, $crossqueryPath, '?smode=removeFromBag;identifier=', $identifier)"/>', {
+                                    onSuccess: function() { 
+                                       var main = $('main_<xsl:value-of select="@rank"/>');
+                                       main.parentNode.removeChild(main);
+                                       --($('itemCount').innerHTML);
+                                    },
+                                    onFailure: function() { span.innerHTML = 'Failed to remove!'; }
+                                 });
+                              };
+                           </script>
+                           <span id="remove_{@rank}">
+                              <a href="javascript:remove_{@rank}()">Remove from bag</a>
                            </span>
                         </xsl:when>
+                        <xsl:when test="session:noCookie()">
+                           <span><a href="javascript:alert('To use the bag, you must enable cookies in your web browser.')">Requires cookie*</a></span>                                 
+                        </xsl:when>
                         <xsl:otherwise>
-                           <a href="{concat($xtfURL, $crossqueryPath, '?smode=showBag;', $queryString)}">Show bag</a> |
+                           <a href="{concat('search?smode=showBag;', $queryString)}">Show bag</a> |
                            <xsl:choose>
                               <xsl:when test="session:getData('bag')/bag/savedDoc[@id=$indexId]">
                                  <span>In bag.</span>
                               </xsl:when>
                               <xsl:otherwise>
-                                 <xsl:variable name="addURL" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=addToBag;identifier-join=exact;identifier=', $identifier))"/>
-                                 <span id="add-{$identifier}">
-                                    <a href="{concat('javascript:addToBag(', $quotedID, ', &quot;', $addURL, '&quot;)')}">
-                                       Add to bag
-                                    </a>
+                                 <script type="text/javascript">
+                                    add_<xsl:value-of select="@rank"/> = function() {
+                                       var span = $('add_<xsl:value-of select="@rank"/>');
+                                       span.innerHTML = "Adding...";
+                                       new Ajax.Request('<xsl:value-of select="concat($xtfURL, $crossqueryPath, '?smode=addToBag;identifier=', $identifier)"/>', {
+                                          onSuccess: function(transport) { span.innerHTML = transport.responseText; },
+                                          onFailure: function(transport) { span.innerHTML = "Failed to add!"; }
+                                       });
+                                    };
+                                 </script>
+                                 <span id="add_{@rank}">
+                                    <a href="javascript:add_{@rank}()">Add to bag</a>
                                  </span>
                               </xsl:otherwise>
                            </xsl:choose>
@@ -797,11 +811,17 @@
                   <b>Similar:&#160;&#160;</b>
                </td>
                <td align="left">
-                  <xsl:variable name="url" select="session:encodeURL(concat($xtfURL, $crossqueryPath, '?smode=moreLike;docsPerPage=5;identifier-join=exact;identifier=', $identifier))"/>
-                  <span id="moreLike-{$identifier}">
-                     <a href="{concat('javascript:moreLike(', $quotedID, ', &quot;', $url, '&quot;)')}">
-                        Fetch
-                     </a>
+                  <script type="text/javascript">
+                     getMoreLike_<xsl:value-of select="@rank"/> = function() {
+                        var span = $('moreLike_<xsl:value-of select="@rank"/>');
+                        span.innerHTML = "Fetching...";
+                        new Ajax.Request('<xsl:value-of select="concat('search?smode=moreLike;docsPerPage=5;identifier=', $identifier)"/>',
+                           { onSuccess: function(transport) { span.innerHTML = transport.responseText; },
+                             onFailure: function(transport) { span.innerHTML = "Failed!" } });
+                     };
+                  </script>
+                  <span id="moreLike_{@rank}">
+                     <a href="javascript:getMoreLike_{@rank}()">Fetch</a>
                   </span>
                </td>
                <td align="right">
