@@ -94,8 +94,15 @@ public abstract class TextConfig
    */
   public long runawayKillTime = 0;
 
-  /** Whether session tracking is enabled. Default: false */
-  public boolean trackSessions = false;
+  /** Whether session tracking is enabled. Default: true */
+  public boolean trackSessions = true;
+  
+  /**
+   * Which URLs to apply encoding to, if session tracking enabled and
+   * user doesn't allow cookies. If null, no URL rewriting will be
+   * performed.
+   */
+  public Pattern sessionEncodeURLPattern = null;
 
   /** 
    * List of parameters to tokenize specially. Default: empty (meaning use
@@ -103,12 +110,6 @@ public abstract class TextConfig
    */
   public Map tokenizerMap = new HashMap();
   
-  /**
-   * Which URLs to apply encoding to, if session tracking enabled and
-   * user doesn't allow cookies.
-   */
-  public Pattern sessionEncodeURLPattern = null;
-
   /** All the configuration attributes in the form of name/value pairs */
   public AttribList attribs = new AttribList();
 
@@ -259,7 +260,8 @@ public abstract class TextConfig
       trackSessions = parseBoolean(tagAttr, strVal);
       return true;
     }
-    else if (tagAttr.equalsIgnoreCase("trackSessions.encodeURLPattern")) 
+    else if (tagAttr.equalsIgnoreCase("trackSessions.encodeURLPattern") &&
+             strVal.length() > 0) 
     {
       try {
         sessionEncodeURLPattern = Pattern.compile(strVal);
