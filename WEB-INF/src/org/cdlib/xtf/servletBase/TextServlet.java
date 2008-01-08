@@ -677,7 +677,7 @@ public abstract class TextServlet extends HttpServlet
                                           trans.getOutputProperties());
 
     TextConfig config = getConfig();
-    if (config.trackSessions)
+    if (config.trackSessions && config.sessionEncodeURLPattern != null)
       return new SessionURLRewriter(target,
                                     config.sessionEncodeURLPattern,
                                     req,
