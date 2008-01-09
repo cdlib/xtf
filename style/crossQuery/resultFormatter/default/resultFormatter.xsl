@@ -64,7 +64,6 @@
    <xsl:param name="icon.path" select="concat($xtfURL, 'icons/default/')"/>
    <!-- to support multiple group values per facet -->
    <xsl:param name="f1-subject"/>
-   <xsl:param name="f1-creator"/>
    
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
@@ -988,17 +987,17 @@
    <!-- hierarchical date group -->
    <xsl:template match="group[ancestor::facet[@field='facet-date']]" exclude-result-prefixes="#all">
       <xsl:variable name="value" select="@value"/>
-      <xsl:variable name="facetString" select="replace($queryString,'[;&amp;]facet-date=[^;&amp;]+','')"/>
+      <xsl:variable name="facetString" select="replace($queryString,'[;&amp;]f1-date=[^;&amp;]+','')"/>
       <xsl:variable name="hierarchy">
          <xsl:for-each select="ancestor::group/@value">
             <xsl:value-of select="concat(.,'::')"/>
          </xsl:for-each>
       </xsl:variable>
       <xsl:variable name="groupURL">
-         <xsl:value-of select="concat($xtfURL,$crossqueryPath,'?',$facetString,';facet-date=',$hierarchy,$value)"/>
+         <xsl:value-of select="concat($xtfURL,$crossqueryPath,'?',$facetString,';f1-date=',$hierarchy,$value)"/>
       </xsl:variable> 
       <xsl:variable name="upURL">
-         <xsl:value-of select="concat($xtfURL,$crossqueryPath,'?',$facetString,';facet-date=',replace($hierarchy,'::$',''))"/>
+         <xsl:value-of select="concat($xtfURL,$crossqueryPath,'?',$facetString,';f1-date=',replace($hierarchy,'::$',''))"/>
       </xsl:variable> 
       
       <li>

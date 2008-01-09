@@ -61,7 +61,8 @@
    <!-- ====================================================================== -->
    
    <xsl:param name="fieldList" select="'text title creator subject description publisher contributor date type format identifier source language relation coverage rights year '"/>
-   <xsl:param name="facet-date"/>
+   <!-- special hierarchical facet -->
+   <xsl:param name="f1-date"/>
    
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
@@ -135,11 +136,11 @@
          <facet field="facet-date" sortGroupsBy="value">
             <xsl:attribute name="select">
                <xsl:choose>
-                  <xsl:when test="matches($facet-date,'[0-9]+::[0-9]+::[0-9]+')">
-                     <xsl:attribute name="select" select="$facet-date"/>
+                  <xsl:when test="matches($f1-date,'[0-9]+::[0-9]+::[0-9]+')">
+                     <xsl:attribute name="select" select="$f1-date"/>
                   </xsl:when>
-                  <xsl:when test="$facet-date">
-                     <xsl:attribute name="select" select="concat($facet-date,'::*')"/>
+                  <xsl:when test="$f1-date">
+                     <xsl:attribute name="select" select="concat($f1-date,'::*')"/>
                   </xsl:when>
                   <xsl:otherwise>
                      <xsl:attribute name="select" select="'*'"/>       
@@ -224,21 +225,22 @@
             <xsl:apply-templates select="$textParam"/>
          </xsl:if>
          <!-- Process special facet query params -->
-         <!-- flat facets -->
          <xsl:for-each select="//param[matches(@name,'f[0-9]+-.+')]">
             <xsl:variable name="field" select="replace(@name,'f[0-9]+-','facet-')"/>
+            <xsl:variable name="value">
+               <xsl:choose>
+                  <!-- this hierarchical facet gets special behavior -->
+                  <xsl:when test="matches(@name,'-date$')">
+                     <xsl:value-of select="concat(@value,'*')"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:value-of select="@value"/>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:variable>
             <and field="{$field}">
                <term maxSnippets="0">
-                  <xsl:value-of select="@value"/>
-               </term>
-            </and>
-         </xsl:for-each>
-         <!-- hierarchical facets -->
-         <xsl:for-each select="//param[matches(@name,'facet-.+')]">
-            <xsl:variable name="field" select="@name"/>
-            <and field="{$field}">
-               <term maxSnippets="0">
-                  <xsl:value-of select="concat(@value,'*')"/>
+                  <xsl:value-of select="$value"/>
                </term>
             </and>
          </xsl:for-each>
