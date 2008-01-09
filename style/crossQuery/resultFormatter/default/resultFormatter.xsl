@@ -91,6 +91,10 @@
          <xsl:when test="contains($smode, '-modify')">
             <xsl:apply-templates select="crossQueryResult" mode="form"/>
          </xsl:when>
+         <!-- browse pages -->
+         <xsl:when test="$browse-title or $browse-creator">
+            <xsl:apply-templates select="crossQueryResult" mode="browse"/>
+         </xsl:when>
          <!-- show results -->
          <xsl:when test="
             $text or 
@@ -112,8 +116,6 @@
             $rights or 
             $year or
             $all or
-            $browse-title or
-            $browse-creator or
             $smode ='showBag'">
             <xsl:apply-templates select="crossQueryResult" mode="results"/>
          </xsl:when>
@@ -144,6 +146,21 @@
             <div class="form">
                <h4>Advanced Search</h4>
                <xsl:call-template name="advancedForm"/>
+            </div>
+            <div class="browse">
+               <h4>Browse</h4>
+               <table width="50%" cellpadding="0" cellspacing="5" border="0" style="border-style: solid; border-color: blue; border-width: 1px 1px 1px 1px;">
+                  <tr>
+                     <td align="center">
+                        <xsl:text>Browse by </xsl:text>
+                        <a href="{$xtfURL}{$crossqueryPath}?all=all">Facet</a>
+                        <xsl:text> | </xsl:text>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title;all=all">Title</a>
+                        <xsl:text> | </xsl:text>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator;all=all">Author</a>
+                     </td>
+                  </tr>
+               </table>
             </div>
             <xsl:copy-of select="$brand.footer"/>
          </body>
@@ -433,8 +450,11 @@
                            <xsl:when test="$smode = 'showBag'">
                               Bag contents
                            </xsl:when>
-                           <xsl:otherwise>
+                           <xsl:when test="$keyword or $text or $title or $creator or $subject or $year or $type">
                               <xsl:call-template name="format-query"/>
+                           </xsl:when>
+                           <xsl:otherwise>
+                              All Items
                            </xsl:otherwise>
                         </xsl:choose>
                      </td>
@@ -477,27 +497,10 @@
                         <xsl:text> Item(s)</xsl:text>
                      </td>
                      <td align="right">
-                        <xsl:choose>
-                           <xsl:when test="$browse-title or $browse-creator">
-                              <xsl:text>Browse by </xsl:text>
-                              <xsl:choose>
-                                 <xsl:when test="$browse-title">
-                                    <xsl:text>Title | </xsl:text>
-                                    <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
-                                 </xsl:when>
-                                 <xsl:otherwise>
-                                    <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
-                                    <xsl:text>  | Author</xsl:text>
-                                 </xsl:otherwise>
-                              </xsl:choose>
-                           </xsl:when>
-                           <xsl:otherwise>
-                              <xsl:text>Browse by </xsl:text>
-                              <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
-                              <xsl:text> | </xsl:text>
-                              <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
-                           </xsl:otherwise>
-                        </xsl:choose>
+                        <xsl:text>Browse by </xsl:text>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title;all=all">Title</a>
+                        <xsl:text> | </xsl:text>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator;all=all">Author</a>
                      </td>
                   </tr>
                   <tr>
@@ -518,17 +521,6 @@
                      </td>
                   </tr>
                   
-                  <xsl:if test="$browse-title or $browse-creator">
-                     <xsl:variable name="alphaList" select="'A B C D E F G H I J K L M N O P Q R S T U V W Y Z OTHER'"/>
-                     <tr>
-                        <td colspan="3" align="center">
-                           <xsl:call-template name="alphaList">
-                              <xsl:with-param name="alphaList" select="$alphaList"/>
-                           </xsl:call-template>
-                        </td>
-                     </tr>
-                  </xsl:if>
-                  
                </table>
             </div>
             
@@ -538,7 +530,7 @@
                   <div class="results">
                      <table width="100%" cellpadding="5" cellspacing="0" border="1">
                         <tr>
-                           <xsl:if test="not($smode='showBag') and not($browse-title or $browse-creator)">
+                           <xsl:if test="not($smode='showBag')">
                               <td width="25%" valign="top">
                                  <xsl:apply-templates select="facet[@field='facet-subject']"/>
                                  <xsl:apply-templates select="facet[@field='facet-date']"/>
@@ -578,6 +570,122 @@
                   </div>
                </xsl:otherwise>
             </xsl:choose>
+            
+            <!-- footer -->
+            <xsl:copy-of select="$brand.footer"/>
+            
+         </body>
+      </html>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Browse Template                                                        -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template match="crossQueryResult" mode="browse">
+      
+      <html>
+         <head>
+            <title>XTF: Search Results</title>
+            <xsl:copy-of select="$brand.links"/>
+            
+            <!-- If session tracking enabled, load bag tracking scripts -->
+            <script src="script/AsyncLoader.js" type="application/javascript"/>
+            <script src="script/MoreLike.js" type="application/javascript"/>
+            <xsl:if test="session:isEnabled()">
+               <script src="script/BookBag.js" type="application/javascript"/>
+            </xsl:if>
+            
+         </head>
+         <body>
+            
+            <!-- header -->
+            <xsl:copy-of select="$brand.header"/>
+            
+            <!-- result header -->
+            <div class="resultsHeader">
+               <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                     <td align="right" width="10%" valign="top">
+                        <b>Browse by:&#160;</b>
+                     </td>
+                     <td align="left">
+                        <xsl:choose>
+                           <xsl:when test="$browse-title">
+                              Title
+                           </xsl:when>
+                           <xsl:when test="$browse-creator">
+                              Author
+                           </xsl:when>
+                           <xsl:otherwise>
+                              All Items
+                           </xsl:otherwise>
+                        </xsl:choose>
+                     </td>
+                     <td align="right" valign="top">
+                        <a href="{$xtfURL}{$crossqueryPath}">
+                           <xsl:text>New Search</xsl:text>
+                        </a>
+                        <xsl:if test="$smode = 'showBag'">
+                           <xsl:text>&#160;|&#160;</xsl:text>
+                           <a href="{session:getData('queryURL')}">
+                              <xsl:text>Return to Search Results</xsl:text>
+                           </a>
+                        </xsl:if>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td align="right" width="10%">
+                        <b>Results:&#160;</b>
+                     </td>
+                     <td align="left">
+                        <xsl:value-of select="facet/group[docHit]/@totalDocs"/>
+                        <xsl:text> Item(s)</xsl:text>
+                     </td>
+                     <td align="right">
+                        <xsl:text>Browse by </xsl:text>
+                        <xsl:choose>
+                           <xsl:when test="$browse-title">
+                              <xsl:text>Title | </xsl:text>
+                              <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator;all=all">Author</a>
+                           </xsl:when>
+                           <xsl:otherwise>
+                              <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title;all=all">Title</a>
+                              <xsl:text>  | Author</xsl:text>
+                           </xsl:otherwise>
+                        </xsl:choose>
+                     </td>
+                  </tr>
+                  
+                  <xsl:variable name="alphaList" select="'A B C D E F G H I J K L M N O P Q R S T U V W Y Z OTHER'"/>
+                  <tr>
+                     <td colspan="3" align="center">
+                        <xsl:call-template name="alphaList">
+                           <xsl:with-param name="alphaList" select="$alphaList"/>
+                        </xsl:call-template>
+                     </td>
+                  </tr>
+                  
+               </table>
+            </div>
+            
+            <!-- results -->
+            <div class="results">
+               <table width="100%" cellpadding="5" cellspacing="0" border="1">
+                  <tr>
+                     <td valign="top">
+                        <xsl:choose>
+                           <xsl:when test="$browse-title">
+                              <xsl:apply-templates select="facet[@field='browse-title']/group/docHit"/>
+                           </xsl:when>
+                           <xsl:otherwise>
+                              <xsl:apply-templates select="facet[@field='browse-creator']/group/docHit"/>
+                           </xsl:otherwise>
+                        </xsl:choose>
+                     </td>
+                  </tr>
+               </table>
+            </div>
             
             <!-- footer -->
             <xsl:copy-of select="$brand.footer"/>

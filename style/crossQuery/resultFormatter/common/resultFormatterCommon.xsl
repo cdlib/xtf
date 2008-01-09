@@ -805,10 +805,13 @@
       
       <xsl:choose>
          <xsl:when test="lower-case($browse-link) = $browse-value">
-            <xsl:value-of select="upper-case($alpha)"/>
+            <span style="color: red"><xsl:value-of select="upper-case($alpha)"/></span>
+         </xsl:when>
+         <xsl:when test="facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link]">
+            <a href="{$xtfURL}{$crossqueryPath}?browse-{$browse-name}={$browse-link};sort={$browse-name};all=all"><xsl:value-of select="$alpha"/></a>
          </xsl:when>
          <xsl:otherwise>
-            <a href="{$xtfURL}{$crossqueryPath}?browse-{$browse-name}={$browse-link};sort={$browse-name}"><xsl:value-of select="$alpha"/></a>
+            <xsl:value-of select="upper-case($alpha)"/>
          </xsl:otherwise>
       </xsl:choose>
       
@@ -818,6 +821,7 @@
             <xsl:with-param name="alphaList" select="replace($alphaList,'^[A-Z]+ ','')"/>
          </xsl:call-template>
       </xsl:if>
+      
    </xsl:template>
    
    <!-- ====================================================================== -->

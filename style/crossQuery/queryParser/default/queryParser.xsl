@@ -148,6 +148,26 @@
             </xsl:attribute>
          </facet>
          
+         <!-- to support title browse pages -->
+         <xsl:if test="//param[matches(@name,'browse-title')]">
+            <xsl:variable name="browse-title" select="//param[matches(@name,'browse-title')]/@value"/> 
+            <facet field="browse-title" sortGroupsBy="value">
+               <xsl:attribute name="select">
+                  <xsl:value-of select="concat('*|',$browse-title,'#all')"/>
+               </xsl:attribute>
+            </facet>
+         </xsl:if>
+         
+         <!-- to support author browse pages -->
+         <xsl:if test="//param[matches(@name,'browse-creator')]">
+            <xsl:variable name="browse-creator" select="//param[matches(@name,'browse-creator')]/@value"/> 
+            <facet field="browse-creator" sortGroupsBy="value">
+               <xsl:attribute name="select">
+                  <xsl:value-of select="concat('*|',$browse-creator,'#all')"/>
+               </xsl:attribute>
+            </facet>
+         </xsl:if>
+         
          <!-- process query -->
          <xsl:choose>
             <xsl:when test="matches($http.User-Agent,$robots)">
@@ -192,7 +212,7 @@
       
       <!-- Find the meta-data queries, if any -->
       <xsl:variable name="metaParams"
-         select="$queryParams[not(matches(@name,'text*|query*|style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|.*-ignore'))]"/>
+         select="$queryParams[not(matches(@name,'text*|query*|style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|browse-*|.*-ignore'))]"/>
       
       <and>
          <!-- Process the meta-data queries, if any -->
