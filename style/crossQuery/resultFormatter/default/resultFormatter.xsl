@@ -588,14 +588,7 @@
          <head>
             <title>XTF: Search Results</title>
             <xsl:copy-of select="$brand.links"/>
-            
-            <!-- If session tracking enabled, load bag tracking scripts -->
-            <script src="script/AsyncLoader.js" type="application/javascript"/>
-            <script src="script/MoreLike.js" type="application/javascript"/>
-            <xsl:if test="session:isEnabled()">
-               <script src="script/BookBag.js" type="application/javascript"/>
-            </xsl:if>
-            
+            <script src="script/prototype.js" type="application/javascript"/> <!-- AJAX support -->
          </head>
          <body>
             
