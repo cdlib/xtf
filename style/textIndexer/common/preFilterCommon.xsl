@@ -112,8 +112,6 @@
             <xsl:value-of select="$display"/>
          </display>
          
-         <all xtf:meta="true">all</all>
-         
          <!-- Parse the date field to create a year (or range of years) -->
          <xsl:apply-templates select="$meta/*[matches(local-name(),'^date$')]" mode="year"/>
          
