@@ -95,7 +95,7 @@
             <xsl:apply-templates select="crossQueryResult" mode="browse"/>
          </xsl:when>
          <!-- show results -->
-         <xsl:when test="not(crossQueryResult/query//*[@field='all']/term='NADA')">
+         <xsl:when test="crossQueryResult/query/*/*">
             <xsl:apply-templates select="crossQueryResult" mode="results"/>
          </xsl:when>
          <!-- show form -->
@@ -132,7 +132,7 @@
                   <tr>
                      <td align="center">
                         <xsl:text>Browse by </xsl:text>
-                        <a href="{$xtfURL}{$crossqueryPath}?all=all">Facet</a>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-all=yes">Facet</a>
                         <xsl:text> | </xsl:text>
                         <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
                         <xsl:text> | </xsl:text>

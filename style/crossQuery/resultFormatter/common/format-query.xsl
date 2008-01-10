@@ -72,7 +72,7 @@
                </xsl:otherwise>
             </xsl:choose>
             <!-- query removal checkbox -->
-            <xsl:variable name="removeString" select="replace($queryString,'[;&amp;]*keyword=[^;&amp;]+','')"/>
+            <xsl:variable name="removeString" select="replace($queryString,'[;&amp;]*keyword=[^;&amp;]+',';browse-all=yes')"/>
             <a href="{$xtfURL}{$crossqueryPath}?{replace($removeString,'^[;&amp;]+','')}">[X]</a>
          </xsl:when>
          <xsl:otherwise>
@@ -134,7 +134,9 @@
                </xsl:analyze-string>
             </xsl:variable>
             <!-- query removal checkbox -->
-            <a href="{$xtfURL}{$crossqueryPath}?{replace($removeString,'^[;&amp;]+','')}">[X]</a>
+            <xsl:variable name="fixedString" select="replace($removeString,'^[;&amp;]+','')"/>
+            <xsl:variable name="finalString" select="if (string-length($fixedString) = 0) then 'browse-all=yes' else $fixedString"/>
+            <a href="{$xtfURL}{$crossqueryPath}?{$finalString}">[X]</a>
             <br/>
          </xsl:when>
          <xsl:otherwise>
