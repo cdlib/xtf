@@ -1,5 +1,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:xtf="http://cdlib.org/xtf" 
+   xmlns:editURL="http://cdlib.org/xtf/editURL" 
    exclude-result-prefixes="#all" 
    version="2.0">
    
@@ -72,8 +73,7 @@
                </xsl:otherwise>
             </xsl:choose>
             <!-- query removal checkbox -->
-            <xsl:variable name="removeString" select="replace($queryString,'[;&amp;]*keyword=[^;&amp;]+',';browse-all=yes')"/>
-            <a href="{$xtfURL}{$crossqueryPath}?{replace($removeString,'^[;&amp;]+','')}">[X]</a>
+            <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($queryString,'keyword','browse-all=yes')}">[X]</a>
          </xsl:when>
          <xsl:otherwise>
             <xsl:apply-templates select="query" mode="query"/>
