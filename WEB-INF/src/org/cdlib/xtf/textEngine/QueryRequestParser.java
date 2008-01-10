@@ -407,14 +407,16 @@ public class QueryRequestParser
   {
     String name = parent.name();
     if (!name.matches(
-      "^(" + "query|term|all|range|phrase|exact|near" + "|and|or|not|orNear" +
+      "^(" + 
+      "query|term|all|range|phrase|exact|near" + 
+      "|and|or|not|orNear|allDocs" +
       "|moreLike" + // experimental
       "|combine|meta|text)$")) // old stuff, for compatability
      
     {
       error(
-        "Expected: 'query', 'term', 'all', 'range', 'phrase', " +
-        "'exact', 'near', 'orNear', 'and', 'or', 'not', " + "or 'moreLike'; " +
+        "Expected one of: (query term all allDocs range phrase " +
+        "exact near orNear and or not moreLike); " +
         "found '" + name + "'");
     }
 
@@ -496,7 +498,11 @@ public class QueryRequestParser
                             int maxSnippets)
     throws QueryGenException 
   {
-    // Term query is the simplest kind.
+    // All docs query is the simplest kind
+    if (name.equals("allDocs"))
+      return new TermQuery(new Term("docInfo", "1"));
+    
+    // Term query is the next-simplest.
     if (name.equals("term")) {
       Term term = parseTerm(parent, field, "term");
       SpanQuery q = isWildcardTerm(term)
