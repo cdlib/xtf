@@ -1,5 +1,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-   xmlns:session="java:org.cdlib.xtf.xslt.Session" 
+   xmlns:session="java:org.cdlib.xtf.xslt.Session"
+   xmlns:editURL="http://cdlib.org/xtf/editURL"
    extension-element-prefixes="session"
    version="2.0">
    
@@ -62,8 +63,6 @@
    
    <xsl:param name="css.path" select="concat($xtfURL, 'css/default/')"/>
    <xsl:param name="icon.path" select="concat($xtfURL, 'icons/default/')"/>
-   <!-- to support multiple group values per facet -->
-   <xsl:param name="f1-subject"/>
    
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
@@ -936,28 +935,24 @@
    
    <!-- subject facet -->
    <xsl:template match="facet[@field='facet-subject']" exclude-result-prefixes="#all">
-      <xsl:variable name="expandString" select="replace($queryString,'[;&amp;]expand=[^;&amp;]+','')"/>
+      <xsl:variable name="field" select="replace(@field, 'facet-(.*)', '$1')"/>
+      <xsl:variable name="needExpand" select="@totalGroups > count(group)"/>
       <div class="facet">
          <h4>
-            <xsl:choose>
-               <xsl:when test="not($expand='subject')">
-                  <a href="{$xtfURL}{$crossqueryPath}?{$expandString};expand=subject">
-                     <img src="{$icon.path}/i_expand.gif" border="0" alt="expand"/>
-                  </a>
-               </xsl:when>
-               <xsl:otherwise>
-                  <a href="{$xtfURL}{$crossqueryPath}?{$expandString}">
-                     <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
-                  </a>
-               </xsl:otherwise>
-            </xsl:choose>
-            <xsl:text> Subject</xsl:text>
+            <xsl:value-of select="$field"/>
          </h4>
+         <xsl:if test="$expand=$field">
+            <blockquote>
+               <i><a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString,'expand')}">less</a></i>
+            </blockquote>
+         </xsl:if>
          <ul>
             <xsl:apply-templates/>
          </ul>
-         <xsl:if test="not($expand='subject') and (@totalDocs > 10)">
-            <a href="{$xtfURL}{$crossqueryPath}?{$expandString};expand=subject">more</a>
+         <xsl:if test="$needExpand and not($expand=$field)">
+            <blockquote>
+               <i><a href="{$xtfURL}{$crossqueryPath}?{editURL:set($queryString,'expand',$field)}">more</a></i>
+            </blockquote>
          </xsl:if>
       </div>
    </xsl:template>
@@ -1025,47 +1020,22 @@
    <!-- subject group -->
    <xsl:template match="group[parent::facet[@field='facet-subject']]" exclude-result-prefixes="#all">
       
-      <xsl:variable name="nextNum">
-         <xsl:choose>
-            <xsl:when test="//param[matches(@name,'f[0-9]+-subject')]">
-               <xsl:for-each select="//param[matches(@name,'f[0-9]+-subject')]">
-                  <xsl:variable name="num" select="number(replace(@name,'f([0-9]+)-subject','$1')) + 1"/>
-                  <xsl:if test="not(//param[@name=concat('f',$num,'-subject')])">
-                     <xsl:value-of select="$num"/>
-                  </xsl:if>
-               </xsl:for-each>
-            </xsl:when>
-            <xsl:otherwise>
-               <xsl:value-of select="'1'"/>
-            </xsl:otherwise>
-         </xsl:choose>
-      </xsl:variable>
-      <xsl:variable name="name" select="concat('f',$nextNum,'-subject')"/>
+      <xsl:variable name="field" select="replace(parent::facet/@field, 'facet-(.*)', '$1')"/>
+      <xsl:variable name="paramRegex" select="concat('f[0-9]+-',$field)"/>
+      <xsl:variable name="params" select="//param[matches(@name,$paramRegex)]"></xsl:variable>
+      <xsl:variable name="nums" select="$params/number(replace(@name, 'f([0-9]+).*', '$1'))"/>
+      <xsl:variable name="nextNum" select="if (count($nums) > 0) then max(($nums)) + 1 else 1"/>
+      <xsl:variable name="nextName" select="concat('f',$nextNum,'-', $field)"/>
       <xsl:variable name="value" select="@value"/>
       
       <li>
          <xsl:choose>
-            <xsl:when test="//param[matches(@name,'f[0-9]+-subject')]/@value=$value">
-               <xsl:variable name="removeString">
-                  <xsl:analyze-string select="$queryString" regex="f[0-9]+-subject=([^;&amp;]+)">
-                     <xsl:matching-substring>
-                        <xsl:variable name="check" select="regex-group(1)"/>
-                        <xsl:choose>
-                           <xsl:when test="$value=$check"/>
-                           <xsl:otherwise>
-                              <xsl:value-of select="."/>
-                           </xsl:otherwise>
-                        </xsl:choose>  
-                     </xsl:matching-substring>
-                     <xsl:non-matching-substring>
-                        <xsl:value-of select="."/>
-                     </xsl:non-matching-substring>
-                  </xsl:analyze-string>
-               </xsl:variable>
-               <i><xsl:value-of select="$value"/></i> <a href="{$xtfURL}{$crossqueryPath}?{replace($removeString,'^;+|;+$','')}">[X]</a>
+            <xsl:when test="//param[matches(@name,$paramRegex)]/@value=$value">
+               <i><xsl:value-of select="$value"/></i> 
+               <a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString,concat($paramRegex,'=', $value))}">[X]</a>
             </xsl:when>
             <xsl:otherwise>
-               <a href="{$xtfURL}{$crossqueryPath}?{$queryString};{$name}={$value}">
+               <a href="{$xtfURL}{$crossqueryPath}?{$queryString};{$nextName}={$value}">
                   <xsl:value-of select="$value"/>
                </a>
                &#160;(<xsl:value-of select="@totalDocs"/>)
