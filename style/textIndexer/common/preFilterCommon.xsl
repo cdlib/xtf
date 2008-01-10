@@ -164,7 +164,7 @@
    <xsl:template match="*[matches(local-name(),'^date$')]" mode="facet">
       <facet-date>
          <xsl:attribute name="xtf:meta" select="'true'"/>
-         <xsl:attribute name="xtf:tokenize" select="'no'"/>
+         <xsl:attribute name="xtf:facet" select="'yes'"/>
          <xsl:choose>
             <xsl:when test="matches(.,'[0-9]{2}-[0-9]{2}-[0-9]{4}')">
                <xsl:value-of select="replace(.,'([0-9]{2})-([0-9]{2})-([0-9]{4})','$3::$1::$2')"/>
@@ -183,7 +183,7 @@
    <xsl:template match="*[matches(local-name(),'^subject$')]" mode="facet">
       <facet-subject>
          <xsl:attribute name="xtf:meta" select="'true'"/>
-         <xsl:attribute name="xtf:tokenize" select="'no'"/>
+         <xsl:attribute name="xtf:facet" select="'yes'"/>
          <xsl:value-of select="string(.)"/>
       </facet-subject>
    </xsl:template>
