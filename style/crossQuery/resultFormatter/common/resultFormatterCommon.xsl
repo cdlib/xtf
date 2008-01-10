@@ -1,6 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
    xmlns:xs="http://www.w3.org/2001/XMLSchema"
    xmlns:xtf="http://cdlib.org/xtf" 
+   xmlns:editURL="http://cdlib.org/xtf/editURL"
    exclude-result-prefixes="#all"
    version="2.0">
    
@@ -292,6 +293,49 @@
    <xsl:param name="http.User-Agent"/>
    <!-- WARNING: Inclusion of 'Wget' is for testing only, please remove before going into production -->
    <xsl:param name="robots" select="'Googlebot|Slurp|msnbot|Teoma|Wget'"></xsl:param>
+   
+   <!-- ====================================================================== -->
+   <!-- Utility functions for handy editing of URLs                           -->
+   <!-- ====================================================================== -->
+   
+   <xsl:function name="editURL:set">
+      <xsl:param name="url"/>
+      <xsl:param name="param"/>
+      <xsl:param name="value"/>
+      
+      <xsl:variable name="regex" select="concat('(^|;)', $param, '[^;]*(;|$)')"/>
+      <xsl:variable name="newParam" select="if(contains($value, '=')) then $value else concat($param, '=', $value)"/>
+      <xsl:choose>
+         <xsl:when test="matches($url, $regex)">
+            <xsl:value-of select="editURL:clean(replace($url, $regex, concat(';', $newParam, ';')))"/>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="editURL:clean(concat($url, ';', $newParam))"/>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:function>
+   
+   <xsl:function name="editURL:remove">
+      <xsl:param name="url"/>
+      <xsl:param name="param"/>
+      
+      <xsl:variable name="regex" select="concat('(^|;)', $param, '[^;]*(;|$)')"/>
+      <xsl:value-of select="editURL:clean(replace($url, $regex, ';'))"/>
+   </xsl:function>
+   
+   <xsl:function name="editURL:clean">
+      <xsl:param name="v0"/>
+      <!-- Change old ampersands to new easy-to-read semicolons -->
+      <xsl:variable name="v1" select="replace($v0, '&amp;', ';')"/>
+      <!-- Get rid of empty parameters -->
+      <xsl:variable name="v2" select="replace($v1, '[^;=]+=;', '')"/>
+      <!-- Replace ";;" with ";" -->
+      <xsl:variable name="v3" select="replace($v2, ';;+', ';')"/>
+      <!-- Get rid of leading and trailing ';' -->
+      <xsl:variable name="v4" select="replace($v3, '^;|;$', '')"/>
+      <!-- All done. -->
+      <xsl:value-of select="$v4"/>
+   </xsl:function>
    
    <!-- ====================================================================== -->
    <!-- Result Paging                                                          -->
