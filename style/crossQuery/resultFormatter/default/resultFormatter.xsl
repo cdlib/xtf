@@ -1062,7 +1062,7 @@
                      </xsl:non-matching-substring>
                   </xsl:analyze-string>
                </xsl:variable>
-               <i><xsl:value-of select="$value"/></i> <a href="{$xtfURL}{$crossqueryPath}?{replace($removeString,'^[;&amp;]+','')}">[X]</a>
+               <i><xsl:value-of select="$value"/></i> <a href="{$xtfURL}{$crossqueryPath}?{replace($removeString,'^;+|;+$','')}">[X]</a>
             </xsl:when>
             <xsl:otherwise>
                <a href="{$xtfURL}{$crossqueryPath}?{$queryString};{$name}={$value}">

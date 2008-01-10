@@ -122,7 +122,11 @@
                   <xsl:matching-substring>
                      <xsl:variable name="param" select="regex-group(1)"/>
                      <xsl:choose>
+                        <!-- things to remove -->
                         <xsl:when test="matches($param,$field)"/>
+                        <xsl:when test="matches($param,'sectionType') and matches($field,'text|query')"/>
+                        <xsl:when test="matches($param,'expand')"/>
+                        <!-- keep everything else -->
                         <xsl:otherwise>
                            <xsl:value-of select="."/>
                         </xsl:otherwise>
@@ -133,10 +137,9 @@
                   </xsl:non-matching-substring>
                </xsl:analyze-string>
             </xsl:variable>
-            <!-- query removal checkbox -->
-            <xsl:variable name="fixedString" select="replace($removeString,'^[;&amp;]+','')"/>
-            <xsl:variable name="finalString" select="if (string-length($fixedString) = 0) then 'browse-all=yes' else $fixedString"/>
-            <a href="{$xtfURL}{$crossqueryPath}?{$finalString}">[X]</a>
+            <!-- if only facets remain (or nothing remains), add "browse-all=yes" to the query -->
+            <xsl:variable name="finalString" select="if (matches($removeString, '^(;?f[0-9]+-[^;]+;?)*$')) then concat('browse-all=yes;', $removeString) else $removeString"/>
+            <a href="{$xtfURL}{$crossqueryPath}?{replace(replace($finalString,';;',';'),'^;+|;+$','')}">[X]</a>
             <br/>
          </xsl:when>
          <xsl:otherwise>
