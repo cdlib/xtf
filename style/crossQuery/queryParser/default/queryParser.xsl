@@ -60,7 +60,9 @@
    <!-- Local Parameters                                                       -->
    <!-- ====================================================================== -->
    
-   <xsl:param name="fieldList" select="'text title creator subject description publisher contributor date type format identifier source language relation coverage rights year '"/>
+   <!-- list of fields to search in 'keyword' search -->
+   <xsl:param name="fieldList" select="'text title creator subject description publisher contributor '"/>
+   
    <!-- special hierarchical facet -->
    <xsl:param name="f1-date"/>
    
@@ -108,46 +110,14 @@
             <xsl:attribute name="explainScores" select="$explainScores"/>
          </xsl:if>
          
-         <!-- flat subject facet -->
-         <facet field="facet-subject">
-            <xsl:attribute name="sortGroupsBy">
-               <xsl:choose>
-                  <xsl:when test="$expand='subject'">
-                     <xsl:value-of select="'value'"/>
-                  </xsl:when>
-                  <xsl:otherwise>
-                     <xsl:value-of select="'totalDocs'"/>
-                  </xsl:otherwise>
-               </xsl:choose>
-            </xsl:attribute>
-            <xsl:attribute name="select">
-               <xsl:choose>
-                  <xsl:when test="$expand='subject'">
-                     <xsl:value-of select="'*'"/>
-                  </xsl:when>
-                  <xsl:otherwise>
-                     <xsl:value-of select="'*[1-10]'"/>
-                  </xsl:otherwise>
-               </xsl:choose>
-            </xsl:attribute>
-         </facet>
+         <!-- flat subject facet, normally shows first 10 but user can 'expand' -->
+         <facet field="facet-subject"
+            select="{if ($expand='subject') then '*' else '*[1-10]'}"
+            sortGroupsBy="{if ($expand='subject') then 'value' else 'totalDocs'}"/>
          
-         <!-- hierarchical date facet -->
-         <facet field="facet-date" sortGroupsBy="value">
-            <xsl:attribute name="select">
-               <xsl:choose>
-                  <xsl:when test="matches($f1-date,'[0-9]+::[0-9]+::[0-9]+')">
-                     <xsl:attribute name="select" select="$f1-date"/>
-                  </xsl:when>
-                  <xsl:when test="$f1-date">
-                     <xsl:attribute name="select" select="concat($f1-date,'::*')"/>
-                  </xsl:when>
-                  <xsl:otherwise>
-                     <xsl:attribute name="select" select="'*'"/>       
-                  </xsl:otherwise>
-               </xsl:choose>
-            </xsl:attribute>
-         </facet>
+         <!-- hierarchical date facet, allows user to drill down -->
+         <facet field="facet-date" sortGroupsBy="value"
+            select="{if ($f1-date) then concat($f1-date, '|', $f1-date, '::*') else '*'}"/>
          
          <!-- to support title browse pages -->
          <xsl:if test="//param[matches(@name,'browse-title')]">
@@ -201,49 +171,23 @@
    
    <xsl:template match="parameters">
       
-      <!-- Scan for non-empty parameters (but skip "-exclude", "-join", "-prox", "-max", and "-ignore") -->
-      <xsl:variable name="queryParams" select="param[count(*) &gt; 0 and not(matches(@name, '.*-exclude')) 
-         and not(matches(@name, '.*-join')) 
-         and not(matches(@name, '.*-prox')) 
-         and not(matches(@name, '.*-max')) 
-         and not(matches(@name, '.*-ignore'))]"/>
-      
-      <!-- Find the full-text query, if any -->
-      <xsl:variable name="textParam" select="$queryParams[matches(@name, 'text|query')]"/>
-      
-      <!-- Find the meta-data queries, if any -->
-      <xsl:variable name="metaParams"
-         select="$queryParams[not(matches(@name,'text*|query*|style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|browse-*|.*-ignore'))]"/>
+      <!-- Find the meta-data and full-text queries, if any -->
+      <xsl:variable name="queryParams"
+         select="param[not(matches(@name,'style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|browse-*|.*-exclude|.*-join|.*-prox|.*-ignore'))]"/>
       
       <and>
-         <!-- Process the meta-data queries, if any -->
-         <xsl:if test="count($metaParams) &gt; 0">
-            <xsl:apply-templates select="$metaParams"/>
-         </xsl:if>       
-         <!-- Process the text query, if any -->
-         <xsl:if test="count($textParam) &gt; 0">
-            <xsl:apply-templates select="$textParam"/>
-         </xsl:if>
+         <!-- Process the meta-data and text queries, if any -->
+         <xsl:apply-templates select="$queryParams"/>
+
          <!-- Process special facet query params -->
          <xsl:for-each select="//param[matches(@name,'f[0-9]+-.+')]">
-            <xsl:variable name="field" select="replace(@name,'f[0-9]+-','facet-')"/>
-            <xsl:variable name="value">
-               <xsl:choose>
-                  <!-- this hierarchical facet gets special behavior -->
-                  <xsl:when test="matches(@name,'-date$')">
-                     <xsl:value-of select="concat(@value,'*')"/>
-                  </xsl:when>
-                  <xsl:otherwise>
-                     <xsl:value-of select="@value"/>
-                  </xsl:otherwise>
-               </xsl:choose>
-            </xsl:variable>
-            <and field="{$field}">
+            <and field="{replace(@name,'f[0-9]+-','facet-')}">
                <term maxSnippets="0">
-                  <xsl:value-of select="$value"/>
+                  <xsl:value-of select="@value"/>
                </term>
             </and>
          </xsl:for-each>
+         
          <!-- Unary Not -->
          <xsl:for-each select="param[contains(@name, '-exclude')]">
             <xsl:variable name="field" select="replace(@name, '-exclude', '')"/>
@@ -252,17 +196,13 @@
                   <xsl:apply-templates/>
                </not>
             </xsl:if>
-         </xsl:for-each>  
-         <xsl:choose>
-            <!-- to enable you to see browse results -->
-            <xsl:when test="//param[matches(@name,'browse-')]">
-               <and field="all"><term>all</term></and>
-            </xsl:when>
-            <!-- If there are no meta, text queries, or unary nots, output a dummy -->
-            <xsl:when test="count($metaParams) = 0 and count($textParam) = 0 and not(param[matches(@name, '.*-exclude')])">
-               <and field="all"><term>NADA</term></and>
-            </xsl:when>
-         </xsl:choose>
+         </xsl:for-each>
+      
+         <!-- to enable you to see browse results -->
+         <xsl:if test="param[matches(@name, 'browse-')]">
+            <and field="all"><term>all</term></and>
+         </xsl:if>
+
       </and>
       
    </xsl:template>
