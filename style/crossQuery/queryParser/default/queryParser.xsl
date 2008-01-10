@@ -180,13 +180,15 @@
          <xsl:apply-templates select="$queryParams"/>
 
          <!-- Process special facet query params -->
-         <xsl:for-each select="//param[matches(@name,'f[0-9]+-.+')]">
-            <and field="{replace(@name,'f[0-9]+-','facet-')}">
-               <term maxSnippets="0">
-                  <xsl:value-of select="@value"/>
-               </term>
+         <xsl:if test="//param[matches(@name,'f[0-9]+-.+')]">
+            <and maxSnippets="0">
+               <xsl:for-each select="//param[matches(@name,'f[0-9]+-.+')]">
+                  <term field="{replace(@name,'f[0-9]+-','facet-')}">
+                     <xsl:value-of select="@value"/>
+                  </term>
+               </xsl:for-each>
             </and>
-         </xsl:for-each>
+         </xsl:if>
          
          <!-- Unary Not -->
          <xsl:for-each select="param[contains(@name, '-exclude')]">
@@ -200,7 +202,7 @@
       
          <!-- to enable you to see browse results -->
          <xsl:if test="param[matches(@name, 'browse-')]">
-            <and field="all"><term>all</term></and>
+            <allDocs/>
          </xsl:if>
 
       </and>
