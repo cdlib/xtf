@@ -808,7 +808,7 @@
             <span style="color: red"><xsl:value-of select="upper-case($alpha)"/></span>
          </xsl:when>
          <xsl:when test="facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link]">
-            <a href="{$xtfURL}{$crossqueryPath}?browse-{$browse-name}={$browse-link};sort={$browse-name};all=all"><xsl:value-of select="$alpha"/></a>
+            <a href="{$xtfURL}{$crossqueryPath}?browse-{$browse-name}={$browse-link};sort={$browse-name}"><xsl:value-of select="$alpha"/></a>
          </xsl:when>
          <xsl:otherwise>
             <xsl:value-of select="upper-case($alpha)"/>

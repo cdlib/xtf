@@ -95,27 +95,7 @@
             <xsl:apply-templates select="crossQueryResult" mode="browse"/>
          </xsl:when>
          <!-- show results -->
-         <xsl:when test="
-            $text or 
-            $keyword or 
-            $title or 
-            $creator or 
-            $subject or 
-            $description or 
-            $publisher or 
-            $contributor or 
-            $date or 
-            $type or 
-            $format or 
-            $identifier or 
-            $source or 
-            $language or 
-            $relation or 
-            $coverage or 
-            $rights or 
-            $year or
-            $all or
-            $smode ='showBag'">
+         <xsl:when test="not(crossQueryResult/query//*[@field='all']/term='NADA')">
             <xsl:apply-templates select="crossQueryResult" mode="results"/>
          </xsl:when>
          <!-- show form -->
@@ -154,9 +134,9 @@
                         <xsl:text>Browse by </xsl:text>
                         <a href="{$xtfURL}{$crossqueryPath}?all=all">Facet</a>
                         <xsl:text> | </xsl:text>
-                        <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title;all=all">Title</a>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
                         <xsl:text> | </xsl:text>
-                        <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator;all=all">Author</a>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
                      </td>
                   </tr>
                </table>
@@ -181,7 +161,6 @@
                <td/>
                <td/>
                <td>
-                  <input type="hidden" name="all" value="all"/>
                   <input type="submit" value="Search"/>
                   <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
                </td>
@@ -391,7 +370,6 @@
                <td/>
                <td/>
                <td>
-                  <input type="hidden" name="all" value="all"/>
                   <input type="submit" value="Search"/>
                   <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
                </td>
@@ -497,9 +475,9 @@
                      </td>
                      <td align="right">
                         <xsl:text>Browse by </xsl:text>
-                        <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title;all=all">Title</a>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
                         <xsl:text> | </xsl:text>
-                        <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator;all=all">Author</a>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
                      </td>
                   </tr>
                   <tr>
@@ -639,10 +617,10 @@
                         <xsl:choose>
                            <xsl:when test="$browse-title">
                               <xsl:text>Title | </xsl:text>
-                              <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator;all=all">Author</a>
+                              <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
                            </xsl:when>
                            <xsl:otherwise>
-                              <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title;all=all">Title</a>
+                              <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
                               <xsl:text>  | Author</xsl:text>
                            </xsl:otherwise>
                         </xsl:choose>
