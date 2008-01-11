@@ -848,7 +848,7 @@
       </xsl:variable>
       
       <xsl:choose>
-         <xsl:when test="lower-case($browse-link) = $browse-value">
+         <xsl:when test="facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link and count(docHit) > 0]">
             <span style="color: red"><xsl:value-of select="upper-case($alpha)"/></span>
          </xsl:when>
          <xsl:when test="facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link]">

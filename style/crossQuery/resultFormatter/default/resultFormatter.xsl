@@ -133,9 +133,9 @@
                         <xsl:text>Browse by </xsl:text>
                         <a href="{$xtfURL}{$crossqueryPath}?browse-all=yes">Facet</a>
                         <xsl:text> | </xsl:text>
-                        <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-title=first;sort=title">Title</a>
                         <xsl:text> | </xsl:text>
-                        <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-creator=first;sort=creator">Author</a>
                      </td>
                   </tr>
                </table>
@@ -457,9 +457,9 @@
                      </td>
                      <td align="right">
                         <xsl:text>Browse by </xsl:text>
-                        <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-title=first;sort=title">Title</a>
                         <xsl:text> | </xsl:text>
-                        <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
+                        <a href="{$xtfURL}{$crossqueryPath}?browse-creator=first;sort=creator">Author</a>
                      </td>
                   </tr>
                   <tr>
@@ -599,10 +599,10 @@
                         <xsl:choose>
                            <xsl:when test="$browse-title">
                               <xsl:text>Title | </xsl:text>
-                              <a href="{$xtfURL}{$crossqueryPath}?browse-creator=aa;sort=creator">Author</a>
+                              <a href="{$xtfURL}{$crossqueryPath}?browse-creator=first;sort=creator">Author</a>
                            </xsl:when>
                            <xsl:otherwise>
-                              <a href="{$xtfURL}{$crossqueryPath}?browse-title=aa;sort=title">Title</a>
+                              <a href="{$xtfURL}{$crossqueryPath}?browse-title=first;sort=title">Title</a>
                               <xsl:text>  | Author</xsl:text>
                            </xsl:otherwise>
                         </xsl:choose>
