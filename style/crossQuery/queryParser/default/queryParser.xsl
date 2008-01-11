@@ -116,8 +116,16 @@
             sortGroupsBy="{if ($expand='subject') then 'value' else 'totalDocs'}"/>
          
          <!-- hierarchical date facet, allows user to drill down -->
-         <facet field="facet-date" sortGroupsBy="value"
-            select="{if ($f1-date) then concat($f1-date, '|', $f1-date, '::*') else '*'}"/>
+         <facet field="facet-date" sortGroupsBy="value">
+            <xsl:attribute name="select">
+               <xsl:text>*</xsl:text> <!-- always select top level -->
+               <xsl:if test="//param[matches(@name, 'f[0-9]+-date')]">
+                  <xsl:for-each select="//param[matches(@name, 'f[0-9]+-date')]">
+                     <xsl:value-of select="concat('|', @value, '|', @value, '::*')"/>
+                  </xsl:for-each>
+               </xsl:if>
+            </xsl:attribute>
+         </facet>
          
          <!-- to support title browse pages -->
          <xsl:if test="//param[matches(@name,'browse-title')]">
@@ -189,7 +197,7 @@
                </xsl:for-each>
             </and>
          </xsl:if>
-         
+        
          <!-- Unary Not -->
          <xsl:for-each select="param[contains(@name, '-exclude')]">
             <xsl:variable name="field" select="replace(@name, '-exclude', '')"/>
