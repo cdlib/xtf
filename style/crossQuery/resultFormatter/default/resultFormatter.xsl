@@ -983,7 +983,7 @@
       </xsl:variable>
       
       <!-- Pick an unused number for the next parameter -->
-      <xsl:variable name="nextName" select="editURL:nextFacetParam($queryString, $field)"/>
+      <xsl:variable name="nextName" select="editURL:nextFacetParam($clearedString, $field)"/>
       
       <li>
          <!-- expand/collapse button -->
