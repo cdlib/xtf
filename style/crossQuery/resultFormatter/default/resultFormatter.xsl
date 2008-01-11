@@ -956,13 +956,16 @@
    <xsl:template match="group[parent::group or @totalSubGroups > 0]" exclude-result-prefixes="#all">
       <xsl:variable name="field" select="replace(ancestor::facet/@field, 'facet-(.*)', '$1')"/>
       
-      <!-- The full hierarchical value of this group, including its ancestor groups if any -->
-      <xsl:variable name="fullValue">
-         <xsl:for-each select="ancestor::group/@value">
+      <!-- Value of the parent of this group (if any) -->
+      <xsl:variable name="parentValue">
+         <xsl:for-each select="parent::*/ancestor::group/@value">
             <xsl:value-of select="concat(.,'::')"/>
          </xsl:for-each>
-         <xsl:value-of select="@value"/>
+         <xsl:value-of select="parent::group/@value"/>
       </xsl:variable>
+      
+      <!-- The full hierarchical value of this group, including its ancestor groups if any -->
+      <xsl:variable name="fullValue" select="if ($parentValue != '') then concat($parentValue,'::',@value) else @value"/>
       
       <!-- Make a query string with this value's parameter (and ancestors and children) are cleared -->
       <xsl:variable name="clearedString">
@@ -1005,7 +1008,7 @@
                
                <!-- mid-level open node: collapse button will select the parent level -->
                <xsl:otherwise>
-                  <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, replace($fullValue, '::[^:]+$', ''))}">
+                  <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $parentValue)}">
                      <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
                   </a>
                </xsl:otherwise>
@@ -1016,7 +1019,7 @@
          <xsl:choose>
             <xsl:when test="//param[matches(@name,concat('f[0-9]+-',$field))]/@value=$fullValue">
                <i><xsl:value-of select="@value"/></i> 
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($clearedString)}">[X]</a>
+               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $parentValue)}">[X]</a>
             </xsl:when>
             <xsl:otherwise>
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $fullValue)}">
