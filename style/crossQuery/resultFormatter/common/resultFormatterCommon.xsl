@@ -260,25 +260,13 @@
    <!-- grab url -->
    <xsl:param name="http.URL"/>
    <!-- extract query string and clean it up -->
-   <xsl:param name="queryString">
-      <xsl:value-of select="replace(replace(replace(replace(replace(replace(replace(replace(replace(replace($http.URL, '.+search\?|.+oai\?', ''), 
-         '[0-9A-Za-z\-]+=&amp;', '&amp;'), 
-         '&amp;[0-9A-Za-z\-]+=$', '&amp;'), 
-         '&amp;startDoc=[0-9]+', ''),
-         '[0-9A-Za-z\-]+=;', ';'), 
-         ';[0-9A-Za-z\-]+=$', ';'), 
-         ';startDoc=[0-9]+', ''),
-         '[;&amp;]+', ';'),
-         '^[;&amp;]', ''),
-         '[;&amp;]$', '')"/>
-   </xsl:param> 
+   <xsl:param name="queryString" select="editURL:remove(replace($http.URL, '.+search\?|.+oai\?', ''),'startDoc')"/> 
    
    <!-- Hidden Query String -->
    <xsl:template name="hidden.query">
       <xsl:param name="queryString"/>
-      <xsl:variable name="cleanString" select="replace($queryString,'&amp;',';')"/>
-      <xsl:variable name ="before" select="if(contains($cleanString, ';')) then substring-before($cleanString, ';') else $cleanString"/>
-      <xsl:variable name ="after" select="substring-after($cleanString, ';')"/>
+      <xsl:variable name ="before" select="if(contains($queryString, ';')) then substring-before($queryString, ';') else $queryString"/>
+      <xsl:variable name ="after" select="substring-after($queryString, ';')"/>
       <xsl:variable name="name" select="substring-before($before, '=')"/>
       <xsl:variable name="value" select="replace(substring-after($before, '='), '\+', ' ')"/>
       <input type="hidden" name="{$name}" value="{$value}"/>
@@ -304,13 +292,12 @@
       <xsl:param name="value"/>
       
       <xsl:variable name="regex" select="concat('(^|;)', $param, '[^;]*(;|$)')"/>
-      <xsl:variable name="newParam" select="if(contains($value, '=')) then $value else concat($param, '=', $value)"/>
       <xsl:choose>
          <xsl:when test="matches($url, $regex)">
-            <xsl:value-of select="editURL:clean(replace($url, $regex, concat(';', $newParam, ';')))"/>
+            <xsl:value-of select="editURL:clean(replace($url, $regex, concat(';', $param, '=', $value, ';')))"/>
          </xsl:when>
          <xsl:otherwise>
-            <xsl:value-of select="editURL:clean(concat($url, ';', $newParam))"/>
+            <xsl:value-of select="editURL:clean(concat($url, ';', $param, '=', $value))"/>
          </xsl:otherwise>
       </xsl:choose>
    </xsl:function>
@@ -328,7 +315,7 @@
       <!-- Change old ampersands to new easy-to-read semicolons -->
       <xsl:variable name="v1" select="replace($v0, '&amp;', ';')"/>
       <!-- Get rid of empty parameters -->
-      <xsl:variable name="v2" select="replace($v1, '[^;=]+=;', '')"/>
+      <xsl:variable name="v2" select="replace($v1, '[^;=]+=(;|$)', '')"/>
       <!-- Replace ";;" with ";" -->
       <xsl:variable name="v3" select="replace($v2, ';;+', ';')"/>
       <!-- Get rid of leading and trailing ';' -->
@@ -416,7 +403,7 @@
       </xsl:variable>
       
       <xsl:variable name="pageQueryString">
-         <xsl:value-of select="replace(replace($queryString, '[;&amp;]startDoc=[0-9]+', ''),'[;&amp;]$','')"/>
+         <xsl:value-of select="editURL:remove($queryString, 'startDoc')"/>
       </xsl:variable>   
       
       <xsl:if test="$nPages &gt; 2">
@@ -515,7 +502,7 @@
       <xsl:param name="block"/>    
       <xsl:param name="identifier"/>
       <xsl:variable name="string" select="normalize-space(string($block))"/>
-      <xsl:variable name="hideString" select="replace($queryString, 'rmode=[A-Za-z0-9]*', '')"/>
+      <xsl:variable name="hideString" select="editURL:remove($queryString, 'rmode')"/>
       
       <xsl:choose>
          <xsl:when test="(contains($rmode, 'showDescrip')) and (matches($string , '.{500}'))">
@@ -536,7 +523,7 @@
       
       <xsl:param name="identifier"/>
       <xsl:variable name="string" select="normalize-space(string(.))"/>   
-      <xsl:variable name="moreString" select="replace($queryString, 'rmode=[A-Za-z0-9]*', '')"/>
+      <xsl:variable name="moreString" select="editURL:remove($queryString, 'rmode')"/>
       
       <xsl:choose>
          <xsl:when test="matches($string , '.{300}')">

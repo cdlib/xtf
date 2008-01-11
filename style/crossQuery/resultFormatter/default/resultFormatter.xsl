@@ -384,24 +384,7 @@
    <xsl:template match="crossQueryResult" mode="results" exclude-result-prefixes="#all">
       
       <!-- modify query URL -->
-      <xsl:variable name="modifyString">
-         <xsl:choose>
-            <xsl:when test="contains($queryString, 'smode')">
-               <xsl:analyze-string select="$queryString" regex=".*(smode=[A-Za-z0-9]+).*">
-                  <xsl:matching-substring>
-                     <xsl:value-of select="regex-group(1)"/>
-                     <xsl:value-of select="'-modify'"/>
-                  </xsl:matching-substring>
-                  <xsl:non-matching-substring>
-                     <xsl:value-of select="."/>
-                  </xsl:non-matching-substring>
-               </xsl:analyze-string>
-            </xsl:when>
-            <xsl:otherwise>
-               <xsl:value-of select="concat($queryString, ';smode=simple-modify')"/>
-            </xsl:otherwise>
-         </xsl:choose>
-      </xsl:variable>
+      <xsl:variable name="modifyString" select="editURL:set($queryString, 'smode', 'simple-modify')"/>
       
       <html>
          <head>
@@ -487,7 +470,7 @@
                         <form method="get" action="{$xtfURL}{$crossqueryPath}">
                            <xsl:call-template name="sort.options"/>
                            <xsl:call-template name="hidden.query">
-                              <xsl:with-param name="queryString" select="replace($queryString, 'sort=[^;]+;', '')"/>
+                              <xsl:with-param name="queryString" select="editURL:remove($queryString, 'sort')"/>
                            </xsl:call-template>
                            <input type="submit" value="Go!"/>
                         </form>
@@ -1035,7 +1018,7 @@
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString,concat($paramRegex,'=', $value))}">[X]</a>
             </xsl:when>
             <xsl:otherwise>
-               <a href="{$xtfURL}{$crossqueryPath}?{$queryString};{$nextName}={$value}">
+               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($queryString, $nextName, $value)}">
                   <xsl:value-of select="$value"/>
                </a>
                &#160;(<xsl:value-of select="@totalDocs"/>)

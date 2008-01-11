@@ -73,7 +73,7 @@
                </xsl:otherwise>
             </xsl:choose>
             <!-- query removal checkbox -->
-            <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($queryString,'keyword','browse-all=yes')}">[X]</a>
+            <a href="{$xtfURL}{$crossqueryPath}?{editURL:set(editURL:remove($queryString,'keyword'),'browse-all','yes')}">[X]</a>
          </xsl:when>
          <xsl:otherwise>
             <xsl:apply-templates select="query" mode="query"/>
@@ -118,7 +118,7 @@
                </xsl:for-each>
             </xsl:variable>
             <xsl:variable name="removeString">
-               <xsl:analyze-string select="$queryString" regex="[;&amp;]*([^;&amp;]+)=[^;&amp;']+">
+               <xsl:analyze-string select="$queryString" regex="([^=;]+)=[^;]+">
                   <xsl:matching-substring>
                      <xsl:variable name="param" select="regex-group(1)"/>
                      <xsl:choose>
@@ -138,8 +138,8 @@
                </xsl:analyze-string>
             </xsl:variable>
             <!-- if only facets remain (or nothing remains), add "browse-all=yes" to the query -->
-            <xsl:variable name="finalString" select="if (matches($removeString, '^(;?f[0-9]+-[^;]+;?)*$')) then concat('browse-all=yes;', $removeString) else $removeString"/>
-            <a href="{$xtfURL}{$crossqueryPath}?{replace(replace($finalString,';;',';'),'^;+|;+$','')}">[X]</a>
+            <xsl:variable name="finalString" select="if (matches(editURL:clean($removeString), '^(f[0-9]+-[^;]+;?)*$')) then concat('browse-all=yes;', $removeString) else $removeString"/>
+            <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($finalString)}">[X]</a>
             <br/>
          </xsl:when>
          <xsl:otherwise>
