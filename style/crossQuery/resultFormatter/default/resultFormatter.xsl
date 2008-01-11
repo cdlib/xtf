@@ -903,26 +903,16 @@
    </xsl:template>
    
    <!-- ====================================================================== -->
-   <!-- Facet and Groups                                                       -->
+   <!-- Facet and their Groups                                                 -->
    <!-- ====================================================================== -->
    
-   <!-- hierarchical date facet -->
-   <xsl:template match="facet[@field='facet-date']" exclude-result-prefixes="#all">
-      <div class="facet">
-         <h4>Date</h4>
-         <ul>
-            <xsl:apply-templates/>
-         </ul>
-      </div>
-   </xsl:template>
-   
-   <!-- subject facet -->
-   <xsl:template match="facet[@field='facet-subject']" exclude-result-prefixes="#all">
+   <!-- Facet -->
+   <xsl:template match="facet[matches(@field,'^facet-')]" exclude-result-prefixes="#all">
       <xsl:variable name="field" select="replace(@field, 'facet-(.*)', '$1')"/>
       <xsl:variable name="needExpand" select="@totalGroups > count(group)"/>
       <div class="facet">
          <h4>
-            <xsl:value-of select="$field"/>
+            <xsl:value-of select="concat(upper-case(substring($field, 1, 1)), substring($field, 2))"/>
          </h4>
          <xsl:if test="$expand=$field">
             <blockquote>
@@ -940,82 +930,17 @@
       </div>
    </xsl:template>
    
-   <!-- hierarchical date group -->
-   <xsl:template match="group[ancestor::facet[@field='facet-date']]" exclude-result-prefixes="#all">
+   <!-- Plain (non-hierarchical) group of a facet -->
+   <xsl:template match="group[not(parent::group) and @totalSubGroups = 0]" exclude-result-prefixes="#all">
+      <xsl:variable name="field" select="replace(ancestor::facet/@field, 'facet-(.*)', '$1')"/>
       <xsl:variable name="value" select="@value"/>
-      <xsl:variable name="facetString" select="replace($queryString,'[;&amp;]f1-date=[^;&amp;]+','')"/>
-      <xsl:variable name="hierarchy">
-         <xsl:for-each select="ancestor::group/@value">
-            <xsl:value-of select="concat(.,'::')"/>
-         </xsl:for-each>
-      </xsl:variable>
-      <xsl:variable name="groupURL">
-         <xsl:value-of select="concat($xtfURL,$crossqueryPath,'?',$facetString,';f1-date=',$hierarchy,$value)"/>
-      </xsl:variable> 
-      <xsl:variable name="upURL">
-         <xsl:value-of select="concat($xtfURL,$crossqueryPath,'?',$facetString,';f1-date=',replace($hierarchy,'::$',''))"/>
-      </xsl:variable> 
-      
+      <xsl:variable name="nextName" select="editURL:nextFacetParam($queryString, $field)"/>
       <li>
+         <!-- Display the group name, with '[X]' box if it is selected. -->
          <xsl:choose>
-            <!-- terminal node with siblings -->
-            <xsl:when test="@totalSubGroups = 0 and (preceding-sibling::group or following-sibling::group)">
-               <a href="{$groupURL}">
-                  <xsl:value-of select="@value"/>
-               </a>
-               &#160;(<xsl:value-of select="@totalDocs"/>)
-            </xsl:when>
-            <!-- single terminal node -->
-            <xsl:when test="(@totalSubGroups = 0)">
-               <a href="{replace($upURL,'::[^:]+$','')}">
-                  <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
-               </a>
-               <i><xsl:value-of select="@value"/></i>
-            </xsl:when>
-            <!-- open node -->
-            <xsl:when test="group">
-               <a href="{$upURL}">
-                  <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
-               </a>
-               <xsl:value-of select="@value"/>
-               &#160;(<xsl:value-of select="@totalDocs"/>)
-               <xsl:if test="group">
-                  <ul>
-                     <xsl:apply-templates/>
-                  </ul>
-               </xsl:if>
-            </xsl:when>
-            <!-- closed node -->
-            <xsl:otherwise>
-               <a href="{$groupURL}">
-                  <img src="{$icon.path}/i_expand.gif" border="0" alt="expand"/>
-               </a>
-               <a href="{$groupURL}">
-                  <xsl:value-of select="@value"/>
-               </a>
-               &#160;(<xsl:value-of select="@totalDocs"/>)
-            </xsl:otherwise>
-         </xsl:choose>
-      </li>
-      
-   </xsl:template>
-   
-   <!-- subject group -->
-   <xsl:template match="group[parent::facet[@field='facet-subject']]" exclude-result-prefixes="#all">
-      
-      <xsl:variable name="field" select="replace(parent::facet/@field, 'facet-(.*)', '$1')"/>
-      <xsl:variable name="paramRegex" select="concat('f[0-9]+-',$field)"/>
-      <xsl:variable name="params" select="//param[matches(@name,$paramRegex)]"></xsl:variable>
-      <xsl:variable name="nums" select="$params/number(replace(@name, 'f([0-9]+).*', '$1'))"/>
-      <xsl:variable name="nextNum" select="if (count($nums) > 0) then max(($nums)) + 1 else 1"/>
-      <xsl:variable name="nextName" select="concat('f',$nextNum,'-', $field)"/>
-      <xsl:variable name="value" select="@value"/>
-      
-      <li>
-         <xsl:choose>
-            <xsl:when test="//param[matches(@name,$paramRegex)]/@value=$value">
+            <xsl:when test="//param[matches(@name,concat('f[0-9]+-',$field))]/@value=$value">
                <i><xsl:value-of select="$value"/></i> 
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString,concat($paramRegex,'=', $value))}">[X]</a>
+               <a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString, concat('f[0-9]+-',$field,'=',$value))}">[X]</a>
             </xsl:when>
             <xsl:otherwise>
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($queryString, $nextName, $value)}">
@@ -1025,7 +950,89 @@
             </xsl:otherwise>
          </xsl:choose>
       </li>
+   </xsl:template>
+   
+   <!-- Hierarchical group or sub-group of facet -->
+   <xsl:template match="group[parent::group or @totalSubGroups > 0]" exclude-result-prefixes="#all">
+      <xsl:variable name="field" select="replace(ancestor::facet/@field, 'facet-(.*)', '$1')"/>
       
+      <!-- The full hierarchical value of this group, including its ancestor groups if any -->
+      <xsl:variable name="fullValue">
+         <xsl:for-each select="ancestor::group/@value">
+            <xsl:value-of select="concat(.,'::')"/>
+         </xsl:for-each>
+         <xsl:value-of select="@value"/>
+      </xsl:variable>
+      
+      <!-- Make a query string with this value's parameter (and ancestors and children) are cleared -->
+      <xsl:variable name="clearedString">
+         <xsl:analyze-string select="$queryString" regex="{concat('f[0-9]+-',$field,'=([^;]+)')}">
+            <xsl:matching-substring>
+               <xsl:variable name="paramValue" select="regex-group(1)"/>
+               <xsl:choose>
+                  <!-- Clear this group, its ancestors, and it descendants -->
+                  <xsl:when test="$paramValue = $fullValue"/>
+                  <xsl:when test="matches($paramValue, concat('^', $fullValue, '::'))"/>
+                  <xsl:when test="matches($fullValue, concat('^', $paramValue, '::'))"/>
+                  <!-- Keep everything else -->
+                  <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+               </xsl:choose>
+            </xsl:matching-substring>
+            <xsl:non-matching-substring><xsl:value-of select="."/></xsl:non-matching-substring>
+         </xsl:analyze-string>
+      </xsl:variable>
+      
+      <!-- Pick an unused number for the next parameter -->
+      <xsl:variable name="nextName" select="editURL:nextFacetParam($queryString, $field)"/>
+      
+      <li>
+         <!-- expand/collapse button -->
+         <xsl:if test="@totalSubGroups > 0">
+            <xsl:choose>
+               <!-- closed node: show expand button -->
+               <xsl:when test="count(group) = 0">
+                  <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $fullValue)}">
+                     <img src="{$icon.path}/i_expand.gif" border="0" alt="expand"/>
+                  </a>
+               </xsl:when>
+               
+               <!-- top-level open node: collapse button will clear the facet -->
+               <xsl:when test="not(parent::group)">
+                  <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($clearedString)}">
+                     <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
+                  </a>
+               </xsl:when>
+               
+               <!-- mid-level open node: collapse button will select the parent level -->
+               <xsl:otherwise>
+                  <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, replace($fullValue, '::[^:]+$', ''))}">
+                     <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
+                  </a>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:if>
+         
+         <!-- Display the group name, with '[X]' box if it is selected. -->
+         <xsl:choose>
+            <xsl:when test="//param[matches(@name,concat('f[0-9]+-',$field))]/@value=$fullValue">
+               <i><xsl:value-of select="@value"/></i> 
+               <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($clearedString)}">[X]</a>
+            </xsl:when>
+            <xsl:otherwise>
+               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $fullValue)}">
+                  <xsl:value-of select="@value"/>
+               </a>
+               &#160;(<xsl:value-of select="@totalDocs"/>)
+            </xsl:otherwise>
+         </xsl:choose>
+         
+         <!-- Handle sub-groups if any -->
+         <xsl:if test="group">
+            <ul>
+               <xsl:apply-templates/>
+            </ul>
+         </xsl:if>
+      </li>
    </xsl:template>
    
    <!-- ====================================================================== -->
