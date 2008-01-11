@@ -110,22 +110,19 @@
             <xsl:attribute name="explainScores" select="$explainScores"/>
          </xsl:if>
          
-         <!-- flat subject facet, normally shows first 10 but user can 'expand' -->
-         <facet field="facet-subject"
-            select="{if ($expand='subject') then '*' else '*[1-10]'}"
-            sortGroupsBy="{if ($expand='subject') then 'value' else 'totalDocs'}"/>
+         <!-- subject facet, normally shows highest 10 but user can select 'more' to see all -->
+         <xsl:call-template name="facet">
+            <xsl:with-param name="field" select="'facet-subject'"/>
+            <xsl:with-param name="maxGroups" select="'10'"/>
+            <xsl:with-param name="sort" select="'totalDocs'"/>
+         </xsl:call-template>
          
-         <!-- hierarchical date facet, allows user to drill down -->
-         <facet field="facet-date" sortGroupsBy="value">
-            <xsl:attribute name="select">
-               <xsl:text>*</xsl:text> <!-- always select top level -->
-               <xsl:if test="//param[matches(@name, 'f[0-9]+-date')]">
-                  <xsl:for-each select="//param[matches(@name, 'f[0-9]+-date')]">
-                     <xsl:value-of select="concat('|', @value, '|', @value, '::*')"/>
-                  </xsl:for-each>
-               </xsl:if>
-            </xsl:attribute>
-         </facet>
+         <!-- hierarchical date facet, shows all top-level groups, always ordered by date (value) -->
+         <xsl:call-template name="facet">
+            <xsl:with-param name="field" select="'facet-date'"/>
+            <xsl:with-param name="maxGroups" select="'999'"/>
+            <xsl:with-param name="sort" select="'value'"/>
+         </xsl:call-template>
          
          <!-- to support title browse pages -->
          <xsl:if test="//param[matches(@name,'browse-title')]">
@@ -188,7 +185,7 @@
          <xsl:apply-templates select="$queryParams"/>
 
          <!-- Process special facet query params -->
-         <xsl:if test="//param[matches(@name,'f[0-9]+-.+')]">
+<!--         <xsl:if test="//param[matches(@name,'f[0-9]+-.+')]">
             <and maxSnippets="0">
                <xsl:for-each select="//param[matches(@name,'f[0-9]+-.+')]">
                   <term field="{replace(@name,'f[0-9]+-','facet-')}">
@@ -197,7 +194,7 @@
                </xsl:for-each>
             </and>
          </xsl:if>
-        
+-->        
          <!-- Unary Not -->
          <xsl:for-each select="param[contains(@name, '-exclude')]">
             <xsl:variable name="field" select="replace(@name, '-exclude', '')"/>
@@ -217,4 +214,51 @@
       
    </xsl:template>
    
+   <!-- ====================================================================== -->
+   <!-- Facet Query Template                                                   -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="facet">
+      <xsl:param name="field"/>
+      <xsl:param name="maxGroups"/>
+      <xsl:param name="sort"/>
+      
+      <xsl:variable name="plainName" select="replace($field,'^facet-','')"/>
+      
+      <!-- Select facet values based on previously clicked ones. Include the
+           ancestors and direct children of these (for hierarchical facets).
+      --> 
+      <xsl:variable name="selection">
+         <xsl:for-each select="//param[matches(@name, concat('f[0-9]+-',$plainName))]">
+            <xsl:call-template name="facetSelect">
+               <xsl:with-param name="value" select="@value"/>
+            </xsl:call-template>
+         </xsl:for-each>
+      </xsl:variable>
+      
+      <!-- generate the facet query -->
+      <facet field="{$field}">
+         <xsl:choose>
+            <xsl:when test="$expand = $plainName">
+               <!-- in expand mode, always sort by value, and select all top-level groups -->
+               <xsl:attribute name="sortGroupsBy" select="'value'"/>
+               <xsl:attribute name="select" select="concat('*', $selection)"/> 
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:attribute name="sortGroupsBy" select="$sort"/>
+               <xsl:attribute name="select" select="concat('*[1-',$maxGroups,']', $selection)"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </facet>
+   </xsl:template>
+
+   <xsl:template name="facetSelect">
+      <xsl:param name="value"/>
+      <xsl:if test="contains($value, '::')">
+         <xsl:call-template name="facetSelect">
+            <xsl:with-param name="value" select="replace($value, '(.*)::.*', '$1')"/>
+         </xsl:call-template>
+      </xsl:if>
+      <xsl:value-of select="concat('|', $value, '|', $value, '::*')"/>
+   </xsl:template>
 </xsl:stylesheet>
