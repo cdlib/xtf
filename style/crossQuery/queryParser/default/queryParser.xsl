@@ -185,7 +185,7 @@
          <xsl:apply-templates select="$queryParams"/>
 
          <!-- Process special facet query params -->
-<!--         <xsl:if test="//param[matches(@name,'f[0-9]+-.+')]">
+         <xsl:if test="//param[matches(@name,'f[0-9]+-.+')]">
             <and maxSnippets="0">
                <xsl:for-each select="//param[matches(@name,'f[0-9]+-.+')]">
                   <term field="{replace(@name,'f[0-9]+-','facet-')}">
@@ -194,7 +194,7 @@
                </xsl:for-each>
             </and>
          </xsl:if>
--->        
+        
          <!-- Unary Not -->
          <xsl:for-each select="param[contains(@name, '-exclude')]">
             <xsl:variable name="field" select="replace(@name, '-exclude', '')"/>
