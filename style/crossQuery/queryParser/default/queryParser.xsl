@@ -110,38 +110,34 @@
             <xsl:attribute name="explainScores" select="$explainScores"/>
          </xsl:if>
          
-         <!-- subject facet, normally shows highest 10 but user can select 'more' to see all -->
+         <!-- subject facet, normally shows top 10 sorted by count, but user can select 'more' 
+              to see all sorted by subject. 
+         -->
          <xsl:call-template name="facet">
             <xsl:with-param name="field" select="'facet-subject'"/>
-            <xsl:with-param name="maxGroups" select="'10'"/>
+            <xsl:with-param name="topGroups" select="'*[1-10]'"/>
             <xsl:with-param name="sort" select="'totalDocs'"/>
          </xsl:call-template>
          
-         <!-- hierarchical date facet, shows all top-level groups, always ordered by date (value) -->
+         <!-- hierarchical date facet, shows all years strictly ordered by year -->
          <xsl:call-template name="facet">
             <xsl:with-param name="field" select="'facet-date'"/>
-            <xsl:with-param name="maxGroups" select="'999'"/>
+            <xsl:with-param name="topGroups" select="'*'"/>
             <xsl:with-param name="sort" select="'value'"/>
          </xsl:call-template>
          
          <!-- to support title browse pages -->
-         <xsl:if test="//param[matches(@name,'browse-title')]">
-            <xsl:variable name="browse-title" select="//param[matches(@name,'browse-title')]/@value"/> 
-            <facet field="browse-title" sortGroupsBy="value">
-               <xsl:attribute name="select">
-                  <xsl:value-of select="concat('*|',$browse-title,'#all')"/>
-               </xsl:attribute>
-            </facet>
+         <xsl:if test="//param[@name='browse-title']">
+            <xsl:variable name="page" select="//param[@name='browse-title']/@value"/>
+            <xsl:variable name="pageSel" select="if ($page = 'first') then '*[1]' else $page"/>
+            <facet field="browse-title" sortGroupsBy="value" select="{concat('*|',$pageSel,'#all')}"/>
          </xsl:if>
          
          <!-- to support author browse pages -->
          <xsl:if test="//param[matches(@name,'browse-creator')]">
-            <xsl:variable name="browse-creator" select="//param[matches(@name,'browse-creator')]/@value"/> 
-            <facet field="browse-creator" sortGroupsBy="value">
-               <xsl:attribute name="select">
-                  <xsl:value-of select="concat('*|',$browse-creator,'#all')"/>
-               </xsl:attribute>
-            </facet>
+            <xsl:variable name="page" select="//param[matches(@name,'browse-creator')]/@value"/> 
+            <xsl:variable name="pageSel" select="if ($page = 'first') then '*[1]' else $page"/>
+            <facet field="browse-creator" sortGroupsBy="value" select="{concat('*|',$pageSel,'#all')}"/>
          </xsl:if>
          
          <!-- process query -->
@@ -220,13 +216,13 @@
    
    <xsl:template name="facet">
       <xsl:param name="field"/>
-      <xsl:param name="maxGroups"/>
+      <xsl:param name="topGroups"/>
       <xsl:param name="sort"/>
       
       <xsl:variable name="plainName" select="replace($field,'^facet-','')"/>
       
       <!-- Select facet values based on previously clicked ones. Include the
-           ancestors and direct children of these (for hierarchical facets).
+           ancestors and direct children of these (handles hierarchical facets).
       --> 
       <xsl:variable name="selection">
          <xsl:for-each select="//param[matches(@name, concat('f[0-9]+-',$plainName))]">
@@ -246,12 +242,13 @@
             </xsl:when>
             <xsl:otherwise>
                <xsl:attribute name="sortGroupsBy" select="$sort"/>
-               <xsl:attribute name="select" select="concat('*[1-',$maxGroups,']', $selection)"/>
+               <xsl:attribute name="select" select="concat($topGroups, $selection)"/>
             </xsl:otherwise>
          </xsl:choose>
       </facet>
    </xsl:template>
 
+   <!-- Utlity to generate a group-select expression for a group and its ancestors -->
    <xsl:template name="facetSelect">
       <xsl:param name="value"/>
       <xsl:if test="contains($value, '::')">
