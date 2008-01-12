@@ -577,6 +577,8 @@ public class SrcTreeProcessor
           format = "PDF";
         else if (format.equalsIgnoreCase("HTML"))
           format = "HTML";
+        else if (format.equalsIgnoreCase("DOC") || format.equalsIgnoreCase("MSWord"))
+          format = "MSWord";
         else if (format.equalsIgnoreCase("Text"))
           format = "Text";
         else if (format.equalsIgnoreCase("MARC"))
@@ -629,6 +631,8 @@ public class SrcTreeProcessor
         format = "PDF";
       else if (lcFileName.endsWith(".htm") || lcFileName.endsWith(".html"))
         format = "HTML";
+      else if (lcFileName.endsWith(".doc"))
+        format = "MSWord";
       else if (lcFileName.endsWith(".txt"))
         format = "Text";
       else if (lcFileName.endsWith(".marc") || lcFileName.endsWith(".mrc"))
@@ -691,11 +695,9 @@ public class SrcTreeProcessor
     else if (format.equalsIgnoreCase("PDF"))
       srcFile = new PDFIndexSource(srcPath, key, preFilters, displayStyle, null);
     else if (format.equalsIgnoreCase("HTML"))
-      srcFile = new HTMLIndexSource(srcPath,
-                                    key,
-                                    preFilters,
-                                    displayStyle,
-                                    lazyStore);
+      srcFile = new HTMLIndexSource(srcPath, key, preFilters, displayStyle, null);
+    else if (format.equalsIgnoreCase("MSWord"))
+      srcFile = new MSWordIndexSource(srcPath, key, preFilters, displayStyle, null);
     else if (format.equalsIgnoreCase("Text"))
       srcFile = new TextIndexSource(srcPath, key, preFilters, displayStyle, null);
     else if (format.equalsIgnoreCase("MARC"))
