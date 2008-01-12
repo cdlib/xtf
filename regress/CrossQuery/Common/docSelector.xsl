@@ -61,6 +61,9 @@
     <xsl:if test="ends-with(@fileName, '.txt')">
       <indexFile fileName="{@fileName}" type="Text"/>
     </xsl:if>
+    <xsl:if test="ends-with(@fileName, '.doc')">
+      <indexFile fileName="{@fileName}" type="MSWord"/>
+    </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>

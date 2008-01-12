@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="2" startDoc="1" endDoc="2">
+   <docHit rank="1" file="doc7.doc" totalHits="2">
+      <snippet rank="1">underlined text This bit is in a <hit>
+            <term>different</term> 
+            <term>font</term>
+         </hit> and size This bit features some</snippet>
+      <snippet rank="2">This is a simple <hit>
+            <term>word</term> 
+            <term>document</term>
+         </hit> It has a number of paragraphs in it Some of them</snippet>
+   </docHit>
+   <docHit rank="2" file="doc6.doc" totalHits="1">
+      <snippet rank="1">This is a test <hit>
+            <term>Word</term> 
+            <term>document</term>
+         </hit>. This is a new paragraph, which will have lots of</snippet>
+   </docHit>
+</crossQueryResult>
