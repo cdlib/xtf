@@ -55,7 +55,7 @@
       
     <indexFiles>
         <indexFile fileName="{file name #1}"
-                   type="{XML|PDF|HTML|...}"
+                   type="{XML|PDF|HTML|MSWord...}"
                    preFilter="{path to input filter stylesheet}"
                    displayStyle="{path to display stylesheet}"/>
         <indexFile .../>
@@ -194,6 +194,13 @@
          <xsl:when test="ends-with(@fileName, '.pdf')">
             <indexFile fileName="{@fileName}" 
                type="PDF"
+               preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+         </xsl:when>
+         
+         <!-- PDF files -->
+         <xsl:when test="ends-with(@fileName, '.doc')">
+            <indexFile fileName="{@fileName}" 
+               type="MSWord"
                preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
          </xsl:when>
          

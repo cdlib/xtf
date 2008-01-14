@@ -355,6 +355,7 @@
                      <option value="">All</option>
                      <option value="ead">EAD</option>
                      <option value="html">HTML</option>
+                     <option value="msword">MSWord</option>
                      <option value="nlm">NLM</option>
                      <option value="pdf">PDF</option>
                      <option value="tei">TEI</option>
