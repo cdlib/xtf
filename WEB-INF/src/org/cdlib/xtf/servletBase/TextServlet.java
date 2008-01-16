@@ -748,7 +748,13 @@ public abstract class TextServlet extends HttpServlet
         }
       }
 
-      switch (c) {
+      // Characters 0-31 (except 9, 11, and 13) are not legal in HTML
+      // or XLM, so filter them out.
+      if (c >= 0 && c <= 31 && c != 9 && c != 11 && c != 13)
+        continue;
+      
+      switch (c) 
+      {
         // Translate special characters to known HTML entities     
         case '<':  buf.append("&lt;");    break;
         case '>':  buf.append("&gt;");    break;
