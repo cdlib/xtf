@@ -297,7 +297,7 @@ public class QueryRequestParser
         fs.field = el.attrValue(i);
       else if (el.attrName(i).equalsIgnoreCase("sortGroupsBy")) 
       {
-        if (el.attrValue(i).matches("^(totalDocs|value|maxDocScore)$"))
+        if (el.attrValue(i).matches("^(totalDocs|value|reverseValue|maxDocScore)$"))
           fs.sortGroupsBy = el.attrValue(i);
         else {
           error(
