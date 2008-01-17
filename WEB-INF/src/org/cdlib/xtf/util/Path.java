@@ -120,6 +120,7 @@ public class Path
       if (i < len - 2 &&
           i == lastSlash + 1 &&
           lastLastSlash >= 0 &&
+          trimPath.charAt(lastLastSlash+1) != '.' &&
           trimPath.charAt(i) == '.' &&
           trimPath.charAt(i + 1) == '.' &&
           trimPath.charAt(i + 2) == '/') 
@@ -368,7 +369,7 @@ public class Path
   public static String resolveRelOrAbs(File parentDir, String childPath) {
     if (parentDir == null)
       return normalize(childPath);
-    return resolveRelOrAbs(parentDir.toString(), childPath);
+    return normalize(resolveRelOrAbs(parentDir.toString(), childPath));
   } // resolveRelOrAbs()
 
   /**
