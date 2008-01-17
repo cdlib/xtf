@@ -402,6 +402,15 @@
             <div class="resultsHeader">
                <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
+                     <td colspan="3" align="right">
+                        <xsl:if test="$smode != 'showBag'">
+                           <a href="{concat('search?smode=showBag;', $queryString)}">Bookbag</a>
+                           <!-- count goes here Martin -->
+                           <xsl:text>&#160;(0)</xsl:text>
+                        </xsl:if>
+                     </td>
+                  </tr>
+                  <tr>
                      <td align="right" width="10%" valign="top">
                         <b>Search:&#160;</b>
                      </td>
@@ -832,7 +841,6 @@
                            <span><a href="javascript:alert('To use the bag, you must enable cookies in your web browser.')">Requires cookie*</a></span>                                 
                         </xsl:when>
                         <xsl:otherwise>
-                           <a href="{concat('search?smode=showBag;', $queryString)}">Show bag</a> |
                            <xsl:choose>
                               <xsl:when test="session:getData('bag')/bag/savedDoc[@id=$indexId]">
                                  <span>In bag.</span>
