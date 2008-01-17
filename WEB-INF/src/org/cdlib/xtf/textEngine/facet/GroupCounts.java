@@ -57,8 +57,9 @@ public class GroupCounts
   private int[] sortedSibling;
   private int curMark = 1000;
   private static final int SORT_BY_VALUE = 0;
-  private static final int SORT_BY_TOTAL_DOCS = 1;
-  private static final int SORT_BY_MAX_DOC_SCORE = 2;
+  private static final int SORT_BY_REVERSE_VALUE = 1;
+  private static final int SORT_BY_TOTAL_DOCS = 2;
+  private static final int SORT_BY_MAX_DOC_SCORE = 3;
 
   /** Construct an object with all counts at zero */
   public GroupCounts(GroupData groupData, FacetSpec spec,
@@ -372,6 +373,8 @@ public class GroupCounts
     int sortKind;
     if (spec.sortGroupsBy.equals("value"))
       sortKind = SORT_BY_VALUE;
+    else if (spec.sortGroupsBy.equals("reverseValue"))
+      sortKind = SORT_BY_REVERSE_VALUE;
     else if (spec.sortGroupsBy.equals("totalDocs"))
       sortKind = SORT_BY_TOTAL_DOCS;
     else if (spec.sortGroupsBy.equals("maxDocScore"))
@@ -385,6 +388,7 @@ public class GroupCounts
       return;
 
     // Allocate storage for sorted child/sibling links
+    int nBefore = countDescendants(0);
     sortedChild = new int[data.nGroups()];
     sortedSibling = new int[data.nGroups()];
     Arrays.fill(sortedChild, -1);
@@ -392,7 +396,20 @@ public class GroupCounts
 
     // Okay, do a recursive merge sort, starting at the root.
     sortChildren(0, sortKind);
+
+    // Verify that we didn't lose anybody in the sort.
+    int nAfter = countDescendants(0);
+    assert nAfter == nBefore : "mis-count on sort";
   } // sortGroups()
+  
+  /** Utility function to count the group and all of its descendants */
+  private int countDescendants(int group)
+  {
+    int count = 1; // for this group itself
+    for (int kid = child(group); kid >= 0; kid = sibling(kid))
+      count += countDescendants(kid);
+    return count;
+  }
 
   /** Construct the array of doc hits for the hit group. */
   private void buildDocHits(int group, ResultGroup resultGroup) 
@@ -473,13 +490,6 @@ public class GroupCounts
     // If no children, we have nothing to do.
     if (first < 0)
       return;
-
-    // If only one child, our work is simple.
-    if (data.sibling(first) < 0) {
-      sortedChild[parent] = first;
-      sortedSibling[first] = -1;
-      return;
-    }
 
     // Initialize the links.
     int nChildrenBefore = 0;
@@ -574,12 +584,14 @@ public class GroupCounts
     // Record the first child.
     sortedChild[parent] = first;
 
-    // Verify the sort, and sort all the descendants of the children.
+    // Sort all the descendants of the children, and verify the sort.
+    for (p = first; p >= 0; p = sortedSibling[p])
+      sortChildren(p, sortKind);
+
     int nChildrenAfter = 0;
-    for (p = first; p >= 0; p = sortedSibling[p]) {
+    for (p = sortedChild[parent]; p >= 0; p = sortedSibling[p]) {
       if (sortedSibling[p] >= 0)
         assert compare(p, sortedSibling[p], sortKind) <= 0 : "error in merge sort";
-      sortChildren(p, sortKind);
       ++nChildrenAfter;
     } // for
     assert nChildrenAfter == nChildrenBefore;
@@ -598,6 +610,14 @@ public class GroupCounts
     switch (sortKind) {
       case SORT_BY_VALUE:
         if ((x = data.compare(g1, g2)) != 0)
+          return x;
+        if ((x = -compare(score(g1), score(g2))) != 0)
+          return x;
+        if ((x = -compare(nDocHits(g1), nDocHits(g2))) != 0)
+          return x;
+        return 0;
+      case SORT_BY_REVERSE_VALUE:
+        if ((x = -data.compare(g1, g2)) != 0)
           return x;
         if ((x = -compare(score(g1), score(g2))) != 0)
           return x;
