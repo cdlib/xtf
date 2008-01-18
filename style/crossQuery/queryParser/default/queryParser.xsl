@@ -174,7 +174,7 @@
       
       <!-- Find the meta-data and full-text queries, if any -->
       <xsl:variable name="queryParams"
-         select="param[not(matches(@name,'style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|browse-*|.*-exclude|.*-join|.*-prox|.*-ignore'))]"/>
+         select="param[not(matches(@name,'style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|browse-*|.*-exclude|.*-join|.*-prox|.*-max|.*-ignore'))]"/>
       
       <and>
          <!-- Process the meta-data and text queries, if any -->

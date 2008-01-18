@@ -96,9 +96,8 @@
             <b>
                <xsl:choose>
                   <xsl:when test="child::sectionType">
-                     <xsl:text> the </xsl:text>
                      <xsl:value-of select="sectionType/term"/>
-                     <xsl:text> element</xsl:text>
+                     <xsl:text> sections</xsl:text>
                   </xsl:when>
                   <xsl:when test="@field = 'text'">
                      <xsl:text> the full text </xsl:text>

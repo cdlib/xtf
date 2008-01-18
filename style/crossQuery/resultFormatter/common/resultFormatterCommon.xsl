@@ -47,15 +47,6 @@
    <xsl:import href="spelling.xsl"/>
    
    <!-- ====================================================================== -->
-   <!-- Output Parameters                                                      -->
-   <!-- ====================================================================== -->
-   
-   <xsl:output method="xhtml" indent="yes" encoding="UTF-8" media-type="text/html" 
-      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
-      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" 
-      exclude-result-prefixes="#all"/>
-   
-   <!-- ====================================================================== -->
    <!-- Parameters                                                             -->
    <!-- ====================================================================== -->
    
