@@ -1,22 +1,8 @@
 /* dynaXML TOC stylesheet */
 
-span.topnav {font-size: 75%;}
-
-/* HEADINGS */
-
-h1 {font-size: 2em;}
-h2 {font-size: 1.5em;}
-h3 {font-size: 1.17em;}
-
-/* TOC */
-
 div.toc {
                 margin-left: 20px;
                 margin-right: 20px;
-}
-
-a.booktitle {
-                color: maroon;
 }
 
 .hit-count {
@@ -32,3 +18,28 @@ a.booktitle {
 .toc-hi {
                 background-color: #FFCC66;
 }
+
+div.l1 {
+font-size: 12pt;
+text-indent: -10%;
+margin-left: 10%;
+margin-top: 0;
+margin-bottom: 0;
+}
+
+div.l2 {
+font-size: 11pt;
+text-indent: -10%;
+margin-left: 10%;
+margin-top: 0;
+margin-bottom: 0;
+}
+
+div.l3, div.l4, div.l5, div.l6, div.l7 {
+font-size: 10pt;
+text-indent: -10%;
+margin-left: 10%;
+margin-top: 0;
+margin-bottom: 0;
+}
+

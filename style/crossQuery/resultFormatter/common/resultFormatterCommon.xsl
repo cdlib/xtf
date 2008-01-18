@@ -181,6 +181,7 @@
    <xsl:param name="expand"/>
    
    <!-- alpha browse parameters -->
+   <xsl:param name="browse-all"/>
    <xsl:param name="browse-title"/>
    <xsl:param name="browse-creator"/>
    
@@ -215,7 +216,7 @@
    <!-- Documents per Page -->
    <xsl:param name="docsPerPage" as="xs:integer">
       <xsl:choose>
-         <xsl:when test="$smode = 'test' or $raw">
+         <xsl:when test="$raw">
             <xsl:value-of select="10000"/>
          </xsl:when>
          <xsl:otherwise>

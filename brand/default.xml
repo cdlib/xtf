@@ -8,25 +8,13 @@
    
    <header>
       <div class="header">
-         <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-               <td>
-                  <h1>XTF Default Interface</h1>
-               </td>
-            </tr>
-         </table>
+         <h3>XTF Default Interface</h3>
       </div>
    </header>
    
    <footer>
       <div class="footer">
-         <table width="100%" cellpadding="0" cellspacing="0">        
-            <tr>
-               <td>
-                  <a href="mailto:xtf-user@googlegroups.com">Comments? Questions?</a>
-               </td>
-            </tr>
-         </table>    
+         <a href="mailto:xtf-user@googlegroups.com">Comments? Questions?</a>
       </div>
    </footer>
    

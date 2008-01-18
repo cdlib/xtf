@@ -77,7 +77,7 @@
    <!-- documents per page -->
    <xsl:param name="docsPerPage">
       <xsl:choose>
-         <xsl:when test="($smode = 'test') or $raw">
+         <xsl:when test="$raw">
             <xsl:value-of select="10000"/>
          </xsl:when>
          <xsl:when test="matches($http.User-Agent,$robots)">
@@ -150,7 +150,7 @@
             <xsl:when test="matches(@name, 'text')">
                <xsl:attribute name="field" select="'text'"/>
                <xsl:attribute name="maxSnippets" select="'3'"/>
-               <xsl:attribute name="maxContext" select="'100'"/>
+               <xsl:attribute name="maxContext" select="'60'"/>
             </xsl:when>
             <xsl:when test="matches(@name, 'query')">
                <xsl:attribute name="field" select="'text'"/>

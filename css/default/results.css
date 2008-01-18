@@ -1,20 +1,151 @@
+
 /* crossQuery RESULTS stylesheet */
 
 body {
-  font-family: Arial, sans-serif
+   font-family: Arial, sans-serif;
+   background-color: silver;
 }
 
-.hit  {
-color: red; 
-font-weight: bold;
-text-decoration: none;
+div.header {
+   margin: 2em;
 }
 
-.subhit  {
-color: red; 
-font-weight: bold;
+div.footer {
+   margin: 2em;
 }
 
-.hitsection  {
-background-color: #D6DCE5;
+/* Forms */
+
+div.searchPage {
+   margin: 2em;
+}
+
+div.forms {
+   width: 800px;
+   height: 600px;
+}
+
+div.forms table {
+   width: 100%;
+   border-style: solid;
+   border-color: black;
+   border-width: 1px 1px 1px 1px;
+   background-color: white;
+}
+
+div.forms table td.tab {
+   padding: 0.5em;
+   border-style: solid;
+   border-color: black;
+   border-width: 1px 1px 1px 1px;
+}
+
+div.forms table td.tab-select {
+   background-color: #D6DCE5;
+   padding: 0.5em;
+   border-style: solid;
+   border-color: black;
+   border-width: 1px 1px 1px 1px;
+}
+
+div.form {
+}
+
+div.form table {
+   padding: 2em;
+}
+
+div.form table td.indent {
+   width: 2em;
+}
+
+/* Results */
+
+div.resultsHeader {
+   margin-left: 2em;
+   margin-right: 2em;
+}
+
+div.resultsHeader table{
+   width: 100%;
+}
+
+td.right {
+   text-align: right;
+}
+
+td.left {
+   text-align: left;
+}
+
+td.center {
+   text-align: center;
+}
+
+div.results {
+   margin-left: 2em;
+   margin-right: 2em;
+   background-color: white;
+}
+
+div.results table {
+   width: 100%;
+   border-style: solid;
+   border-color: black;
+   border-width: 1px 1px 1px 1px;
+}
+
+div.results table td {
+   vertical-align: top;
+}
+
+div.results table td.facet{
+   padding: 1em;
+   width: 25%;
+}
+
+div.results table td.docHit{
+}
+
+div.results table table{
+   padding: 1em;
+}
+
+div.results table td.col1{
+   width: 4%;
+   text-align: left;
+}
+
+div.results table td.col2{
+   width: 10%;
+   text-align: right;
+}
+
+div.results table td.col3{
+   width: auto;
+   text-align: left;
+}
+div.results table td.col4{
+   width: 10%;
+   text-align: right;
+}
+
+div.facet {
+}
+
+div.docHit {
+}
+
+.hit {
+   color: red;
+   font-weight: bold;
+}
+
+.subhit {
+   color: red;
+   font-weight: bold;
+}
+
+.hitsection {
+   background-color: #D6DCE5;
 }

@@ -94,6 +94,14 @@
       </xsl:copy>
    </xsl:template>
    
+   <xsl:template match="prefercite">
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>
+         <xsl:attribute name="xtf:sectionType" select="'citation'"/>
+         <xsl:apply-templates/>
+      </xsl:copy>
+   </xsl:template>
+   
    <xsl:template match="titleproper[parent::titlestmt]">
       <xsl:copy>
          <xsl:copy-of select="@*"/>

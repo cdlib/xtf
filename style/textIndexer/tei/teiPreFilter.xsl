@@ -95,6 +95,15 @@
       </xsl:copy>
    </xsl:template>
    
+   <xsl:template match="*[local-name()='bibl']">
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>
+         <xsl:attribute name="xtf:sectionType" select="'citation'"/>
+         <xsl:attribute name="xtf:wordBoost" select="2.0"/>
+         <xsl:apply-templates/>
+      </xsl:copy>
+   </xsl:template>
+   
    <xsl:template match="*[local-name()='titlePart'][ancestor::*[local-name()='titlePage']]">
       <xsl:copy>
          <xsl:copy-of select="@*"/>

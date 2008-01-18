@@ -43,9 +43,6 @@
    <!-- Local Parameters                                                       -->
    <!-- ====================================================================== -->
    
-   <xsl:param name="keyword"/>
-   <xsl:param name="fieldList"/>   
-   <xsl:param name="query"/>
    <xsl:param name="noShow" select="'all|display|facet-[a-z]+|browse-[a-z]+'"/>
    
    <!-- ====================================================================== -->
@@ -57,6 +54,7 @@
       
       <xsl:choose>
          <!-- keyword queries get special handling -->
+         <xsl:when test="$browse-all">All</xsl:when>
          <xsl:when test="$keyword">
             <xsl:apply-templates select="(query//*[@fields])[1]/*" mode="query"/>
             <xsl:choose>
@@ -73,6 +71,7 @@
                </xsl:otherwise>
             </xsl:choose>
             <!-- query removal checkbox -->
+            <xsl:text>&#160;</xsl:text>
             <a href="{$xtfURL}{$crossqueryPath}?{editURL:set(editURL:remove($queryString,'keyword'),'browse-all','yes')}">[X]</a>
          </xsl:when>
          <xsl:otherwise>

@@ -103,6 +103,14 @@
       </xsl:copy>
    </xsl:template>
    
+   <xsl:template match="citation">
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>
+         <xsl:attribute name="xtf:sectionType" select="'citation'"/>
+         <xsl:apply-templates/>
+      </xsl:copy>
+   </xsl:template>
+   
    <xsl:template match="article-title[parent::title-group]">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
