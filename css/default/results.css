@@ -23,14 +23,16 @@ div.searchPage {
 div.forms {
    width: 800px;
    height: 600px;
-}
-
-div.forms table {
-   width: 100%;
+   margin-left:auto;
+   margin-right:auto;
    border-style: solid;
    border-color: black;
    border-width: 1px 1px 1px 1px;
    background-color: white;
+}
+
+div.forms table {
+   width: 100%;
 }
 
 div.forms table td.tab {
