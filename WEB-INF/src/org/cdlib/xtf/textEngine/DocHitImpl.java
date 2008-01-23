@@ -279,7 +279,7 @@ public class DocHitImpl extends DocHit
     // <element>...</element> tags anyway.
     //
     if (!startFound) {
-      if (buf.substring(0, 3).equals("<$ "))
+      if (buf.length() > 3 && buf.substring(0, 3).equals("<$ "))
         buf.replace(1, 2, name);
       else
         buf.insert(0, "<" + name + ">");
