@@ -737,7 +737,7 @@
                            <script type="text/javascript">
                               remove_<xsl:value-of select="@rank"/> = function() {
                               var span = $('remove_<xsl:value-of select="@rank"/>');
-                              span.innerHTML = "Removing...";
+                              span.innerHTML = "Deleting...";
                               new Ajax.Request('<xsl:value-of select="concat($xtfURL, $crossqueryPath, '?smode=removeFromBag;identifier=', $identifier)"/>', {
                               onSuccess: function() { 
                               var main = $('main_<xsl:value-of select="@rank"/>');
@@ -758,7 +758,7 @@
                         <xsl:otherwise>
                            <xsl:choose>
                               <xsl:when test="session:getData('bag')/bag/savedDoc[@id=$indexId]">
-                                 <span>In Bag</span>
+                                 <span>Added</span>
                               </xsl:when>
                               <xsl:otherwise>
                                  <script type="text/javascript">
@@ -873,11 +873,8 @@
                      <br/>
                      <xsl:value-of select="@totalHits"/> hit(s)&#160;&#160;&#160;&#160;
                   </td>
-                  <td class="col3">
+                  <td class="col3" colspan="2">
                      <xsl:apply-templates select="snippet" mode="text"/>
-                  </td>
-                  <td class="col4">
-                     <xsl:text>&#160;</xsl:text>
                   </td>
                </tr>
             </xsl:if>
@@ -890,7 +887,7 @@
                <td class="col2">
                   <b>Similar&#160;Items:&#160;&#160;</b>
                </td>
-               <td class="col3">
+               <td class="col3" colspan="2">
                   <script type="text/javascript">
                      getMoreLike_<xsl:value-of select="@rank"/> = function() {
                         var span = $('moreLike_<xsl:value-of select="@rank"/>');
@@ -903,9 +900,6 @@
                   <span id="moreLike_{@rank}">
                      <a href="javascript:getMoreLike_{@rank}()">Find</a>
                   </span>
-               </td>
-               <td class="col4">
-                  <xsl:text>&#160;</xsl:text>
                </td>
             </tr>
             
@@ -951,7 +945,7 @@
          <!-- Display the group name, with '[X]' box if it is selected. -->
          <xsl:choose>
             <xsl:when test="//param[matches(@name,concat('f[0-9]+-',$field))]/@value=$value">
-               <i><xsl:value-of select="$value"/></i> 
+               <i><xsl:value-of select="$value"/></i>&#160;
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString, concat('f[0-9]+-',$field,'=',$value))}">[X]</a>
             </xsl:when>
             <xsl:otherwise>
@@ -1009,8 +1003,8 @@
          <xsl:choose>
             <!-- selected terminal node: click to collapse -->
             <xsl:when test="count(group) = 0 and //param[matches(@name,concat('f[0-9]+-',$field))]/@value=$fullValue">
-               <i><xsl:value-of select="@value"/></i>
-               &#160;<a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $parentValue)}">[X]</a>
+               <i><xsl:value-of select="@value"/></i>&#160;
+               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $parentValue)}">[X]</a>
             </xsl:when>
             
             <!-- non-selected terminal node: click to select -->

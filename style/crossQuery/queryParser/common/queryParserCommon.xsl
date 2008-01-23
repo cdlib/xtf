@@ -146,6 +146,7 @@
                <xsl:attribute name="slop" select="'10'"/>
                <xsl:attribute name="maxTextSnippets" select="'3'"/>
                <xsl:attribute name="maxMetaSnippets" select="'all'"/>
+               <xsl:attribute name="maxContext" select="'60'"/>
             </xsl:when>
             <xsl:when test="matches(@name, 'text')">
                <xsl:attribute name="field" select="'text'"/>
