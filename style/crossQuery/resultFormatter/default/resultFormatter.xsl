@@ -953,7 +953,7 @@
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString, concat('f[0-9]+-',$field,'=',$value))}">[X]</a>
             </xsl:when>
             <xsl:otherwise>
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($queryString, $nextName, $value)}">
+               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set(editURL:remove($queryString,'browse-all=yes'), $nextName, $value)}">
                   <xsl:value-of select="$value"/>
                </a>
                &#160;(<xsl:value-of select="@totalDocs"/>)
@@ -984,6 +984,7 @@
                <xsl:variable name="paramValue" select="regex-group(1)"/>
                <xsl:choose>
                   <!-- Clear this group, its ancestors, and it descendants -->
+                  <xsl:when test="$paramValue = 'browse-all'"/>
                   <xsl:when test="$paramValue = $fullValue"/>
                   <xsl:when test="matches($paramValue, concat('^', $fullValue, '::'))"/>
                   <xsl:when test="matches($fullValue, concat('^', $paramValue, '::'))"/>
