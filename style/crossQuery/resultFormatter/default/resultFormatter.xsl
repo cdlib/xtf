@@ -412,7 +412,9 @@
          <head>
             <title>XTF: Search Results</title>
             <xsl:copy-of select="$brand.links"/>
-            <script src="script/prototype.js" type="application/javascript"/> <!-- AJAX support -->
+            <!-- AJAX support -->
+            <script src="script/yui/yahoo-dom-event.js" type="application/javascript"/> 
+            <script src="script/yui/connection-min.js" type="application/javascript"/> 
          </head>
          <body>
             
@@ -562,7 +564,9 @@
          <head>
             <title>XTF: Search Results</title>
             <xsl:copy-of select="$brand.links"/>
-            <script src="script/prototype.js" type="application/javascript"/> <!-- AJAX support -->
+            <!-- AJAX support -->
+            <script src="script/yui/yahoo-dom-event.js" type="application/javascript"/> 
+            <script src="script/yui/connection-min.js" type="application/javascript"/> 
          </head>
          <body>
             
@@ -740,16 +744,17 @@
                         <xsl:when test="$smode = 'showBag'">
                            <script type="text/javascript">
                               remove_<xsl:value-of select="@rank"/> = function() {
-                              var span = $('remove_<xsl:value-of select="@rank"/>');
-                              span.innerHTML = "Deleting...";
-                              new Ajax.Request('<xsl:value-of select="concat($xtfURL, $crossqueryPath, '?smode=removeFromBag;identifier=', $identifier)"/>', {
-                              onSuccess: function() { 
-                              var main = $('main_<xsl:value-of select="@rank"/>');
-                              main.parentNode.removeChild(main);
-                              --($('itemCount').innerHTML);
-                              },
-                              onFailure: function() { span.innerHTML = 'Failed to remove!'; }
-                              });
+                                 var span = YAHOO.util.Dom.get('remove_<xsl:value-of select="@rank"/>');
+                                 span.innerHTML = "Deleting...";
+                                 YAHOO.util.Connect.asyncRequest('GET', 
+                                    '<xsl:value-of select="concat($xtfURL, $crossqueryPath, '?smode=removeFromBag;identifier=', $identifier)"/>',
+                                    {  success: function(o) { 
+                                          var main = YAHOO.util.Dom.get('main_<xsl:value-of select="@rank"/>');
+                                          main.parentNode.removeChild(main);
+                                          --(YAHOO.util.Dom.get('itemCount').innerHTML);
+                                       },
+                                       failure: function(o) { span.innerHTML = 'Failed to delete!'; }
+                                    }, null);
                               };
                            </script>
                            <span id="remove_{@rank}">
@@ -767,15 +772,16 @@
                               <xsl:otherwise>
                                  <script type="text/javascript">
                                     add_<xsl:value-of select="@rank"/> = function() {
-                                    var span = $('add_<xsl:value-of select="@rank"/>');
-                                    span.innerHTML = "Adding...";
-                                    new Ajax.Request('<xsl:value-of select="concat($xtfURL, $crossqueryPath, '?smode=addToBag;identifier=', $identifier)"/>', {
-                                    onSuccess: function(transport) { 
-                                    span.innerHTML = transport.responseText;
-                                    ++($('itemCount').innerHTML);
-                                    },
-                                    onFailure: function(transport) { span.innerHTML = "Failed to add!"; }
-                                    });
+                                       var span = YAHOO.util.Dom.get('add_<xsl:value-of select="@rank"/>');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          '<xsl:value-of select="concat($xtfURL, $crossqueryPath, '?smode=addToBag;identifier=', $identifier)"/>',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('itemCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
                                     };
                                  </script>
                                  <span id="add_{@rank}">
@@ -894,11 +900,13 @@
                <td class="col3" colspan="2">
                   <script type="text/javascript">
                      getMoreLike_<xsl:value-of select="@rank"/> = function() {
-                        var span = $('moreLike_<xsl:value-of select="@rank"/>');
-                        span.innerHTML = "Finding...";
-                        new Ajax.Request('<xsl:value-of select="concat('search?smode=moreLike;docsPerPage=5;identifier=', $identifier)"/>',
-                           { onSuccess: function(transport) { span.innerHTML = transport.responseText; },
-                             onFailure: function(transport) { span.innerHTML = "Failed!" } });
+                        var span = YAHOO.util.Dom.get('moreLike_<xsl:value-of select="@rank"/>');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           '<xsl:value-of select="concat('search?smode=moreLike;docsPerPage=5;identifier=', $identifier)"/>',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
                      };
                   </script>
                   <span id="moreLike_{@rank}">
