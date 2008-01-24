@@ -434,8 +434,12 @@
                   <tr>
                      <td>
                         <xsl:if test="not($smode='showBag')">
-                           <b><xsl:value-of select="if($browse-all) then 'Browse by' else 'Search'"/>:</b>&#160;
-                           <xsl:call-template name="format-query"/>
+                           <div class="query">
+                              <div class="label">
+                                 <b><xsl:value-of select="if($browse-all) then 'Browse by' else 'Search'"/>:</b>
+                              </div>
+                              <xsl:call-template name="format-query"/>
+                           </div>
                         </xsl:if>
                      </td>
                      <td class="right">

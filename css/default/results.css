@@ -88,6 +88,15 @@ td.center {
    text-align: center;
 }
 
+div.query {
+   width: 350px;
+   text-align: right;
+}
+
+div.label {
+   float: left;
+}
+
 div.results {
    margin-left: 2em;
    margin-right: 2em;
