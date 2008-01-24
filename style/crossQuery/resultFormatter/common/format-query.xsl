@@ -43,7 +43,7 @@
    <!-- Local Parameters                                                       -->
    <!-- ====================================================================== -->
    
-   <xsl:param name="noShow" select="'all|display|facet-[a-z]+|browse-[a-z]+'"/>
+   <xsl:param name="noShow" select="'all|display|browse-[a-z]+'"/>
    
    <!-- ====================================================================== -->
    <!-- Format Query for Display                                               -->
@@ -73,6 +73,8 @@
             <!-- query removal checkbox -->
             <xsl:text>&#160;</xsl:text>
             <a href="{$xtfURL}{$crossqueryPath}?{editURL:set(editURL:remove($queryString,'keyword'),'browse-all','yes')}">[X]</a>
+            <br/>
+            <xsl:apply-templates select="query" mode="query"/>
          </xsl:when>
          <xsl:otherwise>
             <xsl:apply-templates select="query" mode="query"/>
@@ -85,12 +87,9 @@
    <xsl:template match="and|or|exact|near|range" mode="query">
       <xsl:variable name="pos" select="count(preceding-sibling::*[not(matches(@field,$noShow))]) + 1"/>
       <xsl:choose>
+         <xsl:when test="@fields"/><!-- keyword -->
          <xsl:when test="matches(@field,$noShow)"/>
          <xsl:when test="@field"> 
-            <xsl:if test="$pos > 1">
-               <xsl:value-of select="name(..)"/>
-            </xsl:if>
-            <xsl:text> </xsl:text>
             <xsl:apply-templates mode="query"/>
             <xsl:text> in </xsl:text>
             <b>
@@ -103,7 +102,7 @@
                      <xsl:text> the full text </xsl:text>
                   </xsl:when>
                   <xsl:otherwise>
-                     <xsl:value-of select="@field"/>
+                     <xsl:value-of select="replace(@field,'facet-','')"/>
                   </xsl:otherwise>
                </xsl:choose>
             </b>
@@ -116,12 +115,14 @@
                </xsl:for-each>
             </xsl:variable>
             <xsl:variable name="removeString">
-               <xsl:analyze-string select="$queryString" regex="([^=;]+)=[^;]+">
+               <xsl:analyze-string select="$queryString" regex="([^=;]+)=([^;]+)">
                   <xsl:matching-substring>
                      <xsl:variable name="param" select="regex-group(1)"/>
+                     <xsl:variable name="value" select="regex-group(2)"/>
                      <xsl:choose>
                         <!-- things to remove -->
                         <xsl:when test="matches($param,$field)"/>
+                        <xsl:when test="matches($field,replace($param,'f[0-9]','facet')) and matches($terms,$value)"/>
                         <xsl:when test="matches($param,'sectionType') and matches($field,'text|query')"/>
                         <xsl:when test="matches($param,'expand')"/>
                         <!-- keep everything else -->

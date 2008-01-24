@@ -1020,11 +1020,12 @@
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $fullValue)}">
                   <img src="{$icon.path}/i_expand.gif" border="0" alt="expand"/>
                </a>
-               <xsl:text> </xsl:text>
+               <xsl:text>&#160;</xsl:text>
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $fullValue)}">
                   <xsl:value-of select="@value"/>
                </a>
-               &#160;(<xsl:value-of select="@totalDocs"/>)
+               <xsl:text>&#160;</xsl:text>
+               (<xsl:value-of select="@totalDocs"/>)
             </xsl:when>
             
             <!-- top-level open node: click to clear the facet -->
@@ -1032,7 +1033,7 @@
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($clearedString)}">
                   <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
                </a>
-               <xsl:text> </xsl:text>
+               <xsl:text>&#160;</xsl:text>
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($clearedString)}">
                   <xsl:value-of select="@value"/>
                </a>
@@ -1043,7 +1044,7 @@
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $parentValue)}">
                   <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
                </a>
-               <xsl:text> </xsl:text>
+               <xsl:text>&#160;</xsl:text>
                <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $parentValue)}">
                   <xsl:value-of select="@value"/>
                </a>

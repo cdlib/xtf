@@ -184,9 +184,9 @@
          <xsl:if test="//param[matches(@name,'f[0-9]+-.+')]">
             <and maxSnippets="0">
                <xsl:for-each select="//param[matches(@name,'f[0-9]+-.+')]">
-                  <term field="{replace(@name,'f[0-9]+-','facet-')}">
-                     <xsl:value-of select="@value"/>
-                  </term>
+                  <and field="{replace(@name,'f[0-9]+-','facet-')}">
+                     <term><xsl:value-of select="@value"/></term>
+                  </and>
                </xsl:for-each>
             </and>
          </xsl:if>
