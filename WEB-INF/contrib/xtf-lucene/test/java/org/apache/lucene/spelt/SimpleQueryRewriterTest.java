@@ -82,7 +82,6 @@ public class SimpleQueryRewriterTest extends TestCase
       if (pos < 0)
         return t;
       
-      String newText = text.replace('x', ' ');
       return new Term(t.field(), text.replace('x', ' '));
     }
   }

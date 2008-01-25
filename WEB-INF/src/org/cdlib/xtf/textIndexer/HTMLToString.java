@@ -301,7 +301,6 @@ public class HTMLToString
       // If it's numeric, check for the invalid range.
       if (inChars[start] == '#') 
       {
-        String code = in.substring(start+1, end);
         try {
           int codeNum = Integer.parseInt(in.substring(start+1, end));
           if (codeNum >= 128 && codeNum <= 159)

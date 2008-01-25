@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.index.Term;
@@ -44,9 +43,6 @@ public class QuerySpeller extends SimpleQueryRewriter
   /** Used to get spelling suggestions */
   private SpellReader spellReader;
 
-  /** Used to tokenize queries */
-  private Analyzer analyzer;
-  
   /** Set of fields we're allowed to collect terms for */
   private HashSet<String> fieldSet;
   

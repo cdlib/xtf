@@ -19,7 +19,6 @@ package org.apache.lucene.spelt;
 import java.io.IOException;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 
 /** 
  * Test the {@link SpellReader} and {@link SpellWriter} classes 
@@ -28,7 +27,6 @@ import org.apache.lucene.queryParser.QueryParser;
  */
 public class QuerySpellerTest extends SpellReadWriteTest
 {
-  private QueryParser parser = new QueryParser("text", new MinimalAnalyzer());
   private QuerySpeller speller;
   
   protected @Override void setUp() throws Exception

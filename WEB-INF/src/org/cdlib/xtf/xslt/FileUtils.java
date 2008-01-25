@@ -232,8 +232,8 @@ public class FileUtils
     ArrayList<File> files = tempFiles.get();
     if (files != null) {
       for (File f : files) {
-        //if (f.delete())
-        //  files.remove(f);
+        if (f.delete())
+          files.remove(f);
       }
     }
   }

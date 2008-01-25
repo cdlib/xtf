@@ -229,7 +229,6 @@ public class FakeServletRequest implements HttpServletRequest
   public HttpSession getSession(boolean create) {
     if (create)
     {
-      HttpServletRequest req = this;
       return new HttpSession() 
       {
         public Object getAttribute(String arg0) { return null; }
