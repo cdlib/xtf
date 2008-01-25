@@ -63,9 +63,6 @@
    <!-- list of fields to search in 'keyword' search -->
    <xsl:param name="fieldList" select="'text title creator subject description publisher contributor '"/>
    
-   <!-- special hierarchical facet -->
-   <xsl:param name="f1-date"/>
-   
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
    <!-- ====================================================================== -->
@@ -119,11 +116,11 @@
             <xsl:with-param name="sort" select="'totalDocs'"/>
          </xsl:call-template>
          
-         <!-- hierarchical date facet, shows all years strictly ordered by year -->
+         <!-- hierarchical date facet, shows most recent years first -->
          <xsl:call-template name="facet">
             <xsl:with-param name="field" select="'facet-date'"/>
-            <xsl:with-param name="topGroups" select="'*'"/>
-            <xsl:with-param name="sort" select="'value'"/>
+            <xsl:with-param name="topGroups" select="'*[1-10]'"/>
+            <xsl:with-param name="sort" select="'reverseValue'"/>
          </xsl:call-template>
          
          <!-- to support title browse pages -->
@@ -236,8 +233,8 @@
       <facet field="{$field}">
          <xsl:choose>
             <xsl:when test="$expand = $plainName">
-               <!-- in expand mode, always sort by value, and select all top-level groups -->
-               <xsl:attribute name="sortGroupsBy" select="'value'"/>
+               <!-- in expand mode, don't sort by totalDocs, and select all top-level groups -->
+               <xsl:attribute name="sortGroupsBy" select="replace($sort, 'totalDocs', 'value')"/>
                <xsl:attribute name="select" select="concat('*', $selection)"/> 
             </xsl:when>
             <xsl:otherwise>
