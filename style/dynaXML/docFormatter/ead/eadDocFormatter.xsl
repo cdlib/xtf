@@ -1,5 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
    xmlns:xtf="http://cdlib.org/xtf"
+   xmlns:session="java:org.cdlib.xtf.xslt.Session"
+   extension-element-prefixes="session"
    version="2.0">
    
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -87,6 +89,10 @@
          <!-- Creates the body of the finding aid.-->
          <xsl:when test="$doc.view = 'content'">
             <xsl:call-template name="body"/>
+         </xsl:when>
+         <!-- print view -->
+         <xsl:when test="$doc.view='print'">
+            <xsl:call-template name="print"/>
          </xsl:when>
          <!-- Creates the basic frameset.-->
          <xsl:otherwise>
@@ -187,96 +193,25 @@
       <xsl:copy-of select="$brand.header"/>
       
       <table width="100%" border="0" cellpadding="0" cellspacing="0">
-         
-         <!-- BEGIN TOPNAV ROW -->
-         <tr  width="100%">
-            <td class="topnav-outer" colspan="3" width="100%" height="31" align="center" valign="middle">
-               
-               <!-- BEGIN TOPNAV LEFT -->
-               <table width="100%" height="27" border="0" cellpadding="0" cellspacing="0">
-                  <tr>
-                     <td class="topnav-inner" width="25%"  align="center" valign="middle">
-                        
-                        <!-- BEGIN TOPNAV LEFT INNER TABLE -->
-                        <table border="0" cellpadding="0" cellspacing="0">
-                           <tr align="left" valign="middle">
-                              <td width="8" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="8"/></td>
-                              <td width="15" nowrap="nowrap">
-                                 <a href="search" target="{$target}">
-                                    <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
-                                 </a>
-                              </td>
-                              <td nowrap="nowrap">&#160;<a class="topnav" href="search" target="{$target}">Home</a></td>
-                              <td width="10" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td>
-                              
-                           </tr>
-                        </table>
-                        <!-- END TOPNAV LEFT INNER TABLE -->
-                        
-                     </td>
-                     <!-- END TOPNAV LEFT -->
-                     
-                     <td width="2"><img src="{$icon.path}spacer.gif" width="2"/></td>
-                     
-                     <!-- BEGIN TOPNAV CENTER -->
-                     <form action="{$xtfURL}{$dynaxmlPath}" target="{$target}" method="GET">
-                        <input type="hidden" name="docId">
-                           <xsl:attribute name="value">
-                              <xsl:value-of select="$docId"/>
-                           </xsl:attribute>
-                        </input>
-                        <input type="hidden" name="chunk.id">
-                           <xsl:attribute name="value">
-                              <xsl:value-of select="$chunk.id"/>
-                           </xsl:attribute>
-                        </input>              
-                        
-                        <td class="topnav-inner" width="50%" align="center" nowrap="nowrap">
-                           
-                           <!-- BEGIN TOPNAV LEFT INNER TABLE -->
-                           <table border="0" cellpadding="0" cellspacing="0">
-                              <tr align="left" valign="middle">
-                                 <td nowrap="nowrap"><span class="search-text">Search</span>&#160;</td>                      
-                                 <td nowrap="nowrap"><input name="query" type="text" size="15"/>&#160;<input type="submit" value="Go"/></td>
-                              </tr>
-                           </table>
-                           <!-- END TOPNAV LEFT INNER TABLE -->
-                           
-                        </td>
-                     </form>
-                     <!-- END TOPNAV CENTER -->
-                     
-                     <td width="2"><img src="{$icon.path}spacer.gif" width="2"/></td>
-                     
-                     <!-- BEGIN TOPNAV RIGHT -->
-                     <td class="topnav-inner" width="25%" align="center" valign="middle">
-                        
-                        <!-- BEGIN TOPNAV RIGHT INNER TABLE -->
-                        <table border="0" cellpadding="0" cellspacing="0">
-                           <tr align="right" valign="middle">
-                              <td width="15" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td> 
-                              <td width="15" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td> 
-                              <td width="10" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td>
-                              <td width="15" nowrap="nowrap">
-                                 <a class="topnav" href="http://xtf.sourceforge.net" target="{$target}">
-                                    <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
-                                 </a>
-                              </td>
-                              <td nowrap="nowrap">&#160;<a class="topnav" href="http://xtf.sourceforge.net" target="{$target}">Help</a></td>
-                              <td width="8" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="8"/></td>
-                           </tr>
-                        </table>
-                        <!-- END TOPNAV RIGHT INNER TABLE -->
-                        
-                     </td>
-                     <!-- END TOPNAV RIGHT -->
-                     
-                  </tr>
-               </table>
-               
+         <tr>
+            <td width="33%">
+               <a href="{session:getData('queryURL')}" target="_top">Return to Search Results</a>
+            </td>
+            <td align="center" width="34%">
+               <form action="{$xtfURL}{$dynaxmlPath}" target="_top" method="GET">
+                  <input name="query" type="text" size="15"/>
+                  <input type="hidden" name="docId" value="{$docId}"/>
+                  <input type="hidden" name="chunk.id" value="{$chunk.id}"/>
+                  <xsl:text>&#160;</xsl:text>
+                  <input type="submit" value="Search this Finding Aid"/>
+               </form>
+            </td>
+            <td align="right" width="33%">
+               <a href="{$doc.path}&#038;doc.view=print;chunk.id={$chunk.id}" target="_top">Print View</a>
             </td>
          </tr>
       </table>
+      
    </xsl:template>
    
    <!-- ====================================================================== -->
@@ -514,6 +449,34 @@
             </td>
          </tr>
       </table>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Print Template                                                  -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="print">
+      <html>
+         <head>
+            <title>
+               <xsl:value-of select="$doc.title"/>
+            </title>
+            <xsl:copy-of select="$brand.links"/>
+         </head>
+         <body>
+            <hr/>
+            <div align="center">
+               <table width="95%">
+                  <tr>
+                     <td>
+                        <xsl:call-template name="body"/>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <hr/>
+         </body>
+      </html>
    </xsl:template>
    
    <!-- ====================================================================== -->
