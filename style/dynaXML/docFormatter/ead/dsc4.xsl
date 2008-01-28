@@ -1,6 +1,5 @@
 <!--Revision date 21 July 2004-->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   xmlns:xtf="http://cdlib.org/xtf"
-  version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xtf="http://cdlib.org/xtf" version="1.0">
 	<!-- This stylesheet formats the dsc portion of a finding aid.-->
 	<!--It formats components that have 2 container elements of any type.-->
 	<!--It assumes that c01 and optionally <c02> is a high-level description
@@ -24,14 +23,14 @@ any introductory paragraphs.-->
 			<xsl:apply-templates/>
 	</xsl:template>
 	
-	<!--Formats dsc/head and makes it a link target.-->
-	<xsl:template match="dsc/head">
-		<h3>
-			<a name="{xtf:make-id(.)}">
-				<xsl:apply-templates/>
-			</a>
-		</h3>
-	</xsl:template>
+   <!--Formats dsc/head and makes it a link target.-->
+   <xsl:template match="dsc/head">
+      <h3>
+         <a name="{xtf:make-id(.)}">
+            <xsl:apply-templates/>
+         </a>
+      </h3>
+   </xsl:template>
 	
 	<xsl:template match="dsc/p | dsc/note/p">
 		<p style="margin-left:25pt">
@@ -60,6 +59,11 @@ that is used generically throughout the stylesheet.-->
 			<xsl:apply-templates select="origination"/>
 			<xsl:text>&#x20;</xsl:text>
 		</xsl:if>
+	   
+	   <!-- anchors, anchors, everywhere -->
+	   <xsl:if test="unittitle/@id">
+	      <a name="{unittitle/@id}"/>
+	   </xsl:if>
 
 		<!--This choose statement selects between cases where unitdate is a child of
 		unittitle and where it is a separate child of did.-->
