@@ -6,9 +6,17 @@
       <link rel="stylesheet" href="css/default/results.css" type="text/css"/>
    </links>
    
+   <dynaxml.links>
+      <link rel="stylesheet" href="css/default/content.css" type="text/css"/>
+   </dynaxml.links>
+   
    <header>
       <b>XTF Default Interface</b>
    </header>
+   
+   <dynaxml.header>
+      <b>XTF Default Interface</b>
+   </dynaxml.header>
    
    <footer>
       <div class="footer">

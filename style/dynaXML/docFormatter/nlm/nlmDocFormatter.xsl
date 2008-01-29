@@ -158,8 +158,15 @@
          <xsl:when test="($query != '0' and $query != '') and $hit.rank != '0'">
             <xsl:text>#</xsl:text><xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/@hitNum"/>
          </xsl:when>
-         <xsl:when test="($query != '0' and $query != '') and $anchor.id != '0'">
-            <xsl:text>#</xsl:text><xsl:value-of select="key('div-id',$anchor.id)/@xtf:firstHit"/>
+         <xsl:when test="$anchor.id != '0' and $anchor.id != ''">
+            <xsl:choose>
+               <xsl:when test="key('div-id',$anchor.id)/@xtf:firstHit">
+                  <xsl:text>#</xsl:text><xsl:value-of select="key('div-id',$anchor.id)/@xtf:firstHit"/>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:text>#</xsl:text><xsl:value-of select="$anchor.id"/>
+               </xsl:otherwise>
+            </xsl:choose>
          </xsl:when>
          <xsl:when test="$query != '0' and $query != ''">
             <xsl:text>#</xsl:text><xsl:value-of select="/*/@xtf:firstHit"/>
@@ -180,7 +187,6 @@
             <title>
                <xsl:value-of select="$doc.title"/>
             </title>
-            <xsl:copy-of select="$brand.links"/>
             <link rel="stylesheet" type="text/css" href="{$css.path}toc.css"/>
          </head>
          <body>
@@ -243,7 +249,6 @@
             <title>
                <xsl:value-of select="$doc.title"/>
             </title>
-            <xsl:copy-of select="$brand.links"/>
             <link rel="stylesheet" type="text/css" href="{$css.path}{$content.css}"/>
          </head>
          <body>
@@ -320,7 +325,6 @@
             <title>
                <xsl:value-of select="$doc.title"/>
             </title>
-            <xsl:copy-of select="$brand.links"/>
             <link rel="stylesheet" type="text/css" href="{$css.path}{$content.css}"/>
          </head>
          <body bgcolor="white">
@@ -349,7 +353,6 @@
             <title>
                <xsl:value-of select="$doc.title"/>
             </title>
-            <xsl:copy-of select="$brand.links"/>
             <link rel="stylesheet" type="text/css" href="{$css.path}bbar.css"/>
          </head>
          <body>

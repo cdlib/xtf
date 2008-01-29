@@ -159,9 +159,8 @@
       </xsl:choose>
    </xsl:variable>
    
-   <xsl:param name="brand.links" select="$brand.file//links/*"/>
-   <xsl:param name="brand.header" select="$brand.file//header/*"/>
-   <xsl:param name="brand.header.dynaxml.header" select="$brand.file//header.dynaxml.header/*"/>
+   <xsl:param name="brand.links" select="$brand.file//dynaxml.links/*"/>
+   <xsl:param name="brand.header" select="$brand.file//dynaxml.header/*"/>
    <xsl:param name="brand.footer" select="$brand.file//footer/*"/>
    
    <!-- Special Robot Parameters -->

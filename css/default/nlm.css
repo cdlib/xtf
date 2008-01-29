@@ -1,3 +1,7 @@
+/* dynaXML CONTENT stylesheet for NLM */
+
+@import url("content.css");
+
 /* Stylesheet for ViewNLM*.xsl
 Version 2.30 release: June 2007
 Beta release: July 8, 2003
@@ -13,8 +17,6 @@ The classes below are divided into the following sections:
 For classes that may not be self-evident, 
 a comment describing the use preceeds them.
 */
-
-@import url("content.css");
 
 /* --------------- Page setup ------------------------ */
 

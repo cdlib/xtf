@@ -180,7 +180,6 @@
             <title>
                <xsl:value-of select="$doc.title"/>
             </title>
-            <xsl:copy-of select="$brand.links"/>
             <link rel="stylesheet" type="text/css" href="{$css.path}bbar.css"/>
          </head>
          <body>
@@ -457,7 +456,7 @@
    </xsl:template>
    
    <!-- ====================================================================== -->
-   <!-- Print Template                                                  -->
+   <!-- Print Template                                                         -->
    <!-- ====================================================================== -->
    
    <xsl:template name="print">
@@ -466,7 +465,6 @@
             <title>
                <xsl:value-of select="$doc.title"/>
             </title>
-            <xsl:copy-of select="$brand.links"/>
          </head>
          <body>
             <hr/>
