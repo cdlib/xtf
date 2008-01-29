@@ -36,6 +36,11 @@
       POSSIBILITY OF SUCH DAMAGE.
    -->
    
+   <!-- 
+      NOTE: This is rough adaptation of the NLM stylesheets to get them to 
+      work with XTF. It should in no way be considered a production interface 
+   -->
+   
    <!-- ====================================================================== -->
    <!-- Import Common Templates                                                -->
    <!-- ====================================================================== -->
@@ -60,6 +65,7 @@
    <!-- ====================================================================== -->
    
    <xsl:include href="ViewNLM-v2.3.xsl"/>
+   <xsl:include href="search.xsl"/>
    
    <!-- ====================================================================== -->
    <!-- Define Keys                                                            -->
@@ -152,8 +158,11 @@
          <xsl:when test="($query != '0' and $query != '') and $hit.rank != '0'">
             <xsl:text>#</xsl:text><xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/@hitNum"/>
          </xsl:when>
-         <xsl:when test="$anchor.id != '0'">
-            <xsl:text>#</xsl:text><xsl:value-of select="$anchor.id"/>
+         <xsl:when test="($query != '0' and $query != '') and $anchor.id != '0'">
+            <xsl:text>#</xsl:text><xsl:value-of select="key('div-id',$anchor.id)/@xtf:firstHit"/>
+         </xsl:when>
+         <xsl:when test="$query != '0' and $query != ''">
+            <xsl:text>#</xsl:text><xsl:value-of select="/*/@xtf:firstHit"/>
          </xsl:when>
          <xsl:otherwise>
             <xsl:text>#X</xsl:text>
@@ -458,83 +467,6 @@
             </td>
          </tr>
       </table>
-   </xsl:template>
-   
-   <!-- ====================================================================== -->
-   <!-- Search Hits                                                            -->
-   <!-- ====================================================================== -->
-   
-   <xsl:template match="xtf:hit">
-      
-      <a name="{@hitNum}"/>
-      
-      <xsl:call-template name="prev.hit"/>
-      
-      <xsl:choose>
-         <xsl:when test="xtf:term">
-            <span style="background-color: #D6DCE5;">
-               <xsl:apply-templates/>
-            </span>
-         </xsl:when>
-         <xsl:otherwise>
-            <span style="background-color: #D6DCE5; color: red; font-weight: bold;">
-               <xsl:apply-templates/>
-            </span>
-         </xsl:otherwise>
-      </xsl:choose>
-      
-      <xsl:if test="not(@more='yes')">
-         <xsl:call-template name="next.hit"/>
-      </xsl:if>
-      
-   </xsl:template>
-   
-   <xsl:template match="xtf:more">
-      
-      <span style="background-color: #D6DCE5;">
-         <xsl:apply-templates/>
-      </span>
-      
-      <xsl:if test="not(@more='yes')">
-         <xsl:call-template name="next.hit"/>
-      </xsl:if>
-      
-   </xsl:template>
-   
-   <xsl:template match="xtf:term">
-      <span style="color: red; font-weight: bold;">
-         <xsl:apply-templates/>
-      </span>
-   </xsl:template>
-   
-   <xsl:template name="prev.hit">
-      
-      <xsl:variable name="num" select="@hitNum"/>
-      <xsl:variable name="prev" select="$num - 1"/>
-      
-      <a>
-         <xsl:attribute name="href">
-            <xsl:text>#</xsl:text><xsl:value-of select="$prev"/>
-         </xsl:attribute>
-         <img src="{$icon.path}b_inprev.gif" border="0" alt="previous hit"/>
-      </a>
-      <xsl:text>&#160;</xsl:text>
-      
-   </xsl:template>
-   
-   <xsl:template name="next.hit">
-      
-      <xsl:variable name="num" select="@hitNum"/>
-      <xsl:variable name="next" select="$num + 1"/>
-      
-      <xsl:text>&#160;</xsl:text>
-      <a>
-         <xsl:attribute name="href">
-            <xsl:text>#</xsl:text><xsl:value-of select="$next"/>
-         </xsl:attribute>
-         <img src="{$icon.path}b_innext.gif" border="0" alt="next hit"/>
-      </a>
-      
    </xsl:template>
    
 </xsl:stylesheet>

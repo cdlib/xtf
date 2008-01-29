@@ -5,7 +5,7 @@
    version="2.0">
    
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-   <!-- dynaXML Stylesheet                                                     -->
+   <!-- EAD dynaXML Stylesheet                                                 -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    
    <!--
@@ -36,6 +36,11 @@
       CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
       ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
       POSSIBILITY OF SUCH DAMAGE.
+   -->
+   
+   <!-- 
+      NOTE: This is rough adaptation of the EAD Cookbook stylesheets to get them 
+      to work with XTF. It should in no way be considered a production interface 
    -->
    
    <!-- ====================================================================== -->
