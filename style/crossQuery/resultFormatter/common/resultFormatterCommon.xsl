@@ -278,6 +278,9 @@
    <!-- Utility functions for handy editing of URLs                           -->
    <!-- ====================================================================== -->
    
+   <!-- Function to set the value of a URL parameter, replacing the old value 
+        of that parameter if any.
+   -->
    <xsl:function name="editURL:set">
       <xsl:param name="url"/>
       <xsl:param name="param"/>
@@ -294,6 +297,7 @@
       </xsl:choose>
    </xsl:function>
    
+   <!-- Function to remove a URL parameter, if it exists in the URL -->
    <xsl:function name="editURL:remove">
       <xsl:param name="url"/>
       <xsl:param name="param"/>
@@ -302,6 +306,24 @@
       <xsl:value-of select="editURL:clean(replace($url, $regex, ';'))"/>
    </xsl:function>
    
+   <!-- Function to replace an empty URL with a value. If the URL isn't empty
+        it is returned unchanged. By the way, certain parameters such as
+        "expand" are still counted as empty.
+   -->
+   <xsl:function name="editURL:replaceEmpty">
+      <xsl:param name="url"/>
+      <xsl:param name="replacement"/>
+      <xsl:choose>
+         <xsl:when test="matches(editURL:clean($url), '^(expand=[^;]*)*$')">
+            <xsl:value-of select="$replacement"/>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="$url"/>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:function>
+   
+   <!-- Function to clean up a URL, removing leading and trailing ';' chars, etc. -->
    <xsl:function name="editURL:clean">
       <xsl:param name="v0"/>
       <!-- Change old ampersands to new easy-to-read semicolons -->
@@ -917,4 +939,259 @@
       </li>
    </xsl:template>
    
+   <!-- ====================================================================== -->
+   <!-- Facets and their Groups                                                -->
+   <!-- ====================================================================== -->
+   
+   <!-- Facet -->
+   <xsl:template match="facet[matches(@field,'^facet-')]" exclude-result-prefixes="#all">
+      <xsl:variable name="field" select="replace(@field, 'facet-(.*)', '$1')"/>
+      <xsl:variable name="needExpand" select="@totalGroups > count(group)"/>
+      <div class="facet">
+         <div class="facetName">
+            <xsl:apply-templates select="." mode="facetName"/>
+         </div>
+         <xsl:if test="$expand=$field">
+            <div class="facetLess">
+               <i><a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString,'expand')}">less</a></i>
+            </div>
+         </xsl:if>
+         <div class="facetGroup">
+            <table>
+               <xsl:apply-templates/>
+            </table>
+         </div>
+         <xsl:if test="$needExpand and not($expand=$field)">
+            <div class="facetMore">
+               <i><a href="{$xtfURL}{$crossqueryPath}?{editURL:set($queryString,'expand',$field)}">more</a></i>
+            </div>
+         </xsl:if>
+      </div>
+   </xsl:template>
+   
+   <!-- Plain (non-hierarchical) group of a facet -->
+   <xsl:template match="group[not(parent::group) and @totalSubGroups = 0]" exclude-result-prefixes="#all">
+      <xsl:variable name="field" select="replace(ancestor::facet/@field, 'facet-(.*)', '$1')"/>
+      <xsl:variable name="value" select="@value"/>
+      <xsl:variable name="nextName" select="editURL:nextFacetParam($queryString, $field)"/>
+      
+      <xsl:variable name="selectLink" select="
+         concat(xtfURL, $crossqueryPath, '?',
+                editURL:set(editURL:remove($queryString,'browse-all=yes'), 
+                            $nextName, $value))">
+      </xsl:variable>
+      
+      <xsl:variable name="clearLink" select="
+         concat(xtfURL, $crossqueryPath, '?',
+                editURL:replaceEmpty(editURL:remove($queryString, concat('f[0-9]+-',$field,'=',$value)),
+                                     'browse-all=yes'))">
+      </xsl:variable>
+      
+      <tr>
+         <td class="col1">&#8226;</td> <!-- bullet char -->
+         <!-- Display the group name, with '[X]' box if it is selected. -->
+         <xsl:choose>
+            <xsl:when test="//param[matches(@name,concat('f[0-9]+-',$field))]/@value=$value">
+               <td class="col2">
+                  <xsl:apply-templates select="." mode="beforeGroupValue"/>
+                  <i>
+                     <xsl:value-of select="$value"/>
+                  </i>
+                  <xsl:apply-templates select="." mode="afterGroupValue"/>
+               </td>
+               <td class="col3">
+                  <a href="{$clearLink}">[X]</a>
+               </td>
+            </xsl:when>
+            <xsl:otherwise>
+               <td class="col2">
+                  <xsl:apply-templates select="." mode="beforeGroupValue"/>
+                  <a href="{$selectLink}">
+                     <xsl:value-of select="$value"/>
+                  </a>
+                  <xsl:apply-templates select="." mode="afterGroupValue"/>
+               </td>
+               <td class="col3">
+                  (<xsl:value-of select="@totalDocs"/>)
+               </td>
+            </xsl:otherwise>
+         </xsl:choose>
+      </tr>
+   </xsl:template>
+   
+   <!-- Hierarchical group or sub-group of facet -->
+   <xsl:template match="group[parent::group or @totalSubGroups > 0]" exclude-result-prefixes="#all">
+      <xsl:variable name="field" select="replace(ancestor::facet/@field, 'facet-(.*)', '$1')"/>
+      
+      <!-- Value of the parent of this group (if any) -->
+      <xsl:variable name="parentValue">
+         <xsl:for-each select="parent::*/ancestor::group/@value">
+            <xsl:value-of select="concat(.,'::')"/>
+         </xsl:for-each>
+         <xsl:value-of select="parent::group/@value"/>
+      </xsl:variable>
+      
+      <!-- The full hierarchical value of this group, including its ancestor groups if any -->
+      <xsl:variable name="fullValue" select="if ($parentValue != '') then concat($parentValue,'::',@value) else @value"/>
+      
+      <!-- Make a query string with this value's parameter (and ancestors and children) cleared -->
+      <xsl:variable name="clearedString">
+         <xsl:analyze-string select="$queryString" regex="{concat('f[0-9]+-',$field,'=([^;]+)')}">
+            <xsl:matching-substring>
+               <xsl:variable name="paramValue" select="regex-group(1)"/>
+               <xsl:choose>
+                  <!-- Clear this group, its ancestors, and it descendants -->
+                  <xsl:when test="$paramValue = $fullValue"/>
+                  <xsl:when test="matches($paramValue, concat('^', $fullValue, '::'))"/>
+                  <xsl:when test="matches($fullValue, concat('^', $paramValue, '::'))"/>
+                  <!-- Keep everything else -->
+                  <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+               </xsl:choose>
+            </xsl:matching-substring>
+            <xsl:non-matching-substring><xsl:value-of select="."/></xsl:non-matching-substring>
+         </xsl:analyze-string>
+      </xsl:variable>
+      
+      <!-- Pick an unused number for the next parameter -->
+      <xsl:variable name="nextName" select="editURL:nextFacetParam($clearedString, $field)"/>
+
+      <!-- Clicking on this node will do one of three things:
+           (1) Expand the node;
+           (2) Collapse the node (returning to the parent level); or
+           (3) Clear this facet
+      -->
+
+      <!-- Link to expand or select a facet group -->
+      <xsl:variable name="selectLink" select="
+         concat(xtfURL, $crossqueryPath, '?',
+                editURL:remove(editURL:set($clearedString, $nextName, $fullValue), 'browse-all'))">
+      </xsl:variable>
+      
+      <!-- Link to collapse a facet group -->
+      <xsl:variable name="collapseLink" select="
+         concat(xtfURL, $crossqueryPath, '?',
+                editURL:set($clearedString, $nextName, $parentValue))">
+      </xsl:variable>
+
+      <!-- Link to clear the facet -->
+      <xsl:variable name="clearLink" select="
+         concat(xtfURL, $crossqueryPath, '?',
+                editURL:clean(editURL:replaceEmpty($clearedString, 'browse-all=yes')))">
+      </xsl:variable>
+      
+      <!-- Figure out which choice to give the user for this group -->
+      <tr>
+         <xsl:choose>
+            <!-- selected terminal node: click [X] to collapse -->
+            <xsl:when test="count(group) = 0 and //param[matches(@name,concat('f[0-9]+-',$field))]/@value=$fullValue">
+               <td class="col1">&#8226;</td> <!-- bullet char -->
+               <td class="col2">
+                  <xsl:apply-templates select="." mode="beforeGroupValue"/>
+                  <i>
+                     <xsl:value-of select="@value"/>
+                  </i>
+                  <xsl:apply-templates select="." mode="afterGroupValue"/>
+               </td>
+               <td class="col3"><a href="{$collapseLink}">[X]</a></td>
+            </xsl:when>
+            
+            <!-- non-selected terminal node: click to select -->
+            <xsl:when test="count(group) = 0 and @totalSubGroups = 0">
+               <td class="col1">&#8226;</td> <!-- bullet char -->
+               <td class="col2">
+                  <xsl:apply-templates select="." mode="beforeGroupValue"/>
+                  <a href="{$selectLink}">
+                     <xsl:value-of select="@value"/>
+                  </a>
+                  <xsl:apply-templates select="." mode="afterGroupValue"/>
+               </td>
+               <td class="col3">
+                  (<xsl:value-of select="@totalDocs"/>)
+               </td>
+            </xsl:when>
+            
+            <!-- closed node: click to expand -->
+            <xsl:when test="count(group) = 0">
+               <td class="col1">
+                  <a href="{$selectLink}">
+                     <img src="{$icon.path}/i_expand.gif" border="0" alt="expand"/>
+                  </a>
+               </td>
+               <td class="col2">
+                  <xsl:apply-templates select="." mode="beforeGroupValue"/>
+                  <a href="{$selectLink}">
+                     <xsl:value-of select="@value"/>
+                  </a>
+                  <xsl:apply-templates select="." mode="afterGroupValue"/>
+               </td>
+               <td class="col3">
+                  (<xsl:value-of select="@totalDocs"/>)
+               </td>
+            </xsl:when>
+               
+            <!-- top-level open node: click to clear the facet -->
+            <xsl:when test="not(parent::group)">
+               <td class="col1">
+                  <a href="{$clearLink}">
+                     <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
+                  </a>
+               </td>
+               <td class="col2">
+                  <xsl:apply-templates select="." mode="beforeGroupValue"/>
+                  <a href="{$clearLink}">
+                     <xsl:value-of select="@value"/>
+                  </a>
+                  <xsl:apply-templates select="." mode="afterGroupValue"/>
+               </td>
+               <td class="col3"/>
+            </xsl:when>
+               
+            <!-- mid-level open node: click to collapse -->
+            <xsl:otherwise>
+               <td class="col1">
+                  <a href="{$collapseLink}">
+                     <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
+                  </a>
+               </td>
+               <td colspan="col2">
+                  <xsl:apply-templates select="." mode="beforeGroupValue"/>
+                  <a href="{$collapseLink}">
+                     <xsl:value-of select="@value"/>
+                  </a>
+                  <xsl:apply-templates select="." mode="afterGroupValue"/>
+               </td>
+               <td colspan="col3"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </tr>
+      
+      <!-- Handle sub-groups if any -->
+      <xsl:if test="group">
+         <tr>
+            <td class="col1"/>
+            <td class="col2" colspan="2">
+               <div class="facetSubGroup">
+                  <table border="0" cellspacing="0" cellpadding="0">
+                     <xsl:apply-templates/>                  
+                  </table>
+               </div>
+            </td>
+         </tr>
+      </xsl:if>
+   </xsl:template>
+
+   <!-- Default template to display the name of a facet. Override to specialize. -->
+   <xsl:template match="facet" mode="facetName" priority="-1">
+      <xsl:variable name="rawName" select="replace(@field, '^facet-', '')"/>
+      <xsl:value-of select="concat(upper-case(substring($rawName, 1, 1)), substring($rawName, 2))"/>
+   </xsl:template>
+
+   <!-- Default template to add data before the name of a facet group. Override to specialize. -->
+   <xsl:template match="group" mode="beforeGroupValue" priority="-1">
+   </xsl:template>
+
+   <!-- Default template to add data after the name of a facet group. Override to specialize. -->
+   <xsl:template match="group" mode="afterGroupValue" priority="-1">
+   </xsl:template>
+
 </xsl:stylesheet>

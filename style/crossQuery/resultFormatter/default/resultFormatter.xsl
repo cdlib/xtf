@@ -113,6 +113,7 @@
       <html>
          <head>
             <title>XTF: Search Form</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <xsl:copy-of select="$brand.links"/>
          </head>
          <body>
@@ -411,6 +412,7 @@
       <html>
          <head>
             <title>XTF: Search Results</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <xsl:copy-of select="$brand.links"/>
             <!-- AJAX support -->
             <script src="script/yui/yahoo-dom-event.js" type="application/javascript"/> 
@@ -563,6 +565,7 @@
       <html>
          <head>
             <title>XTF: Search Results</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <xsl:copy-of select="$brand.links"/>
             <!-- AJAX support -->
             <script src="script/yui/yahoo-dom-event.js" type="application/javascript"/> 
@@ -918,159 +921,6 @@
          </table>
       </div>
       
-   </xsl:template>
-   
-   <!-- ====================================================================== -->
-   <!-- Facet and their Groups                                                 -->
-   <!-- ====================================================================== -->
-   
-   <!-- Facet -->
-   <xsl:template match="facet[matches(@field,'^facet-')]" exclude-result-prefixes="#all">
-      <xsl:variable name="field" select="replace(@field, 'facet-(.*)', '$1')"/>
-      <xsl:variable name="needExpand" select="@totalGroups > count(group)"/>
-      <div class="facet">
-         <h4>
-            <xsl:value-of select="concat(upper-case(substring($field, 1, 1)), substring($field, 2))"/>
-         </h4>
-         <xsl:if test="$expand=$field">
-            <blockquote>
-               <i><a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString,'expand')}">less</a></i>
-            </blockquote>
-         </xsl:if>
-         <ul>
-            <xsl:apply-templates/>
-         </ul>
-         <xsl:if test="$needExpand and not($expand=$field)">
-            <blockquote>
-               <i><a href="{$xtfURL}{$crossqueryPath}?{editURL:set($queryString,'expand',$field)}">more</a></i>
-            </blockquote>
-         </xsl:if>
-      </div>
-   </xsl:template>
-   
-   <!-- Plain (non-hierarchical) group of a facet -->
-   <xsl:template match="group[not(parent::group) and @totalSubGroups = 0]" exclude-result-prefixes="#all">
-      <xsl:variable name="field" select="replace(ancestor::facet/@field, 'facet-(.*)', '$1')"/>
-      <xsl:variable name="value" select="@value"/>
-      <xsl:variable name="nextName" select="editURL:nextFacetParam($queryString, $field)"/>
-      <li>
-         <!-- Display the group name, with '[X]' box if it is selected. -->
-         <xsl:choose>
-            <xsl:when test="//param[matches(@name,concat('f[0-9]+-',$field))]/@value=$value">
-               <i><xsl:value-of select="$value"/></i>&#160;
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString, concat('f[0-9]+-',$field,'=',$value))}">[X]</a>
-            </xsl:when>
-            <xsl:otherwise>
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set(editURL:remove($queryString,'browse-all=yes'), $nextName, $value)}">
-                  <xsl:value-of select="$value"/>
-               </a>
-               &#160;(<xsl:value-of select="@totalDocs"/>)
-            </xsl:otherwise>
-         </xsl:choose>
-      </li>
-   </xsl:template>
-   
-   <!-- Hierarchical group or sub-group of facet -->
-   <xsl:template match="group[parent::group or @totalSubGroups > 0]" exclude-result-prefixes="#all">
-      <xsl:variable name="field" select="replace(ancestor::facet/@field, 'facet-(.*)', '$1')"/>
-      
-      <!-- Value of the parent of this group (if any) -->
-      <xsl:variable name="parentValue">
-         <xsl:for-each select="parent::*/ancestor::group/@value">
-            <xsl:value-of select="concat(.,'::')"/>
-         </xsl:for-each>
-         <xsl:value-of select="parent::group/@value"/>
-      </xsl:variable>
-      
-      <!-- The full hierarchical value of this group, including its ancestor groups if any -->
-      <xsl:variable name="fullValue" select="if ($parentValue != '') then concat($parentValue,'::',@value) else @value"/>
-      
-      <!-- Make a query string with this value's parameter (and ancestors and children) are cleared -->
-      <xsl:variable name="clearedString">
-         <xsl:analyze-string select="$queryString" regex="{concat('f[0-9]+-',$field,'=([^;]+)')}">
-            <xsl:matching-substring>
-               <xsl:variable name="paramValue" select="regex-group(1)"/>
-               <xsl:choose>
-                  <!-- Clear this group, its ancestors, and it descendants -->
-                  <xsl:when test="$paramValue = 'browse-all'"/>
-                  <xsl:when test="$paramValue = $fullValue"/>
-                  <xsl:when test="matches($paramValue, concat('^', $fullValue, '::'))"/>
-                  <xsl:when test="matches($fullValue, concat('^', $paramValue, '::'))"/>
-                  <!-- Keep everything else -->
-                  <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
-               </xsl:choose>
-            </xsl:matching-substring>
-            <xsl:non-matching-substring><xsl:value-of select="."/></xsl:non-matching-substring>
-         </xsl:analyze-string>
-      </xsl:variable>
-      
-      <!-- Pick an unused number for the next parameter -->
-      <xsl:variable name="nextName" select="editURL:nextFacetParam($clearedString, $field)"/>
-      
-      <!-- Clicking on this node will do one of three things:
-           (1) Expand the node;
-           (2) Collapse the node (returning to the parent level); or
-           (3) Clear this facet
-      -->
-      <li>
-         <xsl:choose>
-            <!-- selected terminal node: click to collapse -->
-            <xsl:when test="count(group) = 0 and //param[matches(@name,concat('f[0-9]+-',$field))]/@value=$fullValue">
-               <i><xsl:value-of select="@value"/></i>&#160;
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $parentValue)}">[X]</a>
-            </xsl:when>
-            
-            <!-- non-selected terminal node: click to select -->
-            <xsl:when test="count(group) = 0 and @totalSubGroups = 0">
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $fullValue)}">
-                  <xsl:value-of select="@value"/>
-               </a>
-               &#160;(<xsl:value-of select="@totalDocs"/>)
-            </xsl:when>
-            
-            <!-- closed node: click to expand -->
-            <xsl:when test="count(group) = 0">
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $fullValue)}">
-                  <img src="{$icon.path}/i_expand.gif" border="0" alt="expand"/>
-               </a>
-               <xsl:text>&#160;</xsl:text>
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $fullValue)}">
-                  <xsl:value-of select="@value"/>
-               </a>
-               <xsl:text>&#160;</xsl:text>
-               (<xsl:value-of select="@totalDocs"/>)
-            </xsl:when>
-            
-            <!-- top-level open node: click to clear the facet -->
-            <xsl:when test="not(parent::group)">
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($clearedString)}">
-                  <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
-               </a>
-               <xsl:text>&#160;</xsl:text>
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($clearedString)}">
-                  <xsl:value-of select="@value"/>
-               </a>
-            </xsl:when>
-            
-            <!-- mid-level open node: click to collapse -->
-            <xsl:otherwise>
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $parentValue)}">
-                  <img src="{$icon.path}/i_colpse.gif" border="0" alt="collapse"/>
-               </a>
-               <xsl:text>&#160;</xsl:text>
-               <a href="{$xtfURL}{$crossqueryPath}?{editURL:set($clearedString, $nextName, $parentValue)}">
-                  <xsl:value-of select="@value"/>
-               </a>
-            </xsl:otherwise>
-         </xsl:choose>
-         
-         <!-- Handle sub-groups if any -->
-         <xsl:if test="group">
-            <ul>
-               <xsl:apply-templates/>
-            </ul>
-         </xsl:if>
-      </li>
    </xsl:template>
    
    <!-- ====================================================================== -->

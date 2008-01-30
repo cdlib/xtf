@@ -112,14 +112,14 @@
          -->
          <xsl:call-template name="facet">
             <xsl:with-param name="field" select="'facet-subject'"/>
-            <xsl:with-param name="topGroups" select="'*[1-10]'"/>
+            <xsl:with-param name="topGroups" select="'*[1-5]'"/>
             <xsl:with-param name="sort" select="'totalDocs'"/>
          </xsl:call-template>
          
          <!-- hierarchical date facet, shows most recent years first -->
          <xsl:call-template name="facet">
             <xsl:with-param name="field" select="'facet-date'"/>
-            <xsl:with-param name="topGroups" select="'*[1-10]'"/>
+            <xsl:with-param name="topGroups" select="'*[1-5]'"/>
             <xsl:with-param name="sort" select="'reverseValue'"/>
          </xsl:call-template>
          
