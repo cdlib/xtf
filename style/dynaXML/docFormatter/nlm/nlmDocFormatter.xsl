@@ -1,6 +1,9 @@
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="2.0" 
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-   xmlns:xtf="http://cdlib.org/xtf">
+   xmlns:xtf="http://cdlib.org/xtf"
+   xmlns:session="java:org.cdlib.xtf.xslt.Session"
+   extension-element-prefixes="session"
+   exclude-result-prefixes="#all">
    
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!-- NLM dynaXML Stylesheet                                                 -->
@@ -47,12 +50,16 @@
    
    <xsl:import href="../common/docFormatterCommon.xsl"/>
    
-   <xsl:output method="html" 
+   <!-- ====================================================================== -->
+   <!-- Output Format                                                          -->
+   <!-- ====================================================================== -->
+   
+   <xsl:output method="xhtml" 
       indent="yes" 
       encoding="UTF-8" 
+      media-type="text/html"
       doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
-   
    
    <!-- ====================================================================== -->
    <!-- Strip Space                                                            -->
@@ -316,7 +323,7 @@
    </xsl:template>
    
    <!-- ====================================================================== -->
-   <!-- Print Template                                                  -->
+   <!-- Print Template                                                         -->
    <!-- ====================================================================== -->
    
    <xsl:template name="print">
@@ -341,135 +348,6 @@
             <hr class="hr-title"/>
          </body>
       </html>
-   </xsl:template>
-   
-   <!-- ====================================================================== -->
-   <!-- Button Bar Templates                                                   -->
-   <!-- ====================================================================== -->
-   
-   <xsl:template name="bbar">
-      <html>
-         <head>
-            <title>
-               <xsl:value-of select="$doc.title"/>
-            </title>
-            <link rel="stylesheet" type="text/css" href="{$css.path}bbar.css"/>
-         </head>
-         <body>
-            <xsl:call-template name="bbar.table"/>
-         </body>
-      </html>
-   </xsl:template>
-   
-   <xsl:template name="bbar.table">
-      
-      <xsl:variable name="target">
-         <xsl:text>_top</xsl:text>
-      </xsl:variable>
-      
-      <xsl:copy-of select="$brand.header"/>
-      
-      <table width="100%" border="0" cellpadding="0" cellspacing="0">
-         
-         <!-- BEGIN TOPNAV ROW -->
-         <tr  width="100%">
-            <td class="topnav-outer" colspan="3" width="100%" height="31" align="center" valign="middle">
-               
-               <!-- BEGIN TOPNAV LEFT -->
-               <table width="100%" height="27" border="0" cellpadding="0" cellspacing="0">
-                  <tr>
-                     <td class="topnav-inner" width="25%"  align="center" valign="middle">
-                        
-                        <!-- BEGIN TOPNAV LEFT INNER TABLE -->
-                        <table border="0" cellpadding="0" cellspacing="0">
-                           <tr align="left" valign="middle">
-                              <td width="8" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="8"/></td>
-                              <td width="15" nowrap="nowrap">
-                                 <a href="search" target="{$target}">
-                                    <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
-                                 </a>
-                              </td>
-                              <td nowrap="nowrap">&#160;<a class="topnav" href="search" target="{$target}">Home</a></td>
-                              <td width="10" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td>
-                              
-                              <td width="15" nowrap="nowrap">
-                                 <a class="topnav" target="{$target}">
-                                    <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;doc.view=print&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/></xsl:attribute>
-                                    <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
-                                 </a>
-                              </td>
-                              
-                              <td nowrap="nowrap">
-                                 <xsl:text>&#160;</xsl:text>
-                                 <a class="topnav" target="{$target}">
-                                    <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;doc.view=print&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/></xsl:attribute>
-                                    <xsl:text>Print View</xsl:text>
-                                 </a>
-                                 <xsl:text>&#160;</xsl:text>
-                              </td>
-                           </tr>
-                        </table>
-                        <!-- END TOPNAV LEFT INNER TABLE -->
-                        
-                     </td>
-                     <!-- END TOPNAV LEFT -->
-                     
-                     <td width="2"><img src="{$icon.path}spacer.gif" width="2"/></td>
-                     
-                     <!-- BEGIN TOPNAV CENTER -->
-                     <form action="{$xtfURL}{$dynaxmlPath}" target="{$target}" method="GET">
-                        <input type="hidden" name="docId">
-                           <xsl:attribute name="value">
-                              <xsl:value-of select="$docId"/>
-                           </xsl:attribute>
-                        </input>     
-                        
-                        <td class="topnav-inner" width="50%" align="center" nowrap="nowrap">
-                           
-                           <!-- BEGIN TOPNAV LEFT INNER TABLE -->
-                           <table border="0" cellpadding="0" cellspacing="0">
-                              <tr align="left" valign="middle">
-                                 <td nowrap="nowrap"><span class="search-text">Search</span>&#160;</td>                      
-                                 <td nowrap="nowrap"><input name="query" type="text" size="15"/>&#160;<input type="submit" value="Go"/></td>
-                              </tr>
-                           </table>
-                           <!-- END TOPNAV LEFT INNER TABLE -->
-                           
-                        </td>
-                     </form>
-                     <!-- END TOPNAV CENTER -->
-                     
-                     <td width="2"><img src="{$icon.path}spacer.gif" width="2"/></td>
-                     
-                     <!-- BEGIN TOPNAV RIGHT -->
-                     <td class="topnav-inner" width="25%" align="center" valign="middle">
-                        
-                        <!-- BEGIN TOPNAV RIGHT INNER TABLE -->
-                        <table border="0" cellpadding="0" cellspacing="0">
-                           <tr align="right" valign="middle">
-                              <td width="15" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td> 
-                              <td width="15" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td> 
-                              <td width="10" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="10"/></td>
-                              <td width="15" nowrap="nowrap">
-                                 <a class="topnav" href="http://xtf.sourceforge.net" target="{$target}">
-                                    <img src="{$icon.path}arrow.gif" width="15" height="15" border="0"/>
-                                 </a>
-                              </td>
-                              <td nowrap="nowrap">&#160;<a class="topnav" href="http://xtf.sourceforge.net" target="{$target}">Help</a></td>
-                              <td width="8" nowrap="nowrap"><img src="{$icon.path}spacer.gif" width="8"/></td>
-                           </tr>
-                        </table>
-                        <!-- END TOPNAV RIGHT INNER TABLE -->
-                        
-                     </td>
-                     <!-- END TOPNAV RIGHT -->
-                     
-                  </tr>
-               </table>
-               
-            </td>
-         </tr>
-      </table>
    </xsl:template>
    
 </xsl:stylesheet>

@@ -1,8 +1,9 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+<xsl:stylesheet version="2.0" 
+   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:xtf="http://cdlib.org/xtf"
    xmlns:session="java:org.cdlib.xtf.xslt.Session"
    extension-element-prefixes="session"
-   version="2.0">
+   exclude-result-prefixes="#all">
    
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!-- EAD dynaXML Stylesheet                                                 -->
@@ -53,11 +54,12 @@
    <!-- Output Format                                                          -->
    <!-- ====================================================================== -->
    
-   <xsl:output method="html"
-      indent="yes"
-      encoding="utf-8"
+   <xsl:output method="xhtml" 
+      indent="yes" 
+      encoding="UTF-8" 
       media-type="text/html"
-      doctype-public="-//W3C//DTD HTML 4.0//EN"/>
+      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
    
    <!-- ====================================================================== -->
    <!-- Strip Space                                                            -->
@@ -168,54 +170,6 @@
             <xsl:text>#X</xsl:text>
          </xsl:when>
       </xsl:choose>
-   </xsl:template>
-   
-   <!-- ====================================================================== -->
-   <!-- Button Bar Templates                                                   -->
-   <!-- ====================================================================== -->
-   
-   <xsl:template name="bbar">
-      <html>
-         <head>
-            <title>
-               <xsl:value-of select="$doc.title"/>
-            </title>
-            <link rel="stylesheet" type="text/css" href="{$css.path}bbar.css"/>
-         </head>
-         <body>
-            <xsl:call-template name="bbar.table"/>
-         </body>
-      </html>
-   </xsl:template>
-   
-   <xsl:template name="bbar.table">
-      
-      <xsl:variable name="target">
-         <xsl:text>_top</xsl:text>
-      </xsl:variable>
-      
-      <xsl:copy-of select="$brand.header"/>
-      
-      <table width="100%" border="0" cellpadding="0" cellspacing="0">
-         <tr>
-            <td width="33%">
-               <a href="{session:getData('queryURL')}" target="_top">Return to Search Results</a>
-            </td>
-            <td align="center" width="34%">
-               <form action="{$xtfURL}{$dynaxmlPath}" target="_top" method="GET">
-                  <input name="query" type="text" size="15"/>
-                  <input type="hidden" name="docId" value="{$docId}"/>
-                  <input type="hidden" name="chunk.id" value="{$chunk.id}"/>
-                  <xsl:text>&#160;</xsl:text>
-                  <input type="submit" value="Search this Finding Aid"/>
-               </form>
-            </td>
-            <td align="right" width="33%">
-               <a href="{$doc.path}&#038;doc.view=print;chunk.id={$chunk.id}" target="_top">Print View</a>
-            </td>
-         </tr>
-      </table>
-      
    </xsl:template>
    
    <!-- ====================================================================== -->

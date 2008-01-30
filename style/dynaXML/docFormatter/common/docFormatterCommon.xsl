@@ -1,6 +1,8 @@
 <xsl:stylesheet version="2.0" 
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:xtf="http://cdlib.org/xtf"
+   xmlns:session="java:org.cdlib.xtf.xslt.Session"
+   extension-element-prefixes="session"
    exclude-result-prefixes="#all">
    
    <!-- ====================================================================== -->
@@ -168,6 +170,49 @@
    <xsl:param name="http.User-Agent"/>
    <!-- WARNING: Inclusion of 'Wget' is for testing only, please remove before going into production -->
    <xsl:param name="robots" select="'Googlebot|Slurp|msnbot|Teoma|Wget'"/>
+   
+   
+   <!-- ====================================================================== -->
+   <!-- Button Bar Templates                                                   -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="bbar">
+      <html>
+         <head>
+            <title>
+               <xsl:value-of select="$doc.title"/>
+            </title>
+            <link rel="stylesheet" type="text/css" href="{$css.path}bbar.css"/>
+         </head>
+         <body>
+            <div class="bbar">
+               <table border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                     <td colspan="3">
+                        <xsl:copy-of select="$brand.header"/>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td class="left">
+                        <a href="{session:getData('queryURL')}" target="_top">Return to Search Results</a>
+                     </td>
+                     <td width="34%" class="center">
+                        <form action="{$xtfURL}{$dynaxmlPath}" target="_top" method="get">
+                           <input name="query" type="text" size="15"/>
+                           <input type="hidden" name="docId" value="{$docId}"/>
+                           <input type="hidden" name="chunk.id" value="{$chunk.id}"/>
+                           <input type="submit" value="Search this Book"/>
+                        </form>
+                     </td>
+                     <td class="right">
+                        <a href="{$doc.path}&#038;doc.view=print;chunk.id={$chunk.id}" target="_top">Print View</a>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </body>
+      </html>
+   </xsl:template>
    
    <!-- ====================================================================== -->
    <!-- Robot Template                                                         -->

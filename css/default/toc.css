@@ -1,45 +1,77 @@
 /* dynaXML TOC stylesheet */
 
 div.toc {
-                margin-left: 20px;
-                margin-right: 20px;
+   margin-left: 20px;
+   margin-right: 20px;
+}
+
+table.title {
+   width: 100%;
+}
+
+table.toc-line {
+   width: 100%;
+}
+
+td.hits {
+   text-align: right;
+   vertical-align: top;
+}
+
+td.expand {
+   width: 15px;
+   text-align: center;
+   vertical-align: top;
+}
+
+td.divnum {
+   width: 40px;
+   text-align: right;
+   vertical-align: top;
+   font-weight: bold;
+}
+
+td.head {
+   vertical-align: top;
 }
 
 .hit-count {
-                color: red;
-                font-weight: bold;
-}
-
-.expand-collapse {
-                color: #6699CC;
-                text-decoration: none;
+   color: red;
 }
 
 .toc-hi {
-                background-color: #FFCC66;
+   background-color: #FFCC66;
+   font-weight: bold;
+}
+
+div.hitSummary {
+   text-align: center;
+}
+
+div.expandAll {
+   text-align: center;
 }
 
 div.l1 {
-font-size: 12pt;
-text-indent: -10%;
-margin-left: 10%;
-margin-top: 0;
-margin-bottom: 0;
+   font-size: 12pt;
+   text-indent: -20px;
+   margin-left: 20px;
+   margin-top: 0;
+   margin-bottom: 0;
 }
 
 div.l2 {
-font-size: 11pt;
-text-indent: -10%;
-margin-left: 10%;
-margin-top: 0;
-margin-bottom: 0;
+   font-size: 11pt;
+   text-indent: -20px;
+   margin-left: 20px;
+   margin-top: 0;
+   margin-bottom: 0;
 }
 
 div.l3, div.l4, div.l5, div.l6, div.l7 {
-font-size: 10pt;
-text-indent: -10%;
-margin-left: 10%;
-margin-top: 0;
-margin-bottom: 0;
+   font-size: 10pt;
+   text-indent: -20px;
+   margin-left: 20px;
+   margin-top: 0;
+   margin-bottom: 0;
 }
-
