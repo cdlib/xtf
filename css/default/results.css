@@ -121,30 +121,27 @@ div.results table td.facet{
 div.results table td.docHit{
 }
 
-div.results table table{
+div.docHit table{
    padding: 1em;
 }
 
-div.results table td.col1{
+div.docHit table td.col1{
    width: 4%;
    text-align: left;
 }
 
-div.results table td.col2{
+div.docHit table td.col2{
    width: 10%;
    text-align: right;
 }
 
-div.results table td.col3{
+div.docHit table td.col3{
    width: auto;
    text-align: left;
 }
-div.results table td.col4{
+div.docHit table td.col4{
    width: 10%;
    text-align: right;
-}
-
-div.facet {
 }
 
 div.docHit {
@@ -162,4 +159,43 @@ div.docHit {
 
 .hitsection {
    background-color: #D6DCE5;
+}
+
+div.facet {
+}
+
+div.facetName {
+   font-weight: bold;
+   margin-top: 1em;
+   margin-bottom: 0.5em;
+}
+
+div.facet table {
+   border-style: none;
+}
+
+div.facet table td.col1 {
+   width: 12px;
+   text-align: center;
+   vertical-align: middle;
+   padding-right: 0.5em;
+}
+
+div.facet table td.col2 {
+   padding-bottom: 0.1em;
+   padding-top: 0.1em;
+}
+
+div.facet table td.col3 {
+   text-align: right;
+}
+
+div.facetMore {
+   margin-top: 0.5em;
+   margin-left: 2em;
+}
+
+div.facetLess {
+   margin-left: 2em;
+   margin-bottom: 0.5em;
 }
