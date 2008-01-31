@@ -31,7 +31,7 @@ package org.cdlib.xtf.textEngine.facet;
  */
 import java.util.HashSet;
 
-/** Select the top level of the hierarchy that has a choice. */
+/** Select all siblings of each incoming group. */
 public class SiblingSelector extends GroupSelector 
 {
   private HashSet parents = new HashSet();
