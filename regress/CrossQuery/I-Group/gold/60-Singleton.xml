@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="9" startDoc="0" endDoc="0">
+   <facet field="geography-sort" totalGroups="1" totalDocs="9">
+      <group value="US" rank="1" totalSubGroups="3" totalDocs="9" startDoc="0" endDoc="0">
+         <group value="California" rank="1" totalSubGroups="4" totalDocs="7" startDoc="0"
+                endDoc="0"/>
+         <group value="Nevada" rank="2" totalSubGroups="2" totalDocs="2" startDoc="0"
+                endDoc="0"/>
+         <group value="Oregon" rank="3" totalSubGroups="1" totalDocs="1" startDoc="0"
+                endDoc="0"/>
+      </group>
+   </facet>
+</crossQueryResult>

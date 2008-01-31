@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="0" indexPath="IndexDB">
+  <facet field="geography-sort" select="*|**[singleton]::*"/>
+  <allDocs/>
+</query>

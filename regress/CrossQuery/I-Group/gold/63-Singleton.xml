@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="10" startDoc="0" endDoc="0">
+   <facet field="geography-sort" totalGroups="2" totalDocs="10">
+      <group value="US" rank="1" totalSubGroups="3" totalDocs="9" startDoc="0" endDoc="0"/>
+      <group value="Canada" rank="2" totalSubGroups="1" totalDocs="1" startDoc="0"
+             endDoc="0"/>
+   </facet>
+</crossQueryResult>
