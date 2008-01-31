@@ -48,8 +48,8 @@
                <subject>Urban Studies</subject>
                <type>text</type>
                <collection>UC</collection>
-               <geography>Canada::Quebec::Toronto</geography>
-               <geography-sort>Canada::Ontario:Toronto</geography-sort>
+               <geography>Canada::Ontario::Toronto</geography>
+               <geography-sort>Canada::Ontario::Toronto</geography-sort>
             </meta>
          </docHit>
          <docHit rank="4" file="doc4.xml" totalHits="0">
