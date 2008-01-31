@@ -210,6 +210,8 @@ public class SelectorParser implements SelectorParserConstants {
               s = new SiblingSelector();
           else if( t.toString().equalsIgnoreCase("page") )
               s = new PageSelector();
+          else if( t.toString().equalsIgnoreCase("singleton") )
+              s = new SingletonSelector();
           else
               {if (true) throw new ParseException( "Unknown filter '" + t.toString() + "'" );}
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -320,7 +322,10 @@ public class SelectorParser implements SelectorParserConstants {
    }
 
   public SelectorParser(java.io.InputStream stream) {
-    jj_input_stream = new SimpleCharStream(stream, 1, 1);
+     this(stream, null);
+  }
+  public SelectorParser(java.io.InputStream stream, String encoding) {
+    try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new SelectorParserTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -329,7 +334,10 @@ public class SelectorParser implements SelectorParserConstants {
   }
 
   public void ReInit(java.io.InputStream stream) {
-    jj_input_stream.ReInit(stream, 1, 1);
+     ReInit(stream, null);
+  }
+  public void ReInit(java.io.InputStream stream, String encoding) {
+    try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;

@@ -208,6 +208,8 @@ GroupSelector filter() :
               s = new SiblingSelector();
           else if( t.toString().equalsIgnoreCase("page") )
               s = new PageSelector();
+          else if( t.toString().equalsIgnoreCase("singleton") )
+              s = new SingletonSelector();
           else
               throw new ParseException( "Unknown filter '" + t.toString() + "'" );
       }
