@@ -101,6 +101,10 @@
          <xsl:when test="$doc.view='print'">
             <xsl:call-template name="print"/>
          </xsl:when>
+         <!-- citation -->
+         <xsl:when test="$doc.view='citation'">
+            <xsl:call-template name="citation"/>
+         </xsl:when>
          <!-- Creates the basic frameset.-->
          <xsl:otherwise>
             <xsl:call-template name="frameset"/>

@@ -205,6 +205,8 @@
                         </form>
                      </td>
                      <td class="right">
+                        <a href="{$xtfURL}{$dynaxmlPath}?docId={$docId};doc.view=citation" target="_top">Citation</a>
+                        <xsl:text> | </xsl:text>
                         <a href="{$doc.path}&#038;doc.view=print;chunk.id={$chunk.id}" target="_top">Print View</a>
                      </td>
                   </tr>
@@ -212,6 +214,35 @@
             </div>
          </body>
       </html>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Citation Template                                                      -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="citation">
+      
+      <html>
+         <head>
+            <title>
+               <xsl:value-of select="$doc.title"/>
+            </title>
+            <link rel="stylesheet" type="text/css" href="{$css.path}bbar.css"/>
+         </head>
+         <body>
+            <xsl:copy-of select="$brand.header"/>
+            <h2>Citation</h2>
+            <div class="citation">
+               <p><xsl:value-of select="//*[local-name()='meta']/*[local-name()='creator'][1]"/>. 
+                  <xsl:value-of select="//*[local-name()='meta']/*[local-name()='title'][1]"/>. 
+                  <xsl:value-of select="//*[local-name()='meta']/*[local-name()='year'][1]"/>.<br/>
+               [<xsl:value-of select="concat($xtfURL,$dynaxmlPath,'?docId=',$docId)"/>]</p>
+               <p><a href="{$xtfURL}{$dynaxmlPath}?docId={$docId};query={$query}">Return to Document</a></p>
+            </div>
+            <xsl:copy-of select="$brand.footer"/>
+         </body>
+      </html>
+     
    </xsl:template>
    
    <!-- ====================================================================== -->

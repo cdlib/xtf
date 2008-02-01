@@ -109,6 +109,9 @@
          <xsl:when test="$doc.view='content'">
             <xsl:call-template name="content"/>
          </xsl:when>
+         <xsl:when test="$doc.view='citation'">
+            <xsl:call-template name="citation"/>
+         </xsl:when>
          <xsl:when test="$doc.view='print'">
             <xsl:call-template name="print"/>
          </xsl:when>
