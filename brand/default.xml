@@ -11,11 +11,15 @@
    </dynaxml.links>
    
    <header>
-      <b>XTF Default Interface</b>
+      <div class="header">
+         <img src="icons/default/xtf_banner.gif"/>
+      </div>
    </header>
    
    <dynaxml.header>
-      <b>XTF Default Interface</b>
+      <div class="header">
+         <img src="icons/default/xtf_banner.gif"/>
+      </div>
    </dynaxml.header>
    
    <footer>

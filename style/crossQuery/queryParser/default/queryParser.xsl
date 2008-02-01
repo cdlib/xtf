@@ -148,7 +148,7 @@
             <xsl:when test="$smode = 'removeFromBag'">
                <xsl:call-template name="removeFromBag"/>
             </xsl:when>
-            <xsl:when test="$smode = 'showBag'">
+            <xsl:when test="matches($smode,'showBag|emailFolder')">
                <xsl:call-template name="showBag"/>
             </xsl:when>
             <xsl:when test="$smode = 'moreLike'">
@@ -171,7 +171,7 @@
       
       <!-- Find the meta-data and full-text queries, if any -->
       <xsl:variable name="queryParams"
-         select="param[not(matches(@name,'style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|browse-*|.*-exclude|.*-join|.*-prox|.*-max|.*-ignore'))]"/>
+         select="param[not(matches(@name,'style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|browse-*|email|.*-exclude|.*-join|.*-prox|.*-max|.*-ignore'))]"/>
       
       <and>
          <!-- Process the meta-data and text queries, if any -->

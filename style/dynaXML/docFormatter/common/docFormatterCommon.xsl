@@ -188,7 +188,7 @@
             <div class="bbar">
                <table border="0" cellpadding="0" cellspacing="0">
                   <tr>
-                     <td colspan="3">
+                     <td colspan="3" align="center">
                         <xsl:copy-of select="$brand.header"/>
                      </td>
                   </tr>

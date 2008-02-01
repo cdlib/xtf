@@ -129,7 +129,7 @@
             <xsl:call-template name="metadata"/>
          </head>
          
-         <frameset rows="80,*" border="2" framespacing="2" frameborder="1">
+         <frameset rows="120,*" border="2" framespacing="2" frameborder="1">
             <frame scrolling="no" title="Navigation Bar">
                <xsl:attribute name="name">bbar</xsl:attribute>
                <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$bbar.href"/></xsl:attribute>

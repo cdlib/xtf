@@ -64,6 +64,8 @@
    
    <xsl:param name="css.path" select="concat($xtfURL, 'css/default/')"/>
    <xsl:param name="icon.path" select="concat($xtfURL, 'icons/default/')"/>
+   <xsl:param name="docHits" select="/crossQueryResult/docHit"/>
+   <xsl:param name="email"/>
    
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
@@ -81,6 +83,12 @@
          </xsl:when>
          <xsl:when test="$smode = 'removeFromBag'">
             <!-- no output needed -->
+         </xsl:when>
+         <xsl:when test="$smode='getAddress'">
+            <xsl:call-template name="getAddress"/>
+         </xsl:when>
+         <xsl:when test="$smode='emailFolder'">
+            <xsl:apply-templates select="crossQueryResult" mode="emailFolder"/>
          </xsl:when>
          <!-- similar item -->
          <xsl:when test="$smode = 'moreLike'">
@@ -137,20 +145,25 @@
                         <xsl:if test="$smode != 'showBag'">
                            <xsl:variable name="bag" select="session:getData('bag')"/>
                            <a href="{$xtfURL}{$crossqueryPath}?smode=showBag">Bookbag</a>
-                           (<span id="itemCount"><xsl:value-of select="count($bag/bag/savedDoc)"/></span>)
+                           (<xsl:value-of select="count($bag/bag/savedDoc)"/>)
                         </xsl:if>
                      </td>
                   </tr>
                   <tr>
                      <td>
-                        <xsl:if test="not($smode='showBag')">
-                           <div class="query">
-                              <div class="label">
-                                 <b><xsl:value-of select="if($browse-all) then 'Browse by' else 'Search'"/>:</b>
+                        <xsl:choose>
+                           <xsl:when test="$smode='showBag'">
+                              <a href="{$xtfURL}search?smode=getAddress">E-mail My Bookbag</a>
+                           </xsl:when>
+                           <xsl:otherwise>
+                              <div class="query">
+                                 <div class="label">
+                                    <b><xsl:value-of select="if($browse-all) then 'Browse by' else 'Search'"/>:</b>
+                                 </div>
+                                 <xsl:call-template name="format-query"/>
                               </div>
-                              <xsl:call-template name="format-query"/>
-                           </div>
-                        </xsl:if>
+                           </xsl:otherwise>
+                        </xsl:choose>
                      </td>
                      <td class="right">
                         <xsl:if test="$smode != 'showBag'">
@@ -184,7 +197,7 @@
                   <tr>
                      <td>
                         <b><xsl:value-of select="if($smode='showBag') then 'Bookbag' else 'Results'"/>:</b>&#160;
-                        <span id="itemCount"><xsl:value-of select="@totalDocs"/></span>
+                        <xsl:value-of select="@totalDocs"/>
                         <xsl:text> Item(s)</xsl:text>
                      </td>
                      <td class="right">
@@ -245,7 +258,17 @@
                         <tr>
                            <td>
                               <p>Sorry, no results...</p>
-                              <p>Some suggestions should go here...</p>
+                              <p>Try modifying your search:</p>
+                              <div class="forms">
+                                 <xsl:choose>
+                                    <xsl:when test="matches($smode,'advanced')">
+                                       <xsl:call-template name="advancedForm"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                       <xsl:call-template name="simpleForm"/>
+                                    </xsl:otherwise>
+                                 </xsl:choose>
+                              </div>
                            </td>
                         </tr>
                      </table>
@@ -258,6 +281,91 @@
             
          </body>
       </html>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Bookbag Templates                                                      -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="getAddress" exclude-result-prefixes="#all">
+      <html>
+         <head>
+            <title>E-mail My Bookbag: Get Address</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+            <xsl:copy-of select="$brand.links"/>
+         </head>
+         <body>
+            <xsl:copy-of select="$brand.header"/>
+            <h1>E-mail My Bookbag</h1>
+            <form action="{$xtfURL}{$crossqueryPath}" method="get">
+               <xsl:text>Address: </xsl:text>
+               <input type="text" name="email"/>
+               <xsl:text>&#160;</xsl:text>
+               <input type="reset" value="CLEAR"/>
+               <xsl:text>&#160;</xsl:text>
+               <input type="submit" value="SUBMIT"/>
+               <input type="hidden" name="smode" value="emailFolder"/>
+            </form>
+         </body>
+      </html>
+   </xsl:template>
+   
+   <xsl:template match="crossQueryResult" mode="emailFolder" exclude-result-prefixes="#all">
+      
+      <xsl:variable name="bookbagContents" select="session:getData('bag')/bag"/>
+      
+      <mail:send xmlns:mail="java:/org.cdlib.xtf.saxonExt.Mail" 
+         xsl:extension-element-prefixes="mail" 
+         smtpHost="smtp.ucop.edu" 
+         useSSL="no" 
+         from="escholarship@cdlib.org"
+         to="{$email}" 
+         subject="XTF: My Bookbag">
+Your XTF Bookbag:
+<xsl:apply-templates select="$bookbagContents/savedDoc" mode="emailFolder"/>
+      </mail:send>
+      
+      <html>
+         <head>
+            <title>E-mail My Citations: Success</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+            <meta http-equiv="refresh" content="1;url={$xtfURL}search?smode=showBag"/>
+            <xsl:copy-of select="$brand.links"/>
+         </head>
+         <body>
+            <xsl:copy-of select="$brand.header"/>
+            <h1>E-mail My Citations</h1>
+            <b>Your citations have been sent.</b>
+         </body>
+      </html>
+      
+   </xsl:template>
+   
+   <xsl:template match="savedDoc" mode="emailFolder" exclude-result-prefixes="#all">
+      <xsl:variable name="num" select="position()"/>
+      <xsl:variable name="id" select="@id"/>
+      <xsl:for-each select="$docHits[string(meta/identifier[1]) = $id][1]">
+         <xsl:variable name="path" select="@path"/>
+         <xsl:variable name="url">
+            <xsl:value-of select="$xtfURL"/>
+            <xsl:choose>
+               <xsl:when test="matches(meta/display, 'dynaxml')">
+                  <xsl:call-template name="dynaxml.url">
+                     <xsl:with-param name="path" select="$path"/>
+                  </xsl:call-template>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:call-template name="rawDisplay.url">
+                     <xsl:with-param name="path" select="$path"/>
+                  </xsl:call-template>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:variable>
+Item number <xsl:value-of select="$num"/>: 
+<xsl:value-of select="meta/creator"/>. <xsl:value-of select="meta/title"/>. <xsl:value-of select="meta/year"/>. 
+[<xsl:value-of select="$url"/>]
+         
+      </xsl:for-each>
    </xsl:template>
    
    <!-- ====================================================================== -->
@@ -290,7 +398,7 @@
                         <td colspan="2" class="right">
                            <xsl:variable name="bag" select="session:getData('bag')"/>
                            <a href="{$xtfURL}{$crossqueryPath}?smode=showBag">Bookbag</a>
-                           (<span id="itemCount"><xsl:value-of select="count($bag/bag/savedDoc)"/></span>)
+                           (<xsl:value-of select="count($bag/bag/savedDoc)"/>)
                         </td>
                      </tr>
                      <td>
