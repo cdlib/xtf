@@ -10,7 +10,7 @@ table.title {
 }
 
 table.toc-line {
-   width: 100%;
+   width: 1200px;
 }
 
 td.hits {
@@ -21,7 +21,6 @@ td.hits {
 td.expand {
    width: 15px;
    text-align: center;
-   vertical-align: top;
 }
 
 td.divnum {
@@ -54,24 +53,18 @@ div.expandAll {
 
 div.l1 {
    font-size: 12pt;
-   text-indent: -20px;
-   margin-left: 20px;
    margin-top: 0;
    margin-bottom: 0;
 }
 
 div.l2 {
    font-size: 11pt;
-   text-indent: -20px;
-   margin-left: 20px;
    margin-top: 0;
    margin-bottom: 0;
 }
 
 div.l3, div.l4, div.l5, div.l6, div.l7 {
    font-size: 10pt;
-   text-indent: -20px;
-   margin-left: 20px;
    margin-top: 0;
    margin-bottom: 0;
 }
