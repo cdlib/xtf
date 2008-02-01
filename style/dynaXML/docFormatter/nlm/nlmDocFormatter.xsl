@@ -55,7 +55,7 @@
    <!-- ====================================================================== -->
    
    <xsl:output method="xhtml" 
-      indent="yes" 
+      indent="no" 
       encoding="UTF-8" 
       media-type="text/html"
       doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
