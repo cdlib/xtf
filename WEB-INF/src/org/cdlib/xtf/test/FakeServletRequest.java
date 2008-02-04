@@ -282,13 +282,14 @@ public class FakeServletRequest implements HttpServletRequest
   }
 
   public Object getAttribute(String name) {
-    assert false;
     return null;
   }
 
   public Enumeration getAttributeNames() {
-    assert false;
-    return null;
+    return new Enumeration() {
+      public boolean hasMoreElements() { return false; }
+      public Object nextElement() { return null; }
+    };
   }
 
   public String getCharacterEncoding() {
