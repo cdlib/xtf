@@ -40,7 +40,7 @@
                <img src="{$figure.path}{$uniqueKey}_cover.jpg" alt="cover"/>
             </td>
             <td>
-               <xsl:apply-templates select="//*[local-name()='front']/*[local-name()='titlePage']/*" mode="titlepage"/>
+               <xsl:apply-templates select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']/*" mode="titlepage"/>
             </td>
          </tr>
       </table>
@@ -49,34 +49,34 @@
       
       <div align="center">
          <span class="down1">
-            <xsl:if test="//*[local-name()='front']/*[local-name()='div1'][@type='dedication']">
+            <xsl:if test="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='div1'][@type='dedication']">
                <xsl:text> [</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
                   <xsl:attribute name="onClick">
-                     <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="//*[local-name()='front']/*[local-name()='div1'][@type='dedication']/@*[local-name()='id']"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
+                     <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='div1'][@type='dedication']/@*[local-name()='id']"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:text>Dedication</xsl:text>
                </a>
                <xsl:text>] </xsl:text>
             </xsl:if>
-            <xsl:if test="//*[local-name()='front']/*[local-name()='div1'][@type='copyright']">
+            <xsl:if test="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='div1'][@type='copyright']">
                <xsl:text> [</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
                   <xsl:attribute name="onClick">
-                     <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="//*[local-name()='front']/*[local-name()='div1'][@type='copyright']/@*[local-name()='id']"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
+                     <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='div1'][@type='copyright']/@*[local-name()='id']"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:text>Copyright</xsl:text>
                </a>
                <xsl:text>] </xsl:text>
             </xsl:if>
-            <xsl:if test="//*[local-name()='front']/*[local-name()='div1'][@type='epigraph']">
+            <xsl:if test="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='div1'][@type='epigraph']">
                <xsl:text> [</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
                   <xsl:attribute name="onClick">
-                     <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="//*[local-name()='front']/*[local-name()='div1'][@type='epigraph']/@*[local-name()='id']"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
+                     <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='div1'][@type='epigraph']/@*[local-name()='id']"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:text>Epigraph</xsl:text>
                </a>

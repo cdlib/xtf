@@ -40,7 +40,7 @@
                      <xsl:value-of select="$doc.path"/>;brand=<xsl:value-of select="$brand"/>;<xsl:value-of select="$search"/>
                   </xsl:attribute>
                   <xsl:attribute name="target">_top</xsl:attribute>
-                  <xsl:value-of select="//*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']/*[local-name()='titlePart'][@type='main']"/>
+                  <xsl:value-of select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']/*[local-name()='titlePart'][@type='main']"/>
                </a>
             </td>
          </tr>
@@ -52,13 +52,13 @@
       </xsl:if>
       <hr/>
       <!-- front -->
-      <xsl:apply-templates select="//*[local-name()='text']/*[local-name()='front']/*[matches(name(),'^div')]" mode="toc"/>
+      <xsl:apply-templates select="/*/*[local-name()='text']/*[local-name()='front']/*[matches(name(),'^div')]" mode="toc"/>
       <br/>
       <!-- body -->
-      <xsl:apply-templates select="//*[local-name()='text']/*[local-name()='body']/*[matches(name(),'^div')]" mode="toc"/>
+      <xsl:apply-templates select="/*/*[local-name()='text']/*[local-name()='body']/*[matches(name(),'^div')]" mode="toc"/>
       <br/>
       <!-- back -->
-      <xsl:apply-templates select="//*[local-name()='text']/*[local-name()='back']/*[matches(name(),'^div')]" mode="toc"/>
+      <xsl:apply-templates select="/*/*[local-name()='text']/*[local-name()='back']/*[matches(name(),'^div')]" mode="toc"/>
       <!-- hit summary -->
       <xsl:if test="($query != '0') and ($query != '')">
          <hr/>

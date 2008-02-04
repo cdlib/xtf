@@ -203,7 +203,7 @@
             <div class="toc">
                <h4><xsl:value-of select="$doc.title"/></h4>
                <hr/>
-               <xsl:apply-templates select="//body/sec" mode="toc"/>
+               <xsl:apply-templates select="/article/body/sec" mode="toc"/>
                <hr/>
             </div>
          </body>

@@ -36,6 +36,6 @@
    
    <xsl:param name="css.path" select="concat($xtfURL, 'css/default/')"/>
    
-   <xsl:variable name="doc.title" select="string(//xtf:meta/title)"/>
+   <xsl:variable name="doc.title" select="string(/ead/xtf:meta/title)"/>
    
 </xsl:stylesheet>

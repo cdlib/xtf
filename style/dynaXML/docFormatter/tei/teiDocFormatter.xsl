@@ -249,7 +249,7 @@
                         <!-- BEGIN CONTENT -->
                         <xsl:choose>
                            <xsl:when test="$chunk.id = '0'">
-                              <xsl:apply-templates select="//*[local-name()='titlePage']"/>
+                              <xsl:apply-templates select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']"/>
                            </xsl:when>
                            <xsl:otherwise>
                               <xsl:apply-templates select="key('div-id', $chunk.id)"/>          
@@ -311,7 +311,7 @@
                               <xsl:apply-templates select="key('div-id', $chunk.id)"/>
                            </xsl:when>
                            <xsl:otherwise>
-                              <xsl:apply-templates select="//*[local-name()='text']/*"/>
+                              <xsl:apply-templates select="/*/*[local-name()='text']/*"/>
                            </xsl:otherwise>
                         </xsl:choose>
                      </td>
@@ -441,7 +441,7 @@
             </xsl:when>
             <!-- no previous $chunk.id (i.e. titlePage) -->
             <xsl:when test="$chunk.id='0'">
-               <xsl:value-of select="//*[local-name()='text']/*[*[*[local-name()='head']][@*[local-name()='id']]][1]/*[*[local-name()='head']][@*[local-name()='id']][1]/@*[local-name()='id']"/>
+               <xsl:value-of select="/*/*[local-name()='text']/*[*[*[local-name()='head']][@*[local-name()='id']]][1]/*[*[local-name()='head']][@*[local-name()='id']][1]/@*[local-name()='id']"/>
             </xsl:when>
             <!-- bottom of tree -->
             <xsl:otherwise>

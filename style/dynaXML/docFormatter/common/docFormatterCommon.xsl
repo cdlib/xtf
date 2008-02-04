@@ -161,9 +161,9 @@
       </xsl:choose>
    </xsl:variable>
    
-   <xsl:param name="brand.links" select="$brand.file//dynaxml.links/*"/>
-   <xsl:param name="brand.header" select="$brand.file//dynaxml.header/*"/>
-   <xsl:param name="brand.footer" select="$brand.file//footer/*"/>
+   <xsl:param name="brand.links" select="$brand.file/brand/dynaxml.links/*"/>
+   <xsl:param name="brand.header" select="$brand.file/brand/dynaxml.header/*"/>
+   <xsl:param name="brand.footer" select="$brand.file/brand/footer/*"/>
    
    <!-- Special Robot Parameters -->
    
@@ -233,9 +233,9 @@
             <xsl:copy-of select="$brand.header"/>
             <h2>Citation</h2>
             <div class="citation">
-               <p><xsl:value-of select="//*[local-name()='meta']/*[local-name()='creator'][1]"/>. 
-                  <xsl:value-of select="//*[local-name()='meta']/*[local-name()='title'][1]"/>. 
-                  <xsl:value-of select="//*[local-name()='meta']/*[local-name()='year'][1]"/>.<br/>
+               <p><xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='creator'][1]"/>. 
+                  <xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='title'][1]"/>. 
+                  <xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='year'][1]"/>.<br/>
                [<xsl:value-of select="concat($xtfURL,$dynaxmlPath,'?docId=',$docId)"/>]</p>
                <p><a href="{$xtfURL}{$dynaxmlPath}?docId={$docId};query={$query}">Return to Document</a></p>
             </div>

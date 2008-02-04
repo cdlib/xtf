@@ -364,7 +364,7 @@
    <!-- Paragraphs                                                             -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='p']">
+   <xsl:template match="*[local-name()='p'][not(ancestor::note[@type='endnote' or @place='end'])]">
       
       <xsl:choose>
          <xsl:when test="@rend='center'">
