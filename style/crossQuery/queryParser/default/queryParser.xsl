@@ -119,7 +119,7 @@
          <!-- hierarchical date facet, shows most recent years first -->
          <xsl:call-template name="facet">
             <xsl:with-param name="field" select="'facet-date'"/>
-            <xsl:with-param name="topGroups" select="'*[1-5]'"/>
+            <xsl:with-param name="topGroups" select="'*'"/>
             <xsl:with-param name="sort" select="'reverseValue'"/>
          </xsl:call-template>
          
@@ -222,37 +222,28 @@
            ancestors and direct children of these (handles hierarchical facets).
       --> 
       <xsl:variable name="selection">
+         <!-- First, select the top groups, or all at the top in expand mode -->
+         <xsl:value-of select="if ($expand = $plainName) then '*' else $topGroups"/>
+         <!-- For each chosen facet value -->
          <xsl:for-each select="//param[matches(@name, concat('f[0-9]+-',$plainName))]">
-            <xsl:call-template name="facetSelect">
-               <xsl:with-param name="value" select="@value"/>
-            </xsl:call-template>
+            <!-- Select the value itself -->
+            <xsl:value-of select="concat('|', @value)"/>
+            <!-- And select its immediate children -->
+            <xsl:value-of select="concat('|', @value, '::*')"/>
+            <!-- And select its siblings, if any -->
+            <xsl:value-of select="concat('|', @value, '[siblings]')"/>
+            <!-- If only one child, expand it (and its single child, etc.) -->
+            <xsl:value-of select="concat('|', @value, '::**[singleton]::*')"/>
          </xsl:for-each>
       </xsl:variable>
       
       <!-- generate the facet query -->
-      <facet field="{$field}">
-         <xsl:choose>
-            <xsl:when test="$expand = $plainName">
-               <!-- in expand mode, don't sort by totalDocs, and select all top-level groups -->
-               <xsl:attribute name="sortGroupsBy" select="replace($sort, 'totalDocs', 'value')"/>
-               <xsl:attribute name="select" select="concat('*', $selection)"/> 
-            </xsl:when>
-            <xsl:otherwise>
-               <xsl:attribute name="sortGroupsBy" select="$sort"/>
-               <xsl:attribute name="select" select="concat($topGroups, $selection)"/>
-            </xsl:otherwise>
-         </xsl:choose>
+      <!-- in expand mode, don't sort by totalDocs -->
+      <facet field="{$field}" 
+             select="{$selection}"
+             sortGroupsBy="{ if ($expand = $plainName) 
+                             then replace($sort, 'totalDocs', 'value') 
+                             else $sort }">
       </facet>
-   </xsl:template>
-
-   <!-- Utlity to generate a group-select expression for a group and its ancestors -->
-   <xsl:template name="facetSelect">
-      <xsl:param name="value"/>
-      <xsl:if test="contains($value, '::')">
-         <xsl:call-template name="facetSelect">
-            <xsl:with-param name="value" select="replace($value, '(.*)::.*', '$1')"/>
-         </xsl:call-template>
-      </xsl:if>
-      <xsl:value-of select="concat('|', $value, '|', $value, '::*')"/>
    </xsl:template>
 </xsl:stylesheet>
