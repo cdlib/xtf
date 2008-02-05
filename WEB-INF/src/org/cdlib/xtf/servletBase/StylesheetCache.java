@@ -121,16 +121,6 @@ public class StylesheetCache extends GeneratingCache
   }
 
   /**
-   * Set a cache to receive file dependencies when an entry is used or
-   * generated.
-   *
-   * @param  cache        Cache to receive dependencies
-   */
-  public void setDependencyReceiver(GeneratingCache cache) {
-    dependencyReceiver = cache;
-  }
-
-  /**
    * Load and parse a stylesheet from the filesystem.
    *
    * @param  key          (String)Filesystem path of the stylesheet to load
