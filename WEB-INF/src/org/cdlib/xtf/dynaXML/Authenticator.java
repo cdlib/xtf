@@ -34,7 +34,6 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.Vector;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.DirContext;
@@ -227,7 +226,6 @@ class Authenticator
    * password. Name and password are gathered using the HTTP 'basic'
    * authentication mechanism.
    *
-   * @param docKey  Cache key for the document being processed
    * @param spec  The authorization spec containing details (server to
    *              connect to, what to look up, etc.)
    * @param req   The HTTP request (contains username and password)
@@ -239,7 +237,7 @@ class Authenticator
    * @throws Exception
    *         Communication or other miscellaneous problems.
    */
-  private void authLdap(LinkedList docKey, LdapAuthSpec spec,
+  private void authLdap(LdapAuthSpec spec,
                         HttpServletRequest req, HttpServletResponse res)
     throws Exception 
   {
@@ -374,11 +372,8 @@ class Authenticator
       throw new NoPermissionException(e);
     }
 
-    // Record that this session has been authorized. Make it dependent
-    // on the docInfo entry, so it will be invalidated if the auth info
-    // for this document changes.
-    //
-    authCache.set(authCacheKey, "LDAP", servlet.getDocDependency(docKey));
+    // Record that this session has been authorized.
+    authCache.set(authCacheKey, "LDAP");
   } // authLdap()
 
   /**
@@ -387,7 +382,6 @@ class Authenticator
    * redirect. Eventually the login gets back to our page with an encrypted
    * version of the nonce so we can prevent spurious returns.
    *
-   * @param docKey Cache key for the document being processed
    * @param spec  The authorization spec containing URL to contact.
    * @param req   The HTTP request (contains nonce when we get the return
    *              from the authorization page).
@@ -400,7 +394,7 @@ class Authenticator
    * @throws Exception
    *         For miscellaneous problems.
    */
-  private boolean authExternal(LinkedList docKey, ExternalAuthSpec spec,
+  private boolean authExternal(ExternalAuthSpec spec,
                                HttpServletRequest req, HttpServletResponse res)
     throws Exception 
   {
@@ -437,11 +431,8 @@ class Authenticator
         // If it's the same, the authentication is successful.
         if (compHash.equals(hash)) 
         {
-          // Record that this session has been authorized. Make it 
-          // dependent on the docInfo entry, so it will be 
-          // invalidated if the auth info for this document changes.
-          //
-          authCache.set(authCacheKey, "ext", servlet.getDocDependency(docKey));
+          // Record that this session has been authorized.
+          authCache.set(authCacheKey, "ext");
 
           // Now redirect to the original URL, minus all the
           // authorization stuff.
@@ -511,7 +502,6 @@ class Authenticator
    * current session is allowed to access this document. Handles IP-based,
    * LDAP, and external authentication methods.
    *
-   * @param docKey    Cache key for the document being accessed
    * @param ipAddr    Real IP address of the requestor
    * @param authSpecs List of authentication specifications (allow/deny),
    *                  processed in order.
@@ -525,7 +515,7 @@ class Authenticator
    * @throws Exception
    *         Miscellaneous problems
    */
-  public boolean checkAuth(LinkedList docKey, String ipAddr, Vector authSpecs,
+  public boolean checkAuth(String ipAddr, Vector authSpecs,
                            HttpServletRequest req, HttpServletResponse res)
     throws Exception 
   {
@@ -568,14 +558,14 @@ class Authenticator
         case AuthSpec.TYPE_LDAP:
           if (spec.access == AuthSpec.ACCESS_DENY)
             throw new NoPermissionException(ipAddr);
-          authLdap(docKey, (LdapAuthSpec)spec, req, res);
+          authLdap((LdapAuthSpec)spec, req, res);
           Trace.debug("Auth LDAP: ok");
           allow = true;
           break;
         case AuthSpec.TYPE_EXTERNAL:
           if (spec.access == AuthSpec.ACCESS_DENY)
             throw new NoPermissionException(ipAddr);
-          if (authExternal(docKey, (ExternalAuthSpec)spec, req, res)) {
+          if (authExternal((ExternalAuthSpec)spec, req, res)) {
             Trace.debug("Auth external: yes");
             allow = true;
           }

@@ -53,7 +53,7 @@ import net.sf.saxon.om.AllElementStripper;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.trans.KeyManager;
 import net.sf.saxon.tree.TreeBuilder;
-import org.cdlib.xtf.dynaXML.DocInfo;
+import org.cdlib.xtf.dynaXML.DocRequest;
 import org.cdlib.xtf.dynaXML.DynaXML;
 import org.cdlib.xtf.dynaXML.InvalidDocumentException;
 import org.cdlib.xtf.lazyTree.LazyKeyManager;
@@ -199,7 +199,7 @@ public class TestableDynaXML extends DynaXML
    * @throws ParserConfigurationException Miscellaneous configuration
    *                                      problems
    */
-  protected Source getSourceDoc(DocInfo docInfo, Transformer transformer)
+  protected Source getSourceDoc(DocRequest docInfo, Transformer transformer)
     throws IOException, SAXException, ParserConfigurationException 
   {
     // If no lazy file is available, skip the document.
@@ -243,7 +243,7 @@ public class TestableDynaXML extends DynaXML
    * info for the document. In the case of testing, we never fail
    * authentication.
    */
-  protected boolean authenticate(LinkedList docKey, DocInfo docInfo,
+  protected boolean authenticate(LinkedList docKey, DocRequest docInfo,
                                  HttpServletRequest req, HttpServletResponse res)
     throws Exception 
   {

@@ -35,9 +35,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
-import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -52,19 +54,24 @@ import net.sf.saxon.Controller;
 import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.trans.KeyManager;
+import net.sf.saxon.tree.TreeBuilder;
+
 import org.cdlib.xtf.servletBase.RedirectException;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.IndexUtil;
+import org.cdlib.xtf.textEngine.QueryRequestParser;
+import org.cdlib.xtf.util.AttribList;
+import org.cdlib.xtf.util.EasyNode;
+import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
+import org.cdlib.xtf.util.XMLFormatter;
 import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.cdlib.xtf.cache.CacheDependency;
-import org.cdlib.xtf.cache.Dependency;
 import org.cdlib.xtf.lazyTree.LazyDocument;
 import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
@@ -83,9 +90,6 @@ import org.cdlib.xtf.lazyTree.SearchTree;
  */
 public class DynaXML extends TextServlet 
 {
-  /** Caches docInfo lookups (based on their docId) */
-  private DocInfoCache docLookupCache;
-
   /** Handles authentication */
   Authenticator authenticator;
 
@@ -97,20 +101,6 @@ public class DynaXML extends TextServlet
 
   /** Set to only allow lazy documents (set by TestableDynaXML only) */
   protected static boolean forceLazy = false;
-
-  /**
-   * Gets a dependency on the docLookup cache for the given document.
-   * Useful when making other cache entries that depend on the docLookup.
-   *
-   * @param docKey    The document being worked on
-   * @return          A dependency on the doc lookup for that document.
-   */
-  public Dependency getDocDependency(LinkedList docKey) {
-    if (getConfig().dependencyCheckingEnabled)
-      return new CacheDependency(docLookupCache, docKey);
-    else
-      return null;
-  } // getDocDependency()
 
   /**
    * Called by the superclass to find out the name of our specific config
@@ -128,9 +118,6 @@ public class DynaXML extends TextServlet
   {
     // Load the configuration file.
     config = new DynaXMLConfig(this, configPath);
-
-    // Create the caches
-    docLookupCache = new DocInfoCache(this);
 
     // Create a helper for authentication.
     authenticator = new Authenticator(this);
@@ -233,47 +220,44 @@ public class DynaXML extends TextServlet
       // Output extended debugging info if requested.
       Trace.debug("Processing request: " + getRequestURL(req));
 
-      // Get the document info, given the current URL params.
-      StringTokenizer st = new StringTokenizer(config.docLookupParams,
-                                               " \t\r\n,;");
-      LinkedList docKey = new LinkedList();
-      while (st.hasMoreTokens()) 
+      // Translate the URL parameters to an AttribList
+      AttribList attribs = new AttribList();
+      Enumeration p = req.getParameterNames();
+      while (p.hasMoreElements()) 
       {
-        String name = st.nextToken();
+        String name = (String)p.nextElement();
 
         // Deal with screwy URL encoding of Unicode strings on
         // many browsers.
         //
         String value = req.getParameter(name);
-        if (value != null) {
-          docKey.add(name);
-          docKey.add(convertUTF8inURL(value));
-        }
+        attribs.put(name, convertUTF8inURL(value));
       }
 
-      DocInfo docInfo = docLookupCache.find(docKey);
+      // Run the document request parser
+      DocRequest docReq = runDocReqParser(req, attribs);
 
       // If source overridden in the URL, make sure it's really
       // external.
       //
       if (!isEmpty(source) && source.startsWith("http://")) 
       {
-        docInfo = new DocInfo(docInfo);
-        docInfo.source = source;
+        docReq = new DocRequest(docReq);
+        docReq.source = source;
       }
       else {
         // Check that the document actually exists.
-        File docFile = new File(docInfo.source);
+        File docFile = new File(docReq.source);
         if (!docFile.canRead())
           throw new InvalidDocumentException();
       }
 
       // Authenticate (if necessary)
-      if (!authenticate(docKey, docInfo, req, res))
+      if (!authenticate(docReq, req, res))
         return;
 
       // This does the bulk of the work.
-      apply(docInfo, req, res);
+      apply(docReq, req, res);
     }
     catch (Exception e) {
       if (!(e instanceof RedirectException) && !(e instanceof SocketException)) 
@@ -289,17 +273,152 @@ public class DynaXML extends TextServlet
   } // doGet()
 
   /**
+   * Creates a document request by running the docReqParser stylesheet and 
+   * the given attributes.
+   *
+   * @param req          The original HTTP request
+   * @param attribs      Attributes to pass to the stylesheet.
+   * @return             A parsed document request, or null if before that step
+   */
+  protected DocRequest runDocReqParser(HttpServletRequest req,
+                                       AttribList attribs)
+    throws Exception 
+  {
+    DocRequest info = new DocRequest();
+
+    // Running the stylesheet may produce additional dependencies if the
+    // sheet reads in extra files dependent on the document ID. To avoid
+    // having to throw away the stylesheet entry, we record the current
+    // dependencies so we can restore them later.
+    // 
+    Iterator di = stylesheetCache.getDependencies(
+      config.docLookupSheet);
+    LinkedList oldStylesheetDeps = new LinkedList();
+    while (di.hasNext())
+      oldStylesheetDeps.add(di.next());
+
+    // Locate the document request parser stylesheet.
+    Templates sheet = stylesheetCache.find(config.docLookupSheet);
+
+    // Get a transformer to handle this stylesheet.
+    Transformer trans = sheet.newTransformer();
+
+    // Stuff all the common config properties into the transformer in
+    // case the query generator needs access to them.
+    //
+    stuffAttribs(trans, config.attribs);
+
+    // Also stuff the URL parameters, in case it wants them that way
+    // instead of tokenized.
+    //
+    stuffAttribs(trans, attribs);
+
+    // Add the special computed attributes.
+    stuffSpecialAttribs(req, trans);
+
+    // Make sure errors get directed to the right place.
+    if (!(trans.getErrorListener() instanceof XTFSaxonErrorListener))
+      trans.setErrorListener(new XTFSaxonErrorListener());
+
+    // Make a <parameters> block. For now, use default tokenization.
+    XMLFormatter fmt = new XMLFormatter();
+    fmt.blankLineAfterTag(false);
+    Hashtable tokenizerMap = new Hashtable();
+    buildParamBlock(attribs, fmt, tokenizerMap, null);
+
+    if (Trace.getOutputLevel() >= Trace.debug) {
+      String tmp = fmt.toString();
+      if (tmp.endsWith("\n"))
+        tmp = tmp.substring(0, tmp.length() - 1);
+      Trace.debug("*** docReqParser input ***\n" + tmp);
+    }
+
+    // Now request the stylesheet to give us the info for this document.
+    TreeBuilder result;
+    result = new TreeBuilder();
+    trans.transform(fmt.toSource(), result);
+
+    if (Trace.getOutputLevel() >= Trace.debug) {
+      Trace.debug("*** docReqParser output ***");
+      Trace.tab();
+      Trace.debug(XMLWriter.toString(result.getCurrentRoot()));
+      Trace.untab();
+    }
+
+    // Extract the data we need.
+    EasyNode root = new EasyNode(result.getCurrentRoot());
+    for (int i = 0; i < root.nChildren(); i++) 
+    {
+      EasyNode el = root.child(i);
+      String tagName = el.name();
+
+      if (tagName.equals("style"))
+        info.style = getRealPath(el.attrValue("path"));
+      else if (tagName.equals("source"))
+        info.source = getRealPath(el.attrValue("path"));
+      else if (tagName.equals("index")) {
+        info.indexConfig = getRealPath(el.attrValue("configPath"));
+        info.indexName = el.attrValue("name");
+      }
+      else if (tagName.equals("brand"))
+        info.brand = getRealPath(el.attrValue("path"));
+      else if (tagName.equals("auth"))
+        info.authSpecs.add(authenticator.processAuthTag(el));
+      else if (tagName.equals("query")) {
+        info.query = new QueryRequestParser().parseRequest(el.getWrappedNode(),
+                                                           new File(getRealPath("")));
+      }
+      else if (tagName.equalsIgnoreCase("preFilter"))
+        info.preFilter = getRealPath(el.attrValue("path"));
+      else if (tagName.equalsIgnoreCase("removeDoctypeDecl")) {
+        String val = el.attrValue("flag");
+        if (val.matches("^yes$|^true$"))
+          info.removeDoctypeDecl = true;
+        else if (val.matches("^no$|^false$"))
+          info.removeDoctypeDecl = false;
+        else
+          throw new DynaXMLException(
+            "Expected 'true', 'false', " +
+            "'yes', or 'no' for flag attribute of " + tagName +
+            " tag specified by docReqParser, but found '" + val + "'");
+      }
+      else
+        throw new DynaXMLException(
+          "Unknown tag '" + tagName + "' specified by docReqParser");
+    } // for node
+
+    // If no source, assume that means an invalid document ID.
+    if (isEmpty(info.source))
+      throw new InvalidDocumentException();
+
+    // Make sure a stylesheet was specified.
+    requireOrElse(info.style, "docReqParser didn't specify 'style'");
+
+    // Index config and index name must be either both specified or both
+    // absent.
+    //
+    if (isEmpty(info.indexConfig) && !isEmpty(info.indexName))
+      throw new GeneralException(
+        "docReqParser specified 'indexName' without 'indexConfig'");
+    if (!isEmpty(info.indexConfig) && isEmpty(info.indexName))
+      throw new GeneralException(
+        "docReqParser specified 'indexConfig' without 'indexName'");
+
+    // And we're done.
+    return info;
+  } // runDocInfoParser()
+
+  /**
    * Performs user authentication for a request, given the authentication
    * info for the document.
    *
-   * @param docKey    Cache key for this document
    * @param docInfo   Info structure containing authentication parameters
    * @param req       The request being processed
    * @param res       Where to send results if authentication fails
    *
    * @return          true iff authentication succeeds
    */
-  protected boolean authenticate(LinkedList docKey, DocInfo docInfo,
+  protected boolean authenticate(DocRequest docInfo,
                                  HttpServletRequest req, HttpServletResponse res)
     throws Exception 
   {
@@ -310,7 +429,7 @@ public class DynaXML extends TextServlet
     // An exception thrown if not; false returned if a redirect
     // to an external page must happen first.
     //
-    if (!authenticator.checkAuth(docKey, ipAddr, docInfo.authSpecs, req, res)) {
+    if (!authenticator.checkAuth(ipAddr, docInfo.authSpecs, req, res)) {
       return false;
     }
 
@@ -338,7 +457,7 @@ public class DynaXML extends TextServlet
   * @exception TransformerException  If there's an error in the stylesheet.
   * @exception IOException           If stylesheet or source can't be read.
   */
-  private void apply(DocInfo docInfo, HttpServletRequest req,
+  private void apply(DocRequest docInfo, HttpServletRequest req,
                      HttpServletResponse res)
     throws Exception 
   {
@@ -447,7 +566,7 @@ public class DynaXML extends TextServlet
    * @throws ParserConfigurationException Miscellaneous configuration
    *                                      problems
    */
-  protected Source getSourceDoc(DocInfo docInfo, Transformer transformer)
+  protected Source getSourceDoc(DocRequest docInfo, Transformer transformer)
     throws IOException, SAXException, ParserConfigurationException,
              InvalidDocumentException 
     {

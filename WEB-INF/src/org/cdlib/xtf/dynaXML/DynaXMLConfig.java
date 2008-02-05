@@ -53,18 +53,6 @@ class DynaXMLConfig extends TextConfig
    */
   public String docLookupSheet;
 
-  /**
-   * List of the URL parameters that should be passed through to the
-   * docLookup stylesheet.
-   */
-  public String docLookupParams;
-
-  /** Max # of doc lookups to cache */
-  public int docLookupCacheSize = 100;
-
-  /** Max amount of time (seconds) to cache doc lookups */
-  public int docLookupCacheExpire = 0;
-
   /** Max # of authentication lookups to cache */
   public int authCacheSize = 1000;
 
@@ -102,8 +90,6 @@ class DynaXMLConfig extends TextConfig
     // Make sure required things were specified.
     requireOrElse(docLookupSheet,
                   "Config file error: docReqParser path not specified");
-    requireOrElse(docLookupParams,
-                  "Config file error: docReqParser params not specified");
   }
 
   /**
@@ -121,20 +107,15 @@ class DynaXMLConfig extends TextConfig
       reverseProxyMarker = strVal;
       return true;
     }
-    else if (tagAttr.equalsIgnoreCase("reqParserCache.size")) {
-      docLookupCacheSize = parseInt(tagAttr, strVal);
-      return true;
-    }
-    else if (tagAttr.equalsIgnoreCase("reqParserCache.expire")) {
-      docLookupCacheExpire = parseInt(tagAttr, strVal);
+    else if (tagAttr.equalsIgnoreCase("reqParserCache.size") ||
+             tagAttr.equalsIgnoreCase("reqParserCache.expire") ||
+             tagAttr.equalsIgnoreCase("docReqParser.params")) 
+    {
+      // Obsolete but accepted for backward compatibility
       return true;
     }
     else if (tagAttr.equalsIgnoreCase("docReqParser.path")) {
       docLookupSheet = servlet.getRealPath(strVal);
-      return true;
-    }
-    else if (tagAttr.equalsIgnoreCase("docReqParser.params")) {
-      docLookupParams = strVal;
       return true;
     }
     else if (tagAttr.equalsIgnoreCase("ipListCache.size")) {

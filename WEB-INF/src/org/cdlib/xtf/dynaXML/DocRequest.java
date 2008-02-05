@@ -33,10 +33,10 @@ import java.util.Vector;
 import org.cdlib.xtf.textEngine.QueryRequest;
 
 /** Holds document information specific to a docId */
-public class DocInfo 
+public class DocRequest 
 {
   /** Default constructor */
-  public DocInfo() {
+  public DocRequest() {
   }
 
   /**
@@ -46,7 +46,7 @@ public class DocInfo
    *
    * @param other     DocInfo to copy data from
    */
-  public DocInfo(DocInfo other) {
+  public DocRequest(DocRequest other) {
     style = other.style;
     source = other.source;
     indexConfig = other.indexConfig;
