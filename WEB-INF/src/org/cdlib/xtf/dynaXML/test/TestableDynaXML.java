@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.LinkedList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
@@ -186,7 +185,7 @@ public class TestableDynaXML extends DynaXML
    * fetching a file from a URL, lazy file, or a plain XML file on disk.
    * Also fires up a text query if requested.
    *
-   * @param docInfo       Tells which document to load, the query to
+   * @param docReq       Tells which document to load, the query to
    *                      apply, tec.
    * @param transformer   The XSLT transformer that will be used on the
    *                      document.
@@ -199,7 +198,7 @@ public class TestableDynaXML extends DynaXML
    * @throws ParserConfigurationException Miscellaneous configuration
    *                                      problems
    */
-  protected Source getSourceDoc(DocRequest docInfo, Transformer transformer)
+  protected Source getSourceDoc(DocRequest docReq, Transformer transformer)
     throws IOException, SAXException, ParserConfigurationException 
   {
     // If no lazy file is available, skip the document.
@@ -207,7 +206,7 @@ public class TestableDynaXML extends DynaXML
 
     // If not annotating, use the normal SearchTree...
     if (!useAnnotated) {
-      Source realSrc = super.getSourceDoc(docInfo, transformer);
+      Source realSrc = super.getSourceDoc(docReq, transformer);
       if (dump)
         dumpTree("C:\\tmp\\tree.dump", realSrc);
       return realSrc;
@@ -228,7 +227,7 @@ public class TestableDynaXML extends DynaXML
     e.setStripsWhitespace(false);
 
     try {
-      Source src = getAnnotatedTree(docInfo.source);
+      Source src = getAnnotatedTree(docReq.source);
       if (dump)
         dumpTree("C:\\tmp\\annotated.dump", src);
       return src;
@@ -243,7 +242,8 @@ public class TestableDynaXML extends DynaXML
    * info for the document. In the case of testing, we never fail
    * authentication.
    */
-  protected boolean authenticate(LinkedList docKey, DocRequest docInfo,
+  @Override
+  protected boolean authenticate(DocRequest docReq,
                                  HttpServletRequest req, HttpServletResponse res)
     throws Exception 
   {
