@@ -406,19 +406,19 @@ public class DynaXML extends TextServlet
 
     // And we're done.
     return info;
-  } // runDocInfoParser()
+  } // runDocReqParser()
 
   /**
    * Performs user authentication for a request, given the authentication
    * info for the document.
    *
-   * @param docInfo   Info structure containing authentication parameters
+   * @param docReq    Info structure containing authentication parameters
    * @param req       The request being processed
    * @param res       Where to send results if authentication fails
    *
    * @return          true iff authentication succeeds
    */
-  protected boolean authenticate(DocRequest docInfo,
+  protected boolean authenticate(DocRequest docReq,
                                  HttpServletRequest req, HttpServletResponse res)
     throws Exception 
   {
@@ -429,7 +429,7 @@ public class DynaXML extends TextServlet
     // An exception thrown if not; false returned if a redirect
     // to an external page must happen first.
     //
-    if (!authenticator.checkAuth(ipAddr, docInfo.authSpecs, req, res)) {
+    if (!authenticator.checkAuth(ipAddr, docReq.authSpecs, req, res)) {
       return false;
     }
 
@@ -450,21 +450,21 @@ public class DynaXML extends TextServlet
   * Loads the source document, optionally performs a text search on it, and
   * then runs the document formatter to produce the final HTML result page.
   *
-  * @param docInfo    Document information (stylesheet, source, etc.)
+  * @param docReq     Document information (stylesheet, source, etc.)
   * @param req        The original HTTP request
   * @param res        Where to send the HTML response
   *
   * @exception TransformerException  If there's an error in the stylesheet.
   * @exception IOException           If stylesheet or source can't be read.
   */
-  private void apply(DocRequest docInfo, HttpServletRequest req,
+  private void apply(DocRequest docReq, HttpServletRequest req,
                      HttpServletResponse res)
     throws Exception 
   {
     boolean dump = false;
 
     // First, load the stylesheet.
-    Templates pss = stylesheetCache.find(docInfo.style);
+    Templates pss = stylesheetCache.find(docReq.style);
 
     // Figure out the output mime type
     res.setContentType(calcMimeType(pss));
@@ -481,10 +481,10 @@ public class DynaXML extends TextServlet
     // stuff the output tags into parameters. They can be whatever the 
     // stylesheet writer desires.
     //
-    readBranding(docInfo.brand, req, transformer);
+    readBranding(docReq.brand, req, transformer);
 
     // Get the source document.
-    Source sourceDoc = getSourceDoc(docInfo, transformer);
+    Source sourceDoc = getSourceDoc(docReq, transformer);
 
     // If we are in raw mode, use a null transform instead of the
     // stylesheet.
@@ -553,7 +553,7 @@ public class DynaXML extends TextServlet
    * fetching a file from a URL, lazy file, or a plain XML file on disk.
    * Also fires up a text query if requested.
    *
-   * @param docInfo       Tells which document to load, the query to
+   * @param docReq        Tells which document to load, the query to
    *                      apply, tec.
    * @param transformer   The XSLT transformer that will be used on the
    *                      document.
@@ -566,16 +566,16 @@ public class DynaXML extends TextServlet
    * @throws ParserConfigurationException Miscellaneous configuration
    *                                      problems
    */
-  protected Source getSourceDoc(DocRequest docInfo, Transformer transformer)
+  protected Source getSourceDoc(DocRequest docReq, Transformer transformer)
     throws IOException, SAXException, ParserConfigurationException,
              InvalidDocumentException 
     {
     // If a pre-filter stylesheet was specified, load it.
     Templates preFilter = null;
-    if (docInfo.preFilter != null) 
+    if (docReq.preFilter != null) 
     {
       try {
-        preFilter = stylesheetCache.find(docInfo.preFilter);
+        preFilter = stylesheetCache.find(docReq.preFilter);
       }
       catch (IOException e) {
         throw e;
@@ -591,11 +591,11 @@ public class DynaXML extends TextServlet
     // See if we can find a lazy version of the document (for speed
     // and searching)
     //
-    StructuredStore lazyStore = docLocator.getLazyStore(docInfo.indexConfig,
-                                                        docInfo.indexName,
-                                                        docInfo.source,
+    StructuredStore lazyStore = docLocator.getLazyStore(docReq.indexConfig,
+                                                        docReq.indexName,
+                                                        docReq.source,
                                                         preFilter,
-                                                        docInfo.removeDoctypeDecl);
+                                                        docReq.removeDoctypeDecl);
 
     // If not found...
     if (lazyStore == null) 
@@ -603,7 +603,7 @@ public class DynaXML extends TextServlet
       // Can't perform queries without a lazy tree and its corresponding
       // index.
       //
-      if (docInfo.query != null)
+      if (docReq.query != null)
         throw new UnsupportedQueryException();
 
       // If we're required to use a lazy store, throw an exception since
@@ -613,16 +613,16 @@ public class DynaXML extends TextServlet
         throw new InvalidDocumentException();
 
       // Can't find a lazy store... does the original source file exist?
-      if (!docInfo.source.startsWith("http://")) {
-        File srcFile = new File(docInfo.source);
+      if (!docReq.source.startsWith("http://")) {
+        File srcFile = new File(docReq.source);
         if (!srcFile.isFile() || !srcFile.canRead())
           throw new InvalidDocumentException();
       }
 
       // Okay, read the original source file.
       XMLReader xmlReader = IndexUtil.createXMLReader();
-      InputSource inSrc = docLocator.getInputSource(docInfo.source,
-                                                    docInfo.removeDoctypeDecl);
+      InputSource inSrc = docLocator.getInputSource(docReq.source,
+                                                    docReq.removeDoctypeDecl);
       return new SAXSource(xmlReader, inSrc);
     }
 
@@ -636,13 +636,13 @@ public class DynaXML extends TextServlet
     // If a query was specified, make a SearchTree; otherwise, make
     // a normal lazy tree.
     //
-    if (docInfo.query != null && docInfo.query.query != null) {
+    if (docReq.query != null && docReq.query.query != null) {
       String docKey = IndexUtil.calcDocKey(new File(getRealPath("")),
-                                           new File(docInfo.indexConfig),
-                                           docInfo.indexName,
-                                           new File(docInfo.source));
+                                           new File(docReq.indexConfig),
+                                           docReq.indexName,
+                                           new File(docReq.source));
       SearchTree tree = new SearchTree(config, docKey, lazyStore);
-      tree.search(createQueryProcessor(), docInfo.query);
+      tree.search(createQueryProcessor(), docReq.query);
       sourceDoc = tree;
     }
     else {

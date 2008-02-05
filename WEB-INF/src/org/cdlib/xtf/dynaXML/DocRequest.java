@@ -44,7 +44,7 @@ public class DocRequest
    * does not copy each authSpec. Rather, the vector contains ref's
    * to the same authSpecs as the original.
    *
-   * @param other     DocInfo to copy data from
+   * @param other     DocRequest to copy data from
    */
   public DocRequest(DocRequest other) {
     style = other.style;
@@ -92,4 +92,4 @@ public class DocRequest
 
   /** Text query to run on the document, or null for none. */
   public QueryRequest query;
-} // class DocInfo
+} // class DocRequest
