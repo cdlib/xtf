@@ -84,12 +84,15 @@ public class StaticGroupData extends GroupData
    * Retrieves GroupData for a given field from a given reader. Maintains a cache
    * so that if the same field is requested again for this reader, we don't have
    * to re-read the group data.
+   * 
+   * Synchronized so that if a bunch of threads come in wanting to load the same
+   * data, we won't waste time and memory loading it over and over.
    *
    * @param reader  Where to read the data from
    * @param field   Which field to read
    * @return        Group data for the specified field
    */
-  public static StaticGroupData getCachedData(IndexReader reader, String field)
+  public static synchronized StaticGroupData getCachedData(IndexReader reader, String field)
     throws IOException 
   {
     // See if we have a cache for this reader.
