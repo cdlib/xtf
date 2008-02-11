@@ -71,6 +71,7 @@ import net.sf.saxon.tree.TreeBuilder;
 import net.sf.saxon.value.StringValue;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.limit.ExcessiveWorkException;
+import org.apache.lucene.limit.TermLimitException;
 import org.cdlib.xtf.saxonExt.sql.SQLConnect;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.IndexUtil;
@@ -1381,6 +1382,7 @@ public abstract class TextServlet extends HttpServlet
       // thus don't need stack traces for debugging.)
       //
       if (!(exc instanceof ExcessiveWorkException) &&
+          !(exc instanceof TermLimitException) &&
           (!(exc instanceof GeneralException) ||
           ((GeneralException)exc).isSevere())) 
       {
