@@ -983,7 +983,17 @@ public class DefaultQueryProcessor extends QueryProcessor
           }
     
           String finalName = flipEmpty ? (name + ":flipEmpty") : name;
-          if (isSparse)
+          
+          // Though not strictly necessary, allow the user to specify "score" or
+          // "relevance" to sort by those. That way, automated programs can always give
+          // a "sortDocsBy" field.
+          //
+          if (name.equals("score") || name.equals("relevance")) {
+            if (reverse || flipEmpty)
+              throw new RuntimeException("Illegal modifier on sortDocsBy 'score'");
+            fields[i] = SortField.FIELD_SCORE;
+          }
+          else if (isSparse)
             fields[i] = new SortField(finalName, sparseStringComparator, reverse);
           else
             fields[i] = new SortField(finalName, compactStringComparator, reverse);
