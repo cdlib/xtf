@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB">
+  <and field="text" maxSnippets="all" contextChars="80" termMode="context">
+    <term>ax*</term>
+    <not>
+      <term>bx*</term>
+    </not>
+  </and>
+</query>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <testMeta xtf:meta="true">test</testMeta>
+    <data-for-near-test xtf:sectionType="ab">
+      ax1 ax2 ax3 ax4 ax5 ax6 ax7 ax8
+      bx1 bx2 bx3 bx4 bx5 bx6 bx7 bx8
+    </data-for-near-test>  
+    <data-for-near-test xtf:sectionType="ac">
+      ax1 ax2 ax3 ax4 ax5 ax6 ax7 ax8
+      cx1 cx2 cx3 cx4 cx5 cx6 cx7 cx8
+    </data-for-near-test>  
+</document>

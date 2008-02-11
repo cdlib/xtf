@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc3.xml" totalHits="8">
+      <meta>
+         <testMeta>test</testMeta>
+      </meta>
+      <snippet rank="1" sectionType="ac">
+         <hit>
+            <term>ax1</term>
+         </hit>
+      </snippet>
+      <snippet rank="2" sectionType="ac">
+         <hit>
+            <term>ax2</term>
+         </hit>
+      </snippet>
+      <snippet rank="3" sectionType="ac">
+         <hit>
+            <term>ax3</term>
+         </hit>
+      </snippet>
+      <snippet rank="4" sectionType="ac">
+         <hit>
+            <term>ax4</term>
+         </hit>
+      </snippet>
+      <snippet rank="5" sectionType="ac">
+         <hit>
+            <term>ax5</term>
+         </hit>
+      </snippet>
+      <snippet rank="6" sectionType="ac">
+         <hit>
+            <term>ax6</term>
+         </hit>
+      </snippet>
+      <snippet rank="7" sectionType="ac">
+         <hit>
+            <term>ax7</term>
+         </hit>
+      </snippet>
+      <snippet rank="8" sectionType="ac">
+         <hit>
+            <term>ax8</term>
+         </hit> cx1 cx2 cx3 cx4 cx5 cx6 cx7 cx8</snippet>
+   </docHit>
+</crossQueryResult>
