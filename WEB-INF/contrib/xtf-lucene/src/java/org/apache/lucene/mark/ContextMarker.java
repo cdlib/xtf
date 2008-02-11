@@ -422,6 +422,10 @@ public class ContextMarker
     if (terms == null)
       return;
 
+    // Don't mark an empty range
+    if (fromPos == toPos)
+      return;
+    
     // Seek to the first spot.
     iter.seekFirst(fromPos, true);
     while (true) 
