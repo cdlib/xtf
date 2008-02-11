@@ -1513,6 +1513,10 @@ public class XMLTextProcessor extends DefaultHandler
         String boostStr = atts.getValue(boostIdx);
         boost = Float.parseFloat(boostStr);
       }
+      
+      // Certain field names are reserved for internal use.
+      if (localName.matches("^(text|key|docInfo|chunkCount|chunkOvlp|chunkSize|fileDate|indexInfo|stopWords|tokenizedFields|xtfIndexVersion)$"))
+        throw new RuntimeException("Reserved name '" + localName + "' not allowed as meta-data field");
 
       // Allocate a place to store the contents of the meta-data field.
       metaField = new MetaField(localName,
