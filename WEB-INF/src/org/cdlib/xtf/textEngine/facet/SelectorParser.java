@@ -23,7 +23,7 @@ public class SelectorParser implements SelectorParserConstants {
   ArrayList list = new ArrayList();
   GroupSelector s;
     s = expr();
-               list.add( s );
+               list.add(s);
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -36,14 +36,14 @@ public class SelectorParser implements SelectorParserConstants {
       }
       jj_consume_token(BAR);
       s = expr();
-                       list.add( s );
+                       list.add(s);
     }
-    if( list.size() == 1 )
-        {if (true) return (GroupSelector) list.get( 0 );}
+    if(list.size() == 1)
+        {if (true) return (GroupSelector) list.get(0);}
 
     GroupSelector[] array = (GroupSelector[])
-        list.toArray( new GroupSelector[list.size()] );
-    {if (true) return new UnionSelector( array );}
+        list.toArray(new GroupSelector[list.size()]);
+    {if (true) return new UnionSelector(array);}
     throw new Error("Missing return statement in function");
   }
 
@@ -82,9 +82,9 @@ public class SelectorParser implements SelectorParserConstants {
       jj_la1[2] = jj_gen;
       ;
     }
-    if( !gotDocs ) {
+    if(!gotDocs) {
         s = new MarkSelector();
-        prev.setNext( s );
+        prev.setNext(s);
         prev = s;
     }
     {if (true) return root;}
@@ -98,7 +98,7 @@ public class SelectorParser implements SelectorParserConstants {
   GroupSelector s;
   GroupSelector prevPrev = null;
     s = name();
-                      if( s != null ) {
+                      if(s != null) {
                           prev.setNext(s);
                           prevPrev = prev;
                           prev = s;
@@ -128,58 +128,76 @@ public class SelectorParser implements SelectorParserConstants {
   final public GroupSelector name() throws ParseException {
   StringBuffer buf = new StringBuffer();
   Token t;
-    label_4:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case TERM:
-        t = jj_consume_token(TERM);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case STRING:
+      t = jj_consume_token(STRING);
+                      String s = t.toString().replace("\\\"", "\"");
+                      {if (true) return new NameSelector(s.substring(1, s.length()-1));}
+      break;
+    case COLON:
+    case STAR:
+    case DASH:
+    case EQUAL:
+    case NUMBER:
+    case TERM:
+      label_4:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case TERM:
+          t = jj_consume_token(TERM);
                       buf.append(t.toString());
-        break;
-      case NUMBER:
-        t = jj_consume_token(NUMBER);
+          break;
+        case NUMBER:
+          t = jj_consume_token(NUMBER);
                       buf.append(t.toString());
-        break;
-      case DASH:
-        t = jj_consume_token(DASH);
+          break;
+        case DASH:
+          t = jj_consume_token(DASH);
                       buf.append(t.toString());
-        break;
-      case STAR:
-        t = jj_consume_token(STAR);
+          break;
+        case STAR:
+          t = jj_consume_token(STAR);
                       buf.append(t.toString());
-        break;
-      case COLON:
-        t = jj_consume_token(COLON);
+          break;
+        case COLON:
+          t = jj_consume_token(COLON);
                       buf.append(t.toString());
-        break;
-      case EQUAL:
-        t = jj_consume_token(EQUAL);
+          break;
+        case EQUAL:
+          t = jj_consume_token(EQUAL);
                       buf.append(t.toString());
-        break;
-      default:
-        jj_la1[4] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
+          break;
+        default:
+          jj_la1[4] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case COLON:
+        case STAR:
+        case DASH:
+        case EQUAL:
+        case NUMBER:
+        case TERM:
+          ;
+          break;
+        default:
+          jj_la1[5] = jj_gen;
+          break label_4;
+        }
       }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COLON:
-      case STAR:
-      case DASH:
-      case EQUAL:
-      case NUMBER:
-      case TERM:
-        ;
-        break;
-      default:
-        jj_la1[5] = jj_gen;
-        break label_4;
-      }
-    }
     String str = buf.toString();
-    if( str.equals("*") )
+    if(str.equals("*"))
         {if (true) return null;}
-    if( str.equals("**") )
+    if(str.equals("**"))
         {if (true) return new DescendantSelector();}
-    {if (true) return new NameSelector( buf.toString() );}
+    {if (true) return new NameSelector(buf.toString());}
+      break;
+    default:
+      jj_la1[6] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -196,48 +214,48 @@ public class SelectorParser implements SelectorParserConstants {
       break;
     case TERM:
       t = jj_consume_token(TERM);
-          if( t.toString().equalsIgnoreCase("topChoices") )
+          if(t.toString().equalsIgnoreCase("topChoices"))
               s = new TopChoiceSelector();
-          else if( t.toString().equalsIgnoreCase("nonEmpty") )
-              s = new EmptySelector( false );
-          else if( t.toString().equalsIgnoreCase("empty") )
-              s = new EmptySelector( true );
-          else if( t.toString().equalsIgnoreCase("unselected") )
-              s = new SelectedSelector( false );
-          else if( t.toString().equalsIgnoreCase("selected") )
-              s = new SelectedSelector( true );
-          else if( t.toString().equalsIgnoreCase("siblings") )
+          else if(t.toString().equalsIgnoreCase("nonEmpty"))
+              s = new EmptySelector(false);
+          else if(t.toString().equalsIgnoreCase("empty"))
+              s = new EmptySelector(true);
+          else if(t.toString().equalsIgnoreCase("unselected"))
+              s = new SelectedSelector(false);
+          else if(t.toString().equalsIgnoreCase("selected"))
+              s = new SelectedSelector(true);
+          else if(t.toString().equalsIgnoreCase("siblings"))
               s = new SiblingSelector();
-          else if( t.toString().equalsIgnoreCase("page") )
+          else if(t.toString().equalsIgnoreCase("page"))
               s = new PageSelector();
-          else if( t.toString().equalsIgnoreCase("singleton") )
+          else if(t.toString().equalsIgnoreCase("singleton"))
               s = new SingletonSelector();
           else
-              {if (true) throw new ParseException( "Unknown filter '" + t.toString() + "'" );}
+              {if (true) throw new ParseException("Unknown filter '" + t.toString() + "'");}
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case OPEN_PAREN:
         jj_consume_token(OPEN_PAREN);
         t = jj_consume_token(TERM);
-                    if( !t.toString().equalsIgnoreCase("size") )
-                        {if (true) throw new ParseException( "Unknown parameter '" + t.toString() + "'" );}
+                    if(!t.toString().equalsIgnoreCase("size"))
+                        {if (true) throw new ParseException("Unknown parameter '" + t.toString() + "'");}
         jj_consume_token(EQUAL);
         t = jj_consume_token(NUMBER);
-            if( s instanceof PageSelector ) {
+            if(s instanceof PageSelector) {
                 int size = Integer.parseInt(t.toString());
-                ((PageSelector)s).setPageSize( size );
+                ((PageSelector)s).setPageSize(size);
             }
             else
-                {if (true) throw new ParseException( "Argument '" + t.toString() + "' not allowed here" );}
+                {if (true) throw new ParseException("Argument '" + t.toString() + "' not allowed here");}
         jj_consume_token(CLOSE_PAREN);
         break;
       default:
-        jj_la1[6] = jj_gen;
+        jj_la1[7] = jj_gen;
         ;
       }
         {if (true) return s;}
       break;
     default:
-      jj_la1[7] = jj_gen;
+      jj_la1[8] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -260,7 +278,7 @@ public class SelectorParser implements SelectorParserConstants {
                     to = Integer.parseInt(t.toString());
       break;
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[9] = jj_gen;
       ;
     }
     {if (true) return new RangeSelector(from - 1, to - from + 1);}
@@ -277,10 +295,10 @@ public class SelectorParser implements SelectorParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case TERM:
       t = jj_consume_token(TERM);
-                      if( !t.toString().equals("all") ) {
+                      if(!t.toString().equals("all")) {
                           {if (true) throw new ParseException(
                               "Found '" + t.toString() +
-                              "' but expected 'all' or '<NUMBER> - <NUMBER>" );}
+                              "' but expected 'all' or '<NUMBER> - <NUMBER>");}
                       }
                       {if (true) return new DocsSelector(0, 999999999);}
       break;
@@ -294,13 +312,13 @@ public class SelectorParser implements SelectorParserConstants {
                       to = Integer.parseInt(t.toString());
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[10] = jj_gen;
         ;
       }
     {if (true) return new DocsSelector(from - 1, to - from + 1);}
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[11] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -312,13 +330,13 @@ public class SelectorParser implements SelectorParserConstants {
   public Token token, jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[11];
+  final private int[] jj_la1 = new int[12];
   static private int[] jj_la1_0;
   static {
       jj_la1_0();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x80,0x20,0x10,0x200,0x1e140,0x1e140,0x800,0x18000,0x2000,0x2000,0x18000,};
+      jj_la1_0 = new int[] {0x80,0x20,0x10,0x200,0x1e140,0x1e140,0x3e140,0x800,0x18000,0x2000,0x2000,0x18000,};
    }
 
   public SelectorParser(java.io.InputStream stream) {
@@ -330,7 +348,7 @@ public class SelectorParser implements SelectorParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   public void ReInit(java.io.InputStream stream) {
@@ -342,7 +360,7 @@ public class SelectorParser implements SelectorParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   public SelectorParser(java.io.Reader stream) {
@@ -351,7 +369,7 @@ public class SelectorParser implements SelectorParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   public void ReInit(java.io.Reader stream) {
@@ -360,7 +378,7 @@ public class SelectorParser implements SelectorParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   public SelectorParser(SelectorParserTokenManager tm) {
@@ -368,7 +386,7 @@ public class SelectorParser implements SelectorParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   public void ReInit(SelectorParserTokenManager tm) {
@@ -376,7 +394,7 @@ public class SelectorParser implements SelectorParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   final private Token jj_consume_token(int kind) throws ParseException {
@@ -423,15 +441,15 @@ public class SelectorParser implements SelectorParserConstants {
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[17];
-    for (int i = 0; i < 17; i++) {
+    boolean[] la1tokens = new boolean[18];
+    for (int i = 0; i < 18; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 12; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -440,7 +458,7 @@ public class SelectorParser implements SelectorParserConstants {
         }
       }
     }
-    for (int i = 0; i < 17; i++) {
+    for (int i = 0; i < 18; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

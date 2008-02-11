@@ -30,11 +30,9 @@
 options {
   STATIC = false;
   UNICODE_INPUT = true;
-  //USER_CHAR_STREAM = true;
-  OPTIMIZE_TOKEN_MANAGER = true;
 }
 
-PARSER_BEGIN( SelectorParser )
+PARSER_BEGIN(SelectorParser)
 
 package org.cdlib.xtf.textEngine.facet;
 import java.util.ArrayList;
@@ -43,7 +41,7 @@ public class SelectorParser
 {
 } // class SelectorParser
 
-PARSER_END( SelectorParser )
+PARSER_END(SelectorParser)
 
 SKIP: 
 {
@@ -64,7 +62,8 @@ TOKEN:
   | <DASH: "-">
   | <EQUAL: "=">
   | <NUMBER: (["0"-"9"])+>
-  | <TERM: (~["#", ":", "|", "*", "(", ")", "=", "[", "]", "-", "0"-"9", "\t", "\n", "\r"])+>
+  | <TERM: (~["#", ":", "|", "*", "(", ")", "\"", "=", "[", "]", "-", "0"-"9", "\t", "\n", "\r"])+>
+  | <STRING: "\"" (~["\""] | "\\\"")+ "\"">
 }
   
 //////////////////////////////////////////////////////////////////////////////
@@ -87,18 +86,18 @@ GroupSelector union() :
   GroupSelector s;
 }
 {
-  s = expr() { list.add( s ); }
+  s = expr() { list.add(s); }
   
-  ( <BAR> s = expr() { list.add( s ); }
+  ( <BAR> s = expr() { list.add(s); }
   )*
   
   { 
-    if( list.size() == 1 )
-        return (GroupSelector) list.get( 0 );
+    if(list.size() == 1)
+        return (GroupSelector) list.get(0);
     
     GroupSelector[] array = (GroupSelector[]) 
-        list.toArray( new GroupSelector[list.size()] );
-    return new UnionSelector( array );
+        list.toArray(new GroupSelector[list.size()]);
+    return new UnionSelector(array);
   }
 }
 
@@ -122,9 +121,9 @@ GroupSelector expr() :
   ( <POUND> s = docs() { prev.setNext(s); prev = s; gotDocs = true; }
   )?
       
-  { if( !gotDocs ) {
+  { if(!gotDocs) {
         s = new MarkSelector();
-        prev.setNext( s );
+        prev.setNext(s);
         prev = s;
     }
     return root;
@@ -134,13 +133,13 @@ GroupSelector expr() :
 //////////////////////////////////////////////////////////////////////////////
 // A single level, consists of a name or * followed by optional filters
 //////////////////////////////////////////////////////////////////////////////
-GroupSelector level( GroupSelector prev ) :
+GroupSelector level(GroupSelector prev) :
 {
   GroupSelector s;
   GroupSelector prevPrev = null;
 }
 {
-  s = name()        { if( s != null ) {
+  s = name()        { if(s != null) {
                           prev.setNext(s);
                           prevPrev = prev;
                           prev = s; 
@@ -164,21 +163,24 @@ GroupSelector name() :
   Token t;
 }
 {
+  (   t = <STRING>  { String s = t.toString().replace("\\\"", "\"");
+                      return new NameSelector(s.substring(1, s.length()-1)); }
+  )
+  | 
   (   t = <TERM>    { buf.append(t.toString()); }
     | t = <NUMBER>  { buf.append(t.toString()); }
     | t = <DASH>    { buf.append(t.toString()); }
     | t = <STAR>    { buf.append(t.toString()); }
     | t = <COLON>   { buf.append(t.toString()); }
     | t = <EQUAL>   { buf.append(t.toString()); }
-  )+
-      
+  )+    
   {
     String str = buf.toString();
-    if( str.equals("*") )
+    if(str.equals("*"))
         return null;
-    if( str.equals("**") )
+    if(str.equals("**"))
         return new DescendantSelector();
-    return new NameSelector( buf.toString() );
+    return new NameSelector(buf.toString());
   }
 } 
 
@@ -191,42 +193,42 @@ GroupSelector filter() :
   Token t;
 }
 {
-    ( s = rangeFilter() { return s; } )
+    ( s = rangeFilter() { return s; })
   | ( t = <TERM> 
       {
-          if( t.toString().equalsIgnoreCase("topChoices") )
+          if(t.toString().equalsIgnoreCase("topChoices"))
               s = new TopChoiceSelector();
-          else if( t.toString().equalsIgnoreCase("nonEmpty") )
-              s = new EmptySelector( false );
-          else if( t.toString().equalsIgnoreCase("empty") )
-              s = new EmptySelector( true );
-          else if( t.toString().equalsIgnoreCase("unselected") )
-              s = new SelectedSelector( false );
-          else if( t.toString().equalsIgnoreCase("selected") )
-              s = new SelectedSelector( true );
-          else if( t.toString().equalsIgnoreCase("siblings") )
+          else if(t.toString().equalsIgnoreCase("nonEmpty"))
+              s = new EmptySelector(false);
+          else if(t.toString().equalsIgnoreCase("empty"))
+              s = new EmptySelector(true);
+          else if(t.toString().equalsIgnoreCase("unselected"))
+              s = new SelectedSelector(false);
+          else if(t.toString().equalsIgnoreCase("selected"))
+              s = new SelectedSelector(true);
+          else if(t.toString().equalsIgnoreCase("siblings"))
               s = new SiblingSelector();
-          else if( t.toString().equalsIgnoreCase("page") )
+          else if(t.toString().equalsIgnoreCase("page"))
               s = new PageSelector();
-          else if( t.toString().equalsIgnoreCase("singleton") )
+          else if(t.toString().equalsIgnoreCase("singleton"))
               s = new SingletonSelector();
           else
-              throw new ParseException( "Unknown filter '" + t.toString() + "'" );
+              throw new ParseException("Unknown filter '" + t.toString() + "'");
       }
   
       ( <OPEN_PAREN> 
-        t=<TERM>  { if( !t.toString().equalsIgnoreCase("size") )
-                        throw new ParseException( "Unknown parameter '" + t.toString() + "'" );
+        t=<TERM>  { if(!t.toString().equalsIgnoreCase("size"))
+                        throw new ParseException("Unknown parameter '" + t.toString() + "'");
                   }
         <EQUAL>
         t=<NUMBER>    
         { 
-            if( s instanceof PageSelector ) {
+            if(s instanceof PageSelector) {
                 int size = Integer.parseInt(t.toString());
-                ((PageSelector)s).setPageSize( size );
+                ((PageSelector)s).setPageSize(size);
             }
             else
-                throw new ParseException( "Argument '" + t.toString() + "' not allowed here" );
+                throw new ParseException("Argument '" + t.toString() + "' not allowed here");
         }
         <CLOSE_PAREN>
       )?
@@ -264,10 +266,10 @@ GroupSelector docs() :
   int to = 999999999;
 }
 {
-  ( t = <TERM>      { if( !t.toString().equals("all") ) {
-                          throw new ParseException( 
+  ( t = <TERM>      { if(!t.toString().equals("all")) {
+                          throw new ParseException(
                               "Found '" + t.toString() + 
-                              "' but expected 'all' or '<NUMBER> - <NUMBER>" );
+                              "' but expected 'all' or '<NUMBER> - <NUMBER>");
                       }
                       return new DocsSelector(0, 999999999);
                     }

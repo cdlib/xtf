@@ -17,6 +17,7 @@ public interface SelectorParserConstants {
   int EQUAL = 14;
   int NUMBER = 15;
   int TERM = 16;
+  int STRING = 17;
 
   int DEFAULT = 0;
 
@@ -38,6 +39,7 @@ public interface SelectorParserConstants {
     "\"=\"",
     "<NUMBER>",
     "<TERM>",
+    "<STRING>",
   };
 
 }
