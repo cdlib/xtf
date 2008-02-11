@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<doc xmlns:xtf="http://cdlib.org/xtf">
+    <title xtf:tokenize="no" xtf:meta="yes">Document 11 has weird stuff</title>
+    <fun-facet xtf:facet="yes" xtf:meta="true">This [fun] "text" {name} *:= (wow!)</fun-facet>
+    <type xtf:meta="true">text</type>
+    <collection xtf:meta="true">Spec</collection>
+    Document 11 text here. Blah blah blah.
+</doc>

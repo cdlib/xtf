@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="0" endDoc="0">
+   <facet field="fun-facet" totalGroups="1" totalDocs="1">
+      <group value="This [fun] &#34;text&#34; {name} *:= (wow!)" rank="1" totalSubGroups="0"
+             totalDocs="1"
+             startDoc="0"
+             endDoc="0"/>
+   </facet>
+</crossQueryResult>
