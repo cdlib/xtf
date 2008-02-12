@@ -144,9 +144,11 @@ public class FileUtils
     String stylesheetPath = context.getOrigin().getInstructionInfo()
                             .getSystemId();
     stylesheetPath = stylesheetPath.replaceFirst("^file:", "");
+    stylesheetPath = stylesheetPath.replaceAll("%20", " "); // fix spaces from Saxon on Windows
     File stylesheetDir = new File(stylesheetPath).getParentFile();
 
     filePath = filePath.replaceFirst("^file:", "");
+    filePath = filePath.replaceAll("%20", " "); // fix spaces from Saxon on Windows
 
     String resolved = Path.resolveRelOrAbs(stylesheetDir, filePath);
     return new File(resolved);
@@ -162,9 +164,11 @@ public class FileUtils
     String stylesheetPath = context.getOrigin().getInstructionInfo()
                             .getSystemId();
     stylesheetPath = stylesheetPath.replaceFirst("^file:", "");
+    stylesheetPath = stylesheetPath.replaceAll("%20", " "); // fix spaces from Saxon on Windows
     File stylesheetDir = new File(stylesheetPath).getParentFile();
 
     filePath = filePath.replaceFirst("^file:", "");
+    filePath = filePath.replaceAll("%20", " "); // fix spaces from Saxon on Windows
 
     String resolved = Path.resolveRelOrAbs(stylesheetDir, filePath);
     return Path.normalize(resolved);
