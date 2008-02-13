@@ -171,7 +171,9 @@
                <xsl:value-of select="replace(.,'-','::')"/>
             </xsl:when>
             <xsl:otherwise>
-               <xsl:value-of select="concat(parse:year(string(.)),'::01::01')"/>
+               <xsl:for-each select="parse:year(string(.))">
+                  <xsl:value-of select="concat(.,'::01::01')"/>
+               </xsl:for-each>
             </xsl:otherwise>
          </xsl:choose>
       </facet-date>
