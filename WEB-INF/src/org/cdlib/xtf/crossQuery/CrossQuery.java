@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.SocketException;
 import java.text.DecimalFormat;
-import java.util.Enumeration;
 import java.util.Properties;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -129,22 +128,8 @@ public class CrossQuery extends TextServlet
       // Output extended debugging info if requested.
       Trace.debug("Processing request: " + getRequestURL(req));
 
-      // Translate the URL parameters to an AttribList
-      AttribList attribs = new AttribList();
-      Enumeration p = req.getParameterNames();
-      while (p.hasMoreElements()) 
-      {
-        String name = (String)p.nextElement();
-
-        // Deal with screwy URL encoding of Unicode strings on
-        // many browsers.
-        //
-        String value = req.getParameter(name);
-        attribs.put(name, convertUTF8inURL(value));
-      }
-
       // This does the bulk of the work.
-      apply(attribs, req, res);
+      apply(makeAttribList(req), req, res);
     }
     catch (Exception e) {
       if (!(e instanceof RedirectException) && !(e instanceof SocketException)) 

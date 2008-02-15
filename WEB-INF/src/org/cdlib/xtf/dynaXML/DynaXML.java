@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.SocketException;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -220,22 +219,8 @@ public class DynaXML extends TextServlet
       // Output extended debugging info if requested.
       Trace.debug("Processing request: " + getRequestURL(req));
 
-      // Translate the URL parameters to an AttribList
-      AttribList attribs = new AttribList();
-      Enumeration p = req.getParameterNames();
-      while (p.hasMoreElements()) 
-      {
-        String name = (String)p.nextElement();
-
-        // Deal with screwy URL encoding of Unicode strings on
-        // many browsers.
-        //
-        String value = req.getParameter(name);
-        attribs.put(name, convertUTF8inURL(value));
-      }
-
       // Run the document request parser
-      DocRequest docReq = runDocReqParser(req, attribs);
+      DocRequest docReq = runDocReqParser(req, makeAttribList(req));
 
       // If source overridden in the URL, make sure it's really
       // external.

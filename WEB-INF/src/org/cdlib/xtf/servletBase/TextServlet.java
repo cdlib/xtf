@@ -43,12 +43,15 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -506,17 +509,23 @@ public abstract class TextServlet extends HttpServlet
     while (p.hasMoreElements()) 
     {
       String name = (String)p.nextElement();
-      String value = req.getParameter(name);
+      String[] values = req.getParameterValues(name);
 
       // Skip parameters with empty values.
-      if (value == null || value.length() == 0)
-        continue;
+      if (values != null) {
+        for (String value : values)
+        {
+          if (value == null || value.length() == 0)
+            continue;
+          
+          // Deal with screwy URL encoding of Unicode strings on
+          // many browsers.
+          //
+          value = convertUTF8inURL(value);
+          trans.setParameter(name, new StringValue(value));
+        }
+      }
 
-      // Deal with screwy URL encoding of Unicode strings on
-      // many browsers.
-      //
-      value = convertUTF8inURL(value);
-      trans.setParameter(name, new StringValue(value));
     }
 
     stuffSpecialAttribs(req, trans);
@@ -1431,6 +1440,31 @@ public abstract class TextServlet extends HttpServlet
   } // genErrorPage()
 
   /**
+   * Generate an AttribList from the parameters in a servlet request. Deals
+   * some URL encoding issues introduced by many browsers.
+   * 
+   * @param req Request to scan for attributes
+   * @return    An AttribList containing the parameter names and value
+   */
+  protected AttribList makeAttribList(HttpServletRequest req) {
+    AttribList attribs = new AttribList();
+    Enumeration p = req.getParameterNames();
+    while (p.hasMoreElements()) 
+    {
+      String name = (String)p.nextElement();
+  
+      // Deal with screwy URL encoding of Unicode strings on many browsers.
+      String[] values = req.getParameterValues(name);
+      if (values != null) {
+        for (String value : values)
+          attribs.put(name, convertUTF8inURL(value));
+      }
+    }
+    
+    return attribs;
+  }
+
+  /**
    * Wraps a servlet request, substituting a different parameter set that
    * allows ';' in addition to '&' as a separator. Also, removes any session
    * ID in the URL.
@@ -1449,69 +1483,97 @@ public abstract class TextServlet extends HttpServlet
       this.inReq = inReq;
     }
 
-    Vector names = new Vector();
-    Vector values = new Vector();
+    HashMap<String, ArrayList<String>> params;
 
     private void init() 
     {
-      if (!names.isEmpty())
+      if (params != null)
         return;
 
+      params = new HashMap<String, ArrayList<String>>();
+      
       Enumeration paramNames = inReq.getParameterNames();
       while (paramNames.hasMoreElements()) 
       {
         String name = (String)paramNames.nextElement();
-        String val = inReq.getParameter(name);
+        String[] vals = inReq.getParameterValues(name);
 
-        if (val.indexOf(';') < 0) 
+        for (String val : vals)
         {
-          if (!name.equals("jsessionid")) {
-            names.add(name);
-            values.add(val);
+          if (val.indexOf(';') < 0) 
+          {
+            if (!name.equals("jsessionid"))
+              addParam(name, val);
+            continue;
           }
-          continue;
+  
+          StringTokenizer tokenizer = new StringTokenizer(val, ";");
+          while (tokenizer.hasMoreTokens()) 
+          {
+            String tok = tokenizer.nextToken();
+            int equalPos = tok.indexOf('=');
+            if (equalPos >= 0) {
+              name = tok.substring(0, equalPos);
+              val = tok.substring(equalPos + 1);
+            }
+            else
+              val = tok;
+  
+            if (name != null && !name.equals("jsessionid"))
+              addParam(name, val);
+            name = null;
+          } // while
         }
-
-        StringTokenizer tokenizer = new StringTokenizer(val, ";");
-        while (tokenizer.hasMoreTokens()) 
-        {
-          String tok = tokenizer.nextToken();
-          int equalPos = tok.indexOf('=');
-          if (equalPos >= 0) {
-            name = tok.substring(0, equalPos);
-            val = tok.substring(equalPos + 1);
-          }
-          else
-            val = tok;
-
-          if (name != null && !name.equals("jsessionid")) {
-            names.add(name);
-            values.add(val);
-          }
-          name = null;
-        } // while
       }
     } // init()
-
-    public Enumeration getParameterNames() {
-      init();
-      return names.elements();
+    
+    private void addParam(String name, String val)
+    {
+      ArrayList<String> vals = params.get(name);
+      if (vals == null) {
+        vals = new ArrayList<String>();
+        params.put(name, vals);
+      }
+      vals.add(val);
     }
 
+    @Override
+    public Enumeration getParameterNames() 
+    {
+      init();
+      
+      Set keys = params.keySet();
+      ArrayList<String> keyColl = new ArrayList<String>(keys);
+      Collections.sort(keyColl);
+      final Iterator iter = keyColl.iterator();
+      
+      return new Enumeration() {
+        public boolean hasMoreElements() { return iter.hasNext(); } 
+        public Object nextElement() { return iter.next(); }
+      };
+    }
+
+    @Override
     public String getParameter(String name) 
     {
       init();
-      for (int i = 0; i < names.size(); i++) {
-        if (name.equals(names.elementAt(i)))
-          return (String)values.elementAt(i);
-      }
-      return null;
+      ArrayList<String> vals = params.get(name);
+      if (vals == null)
+        return null;
+      return vals.get(0);
     }
 
-    public Enumeration getParameterValues() {
-      throw new UnsupportedOperationException();
+    @Override
+    public String[] getParameterValues(String name) 
+    {
+      init();
+      ArrayList<String> vals = params.get(name);
+      if (vals == null)
+        return null;
+      return vals.toArray(new String[vals.size()]);
     }
 
+    @Override
     public Map getParameterMap() {
       throw new UnsupportedOperationException();
     }
