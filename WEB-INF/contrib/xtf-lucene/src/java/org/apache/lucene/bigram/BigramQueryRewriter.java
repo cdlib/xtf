@@ -309,7 +309,7 @@ public class BigramQueryRewriter extends QueryRewriter
     {
       SpanQuery[] bigrammedClauses = bigramQueries(newClauses, slop, joiner);
       if (bigrammedClauses != newClauses) {
-        assert bigrammedClauses.length == 1 : "bigramQueries should result in one clause if any bigramming performed";
+        assert bigrammedClauses.length <= 1 : "bigramQueries should result in one clause if any bigramming performed";
         newClauses = bigrammedClauses;
         anyChanges = true;
         alreadyJoined = true;

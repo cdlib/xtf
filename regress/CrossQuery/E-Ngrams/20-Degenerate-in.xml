@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query indexPath="IndexDB" style="NullStyle.xsl" startDoc="0" maxDocs="10">
+  <and fields="text" slop="10" maxSnippets="3" contextChars="80">
+    <term>the</term>
+  </and>
+</query>
