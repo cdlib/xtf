@@ -59,13 +59,15 @@ class SpanScorer extends Scorer
 
     freq = 0.0f;
     doc = spans.doc();
+    boolean anyMatches = false;
 
     while (more && doc == spans.doc()) {
       freq += spans.score();
+      anyMatches = true;
       more = spans.next();
     }
 
-    return more || freq != 0.0f;
+    return more || anyMatches;
   }
 
   public int doc() {
