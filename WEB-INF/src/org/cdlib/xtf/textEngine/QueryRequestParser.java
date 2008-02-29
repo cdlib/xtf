@@ -1283,6 +1283,12 @@ public class QueryRequestParser
     SpanQuery nq;
     if (query.getField().equals("text")) 
     {
+      // If a not is nested within another not, we need to avoid
+      // double-dechunking.
+      //
+      if (query instanceof SpanDechunkingQuery)
+        query = ((SpanDechunkingQuery)query).getWrapped();
+      
       // Note that the actual slop will have to be fixed when the 
       // query is run.
       //
