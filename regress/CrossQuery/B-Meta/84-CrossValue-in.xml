@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query indexPath="IndexDB" style="NullStyle.xsl" startDoc="0" maxDocs="10">
+  <orNear field="subject" slop="10">
+    <term>politics</term>
+    <term>studies</term>
+  </orNear>
+</query>

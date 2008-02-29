@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query indexPath="IndexDB" style="NullStyle.xsl" startDoc="0" maxDocs="10">
+  <and fields="subject" slop="10"> <!-- keyword query -->
+    <term>politics</term>
+    <term>studies</term>
+  </and>
+</query>
