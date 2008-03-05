@@ -5,7 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import javax.xml.transform.stream.StreamSource;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tinytree.TinyBuilder;
+import net.sf.saxon.trans.XPathException;
 
+@SuppressWarnings("unused")
 public class FreeformQueryParserTokenManager implements FreeformQueryParserConstants
 {
   public  java.io.PrintStream debugStream = System.out;
