@@ -29,6 +29,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryRewriter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanNotNearQuery;
 import org.apache.lucene.search.spans.SpanOrNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -709,6 +710,11 @@ public class BigramQueryRewriter extends QueryRewriter
     if (q1 instanceof SpanChunkedNotQuery && q2 instanceof SpanTermQuery)
       return glomInside((SpanChunkedNotQuery)q1, (SpanTermQuery)q2, false);
 
+    if (q1 instanceof SpanTermQuery && q2 instanceof SpanNotNearQuery)
+      return glomInside((SpanNotNearQuery)q2, (SpanTermQuery)q1, true);
+    if (q1 instanceof SpanNotNearQuery && q2 instanceof SpanTermQuery)
+      return glomInside((SpanNotNearQuery)q1, (SpanTermQuery)q2, false);
+
     // Don't mess with near queries.
     if (q1 instanceof SpanTermQuery && q2 instanceof SpanNearQuery)
       return q2;
@@ -796,6 +802,39 @@ public class BigramQueryRewriter extends QueryRewriter
                                                         newInclude,
                                                         nq.getExclude(),
                                                         nq.getSlop()));
+  } // glomInside()
+
+  /**
+   * Gloms the term onto each clause within a NOT query.
+   *
+   * @param nq      Query to glom into
+   * @param term    Term to glom on
+   * @param before  true to prepend the term, false to append.
+   * @return        A new glommed query.
+   */
+  protected SpanQuery glomInside(SpanNotNearQuery nq, SpanTermQuery term,
+                                 boolean before) 
+  {
+    // Only glom into the 'include' clause. The 'exclude' clause is entirely
+    // independent.
+    //
+    SpanQuery newInclude;
+    if (before)
+      newInclude = (SpanQuery)glomQueries(term, nq.getInclude());
+    else
+      newInclude = (SpanQuery)glomQueries(nq.getInclude(), term);
+
+    // If no change was made to the 'include' clause, then we needn't change
+    // the NOT query.
+    //
+    if (newInclude == nq.getInclude())
+      return nq;
+
+    // Make a new NOT query then.
+    return (SpanQuery)copyBoost(nq,
+                                new SpanNotNearQuery(newInclude,
+                                                     nq.getExclude(),
+                                                     nq.getSlop()));
   } // glomInside()
 
   /**
