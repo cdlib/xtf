@@ -233,49 +233,66 @@
    <!-- Freeform queries                                                       -->
    <!--                                                                        -->
    <!-- These come pretty much in XTF format from the Java parser... we just   -->
-   <!-- need to do a little bit of decoration.                                 -->
+   <!-- need to do some decoration.                                            -->
    <!-- ====================================================================== -->
    
-   <!-- If not field on AND/OR, use a multi-field keyword query. -->
-   <xsl:template match="and[@field='serverChoice'] |
-                        or[@field='serverChoice']"
+   <!-- Handle multi-field keyword queries -->
+   <xsl:template match="and[matches(@field, '^(serverChoice|keywords)$')] |
+                        or[matches(@field, '^(serverChoice|keywords)$')]"
                  mode="freeform">
       <xsl:copy>
          <xsl:attribute name="fields" select="$fieldList"/>
          <xsl:attribute name="slop" select="10"/>
+         <xsl:attribute name="maxTextSnippets" select="'3'"/>
+         <xsl:attribute name="maxMetaSnippets" select="'all'"/>
+         <xsl:attribute name="maxContext" select="'60'"/>
          <xsl:apply-templates mode="freeform"/>
       </xsl:copy>
    </xsl:template>
    
-   <!-- Same with term and phrase queries -->
-   <xsl:template match="term[@field='serverChoice'] | 
-                        phrase[@field='serverChoice']" 
-                 mode="freeform">
-      <and>
-         <xsl:attribute name="fields" select="$fieldList"/>
-         <xsl:attribute name="slop" select="10"/>
-         <xsl:copy>
+   <!-- Wrap terms or phrases with a field spec into an <and>, to make the query
+        formatting logic simpler.
+   -->
+   <xsl:template match="term[@field] | phrase[@field]" mode="freeform">
+      <xsl:variable name="wrapped">
+         <and field="{@field}">
+            <xsl:copy>
+               <xsl:copy-of select="*|text()"/>
+            </xsl:copy>
+         </and>
+      </xsl:variable>
+      <xsl:apply-templates select="$wrapped" mode="freeform"/>
+   </xsl:template>
+   
+   <!-- Arbitrarily change multi-field unary not to 'text' (have to pick something) -->
+   <xsl:template match="not[matches(@field, '^(serverChoice|keywords)$')]" mode="freeform">
+      <and field="text">
+         <not>
             <xsl:apply-templates mode="freeform"/>
-         </xsl:copy>
+         </not>
       </and>
    </xsl:template>
    
-   <!-- For a unary not with no field specification, pick 'text' (arbitrarily) -->
-   <xsl:template match="not[@field='serverChoice']" mode="freeform">
+   <!-- Add maxContext to all fielded queries, plus maxSnippets for text queries -->
+   <xsl:template match="*[@field]" priority="-1" mode="freeform">
       <xsl:copy>
-         <xsl:attribute name="field" select="'text'"/>
+         <xsl:copy-of select="@*"/>
+         <xsl:attribute name="maxContext" select="'60'"/>
+         <xsl:if test="@field = 'text'">
+            <xsl:attribute name="maxSnippets" select="'3'"/>
+         </xsl:if>
          <xsl:apply-templates mode="freeform"/>
       </xsl:copy>
    </xsl:template>
    
    <!-- All other stuff can be copied unchanged -->
-   <xsl:template match="*" mode="freeform" priority="-1">
+   <xsl:template match="*" mode="freeform" priority="-2">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
          <xsl:apply-templates mode="freeform"/>
       </xsl:copy>
    </xsl:template>
-   
+      
    <!-- ====================================================================== -->
    <!-- "Add To Bag" template                                                  -->
    <!--                                                                        -->
