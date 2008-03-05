@@ -363,55 +363,70 @@
                      </tr>
                      <tr>
                         <td class="sampleQuery">africa</td>
-                        <td class="sampleDescrip">search keywords for 'africa'</td>
+                        <td class="sampleDescrip">Search keywords for 'africa'</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">south africa</td>
-                        <td class="sampleDescrip">search keywords for 'south' AND 'africa'</td>
+                        <td class="sampleDescrip">Search keywords for 'south' AND 'africa'</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">south &amp; africa</td>
-                        <td class="sampleDescrip">same</td>
+                        <td class="sampleDescrip">(same)</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">south AND africa</td>
-                        <td class="sampleDescrip">same (note 'AND' must be capitalized)</td>
+                        <td class="sampleDescrip">(same; note 'AND' must be capitalized)</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">title:south africa</td>
-                        <td class="sampleDescrip">search title for 'south' AND 'africa'</td>
+                        <td class="sampleDescrip">Search title for 'south' AND 'africa'</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">creator:moodley title:africa</td>
-                        <td class="sampleDescrip">search creator for 'moodley' AND title for 'africa'</td>
-                     </tr>
-                     <tr>
-                        <td class="sampleQuery">south OR africa</td>
-                        <td class="sampleDescrip">search keywords for 'south' OR 'africa'</td>
+                        <td class="sampleDescrip">Search creator for 'moodley' AND title for 'africa'</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">south | africa</td>
-                        <td class="sampleDescrip">same</td>
+                        <td class="sampleDescrip">Search keywords for 'south' OR 'africa'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">south OR africa</td>
+                        <td class="sampleDescrip">(same; note 'OR' must be capitalized)</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">africa -south</td>
-                        <td class="sampleDescrip">search keywords for 'africa' not near 'south'</td>
+                        <td class="sampleDescrip">Search keywords for 'africa' not near 'south'</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">africa NOT south</td>
-                        <td class="sampleDescrip">same</td>
+                        <td class="sampleDescrip">(same; note 'NOT' must be capitalized)</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">title:africa -south</td>
-                        <td class="sampleDescrip">search title for 'africa' not near 'south'</td>
+                        <td class="sampleDescrip">Search title for 'africa' not near 'south'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">title:africa subject:-politics</td>
+                        <td class="sampleDescrip">
+                           Search items with 'africa' in title but not 'politics' in subject.
+                           Note '-' must follow ':'
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">title:-south</td>
+                        <td class="sampleDescrip">Match all items without 'south' in title</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">-africa</td>
+                        <td class="sampleDescrip">Match all items without 'africa' in keywords</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">south (africa OR america)</td>
-                        <td class="sampleDescrip">search keywords for 'south' AND either 'africa' OR 'america'</td>
+                        <td class="sampleDescrip">Search keywords for 'south' AND either 'africa' OR 'america'</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">south africa OR america</td>
-                        <td class="sampleDescrip">same (due to precedence)</td>
+                        <td class="sampleDescrip">(same, due to precedence)</td>
                      </tr>
                   </table>
                </td>
