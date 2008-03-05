@@ -733,6 +733,7 @@ public class QueryRequestParser
 
     // Now parse all the sub-queries.
     ArrayList queryList = new ArrayList();
+    Vector<Query> notVec = new Vector<Query>();
     for (int i = 0; i < parent.nChildren(); i++) 
     {
       EasyNode el = parent.child(i);
@@ -740,15 +741,19 @@ public class QueryRequestParser
         continue;
       else if (el.name().equalsIgnoreCase("resultData"))
         continue; // ignore, handled by client's resultFormatter.xsl
-
-      Query q = parseQuery(el, fieldsStr, maxSnippets);
-      if (q == null)
-        continue;
-
-      if (!(q instanceof SpanQuery))
-        error("Internal error: sub-queries of 'keyword' must be span queries");
-
-      queryList.add(q);
+      else if (el.name().equalsIgnoreCase("not"))
+        notVec.add(parseQuery2(el, "not", fieldsStr, maxSnippets));
+      else 
+      {
+        Query q = parseQuery(el, fieldsStr, maxSnippets);
+        if (q == null)
+          continue;
+  
+        if (!(q instanceof SpanQuery))
+          error("Internal error: sub-queries of multi-field query must be span queries");
+  
+        queryList.add(q);
+      }
     }
 
     // Form the final query.
@@ -758,6 +763,7 @@ public class QueryRequestParser
                                  fields.toArray(new String[fields.size()]),
                                  boosts,
                                  subQueries,
+                                 notVec,
                                  slop,
                                  maxMetaSnippets,
                                  maxTextSnippets);
@@ -768,6 +774,7 @@ public class QueryRequestParser
    */
   private Query createMultiFieldQuery(EasyNode parent, String[] fields,
                                       float[] boosts, SpanQuery[] spanQueries,
+                                      Vector<Query> notVec,
                                       int slop, int maxMetaSnippets,
                                       int maxTextSnippets) 
   {
@@ -792,6 +799,12 @@ public class QueryRequestParser
         BooleanQuery termOrQuery = new BooleanQuery();
         for (int j = 0; j < fields.length; j++) {
           Query tq = refielder.refield(spanQueries[i], fields[j]);
+          if (!notVec.isEmpty()) {
+            Vector refieldedNotVec = new Vector();
+            for (Query nq : notVec)
+              refieldedNotVec.add(refielder.refield(nq, fields[j]));
+            tq = processSpanNots((SpanQuery)tq, refieldedNotVec, 0);
+          }
           tq = deChunk(tq);
           if (tq instanceof SpanQuery)
             ((SpanQuery)tq).setSpanRecording(0);
@@ -817,10 +830,16 @@ public class QueryRequestParser
     //
     for (int i = 0; i < fields.length; i++) {
       SpanQuery[] termQueries = new SpanQuery[spanQueries.length];
-      for (int j = 0; j < spanQueries.length; j++)
+      for (int j = 0; j < spanQueries.length; j++) {
         termQueries[j] = (SpanQuery)refielder.refield(spanQueries[j], fields[i]);
-      SpanQuery fieldOrQuery = (SpanQuery)deChunk(new SpanOrNearQuery(
-                                                                      termQueries,
+        if (!notVec.isEmpty()) {
+          Vector refieldedNotVec = new Vector();
+          for (Query nq : notVec)
+            refieldedNotVec.add(refielder.refield(nq, fields[i]));
+          termQueries[j] = processSpanNots(termQueries[j], refieldedNotVec, 0);
+        }
+      }
+      SpanQuery fieldOrQuery = (SpanQuery)deChunk(new SpanOrNearQuery(termQueries,
                                                                       slop,
                                                                       true));
       int maxSnippets = (fields[i].equals("text")) ? maxTextSnippets
