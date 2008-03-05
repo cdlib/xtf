@@ -97,13 +97,23 @@
             </xsl:non-matching-substring>
          </xsl:analyze-string>
       </xsl:variable>
+      
+      <!-- If unchanged, it probably means there's a 'freeform' query that we don't understand,
+           so remove that.
+      -->
+      <xsl:variable name="almostFinal" select="if ($removeString = $queryString)
+         then replace($removeString, 'freeformQuery=[^=;]+', '')
+         else $removeString"/>
+      
       <!-- if nothing remains, add "browse-all=yes" to the query -->
-      <xsl:variable name="finalString" select="if (matches(editURL:clean($removeString), '^$')) then concat('browse-all=yes;', $removeString) else $removeString"/>
+      <xsl:variable name="finalString" select="if (matches(editURL:clean($almostFinal), '^$')) 
+         then concat('browse-all=yes;', $almostFinal) 
+         else $almostFinal"/>
       
       <xsl:choose>
          <!-- hidden queries -->
          <xsl:when test="matches(@field,$noShow)"/>
-         <xsl:when test="@field or @fields or term/@field or phrase/@field">
+         <xsl:when test="@field or @fields or not/@field">
             <!-- query -->
             <xsl:apply-templates mode="query"/>
             <xsl:text> in </xsl:text>
@@ -120,13 +130,12 @@
                   <xsl:when test="@field = 'text'">
                      <xsl:text> the full text </xsl:text>
                   </xsl:when>
+                  <xsl:when test="not(@field) and not[@field]">
+                     <xsl:value-of select="not/@field"/>
+                  </xsl:when>
                   <xsl:otherwise>
-                     <xsl:variable name="field" select="
-                        if (@field) then @field
-                        else if (term/@field) then term/@field
-                        else phrase/@field"/>
                      <!-- mask facets -->
-                     <xsl:value-of select="replace(replace(replace($field,'facet-',''),'subject','Subject'),'date','Date')"/>
+                     <xsl:value-of select="replace(replace(replace(@field,'facet-',''),'subject','Subject'),'date','Date')"/>
                   </xsl:otherwise>
                </xsl:choose>
             </b>
@@ -142,7 +151,7 @@
    </xsl:template>
    
    <!-- term -->
-   <xsl:template match="term" mode="query">
+   <xsl:template match="term" mode="query" priority="-1">
       <xsl:if test="preceding-sibling::term and (. != $keyword)">
          <xsl:value-of select="name(..)"/>
          <xsl:text>&#160;</xsl:text>
