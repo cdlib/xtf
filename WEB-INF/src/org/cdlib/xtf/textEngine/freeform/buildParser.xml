@@ -1,0 +1,17 @@
+<project name="Freeform Query Parser" default="parser" basedir=".">
+
+  <description>
+      Freeform Query Parser
+  </description>
+
+  <!-- set global properties for this build -->
+  <property name="lib" location="lib"/>
+
+  <target name="parser" description="compile the parser">
+    <javacc target="FreeformQueryParser.jj"
+            javacchome="../../../../../../lib"/>
+  </target>
+
+</project>
+
+

@@ -1,0 +1,678 @@
+/* ====================================================================
+ * The Apache Software License, Version 1.1
+ *
+ * Copyright (c) 2001 The Apache Software Foundation.  All rights
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. The end-user documentation included with the redistribution,
+ *    if any, must include the following acknowledgment:
+ *       "This product includes software developed by the
+ *        Apache Software Foundation (http://www.apache.org/)."
+ *    Alternately, this acknowledgment may appear in the software itself,
+ *    if and wherever such third-party acknowledgments normally appear.
+ *
+ * 4. The names "Apache" and "Apache Software Foundation" and
+ *    "Apache Lucene" must not be used to endorse or promote products
+ *    derived from this software without prior written permission. For
+ *    written permission, please contact apache@apache.org.
+ *
+ * 5. Products derived from this software may not be called "Apache",
+ *    "Apache Lucene", nor may "Apache" appear in their name, without
+ *    prior written permission of the Apache Software Foundation.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals on behalf of the Apache Software Foundation.  For more
+ * information on the Apache Software Foundation, please see
+ * <http://www.apache.org/>.
+ */
+
+options {
+  STATIC = false;
+  UNICODE_INPUT = true;
+}
+PARSER_BEGIN(FreeformQueryParser)
+
+package org.cdlib.xtf.textEngine.freeform;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.util.ArrayList;
+
+
+/** 
+ * A grammar-based parser for "freeform queries", constructed with JavaCC.
+ * 
+ * Designed to parse a query language much like that supported by "gaggle",
+ * a little query language used at CDL, which is in turn designed to act
+ * much like Google.
+ *
+ * <p> Uses a tokenizer that should be good for most European-language queries.
+ */
+@SuppressWarnings("unused")
+public class FreeformQueryParser 
+{
+  /**
+   * Simple command-line test driver.
+   */
+  public static void main(String[] args) throws IOException
+  {
+    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    while (true)
+    {
+      System.out.print("Enter query: ");
+      String text = in.readLine();
+      if (text == null || text.length() == 0)
+        break;
+      FreeformQueryParser parser = new FreeformQueryParser(new StringReader(text));
+      try {
+        FNode query = parser.Query();
+        System.out.println(query.toXML());
+      }
+      catch (ParseException e) {
+        System.out.println("Parse error: " + e);
+      }
+    }
+  }
+  
+  /**
+   * The result of a parse. A very simple hierarchical structure, basically
+   * mirroring the XML that would be generated for an XTF query.
+   */
+  public class FNode
+  {
+    public String name;  // Name of the element, such as "query", "and", "term", etc.
+    public String text;  // Text of a term element
+    public String field; // Field name, or null if specified by parent, or "serverChoice"
+    
+    public ArrayList<FNode> children = new ArrayList(); // Sub-elements
+
+    /** Private constructor */
+    FNode(String n) { name = n; }
+
+    /** Private constructor */
+    FNode(String n, String t) { name = n; text = t; }
+
+    /** Generate XML for this node and its descendants. */
+    public String toXML()
+    {
+      StringBuffer buf = new StringBuffer();
+      toXML(0, buf);
+      return buf.toString();
+    }
+    
+    /** Workhorse XML generator */
+    private void toXML(int level, StringBuffer buf)
+    {
+      buf.append(indent(level) + "<" + name);
+      if (field != null)
+        buf.append(" field=\"" + field + "\"");
+      if (text != null && children.isEmpty())
+        buf.append(">" + text + "</" + name + ">\n");
+      else
+      {
+        buf.append(">\n");
+        level++;
+        if (text != null)
+          buf.append(indent(level) + text + "\n");
+        for (FNode kid : children)
+          kid.toXML(level, buf);
+        --level;
+        buf.append(indent(level) + "</" + name + ">\n");
+      }
+    }
+
+    /** Convert the query to something more compact than XML */
+    public String toString()
+    {
+      StringBuffer buf = new StringBuffer();
+      buf.append(name + "(");
+      if (field != null)
+        buf.append(field + ": ");
+      if (text != null)
+        buf.append("\"" + text + "\"");
+      boolean first = true;
+      for (FNode kid : children) {
+        if (!first)
+          buf.append(", ");
+        first = false;
+        buf.append(kid.toString());
+      }
+      buf.append(")");
+      return buf.toString();
+    }
+    
+    /** Return a string with two spaces per level, used for indenting XML. */
+    private String indent(int level)
+    {
+      StringBuffer buf = new StringBuffer();
+      for (int i=0; i<level; i++)
+        buf.append("  ");
+      return buf.toString();
+    }
+    
+    /** Add a child to this node */
+    private void add(FNode n)
+    {
+      children.add(n);
+    }
+
+    /** If we only have one child, return it. Else, return 'this'. */
+    private FNode promoteSingle()
+    {
+      if (children.size() == 1)
+        return children.get(0);
+      return this;
+    }
+
+    /** Clear the 'field' on this node and all descendants */
+    private void clearFields()
+    {
+      field = null;
+      for (FNode kid : children)
+        kid.clearFields();
+    }
+
+    /**
+     * Carry field identifiers to the right. If all fields at one level are
+     * the same, move them up to the parent.
+     */
+    private void resolveFields(int level)
+    {
+      String f = null;
+
+      // If a field is specified on the parent, ignore specs on children
+      if (this.field != null) {
+        for (FNode kid : children)
+          kid.clearFields();
+      }
+      else
+      {
+        // Propagate field names to the right like Google does
+        for (FNode kid : children) {
+          if (kid.field != null)
+            f = kid.field;
+          else if (f != null)
+            kid.field = f;
+        }
+
+        // If any kid has a field specifier, force all of them to.
+        if (f != null)
+        {
+          // If all kids have the same field name, propagate it up.
+          boolean anyDiff = false;
+          for (FNode kid : children) {
+            if (!f.equals(kid.field))
+              anyDiff = true;
+          }
+          if (!anyDiff) {
+            for (FNode kid : children)
+              kid.field = null;
+            this.field = f;
+          }
+
+          // Otherwise, assign "serverChoice" to kids that don't have a field.
+          else {
+            for (FNode kid : children) {
+              if (kid.field == null)
+                kid.field = "serverChoice";
+            }
+          }
+        }
+
+        // Recursively process descendants
+        for (FNode kid : children)
+          kid.resolveFields(level+1);
+      }
+
+      // If no fields anywhere, assign one at the top level.
+      if (level == 0 && this.field == null && f == null)
+        field = "serverChoice";
+    }
+
+    /**
+     * In XTF, "not" is always implemented as AND-NOT. So make sure that
+     * every not is part of an AND, if necessary sticking an <allDocs>
+     * query onto it.
+     */
+    private void fixNots()
+    {
+      // Recursively fix nots below here
+      for (FNode kid : children)
+        kid.fixNots();
+
+      // Now scan for unmatched nots at this level
+      for (int i = 0; i < children.size(); i++)
+      {
+        FNode kid = children.get(i);
+        if (kid.name != "not")
+          continue;
+
+        // 'not' outside of an <and> always needs fixing. Within an AND,
+        // we check if there's anything else (positive) with the same field.
+        //
+        boolean found = false;
+        if (name.equals("and"))
+        {
+          for (FNode k2 : children) {
+            if (k2 == kid || k2.name == "not")
+              continue;
+            if (k2.field == kid.field)
+              found = true;
+          }
+        }
+
+        // If nothing to match against, add something.
+        if (!found) {
+          FNode all = new FNode("allDocs");
+          FNode and = new FNode("and");
+          and.add(all);
+          and.add(kid);
+          children.set(i, and);
+        }
+      }
+    }
+  }
+}
+
+PARSER_END(FreeformQueryParser)
+
+/*****************************************************************************
+ * Tokenization rules begin here.
+ ****************************************************************************/
+
+TOKEN : 
+{
+  // reserved words (meaningful outside phrases)
+  <AND: "AND" | "&">
+| <OR: "OR" | "|">
+| <NOT: "NOT" | "-">
+| <PLUS: "+">
+| <QUOTE: "\"">
+| <COLON: ":">
+| <OPEN_PAREN: "(">
+| <CLOSE_PAREN: ")">
+  
+  // basic word: a SubQuery of digits & letters
+| <BASIC: (<LETTER>|<DIGIT>)+ >
+
+  // internal apostrophes: O'Reilly, you're, O'Reilly's
+  // use a post-filter to remove possesives
+| <APOSTROPHE: <ALPHA> ("'" <ALPHA>)+ >
+
+  // acronyms: U.S.A., I.B.M., etc.
+  // use a post-filter to remove dots
+| <ACRONYM: <ALPHA> "." (<ALPHA> ".")+ >
+
+  // company names like AT&T and Excite@Home.
+| <COMPANY: <ALPHA> ("&"|"@") <ALPHA> >
+
+  // email addresses
+| <EMAIL: <ALPHANUM> (("."|"-"|"_") <ALPHANUM>)* "@" <ALPHANUM> (("."|"-") <ALPHANUM>)+ >
+
+  // hostname
+| <HOST: <ALPHANUM> ("." <ALPHANUM>)+ >
+
+  // floating point, serial, model numbers, ip addresses, etc.
+  // every other segment must have at least one digit
+| <NUM: (<ALPHANUM> <P> <HAS_DIGIT> 
+       | <HAS_DIGIT> <P> <ALPHANUM> 
+       | <ALPHANUM> (<P> <HAS_DIGIT> <P> <ALPHANUM>)+ 
+       | <HAS_DIGIT> (<P> <ALPHANUM> <P> <HAS_DIGIT>)+ 
+       | <ALPHANUM> <P> <HAS_DIGIT> (<P> <ALPHANUM> <P> <HAS_DIGIT>)+
+       | <HAS_DIGIT> <P> <ALPHANUM> (<P> <HAS_DIGIT> <P> <ALPHANUM>)+
+       )
+  >
+
+| <SYMBOL: 
+     [
+      // Monetary symbols
+      "\u0024", // Dollar
+      "\u00a2", // Cent
+      "\u00a3", // Pound Sterling
+      "\u00a4", // currency symbol
+      "\u00a5", // Yen
+      "\u0192", // Florin currency symbol (Dutch)
+      "\u20a3", // Franc
+      "\u20a4", // Lira
+      "\u20a7", // Peseta
+      "\u20ac", // Euro
+      
+      // Fractions
+      "\u00bc", // one quarter
+      "\u00bd", // one half
+      "\u00be", // three quarters
+      "\u2153", // one third
+      "\u2154", // two thirds
+      "\u2155", // one fifth
+      "\u2156", // two fifths
+      "\u2157", // three fifths
+      "\u2158", // four fifths
+      "\u2159", // one sixth
+      "\u215a", // five sixths
+      "\u215b", // one eighth
+      "\u215c", // three eighths
+      "\u215d", // five eighths
+      "\u215e", // seven eighths
+      
+      // Math symbols
+      "\u002b", // plus
+      "\u2212", // minus
+      "\u003d", // equals
+      "\u2260", // not equal
+      "\u003c", // less than
+      "\u003e", // greater than
+      "\u2264", // less than or equal
+      "\u2265", // greater than or equal
+      "\u00b1", // plus/minus
+      "\u00d7", // multiply
+      "\u00f7", // divide
+      "\u2219", // period-centered bullet operator
+      "\u00b7", // mid-dot (same as period-centered bullet operator)
+      "\u007e", // tilde
+      "\u005e", // circumflex
+      "\u00b0", // degree
+      "\u00ac", // logical not
+      "\u2248", // approximately equal
+      "\u00b5", // micro
+      "\u221e", // infinity
+      "\u2202", // partial differential
+      "\u220f", // product
+      "\u03c0", // lower-case greek pi
+      "\u222b", // integral
+      "\u2126", // ohm
+      "\u221a", // radical
+      "\u2206", // increment
+      "\u2211", // summation
+      "\u25ca", // lozenge
+      "\u212e", // estimate
+      "\u2032", // single prime
+      "\u2033", // double prime
+      "\u2116", // numero
+      
+      // Other
+      "\u00ae", // registered trademark
+      "\u00a9", // copyright
+      "\u2122"  // trademark
+     ]
+  >
+    	
+| <#ALPHANUM: (<LETTER>|<DIGIT>)+ >
+
+| <#P: ("_"|"/"|"."|",") >
+| <#HAS_DIGIT:					  // at least one digit
+    (<LETTER>|<DIGIT>)*
+    <DIGIT>
+    (<LETTER>|<DIGIT>)*
+  >
+  
+| < #ALPHA: (<LETTER>)+>
+| < #LETTER:					  // unicode letters
+      [
+       "\u0041"-"\u005a",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff"
+      ]
+  >
+| < CJK:                                          // non-alphabets
+      [
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+| < #DIGIT:					  // unicode digits
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+SKIP : {					  // skip unrecognized chars
+ <NOISE: ~[] >
+}
+
+/*****************************************************************************
+ * Parser begins here. The grammar builds from the bottom up, beginning with
+ * a Term, followed by things that use Term, etc. The root of the grammar
+ * is Query, at the very end.
+ ****************************************************************************/
+
+/**
+ * In general a term is just a single word. But it can also be an email
+ * address, symbol, number, etc.
+ */
+FNode Term():
+{}
+{
+  ( <BASIC> |
+    <APOSTROPHE> |
+    <ACRONYM> |
+    <COMPANY> |
+    <EMAIL> |
+    <HOST> |
+    <NUM> |
+    <SYMBOL> |
+    <CJK>
+  )
+  {
+    return new FNode("term", token.image);
+  }
+}
+
+/**
+ * A phrase is a quoted string of terms (but we also take care not to barf on
+ * reserved words).
+ */
+FNode Phrase():
+{
+  FNode phrase = new FNode("phrase");
+  FNode term;
+}
+{
+  (
+    <QUOTE>
+    (   term = Term() { phrase.add(term); }
+      | (
+          <AND> | <OR> | <NOT> | <PLUS> | <COLON> | <OPEN_PAREN> | <CLOSE_PAREN>
+          {}
+        )
+    )*
+    <QUOTE>
+  ) 
+  { 
+    return phrase; 
+  }
+}
+
+/**
+ * You can stick "not" in front of something to negate it. There is post-
+ * processing in the Query() production (at the end) to guarantee that each
+ * NOT is actually part of an AND-NOT.
+ */
+FNode Not():
+{
+  FNode node;
+  FNode kid;
+}
+{
+  ( <NOT> kid=Component() )
+  {
+    // Handle double-not
+    if (kid.name == "not") {
+      assert kid.children.size() == 1;
+      return kid.children.get(0);
+    }
+    node = new FNode("not");
+    node.add(kid);
+    return node;
+  }
+}
+
+/**
+ * We allow parenthesized sub-expressions for grouping
+ */
+FNode ParenSeq():
+{
+  FNode node;
+}
+{
+  ( <OPEN_PAREN> node=SubQuery() <CLOSE_PAREN> )
+  { return node; }
+}
+
+/**
+ * A component of a query is a phrase, term, parenthesized sequence, or a
+ * "not" clause. It can be preceded by an optional field specification.
+ */
+FNode Component():
+{
+  String field = null;
+  FNode node;
+}
+{
+  // Ignore any "+" symbols we find. People use these in Google to specify that
+  // they want to "require" the next term, but we always require terms so we
+  // can safely ignore it.
+  //
+  ( <PLUS> {} )*
+  
+  // Optional field specifier
+  ( LOOKAHEAD(2) 
+    node=Term() <COLON> 
+    { field = node.text; } 
+  )* 
+  
+  (   node = Phrase() 
+    | node = Term() 
+    | node = ParenSeq()
+    | node = Not()
+  )
+  {
+    if (field != null)
+      node.field = field;
+    return node;
+  }
+}
+
+/**
+ * A sequence of components, separated by "OR" or "|"
+ */
+FNode ORs():
+{
+  FNode node = new FNode("or");
+  FNode kid;
+}
+{
+  ( kid = Component() { node.add(kid); }
+    ( <OR>
+      kid=Component() { node.add(kid); }
+    )*
+  )
+  { return node.promoteSingle(); }
+}
+
+/**
+ * A sequence of terms (optionally separated by "AND" or "&") is AND-ed together.
+ * As in Google, "AND" binds more loosely than "OR", so that A AND B OR C should
+ * be grouped like this: A AND (B OR C).
+ */
+FNode ANDs():
+{
+  FNode node = new FNode("and");
+  FNode kid;
+}
+{
+  ( kid=ORs() { node.add(kid); }
+    ( (<AND>)*
+      kid=ORs() { node.add(kid); }
+    )*
+  )
+  { return node.promoteSingle(); }
+}
+
+/**
+ * A single sub-query (can be contained in a paren expr) 
+ */
+FNode SubQuery():
+{
+  FNode node;
+}
+{
+  node=ANDs() { return node; }
+}
+
+/**
+ * The entire query, which consists of a single sub-query. We apply additional
+ * processing to ensure proper structure.
+ */
+FNode Query():
+{
+  FNode sub;
+}
+{
+  sub = SubQuery() 
+  { 
+    // Propagate field names from left to right, and from children to parent.
+    // Also assign "serverChoice" at the highest level we're forced to.
+    //
+    sub.resolveFields(0);
+
+    // Create the final wrapper node.
+    FNode query = new FNode("query");
+    query.add(sub);
+    
+    // Guarantee that every NOT is part of a AND-NOT
+    query.fixNots();
+    
+    // All done!
+    return query;
+  }
+}
+
