@@ -229,6 +229,52 @@
       
    </xsl:template>
    
+   <!-- ====================================================================== -->
+   <!-- Freeform queries                                                       -->
+   <!--                                                                        -->
+   <!-- These come pretty much in XTF format from the Java parser... we just   -->
+   <!-- need to do a little bit of decoration.                                 -->
+   <!-- ====================================================================== -->
+   
+   <!-- If not field on AND/OR, use a multi-field keyword query. -->
+   <xsl:template match="and[@field='serverChoice'] |
+                        or[@field='serverChoice']"
+                 mode="freeform">
+      <xsl:copy>
+         <xsl:attribute name="fields" select="$fieldList"/>
+         <xsl:attribute name="slop" select="10"/>
+         <xsl:apply-templates mode="freeform"/>
+      </xsl:copy>
+   </xsl:template>
+   
+   <!-- Same with term and phrase queries -->
+   <xsl:template match="term[@field='serverChoice'] | 
+                        phrase[@field='serverChoice']" 
+                 mode="freeform">
+      <and>
+         <xsl:attribute name="fields" select="$fieldList"/>
+         <xsl:attribute name="slop" select="10"/>
+         <xsl:copy>
+            <xsl:apply-templates mode="freeform"/>
+         </xsl:copy>
+      </and>
+   </xsl:template>
+   
+   <!-- For a unary not with no field specification, pick 'text' (arbitrarily) -->
+   <xsl:template match="not[@field='serverChoice']" mode="freeform">
+      <xsl:copy>
+         <xsl:attribute name="field" select="'text'"/>
+         <xsl:apply-templates mode="freeform"/>
+      </xsl:copy>
+   </xsl:template>
+   
+   <!-- All other stuff can be copied unchanged -->
+   <xsl:template match="*" mode="freeform" priority="-1">
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>
+         <xsl:apply-templates mode="freeform"/>
+      </xsl:copy>
+   </xsl:template>
    
    <!-- ====================================================================== -->
    <!-- "Add To Bag" template                                                  -->
