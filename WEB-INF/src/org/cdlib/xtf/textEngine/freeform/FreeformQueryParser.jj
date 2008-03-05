@@ -66,6 +66,11 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tinytree.TinyBuilder;
+import net.sf.saxon.trans.XPathException;
 
 /** 
  * A grammar-based parser for "freeform queries", constructed with JavaCC.
@@ -272,21 +277,22 @@ public class FreeformQueryParser
       for (int i = 0; i < children.size(); i++)
       {
         FNode kid = children.get(i);
-        if (kid.name != "not")
+        if (!kid.name.equals("not"))
           continue;
+        
+        // If the parent isn't an "and", change it.
+        if (!name.equals("and"))
+          name = "and";
 
-        // 'not' outside of an <and> always needs fixing. Within an AND,
-        // we check if there's anything else (positive) with the same field.
+        // Within an AND, we check if there's anything else (positive) 
+        // with the same field.
         //
         boolean found = false;
-        if (name.equals("and"))
-        {
-          for (FNode k2 : children) {
-            if (k2 == kid || k2.name == "not")
-              continue;
-            if (k2.field == kid.field)
-              found = true;
-          }
+        for (FNode k2 : children) {
+          if (k2 == kid || k2.name == "not")
+            continue;
+          if (k2.field == kid.field)
+            found = true;
         }
 
         // If nothing to match against, add something.

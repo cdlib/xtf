@@ -7,6 +7,11 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tinytree.TinyBuilder;
+import net.sf.saxon.trans.XPathException;
 
 /** 
  * A grammar-based parser for "freeform queries", constructed with JavaCC.
@@ -212,21 +217,22 @@ public class FreeformQueryParser implements FreeformQueryParserConstants {
       for (int i = 0; i < children.size(); i++)
       {
         FNode kid = children.get(i);
-        if (kid.name != "not")
+        if (!kid.name.equals("not"))
           continue;
 
-        // 'not' outside of an <and> always needs fixing. Within an AND,
-        // we check if there's anything else (positive) with the same field.
+        // If the parent isn't an "and", change it.
+        if (!name.equals("and"))
+          name = "and";
+
+        // Within an AND, we check if there's anything else (positive) 
+        // with the same field.
         //
         boolean found = false;
-        if (name.equals("and"))
-        {
-          for (FNode k2 : children) {
-            if (k2 == kid || k2.name == "not")
-              continue;
-            if (k2.field == kid.field)
-              found = true;
-          }
+        for (FNode k2 : children) {
+          if (k2 == kid || k2.name == "not")
+            continue;
+          if (k2.field == kid.field)
+            found = true;
         }
 
         // If nothing to match against, add something.
@@ -597,12 +603,6 @@ public class FreeformQueryParser implements FreeformQueryParserConstants {
     finally { jj_save(0, xla); }
   }
 
-  final private boolean jj_3_1() {
-    if (jj_3R_7()) return true;
-    if (jj_scan_token(COLON)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_7() {
     Token xsp;
     xsp = jj_scanpos;
@@ -631,6 +631,12 @@ public class FreeformQueryParser implements FreeformQueryParserConstants {
     }
     }
     }
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_7()) return true;
+    if (jj_scan_token(COLON)) return true;
     return false;
   }
 
