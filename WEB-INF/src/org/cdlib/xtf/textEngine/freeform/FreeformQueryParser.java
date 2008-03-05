@@ -201,7 +201,7 @@ public class FreeformQueryParser implements FreeformQueryParserConstants {
       if (level == 0 && this.field == null && f == null)
         field = "serverChoice";
     }
-
+    
     /**
      * In XTF, "not" is always implemented as AND-NOT. So make sure that
      * every not is part of an AND, if necessary sticking an <allDocs>
@@ -221,7 +221,7 @@ public class FreeformQueryParser implements FreeformQueryParserConstants {
           continue;
 
         // If the parent isn't an "and", change it.
-        if (!name.equals("and"))
+        if (!name.equals("and") && !name.equals("query"))
           name = "and";
 
         // Within an AND, we check if there's anything else (positive) 

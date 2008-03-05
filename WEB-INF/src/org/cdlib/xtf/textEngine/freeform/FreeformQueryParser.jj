@@ -281,7 +281,7 @@ public class FreeformQueryParser
           continue;
         
         // If the parent isn't an "and", change it.
-        if (!name.equals("and"))
+        if (!name.equals("and") && !name.equals("query"))
           name = "and";
 
         // Within an AND, we check if there's anything else (positive) 
