@@ -38,6 +38,12 @@
    -->
    
    <!-- ====================================================================== -->
+   <!-- Global parameters                                                      -->
+   <!-- ====================================================================== -->
+   
+   <xsl:param name="freeformQuery"/>
+   
+   <!-- ====================================================================== -->
    <!-- Form Templates                                                         -->
    <!-- ====================================================================== -->
    
@@ -58,6 +64,7 @@
                         <td class="{if(matches($smode,'simple')) then 'tab-select' else 'tab'}"><a href="search?smode=simple">Keyword</a></td>
                         <td class="{if(matches($smode,'advanced')) then 'tab-select' else 'tab'}"><a href="search?smode=advanced">Advanced</a></td>
                         <td class="{if(matches($smode,'browse')) then 'tab-select' else 'tab'}"><a href="search?smode=browse">Browse</a></td>
+                        <td class="{if(matches($smode,'freeform')) then 'tab-select' else 'tab'}"><a href="search?smode=freeform">Freeform <i>(exp.)</i></a></td>
                      </tr>
                      <tr>
                         <td colspan="3">
@@ -68,6 +75,9 @@
                                  </xsl:when>
                                  <xsl:when test="matches($smode,'advanced')">
                                     <xsl:call-template name="advancedForm"/>
+                                 </xsl:when>
+                                 <xsl:when test="matches($smode,'freeform')">
+                                    <xsl:call-template name="freeformForm"/>
                                  </xsl:when>
                                  <xsl:when test="matches($smode,'browse')">
                                     <table>
@@ -326,6 +336,84 @@
                   <input type="hidden" name="smode" value="advanced"/>
                   <input type="submit" value="Search"/>
                   <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}?smode=advanced'" value="Clear"/>
+               </td>
+            </tr>
+         </table>
+      </form>
+   </xsl:template>
+   
+   <!-- free-form form -->
+   <xsl:template name="freeformForm" exclude-result-prefixes="#all">
+      <form method="get" action="{$xtfURL}{$crossqueryPath}">
+         <table>
+            <tr>
+               <td>
+                  <p><i>Experimental feature:</i> "Freeform" complex query supporting -/NOT, |/OR, &amp;/AND, field names, and parentheses.</p>
+                  <input type="text" name="freeformQuery" size="40" value="{$freeformQuery}"/>
+                  <xsl:text>&#160;</xsl:text>
+                  <input type="submit" value="Search"/>
+                  <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                  <table class="sampleTable">
+                     <tr>
+                        <td colspan="2">Examples:</td>                  
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">africa</td>
+                        <td class="sampleDescrip">search keywords for 'africa'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">south africa</td>
+                        <td class="sampleDescrip">search keywords for 'south' AND 'africa'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">south &amp; africa</td>
+                        <td class="sampleDescrip">same</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">south AND africa</td>
+                        <td class="sampleDescrip">same (note 'AND' must be capitalized)</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">title:south africa</td>
+                        <td class="sampleDescrip">search title for 'south' AND 'africa'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">creator:moodley title:africa</td>
+                        <td class="sampleDescrip">search creator for 'moodley' AND title for 'africa'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">south OR africa</td>
+                        <td class="sampleDescrip">search keywords for 'south' OR 'africa'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">south | africa</td>
+                        <td class="sampleDescrip">same</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">africa -south</td>
+                        <td class="sampleDescrip">search keywords for 'africa' not near 'south'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">africa NOT south</td>
+                        <td class="sampleDescrip">same</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">title:africa -south</td>
+                        <td class="sampleDescrip">search title for 'africa' not near 'south'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">south (africa OR america)</td>
+                        <td class="sampleDescrip">search keywords for 'south' AND either 'africa' OR 'america'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">south africa OR america</td>
+                        <td class="sampleDescrip">same (due to precedence)</td>
+                     </tr>
+                  </table>
                </td>
             </tr>
          </table>

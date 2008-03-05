@@ -65,6 +65,20 @@ div.form table td.indent {
    width: 2em;
 }
 
+div.form table.sampleTable {
+}
+
+div.form table td.sampleQuery {
+   font-family: courier, serif;
+   border-style: solid;
+   border-color: black;
+   border-width: 1px 1px 1px 1px;
+}
+
+div.form table td.sampleDescrip {
+    font-style: italic;
+}
+
 /* Results */
 
 div.resultsHeader {

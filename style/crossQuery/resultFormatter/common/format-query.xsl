@@ -103,7 +103,7 @@
       <xsl:choose>
          <!-- hidden queries -->
          <xsl:when test="matches(@field,$noShow)"/>
-         <xsl:when test="@field or @fields">
+         <xsl:when test="@field or @fields or term/@field or phrase/@field">
             <!-- query -->
             <xsl:apply-templates mode="query"/>
             <xsl:text> in </xsl:text>
@@ -121,8 +121,12 @@
                      <xsl:text> the full text </xsl:text>
                   </xsl:when>
                   <xsl:otherwise>
+                     <xsl:variable name="field" select="
+                        if (@field) then @field
+                        else if (term/@field) then term/@field
+                        else phrase/@field"/>
                      <!-- mask facets -->
-                     <xsl:value-of select="replace(replace(replace(@field,'facet-',''),'subject','Subject'),'date','Date')"/>
+                     <xsl:value-of select="replace(replace(replace($field,'facet-',''),'subject','Subject'),'date','Date')"/>
                   </xsl:otherwise>
                </xsl:choose>
             </b>

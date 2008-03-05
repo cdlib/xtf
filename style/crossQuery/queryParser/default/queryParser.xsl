@@ -1,6 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:session="java:org.cdlib.xtf.xslt.Session"
-   extension-element-prefixes="session"
+   xmlns:freeformQuery="java:org.cdlib.xtf.xslt.FreeformQuery"
+   extension-element-prefixes="session freeformQuery"
    exclude-result-prefixes="#all" 
    version="2.0">
    
@@ -171,7 +172,7 @@
       
       <!-- Find the meta-data and full-text queries, if any -->
       <xsl:variable name="queryParams"
-         select="param[not(matches(@name,'style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|browse-*|email|.*-exclude|.*-join|.*-prox|.*-max|.*-ignore'))]"/>
+         select="param[not(matches(@name,'style|smode|rmode|expand|brand|sort|startDoc|docsPerPage|sectionType|fieldList|normalizeScores|explainScores|f[0-9]+-.+|facet-.+|browse-*|email|.*-exclude|.*-join|.*-prox|.*-max|.*-ignore|freeformQuery'))]"/>
       
       <and>
          <!-- Process the meta-data and text queries, if any -->
@@ -186,6 +187,13 @@
                   </and>
                </xsl:for-each>
             </and>
+         </xsl:if>
+         
+         <!-- Freeform query language -->
+         <xsl:if test="//param[matches(@name, '^freeformQuery$')]">
+            <xsl:variable name="strQuery" select="//param[matches(@name, '^freeformQuery$')]/@value"/>
+            <xsl:variable name="parsed" select="freeformQuery:parse($strQuery)"/>
+            <xsl:apply-templates select="$parsed/query/*" mode="freeform"/>
          </xsl:if>
         
          <!-- Unary Not -->
