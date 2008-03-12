@@ -32,15 +32,15 @@
    POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<xsl:stylesheet version="1.0"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:dc="http://purl.org/dc/elements/1.1/">
+<xsl:stylesheet version="2.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-<xsl:output method="html"
-            indent="yes"
-            encoding="utf-8"
-            media-type="text/html"
-            doctype-public="-//W3C//DTD HTML 4.0//EN"/>
+   <xsl:output method="xhtml" indent="no" 
+      encoding="UTF-8" media-type="text/html; charset=UTF-8" 
+      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" 
+      exclude-result-prefixes="#all"
+      omit-xml-declaration="yes"/>
 
 <!-- =====================================================================
     
@@ -174,7 +174,7 @@
 <xsl:template match="NoPermission">
   <h1>Access Restricted</h1>
   <p>You have been denied access to this <xsl:value-of select="$project-name"/> Text. This book is available only to University of California faculty, staff, and students. If you <i>are</i> a member of the UC community and are off campus, you must use the <a href="http://www.cdlib.org/hlp/directory/proxy.html#proxyserver" target="_self">proxy server</a> for your campus to access this title.</p>
-  <p>If you have questions, need further technical assistance, or believe that you have reached this page in error, send email to the CDL (<a href="mailto:cdl@www.cdlib.org?subject=Access denied - {$reason}">cdl@www.cdlib.org</a>) or call the CDL Helpline (510.987.0555). Be sure to include the following information in your communication:</p>
+  <p>If you have questions, need further technical assistance, or believe that you have reached this page in error, send email to the CDL (<a href="{concat('mailto:cdl@www.cdlib.org?subject=Access%20denied%20-%20', encode-for-uri($reason))}">cdl@www.cdlib.org</a>) or call the CDL Helpline (510.987.0555). Be sure to include the following information in your communication:</p>
   <p>Document ID: <b><xsl:value-of select="$docId"/></b> and  IP Address:<b> <xsl:apply-templates select="ipAddr"/></b>.</p>
 </xsl:template>
 
@@ -184,7 +184,7 @@
   <h1>Servlet Error: <xsl:value-of select="name()"/></h1>
   <h3>An unexpected servlet error has occurred.</h3>
   <xsl:apply-templates/>
-  <p>If you have questions, need further technical assistance, or believe that you have reached this page in error, send email to the CDL (<a href="mailto:cdl@www.cdlib.org?subject=Access denied - {$reason}">cdl@www.cdlib.org</a>) or call the CDL Helpline (510.987.0555). Be sure to include the above message and/or stack trace in your communication.</p>
+  <p>If you have questions, need further technical assistance, or believe that you have reached this page in error, send email to the CDL (<a href="{concat('mailto:cdl@www.cdlib.org?subject=Access%20denied%20-%20', encode-for-uri($reason))}">cdl@www.cdlib.org</a>) or call the CDL Helpline (510.987.0555). Be sure to include the above message and/or stack trace in your communication.</p>
 </xsl:template>
 
 

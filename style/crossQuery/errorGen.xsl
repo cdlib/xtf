@@ -1,5 +1,4 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-   xmlns:dc="http://purl.org/dc/elements/1.1/" 
    version="2.0">
    
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -36,11 +35,11 @@
       POSSIBILITY OF SUCH DAMAGE.
    -->
    
-   <xsl:output method="html"
-      indent="yes"
-      encoding="utf-8"
-      media-type="text/html"
-      doctype-public="-//W3C//DTD HTML 4.0//EN"/>
+   <xsl:output method="xhtml" indent="no" 
+      encoding="UTF-8" media-type="text/html; charset=UTF-8" 
+      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" 
+      omit-xml-declaration="yes"/>
    
    <!-- 
       
@@ -187,7 +186,10 @@
       <h1>Servlet Error: <xsl:value-of select="name()"/></h1>
       <h3>An unexpected servlet error has occurred.</h3>
       <xsl:apply-templates/>
-      <p>If you have questions, need further technical assistance, or believe that you have reached this page in error, send email to the CDL (<a href="mailto:cdl@www.cdlib.org?subject=Access denied - {$reason}">cdl@www.cdlib.org</a>) or call the CDL Helpline (510.987.0555). Be sure to include the above message and/or stack trace in your communication.</p>
+      <p>
+         If you have questions, need further technical assistance, or believe that you have 
+         reached this page in error, send email to the CDL 
+         (<a href="{concat('mailto:cdl@www.cdlib.org?subject=Access%20denied%20-%20', encode-for-uri($reason))}">cdl@www.cdlib.org</a>) or call the CDL Helpline (510.987.0555). Be sure to include the above message and/or stack trace in your communication.</p>
    </xsl:template>
    
    

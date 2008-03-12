@@ -2,6 +2,7 @@
    xmlns:session="java:org.cdlib.xtf.xslt.Session"
    xmlns:editURL="http://cdlib.org/xtf/editURL"
    extension-element-prefixes="session"
+   exclude-result-prefixes="#all"
    version="2.0">
    
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -53,9 +54,11 @@
    <!-- Output                                                                 -->
    <!-- ====================================================================== -->
    
-   <xsl:output method="xhtml" indent="no" encoding="UTF-8" media-type="text/html" 
+   <xsl:output method="xhtml" indent="no" 
+      encoding="UTF-8" media-type="text/html; charset=UTF-8" 
       doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" 
+      omit-xml-declaration="yes"
       exclude-result-prefixes="#all"/>
    
    <!-- ====================================================================== -->
@@ -395,13 +398,13 @@ Item number <xsl:value-of select="$num"/>:
             <div class="resultsHeader">
                <table>
                   <tr>
-                     <tr>
-                        <td colspan="2" class="right">
-                           <xsl:variable name="bag" select="session:getData('bag')"/>
-                           <a href="{$xtfURL}{$crossqueryPath}?smode=showBag">Bookbag</a>
-                           (<xsl:value-of select="count($bag/bag/savedDoc)"/>)
-                        </td>
-                     </tr>
+                     <td colspan="2" class="right">
+                        <xsl:variable name="bag" select="session:getData('bag')"/>
+                        <a href="{$xtfURL}{$crossqueryPath}?smode=showBag">Bookbag</a>
+                        (<xsl:value-of select="count($bag/bag/savedDoc)"/>)
+                     </td>
+                  </tr>
+                  <tr>
                      <td>
                         <b>Browse by:&#160;</b>
                         <xsl:choose>
