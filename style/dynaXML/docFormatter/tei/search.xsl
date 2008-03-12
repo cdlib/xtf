@@ -1,5 +1,5 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-   xmlns:xtf="http://cdlib.org/xtf">
+   xmlns:xtf="http://cdlib.org/xtf" exclude-result-prefixes="#all">
    
    <!--
       Copyright (c) 2008, Regents of the University of California

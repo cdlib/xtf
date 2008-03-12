@@ -49,12 +49,12 @@
    <!-- Output Format                                                          -->
    <!-- ====================================================================== -->
    
-   <xsl:output method="xhtml"
-      indent="no" 
-      encoding="UTF-8" 
-      media-type="text/html"
-      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
-      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
+   <xsl:output method="xhtml" indent="no" 
+      encoding="UTF-8" media-type="text/html; charset=UTF-8" 
+      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" 
+      exclude-result-prefixes="#all"
+      omit-xml-declaration="yes"/>
    
    <!-- ====================================================================== -->
    <!-- Strip Space                                                            -->
@@ -376,7 +376,7 @@
                <p>
                   <a>
                      <xsl:attribute name="href">javascript://</xsl:attribute>
-                     <xsl:attribute name="onClick">
+                     <xsl:attribute name="onclick">
                         <xsl:text>javascript:window.close('popup')</xsl:text>
                      </xsl:attribute>
                      <span class="down1">Close this Window</span>
