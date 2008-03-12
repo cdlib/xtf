@@ -12,13 +12,13 @@
    
    <header>
       <div class="header">
-         <img src="icons/default/xtf_banner.gif"/>
+         <img src="icons/default/xtf_banner.gif" alt="XTF banner"/>
       </div>
    </header>
    
    <dynaxml.header>
       <div class="header">
-         <img src="icons/default/xtf_banner.gif"/>
+         <img src="icons/default/xtf_banner.gif" alt="XTF banner"/>
       </div>
    </dynaxml.header>
    
