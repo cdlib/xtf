@@ -269,16 +269,6 @@
          url    = [URL of the external authentication web page]/>
       -->
       
-      <!-- CDL-specific: Since we don't read METS yet, each directory has an 
-         authInfo.xml file which has authentication directives.
-         
-         Note that the path here, since we're reading the file directly, must
-         be relative to this stylesheet, *not* to the servlet base directory.
-         Hence the "../" below.
-         
-         If not found, allow access. This is for testing only!
-      -->
-      
       <auth access="allow" type="all"/>
       
    </xsl:template>
