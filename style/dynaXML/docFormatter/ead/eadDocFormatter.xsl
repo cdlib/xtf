@@ -2,7 +2,6 @@
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:xtf="http://cdlib.org/xtf"
    xmlns:session="java:org.cdlib.xtf.xslt.Session"
-   xmlns="http://www.w3.org/1999/xhtml"
    extension-element-prefixes="session"
    exclude-result-prefixes="#all">
    

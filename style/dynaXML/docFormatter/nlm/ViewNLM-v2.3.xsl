@@ -360,9 +360,13 @@
 <!--  1. TRANSFORM ELEMENT AND TOP-LEVEL SETTINGS                  -->
 <!-- ============================================================= -->
 
-<xsl:transform version="2.0" id="ViewNLM-v2-04.xsl" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:util="http://dtd.nlm.nih.gov/xsl/util"
-	xmlns:mml="http://www.w3.org/1998/Math/MathML" exclude-result-prefixes="util xsl xlink mml">
+<xsl:transform version="2.0" id="ViewNLM-v2-04.xsl" 
+   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:util="http://dtd.nlm.nih.gov/xsl/util"
+	xmlns:mml="http://www.w3.org/1998/Math/MathML"
+	xmlns="http://www.w3.org/1999/xhtml"
+	exclude-result-prefixes="#all">
 
 	<xsl:strip-space elements="*"/>
 
@@ -414,7 +418,7 @@
 	      </xsl:when>
 	      <xsl:otherwise>
 	         <xsl:call-template name="nl-1"/>
-	         <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	         <html xml:lang="en" lang="en">
 	            <!-- HTML header -->
 	            <xsl:call-template name="nl-2"/>
 	            <xsl:call-template name="make-html-header"/>
