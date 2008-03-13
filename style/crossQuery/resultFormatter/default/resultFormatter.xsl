@@ -1,6 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
    xmlns:session="java:org.cdlib.xtf.xslt.Session"
    xmlns:editURL="http://cdlib.org/xtf/editURL"
+   xmlns="http://www.w3.org/1999/xhtml"
    extension-element-prefixes="session"
    exclude-result-prefixes="#all"
    version="2.0">
@@ -126,7 +127,7 @@
       <xsl:variable name="modify" select="if(matches($smode,'simple')) then 'simple-modify' else 'advanced-modify'"/>
       <xsl:variable name="modifyString" select="editURL:set($queryString, 'smode', $modify)"/>
       
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html xml:lang="en" lang="en">
          <head>
             <title>XTF: Search Results</title>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -291,7 +292,7 @@
    <!-- ====================================================================== -->
    
    <xsl:template name="getAddress" exclude-result-prefixes="#all">
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html xml:lang="en" lang="en">
          <head>
             <title>E-mail My Bookbag: Get Address</title>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -329,7 +330,7 @@ Your XTF Bookbag:
 <xsl:apply-templates select="$bookbagContents/savedDoc" mode="emailFolder"/>
       </mail:send>
       
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html xml:lang="en" lang="en">
          <head>
             <title>E-mail My Citations: Success</title>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -380,7 +381,7 @@ Item number <xsl:value-of select="$num"/>:
       
       <xsl:variable name="alphaList" select="'A B C D E F G H I J K L M N O P Q R S T U V W Y Z OTHER'"/>
       
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html xml:lang="en" lang="en">
          <head>
             <title>XTF: Search Results</title>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>

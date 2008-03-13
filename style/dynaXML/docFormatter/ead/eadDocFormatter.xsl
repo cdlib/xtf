@@ -2,6 +2,7 @@
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:xtf="http://cdlib.org/xtf"
    xmlns:session="java:org.cdlib.xtf.xslt.Session"
+   xmlns="http://www.w3.org/1999/xhtml"
    extension-element-prefixes="session"
    exclude-result-prefixes="#all">
    
@@ -121,7 +122,7 @@
       <xsl:variable name="toc.href"><xsl:value-of select="$query.string"/>&#038;doc.view=toc&#038;brand=<xsl:value-of select="$brand"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/>#X</xsl:variable>
       <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>&#038;doc.view=content&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$anchor.id"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/></xsl:variable>
       
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html xml:lang="en" lang="en">
          <head>
             <link rel="stylesheet" type="text/css" href="{$css.path}ead.css"/>
             
@@ -196,7 +197,7 @@
          </xsl:choose>
       </xsl:variable>
       
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html xml:lang="en" lang="en">
          <head>
             <base target="body"/>
             <link rel="stylesheet" type="text/css" href="{$css.path}toc.css"/>
@@ -418,7 +419,7 @@
    <!-- ====================================================================== -->
    
    <xsl:template name="print">
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html xml:lang="en" lang="en">
          <head>
             <title>
                <xsl:value-of select="$doc.title"/>

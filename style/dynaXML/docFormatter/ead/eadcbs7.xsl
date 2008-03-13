@@ -5,6 +5,7 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:xtf="http://cdlib.org/xtf" 
+   xmlns="http://www.w3.org/1999/xhtml"
    version="1.0">
    
    <!-- Creates a variable equal to the value of the number in eadid which serves as the base
@@ -68,7 +69,7 @@
       <xsl:variable name="file">
          <xsl:value-of select="ead/eadheader/eadid"/>
       </xsl:variable>
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html xml:lang="en" lang="en">
          <head>
             
             <link rel="stylesheet" type="text/css" href="{$css.path}ead.css"/>

@@ -1,6 +1,7 @@
 <xsl:stylesheet version="2.0" 
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:xtf="http://cdlib.org/xtf"
+   xmlns="http://www.w3.org/1999/xhtml"
    xmlns:session="java:org.cdlib.xtf.xslt.Session"
    extension-element-prefixes="session"
    exclude-result-prefixes="#all">
@@ -161,9 +162,9 @@
       </xsl:choose>
    </xsl:variable>
    
-   <xsl:param name="brand.links" select="$brand.file/brand/dynaxml.links/*"/>
-   <xsl:param name="brand.header" select="$brand.file/brand/dynaxml.header/*"/>
-   <xsl:param name="brand.footer" select="$brand.file/brand/footer/*"/>
+   <xsl:param name="brand.links" select="$brand.file/brand/dynaxml.links/*" xpath-default-namespace="http://www.w3.org/1999/xhtml"/>
+   <xsl:param name="brand.header" select="$brand.file/brand/dynaxml.header/*" xpath-default-namespace="http://www.w3.org/1999/xhtml"/>
+   <xsl:param name="brand.footer" select="$brand.file/brand/footer/*" xpath-default-namespace="http://www.w3.org/1999/xhtml"/>
    
    <!-- Special Robot Parameters -->
    
@@ -177,7 +178,7 @@
    <!-- ====================================================================== -->
    
    <xsl:template name="bbar">
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html xml:lang="en" lang="en">
          <head>
             <title>
                <xsl:value-of select="$doc.title"/>
@@ -222,7 +223,7 @@
    
    <xsl:template name="citation">
       
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html xml:lang="en" lang="en">
          <head>
             <title>
                <xsl:value-of select="$doc.title"/>

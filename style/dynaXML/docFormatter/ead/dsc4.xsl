@@ -1,5 +1,8 @@
 <!--Revision date 21 July 2004-->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xtf="http://cdlib.org/xtf" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+   xmlns:xtf="http://cdlib.org/xtf"
+   xmlns="http://www.w3.org/1999/xhtml"
+   version="1.0">
    <!-- This stylesheet formats the dsc portion of a finding aid.-->
    <!--It formats components that have 2 container elements of any type.-->
    <!--It assumes that c01 and optionally <c02> is a high-level description

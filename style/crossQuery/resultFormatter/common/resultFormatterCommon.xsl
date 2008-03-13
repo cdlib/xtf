@@ -2,6 +2,7 @@
    xmlns:xs="http://www.w3.org/2001/XMLSchema"
    xmlns:xtf="http://cdlib.org/xtf" 
    xmlns:editURL="http://cdlib.org/xtf/editURL"
+   xmlns="http://www.w3.org/1999/xhtml"
    exclude-result-prefixes="#all"
    version="2.0">
    
@@ -198,9 +199,9 @@
       </xsl:choose>
    </xsl:variable>
    
-   <xsl:param name="brand.links" select="$brand.file//links/*"/>
-   <xsl:param name="brand.header" select="$brand.file//header/*"/>
-   <xsl:param name="brand.footer" select="$brand.file//footer/*"/>
+   <xsl:param name="brand.links" select="$brand.file//links/*" xpath-default-namespace="http://www.w3.org/1999/xhtml"/>
+   <xsl:param name="brand.header" select="$brand.file//header/*" xpath-default-namespace="http://www.w3.org/1999/xhtml"/>
+   <xsl:param name="brand.footer" select="$brand.file//footer/*" xpath-default-namespace="http://www.w3.org/1999/xhtml"/>
    
    <!-- Paging Parameters-->  
    <xsl:param name="startDoc" as="xs:integer" select="1"/>
