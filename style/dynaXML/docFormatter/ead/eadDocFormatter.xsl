@@ -121,7 +121,7 @@
       <xsl:variable name="toc.href"><xsl:value-of select="$query.string"/>&#038;doc.view=toc&#038;brand=<xsl:value-of select="$brand"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/>#X</xsl:variable>
       <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>&#038;doc.view=content&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$anchor.id"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/></xsl:variable>
       
-      <html>
+      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
          <head>
             <link rel="stylesheet" type="text/css" href="{$css.path}ead.css"/>
             
@@ -196,7 +196,7 @@
          </xsl:choose>
       </xsl:variable>
       
-      <html>
+      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
          <head>
             <base target="body"/>
             <link rel="stylesheet" type="text/css" href="{$css.path}toc.css"/>
@@ -418,7 +418,7 @@
    <!-- ====================================================================== -->
    
    <xsl:template name="print">
-      <html>
+      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
          <head>
             <title>
                <xsl:value-of select="$doc.title"/>

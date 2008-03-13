@@ -414,7 +414,7 @@
 	      </xsl:when>
 	      <xsl:otherwise>
 	         <xsl:call-template name="nl-1"/>
-	         <html>
+	         <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	            <!-- HTML header -->
 	            <xsl:call-template name="nl-2"/>
 	            <xsl:call-template name="make-html-header"/>

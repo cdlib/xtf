@@ -177,7 +177,7 @@
    <!-- ====================================================================== -->
    
    <xsl:template name="bbar">
-      <html>
+      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
          <head>
             <title>
                <xsl:value-of select="$doc.title"/>
@@ -222,7 +222,7 @@
    
    <xsl:template name="citation">
       
-      <html>
+      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
          <head>
             <title>
                <xsl:value-of select="$doc.title"/>
@@ -250,7 +250,7 @@
    <!-- ====================================================================== -->
    
    <xsl:template name="robot">
-      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+      <html>
          <head>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <title>XTF: <xsl:value-of select="xtf:meta/title[1]"/></title>
