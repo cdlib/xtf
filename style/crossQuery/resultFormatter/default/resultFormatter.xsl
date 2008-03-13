@@ -142,7 +142,7 @@
             
             <!-- result header -->
             <div class="resultsHeader">
-               <table border="1">
+               <table>
                   <tr>
                      <td colspan="2" class="right">
                         <xsl:if test="$smode != 'showBag'">
