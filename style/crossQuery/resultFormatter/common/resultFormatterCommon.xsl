@@ -340,7 +340,7 @@
    </xsl:function>
    
    <!-- Function to calculate an unused name for the next facet parameter -->
-   <xsl:function name="editURL:nextFacetParam">
+   <xsl:function name="editURL:nextFacetParam" xmlns="">
       <xsl:param name="queryString"/>
       <xsl:param name="field"/>
       <xsl:variable name="nums">
