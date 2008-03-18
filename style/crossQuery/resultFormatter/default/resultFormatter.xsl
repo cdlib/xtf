@@ -149,7 +149,7 @@
                         <xsl:if test="$smode != 'showBag'">
                            <xsl:variable name="bag" select="session:getData('bag')"/>
                            <a href="{$xtfURL}{$crossqueryPath}?smode=showBag">Bookbag</a>
-                           (<xsl:value-of select="count($bag/bag/savedDoc)"/>)
+                           (<span id="bagCount"><xsl:value-of select="count($bag/bag/savedDoc)"/></span>)
                         </xsl:if>
                      </td>
                   </tr>
@@ -201,7 +201,7 @@
                   <tr>
                      <td>
                         <b><xsl:value-of select="if($smode='showBag') then 'Bookbag' else 'Results'"/>:</b>&#160;
-                        <xsl:value-of select="@totalDocs"/>
+                        <span id="itemCount"><xsl:value-of select="@totalDocs"/></span>
                         <xsl:text> Item(s)</xsl:text>
                      </td>
                      <td class="right">
@@ -402,7 +402,7 @@ Item number <xsl:value-of select="$num"/>:
                      <td colspan="2" class="right">
                         <xsl:variable name="bag" select="session:getData('bag')"/>
                         <a href="{$xtfURL}{$crossqueryPath}?smode=showBag">Bookbag</a>
-                        (<xsl:value-of select="count($bag/bag/savedDoc)"/>)
+                        (<span id="bagCount"><xsl:value-of select="count($bag/bag/savedDoc)"/></span>)
                      </td>
                   </tr>
                   <tr>
@@ -600,7 +600,7 @@ Item number <xsl:value-of select="$num"/>:
                                           '<xsl:value-of select="concat($xtfURL, $crossqueryPath, '?smode=addToBag;identifier=', $identifier)"/>',
                                           {  success: function(o) { 
                                                 span.innerHTML = o.responseText;
-                                                ++(YAHOO.util.Dom.get('itemCount').innerHTML);
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
                                              },
                                              failure: function(o) { span.innerHTML = 'Failed to add!'; }
                                           }, null);
