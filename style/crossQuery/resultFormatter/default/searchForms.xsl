@@ -69,7 +69,7 @@
                         <td class="{if(matches($smode,'freeform')) then 'tab-select' else 'tab'}"><a href="search?smode=freeform">Freeform <i>(exp.)</i></a></td>
                      </tr>
                      <tr>
-                        <td colspan="3">
+                        <td colspan="4">
                            <div class="form">
                               <xsl:choose>
                                  <xsl:when test="matches($smode,'simple')">
