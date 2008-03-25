@@ -321,9 +321,9 @@
       <!-- Change the values for @smtpHost and @from to those valid for your domain -->
       <mail:send xmlns:mail="java:/org.cdlib.xtf.saxonExt.Mail" 
          xsl:extension-element-prefixes="mail" 
-         smtpHost="smtp.ucop.edu" 
+         smtpHost="smtp.yourdomain" 
          useSSL="no" 
-         from="escholarship@cdlib.org"
+         from="user@yourdomain"
          to="{$email}" 
          subject="XTF: My Bookbag">
 Your XTF Bookbag:
