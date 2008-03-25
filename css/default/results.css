@@ -3,66 +3,143 @@
 body {
    font-family: Arial, sans-serif;
    background-color: silver;
+	 font-size: small;
+	 color: #333;
+}
+
+form {
+	display: inline;
+}
+
+.clear {
+	clear: both;
 }
 
 div.header {
-   text-align: center;
-   margin-bottom: 1em;
+	 border: 1px solid #666;
+	 width: 99%;
+	 border-bottom: 0;
+	 margin: 0 auto;
+	 background-color: #63718d;
+}
+
+div.header img {
+	border: 0;
+}
+
+div.header #xtf-logo {
+	float: left;
+	margin: 21px 0 0 15px
+}
+
+div.header #your-logo {
+	float: right;
+	margin: 10px 15px;
 }
 
 div.footer {
-   margin: 2em;
+   margin: 0 auto;
+	 width: 99%;
+	 text-align: center;
+	 padding: 10px 0;
+	 margin-bottom: 20px;
 }
 
 /* Forms */
 
 div.searchPage {
-   margin: 2em;
+   margin: 0 auto;
+	 background-color: #fff;
+	 width: 99%;
+	 border-right: 1px solid #666;
+	 border-left: 1px solid #666;
+	 border-top: 1px solid #999;
+	 border-bottom: 1px solid #666;
 }
 
 div.forms {
-   width: 800px;
    height: 600px;
-   margin-left:auto;
-   margin-right:auto;
-   border-style: solid;
-   border-color: black;
-   border-width: 1px 1px 1px 1px;
-   background-color: white;
 }
 
 div.forms table {
    width: 100%;
 }
 
+div.forms table,
+div.forms table td {
+	/*border: 1px solid #ccc;*/
+}
+
+div.forms table td.tab,
+div.forms table td.tab-select {
+	width: 25%;
+	text-align: center;
+	padding: 0.5em;
+}
+
 div.forms table td.tab {
-   padding: 0.5em;
-   border-style: solid;
-   border-color: black;
-   border-width: 1px 1px 1px 1px;
+   border: 1px solid #999;
+	 background-color: #E8EBF1;
 }
 
 div.forms table td.tab-select {
-   background-color: #D6DCE5;
-   padding: 0.5em;
-   border-style: solid;
-   border-color: black;
-   border-width: 1px 1px 1px 1px;
+   border: 1px solid #999;
+	 border-bottom: 0;
+}
+
+div.forms table td.tab a {
+	text-decoration: none;
+	color: #333;
+}
+
+div.forms table td.tab a:hover {
+	text-decoration: underline;
+}
+
+div.forms table td.tab-select a {
+	color: #424F8D;
 }
 
 div.form {
-   width: 600px;
-   height: 545px;
-   margin-left:auto;
-   margin-right:auto;
+   width: 75%;
+	 margin: 15px 0 0 10px;
 }
 
 div.form table {
-   padding: 2em;
+	margin: 0 auto;
+}
+
+div.form table.top_table td:first-child {
+	text-align: left;
+}
+
+div.form table.left_table {
+	border-right: 1px solid #ccc;
+	text-align: left;
+	margin-right: 50px;
+	float: right;
+}
+
+div.form table h4 {
+	margin: 0 0 10px 0;
+}
+
+div.form table,
+div.form table td {
+	/*border: 1px solid #ccc;*/
+}
+
+div.form table td {
+	vertical-align: top;
+	text-align: left;
+}
+
+div.form table td table td {
+	vertical-align: middle;
 }
 
 div.form table td.indent {
-   width: 2em;
+   width: 2px;
 }
 
 div.form table.sampleTable {
@@ -82,12 +159,22 @@ div.form table td.sampleDescrip {
 /* Results */
 
 div.resultsHeader {
-   margin-left: 2em;
-   margin-right: 2em;
+   width: 99%;
+	 border-right: 1px solid #666;
+	 border-left: 1px solid #666;
+	 border-top: 1px solid #999;
+	 border-bottom: 1px solid #999;
+	 background-color: #dededf;
+	 margin-left: auto;
+	 margin-right: auto;
 }
 
-div.resultsHeader table{
+div.resultsHeader table {
    width: 100%;
+}
+
+div.resultsHeader table td {
+	padding: 2px 5px;
 }
 
 td.right {
@@ -104,7 +191,6 @@ td.center {
 
 div.query {
    width: 350px;
-   text-align: right;
 }
 
 div.label {
@@ -112,16 +198,15 @@ div.label {
 }
 
 div.results {
-   margin-left: 2em;
-   margin-right: 2em;
+   margin: 0 auto;
    background-color: white;
+	 width: 99%;
+	 border: 1px solid #666;
+	 border-top: 0;
 }
 
 div.results table {
-   width: 100%;
-   border-style: solid;
-   border-color: black;
-   border-width: 1px 1px 1px 1px;
+	margin: 0 10px;
 }
 
 div.results table td {
@@ -129,15 +214,25 @@ div.results table td {
 }
 
 div.results table td.facet{
-   padding: 1em;
    width: 25%;
+}
+
+div.facetGroup {
+	font-size: 95%;	
 }
 
 div.results table td.docHit{
 }
 
-div.docHit table{
-   padding: 1em;
+div.docHit {
+	background-color: #FAFAFB;
+	border: 1px solid #ccc;
+	margin: 10px 0 10px 20px;
+	padding: 10px;
+}
+
+div#main_2, div#main_4, div#main_6, div#main_8, div#main_10, div#main_12 {
+	
 }
 
 div.docHit table td.col1{
@@ -159,30 +254,25 @@ div.docHit table td.col4{
    text-align: right;
 }
 
-div.docHit {
-}
-
 .hit {
-   color: red;
+   color: #FD8239;
    font-weight: bold;
 }
 
 .subhit {
-   color: red;
+   color: #FD8239;
    font-weight: bold;
+	 margin-left: 5px;
 }
 
 .hitsection {
    background-color: #D6DCE5;
 }
 
-div.facet {
-}
-
 div.facetName {
-   font-weight: bold;
-   margin-top: 1em;
-   margin-bottom: 0.5em;
+  font-weight: bold;
+	margin: 10px 0;
+	font-size: 95%;
 }
 
 div.facet table {
@@ -194,6 +284,7 @@ div.facet table td.col1 {
    text-align: center;
    vertical-align: middle;
    padding-right: 0.5em;
+	 color: #6699CC;
 }
 
 div.facet table td.col2 {

@@ -174,10 +174,10 @@
          <Identify>
             <repositoryName>XTF Sample Repository</repositoryName>
             <!-- CHANGE -->
-            <baseURL>http://oaiservice.org</baseURL>
+            <baseURL>http://dev.escholarship.org/default/oai</baseURL>
             <protocolVersion>2.0</protocolVersion>
             <!-- CHANGE -->
-            <adminEmail>admin@oaiserver.org</adminEmail>
+            <adminEmail>kirk.hastings@ucop.edu</adminEmail>
             <earliestDatestamp>
                <xsl:value-of select="$earliestDateStamp"/>
             </earliestDatestamp>
