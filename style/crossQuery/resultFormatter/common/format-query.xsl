@@ -55,7 +55,9 @@
    <xsl:template name="format-query">
       
       <xsl:choose>
-         <xsl:when test="$browse-all">All</xsl:when>
+         <xsl:when test="$browse-all">
+            <div class="subQuery">&#160;All</div>
+         </xsl:when>
          <xsl:otherwise>
             <xsl:apply-templates select="query" mode="query"/>
          </xsl:otherwise>
@@ -115,35 +117,37 @@
          <!-- hidden queries -->
          <xsl:when test="matches(@field,$noShow)"/>
          <xsl:when test="@field or @fields or not/@field">
-            <!-- query -->
-            <xsl:apply-templates mode="query"/>
-            <xsl:text> in </xsl:text>
-            <!-- field -->
-            <b>
-               <xsl:choose>
-                  <xsl:when test="@fields">
-                     <xsl:text> keywords</xsl:text>
-                  </xsl:when>
-                  <xsl:when test="child::sectionType">
-                     <xsl:value-of select="sectionType/term"/>
-                     <xsl:text> sections</xsl:text>
-                  </xsl:when>
-                  <xsl:when test="@field = 'text'">
-                     <xsl:text> the full text </xsl:text>
-                  </xsl:when>
-                  <xsl:when test="not(@field) and not[@field]">
-                     <xsl:value-of select="not/@field"/>
-                  </xsl:when>
-                  <xsl:otherwise>
-                     <!-- mask facets -->
-                     <xsl:value-of select="replace(replace(replace(@field,'facet-',''),'subject','Subject'),'date','Date')"/>
-                  </xsl:otherwise>
-               </xsl:choose>
-            </b>
-            <xsl:text>&#160;</xsl:text>
-            <!-- query removal widget -->
-            <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($finalString)}">[X]</a>
-            <br/>
+            <div class="subQuery">
+               <!-- query -->
+               <xsl:apply-templates mode="query"/>
+               <xsl:text> in </xsl:text>
+               <!-- field -->
+               <b>
+                  <xsl:choose>
+                     <xsl:when test="@fields">
+                        <xsl:text> keywords</xsl:text>
+                     </xsl:when>
+                     <xsl:when test="child::sectionType">
+                        <xsl:value-of select="sectionType/term"/>
+                        <xsl:text> sections</xsl:text>
+                     </xsl:when>
+                     <xsl:when test="@field = 'text'">
+                        <xsl:text> the full text </xsl:text>
+                     </xsl:when>
+                     <xsl:when test="not(@field) and not[@field]">
+                        <xsl:value-of select="not/@field"/>
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <!-- mask facets -->
+                        <xsl:value-of select="replace(replace(replace(@field,'facet-',''),'subject','subject'),'date','date')"/>
+                     </xsl:otherwise>
+                  </xsl:choose>
+               </b>
+               <xsl:text>&#160;</xsl:text>
+               <!-- query removal widget -->
+               <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($finalString)}">[X]</a>
+               <br/>
+            </div>
          </xsl:when>
          <xsl:otherwise>
             <xsl:apply-templates mode="query"/>
@@ -155,12 +159,12 @@
    <xsl:template match="term" mode="query" priority="-1">
       <xsl:if test="preceding-sibling::term and (. != $keyword)">
          <xsl:value-of select="name(..)"/>
-         <xsl:text>&#160;</xsl:text>
+         <!--<xsl:text>&#160;</xsl:text>-->
       </xsl:if>
       <span class="subhit">
          <xsl:value-of select="."/>
       </span>
-      <xsl:text>&#160;</xsl:text>
+      <!--<xsl:text>&#160;</xsl:text>-->
    </xsl:template>
    
    <!-- phrase -->

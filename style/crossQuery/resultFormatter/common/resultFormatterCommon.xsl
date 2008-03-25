@@ -434,9 +434,14 @@
          <xsl:value-of select="editURL:remove($queryString, 'startDoc')"/>
       </xsl:variable>   
       
-      <xsl:if test="$nPages &gt; 2">
-         <xsl:text>Page: </xsl:text>
-      </xsl:if>
+      <xsl:choose>
+         <xsl:when test="$nPages &gt; 2">
+            <xsl:text>Page: </xsl:text>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:text>Page: 1</xsl:text>
+         </xsl:otherwise>
+      </xsl:choose>
       
       <xsl:for-each select="(1 to $maxPages)">
          <!-- Figure out which block you need to be in -->

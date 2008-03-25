@@ -81,6 +81,9 @@
          <xsl:when test="matches($http.User-Agent,$robots)">
             <xsl:apply-templates select="crossQueryResult" mode="robot"/>
          </xsl:when>
+         <xsl:when test="$smode = 'showBag'">
+            <xsl:apply-templates select="crossQueryResult" mode="results"/>
+         </xsl:when>
          <!-- book bag -->
          <xsl:when test="$smode = 'addToBag'">
             <span>Added</span>
@@ -157,7 +160,14 @@
                      <td>
                         <xsl:choose>
                            <xsl:when test="$smode='showBag'">
-                              <a href="{$xtfURL}search?smode=getAddress">E-mail My Bookbag</a>
+                              <a>
+                                 <xsl:attribute name="href">javascript://</xsl:attribute>
+                                 <xsl:attribute name="onClick">
+                                    <xsl:text>javascript:window.open('</xsl:text><xsl:value-of
+                                       select="$xtfURL"/>search?smode=getAddress<xsl:text>','popup','width=400,height=200,resizable=no,scrollbars=no')</xsl:text>
+                                 </xsl:attribute>
+                                 <xsl:text>E-mail My Bookbag</xsl:text>
+                              </a>
                            </xsl:when>
                            <xsl:otherwise>
                               <div class="query">
@@ -201,8 +211,21 @@
                   <tr>
                      <td>
                         <b><xsl:value-of select="if($smode='showBag') then 'Bookbag' else 'Results'"/>:</b>&#160;
-                        <span id="itemCount"><xsl:value-of select="@totalDocs"/></span>
-                        <xsl:text> Item(s)</xsl:text>
+                        <xsl:variable name="items" select="@totalDocs"/>
+                        <xsl:choose>
+                           <xsl:when test="$items &gt; 1">
+                              <span id="itemCount">
+                                 <xsl:value-of select="$items"/>
+                              </span>
+                              <xsl:text> Items</xsl:text>
+                           </xsl:when>
+                           <xsl:otherwise>
+                              <span id="itemCount">
+                                 <xsl:value-of select="$items"/>
+                              </span>
+                              <xsl:text> Item</xsl:text>
+                           </xsl:otherwise>
+                        </xsl:choose>
                      </td>
                      <td class="right">
                         <xsl:text>Browse by </xsl:text>
@@ -261,18 +284,25 @@
                      <table>
                         <tr>
                            <td>
-                              <p>Sorry, no results...</p>
-                              <p>Try modifying your search:</p>
-                              <div class="forms">
-                                 <xsl:choose>
-                                    <xsl:when test="matches($smode,'advanced')">
-                                       <xsl:call-template name="advancedForm"/>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                       <xsl:call-template name="simpleForm"/>
-                                    </xsl:otherwise>
-                                 </xsl:choose>
-                              </div>
+                              <xsl:choose>
+                                 <xsl:when test="$smode = 'showBag'">
+                                    <p>Your Bookbag is empty.</p>
+                                    <p>Click on the 'Add' link next to one or more items in your <a href="{session:getData('queryURL')}">Search Results</a>.</p>
+                                 </xsl:when>
+                                 <xsl:otherwise>
+                                    <p>Sorry, no results...</p>
+                                    <p>Try modifying your search:</p>
+                                    <div class="forms">
+                                       <xsl:choose>
+                                          <xsl:when test="matches($smode,'advanced')">
+                                             <xsl:call-template name="advancedForm"/>
+                                          </xsl:when>
+                                          <xsl:otherwise>
+                                             <xsl:call-template name="simpleForm"/>
+                                          </xsl:otherwise>
+                                       </xsl:choose>
+                                    </div></xsl:otherwise>
+                              </xsl:choose>
                            </td>
                         </tr>
                      </table>
@@ -300,16 +330,18 @@
          </head>
          <body>
             <xsl:copy-of select="$brand.header"/>
-            <h1>E-mail My Bookbag</h1>
-            <form action="{$xtfURL}{$crossqueryPath}" method="get">
-               <xsl:text>Address: </xsl:text>
-               <input type="text" name="email"/>
-               <xsl:text>&#160;</xsl:text>
-               <input type="reset" value="CLEAR"/>
-               <xsl:text>&#160;</xsl:text>
-               <input type="submit" value="SUBMIT"/>
-               <input type="hidden" name="smode" value="emailFolder"/>
-            </form>
+            <div class="getAddress">
+               <h2>E-mail My Bookbag</h2>
+               <form action="{$xtfURL}{$crossqueryPath}" method="get">
+                  <xsl:text>Address: </xsl:text>
+                  <input type="text" name="email"/>
+                  <xsl:text>&#160;</xsl:text>
+                  <input type="reset" value="CLEAR"/>
+                  <xsl:text>&#160;</xsl:text>
+                  <input type="submit" value="SUBMIT"/>
+                  <input type="hidden" name="smode" value="emailFolder"/>
+               </form>
+            </div>
          </body>
       </html>
    </xsl:template>
@@ -321,9 +353,9 @@
       <!-- Change the values for @smtpHost and @from to those valid for your domain -->
       <mail:send xmlns:mail="java:/org.cdlib.xtf.saxonExt.Mail" 
          xsl:extension-element-prefixes="mail" 
-         smtpHost="smtp.yourdomain" 
+         smtpHost="smtp.yourserver.org" 
          useSSL="no" 
-         from="user@yourdomain"
+         from="admin@yourserver.org"
          to="{$email}" 
          subject="XTF: My Bookbag">
 Your XTF Bookbag:
@@ -409,15 +441,9 @@ Item number <xsl:value-of select="$num"/>:
                      <td>
                         <b>Browse by:&#160;</b>
                         <xsl:choose>
-                           <xsl:when test="$browse-title">
-                              Title
-                           </xsl:when>
-                           <xsl:when test="$browse-creator">
-                              Author
-                           </xsl:when>
-                           <xsl:otherwise>
-                              All Items
-                           </xsl:otherwise>
+                           <xsl:when test="$browse-title">Title</xsl:when>
+                           <xsl:when test="$browse-creator">Author</xsl:when>
+                           <xsl:otherwise>All Items</xsl:otherwise>
                         </xsl:choose>
                      </td>
                      <td class="right">
@@ -435,8 +461,17 @@ Item number <xsl:value-of select="$num"/>:
                   <tr>
                      <td>
                         <b>Results:&#160;</b>
-                        <xsl:value-of select="facet/group[docHit]/@totalDocs"/>
-                        <xsl:text> Item(s)</xsl:text>
+                        <xsl:variable name="items" select="facet/group[docHit]/@totalDocs"/>
+                        <xsl:choose>
+                           <xsl:when test="$items &gt; 1">
+                              <xsl:value-of select="$items"/>
+                              <xsl:text> Items</xsl:text>
+                           </xsl:when>
+                           <xsl:otherwise>
+                              <xsl:value-of select="$items"/>
+                              <xsl:text> Item</xsl:text>
+                           </xsl:otherwise>
+                        </xsl:choose>
                      </td>
                      <td class="right">
                         <xsl:text>Browse by </xsl:text>
