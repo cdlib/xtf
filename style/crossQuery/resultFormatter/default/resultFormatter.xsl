@@ -213,17 +213,15 @@
                         <b><xsl:value-of select="if($smode='showBag') then 'Bookbag' else 'Results'"/>:</b>&#160;
                         <xsl:variable name="items" select="@totalDocs"/>
                         <xsl:choose>
-                           <xsl:when test="$items &gt; 1">
-                              <span id="itemCount">
-                                 <xsl:value-of select="$items"/>
-                              </span>
-                              <xsl:text> Items</xsl:text>
+                           <xsl:when test="$items = 1">
+                              <span id="itemCount">1</span>
+                              <xsl:text> Item</xsl:text>
                            </xsl:when>
                            <xsl:otherwise>
                               <span id="itemCount">
                                  <xsl:value-of select="$items"/>
                               </span>
-                              <xsl:text> Item</xsl:text>
+                              <xsl:text> Items</xsl:text>
                            </xsl:otherwise>
                         </xsl:choose>
                      </td>
