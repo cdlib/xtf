@@ -340,7 +340,7 @@
    </xsl:function>
    
    <!-- Function to calculate an unused name for the next facet parameter -->
-   <xsl:function name="editURL:nextFacetParam" xmlns="">
+   <xsl:function name="editURL:nextFacetParam">
       <xsl:param name="queryString"/>
       <xsl:param name="field"/>
       <xsl:variable name="nums">
@@ -349,7 +349,7 @@
             <xsl:matching-substring><num n="{number(regex-group(2))}"/></xsl:matching-substring>
          </xsl:analyze-string>
       </xsl:variable>
-      <xsl:value-of select="concat('f', 1+max(($nums/num/@n)), '-', $field)"/>
+      <xsl:value-of select="concat('f', 1+max(($nums/*/@n)), '-', $field)"/>
    </xsl:function>
 
    <!-- ====================================================================== -->
