@@ -398,12 +398,12 @@
                      </tr>
                      <tr>
                         <td>Proximity</td>
-                        <td><form><select><option>5</option></select></form></td>
+                        <td><form action=""><select><option>5</option></select></form></td>
                         <td class="sampleDescrip">Match the full text terms, only if they are 5 or fewer words apart</td>
                      </tr>
                      <tr>
                         <td>Section</td>
-                        <td><form><input type="radio" checked="checked">headings</input></form></td>
+                        <td><form action=""><input type="radio" checked="checked"/>headings</form></td>
                         <td class="sampleDescrip">Match the full text terms, only if they appear in document 'headings' (e.g. chapter titles)</td>
                      </tr>
                      <tr>
@@ -413,7 +413,7 @@
                      </tr>
                      <tr>
                         <td>Year(s)</td>
-                        <td><form>from <input type="text" value="2000" size="4"/> to <input type="text" value="2005" size="4"/></form></td>
+                        <td><form action="">from <input type="text" value="2000" size="4"/> to <input type="text" value="2005" size="4"/></form></td>
                         <td class="sampleDescrip">Search for documents whose date falls in the range from '2000' to '2005'</td>
                      </tr>
                   </table>
