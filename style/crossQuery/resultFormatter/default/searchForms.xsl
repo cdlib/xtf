@@ -65,8 +65,8 @@
                      <tr>
                         <td class="{if(matches($smode,'simple')) then 'tab-select' else 'tab'}"><a href="search?smode=simple">Keyword</a></td>
                         <td class="{if(matches($smode,'advanced')) then 'tab-select' else 'tab'}"><a href="search?smode=advanced">Advanced</a></td>
+                        <td class="{if(matches($smode,'freeform')) then 'tab-select' else 'tab'}"><a href="search?smode=freeform">Freeform</a></td>
                         <td class="{if(matches($smode,'browse')) then 'tab-select' else 'tab'}"><a href="search?smode=browse">Browse</a></td>
-                        <td class="{if(matches($smode,'freeform')) then 'tab-select' else 'tab'}"><a href="search?smode=freeform">Freeform <i>(exp.)</i></a></td>
                      </tr>
                      <tr>
                         <td colspan="4">
@@ -85,7 +85,11 @@
                                     <table>
                                        <tr>
                                           <td>
-                                             <xsl:text>Browse by </xsl:text>
+                                             <p>Browse all documents by the available facets, or alphanumerically by author or title:</p>
+                                          </td>
+                                       </tr>
+                                       <tr>
+                                          <td>
                                              <xsl:call-template name="browseLinks"/>
                                           </td>
                                        </tr>
@@ -116,7 +120,33 @@
                </td>
             </tr>
             <tr>
-               <td>Examples go here.</td>
+               <td>
+                  <table class="sampleTable">
+                     <tr>
+                        <td colspan="2">Examples:</td>                  
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">africa</td>
+                        <td class="sampleDescrip">Search keywords (full text and metadata) for 'africa'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">south africa</td>
+                        <td class="sampleDescrip">Search keywords for 'south' AND 'africa'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">"south africa"</td>
+                        <td class="sampleDescrip">Search keywords for the phrase 'south africa'</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">africa*</td>
+                        <td class="sampleDescrip">Search keywords for the string 'africa' followed by 0 or more characters</td>
+                     </tr>
+                     <tr>
+                        <td class="sampleQuery">africa?</td>
+                        <td class="sampleDescrip">Search keywords for the string 'africa' followed by a single character</td>
+                     </tr>
+                  </table>
+               </td>
             </tr>
          </table>
       </form>
@@ -350,6 +380,45 @@
                   </table>
                </td>
             </tr>
+            <tr>
+               <td colspan="2">
+                  <table class="sampleTable">
+                     <tr>
+                        <td colspan="3">Examples:</td>                  
+                     </tr>
+                     <tr>
+                        <td/>
+                        <td class="sampleQuery">south africa</td>
+                        <td class="sampleDescrip">Search full text for 'south' AND 'africa'</td>
+                     </tr>
+                     <tr>
+                        <td>Exclude</td>
+                        <td class="sampleQuery">race</td>
+                        <td class="sampleDescrip">Exclude results which contain the term 'race'</td>
+                     </tr>
+                     <tr>
+                        <td>Proximity</td>
+                        <td><form><select><option>5</option></select></form></td>
+                        <td class="sampleDescrip">Match the full text terms, only if they are 5 or fewer words apart</td>
+                     </tr>
+                     <tr>
+                        <td>Section</td>
+                        <td><form><input type="radio" checked="checked">headings</input></form></td>
+                        <td class="sampleDescrip">Match the full text terms, only if they appear in document 'headings' (e.g. chapter titles)</td>
+                     </tr>
+                     <tr>
+                        <td>Title</td>
+                        <td class="sampleQuery">"south africa"</td>
+                        <td class="sampleDescrip">Search for the phrase 'south africa' in the 'title' field</td>
+                     </tr>
+                     <tr>
+                        <td>Year(s)</td>
+                        <td><form>from <input type="text" value="2000" size="4"/> to <input type="text" value="2005" size="4"/></form></td>
+                        <td class="sampleDescrip">Search for documents whose date falls in the range from '2000' to '2005'</td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
          </table>
       </form>
    </xsl:template>
@@ -375,7 +444,7 @@
                      </tr>
                      <tr>
                         <td class="sampleQuery">africa</td>
-                        <td class="sampleDescrip">Search keywords for 'africa'</td>
+                        <td class="sampleDescrip">Search keywords (full text and metadata) for 'africa'</td>
                      </tr>
                      <tr>
                         <td class="sampleQuery">south africa</td>
