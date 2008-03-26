@@ -164,7 +164,7 @@
                                  <xsl:attribute name="href">javascript://</xsl:attribute>
                                  <xsl:attribute name="onClick">
                                     <xsl:text>javascript:window.open('</xsl:text><xsl:value-of
-                                       select="$xtfURL"/>search?smode=getAddress<xsl:text>','popup','width=400,height=200,resizable=no,scrollbars=no')</xsl:text>
+                                       select="$xtfURL"/>search?smode=getAddress<xsl:text>','popup','width=500,height=200,resizable=no,scrollbars=no')</xsl:text>
                                  </xsl:attribute>
                                  <xsl:text>E-mail My Bookbag</xsl:text>
                               </a>
@@ -364,10 +364,9 @@ Your XTF Bookbag:
          <head>
             <title>E-mail My Citations: Success</title>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-            <meta http-equiv="refresh" content="1;url={$xtfURL}search?smode=showBag"/>
             <xsl:copy-of select="$brand.links"/>
          </head>
-         <body>
+         <body onLoad="autoCloseTimer = setTimeout('window.close()', 1000)">
             <xsl:copy-of select="$brand.header"/>
             <h1>E-mail My Citations</h1>
             <b>Your citations have been sent.</b>
