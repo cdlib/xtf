@@ -361,6 +361,13 @@
          <tr>
             <td valign="top"></td>
             <td valign="top" colspan="11">
+               <!-- for sheila -->
+               <a>
+                  <xsl:attribute name="name">
+                     <xsl:text>subseries</xsl:text><xsl:number from="dsc" count="c02 "/>
+                  </xsl:attribute>
+               </a>
+               <!-- end for sheila -->
                <b>
                   <xsl:call-template name="component-did"/>
                </b>

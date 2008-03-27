@@ -337,7 +337,7 @@
                      evidenced by the level attribute series)and numbers them
                      to form a hyperlink to each.   Delete this section if you do not
                      wish the c01 titles to appear in the table of contents.-->
-                  <xsl:for-each select="archdesc/dsc/c01[@level='series' or @level='subseries'    or @level='subgrp' or @level='subcollection']">
+                  <xsl:for-each select="archdesc/dsc/c01[@level='series' or @level='subseries' or @level='subgrp' or @level='subcollection']">
                      <xsl:call-template name="make-toc-link">
                         <xsl:with-param name="name">
                            <xsl:choose>
@@ -348,7 +348,6 @@
                                     <xsl:apply-templates select="./unitdate"/>
                                  </xsl:for-each>
                               </xsl:when>
-                              
                               <xsl:otherwise>
                                  <xsl:apply-templates select="did/unittitle"/>
                                  <xsl:text> </xsl:text>
@@ -362,6 +361,33 @@
                         <xsl:with-param name="nodes" select="."/>
                         <xsl:with-param name="indent" select="2"/>
                      </xsl:call-template>
+                     <!-- for sheila -->
+                     <xsl:for-each select=".//c02[@level='subseries']">
+                        <xsl:call-template name="make-toc-link">
+                           <xsl:with-param name="name">
+                              <xsl:choose>
+                                 <xsl:when test="did/unittitle/unitdate">
+                                    <xsl:for-each select="did/unittitle">
+                                       <xsl:value-of select="text()"/>
+                                       <xsl:text> </xsl:text>
+                                       <xsl:apply-templates select="./unitdate"/>
+                                    </xsl:for-each>
+                                 </xsl:when>
+                                 <xsl:otherwise>
+                                    <xsl:apply-templates select="did/unittitle"/>
+                                    <xsl:text> </xsl:text>
+                                    <xsl:apply-templates select="did/unitdate"/>
+                                 </xsl:otherwise>
+                              </xsl:choose>
+                           </xsl:with-param>
+                           <xsl:with-param name="id">
+                              <xsl:value-of select="concat('subseries', position())"/>
+                           </xsl:with-param>
+                           <xsl:with-param name="nodes" select="."/>
+                           <xsl:with-param name="indent" select="2"/>
+                        </xsl:call-template>
+                     </xsl:for-each>
+                     <!-- end for sheila -->
                   </xsl:for-each>
                   <!--This ends the section that causes the c01 titles to appear in the table of contents.-->
                </xsl:if>
