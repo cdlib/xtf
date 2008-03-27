@@ -384,7 +384,7 @@
                               <xsl:value-of select="concat('subseries', position())"/>
                            </xsl:with-param>
                            <xsl:with-param name="nodes" select="."/>
-                           <xsl:with-param name="indent" select="2"/>
+                           <xsl:with-param name="indent" select="3"/>
                         </xsl:call-template>
                      </xsl:for-each>
                      <!-- end for sheila -->
