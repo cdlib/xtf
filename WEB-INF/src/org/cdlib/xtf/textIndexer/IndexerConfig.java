@@ -306,7 +306,7 @@ public class IndexerConfig
       else if (args[i].equalsIgnoreCase("-nobuildlazy"))
         buildLazyFiles = false;
 
-      // If the user asked for us to skip the main indexing pass, flat it.
+      // If the user asked for us to skip the main indexing pass, flag it.
       else if (args[i].equalsIgnoreCase("-skipindexing"))
         skipIndexing = true;
 
