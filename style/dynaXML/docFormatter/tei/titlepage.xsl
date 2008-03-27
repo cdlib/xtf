@@ -67,7 +67,7 @@
                <xsl:text> [</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
-                  <xsl:attribute name="onClick">
+                  <xsl:attribute name="onclick">
                      <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='div1'][@type='copyright']/@*[local-name()='id']"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:text>Copyright</xsl:text>
@@ -78,7 +78,7 @@
                <xsl:text> [</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
-                  <xsl:attribute name="onClick">
+                  <xsl:attribute name="onclick">
                      <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='div1'][@type='epigraph']/@*[local-name()='id']"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:text>Epigraph</xsl:text>

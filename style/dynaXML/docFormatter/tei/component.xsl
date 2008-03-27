@@ -662,7 +662,7 @@
                <xsl:text>[</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
-                  <xsl:attribute name="onClick">
+                  <xsl:attribute name="onclick">
                      <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/>&#038;doc.view=popup&#038;chunk.id=<xsl:value-of select="$target"/><xsl:text>','popup','width=300,height=300,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:apply-templates/>
@@ -781,7 +781,7 @@
                <xsl:text>[</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
-                  <xsl:attribute name="onClick">
+                  <xsl:attribute name="onclick">
                      <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/><xsl:text>&#038;doc.view=popup&#038;fig.ent=</xsl:text><xsl:value-of select="$img_src"/><xsl:text>','popup','width=600,height=600,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:text>Full Size</xsl:text>
@@ -798,7 +798,7 @@
                <xsl:text>[</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
-                  <xsl:attribute name="onClick">
+                  <xsl:attribute name="onclick">
                      <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/><xsl:text>&#038;doc.view=popup&#038;fig.ent=</xsl:text><xsl:value-of select="$fullsize"/><xsl:text>','popup','width=400,height=400,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:text>Full Size</xsl:text>
@@ -818,7 +818,7 @@
                <xsl:text>[</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
-                  <xsl:attribute name="onClick">
+                  <xsl:attribute name="onclick">
                      <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/><xsl:text>&#038;doc.view=popup&#038;fig.ent=</xsl:text><xsl:value-of select="$img_src"/><xsl:text>','popup','width=</xsl:text><xsl:value-of select="$width + 50"/><xsl:text>,height=</xsl:text><xsl:value-of select="$height + 50"/><xsl:text>,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:text>Full Size</xsl:text>
@@ -835,7 +835,7 @@
                <xsl:text>[</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
-                  <xsl:attribute name="onClick">
+                  <xsl:attribute name="onclick">
                      <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/><xsl:text>&#038;doc.view=popup&#038;fig.ent=</xsl:text><xsl:value-of select="$img_src"/><xsl:text>','popup','width=</xsl:text><xsl:value-of select="$width + 50"/><xsl:text>,height=</xsl:text><xsl:value-of select="$height + 50"/><xsl:text>,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:text>Full Size</xsl:text>
@@ -852,7 +852,7 @@
                <xsl:text>[</xsl:text>
                <a>
                   <xsl:attribute name="href">javascript://</xsl:attribute>
-                  <xsl:attribute name="onClick">
+                  <xsl:attribute name="onclick">
                      <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$doc.path"/><xsl:text>&#038;doc.view=popup&#038;fig.ent=</xsl:text><xsl:value-of select="$img_src"/><xsl:text>','popup','width=400,height=400,resizable=yes,scrollbars=yes')</xsl:text>
                   </xsl:attribute>
                   <xsl:text>Full Size</xsl:text>
