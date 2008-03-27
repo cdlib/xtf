@@ -101,23 +101,30 @@ div.forms table td.tab-select a {
 }
 
 div.form {
-   width: 75%;
-	 margin: 15px 0 0 10px;
+   width: 99%;
+	 margin-top: 20px;
+	 margin-bottom: 10px;
+	 text-align: center;
 }
 
 div.form table {
 	margin: 0 auto;
 }
 
-div.form table.top_table td:first-child {
-	text-align: left;
+div.form table.top_table {
+	width: 85%;
+	margin: 0 auto;
 }
 
 div.form table.left_table {
 	border-right: 1px solid #ccc;
 	text-align: left;
-	margin-right: 50px;
-	float: right;
+	margin-right: 40px;
+	width: 99%;
+}
+
+div.form table.right_table {
+	margin: 0 25px;
 }
 
 div.form table h4 {
@@ -143,6 +150,11 @@ div.form table td.indent {
 }
 
 div.form table.sampleTable {
+	margin-top: 20px;
+}
+
+div.form table.sampleTable td {
+	padding: 5px;
 }
 
 div.form table td.sampleQuery {
@@ -169,6 +181,10 @@ div.resultsHeader {
 	 margin-right: auto;
 }
 
+div.resultsHeader .subQuery {
+	
+}
+
 div.resultsHeader table {
    width: 100%;
 }
@@ -187,6 +203,7 @@ td.left {
 
 td.center {
    text-align: center;
+	 padding: 10px;
 }
 
 div.query {
