@@ -20,8 +20,11 @@
    </header>
    
    <dynaxml.header>
+      <!-- can I get rid of the @ids and <br>? -->
       <div class="header">
-         <img src="icons/default/xtf_banner.gif" alt="XTF banner"/>
+         <img src="icons/default/xtf_logo.gif" width="302" height="18" alt="eXtensible Text Framework" id="xtf-logo"/>
+         <img src="icons/default/your_logo.gif" width="100" height="40" alt="graphic" id="your-logo" />
+         <br class="clear" />
       </div>
    </dynaxml.header>
    
