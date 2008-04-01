@@ -214,7 +214,14 @@
                         </form>
                      </td>
                      <td class="right">
-                        <a href="{$xtfURL}{$dynaxmlPath}?docId={$docId};doc.view=citation" target="_top">Citation</a>
+                        <a>
+                           <xsl:attribute name="href">javascript://</xsl:attribute>
+                           <xsl:attribute name="onclick">
+                              <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/><xsl:text>?docId=</xsl:text><xsl:value-of
+                                 select="$docId"/><xsl:text>;doc.view=citation</xsl:text><xsl:text>','popup','width=800,height=400,resizable=yes,scrollbars=no')</xsl:text>
+                           </xsl:attribute>
+                           <xsl:text>Citation</xsl:text>
+                        </a>
                         <xsl:text> | </xsl:text>
                         <a href="{$doc.path}&#038;doc.view=print;chunk.id={$chunk.id}" target="_top">Print View</a>
                      </td>
@@ -246,9 +253,14 @@
                   <xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='title'][1]"/>. 
                   <xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='year'][1]"/>.<br/>
                [<xsl:value-of select="concat($xtfURL,$dynaxmlPath,'?docId=',$docId)"/>]</p>
-               <p><a href="{$xtfURL}{$dynaxmlPath}?docId={$docId};query={$query}">Return to Document</a></p>
+               <a>
+                  <xsl:attribute name="href">javascript://</xsl:attribute>
+                  <xsl:attribute name="onClick">
+                     <xsl:text>javascript:window.close('popup')</xsl:text>
+                  </xsl:attribute>
+                  <span class="down1">Close this Window</span>
+               </a>
             </div>
-            <xsl:copy-of select="$brand.footer"/>
          </body>
       </html>
      
