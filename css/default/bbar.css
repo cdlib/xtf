@@ -1,27 +1,70 @@
 /* dynaXML Button Bar stylesheet */
 /* Applies only to the top navigation bar that appears in the frames view */
 body {
-   background-color: silver;
+	background-color: silver;
+}
+
+.clear {
+	clear: both;
+}
+
+div.header {
+	 border: 1px solid #666;
+	 border-bottom: 0;
+	 margin: 0 auto;
+	 background-color: #63718d;
+}
+
+div.header img {
+	border: 0;
+}
+
+div.header #xtf-logo {
+	float: left;
+	margin: 21px 0 0 15px
+}
+
+div.header #your-logo {
+	float: right;
+	margin: 10px 15px;
 }
 
 div.bbar {
+	width: 99%;
+	margin: 0 auto;
 }
 
 div.bbar table {
-   width: 100%;
+	width: 100%;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border: 1px solid #666;
 }
 
 td.left {
-   width: 33%;
-   text-align: left;
+	width: 33%;
+	text-align: left;
+	padding: 10px;
+	font-size: 85%;
+	background-color: #dededf;
 }
 
 td.center {
-   width: 34%;
-   text-align: center;
+	width: 34%;
+	text-align: center;
+	padding: 10px;
+	font-size: 85%;
+	background-color: #dededf;
+}
+
+td.center input[type="text"] {
+	margin-right: 5px;
 }
 
 td.right {
-   width: 33%;
-   text-align: right;
+	width: 33%;
+	text-align: right;
+	padding: 10px;
+	font-size: 85%;
+	background-color: #dededf;
 }

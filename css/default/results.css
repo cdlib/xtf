@@ -58,7 +58,7 @@ div.searchPage {
 }
 
 div.forms {
-   height: 600px;
+	min-height: 500px;
 }
 
 div.forms table {
@@ -102,8 +102,7 @@ div.forms table td.tab-select a {
 
 div.form {
    width: 99%;
-	 margin-top: 20px;
-	 margin-bottom: 10px;
+	 margin: 20px 0 10px 10px;
 	 text-align: center;
 }
 
@@ -120,7 +119,7 @@ div.form table.left_table {
 	border-right: 1px solid #ccc;
 	text-align: left;
 	margin-right: 40px;
-	width: 99%;
+	width: 90%;
 }
 
 div.form table.right_table {
@@ -181,10 +180,6 @@ div.resultsHeader {
 	 margin-right: auto;
 }
 
-div.resultsHeader .subQuery {
-	
-}
-
 div.resultsHeader table {
    width: 100%;
 }
@@ -208,10 +203,15 @@ td.center {
 
 div.query {
    width: 350px;
+	 float: left;
 }
 
 div.label {
    float: left;
+}
+
+div.resultsHeader .subQuery {
+	float: left;
 }
 
 div.results {
@@ -244,7 +244,7 @@ div.results table td.docHit{
 div.docHit {
 	background-color: #FAFAFB;
 	border: 1px solid #ccc;
-	margin: 10px 0 10px 20px;
+	margin: 10px 0 10px 0;
 	padding: 10px;
 }
 
@@ -322,3 +322,24 @@ div.facetLess {
    margin-left: 2em;
    margin-bottom: 0.5em;
 }
+
+div.getAddress {
+	width: 95%;
+	margin: 0 auto;
+	background-color: #fff;
+	border: 1px solid #666;
+	border-top: 0;
+	padding: 10px;
+}
+
+div.getAddress h2 {
+	margin: 0 0 10px 0;
+	font-size: 120%;
+}
+
+
+
+
+
+
+
