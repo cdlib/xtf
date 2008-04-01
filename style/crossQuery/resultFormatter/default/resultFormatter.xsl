@@ -136,8 +136,8 @@
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <xsl:copy-of select="$brand.links"/>
             <!-- AJAX support -->
-            <script src="script/yui/yahoo-dom-event.js" type="application/javascript"/> 
-            <script src="script/yui/connection-min.js" type="application/javascript"/> 
+            <script src="script/yui/yahoo-dom-event.js" type="text/javascript"/> 
+            <script src="script/yui/connection-min.js" type="text/javascript"/> 
          </head>
          <body>
             
@@ -416,8 +416,8 @@ Item number <xsl:value-of select="$num"/>:
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <xsl:copy-of select="$brand.links"/>
             <!-- AJAX support -->
-            <script src="script/yui/yahoo-dom-event.js" type="application/javascript"/> 
-            <script src="script/yui/connection-min.js" type="application/javascript"/> 
+            <script src="script/yui/yahoo-dom-event.js" type="text/javascript"/> 
+            <script src="script/yui/connection-min.js" type="text/javascript"/> 
          </head>
          <body>
             
