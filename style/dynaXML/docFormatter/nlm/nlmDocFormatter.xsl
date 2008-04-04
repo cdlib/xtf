@@ -62,6 +62,13 @@
       exclude-result-prefixes="#all"
       omit-xml-declaration="yes"/>
    
+   <xsl:output name="frameset" method="xhtml" indent="no" 
+      encoding="UTF-8" media-type="text/html; charset=UTF-8" 
+      doctype-public="-//W3C//DTD XHTML 1.0 Frameset//EN" 
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd" 
+      omit-xml-declaration="yes"
+      exclude-result-prefixes="#all"/>
+   
    <!-- ====================================================================== -->
    <!-- Strip Space                                                            -->
    <!-- ====================================================================== -->
@@ -132,32 +139,34 @@
       <xsl:variable name="toc.href"><xsl:value-of select="$query.string"/>&#038;doc.view=toc&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/>#X</xsl:variable>
       <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>&#038;doc.view=content&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/></xsl:variable>
       
-      <html xml:lang="en" lang="en">
-         <head>
-            <title>
-               <xsl:value-of select="$doc.title"/>
-            </title>
-         </head>
-         <frameset rows="120,*" border="2" framespacing="2" frameborder="1">
-            <frame scrolling="no" title="Navigation Bar">
-               <xsl:attribute name="name">bbar</xsl:attribute>
-               <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$bbar.href"/></xsl:attribute>
-            </frame>
-            <frameset cols="25%,75%" border="2" framespacing="2" frameborder="1">
-               <frame title="Table of Contents">
-                  <xsl:attribute name="name">toc</xsl:attribute>
-                  <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$toc.href"/></xsl:attribute>
+      <xsl:result-document format="frameset" exclude-result-prefixes="#all">
+         <html xml:lang="en" lang="en">
+            <head>
+               <title>
+                  <xsl:value-of select="$doc.title"/>
+               </title>
+            </head>
+            <frameset rows="120,*">
+               <frame frameborder="1" scrolling="no" title="Navigation Bar">
+                  <xsl:attribute name="name">bbar</xsl:attribute>
+                  <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$bbar.href"/></xsl:attribute>
                </frame>
-               <frame title="Content">
-                  <xsl:attribute name="name">content</xsl:attribute>
-                  <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$content.href"/></xsl:attribute>
-               </frame>
+               <frameset cols="25%,75%">
+                  <frame frameborder="1" title="Table of Contents">
+                     <xsl:attribute name="name">toc</xsl:attribute>
+                     <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$toc.href"/></xsl:attribute>
+                  </frame>
+                  <frame frameborder="1" title="Content">
+                     <xsl:attribute name="name">content</xsl:attribute>
+                     <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$content.href"/></xsl:attribute>
+                  </frame>
+               </frameset>
             </frameset>
-         </frameset>
-         <noframes>
-            <h1>Sorry, your browser doesn't support frames...</h1>
-         </noframes>
-      </html>
+            <noframes>
+               <h1>Sorry, your browser doesn't support frames...</h1>
+            </noframes>
+         </html>
+      </xsl:result-document>
    </xsl:template>
    
    <!-- ====================================================================== -->
