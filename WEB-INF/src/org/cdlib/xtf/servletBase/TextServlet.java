@@ -61,6 +61,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -673,27 +674,37 @@ public abstract class TextServlet extends HttpServlet
    * @param res     The servlet response to output to
    * @return        A Receiver suitable for the target of the transform
    */
-  public Receiver createFilteredReceiver(Transformer trans,
-                                         HttpServletRequest req,
-                                         HttpServletResponse res)
+  public Result createFilteredReceiver(Transformer trans,
+                                       HttpServletRequest req,
+                                       HttpServletResponse res)
     throws XPathException, IOException 
   {
     StreamResult stream = new StreamResult(res.getOutputStream());
 
-    Controller controller = (Controller)trans;
-    SerializerFactory factory = controller.getConfiguration().getSerializerFactory();
-    Receiver target = factory.getReceiver(stream,
-                                          controller.makePipelineConfiguration(),
-                                          trans.getOutputProperties());
-
     TextConfig config = getConfig();
-    if (config.trackSessions && config.sessionEncodeURLPattern != null)
+    if (config.trackSessions && config.sessionEncodeURLPattern != null) 
+    {
+      // NOTE: It's a good thing we're no longer defaulting to doing this, because it
+      // effectively prevents Saxon from being able to switch the xsl:output parameters
+      // during the transformation (such as in response to an xsl:result-document
+      // element.)
+      //
+      Controller controller = (Controller)trans;
+      SerializerFactory factory = controller.getConfiguration().getSerializerFactory();
+      Receiver target = factory.getReceiver(stream,
+                                            controller.makePipelineConfiguration(),
+                                            trans.getOutputProperties());
       return new SessionURLRewriter(target,
                                     config.sessionEncodeURLPattern,
                                     req,
                                     res);
+    }
     else
-      return target;
+    {
+      // Return a StreamResult, not a Receiver. This allows Saxon to change the output
+      // parameters during the transformation (e.g. in response to xsl:result-document).
+      return stream;
+    }
   } // createFilteredReceiver
 
   /**
