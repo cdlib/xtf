@@ -156,10 +156,12 @@
                      <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/></xsl:attribute>
                   </frame>
                </frameset>
+               <noframes>
+                  <body>
+                     <h1>Sorry, your browser doesn't support frames...</h1>
+                  </body>
+               </noframes>
             </frameset>
-            <noframes>
-               <h1>Sorry, your browser doesn't support frames...</h1>
-            </noframes>
          </html>
       </xsl:result-document>
    </xsl:template>
