@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
 import java.util.zip.GZIPInputStream;
 
 // import javax.xml.parsers.ParserConfigurationException;
@@ -185,10 +186,11 @@ public class XMLConfigParser extends DefaultHandler
       // Instantiate a new SAX parser instance.
       SAXParser xmlParser = IndexUtil.createSAXParser();
 
-      // Call the XML parser to process the config file, using 
-      // this object as the tag handler.
+      // Call the XML parser to process the config file, using this object
+      // as the tag handler. Make sure to convert file to a proper URI,
+      // since on Windows weird stuff happens with "C:\blah"
       //
-      xmlParser.parse(cfgInfo.cfgFilePath, this);
+      xmlParser.parse(new File(cfgInfo.cfgFilePath).toURI().toString(), this);
     } // try
 
     catch (Throwable t) 
