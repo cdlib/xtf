@@ -160,7 +160,9 @@
                   </frame>
                </frameset>
                <noframes>
-                  <h1>Sorry, your browser doesn't support frames...</h1>
+                  <body>
+                     <h1>Sorry, your browser doesn't support frames...</h1>
+                  </body>
                </noframes>
             </frameset>
          </html>
