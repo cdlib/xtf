@@ -138,7 +138,6 @@
                   <xsl:text>  </xsl:text>
                   <xsl:value-of select="eadheader/filedesc/titlestmt/subtitle"/>
                </title>
-               <xsl:call-template name="metadata"/>
             </head>
             
             <frameset rows="120,*">
