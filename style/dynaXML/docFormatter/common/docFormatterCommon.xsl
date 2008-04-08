@@ -247,19 +247,21 @@
          </head>
          <body>
             <xsl:copy-of select="$brand.header"/>
-            <h2>Citation</h2>
-            <div class="citation">
-               <p><xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='creator'][1]"/>. 
-                  <xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='title'][1]"/>. 
-                  <xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='year'][1]"/>.<br/>
-               [<xsl:value-of select="concat($xtfURL,$dynaxmlPath,'?docId=',$docId)"/>]</p>
-               <a>
-                  <xsl:attribute name="href">javascript://</xsl:attribute>
-                  <xsl:attribute name="onClick">
-                     <xsl:text>javascript:window.close('popup')</xsl:text>
-                  </xsl:attribute>
-                  <span class="down1">Close this Window</span>
-               </a>
+            <div class="container">
+               <h2>Citation</h2>
+               <div class="citation">
+                  <p><xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='creator'][1]"/>. 
+                     <xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='title'][1]"/>. 
+                     <xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='year'][1]"/>.<br/>
+                     [<xsl:value-of select="concat($xtfURL,$dynaxmlPath,'?docId=',$docId)"/>]</p>
+                  <a>
+                     <xsl:attribute name="href">javascript://</xsl:attribute>
+                     <xsl:attribute name="onClick">
+                        <xsl:text>javascript:window.close('popup')</xsl:text>
+                     </xsl:attribute>
+                     <span class="down1">Close this Window</span>
+                  </a>
+               </div>
             </div>
          </body>
       </html>
