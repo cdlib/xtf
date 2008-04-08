@@ -349,8 +349,9 @@ public class FakeServletRequest implements HttpServletRequest
   }
 
   public String[] getParameterValues(String name) {
-    assert false;
-    return null;
+    if (params.get(name) == null)
+      return new String[0];
+    return new String[] { params.get(name) };
   }
 
   public String getProtocol() {
