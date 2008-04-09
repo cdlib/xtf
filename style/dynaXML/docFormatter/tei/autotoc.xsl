@@ -92,7 +92,7 @@
       <xsl:variable name="factor" select="25"/>
       
       <xsl:if test="$head">
-         <table cellpadding="0" cellspacing="0" class="toc-line" width="1000">
+         <table cellpadding="0" cellspacing="0" class="toc-line">
             <tr>
                <!-- show node hits -->
                <xsl:choose>
