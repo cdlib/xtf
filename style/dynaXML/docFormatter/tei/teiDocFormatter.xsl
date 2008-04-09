@@ -181,7 +181,7 @@
          <xsl:when test="($query != '0' and $query != '') and $set.anchor != '0'">
             <xsl:text>#</xsl:text><xsl:value-of select="$set.anchor"/>
          </xsl:when>
-         <xsl:when test="$query != '0' and $query != ''">
+         <xsl:when test="($query != '0' and $query != '') and $chunk.id != '0'">
             <xsl:text>#</xsl:text><xsl:value-of select="key('div-id', $chunk.id)/@xtf:firstHit"/>
          </xsl:when>
          <xsl:when test="$anchor.id != '0'">
