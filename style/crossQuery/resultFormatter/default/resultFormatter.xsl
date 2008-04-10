@@ -684,7 +684,9 @@ Item number <xsl:value-of select="$num"/>:
                   </a>
                   <xsl:text>&#160;</xsl:text>
                   <xsl:variable name="type" select="meta/type"/>
-                  <i><b><xsl:value-of select="$type"/></b></i>
+                  <span class="typeIcon">
+                     <img src="{$icon.path}i_{$type}.gif"/>
+                  </span>
                </td>
                <td class="col4">
                   <xsl:text>&#160;</xsl:text>
