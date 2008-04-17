@@ -24,12 +24,12 @@ div.header img {
 	border: 0;
 }
 
-div.header #xtf-logo {
+div.header img.xtf-logo {
 	float: left;
 	margin: 21px 0 0 15px
 }
 
-div.header #your-logo {
+div.header img.your-logo {
 	float: right;
 	margin: 10px 15px;
 }
