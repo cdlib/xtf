@@ -148,22 +148,22 @@ div.form table td.indent {
    width: 2px;
 }
 
-div.form table.sampleTable {
+table.sampleTable {
 	margin-top: 20px;
 }
 
-div.form table.sampleTable td {
+table.sampleTable td {
 	padding: 5px;
 }
 
-div.form table td.sampleQuery {
+table td.sampleQuery {
    font-family: courier, serif;
    border-style: solid;
    border-color: black;
    border-width: 1px 1px 1px 1px;
 }
 
-div.form table td.sampleDescrip {
+table td.sampleDescrip {
     font-style: italic;
 }
 
@@ -248,6 +248,10 @@ div.docHit {
 	padding: 10px;
 }
 
+div.docHit table td {
+	/* border: 1px solid red; */
+}
+
 div#main_2, div#main_4, div#main_6, div#main_8, div#main_10, div#main_12 {
 	
 }
@@ -266,6 +270,7 @@ div.docHit table td.col3{
    width: auto;
    text-align: left;
 }
+
 div.docHit table td.col4{
    width: 10%;
    text-align: right;
@@ -336,10 +341,3 @@ div.getAddress h2 {
 	margin: 0 0 10px 0;
 	font-size: 120%;
 }
-
-
-
-
-
-
-

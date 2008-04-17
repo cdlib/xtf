@@ -12,12 +12,20 @@ table.title {
    font-weight: bold;
 }
 
+table.toc-line {
+   width: 1000px;
+}
+
 table.toc-line td {
 	padding: 4px;
 }
 
 .toc table td {
+	padding: 3px;
 	/*border: 1px solid #ccc;*/
+}
+
+.toc table .l1 {
 }
 
 td.hits {
@@ -39,10 +47,12 @@ td.divnum {
    text-align: right;
    vertical-align: top;
    font-weight: bold;
+   width: 30px;
 }
 
 td.head {
    vertical-align: top;
+	 white-space: nowrap;
 }
 
 .hit-count {
@@ -67,13 +77,13 @@ div.l1 {
 }
 
 div.l2 {
-   font-size: 90%;
+   font-size: 95%;
    margin-top: 0;
    margin-bottom: 0;
 }
 
 div.l3, div.l4, div.l5, div.l6, div.l7 {
-   font-size: 10pt;
+   font-size: 90%;
    margin-top: 0;
    margin-bottom: 0;
 }
