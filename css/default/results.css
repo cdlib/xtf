@@ -276,6 +276,11 @@ div.docHit table td.col4{
    text-align: right;
 }
 
+div.docHit .typeIcon {
+	vertical-align: text-top;
+	margin-left: 1px;
+}
+
 .hit {
    color: #FD8239;
    font-weight: bold;
