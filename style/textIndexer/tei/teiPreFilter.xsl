@@ -36,7 +36,7 @@
    -->
    
    <!-- ====================================================================== -->
-   <!-- Import Common Templates and Functions                                  -->
+   <!-- Import Common Templates and Functions                 (cross-ref: top) -->
    <!-- ====================================================================== -->
    
    <xsl:import href="../common/preFilterCommon.xsl"/>
