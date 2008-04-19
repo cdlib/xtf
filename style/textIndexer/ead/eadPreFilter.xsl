@@ -186,7 +186,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <!-- creator --> 
+   <!-- creator. This code is referenced in the XTF docs (cross-ref: marking_meta_data) -->
    <xsl:template name="get-ead-creator">
       <xsl:choose>
          <xsl:when test="/ead/archdesc/did/origination[starts-with(@label, 'Creator')]">

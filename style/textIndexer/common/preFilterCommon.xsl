@@ -137,7 +137,7 @@
       </year>
    </xsl:template>
    
-   <!-- Generate sort-title -->
+   <!-- Generate sort-title, as referenced in the XTF docs (cross-ref: sort_title) -->
    <xsl:template match="*[matches(local-name(),'^title$')]" mode="sort">
       <sort-title xtf:meta="yes" xtf:tokenize="no">
          <xsl:value-of select="parse:title(string(.))"/>
