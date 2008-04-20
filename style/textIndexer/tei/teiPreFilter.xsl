@@ -36,7 +36,7 @@
    -->
    
    <!-- ====================================================================== -->
-   <!-- Import Common Templates and Functions                 (cross-ref: top) -->
+   <!-- Import Common Templates and Functions                                  -->
    <!-- ====================================================================== -->
    
    <xsl:import href="../common/preFilterCommon.xsl"/>
@@ -77,7 +77,6 @@
    <!-- ====================================================================== -->
    
    <!-- Ignored Elements. -->
-   <!-- Note: this code is referenced by the XTF docs (cross-ref: index_no) -->
    <xsl:template match="*[local-name()='teiHeader']">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
@@ -87,7 +86,6 @@
    </xsl:template>
    
    <!-- sectionType Indexing and Element Boosting -->
-   <!-- Note: this code is referenced by the XTF docs (cross-ref: tei_sectionType) -->
    <xsl:template match="*[local-name()='head'][parent::*[matches(local-name(),'^div')]]">
       <xsl:copy>
          <xsl:copy-of select="@*"/>

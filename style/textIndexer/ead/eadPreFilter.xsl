@@ -34,7 +34,7 @@
    -->
    
    <!-- ====================================================================== -->
-   <!-- Import Common Templates and Functions                 (cross-ref: top) -->
+   <!-- Import Common Templates and Functions                                  -->
    <!-- ====================================================================== -->
    
    <xsl:import href="../common/preFilterCommon.xsl"/>
@@ -186,7 +186,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <!-- creator. This code is referenced in the XTF docs (cross-ref: marking_meta_data) -->
+   <!-- creator -->
    <xsl:template name="get-ead-creator">
       <xsl:choose>
          <xsl:when test="/ead/archdesc/did/origination[starts-with(@label, 'Creator')]">
