@@ -72,7 +72,7 @@
          <xsl:when test="$suggestions">
             <xsl:variable name="sugg" select="$suggestions[1]"/>
             <xsl:variable name="remainder" select="cdl:replace-misspellings($baseURL, $suggestions[position() > 1])"/>
-            <xsl:variable name="fields" select="concat($sugg/@fields, ',keyword')"/>
+            <xsl:variable name="fields" select="concat($sugg/@fields, ',keyword,freeformQuery')"/>
             
             <!-- 
                Replace the term in the proper field(s) from the URL. Make sure it has word
@@ -176,5 +176,8 @@
    
    <!-- ignore 'all' portion of query -->
    <xsl:template match="*[@field='all']" mode="spelling"/>
+   
+   <!-- ignore text supplement to 'keyword' query -->
+   <xsl:template match="and[@field='text' and parent::*/and/@fields]" mode="spelling"/>
    
 </xsl:stylesheet>
