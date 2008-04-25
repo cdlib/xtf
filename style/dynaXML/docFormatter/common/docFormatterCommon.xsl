@@ -100,9 +100,9 @@
    
    <xsl:param name="set.anchor" select="'0'"/>
    
-   <xsl:param name="chunk.id">
+   <xsl:param name="chunk.id"/>
       
-   <xsl:param name="toc.id">
+   <xsl:param name="toc.id"/>
    
    <!-- search parameters -->
    
