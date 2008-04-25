@@ -79,15 +79,7 @@
    <!-- ====================================================================== -->
    
    <xsl:template match="/">
-      
-      <!-- ==================================================================
-         The "style" tag specifies a filesystem path, relative to the servlet
-         base directory, to a stylesheet that translates an XML source document
-         into an HTML page
-      -->
-      
-      <xsl:variable name="file" select="concat('../../data/',$docId)"/>
-      
+            
       <!-- We need to determine what kind of XML file we're looking at. XTF provides a
          handy function that quickly reads in only the first part of an XML file
          (up to the first close element tag, e.g. </element>). We make our decision
@@ -100,51 +92,61 @@
          "for-each" is a bit of a misnomer, since the stub is a single document
          so the code below runs only once.
       -->
-      <xsl:for-each select="FileUtils:readXMLStub($file)">
-         
-         <xsl:variable name="root-element-name" select="name(*[1])"/>
-         <xsl:variable name="pid" select="unparsed-entity-public-id($root-element-name)"/>
-         <xsl:variable name="uri" select="unparsed-entity-uri($root-element-name)"/>
-         <xsl:variable name="ns" select="namespace-uri(*[1])"/>
-         
-         <style>
+      <xsl:variable name="file" select="concat('../../data/',$docId)"/>
+      <xsl:variable name="fileType">
+         <xsl:for-each select="FileUtils:readXMLStub($file)">
+            
+            <xsl:variable name="root-element-name" select="name(*[1])"/>
+            <xsl:variable name="pid" select="unparsed-entity-public-id($root-element-name)"/>
+            <xsl:variable name="uri" select="unparsed-entity-uri($root-element-name)"/>
+            <xsl:variable name="ns" select="namespace-uri(*[1])"/>
+            
             <xsl:choose>
                <!-- Look for EAD XML files -->
                <xsl:when test="matches($root-element-name,'^ead$') or
                   matches($pid,'EAD') or 
                   matches($uri,'ead\.dtd') or 
                   matches($ns,'ead')">
-                  <xsl:attribute name="path">style/dynaXML/docFormatter/ead/eadDocFormatter.xsl</xsl:attribute>
+                  <xsl:value-of select="'ead'"/>
                </xsl:when>
                <!-- Look for NLM XML files -->
                <xsl:when test="matches($root-element-name,'^article$') or
                   matches($pid,'NLM') or 
                   matches($uri,'journalpublishing\.dtd') or 
                   matches($ns,'nlm')">
-                  <xsl:attribute name="path">style/dynaXML/docFormatter/nlm/nlmDocFormatter.xsl</xsl:attribute>
+                  <xsl:value-of select="'nlm'"/>
                </xsl:when>
                <!-- Look for TEI XML file -->
                <xsl:when test="matches($root-element-name,'^TEI') or 
                   matches($pid,'TEI') or 
                   matches($uri,'tei2\.dtd') or 
                   matches($ns,'tei')">
-                  <xsl:attribute name="path">style/dynaXML/docFormatter/tei/teiDocFormatter.xsl</xsl:attribute>
+                  <xsl:value-of select="'tei'"/>
                </xsl:when>
                <!-- Default processing for XML files -->
                <xsl:otherwise>
-                  <xsl:attribute name="path">style/dynaXML/docFormatter/default/docFormatter.xsl</xsl:attribute>
+                  <xsl:value-of select="'default'"/>
                </xsl:otherwise>
             </xsl:choose>
-         </style>
-         
-      </xsl:for-each>
+         </xsl:for-each>
+      </xsl:variable>
+      
+      <!-- ==================================================================
+         The "style" tag specifies a filesystem path, relative to the servlet
+         base directory, to a stylesheet that translates an XML source document
+         into an HTML page
+      -->
+      <style path="{
+         if      ($fileType = 'ead') then 'style/dynaXML/docFormatter/ead/eadDocFormatter.xsl'
+         else if ($fileType = 'nlm') then 'style/dynaXML/docFormatter/nlm/nlmDocFormatter.xsl'
+         else if ($fileType = 'tei') then 'style/dynaXML/docFormatter/tei/teiDocFormatter.xsl'
+         else                             'style/dynaXML/docFormatter/default/docFormatter.xsl'}"/>
       
       <!-- ==================================================================
          The "source" tag specifies a filesystem path (relative to the servlet
          base directory), or an HTTP URL. The referenced XML document is
          parsed and fed into the display stylesheet.
-      -->
-      
+      -->   
       <source path="{concat('data/',$docId)}"/>
       
       <!-- ==================================================================
@@ -168,6 +170,17 @@
       -->
       
       <index configPath="conf/textIndexer.conf" name="default"/>
+      
+      <!-- ==================================================================
+         The "prefilter" tag specifies a filesystem path, relative to the servlet
+         base directory, to a stylesheet that will be used to build any lazy files
+         that weren't built at index time (due to specifying -nobuildlazy).
+      -->
+      <preFilter path="{
+         if      ($fileType = 'ead') then 'style/textIndexer/ead/eadPreFilter.xsl'
+         else if ($fileType = 'nlm') then 'style/textIndexer/nlm/nlmPreFilter.xsl'
+         else if ($fileType = 'tei') then 'style/textIndexer/tei/teiPreFilter.xsl'
+         else                             'style/textIndexer/default/defaultPreFilter.xsl'}"/>
       
       <!-- ==================================================================
          If the user specifies a text query, it needs to be parsed into the
