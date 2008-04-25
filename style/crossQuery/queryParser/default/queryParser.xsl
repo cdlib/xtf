@@ -61,8 +61,10 @@
    <!-- Local Parameters                                                       -->
    <!-- ====================================================================== -->
    
-   <!-- list of fields to search in 'keyword' search -->
-   <xsl:param name="fieldList" select="'text title creator subject description publisher contributor '"/>
+   <!-- list of fields to search in 'keyword' search; generally these should
+        be the same fields shown in the search result listing, so the user
+        can see all the matching words. -->
+   <xsl:param name="fieldList" select="'text title creator subject '"/>
    
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
