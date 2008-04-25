@@ -96,6 +96,20 @@
    <!-- ====================================================================== -->
    <!-- TEI-specific parameters                                                -->
    <!-- ====================================================================== -->
+
+   <!-- If a query was specified but no particular hit rank, jump to the first hit 
+        (in document order) 
+   -->
+   <xsl:param name="hit.rank">
+      <xsl:choose>
+         <xsl:when test="$query and not($query = '0')">
+            <xsl:value-of select="key('hit-num-dynamic', '1')/@rank"/>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="'0'"/>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:param>
    
    <!-- To support direct links from snippets, the following two parameters must check value of $hit.rank -->
    <xsl:param name="chunk.id">
@@ -112,7 +126,7 @@
    <xsl:param name="toc.id">
       <xsl:choose>
          <xsl:when test="$hit.rank != '0' and key('hit-rank-dynamic', $hit.rank)/ancestor::*[matches(name(),'^div')]">
-            <xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/ancestor::*[matches(name(),'^div')][position() = last()]/@*[local-name()='id']"/>
+            <xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/ancestor::*[matches(name(),'^div')][1]/parent::*/@*[local-name()='id']"/>
          </xsl:when>
          <xsl:otherwise>
             <xsl:value-of select="'0'"/>
