@@ -737,7 +737,8 @@ Item number <xsl:value-of select="$num"/>:
                   <td class="col2">
                      <b>Matches:&#160;&#160;</b>
                      <br/>
-                     <xsl:value-of select="@totalHits"/> hit(s)&#160;&#160;&#160;&#160;
+                     <xsl:value-of select="@totalHits"/> 
+                     <xsl:value-of select="if (@totalHits = 1) then ' hit' else ' hits'"/>&#160;&#160;&#160;&#160;
                   </td>
                   <td class="col3" colspan="2">
                      <xsl:apply-templates select="snippet" mode="text"/>
