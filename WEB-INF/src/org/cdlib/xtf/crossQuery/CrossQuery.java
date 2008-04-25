@@ -504,7 +504,22 @@ public class CrossQuery extends TextServlet
   protected String stepSetup(HttpServletRequest req, HttpServletResponse res)
     throws IOException 
   {
-    String baseUrl = res.encodeURL(getRequestURL(req));
+    // Start with the basics. By the way, we do *not* want to translate
+    // special characters in the URL, e.g. if a query term contains an
+    // ampersand.
+    //
+    String baseUrl = req.getRequestURL().toString();
+
+    // Sometimes we don't get the query parameters, sometimes we do. If
+    // we didn't get them but there are some, add them on.
+    //
+    if (baseUrl.indexOf('?') < 0 &&
+        req.getQueryString() != null &&
+        req.getQueryString().length() > 0) 
+    {
+      baseUrl = baseUrl + "?" + req.getQueryString();
+    }
+    
     baseUrl = baseUrl.replaceAll("\"", "&quot;"); // because we're embedding in HTML
 
     String step = req.getParameter("debugStep");
