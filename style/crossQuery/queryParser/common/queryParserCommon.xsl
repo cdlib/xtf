@@ -98,6 +98,26 @@
    <xsl:param name="fieldList"/>
    
    <!-- ====================================================================== -->
+   <!-- Multi-field keyword query template                                     -->
+   <!--                                                                        -->
+   <!-- Join all the terms of a multi-field query together.                    -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template match="param[@name = 'keyword']">
+      <or>
+         <and fields="{replace($fieldList, 'text ?', '')}"
+              slop="10"
+              maxMetaSnippets="all"
+              maxContext="60">
+            <xsl:apply-templates/>
+         </and>
+         <and field="text" maxSnippets="3" maxContext="60">
+            <xsl:apply-templates/>
+         </and>
+      </or>
+   </xsl:template>
+      
+   <!-- ====================================================================== -->
    <!-- Single-field parameter template                                        -->
    <!--                                                                        -->
    <!-- Join all the terms of a single text or meta-data query together. For   -->
@@ -136,26 +156,19 @@
          harmless. -->
       <xsl:element name="{$op}">
          
-         <!-- Specify the field name for meta-data queries -->
+         <!-- Specify the field name the query -->
          <xsl:choose>
-            <xsl:when test="not(matches(@name, 'text|query|keyword'))">
+            <xsl:when test="not(matches(@name, 'text|query'))">
                <xsl:attribute name="field" select="$metaField"/>
             </xsl:when>
-            <xsl:when test="matches(@name, 'keyword')">
-               <xsl:attribute name="fields" select="$fieldList"/>
-               <xsl:attribute name="slop" select="'10'"/>
-               <xsl:attribute name="maxTextSnippets" select="'3'"/>
-               <xsl:attribute name="maxMetaSnippets" select="'all'"/>
-               <xsl:attribute name="maxContext" select="'60'"/>
-            </xsl:when>
-            <xsl:when test="matches(@name, 'text')">
+            <xsl:when test="@name = 'text'">
                <xsl:attribute name="field" select="'text'"/>
                <xsl:attribute name="maxSnippets" select="'3'"/>
                <xsl:attribute name="maxContext" select="'60'"/>
             </xsl:when>
-            <xsl:when test="matches(@name, 'query')">
+            <xsl:when test="@name = 'query'">
                <xsl:attribute name="field" select="'text'"/>
-               <xsl:attribute name="maxSnippets" select="'-1'"/>
+               <xsl:attribute name="maxSnippets" select="'all'"/>
                <xsl:attribute name="maxContext" select="'80'"/>
             </xsl:when>
          </xsl:choose>
