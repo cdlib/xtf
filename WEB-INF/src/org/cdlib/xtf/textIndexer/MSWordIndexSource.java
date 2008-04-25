@@ -43,7 +43,7 @@ import java.util.StringTokenizer;
 
 import javax.xml.transform.Templates;
 
-import org.cdlib.xtf.servletBase.TextServlet;
+import org.apache.lucene.util.StringUtil;
 import org.cdlib.xtf.util.StructuredStore;
 import org.textmining.text.extraction.WordExtractor;
 import org.xml.sax.InputSource;
@@ -84,7 +84,7 @@ public class MSWordIndexSource extends XMLIndexSource
       StringTokenizer st = new StringTokenizer(str, "\r\t", false);
       while (st.hasMoreTokens()) {
         String para = st.nextToken().trim();
-        para = TextServlet.makeHtmlString(para);
+        para = StringUtil.escapeHTMLChars(para);
         if (para.length() > 0) {
           outBuf.append("  <p>" + para + "</p>\n");
         }
