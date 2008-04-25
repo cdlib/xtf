@@ -118,6 +118,11 @@
       <xsl:choose>
          <!-- hidden queries -->
          <xsl:when test="matches(@field,$noShow)"/>
+         
+         <!-- 'text' supplement to keyword queries -->
+         <xsl:when test="@field='text' and parent::*[1]/and/@fields"/>
+         
+         <!-- a query at this level -->
          <xsl:when test="@field or @fields or not/@field">
             <!-- query -->
             <xsl:apply-templates mode="query"/>
@@ -149,6 +154,8 @@
             <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($finalString)}">[X]</a>
             <br/>
          </xsl:when>
+         
+         <!-- keep searching down until we find the query -->
          <xsl:otherwise>
             <xsl:apply-templates mode="query"/>
          </xsl:otherwise>
@@ -169,20 +176,20 @@
    
    <!-- phrase -->
    <xsl:template match="phrase" mode="query">
-      <xsl:text>&quot;</xsl:text>
       <span class="subhit">
+         <xsl:text>&quot;</xsl:text>
          <xsl:value-of select="term"/>
+         <xsl:text>&quot;</xsl:text>
       </span>
-      <xsl:text>&quot;</xsl:text>
    </xsl:template>
    
    <!-- exact -->
    <xsl:template match="exact" mode="query">
-      <xsl:text>'</xsl:text>
       <span class="subhit">
+         <xsl:text>'</xsl:text>
          <xsl:value-of select="term"/>
+         <xsl:text>'</xsl:text>
       </span>
-      <xsl:text>'</xsl:text>
       <xsl:if test="@field">
          <xsl:text> in </xsl:text>
          <b><xsl:value-of select="@field"/></b>
