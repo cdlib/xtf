@@ -100,28 +100,9 @@
    
    <xsl:param name="set.anchor" select="'0'"/>
    
-   <!-- To support direct links from snippets, the following two parameters must check value of $hit.rank -->
    <xsl:param name="chunk.id">
-      <xsl:choose>
-         <xsl:when test="$hit.rank != '0' and key('hit-rank-dynamic', $hit.rank)/ancestor::div1">
-            <xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/ancestor::*[self::div7 or self::div6 or self::div5 or self::div4 or self::div3 or self::div2 or self::div1][1]/@id"/>
-         </xsl:when>
-         <xsl:otherwise>
-            <xsl:value-of select="'0'"/>
-         </xsl:otherwise>
-      </xsl:choose>
-   </xsl:param>
-   
+      
    <xsl:param name="toc.id">
-      <xsl:choose>
-         <xsl:when test="$hit.rank != '0' and key('hit-rank-dynamic', $hit.rank)/ancestor::div1">
-            <xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/ancestor::*[self::div7 or self::div6 or self::div5 or self::div4 or self::div3 or self::div2 or self::div1][1]/parent::*[self::div7 or self::div6 or self::div5 or self::div4 or self::div3 or self::div2 or self::div1]/@id"/>
-         </xsl:when>
-         <xsl:otherwise>
-            <xsl:value-of select="'0'"/>
-         </xsl:otherwise>
-      </xsl:choose>
-   </xsl:param>
    
    <!-- search parameters -->
    
