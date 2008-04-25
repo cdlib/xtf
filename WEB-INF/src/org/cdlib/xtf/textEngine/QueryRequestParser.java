@@ -410,13 +410,14 @@ public class QueryRequestParser
       "^(" + 
       "query|term|all|range|phrase|exact|near" + 
       "|and|or|not|orNear|allDocs" +
-      "|moreLike" + // experimental
+      "|moreLike" + 
+      "|orderedNear" + // experimental
       "|combine|meta|text)$")) // old stuff, for compatability
      
     {
       error(
         "Expected one of: (query term all allDocs range phrase " +
-        "exact near orNear and or not moreLike); " +
+        "exact near orNear and or not moreLike orderedNear); " +
         "found '" + name + "'");
     }
 
@@ -539,7 +540,7 @@ public class QueryRequestParser
     // 'orNear' is a special case which also allows specifying slop, but
     //          activates a different query.
     //
-    if (name.matches("^(all|phrase|exact|near|orNear)$")) {
+    if (name.matches("^(all|phrase|exact|near|orNear|orderedNear)$")) {
       int slop = name.equals("all") ? 999999999
                  : name.equals("phrase") ? 0
                  : name.equals("exact") ? -1 : parseIntAttrib(parent, "slop");
@@ -1034,7 +1035,7 @@ public class QueryRequestParser
              el.name().equals("range"))
       ; // handled elsewhere
 
-    else if (attrName.equals("slop") && el.name().matches("^(near|orNear)$"))
+    else if (attrName.equals("slop") && el.name().matches("^(near|orNear|orderedNear)$"))
       ; // handled elsewhere
 
     else if (attrName.matches("^(slop|boosts)$") &&
@@ -1148,6 +1149,10 @@ public class QueryRequestParser
       // when the query is run.
       //
       q = new SpanOrNearQuery(subQueries, 999999999, true);
+    }
+    else if (name.equals("orderedNear")) 
+    {
+      q = new SpanNearQuery(subQueries, 999999999, true);
     }
     else if (!name.equals("or")) {
       // We can't know the actual slop until the query is run against
@@ -1384,6 +1389,10 @@ public class QueryRequestParser
     // Handle orNear queries specially.
     else if (parent.name().equals("orNear"))
       q = new SpanOrNearQuery(termQueries, slop, true);
+
+    // Ordered near - true means in order
+    else if (parent.name().equals("orderedNear"))
+      q = new SpanNearQuery(termQueries, slop, true);
 
     // Make a 'near' query out of it. Zero slop implies in-order.
     else
