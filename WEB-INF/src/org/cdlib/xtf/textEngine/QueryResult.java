@@ -303,9 +303,9 @@ public class QueryResult
         fieldsBuf.append(sugg.fields[j]);
       }
       buf.append(
-        "  <suggestion" + " originalTerm=\"" + sugg.origTerm + "\"" +
+        "  <suggestion" + " originalTerm=\"" + TextServlet.makeHtmlString(sugg.origTerm) + "\"" +
         " fields=\"" + fieldsBuf + "\"" + " suggestedTerm=\"" +
-        (sugg.suggestedTerm != null ? sugg.suggestedTerm : "") + "\"" + "/>\n");
+        (sugg.suggestedTerm != null ? TextServlet.makeHtmlString(sugg.suggestedTerm) : "") + "\"" + "/>\n");
     }
 
     buf.append("</spelling>\n");
