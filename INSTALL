@@ -1,8 +1,11 @@
 
 XTF - eXtensible Text Framework
 
-For assistance installing this package, please browse the instructions in
-the docs directory:
+For assistance installing this package, please browse the instructions on
+the XTF wiki:
 
-    docs/deployment.html
+    http://xtf.wiki.sourceforge.net
+
+If you are working offline, these documents are also available in the
+'docs' directory included with this distribution.
 
