@@ -153,7 +153,8 @@
 
         <include name="INSTALL"/>
 
-        <include name="LICENSE*"/>
+        <include name="LICENSE"/>
+        <include name="licenses/**/*"/>
         <include name="CHANGES"/>
 
         <include name="docs/**/*"/>
@@ -183,7 +184,9 @@
         <include name="bin/**/*"/>
         <include name="WEB-INF/**/*"/>
         <include name="INSTALL"/>
-        <include name="LICENSE*"/>
+        <include name="LICENSE"/>
+        <include name="licenses/**/*"/>
+        <include name="regress.zip"/>
         <include name="docs/**/*"/>
       </fileset>
     </zip>
