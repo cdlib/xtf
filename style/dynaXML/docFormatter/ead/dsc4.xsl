@@ -364,7 +364,7 @@
                <!-- for sheila -->
                <a>
                   <xsl:attribute name="name">
-                     <xsl:text>subseries</xsl:text><xsl:number from="dsc" count="c02 "/>
+                     <xsl:text>subseries</xsl:text><xsl:value-of select="count(preceding::c02[@level='subseries'])+1"/>
                   </xsl:attribute>
                </a>
                <!-- end for sheila -->

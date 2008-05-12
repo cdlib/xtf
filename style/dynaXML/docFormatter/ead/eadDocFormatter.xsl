@@ -392,7 +392,8 @@
                               </xsl:choose>
                            </xsl:with-param>
                            <xsl:with-param name="id">
-                              <xsl:value-of select="concat('subseries', position())"/>
+                              <!-- here -->
+                              <xsl:value-of select="concat('subseries', count(preceding::c02[@level='subseries'])+1)"/>
                            </xsl:with-param>
                            <xsl:with-param name="nodes" select="."/>
                            <xsl:with-param name="indent" select="3"/>
