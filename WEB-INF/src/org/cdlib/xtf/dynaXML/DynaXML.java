@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.SocketException;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -305,11 +304,10 @@ public class DynaXML extends TextServlet
     if (!(trans.getErrorListener() instanceof XTFSaxonErrorListener))
       trans.setErrorListener(new XTFSaxonErrorListener());
 
-    // Make a <parameters> block. For now, use default tokenization.
+    // Make a <parameters> block.
     XMLFormatter fmt = new XMLFormatter();
     fmt.blankLineAfterTag(false);
-    Hashtable tokenizerMap = new Hashtable();
-    buildParamBlock(attribs, fmt, tokenizerMap, null);
+    buildParamBlock(attribs, fmt, config.tokenizerMap, null);
 
     if (Trace.getOutputLevel() >= Trace.debug) {
       String tmp = fmt.toString();
