@@ -36,10 +36,7 @@ import java.io.LineNumberReader;
 import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.TreeMap;
-import javax.servlet.ServletOutputStream;
+import java.util.ArrayList;
 
 /**
  * Loads and provides quick access to a map of IP addresses. Reads a file
@@ -189,107 +186,33 @@ class IpList
     /** Checks if a specified IP address falls within the range. */
     boolean matches(IpAddr addr) 
     {
-      // Try to match each component in turn.
-      for (int i = 0; i < 4; i++) 
-      {
-        int min = startAddr.components[i];
-        int max = endAddr.components[i];
-        if (min > max) {
-          int tmp = min;
-          min = max;
-          max = tmp;
-        }
-
-        // Wildcards always match.
-        if (min == 999)
-          continue;
-
-        // Check the range.
-        if (addr.components[i] < min)
+      // First, make sure the addr is >= the range start.
+      for (int i = 0; i < 4; i++) {
+        int ic = addr.components[i];
+        int sc = startAddr.components[i];
+        if (sc == 999) // handle wildcard
+          sc = 0;
+        if (ic < sc)
           return false;
-        if (addr.components[i] > max)
+        if (ic > sc)
+          break;
+      }
+      
+      // Then make sure the addr is <= the range end
+      for (int i = 0; i < 4; i++) {
+        int ic = addr.components[i];
+        int ec = endAddr.components[i];
+        if (ec == 999) // handle wildcard
+          ec = 255;
+        if (ic > ec)
           return false;
-      } // for i
-
-      // All components matched!
+        if (ic < ec)
+          break;
+      }
+      
       return true;
     } // matches()
   } // class IpRange
-
-  /**
-   * Compares IP ranges to other ranges, or to IP addresses. Used to maintain
-   * a sorted map of ranges for quick searching.
-   */
-  private class IpRangeComparator implements Comparator 
-  {
-    /**
-     * Compare two ranges, or a range and an address, or two addresses.
-     *
-     * If comparing two ranges, the start addresses are compared first; if
-     * equal, then the end addresses are compared.
-     *
-     * If comparing a range to an address, returns -1 if the address falls
-     * within the range; otherwise, compares the addr to the range's
-     * start address.
-     *
-     * If comparing an address to an address, simple component-by-component
-     * comparison is performed.
-     *
-     * @param o1    First IpRange or IpAddr
-     * @param o2    Second IpRange or IpAddr
-     *
-     * @return      -1 if o1 < o2, zero if o1 == o2, 1 if o1 > o2.
-     */
-    public int compare(Object o1, Object o2) 
-    {
-      IpRange ip1;
-      IpRange ip2;
-
-      try 
-      {
-        ip1 = (IpRange)o1;
-      }
-      catch (ClassCastException e) {
-        IpAddr ad = (IpAddr)o1;
-        try {
-          ip2 = (IpRange)o2;
-        }
-        catch (ClassCastException e2) {
-          return compareAddr(ad, (IpAddr)o2);
-        }
-
-        if (ip2.matches(ad))
-          return -1;
-        return compareAddr(ad, ip2.startAddr);
-      }
-
-      try {
-        ip2 = (IpRange)o2;
-      }
-      catch (ClassCastException e) {
-        IpAddr ad = (IpAddr)o2;
-        if (ip1.matches(ad))
-          return 1;
-        return compareAddr(ad, ip1.startAddr);
-      }
-
-      int ret = compareAddr(ip1.startAddr, ip2.startAddr);
-      if (ret == 0)
-        ret = compareAddr(ip1.endAddr, ip2.endAddr);
-      return ret;
-    } // compare()
-
-    /** Compare two IP addresses component by component. */
-    private int compareAddr(IpAddr a1, IpAddr a2) 
-    {
-      for (int i = 0; i < 4; i++) {
-        int diff = a1.components[i] - a2.components[i];
-        if (diff != 0)
-          return diff;
-      }
-      return 0;
-    } // compareAddr()
-  } // class IpRangeComparator
 
   /**
    * Constructs and loads an IP map from the specified file.
@@ -301,8 +224,8 @@ class IpList
   public IpList(String path)
     throws IOException 
   {
-    map = new TreeMap(new IpRangeComparator());
-    readMap(path);
+    ranges = new ArrayList<IpRange>();
+    readRanges(path);
   } // IpList()
 
   /**
@@ -324,34 +247,25 @@ class IpList
     if (parsedAddr.parse(ipAddrStr) == null)
       return false;
 
-    // We want to scan entries that will match this. We can do that
-    // pretty easily by scanning from the first entry greater than or
-    // equal to this one.
+    // Scan each entry. We used to try to be clever and use a sorted map to
+    // limit the number we had to scan, but this has been shown to fail in
+    // the case of overlapping entries. Consider for instance if the first
+    // entry in the map is "0.0.0.0 - 255.255.255.255". No sorting algorithm
+    // is going to help you -- that entry *always* has to be checked. By
+    // induction, *every* entry *always* has to be checked.
     //
-    Iterator i = map.tailMap(parsedAddr).keySet().iterator();
     boolean positive = false;
     boolean negative = false;
-    while (i.hasNext()) 
+    for (IpRange range : ranges) 
     {
-      IpRange mapRange = (IpRange)i.next();
-
-      // Stop when we reach an address that doesn't match, and the 
-      // the first two components don't match.
-      //
-      if (!mapRange.matches(parsedAddr) &&
-          !mapRange.startAddr.componentsEqual(parsedAddr, 2)) 
-      {
-        break;
-      }
-
       // See if the parsed address matches the one in the map. If not,
       // skip it.
       //
-      if (!mapRange.matches(parsedAddr))
+      if (!range.matches(parsedAddr))
         continue;
 
       // Found a matching entry. Set the appropriate flag.
-      if (mapRange.isPositive)
+      if (range.isPositive)
         positive = true;
       else
         negative = true;
@@ -376,7 +290,7 @@ class IpList
    *
    * @exception   IOException     If the file couldn't be read from.
    */
-  private void readMap(String path)
+  private void readRanges(String path)
     throws IOException 
   {
     Reader rawReader;
@@ -460,34 +374,11 @@ class IpList
     else
       endIp = startIp;
 
-    // Make a new entry in the map.
+    // Add the new entry
     IpRange range = new IpRange(startIp, endIp, isPositive);
-    map.put(range, null);
+    ranges.add(range);
   }
 
-  /**
-   * Prints the contents of the IP map to a ServletOutputStream. For
-   * debugging purposes only.
-   *
-   * @param out   The stream to print to
-   */
-  public void print(ServletOutputStream out)
-    throws IOException 
-  {
-    out.println("IpList contents:");
-    Iterator i = map.keySet().iterator();
-    while (i.hasNext()) {
-      IpRange range = (IpRange)i.next();
-      out.println(
-        "Range: " + range.startAddr.components[0] + "." +
-        range.startAddr.components[1] + "." + range.startAddr.components[2] +
-        "." + range.startAddr.components[3] + " - " +
-        range.endAddr.components[0] + "." + range.endAddr.components[1] + "." +
-        range.endAddr.components[2] + "." + range.endAddr.components[3] +
-        " ==> " + range.isPositive);
-    } // while
-  } // print()
-
-  /** Sorted map of IpRanges. The values are irrelevant (and set to null). */
-  private TreeMap map;
+  /** List of IpRanges. */
+  private ArrayList<IpRange> ranges;
 } // class IpList
