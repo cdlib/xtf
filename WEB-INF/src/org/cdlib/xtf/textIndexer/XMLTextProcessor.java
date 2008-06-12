@@ -37,6 +37,7 @@ package org.cdlib.xtf.textIndexer;
  */
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -64,7 +65,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
@@ -83,6 +83,7 @@ import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.Constants;
+import org.cdlib.xtf.textEngine.XtfSearcher;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
@@ -588,16 +589,8 @@ public class XMLTextProcessor extends DefaultHandler
         accentMap = new CharMap(stream);
       }
 
-      // Read in the list of tokenized fields (if any)
-      tokenizedFields = new HashSet();
-      TermEnum tokTerms = indexReader.terms(new Term("tokenizedFields", ""));
-      while (tokTerms.next()) {
-        Term t = tokTerms.term();
-        if (!t.field().equals("tokenizedFields"))
-          break;
-        tokenizedFields.add(t.text());
-      }
-      tokTerms.close();
+      // Read in the the list of all the tokenized fields (if any).
+      tokenizedFields = XtfSearcher.readTokenizedFields(indexPath, indexReader);
     } // try
 
     catch (IOException e) 
@@ -3454,9 +3447,7 @@ public class XMLTextProcessor extends DefaultHandler
         if (metaField.tokenize && !metaField.isFacet) 
         {
           if (!tokenizedFields.contains(metaField.name)) {
-            doc.add(new Field("tokenizedFields",
-                              metaField.name,
-                              Field.Store.NO, Field.Index.UN_TOKENIZED));
+            addToTokenizedFieldsFile(metaField.name);
             tokenizedFields.add(metaField.name);
           }
         }
@@ -3483,6 +3474,38 @@ public class XMLTextProcessor extends DefaultHandler
         throw new RuntimeException(t);
     }
   } // saveDocInfo()
+
+  ////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Adds a field to the on-disk list of tokenized fields for an index.
+   * Exceptions are handled internally and thrown as RuntimeException.
+   */
+  private void addToTokenizedFieldsFile(String field)
+  {
+    try 
+    {
+      File tokFieldsFile = new File(
+          Path.normalizePath(indexPath + "tokenizedFields.txt"));
+      FileWriter writer = new FileWriter(tokFieldsFile, true /*append*/);
+      writer.append(field + "\n");
+      writer.close();
+    }
+
+    // If something went wrong...
+    catch (Throwable t) 
+    {
+      // Log the problem.
+      Trace.tab();
+      Trace.error("*** Exception Adding to tokenizedFields.txt: " + t);
+      Trace.untab();
+
+      if (t instanceof RuntimeException)
+        throw (RuntimeException)t;
+      else
+        throw new RuntimeException(t);
+    }
+  }
 
   ////////////////////////////////////////////////////////////////////////////
 

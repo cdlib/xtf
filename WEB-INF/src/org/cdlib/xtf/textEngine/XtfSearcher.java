@@ -29,8 +29,10 @@ package org.cdlib.xtf.textEngine;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashSet;
@@ -50,6 +52,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.textIndexer.TextIndexer;
 import org.cdlib.xtf.util.CharMap;
+import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.WordMap;
 
 /**
@@ -227,7 +230,37 @@ public class XtfSearcher
       indexReader.getFieldNames(IndexReader.FieldOption.ALL));
 
     // Determine which fields are tokenized.
-    tokenizedFields = new LinkedHashSet();
+    tokenizedFields = readTokenizedFields(indexPath, indexReader);
+
+    // Remember the version that we've checked.
+    curVersion = ver;
+  } // update()
+
+  /**
+   * Read in the list of fields that are tokenized in this index.
+   */
+  public static LinkedHashSet readTokenizedFields(String indexPath, 
+                                                  IndexReader indexReader) 
+    throws IOException
+  {
+    LinkedHashSet tokenizedFields = new LinkedHashSet();
+    
+    // Read in the the file listing all the tokenized fields (if any).
+    File tokFieldsFile = new File(
+      Path.normalizePath(indexPath + "/tokenizedFields.txt"));
+    if (tokFieldsFile.canRead()) {
+      BufferedReader reader = new BufferedReader(new FileReader(tokFieldsFile));
+      String line;
+      while ((line = reader.readLine()) != null)
+        tokenizedFields.add(line);
+      reader.close();
+    }
+    
+    // Previous versions of XTF stored the list of tokenized fields in a 
+    // Lucene field. Turns out this was a bad idea, because it gets lost if 
+    // the document attached to that field is deleted. Still, let's retain 
+    // compatibility and read it if present.
+    //
     TermEnum tokTerms = indexReader.terms(new Term("tokenizedFields", ""));
     do {
       Term t = tokTerms.term();
@@ -237,14 +270,14 @@ public class XtfSearcher
         break;
       tokenizedFields.add(t.text());
     } while (tokTerms.next());
-
+    
     // Of course, the "text" field is always tokenized.
     tokenizedFields.add("text");
 
-    // Remember the version that we've checked.
-    curVersion = ver;
-  } // update()
-
+    // All done.
+    return tokenizedFields;
+  }
+  
   /**
    * Get the list of all tokenized fields.
    */
