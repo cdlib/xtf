@@ -597,7 +597,7 @@ public class XMLTextProcessor extends DefaultHandler
     {
       // Log the error caught.
       Trace.tab();
-      Trace.error("*** IOException Opening Index: " + e);
+      Trace.error("*** IOException Opening or Creating Index: " + e);
       Trace.untab();
 
       // Shut down any open index files.
