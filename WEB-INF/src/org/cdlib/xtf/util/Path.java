@@ -327,9 +327,8 @@ public class Path
    *
    *   <code>false</code> - Error deleting specified directory or one of its
    *                        files or sub-directories. <br><br>
-   *
    */
-  public static boolean deleteDir(File dir) 
+  public static void deleteDir(File dir) throws IOException 
   {
     // If the specified directory exists...
     if (dir.isDirectory()) 
@@ -339,20 +338,15 @@ public class Path
 
       //  Delete the contents of the directory.
       for (int i = 0; i < children.length; i++) 
-      {
-        // Delete the directory and its contents.
-        boolean success = deleteDir(new File(dir, children[i]));
-
-        // If something in the directory couldn't be deleted say so.
-        if (!success)
-          return false;
-      }
+        deleteDir(new File(dir, children[i]));
     } // if( dir.isDirectory() )
 
     // At this point we either have a file or an empty directory, so 
     // delete it directly.
     //
-    return dir.delete();
+    if (!dir.delete()) {
+      throw new IOException("Unable to delete '" + dir.toString() + "'");
+    }
   } // deleteDir()
 
   /**
