@@ -896,29 +896,52 @@
    <!-- ====================================================================== -->
    
    <xsl:template match="crossQueryResult" mode="robot">
+      
+      <!-- Page Maximum: this will handle up to 1 million objects -->
+      <xsl:param name="PM" select="100"/>
+      <!-- Total Documents -->
+      <xsl:param name="TD" select="@totalDocs"/>
+      <!-- Page Number -->
+      <xsl:param name="PN" select="($startDoc - 1) div 90"/>
+      <!-- Start Document -->
+      <xsl:param name="SD">
+         <xsl:choose>
+            <xsl:when test="$startDoc">
+               <xsl:value-of select="$startDoc + 90"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:value-of select="1" />
+            </xsl:otherwise>
+         </xsl:choose>
+      </xsl:param>
+      
       <html>
          <head>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <title>XTF: Results</title>
          </head>
          <body>
-            <xsl:variable name="TD" select="@totalDocs"/>
-            <xsl:variable name="SD">
-               <xsl:choose>
-                  <xsl:when test="$startDoc">
-                     <xsl:value-of select="$startDoc + 90"/>
-                  </xsl:when>
-                  <xsl:otherwise>
-                     <xsl:value-of select="1" />
-                  </xsl:otherwise>
-               </xsl:choose>
-            </xsl:variable>
-            <xsl:if test="($TD - $SD) > 0">
-               <a href="{$xtfURL}search?startDoc={$SD}">NEXT</a>
-            </xsl:if>
+            
             <ol>
                <xsl:apply-templates select="docHit" mode="robot"/>
             </ol>
+            
+            <xsl:if test="($TD - $SD) > 0">
+               <xsl:for-each select="(1 to 10)">
+                  
+                  <!-- New Page -->
+                  <xsl:variable name="NP" select="($PN * 10) + position()"/>
+                  <!-- New Start Document -->
+                  <xsl:variable name="NS" select="($NP * 90) + 1"/>
+                  
+                  <xsl:if test="($NS &lt; $TD) and ($NP &lt; $PM)">
+                     <a href="{$xtfURL}search?startDoc={$NS}"><xsl:value-of select="$NP"/></a>
+                     <br/>
+                  </xsl:if>
+                  
+               </xsl:for-each>
+            </xsl:if>
+            
          </body>
       </html>
    </xsl:template>
