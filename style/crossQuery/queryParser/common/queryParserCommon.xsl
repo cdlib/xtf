@@ -379,9 +379,7 @@
    
    <xsl:template name="robot">
       <and>
-         <and field="display">
-            <term>all</term>
-         </and>
+         <allDocs/>
       </and>
    </xsl:template>
    
