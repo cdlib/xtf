@@ -41,11 +41,14 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Vector;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -77,7 +80,7 @@ public class IndexMerge
    */
   public static void main(String[] args) 
   {
-    Trace.info("IndexMerge v. 2.1");
+    Trace.info("IndexMerge v. 2.1.1");
 
     try 
     {
@@ -186,8 +189,15 @@ public class IndexMerge
         Trace.error("  usage: ");
         Trace.tab();
         Trace.error(
-          "indexMerge {-config <configfile>} " + "-index <inputOutputIndex> " +
-          "-index <inputIndex1> " + "{-index inputIndex2...}\n\n");
+          "indexMerge -config <config1> -index <index1> " +
+          "-config <config2> -index <inputIndex2> ...\n\n" +
+          "Sample use:\n" +
+          "1. Make two config files, each with different input and output directories.\n" +
+          "2. textIndexer -config conf/textIndexer.conf1 -clean -noupdatespell -index default\n" +
+          "3. textIndexer -config conf/textIndexer.conf2 -clean -noupdatespell -index default\n" +
+          "4. indexMerge -config conf/textIndexer.conf1 -index default -config conf/textIndexer.conf2 -index default\n\n" +
+          "This *experimental* command merges data from all the specified indexes into the \n" +
+          "first index.\n\n");
         Trace.untab();
 
         // And then bail.
@@ -352,6 +362,7 @@ public class IndexMerge
     String ending = ((timeSec % 60) == 1) ? "" : "s";
     Trace.more(Trace.info, (timeSec % 60) + " second" + ending + ".");
     Trace.info("Merge completed successfully.");
+    Trace.info("");
   } // doMerge()
 
   //////////////////////////////////////////////////////////////////////////////
@@ -434,8 +445,9 @@ public class IndexMerge
 
       File accentFile = new File(sourceDir + dirInfos[i].accentMapName);
       File pluralFile = new File(sourceDir + dirInfos[i].pluralMapName);
+      File tokFldFile = new File(sourceDir + "tokenizedFields.txt");
 
-      if (accentFile.canRead() || pluralFile.canRead())
+      if (accentFile.canRead() || pluralFile.canRead() || tokFldFile.canRead())
         anyToDo = true;
     }
 
@@ -448,20 +460,47 @@ public class IndexMerge
     for (int i = 1; i < dirInfos.length; i++) 
     {
       File accentSrc = new File(dirInfos[i].path, dirInfos[i].accentMapName);
-      File pluralSrc = new File(dirInfos[i].path, dirInfos[i].pluralMapName);
-
       File accentDst = new File(dirInfos[0].path, dirInfos[i].accentMapName);
-      File pluralDst = new File(dirInfos[0].path, dirInfos[i].pluralMapName);
-
       if (accentSrc.canRead() && !accentDst.canRead())
         Path.copyFile(accentSrc, accentDst);
 
+      File pluralSrc = new File(dirInfos[i].path, dirInfos[i].pluralMapName);
+      File pluralDst = new File(dirInfos[0].path, dirInfos[i].pluralMapName);
       if (pluralSrc.canRead() && !pluralDst.canRead())
         Path.copyFile(pluralSrc, pluralDst);
+      
+      File tokFldSrc = new File(dirInfos[i].path, "tokenizedFields.txt");
+      File tokFldDst = new File(dirInfos[0].path, "tokenizedFields.txt");
+      if (tokFldSrc.canRead() && !tokFldDst.canRead())
+        mergeTokFldFiles(tokFldSrc, tokFldDst);
+      else if (tokFldSrc.canRead() && tokFldDst.canRead())
+        mergeTokFldFiles(tokFldSrc, tokFldDst);
     } // for
 
     Trace.more("Done.");
   } // mergeAux()
+  
+  //////////////////////////////////////////////////////////////////////////////
+  private static void mergeTokFldFiles(File file1, File file2) throws IOException
+  {
+    LinkedHashSet set = new LinkedHashSet();
+    
+    // Read in the first file
+    BufferedReader reader = new BufferedReader(new FileReader(file1));
+    String line;
+    while ((line = reader.readLine()) != null)
+      set.add(line);
+    reader.close();
+    
+    // Add entries from the second file
+    FileWriter writer = new FileWriter(file1, true /*append*/);
+    reader = new BufferedReader(new FileReader(file2));
+    while ((line = reader.readLine()) != null) {
+      if (!set.contains(line))
+        writer.append(line + "\n");
+    }
+    writer.close();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   private static void mergeLazy(DirInfo[] dirInfos)
@@ -532,7 +571,7 @@ public class IndexMerge
   private static void mergeLucene(IndexWriter writer, DirInfo[] dirInfos)
     throws IOException 
   {
-    Trace.info("Processing Lucene indexes (time-consuming) ... ");
+    Trace.info("Processing Lucene indexes (can be very time-consuming) ... ");
     Directory[] dirs = new Directory[dirInfos.length - 1];
     for (int i = 1; i < dirInfos.length; i++)
       dirs[i - 1] = dirInfos[i].dir;
