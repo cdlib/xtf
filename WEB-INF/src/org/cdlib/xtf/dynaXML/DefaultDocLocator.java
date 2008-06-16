@@ -41,6 +41,7 @@ import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceivingContentHandler;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
+import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.DocTypeDeclRemover;
@@ -97,6 +98,11 @@ public class DefaultDocLocator implements DocLocator
                                       boolean removeDoctypeDecl)
     throws IOException 
   {
+    // If we're not allowed to use lazy files, then don't.
+    TextConfig config = servlet.getConfig();
+    if (config instanceof DynaXMLConfig && !((DynaXMLConfig)config).useLazyFiles)
+      return null;
+    
     // If no 'index' specified in the docInfo, then there's no way we can
     // find the lazy file.
     //
@@ -120,22 +126,41 @@ public class DefaultDocLocator implements DocLocator
                                            indexName,
                                            new File(sourcePath),
                                            false);
-    
+
+    // Get the config flag telling us whether we're allowed to build lazy
+    // files outside of indexing.
+    //
+    boolean buildLazyFilesAlone = false;
+    if (config instanceof DynaXMLConfig)
+      buildLazyFilesAlone = ((DynaXMLConfig)config).buildLazyFilesAlone;
+
     // If the lazy file is out of date (and we created it), rebuild it. Note
     // that it's not safe to rebuild lazy files created by the indexer, since
     // it would cause hit highlighting to fail due to a mismatch between
     // node numbers stored in the index vs. stored in the lazy file.
     //
-    if (lazyFile.canRead() &&
+    if (buildLazyFilesAlone &&
+        lazyFile.canRead() &&
         sourceFile.lastModified() > lazyFile.lastModified() &&
         isPostIndexLazyFile(lazyFile))
     {
       lazyFile.delete();
     }
 
-    // If we can't read it, try to build it instead.
+    // If we can't read it for any reason (including because we just deleted an
+    // out-of-date file), try to build it instead...
+    //
     if (!lazyFile.canRead()) 
     {
+      // ... unless we've been asked not to build lazy files alone.
+      // This is the case by default, but people who want to use dynaXML
+      // without textIndexer will allow dynaXML to build lazy files by
+      // itself.
+      //
+      if (!buildLazyFilesAlone)
+        return null;
+      
+      // Decide whether we need to strip whitespace
       boolean stripWhitespace = false;
       try {
         stripWhitespace = IndexUtil.getIndexInfo(new File(indexConfigPath),
@@ -144,6 +169,7 @@ public class DefaultDocLocator implements DocLocator
       catch (Exception e) {
       }
 
+      // Build the lazy file.
       buildLazyStore(lazyFile,
                      sourcePath,
                      preFilter,

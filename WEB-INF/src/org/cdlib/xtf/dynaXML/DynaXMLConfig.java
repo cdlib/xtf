@@ -73,6 +73,12 @@ class DynaXMLConfig extends TextConfig
 
   /** Whether to print out a stylesheet profile after each request */
   public boolean stylesheetProfiling = false;
+  
+  /** Whether to use lazy files */
+  public boolean useLazyFiles = true;
+  
+  /** Whether to generate lazy files alone (outside of textIndexer) */
+  public boolean buildLazyFilesAlone = false;
 
   /**
    * Constructor - Reads and parses the global configuration file (XML) for
@@ -144,6 +150,14 @@ class DynaXMLConfig extends TextConfig
     }
     else if (tagAttr.equalsIgnoreCase("stylesheetProfiling.profile")) {
       stylesheetProfiling = parseBoolean(tagAttr, strVal);
+      return true;
+    }
+    else if (tagAttr.equalsIgnoreCase("lazyFiles.use")) {
+      useLazyFiles = parseBoolean(tagAttr, strVal);
+      return true;
+    }
+    else if (tagAttr.equalsIgnoreCase("lazyFiles.buildAlone")) {
+      buildLazyFilesAlone = parseBoolean(tagAttr, strVal);
       return true;
     }
 
