@@ -321,12 +321,8 @@ public class Path
    * Utility function to delete a specified directory and all its files and
    * subdirectories. <br><br>
    *
-   * @return
-   *   <code>true</code> - Directory and associated files and sub-directories
-   *                       successfully deleted. <br>
-   *
-   *   <code>false</code> - Error deleting specified directory or one of its
-   *                        files or sub-directories. <br><br>
+   * @throws IOException if we fail to delete the entire directory and all
+   *                     sub-files and subdirectories.
    */
   public static void deleteDir(File dir) throws IOException 
   {
