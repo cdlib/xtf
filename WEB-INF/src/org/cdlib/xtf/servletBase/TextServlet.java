@@ -609,7 +609,15 @@ public abstract class TextServlet extends HttpServlet
     while (i.hasMoreElements()) {
       String name = (String)i.nextElement();
       String value = req.getHeader(name);
+
+      // For backward compatibility, stuff the parameter exactly as named
       trans.setParameter("http." + name, new StringValue(value));
+
+      // But for ease of standardized code, make sure the lower-case version is
+      // also available at all times.
+      //
+      if (!(name.equals(name.toLowerCase())))
+        trans.setParameter("http." + (name.toLowerCase()), new StringValue(value));
     }
   } // stuffSpecialAttribs()
 
