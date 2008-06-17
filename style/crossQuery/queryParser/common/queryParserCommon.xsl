@@ -80,7 +80,7 @@
          <xsl:when test="$raw">
             <xsl:value-of select="10000"/>
          </xsl:when>
-         <xsl:when test="matches($http.User-Agent,$robots)">
+         <xsl:when test="matches($http.user-agent,$robots)">
             <xsl:value-of select="90"/><!-- maximum amount allowed by google is 100 -->
          </xsl:when>
          <xsl:otherwise>
@@ -90,7 +90,7 @@
    </xsl:param>
    
    <!-- Special Robot Parameters -->
-   <xsl:param name="http.User-Agent"/>
+   <xsl:param name="http.user-agent"/>
    <!-- WARNING: Inclusion of 'Wget' is for testing only, please remove before going into production -->
    <xsl:param name="robots" select="'Googlebot|Slurp|msnbot|Teoma|Wget'"/>
    

@@ -90,7 +90,7 @@
    <xsl:template match="/ead">
       <xsl:choose>
          <!-- robot solution -->
-         <xsl:when test="matches($http.User-Agent,$robots)">
+         <xsl:when test="matches($http.user-agent,$robots)">
             <xsl:call-template name="robot"/>
          </xsl:when>
          <!-- Creates the button bar.-->

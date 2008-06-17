@@ -141,7 +141,7 @@
    <xsl:template match="/">
       <xsl:choose>
          <!-- robot solution -->
-         <xsl:when test="matches($http.User-Agent,$robots)">
+         <xsl:when test="matches($http.user-agent,$robots)">
             <xsl:call-template name="robot"/>
          </xsl:when>
          <xsl:when test="$doc.view='bbar'">

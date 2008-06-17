@@ -78,7 +78,7 @@
    <xsl:template match="/" exclude-result-prefixes="#all">
       <xsl:choose>
          <!-- robot response -->
-         <xsl:when test="matches($http.User-Agent,$robots)">
+         <xsl:when test="matches($http.user-agent,$robots)">
             <xsl:apply-templates select="crossQueryResult" mode="robot"/>
          </xsl:when>
          <xsl:when test="$smode = 'showBag'">
