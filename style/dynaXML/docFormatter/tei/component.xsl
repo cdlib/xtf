@@ -345,7 +345,7 @@
                
                <xsl:variable name="corresp" select="parent::note/@corresp"/>
                
-               <xsl:variable name="chunk" select="key('ref-id', $corresp)/ancestor::*[self::div1 or self::div2 or self::div3 or self::div4 or self::div5 or self::div6][1]/@*[local-name()='id']"/>
+               <xsl:variable name="chunk" select="key('ref-id', $corresp)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"/>
                
                <xsl:variable name="toc" select="key('div-id', $chunk)/parent::*/@*[local-name()='id']"/>
                
@@ -605,10 +605,10 @@
                <xsl:value-of select="$target"/>
             </xsl:when>
             <xsl:when test="@type='noteref' or @type='endnote'">
-               <xsl:value-of select="key('endnote-id', $target)/ancestor::*[self::div1 or self::div2 or self::div3 or self::div4 or self::div5 or self::div6][1]/@*[local-name()='id']"/>
+               <xsl:value-of select="key('endnote-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"/>
             </xsl:when>
             <xsl:when test="@type='fnoteref'">
-               <xsl:value-of select="key('fnote-id', $target)/ancestor::*[self::div1 or self::div2 or self::div3 or self::div4 or self::div5 or self::div6][1]/@*[local-name()='id']"/>
+               <xsl:value-of select="key('fnote-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"/>
             </xsl:when>
             <xsl:when test="@type='pageref'">
                <xsl:choose>
@@ -616,12 +616,12 @@
                      <xsl:value-of select="'endnotes'"/>
                   </xsl:when>
                   <xsl:otherwise>
-                     <xsl:value-of select="key('pb-id', $target)/ancestor::*[self::div1 or self::div2 or self::div3 or self::div4 or self::div5 or self::div6][1]/@*[local-name()='id']"/>
+                     <xsl:value-of select="key('pb-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"/>
                   </xsl:otherwise>
                </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
-               <xsl:value-of select="key('generic-id', $target)/ancestor::*[self::div1 or self::div2 or self::div3 or self::div4 or self::div5 or self::div6][1]/@*[local-name()='id']"/>
+               <xsl:value-of select="key('generic-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"/>
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
