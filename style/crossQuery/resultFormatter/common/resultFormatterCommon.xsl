@@ -898,7 +898,7 @@
    <xsl:template match="crossQueryResult" mode="robot">
       
       <!-- Page Maximum: this will handle up to 1 million objects -->
-      <xsl:param name="PM" select="100"/>
+      <xsl:param name="PM" select="11112"/>
       <!-- Total Documents -->
       <xsl:param name="TD" select="@totalDocs"/>
       <!-- Page Number -->
