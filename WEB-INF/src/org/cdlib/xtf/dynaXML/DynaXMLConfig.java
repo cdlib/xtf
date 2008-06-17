@@ -152,11 +152,11 @@ class DynaXMLConfig extends TextConfig
       stylesheetProfiling = parseBoolean(tagAttr, strVal);
       return true;
     }
-    else if (tagAttr.equalsIgnoreCase("lazyFiles.use")) {
+    else if (tagAttr.equalsIgnoreCase("lazyTrees.use")) {
       useLazyFiles = parseBoolean(tagAttr, strVal);
       return true;
     }
-    else if (tagAttr.equalsIgnoreCase("lazyFiles.buildAlone")) {
+    else if (tagAttr.equalsIgnoreCase("lazyTrees.buildAlone")) {
       buildLazyFilesAlone = parseBoolean(tagAttr, strVal);
       return true;
     }
