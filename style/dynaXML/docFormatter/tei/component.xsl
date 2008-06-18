@@ -597,8 +597,8 @@
    
    <xsl:template match="*[local-name()='ref']">
       
+      <!-- variables -->
       <xsl:variable name="target" select="@target"/>
-      
       <xsl:variable name="chunk">
          <xsl:choose>
             <xsl:when test="@type='secref'">
@@ -625,9 +625,7 @@
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
-      
       <xsl:variable name="toc" select="key('div-id', $chunk)/parent::*/@*[local-name()='id']"/>
-      
       <xsl:variable name="class">
          <xsl:choose>
             <xsl:when test="$anchor.id=@*[local-name()='id']">ref-hi</xsl:when>
@@ -635,11 +633,14 @@
          </xsl:choose>
       </xsl:variable>
       
+      <!-- back link scrolling -->
       <xsl:if test="$anchor.id=@*[local-name()='id']">
          <a name="X"></a>
       </xsl:if>
       
+      <!-- process refs -->
       <xsl:choose>
+         <!-- end note refs -->
          <xsl:when test="@type='noteref' or @type='endnote'">
             <sup>
                <xsl:attribute name="class">
@@ -654,6 +655,7 @@
                <xsl:text>]</xsl:text>
             </sup>
          </xsl:when>
+         <!-- footnote refs -->
          <xsl:when test="@type='fnoteref'">
             <sup>
                <xsl:attribute name="class">
@@ -670,6 +672,7 @@
                <xsl:text>]</xsl:text>
             </sup>
          </xsl:when>
+         <!-- page refs -->
          <xsl:when test="@type='pageref'">
             <a>
                <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk"/>&#038;toc.id=<xsl:value-of select="$toc"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$target"/>#X</xsl:attribute>
@@ -677,6 +680,7 @@
                <xsl:apply-templates/>
             </a>
          </xsl:when>
+         <!-- all others -->
          <xsl:otherwise>
             <a>
                <xsl:attribute name="href"><xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk"/>&#038;toc.id=<xsl:value-of select="$toc"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$target"/>#X</xsl:attribute>

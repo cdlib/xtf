@@ -57,7 +57,9 @@
    
    <xsl:template match="*[local-name()='div1'][@type='dedication']"/>
    
-   <xsl:template match="*[matches(name(),'^div')]">
+   <!-- all div elements -->
+   <xsl:template match="*[matches(local-name(),'^div')]">
+      <!-- Decorative break or ornament? -->
       <xsl:choose>
          <xsl:when test="@type='textbreak'">
             <xsl:choose>
@@ -79,6 +81,7 @@
             </xsl:if>
          </xsl:otherwise>
       </xsl:choose>
+      <!-- process div -->
       <xsl:apply-templates/>
    </xsl:template>
    
