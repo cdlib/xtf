@@ -340,7 +340,7 @@ public class Path
     // At this point we either have a file or an empty directory, so 
     // delete it directly.
     //
-    if (!dir.delete()) {
+    if (dir.canRead() && !dir.delete()) {
       throw new IOException("Unable to delete '" + dir.toString() + "'");
     }
   } // deleteDir()
