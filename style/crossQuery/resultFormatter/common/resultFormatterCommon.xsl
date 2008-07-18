@@ -1225,5 +1225,27 @@
    <!-- Default template to add data after the name of a facet group. Override to specialize. -->
    <xsl:template match="group" mode="afterGroupValue" priority="-1">
    </xsl:template>
-
+   
+   
+   <!-- ====================================================================== -->
+   <!-- URL encoding for OpenURLs                                              -->
+   <!-- ====================================================================== -->
+   
+   <xsl:function name="xtf:urlEncode">
+      <xsl:param name="string"/>
+      <xsl:variable name="string1" select="replace(replace($string,'^ +',''),' +$','')"/>
+      <xsl:variable name="string2" select="replace($string1,'%','%25')"/>
+      <xsl:variable name="string3" select="replace($string2,' +','%20')"/>
+      <xsl:variable name="string4" select="replace($string3,'#','%23')"/>
+      <xsl:variable name="string5" select="replace($string4,'&amp;','%26')"/>
+      <xsl:variable name="string6" select="replace($string5,'\+','%2B')"/>
+      <xsl:variable name="string7" select="replace($string6,'/','%2F')"/>
+      <xsl:variable name="string8" select="replace($string7,'&lt;','%3C')"/>
+      <xsl:variable name="string9" select="replace($string8,'=','%3D')"/>
+      <xsl:variable name="string10" select="replace($string9,'>','%3E')"/>
+      <xsl:variable name="string11" select="replace($string10,'\?','%3F')"/>
+      <xsl:variable name="string12" select="replace($string11,':','%3A')"/>
+      <xsl:value-of select="$string12"/>
+   </xsl:function>
+   
 </xsl:stylesheet>
