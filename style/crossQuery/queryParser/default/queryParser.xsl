@@ -130,14 +130,14 @@
          <xsl:if test="//param[@name='browse-title']">
             <xsl:variable name="page" select="//param[@name='browse-title']/@value"/>
             <xsl:variable name="pageSel" select="if ($page = 'first') then '*[1]' else $page"/>
-            <facet field="browse-title" sortGroupsBy="value" select="{concat('*|',$pageSel,'#all')}"/>
+            <facet field="browse-title" sortGroupsBy="value" sortDocsBy="sort-title,sort-creator,sort-publisher,sort-year" select="{concat('*|',$pageSel,'#all')}"/>
          </xsl:if>
          
          <!-- to support author browse pages -->
          <xsl:if test="//param[matches(@name,'browse-creator')]">
             <xsl:variable name="page" select="//param[matches(@name,'browse-creator')]/@value"/> 
             <xsl:variable name="pageSel" select="if ($page = 'first') then '*[1]' else $page"/>
-            <facet field="browse-creator" sortGroupsBy="value" select="{concat('*|',$pageSel,'#all')}"/>
+            <facet field="browse-creator" sortGroupsBy="value" sortDocsBy="sort-creator,sort-title,sort-publisher,sort-year" select="{concat('*|',$pageSel,'#all')}"/>
          </xsl:if>
          
          <!-- process query -->
