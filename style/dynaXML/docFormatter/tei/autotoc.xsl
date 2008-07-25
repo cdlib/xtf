@@ -143,7 +143,7 @@
                   </xsl:otherwise>
                </xsl:choose>
                <!-- div number, if present -->
-               <xsl:if test="//*[matches(name(),'^div')]/@n">
+               <xsl:if test="(@n) or (following-sibling::*[matches(name(),'^div')]/@n) or (preceding-sibling::*[matches(name(),'^div')]/@n)">
                   <td class="divnum">
                      <xsl:choose>
                         <xsl:when test="@n">
@@ -161,9 +161,14 @@
             </tr>
          </table>
          <!-- process node children if required -->
-         <xsl:if test="(number($toc.depth) > $level and *[matches(name(),'^div')]/*[local-name()='head']) or (@*[local-name()='id'] = key('div-id', $toc.id)/ancestor-or-self::*/@*[local-name()='id'])">
-            <xsl:apply-templates select="*[matches(name(),'^div')]" mode="toc"/>
-         </xsl:if>
+         <xsl:choose>
+            <xsl:when test="number($toc.depth) > $level and *[matches(name(),'^div')]/*[local-name()='head']">
+               <xsl:apply-templates select="*[matches(name(),'^div')]" mode="toc"/>
+            </xsl:when>
+            <xsl:when test="@*[local-name()='id'] = key('div-id', $toc.id)/ancestor-or-self::*/@*[local-name()='id']">
+               <xsl:apply-templates select="*[matches(name(),'^div')]" mode="toc"/>
+            </xsl:when>
+         </xsl:choose>
       </xsl:if>
    </xsl:template>
    
