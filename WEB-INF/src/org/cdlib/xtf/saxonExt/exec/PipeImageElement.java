@@ -1,8 +1,11 @@
-package org.cdlib.xtf.saxonExt;
+package org.cdlib.xtf.saxonExt.exec;
 
+import net.sf.saxon.expr.Expression;
+import net.sf.saxon.instruct.Executable;
+import net.sf.saxon.trans.XPathException;
 
 /*
- * Copyright (c) 2004, Regents of the University of California
+ * Copyright (c) 2008, Regents of the University of California
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,48 +31,20 @@ package org.cdlib.xtf.saxonExt;
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *
- * Acknowledgements:
- *
- * A significant amount of new and/or modified code in this module
- * was made possible by a grant from the Andrew W. Mellon Foundation,
- * as part of the Melvyl Recommender Project.
  */
-import org.cdlib.xtf.saxonExt.exec.ArgElement;
-import org.cdlib.xtf.saxonExt.exec.InputElement;
-import org.cdlib.xtf.saxonExt.exec.PipeImageElement;
-import org.cdlib.xtf.saxonExt.exec.RunElement;
-import net.sf.saxon.style.ExtensionElementFactory;
 
 /**
- * Front-end to the "Exec" Saxon extension, which allows stylesheets to call
- * command-line programs, with proper error handling, timeouts, and format
- * conversion.
- *
- * @author Martin Haye
+ * Implements almost the same thing as Exec.run saxon extension, except that
+ * instead of returning stdout as a string or XML, it is interpreted as
+ * an image and sent directly to the servlet output stream (with a proper
+ * MIME type). Images of type PNG and JPEG are acceptable; others will
+ * cause an exception to be thrown.
  */
-public class Exec implements ExtensionElementFactory 
+public class PipeImageElement extends RunElement 
 {
-  /**
-  * Identify the class to be used for stylesheet elements with a given local name.
-  * The returned class must extend net.sf.saxon.style.StyleElement
-  * @return null if the local name is not a recognised element type in this
-  * namespace.
-  */
-  public Class getExtensionClass(String localname) 
+  public Expression compile(Executable exec)
+    throws XPathException 
   {
-    if (localname.equals("run"))
-      return RunElement.class;
-    
-    if (localname.equals("pipeImage"))
-      return PipeImageElement.class;
-
-    if (localname.equals("arg") || localname.equals("argument"))
-      return ArgElement.class;
-
-    if (localname.equals("input"))
-      return InputElement.class;
-
-    return null;
+    return new PipeImageInstruction(command, timeoutMsec, getArgInstructions(exec));
   }
-}
+} // class PipeImageElement
