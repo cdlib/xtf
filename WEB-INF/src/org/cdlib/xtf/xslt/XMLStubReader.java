@@ -115,7 +115,7 @@ class XMLStubReader extends DTDSuppressingXMLReader
     throws SAXException 
     {
       out.startDTD(name, publicId, systemId);
-      if (out instanceof DTDHandler)
+      if (out instanceof DTDHandler && publicId != null && systemId != null)
         ((DTDHandler)out).unparsedEntityDecl(name, publicId, systemId, null);
     }
   
