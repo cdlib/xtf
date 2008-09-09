@@ -54,12 +54,8 @@
 
 options {
   STATIC = false;
-//IGNORE_CASE = true;
-//BUILD_PARSER = false;
   UNICODE_INPUT = true;
   USER_CHAR_STREAM = true;
-  OPTIMIZE_TOKEN_MANAGER = true;
-//DEBUG_TOKEN_MANAGER = true;
 }
 PARSER_BEGIN(XTFTokenizer)
 
@@ -184,6 +180,7 @@ TOKEN : {					  // token patterns
       "\u2116", // numero
       
       // Other
+      "\u00a7", // section sign
       "\u00ae", // registered trademark
       "\u00a9", // copyright
       "\u2122"  // trademark
