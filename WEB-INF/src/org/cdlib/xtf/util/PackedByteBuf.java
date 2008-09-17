@@ -59,6 +59,9 @@ public class PackedByteBuf {
   /** Tells whether compression succeeded */
   private boolean compressed = false;
 
+  /** Special flag to avoid compression (if buffer will be included in another) */
+  private boolean doNotCompress = false;
+
   /** Original (uncompressed) length of the buffer */
   private int uncompLen = 0;
 
@@ -138,6 +141,16 @@ public class PackedByteBuf {
     reset();
     decompress();
   } // setBytes()
+  
+  /** 
+   * Call this to avoid compressing the contents of the buffer (for instance, if
+   * it will be copied into another buffer.)
+   */
+  public void doNotCompress() {
+    this.doNotCompress = true;
+    if (compressed)
+      decompress();
+  }
 
   /**
    * Given a raw buffer, this method determines if it is compressed, and if
@@ -201,6 +214,9 @@ public class PackedByteBuf {
     PackedByteBuf other = new PackedByteBuf(pos);
     System.arraycopy(bytes, 0, other.bytes, 0, pos);
     other.pos = pos;
+    other.compressed = compressed;
+    other.compressTried = compressTried;
+    other.uncompLen = uncompLen;
     return other;
   } // clone()
 
@@ -328,6 +344,7 @@ public class PackedByteBuf {
    * @param b  The buffer to write.
    */
   public void writeBuffer(PackedByteBuf b) {
+    assert !b.compressed; // If you want to do this, call doNotCompress first
     writeInt(b.length());
     writeBytes(b.bytes, 0, b.length());
   } // writeBuffer()
@@ -365,7 +382,7 @@ public class PackedByteBuf {
     // If already done, get out. Also, if buffer is small, we're very
     // unlikely to get a good savings, so skip it.
     //
-    if (compressTried || pos < compressLimitMin || pos > compressLimitMax)
+    if (compressTried || pos < compressLimitMin || pos > compressLimitMax || doNotCompress)
       return;
     compressTried = true;
 

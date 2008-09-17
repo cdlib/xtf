@@ -59,7 +59,9 @@ public class DiskHashWriter
     if (key.length() == 0)
       key = " ";
 
-    memMap.put(key, val.clone());
+    PackedByteBuf cloned = (PackedByteBuf) val.clone();
+    cloned.doNotCompress(); // We're going to copy to another buffer, so avoid compressing
+    memMap.put(key, cloned);
   } // put()
 
   /** Writes out the entire hash */
