@@ -169,6 +169,11 @@ public class LazyKeyManager extends KeyManager
     throws XPathException 
   {
     StringValue val = new StringValue("1");
+    NamePool pool = context.getController().getNamePool();
+    
+    // In debug mode, output keys being created.
+    if (Trace.getOutputLevel() == Trace.debug)
+      doc.setDebug(true);
 
     // Create a key for every definition we have, and count how many actually
     // get stored on disk.
@@ -177,6 +182,9 @@ public class LazyKeyManager extends KeyManager
     IntIterator iter = keyList.keyIterator();
     while (iter.hasNext()) {
       int fingerprint = iter.next();
+      String fingerName = pool.getDisplayName(fingerprint);
+      if (fingerName.indexOf("dynamic") >= 0)
+        continue;
 
       // Do a fake lookup on this fingerprint, and ignore the results.
       // This will have the effect of building the on-disk hash.
