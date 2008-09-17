@@ -1564,9 +1564,9 @@ public class XMLTextProcessor extends DefaultHandler
         forceNewChunk(prevSectionType, prevWordBoost, prevSpellFlag);
 
         // Diagnostic info.
-        Trace.tab();
-        Trace.debug("Begin Section [" + section.sectionType() + "]");
-        Trace.untab();
+        //Trace.tab();
+        //Trace.debug("Begin Section [" + section.sectionType() + "]");
+        //Trace.untab();
       }
     }
 
@@ -1779,9 +1779,9 @@ public class XMLTextProcessor extends DefaultHandler
       forceNewChunk(prevSectionType, prevWordBoost, prevSpellFlag);
 
       // Diagnostic info.
-      Trace.tab();
-      Trace.debug("End Section [" + prevSectionType + "]");
-      Trace.untab();
+      //Trace.tab();
+      //Trace.debug("End Section [" + prevSectionType + "]");
+      //Trace.untab();
     }
 
     // Cross-check to make sure our node counting matches the lazy tree.
@@ -2781,10 +2781,10 @@ public class XMLTextProcessor extends DefaultHandler
     String textStr = compactedAccumText.toString();
 
     // Diagnostic output.
-    Trace.tab();
-    Trace.debug("node " + nodeStr + ", offset = " + wordOffsetStr);
-    Trace.more(" text = [" + textStr + "]");
-    Trace.untab();
+    //Trace.tab();
+    //Trace.debug("node " + nodeStr + ", offset = " + wordOffsetStr);
+    //Trace.more(" text = [" + textStr + "]");
+    //Trace.untab();
 
     // Add the node number for this chunk. Store, but don't index or tokenize.
     doc.add(new Field("node", nodeStr, Field.Store.YES, Field.Index.NO));
@@ -3223,9 +3223,9 @@ public class XMLTextProcessor extends DefaultHandler
           chunkStartNode = -1;
           chunkWordOffset = -1;
 
-          Trace.tab();
-          Trace.debug("Proximity Break");
-          Trace.untab();
+          //Trace.tab();
+          //Trace.debug("Proximity Break");
+          //Trace.untab();
         }
       } // else if( atts.getQName(i).equalsIgnoreCase("xtfProximityBreak") )
 
@@ -3251,9 +3251,9 @@ public class XMLTextProcessor extends DefaultHandler
           // Hang on to the new boost value.
           wordBoost = newBoost;
 
-          Trace.tab();
-          Trace.debug("Word Boost: " + newBoost);
-          Trace.untab();
+          //Trace.tab();
+          //Trace.debug("Word Boost: " + newBoost);
+          //Trace.untab();
         }
       } // else if( atts.getQName(i).equalsIgnoreCase("xtfProximityBreak") )
 
@@ -3287,9 +3287,9 @@ public class XMLTextProcessor extends DefaultHandler
           chunkStartNode = -1;
           chunkWordOffset = -1;
 
-          Trace.tab();
-          Trace.debug("Spell: " + spellFlag);
-          Trace.untab();
+          //Trace.tab();
+          //Trace.debug("Spell: " + spellFlag);
+          //Trace.untab();
         }
       } // else if( atts.getQName(i).equalsIgnoreCase("xtfIndex") )
 
