@@ -316,7 +316,6 @@
    -->
    <xsl:function name="editURL:escapeRegex">
       <xsl:param name="val"/>
-      <xsl:message>escapeRegex: <xsl:value-of select="$val"/></xsl:message>
       <xsl:value-of select="replace($val, '([.\?*+{}()|^\[\]])', '\\$1')"/>
    </xsl:function>
    
