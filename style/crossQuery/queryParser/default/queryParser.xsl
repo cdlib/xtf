@@ -236,14 +236,19 @@
          <xsl:value-of select="if ($expand = $plainName) then '*' else $topGroups"/>
          <!-- For each chosen facet value -->
          <xsl:for-each select="//param[matches(@name, concat('f[0-9]+-',$plainName))]">
+            <!-- Escape characters that have special meaning in facet language -->
+            <xsl:variable name="escapedValue" select="
+               if (matches(@value, '[#:|*()\\=\[\]]')) 
+               then concat('&quot;', @value, '&quot;') 
+               else @value"/>
             <!-- Select the value itself -->
-            <xsl:value-of select="concat('|', @value)"/>
+            <xsl:value-of select="concat('|', $escapedValue)"/>
             <!-- And select its immediate children -->
-            <xsl:value-of select="concat('|', @value, '::*')"/>
+            <xsl:value-of select="concat('|', $escapedValue, '::*')"/>
             <!-- And select its siblings, if any -->
-            <xsl:value-of select="concat('|', @value, '[siblings]')"/>
+            <xsl:value-of select="concat('|', $escapedValue, '[siblings]')"/>
             <!-- If only one child, expand it (and its single child, etc.) -->
-            <xsl:value-of select="concat('|', @value, '::**[singleton]::*')"/>
+            <xsl:value-of select="concat('|', $escapedValue, '::**[singleton]::*')"/>
          </xsl:for-each>
       </xsl:variable>
       

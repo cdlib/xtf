@@ -88,7 +88,7 @@
                   <!-- things to remove -->
                   <xsl:when test="matches($param,'smode')"/>
                   <xsl:when test="matches($param,$field)"/>
-                  <xsl:when test="matches($field,replace($param,'f[0-9]','facet')) and matches($terms,$value)"/>
+                  <xsl:when test="matches($field,replace($param,'f[0-9]','facet')) and matches($terms,editURL:escapeRegex($value))"/>
                   <xsl:when test="matches($param,'sectionType') and matches($field,'text|query')"/>
                   <xsl:when test="matches($param,'expand')"/>
                   <!-- keep everything else -->

@@ -307,6 +307,19 @@
       <xsl:value-of select="editURL:clean(replace($url, $regex, ';'))"/>
    </xsl:function>
    
+   <!-- Utility function to escape characters that have special meaning in a regular
+        expression. Call this when passing raw values in 'param' to editURL:remove.
+        
+        From the XPath specification:
+        [10] Char ::= [^.\?*+{}()|^$#x5B#x5D]
+        The characters #x5B and #x5D correspond to "[" and "]" respectively.  
+   -->
+   <xsl:function name="editURL:escapeRegex">
+      <xsl:param name="val"/>
+      <xsl:message>escapeRegex: <xsl:value-of select="$val"/></xsl:message>
+      <xsl:value-of select="replace($val, '([.\?*+{}()|^\[\]])', '\\$1')"/>
+   </xsl:function>
+   
    <!-- Function to replace an empty URL with a value. If the URL isn't empty
         it is returned unchanged. By the way, certain parameters such as
         "expand" are still counted as empty.
@@ -1015,8 +1028,10 @@
       
       <xsl:variable name="clearLink" select="
          concat(xtfURL, $crossqueryPath, '?',
-                editURL:replaceEmpty(editURL:remove($queryString, concat('f[0-9]+-',$field,'=',$value)),
-                                     'browse-all=yes'))">
+                editURL:replaceEmpty(
+                   editURL:remove($queryString, 
+                                  concat('f[0-9]+-',$field,'=',editURL:escapeRegex($value))),
+                                  'browse-all=yes'))">
       </xsl:variable>
       
       <tr>
