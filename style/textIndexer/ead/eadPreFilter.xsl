@@ -1,4 +1,5 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
    xmlns:parse="http://cdlib.org/xtf/parse"
    xmlns:xtf="http://cdlib.org/xtf"
    exclude-result-prefixes="#all">
@@ -66,20 +67,138 @@
          <xsl:namespace name="xtf" select="'http://cdlib.org/xtf'"/>
          <xsl:copy-of select="@*"/>
          <xsl:call-template name="get-meta"/>
-         <xsl:apply-templates/>
+         <xsl:apply-templates mode="addChunkId"/>
       </xsl:copy>
    </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Top-level transformation: add chunk.id to each element                 -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template match="node()" mode="addChunkId">
+      <xsl:call-template name="ead-copy">
+         <xsl:with-param name="node" select="."/>
+         <xsl:with-param name="chunk.id" select="xs:string(position())"/>
+      </xsl:call-template>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Rearrange the archdesc section to be in display order                  -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template match="archdesc" mode="addChunkId">
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>         
+         
+         <xsl:apply-templates mode="addChunkId" select="did"/>
+         <xsl:apply-templates mode="addChunkId" select="bioghist"/>
+         <xsl:apply-templates mode="addChunkId" select="scopecontent"/>
+         <xsl:apply-templates mode="addChunkId" select="arrangement"/>
+
+         <!-- archdesc-restrict -->
+         <xsl:apply-templates mode="addChunkId" select="userestrict"/>
+         <xsl:apply-templates mode="addChunkId" select="accessrestrict"/>
+
+         <!-- archdesc-relatedmaterial -->
+         <xsl:apply-templates mode="addChunkId" select="relatedmaterial"/>
+         <xsl:apply-templates mode="addChunkId" select="separatedmaterial"/>
+         
+         <xsl:apply-templates mode="addChunkId" select="controlaccess"/>
+         <xsl:apply-templates mode="addChunkId" select="odd"/>
+         <xsl:apply-templates mode="addChunkId" select="originalsloc"/>
+         <xsl:apply-templates mode="addChunkId" select="phystech"/>
+
+         <!-- archdesc-admininfo -->
+         <xsl:apply-templates mode="addChunkId" select="custodhist"/>
+         <xsl:apply-templates mode="addChunkId" select="altformavailable"/>
+         <xsl:apply-templates mode="addChunkId" select="prefercite"/>
+         <xsl:apply-templates mode="addChunkId" select="acqinfo"/>
+         <xsl:apply-templates mode="addChunkId" select="processinfo"/>
+         <xsl:apply-templates mode="addChunkId" select="appraisal"/>
+         <xsl:apply-templates mode="addChunkId" select="accruals"/>
+
+         <xsl:apply-templates mode="addChunkId" select="descgrp"/>
+         <xsl:apply-templates mode="addChunkId" select="otherfindaid"/>
+         <xsl:apply-templates mode="addChunkId" select="fileplan"/>
+         <xsl:apply-templates mode="addChunkId" select="bibliography"/>
+         <xsl:apply-templates mode="addChunkId" select="index"/>
+         
+         <!-- Lastly, the container list. -->
+         <xsl:apply-templates mode="addChunkId" select="dsc"/>
+      </xsl:copy>
+   </xsl:template>
+
+   <!-- Rearrange the <did> section to be in display order -->
+   <xsl:template match="did" mode="addChunkId">
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>         
+         
+         <xsl:apply-templates select="repository"/>
+         <xsl:apply-templates select="origination"/>
+         <xsl:apply-templates select="unittitle"/>
+         <xsl:apply-templates select="unitdate"/>
+         <xsl:apply-templates select="physdesc"/>
+         <xsl:apply-templates select="abstract"/>
+         <xsl:apply-templates select="unitid"/>
+         <xsl:apply-templates select="physloc"/>
+         <xsl:apply-templates select="langmaterial"/>
+         <xsl:apply-templates select="materialspec"/>
+         <xsl:apply-templates select="note"/>
+      </xsl:copy>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Add a unique id to each child of archdesc and each c01, c02, and       --> 
+   <!-- archdesc section...                                                    -->
+   <!-- We do this by recording the position of each of the node's ancestors   -->
+   <!-- (and the node itself)                                                  -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="ead-copy">
+      <xsl:param name="node"/>
+      <xsl:param name="chunk.id"/>
+
+      <xsl:copy>
+         <xsl:copy-of select="@*"/>
+         <xsl:choose>
+            <xsl:when test="self::c01 or self::c02 or (self::* and (parent::archdesc or parent::ead))">
+               <xsl:if test="not(@id)">
+                  <xsl:attribute name="id" select="concat(local-name(), '_', $chunk.id)"/>
+               </xsl:if>
+               <xsl:for-each select="node()">
+                  <xsl:call-template name="ead-copy">
+                     <xsl:with-param name="node" select="."/>
+                     <xsl:with-param name="chunk.id" select="concat($chunk.id, xtf:posToChar(position()))"/>
+                  </xsl:call-template>
+               </xsl:for-each>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:apply-templates select="node()"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </xsl:copy>
+   </xsl:template>
+   
+   <!-- Used to generate compact IDs by encoding numbers 1..26 as letters instead -->
+   <xsl:function name="xtf:posToChar">
+      <xsl:param name="pos"/>
+      <xsl:value-of select="
+         if ($pos &lt; 27) then
+            substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ', $pos, 1)
+         else
+            concat('.', $pos)"/>
+   </xsl:function>
    
    <!-- ====================================================================== -->
    <!-- EAD Indexing                                                           -->
    <!-- ====================================================================== -->
    
    <!-- Ignored Elements -->
-   <xsl:template match="eadheader">
+   <xsl:template match="eadheader" mode="addChunkId">
       <xsl:copy>
          <xsl:copy-of select="@*"/>
          <xsl:attribute name="xtf:index" select="'no'"/>
-         <xsl:apply-templates/>
+         <xsl:apply-templates mode="addChunkId"/>
       </xsl:copy>
    </xsl:template>
    
@@ -208,21 +327,22 @@
    </xsl:template>
    
    <!-- subject --> 
+   <!-- Note: we use for-each-group below to remove duplicate entries. -->
    <xsl:template name="get-ead-subject">
       <xsl:choose>
          <xsl:when test="/ead/archdesc//controlaccess/subject">
-            <xsl:for-each select="/ead/archdesc//controlaccess/subject">
+            <xsl:for-each-group select="/ead/archdesc//controlaccess/subject" group-by="string()">
                <subject xtf:meta="true">
                   <xsl:value-of select="."/>
                </subject>
-            </xsl:for-each>
+            </xsl:for-each-group>
          </xsl:when>
          <xsl:when test="/ead/eadheader/filedesc/notestmt/subject">
-            <xsl:for-each select="/ead/eadheader/filedesc/notestmt/subject">
+            <xsl:for-each-group select="/ead/eadheader/filedesc/notestmt/subject" group-by="string()">
                <subject xtf:meta="true">
                   <xsl:value-of select="."/>
                </subject>
-            </xsl:for-each>
+            </xsl:for-each-group>
          </xsl:when>
       </xsl:choose>
    </xsl:template>
@@ -391,16 +511,16 @@
    
    <!-- OAI sets -->
    <xsl:template name="oai-set">
-      <xsl:for-each select="/ead/archdesc//controlaccess/subject">
+      <xsl:for-each-group select="/ead/archdesc//controlaccess/subject" group-by="string()">
          <set xtf:meta="true">
             <xsl:value-of select="."/>
          </set>
-      </xsl:for-each>
-      <xsl:for-each select="/ead/eadheader/filedesc/notestmt/subject">
+      </xsl:for-each-group>
+      <xsl:for-each-group select="/ead/eadheader/filedesc/notestmt/subject" group-by="string()">
          <set xtf:meta="true">
             <xsl:value-of select="."/>
          </set>
-      </xsl:for-each>
+      </xsl:for-each-group>
       <set xtf:meta="true">
          <xsl:value-of select="'public'"/>
       </set>

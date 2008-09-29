@@ -39,6 +39,10 @@
       
       <a name="{@hitNum}"/>
       
+      <xsl:if test="@hitNum = key('chunk-id', $chunk.id)/@xtf:firstHit">
+         <a name="X"/>
+      </xsl:if>
+      
       <xsl:call-template name="prev.hit"/>
       
       <xsl:choose>
@@ -78,21 +82,80 @@
       </span>
    </xsl:template>
    
+   <!-- This template locates the TOC chunk that a particular hit resides
+        in. It's a bit complicated by the way we group sets of archdesc
+        elements (like for "Restrictions", "Administrative Information",
+        etc.) -->
+   <xsl:template name="findHitChunk">
+      <xsl:param name="hitNode"/>
+      <xsl:choose>
+         <xsl:when test="$hitNode/ancestor::c02">
+            <xsl:value-of select="$hitNode/ancestor::c02[1]/@id"/>
+         </xsl:when>
+         <xsl:when test="$hitNode/ancestor::c01">
+            <xsl:value-of select="$hitNode/ancestor::c01[1]/@id"/>
+         </xsl:when>
+         <xsl:when test="$hitNode/ancestor::accessrestrict/ancestor::archdesc or
+                         $hitNode/ancestor::userestrict/ancestor::archdesc">
+            <xsl:value-of select="'restrictlink'"/>
+         </xsl:when>
+         <xsl:when test="$hitNode/ancestor::relatedmaterial/ancestor::archdesc or
+                         $hitNode/ancestor::separatedmaterial/ancestor::archdesc">
+            <xsl:value-of select="'relatedmatlink'"/>
+         </xsl:when>
+         <xsl:when test="$hitNode/ancestor::custodhist/ancestor::archdesc or
+                         $hitNode/ancestor::altformavailable/ancestor::archdesc or
+                         $hitNode/ancestor::prefercite/ancestor::archdesc or
+                         $hitNode/ancestor::acqinfo/ancestor::archdesc or
+                         $hitNode/ancestor::processinfo/ancestor::archdesc or
+                         $hitNode/ancestor::appraisal/ancestor::archdesc or
+                         $hitNode/ancestor::accruals/ancestor::archdesc">
+            <xsl:value-of select="'adminlink'"/>
+         </xsl:when>
+         <xsl:when test="$hitNode/ancestor::*[@id]/ancestor::archdesc">
+            <xsl:value-of select="$hitNode/ancestor::*[@id][1]/@id"/>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="'0'"/>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
+
+   <!-- Output the linking arrow to move to the previous hit. If the hit is in
+        the same chunk as the current hit, we jump to its anchor; otherwise
+        we jump to the external chunk. -->
    <xsl:template name="prev.hit">
       
       <xsl:variable name="num" select="@hitNum"/>
       <xsl:variable name="prev" select="$num - 1"/>
       
       <xsl:if test="$prev &gt; 0">
+         <xsl:variable name="target.chunk">
+            <xsl:call-template name="findHitChunk">
+               <xsl:with-param name="hitNode" select="key('hit-num-dynamic', string($prev))"/>
+            </xsl:call-template>
+         </xsl:variable>
          <a>
-            <xsl:attribute name="href">
-               <xsl:text>#</xsl:text><xsl:value-of select="$prev"/>
-            </xsl:attribute>
+            <xsl:choose>
+               <xsl:when test="$target.chunk = $chunk.id">
+                  <xsl:attribute name="href" select="concat('#', $prev)"/>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:attribute name="target" select="'_top'"/>
+                  <xsl:attribute name="href" select="
+                     concat($xtfURL, $dynaxmlPath, '?', $query.string, 
+                            ';hit.num=', $prev, ';brand=', $brand, $search)"/>
+               </xsl:otherwise>
+            </xsl:choose>
             <img src="{$icon.path}b_inprev.gif" border="0" alt="previous hit"/>
-         </a>
+         </a>         
+         <xsl:text>&#160;</xsl:text>
       </xsl:if>
    </xsl:template>
    
+   <!-- Output the linking arrow to move to the next hit. If the hit is in
+        the same chunk as the current hit, we jump to its anchor; otherwise
+        we jump to the external chunk. -->
    <xsl:template name="next.hit">
       
       <xsl:variable name="num" select="@hitNum"/>
@@ -100,11 +163,24 @@
       <xsl:variable name="totalHits" select="/*[1]/@xtf:hitCount"/>
       
       <xsl:if test="$next &lt;= $totalHits">
+         <xsl:variable name="target.chunk">
+            <xsl:call-template name="findHitChunk">
+               <xsl:with-param name="hitNode" select="key('hit-num-dynamic', string($next))"/>
+            </xsl:call-template>
+         </xsl:variable>       
          <xsl:text>&#160;</xsl:text>
          <a>
-            <xsl:attribute name="href">
-               <xsl:text>#</xsl:text><xsl:value-of select="$next"/>
-            </xsl:attribute>
+            <xsl:choose>
+               <xsl:when test="$target.chunk = $chunk.id">
+                  <xsl:attribute name="href" select="concat('#', $next)"/>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:attribute name="target" select="'_top'"/>
+                  <xsl:attribute name="href" select="
+                     concat($xtfURL, $dynaxmlPath, '?', $query.string, 
+                            ';hit.num=', $next, ';brand=', $brand, $search)"/>
+               </xsl:otherwise>
+            </xsl:choose>
             <img src="{$icon.path}b_innext.gif" border="0" alt="next hit"/>
          </a>
       </xsl:if>

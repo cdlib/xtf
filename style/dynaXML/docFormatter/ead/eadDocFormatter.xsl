@@ -55,14 +55,14 @@
    <!-- Output Format                                                          -->
    <!-- ====================================================================== -->
    
-   <xsl:output method="xhtml" indent="no" 
+   <xsl:output method="xhtml" indent="yes" 
       encoding="UTF-8" media-type="text/html; charset=UTF-8" 
       doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
       exclude-result-prefixes="#all"
       omit-xml-declaration="yes"/>
    
-   <xsl:output name="frameset" method="xhtml" indent="no" 
+   <xsl:output name="frameset" method="xhtml" indent="yes" 
       encoding="UTF-8" media-type="text/html; charset=UTF-8" 
       doctype-public="-//W3C//DTD XHTML 1.0 Frameset//EN" 
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd" 
@@ -82,6 +82,49 @@
    <xsl:include href="eadcbs7.xsl"/>
    <xsl:include href="parameter.xsl"/>
    <xsl:include href="search.xsl"/>
+   
+   <!-- ====================================================================== -->
+   <!-- Define Keys                                                            -->
+   <!-- ====================================================================== -->
+   
+   <xsl:key name="chunk-id" match="*[parent::archdesc or matches(local-name(), '^(c|c[0-9][0-9])$')][@id]" use="@id"/>
+   
+   <!-- ====================================================================== -->
+   <!-- EAD-specific parameters                                                -->
+   <!-- ====================================================================== -->
+
+   <!-- If a query was specified but no particular hit rank, jump to the first hit 
+        (in document order) 
+   -->
+   <xsl:param name="hit.num" select="'0'"/>
+   
+   <xsl:param name="hit.rank">
+      <xsl:choose>
+         <xsl:when test="$hit.num != '0'">
+            <xsl:value-of select="key('hit-num-dynamic', string($hit.num))/@rank"/>
+         </xsl:when>
+         <xsl:when test="$query and not($query = '0')">
+            <xsl:value-of select="key('hit-num-dynamic', '1')/@rank"/>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="'0'"/>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:param>
+   
+   <!-- To support direct links from snippets, the following two parameters must check value of $hit.rank -->
+   <xsl:param name="chunk.id">
+      <xsl:choose>
+         <xsl:when test="$hit.rank != '0'">
+            <xsl:call-template name="findHitChunk">
+               <xsl:with-param name="hitNode" select="key('hit-rank-dynamic', string($hit.rank))"/>
+            </xsl:call-template>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="'0'"/>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:param>
    
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
@@ -125,9 +168,9 @@
    <!-- ====================================================================== -->
    
    <xsl:template name="frameset">
-      <xsl:variable name="bbar.href"><xsl:value-of select="$query.string"/>&#038;doc.view=bbar&#038;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/></xsl:variable> 
-      <xsl:variable name="toc.href"><xsl:value-of select="$query.string"/>&#038;doc.view=toc&#038;brand=<xsl:value-of select="$brand"/>&#038;toc.id=<xsl:value-of select="$toc.id"/><xsl:value-of select="$search"/>#X</xsl:variable>
-      <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>&#038;doc.view=content&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$anchor.id"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/></xsl:variable>
+      <xsl:variable name="bbar.href"><xsl:value-of select="$query.string"/>;doc.view=bbar;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/></xsl:variable> 
+      <xsl:variable name="toc.href"><xsl:value-of select="$query.string"/>;doc.view=toc;brand=<xsl:value-of select="$brand"/>;chunk.id=<xsl:value-of select="$chunk.id"/>;<xsl:value-of select="$search"/>#X</xsl:variable>
+      <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>;doc.view=content;brand=<xsl:value-of select="$brand"/>;chunk.id=<xsl:value-of select="$chunk.id"/><xsl:value-of select="$search"/></xsl:variable>
       
       <xsl:result-document format="frameset" exclude-result-prefixes="#all">
          <html xml:lang="en" lang="en">
@@ -153,7 +196,7 @@
                   </frame>
                   <frame frameborder="1" title="Content">
                      <xsl:attribute name="name">content</xsl:attribute>
-                     <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/></xsl:attribute>
+                     <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/>#X</xsl:attribute>
                   </frame>
                </frameset>
                <noframes>
@@ -164,27 +207,6 @@
             </frameset>
          </html>
       </xsl:result-document>
-   </xsl:template>
-   
-   <!-- ====================================================================== -->
-   <!-- Anchor Template                                                        -->
-   <!-- ====================================================================== -->
-   
-   <xsl:template name="create.anchor">
-      <xsl:choose>
-         <xsl:when test="($query != '0' and $query != '') and $hit.rank != '0'">
-            <xsl:text>#</xsl:text><xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/@hitNum"/>
-         </xsl:when>
-         <xsl:when test="($query != '0' and $query != '') and $set.anchor != '0'">
-            <xsl:text>#</xsl:text><xsl:value-of select="$set.anchor"/>
-         </xsl:when>
-         <xsl:when test="$query != '0' and $query != ''">
-            <xsl:text>#</xsl:text><xsl:value-of select="/*/@xtf:firstHit"/>
-         </xsl:when>
-         <xsl:when test="$anchor.id != '0'">
-            <xsl:text>#X</xsl:text>
-         </xsl:when>
-      </xsl:choose>
    </xsl:template>
    
    <!-- ====================================================================== -->
@@ -244,7 +266,7 @@
                      <xsl:text> [</xsl:text>
                      <a>
                         <xsl:attribute name="href">
-                           <xsl:value-of select="$doc.path"/>&#038;chunk.id=<xsl:value-of select="$chunk.id"/>&#038;toc.depth=<xsl:value-of select="$toc.depth"/>&#038;toc.id=<xsl:value-of select="$toc.id"/>&#038;brand=<xsl:value-of select="$brand"/>
+                           <xsl:value-of select="$doc.path"/>;chunk.id=<xsl:value-of select="$chunk.id"/>;toc.depth=<xsl:value-of select="$toc.depth"/>;brand=<xsl:value-of select="$brand"/>
                         </xsl:attribute>
                         <xsl:attribute name="target">_top</xsl:attribute>
                         <xsl:text>Clear Hits</xsl:text>
@@ -259,6 +281,13 @@
                   determine which elements will be included in the table
                   of contents.  Each if statement tests to see if there is
                   a matching element with content in the finding aid.-->
+               <xsl:if test="archdesc/did">
+                  <xsl:call-template name="make-toc-link">
+                     <xsl:with-param name="name" select="'Descriptive Summary'"/>
+                     <xsl:with-param name="id" select="'headerlink'"/>
+                     <xsl:with-param name="nodes" select="archdesc/did"/>
+                  </xsl:call-template>
+               </xsl:if>
                <xsl:if test="archdesc/did/head">
                   <xsl:apply-templates select="archdesc/did/head" mode="tocLink"/>
                </xsl:if>
@@ -310,15 +339,13 @@
                
                <!--The next test covers the situation where there is more than one odd element
                   in the document.-->
-               <xsl:if test="archdesc/odd/head">
-                  <xsl:for-each select="archdesc/odd">
-                     <xsl:call-template name="make-toc-link">
-                        <xsl:with-param name="name" select="head"/>
-                        <xsl:with-param name="id" select="xtf:make-id(head)"/>
-                        <xsl:with-param name="nodes" select="."/>
-                     </xsl:call-template>
-                  </xsl:for-each>
-               </xsl:if>
+               <xsl:for-each select="archdesc/odd">
+                  <xsl:call-template name="make-toc-link">
+                     <xsl:with-param name="name" select="head"/>
+                     <xsl:with-param name="id" select="@id"/>
+                     <xsl:with-param name="nodes" select="."/>
+                  </xsl:call-template>
+               </xsl:for-each>
                
                <xsl:if test="archdesc/bibliography/head    or archdesc/*/bibliography/head">
                   <xsl:choose>
@@ -345,9 +372,9 @@
                <xsl:if test="archdesc/dsc/head">
                   <xsl:apply-templates select="archdesc/dsc/head" mode="tocLink"/>
                   <!-- Displays the unittitle and unitdates for a c01 if it is a series (as
-                     evidenced by the level attribute series)and numbers them
-                     to form a hyperlink to each.   Delete this section if you do not
-                     wish the c01 titles to appear in the table of contents.-->
+                       evidenced by the level attribute series)and numbers them
+                       to form a hyperlink to each.   Delete this section if you do not
+                       wish the c01 titles to appear in the table of contents.-->
                   <xsl:for-each select="archdesc/dsc/c01[@level='series' or @level='subseries' or @level='subgrp' or @level='subcollection']">
                      <xsl:call-template name="make-toc-link">
                         <xsl:with-param name="name">
@@ -366,14 +393,16 @@
                               </xsl:otherwise>
                            </xsl:choose>
                         </xsl:with-param>
-                        <xsl:with-param name="id">
-                           <xsl:value-of select="concat('series', position())"/>
-                        </xsl:with-param>
+                        <xsl:with-param name="id" select="@id"/>
                         <xsl:with-param name="nodes" select="."/>
                         <xsl:with-param name="indent" select="2"/>
                      </xsl:call-template>
-                     <!-- for sheila -->
-                     <xsl:for-each select=".//c02[@level='subseries']">
+                     
+                     <!-- Displays the unittitle and unitdates for each c02 if it is a subseries 
+                          (as evidenced by the level attribute series) and forms a hyperlink to each.   
+                          Delete this section if you do not wish the c02 titles to appear in the 
+                          table of contents. -->
+                     <xsl:for-each select="c02[@level='subseries']">
                         <xsl:call-template name="make-toc-link">
                            <xsl:with-param name="name">
                               <xsl:choose>
@@ -391,15 +420,12 @@
                                  </xsl:otherwise>
                               </xsl:choose>
                            </xsl:with-param>
-                           <xsl:with-param name="id">
-                              <!-- here -->
-                              <xsl:value-of select="concat('subseries', count(preceding::c02[@level='subseries'])+1)"/>
-                           </xsl:with-param>
+                           <xsl:with-param name="id" select="@id"/>
                            <xsl:with-param name="nodes" select="."/>
                            <xsl:with-param name="indent" select="3"/>
                         </xsl:call-template>
                      </xsl:for-each>
-                     <!-- end for sheila -->
+                     <!--This ends the section that causes the c02 titles to appear in the table of contents.-->
                   </xsl:for-each>
                   <!--This ends the section that causes the c01 titles to appear in the table of contents.-->
                </xsl:if>
@@ -412,7 +438,7 @@
    <xsl:template match="node()" mode="tocLink">
       <xsl:call-template name="make-toc-link">
          <xsl:with-param name="name" select="string(.)"/>
-         <xsl:with-param name="id" select="xtf:make-id(.)"/>
+         <xsl:with-param name="id" select="ancestor-or-self::*[@id][1]/@id"/>
          <xsl:with-param name="nodes" select="parent::*"/>
       </xsl:call-template>
    </xsl:template>
@@ -423,9 +449,13 @@
       <xsl:param name="nodes"/>
       <xsl:param name="indent" select="1"/>
       
-      <xsl:variable name="hit.count" select="sum($nodes/*/@xtf:hitCount)"/>
-      <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>&#038;doc.view=content&#038;brand=<xsl:value-of select="$brand"/>&#038;anchor.id=<xsl:value-of select="$anchor.id"/><xsl:value-of select="$search"/></xsl:variable>
-      
+      <xsl:variable name="hit.count" select="sum($nodes/@xtf:hitCount)"/>
+      <xsl:variable name="content.href"><xsl:value-of select="$query.string"/>;chunk.id=<xsl:value-of select="$id"/>;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/></xsl:variable>
+
+      <xsl:if test="@id = $chunk.id">
+         <a name="X"/>
+      </xsl:if>
+
       <table border="0" cellpadding="1" cellspacing="0" width="820">
          <tr>
             <td align="right">
@@ -438,13 +468,23 @@
             </td>
             <td align="left" valign="top" width="700">
                <nobr>
-                  <a>
-                     <xsl:attribute name="href">
-                        <xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/>#<xsl:value-of select="$id"/>
-                     </xsl:attribute>
-                     <xsl:attribute name="target">content</xsl:attribute>
-                     <xsl:value-of select="$name"/>
-                  </a>
+                  <xsl:choose>
+                     <xsl:when test="$chunk.id = @id">
+                        <a name="X"/>
+                        <span class="toc-hi">
+                           <xsl:value-of select="$name"/>
+                        </span>
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <a>
+                           <xsl:attribute name="href">
+                              <xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/>
+                           </xsl:attribute>
+                           <xsl:attribute name="target">_top</xsl:attribute>
+                           <xsl:value-of select="$name"/>
+                        </a>
+                     </xsl:otherwise>
+                  </xsl:choose>
                </nobr>
             </td>
          </tr>
@@ -477,24 +517,5 @@
          </body>
       </html>
    </xsl:template>
-   
-   <!-- ====================================================================== -->
-   <!-- Functions                                                              -->
-   <!-- ====================================================================== -->
-   
-   <xsl:function name="xtf:make-id">
-      <xsl:param name="node"/>
-      <xsl:choose>
-         <xsl:when test="$node/@id">
-            <xsl:value-of select="$node/@id"/>
-         </xsl:when>
-         <xsl:when test="$node">
-            <xsl:value-of select="concat(xtf:make-id($node/parent::*), '.', count($node/preceding-sibling::*) + 1)"/>
-         </xsl:when>
-         <xsl:otherwise>
-            <xsl:text>node</xsl:text>
-         </xsl:otherwise>
-      </xsl:choose>
-   </xsl:function>
    
 </xsl:stylesheet>

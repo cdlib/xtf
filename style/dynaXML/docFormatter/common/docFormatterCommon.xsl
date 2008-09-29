@@ -191,7 +191,7 @@
                            <input name="query" type="text" size="15"/>
                            <input type="hidden" name="docId" value="{$docId}"/>
                            <input type="hidden" name="chunk.id" value="{$chunk.id}"/>
-                           <input type="submit" value="Search this Book"/>
+                           <input type="submit" value="Search this Item"/>
                         </form>
                      </td>
                      <td class="right">

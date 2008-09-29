@@ -29,9 +29,7 @@
    <!--Formats dsc/head and makes it a link target.-->
    <xsl:template match="dsc/head">
       <h3>
-         <a name="{xtf:make-id(.)}">
-            <xsl:apply-templates/>
-         </a>
+         <xsl:apply-templates/>
       </h3>
    </xsl:template>
    
@@ -361,13 +359,6 @@
          <tr>
             <td valign="top"></td>
             <td valign="top" colspan="11">
-               <!-- for sheila -->
-               <a>
-                  <xsl:attribute name="name">
-                     <xsl:text>subseries</xsl:text><xsl:value-of select="count(preceding::c02[@level='subseries'])+1"/>
-                  </xsl:attribute>
-               </a>
-               <!-- end for sheila -->
                <b>
                   <xsl:call-template name="component-did"/>
                </b>

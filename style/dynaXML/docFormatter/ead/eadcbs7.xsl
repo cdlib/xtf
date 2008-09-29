@@ -23,37 +23,7 @@
          content="{eadheader/filedesc/titlestmt/titleproper&#x20; }{eadheader/filedesc/titlestmt/subtitle}"/>
       <meta http-equiv="Content-Type" name="dc.author" content="{archdesc/did/origination}"/>
       
-      <xsl:for-each select="//controlaccess/persname | //controlaccess/corpname">
-         <xsl:choose>
-            <xsl:when test="@encodinganalog='600'">
-               <meta http-equiv="Content-Type" name="dc.subject" content="{.}"/>
-            </xsl:when>
-            
-            <xsl:when test="//@encodinganalog='610'">
-               <meta http-equiv="Content-Type" name="dc.subject" content="{.}"/>
-            </xsl:when>
-            
-            <xsl:when test="//@encodinganalog='611'">
-               <meta http-equiv="Content-Type" name="dc.subject" content="{.}"/>
-            </xsl:when>
-            
-            <xsl:when test="//@encodinganalog='700'">
-               <meta http-equiv="Content-Type" name="dc.contributor" content="{.}"/>
-            </xsl:when>
-            
-            <xsl:when test="//@encodinganalog='710'">
-               <meta http-equiv="Content-Type" name="dc.contributor" content="{.}"/>
-            </xsl:when>
-            
-            <xsl:otherwise>
-               <meta http-equiv="Content-Type" name="dc.contributor" content="{.}"/>
-            </xsl:otherwise>
-         </xsl:choose>
-      </xsl:for-each>
-      <xsl:for-each select="//controlaccess/subject">
-         <meta http-equiv="Content-Type" name="dc.subject" content="{.}"/>
-      </xsl:for-each>
-      <xsl:for-each select="//controlaccess/geogname">
+      <xsl:for-each select="xtf:meta/subject">
          <meta http-equiv="Content-Type" name="dc.subject" content="{.}"/>
       </xsl:for-each>
       
@@ -93,34 +63,30 @@
             <center>
                <img src="yourlogo.gif"></img>
             </center>
-            
-            <xsl:apply-templates select="eadheader"/>
-            
-            <!--To change the order of display, adjust the sequence of
-               the following apply-template statements which invoke the various
-               templates that populate the finding aid.  Multiple statements
-               are included to handle the possibility that descgrp has been used
-               as a wrapper to replace add and admininfo.  In several cases where
-               multiple elemnents are displayed together in the output, a call-template
-               statement is used-->
-            
-            <xsl:apply-templates select="archdesc/did"/>
-            <xsl:apply-templates select="archdesc/bioghist"/>
-            <xsl:apply-templates select="archdesc/scopecontent"/>
-            <xsl:apply-templates select="archdesc/arrangement"/>
-            <xsl:call-template name="archdesc-restrict"/>
-            <xsl:call-template name="archdesc-relatedmaterial"/>
-            <xsl:apply-templates select="archdesc/controlaccess"/>
-            <xsl:apply-templates select="archdesc/odd"/>
-            <xsl:apply-templates select="archdesc/originalsloc"/>
-            <xsl:apply-templates select="archdesc/phystech"/>
-            <xsl:call-template name="archdesc-admininfo"/>
-            <xsl:apply-templates select="archdesc/descgrp"/>
-            <xsl:apply-templates select="archdesc/otherfindaid | archdesc/*/otherfindaid"/>
-            <xsl:apply-templates select="archdesc/fileplan | archdesc/*/fileplan"/>
-            <xsl:apply-templates select="archdesc/bibliography | archdesc/*/bibliography"/>
-            <xsl:apply-templates select="archdesc/index | archdesc/*/index"/>
-            <xsl:apply-templates select="archdesc/dsc"/>
+
+            <xsl:choose>
+               <xsl:when test="$chunk.id = 'headerlink'">
+                  <xsl:apply-templates select="eadheader"/>
+                  <xsl:apply-templates select="archdesc/did"/>
+               </xsl:when>
+               <xsl:when test="$chunk.id = 'restrictlink'">
+                  <xsl:call-template name="archdesc-restrict"/>
+               </xsl:when>
+               <xsl:when test="$chunk.id = 'relatedmatlink'">
+                  <xsl:call-template name="archdesc-relatedmaterial"/>
+               </xsl:when>
+               <xsl:when test="$chunk.id = 'adminlink'">
+                  <xsl:call-template name="archdesc-admininfo"/>
+               </xsl:when>
+               <xsl:when test="$chunk.id != 0">
+                  <xsl:apply-templates select="key('chunk-id', $chunk.id)"/>
+               </xsl:when>
+               <xsl:otherwise>
+                  
+                  <xsl:apply-templates select="eadheader"/>
+                  <xsl:apply-templates select="archdesc/did"/>
+               </xsl:otherwise>
+            </xsl:choose>
          </body>
       </html>
    </xsl:template>		
@@ -442,9 +408,7 @@
    <!--Suppreses all other elements of eadheader.-->
    <xsl:template match="eadheader">
       <h2 style="text-align:center">
-         <a name="{xtf:make-id(titlestmt/titleproper)}">
-            <xsl:value-of select="filedesc/titlestmt/titleproper"/>
-         </a>
+         <xsl:value-of select="filedesc/titlestmt/titleproper"/>
       </h2>
       <h3 style="text-align:center">
          <xsl:value-of select="filedesc/titlestmt/subtitle"/>
@@ -464,9 +428,7 @@
          <tr>
             <td colspan="2">
                <h3>
-                  <a name="{xtf:make-id(head)}">
-                     <xsl:apply-templates select="head"/>
-                  </a>
+                  <xsl:apply-templates select="head"/>
                </h3>
             </td>
          </tr>
@@ -758,9 +720,7 @@
       archdesc/odd/head |
       archdesc/arrangement/head">
       <h3>
-         <a name="{xtf:make-id(.)}">
-            <xsl:apply-templates/>
-         </a>
+         <xsl:apply-templates/>
       </h3>
    </xsl:template>
    
@@ -800,9 +760,7 @@
    
    <xsl:template match="archdesc/scopecontent/arrangement/head">
       <h4 style="margin-left:25pt">
-         <a name="{xtf:make-id(.)}">
-            <xsl:apply-templates/>
-         </a>
+         <xsl:apply-templates/>
       </h4>
    </xsl:template>
    
@@ -820,17 +778,13 @@
    
    <xsl:template match="archdesc/scopecontent/arrangement/list/head">
       <div style="margin-left:25pt">
-         <a name="{xtf:make-id(.)}">
-            <xsl:apply-templates/>
-         </a>
+         <xsl:apply-templates/>
       </div>
    </xsl:template>
    
    <xsl:template match="archdesc/arrangement/list/head">
       <div style="margin-left:25pt">
-         <a name="{xtf:make-id(.)}">
-            <xsl:apply-templates/>
-         </a>
+         <xsl:apply-templates/>
       </div>
    </xsl:template>
    
@@ -892,9 +846,7 @@
       for the children of controlaccess.  -->
    <xsl:template match="archdesc/controlaccess">
       <xsl:if test="string(child::*)">
-         <a name="{xtf:make-id(head)}">
-            <xsl:apply-templates select="head"/>
-         </a>
+         <xsl:apply-templates select="head"/>
          <p style="text-indent:25pt">
             <xsl:apply-templates select="p | note/p"/>
          </p>
@@ -1055,11 +1007,9 @@
       | archdesc/*/appraisal/head
       | archdesc/*/accruals/head">
       <h4 style="margin-left:50pt">
-         <a name="{xtf:make-id(.)}">
-            <b>
-               <xsl:apply-templates/>
-            </b>
-         </a>
+         <b>
+            <xsl:apply-templates/>
+         </b>
       </h4>
    </xsl:template>
    
@@ -1116,11 +1066,9 @@
       | archdesc/phystech/head
       | archdesc/originalsloc/head">
       <h3>
-         <a name="{xtf:make-id(.)}">
-            <b>
-               <xsl:apply-templates/>
-            </b>
-         </a>
+         <b>
+            <xsl:apply-templates/>
+         </b>
       </h3>
    </xsl:template>
    
@@ -1158,11 +1106,9 @@
          <tr>
             <td colspan="3">
                <h3>
-                  <a name="{xtf:make-id(head)}">
-                     <b>
-                        <xsl:apply-templates select="head"/>
-                     </b>
-                  </a>
+                  <b>
+                     <xsl:apply-templates select="head"/>
+                  </b>
                </h3>
             </td>
          </tr>
