@@ -28,6 +28,7 @@ class ProxyAttributeImpl extends NodeImpl
   public ProxyAttributeImpl(ProxyElement element, int index) {
     this.element = element;
     this.index = index;
+    this.document = element.document;
   }
 
   /**
