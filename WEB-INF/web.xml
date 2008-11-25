@@ -52,6 +52,11 @@
         </servlet-mapping>
         
         <servlet-mapping>
+            <servlet-name>crossQuery</servlet-name>
+            <url-pattern>/openurl</url-pattern>
+        </servlet-mapping>
+        
+        <servlet-mapping>
             <servlet-name>rawQuery</servlet-name>
             <url-pattern>/rawQuery</url-pattern>
         </servlet-mapping>
