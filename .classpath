@@ -14,7 +14,8 @@
 	<classpathentry kind="lib" path="WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/Tidy.jar" sourcepath="WEB-INF/lib/source/jtidy-20060730"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/tm-extractors-0.4.jar" sourcepath="WEB-INF/lib/source/textmining-0.4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Tomcat"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/tm-extractors-1.0.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/poi-3.0.2-FINAL.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>

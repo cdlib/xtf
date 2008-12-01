@@ -38,3 +38,13 @@ JTidy
   The JTidy library for normalizing HTML documents is included, and is under
   a custom BSD-style license. See licenses/JTidy_license.txt for details.
 
+Textmining
+  The Textmining.org library is used for extracting text from Microsoft Word
+  documents, and is distributed under the Lesser Gnu Public License 2.1. See 
+  licenses/Textmining_license.txt for details.
+
+POI
+  The Apache POI library is used by Textmining.org for extracting text from
+  Microsoft Word documents, and is distributed under the Apache License 2.0.
+  See licenses/POI_license.txt for details.
+
