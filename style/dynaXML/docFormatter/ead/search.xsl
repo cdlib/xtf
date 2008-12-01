@@ -89,7 +89,7 @@
    <xsl:template name="findHitChunk">
       <xsl:param name="hitNode"/>
       <xsl:choose>
-         <xsl:when test="$hitNode/ancestor::c02">
+         <xsl:when test="$hitNode/ancestor::c02[@level='subseries']">
             <xsl:value-of select="$hitNode/ancestor::c02[1]/@id"/>
          </xsl:when>
          <xsl:when test="$hitNode/ancestor::c01">
