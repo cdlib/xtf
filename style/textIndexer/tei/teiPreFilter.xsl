@@ -333,7 +333,7 @@
       <xsl:choose>
          <xsl:when test="//*[local-name()='profileDesc']/*[local-name()='langUsage']/*[local-name()='language']">
             <language xtf-meta="true">
-               <xsl:value-of select="string(//*[local-name()='profileDesc']/*[local-name()='langUsage']/*[local-name()='language'][1])"/>
+               <xsl:value-of select="string((//*[local-name()='profileDesc']/*[local-name()='langUsage']/*[local-name()='language'])[1])"/>
             </language>
          </xsl:when>
          <xsl:otherwise>

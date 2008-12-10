@@ -458,7 +458,7 @@
             </xsl:when>
             <!-- last div node in any preceding structure-->
             <xsl:when test="key('div-id', $chunk.id)/ancestor::*/preceding-sibling::*/*[*[local-name()='head']][@*[local-name()='id']]">
-               <xsl:value-of select="key('div-id', $chunk.id)/ancestor::*/preceding-sibling::*[1]/*[*[local-name()='head']][@*[local-name()='id']][position()=last()]/@*[local-name()='id']"/>
+               <xsl:value-of select="(key('div-id', $chunk.id)/ancestor::*/preceding-sibling::*[1]/*[*[local-name()='head']][@*[local-name()='id']][position()=last()]/@*[local-name()='id'])[last()]"/>
             </xsl:when>
             <!-- top of tree -->
             <xsl:otherwise>
@@ -490,7 +490,7 @@
             </xsl:when>
             <!-- first div node in any following structure -->
             <xsl:when test="key('div-id', $chunk.id)/ancestor::*/following-sibling::*/*[*[local-name()='head']][@*[local-name()='id']]">
-               <xsl:value-of select="key('div-id', $chunk.id)/ancestor::*/following-sibling::*[1]/*[*[local-name()='head']][@*[local-name()='id']][1]/@*[local-name()='id']"/>
+               <xsl:value-of select="(key('div-id', $chunk.id)/ancestor::*/following-sibling::*[1]/*[*[local-name()='head']][@*[local-name()='id']][1]/@*[local-name()='id'])[1]"/>
             </xsl:when>
             <!-- no previous $chunk.id (i.e. titlePage) -->
             <xsl:when test="$chunk.id='0'">
