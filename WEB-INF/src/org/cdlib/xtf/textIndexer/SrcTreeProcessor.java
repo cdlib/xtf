@@ -487,14 +487,17 @@ public class SrcTreeProcessor
       docSelCache.put(dirKey, new CacheEntry(filesAndTimes, anyProcessed));
     } // if nFiles > 0
 
-    // If we found any files to process, the convention is that subdirectories
-    // contain file related to the ones we processed, and that they shouldn't
-    // be processed individually.
+    // In the old mode (scanAllDirs = false), if we found any files to process, 
+    // the convention is that subdirectories contain file related to the ones 
+    // we processed, and that they shouldn't be processed individually.
     //
-    if (anyProcessed)
+    // In the new mode (scanAllDirs = true), we always process subdirs. This
+    // seems to be what most people really want and expect.
+    //
+    if (anyProcessed && !cfgInfo.indexInfo.scanAllDirs)
       return;
 
-    // Didn't find any files to process. Try sub-directories.
+    // Recursively try sub-directories.
     for (Iterator i = list.iterator(); i.hasNext();) {
       File subFile = new File(currFile, (String)i.next());
       if (subFile.getAbsoluteFile().isDirectory())

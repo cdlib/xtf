@@ -63,7 +63,13 @@ public class IndexInfo
 
   /** Path to the source text for the current index. */
   public String sourcePath;
-
+  
+  /** 
+   * True to scan all dirs, false for pruned (e.g. stop at first data).
+   * Defaults to false for backward compatibility.
+   */
+  public boolean scanAllDirs = false;
+  
   /** Path to stylesheet used to determine which documents to index */
   public String docSelectorPath;
 

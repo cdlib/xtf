@@ -322,7 +322,6 @@ public class XMLConfigParser extends DefaultHandler
     {
       // Save it away as the database root directory. 
       configInfo.indexInfo.indexPath = Path.normalizePath(atts.getValue("path"));
-
       return;
     }
 
@@ -333,6 +332,22 @@ public class XMLConfigParser extends DefaultHandler
       // source XML text files.
       //
       configInfo.indexInfo.sourcePath = Path.normalizePath(atts.getValue("path"));
+      
+      // Validate the 'scan' attribute if present
+      String val = atts.getValue("scan");
+      if (val != null) {
+        if ("all".equals(val))
+          configInfo.indexInfo.scanAllDirs = true;
+        else if ("pruned".equals(val))
+          configInfo.indexInfo.scanAllDirs = false;
+        else {
+          Trace.error(
+            "Unrecognized value for 'scan' attribute of " +
+            "config option: '" + qName + "'");
+          System.exit(1);
+        }
+      }
+
       return;
     }
 
