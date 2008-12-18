@@ -138,10 +138,21 @@ public class SpanDechunkingQuery extends SpanQuery
         {
           // Get params for the new main doc.
           mainDoc = docNumMap.getDocNum(chunk);
-          firstChunk = docNumMap.getFirstChunk(mainDoc);
-          lastChunk = docNumMap.getLastChunk(mainDoc);
-          lengthNorm = similarity.lengthNorm(wrapped.getField(),
-                                             (lastChunk + 1) - firstChunk);
+          if (mainDoc >= 0) {
+            firstChunk = docNumMap.getFirstChunk(mainDoc);
+            lastChunk = docNumMap.getLastChunk(mainDoc);
+            lengthNorm = similarity.lengthNorm(wrapped.getField(),
+                                               (lastChunk + 1) - firstChunk);
+          }
+          else 
+          {
+            // This can occur if we start reading an index that contains a partially
+            // complete document (especially likely with large documents). Just suppress
+            // the spans by setting lengthNorm to 0 which will result in zero scores.
+            //
+            lengthNorm = 0.0f;
+            firstChunk = lastChunk = -1;
+          }
         }
 
         // Now calculate an appropriate offset for the current chunk.

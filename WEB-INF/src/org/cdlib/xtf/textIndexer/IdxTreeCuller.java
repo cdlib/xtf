@@ -38,6 +38,7 @@ package org.cdlib.xtf.textIndexer;
 import java.io.File;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.Path;
@@ -137,6 +138,15 @@ public class IdxTreeCuller
         // If the source XML document doesn't exist...
         if (!currFile.exists()) 
         {
+          // In a non-optimized index, the document may still be in the term list
+          // but actually have been deleted.
+          //
+          TermDocs docs = indexReader.termDocs(term);
+          if (docs == null || !docs.next()) {
+            docCount--;
+            continue;
+          }
+          
           // Indicate which document we're looking at.
           Trace.tab();
           Trace.info("[" + relPath + "] ... ");
