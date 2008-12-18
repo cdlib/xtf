@@ -1514,36 +1514,55 @@ public abstract class TextServlet extends HttpServlet
       Enumeration paramNames = inReq.getParameterNames();
       while (paramNames.hasMoreElements()) 
       {
-        String name = (String)paramNames.nextElement();
-        String[] vals = inReq.getParameterValues(name);
+        String paramName = (String)paramNames.nextElement();
+        String[] vals = inReq.getParameterValues(paramName);
 
         for (String val : vals)
         {
           if (val.indexOf(';') < 0) 
           {
-            if (!name.equals("jsessionid"))
-              addParam(name, val);
+            if (!paramName.equals("jsessionid"))
+              addParam(paramName, val);
             continue;
           }
-  
+          
           StringTokenizer tokenizer = new StringTokenizer(val, ";");
+          String name = paramName;
+          StringBuffer valbuf = new StringBuffer();
           while (tokenizer.hasMoreTokens()) 
           {
             String tok = tokenizer.nextToken();
-            int equalPos = tok.indexOf('=');
-            if (equalPos >= 0) {
-              name = tok.substring(0, equalPos);
-              val = tok.substring(equalPos + 1);
+
+            // Locate the first equal sign (outside of quotes)
+            int equalPos = -1;
+            boolean inQuote = false;
+            for (int i=0; i<tok.length() && equalPos < 0; i++) {
+              if (tok.charAt(i) == '"')
+                inQuote = !inQuote;
+              else if (!inQuote && tok.charAt(i) == '=')
+                equalPos = i;
             }
-            else
-              val = tok;
-  
-            if (name != null && !name.equals("jsessionid"))
-              addParam(name, val);
-            name = null;
+            equalPos = tok.indexOf('=');
+            
+            // If there is one, that means we have a parameter here
+            if (equalPos >= 0) {
+              if (!name.equals("jsessionid"))
+                addParam(name,valbuf.toString());
+              valbuf.setLength(0);
+              name = tok.substring(0, equalPos);
+              valbuf.append(tok.substring(equalPos + 1));
+            }
+            else {
+              if (valbuf.length() > 0)
+                valbuf.append(";"); // put back
+              valbuf.append(tok);
+            }
           } // while
-        }
-      }
+          
+          if (!name.equals("jsessionid"))
+            addParam(name, valbuf.toString());
+        } // for
+      } // while
     } // init()
     
     private void addParam(String name, String val)
