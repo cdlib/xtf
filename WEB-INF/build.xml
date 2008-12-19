@@ -33,7 +33,7 @@
            debug="true"
            classpath="${libs}"
            encoding="UTF-8"
-           excludes="**/.sf/**/*,**/.cdl/**/*"
+           excludes="**/.*/**/*"
            destdir="${classes}">
       <src path="${src1}"/>
       <src path="${src2}"/>
@@ -126,7 +126,6 @@
         <exclude name="**/.*"/>
         <exclude name="**/.*/**/*"/>
         <exclude name="**/CVS/**/*"/>
-        <exclude name="**/.DS_Store"/>
         <exclude name="style/crossQuery/complexQueryParser.xsl"/>
 
         <include name="bin/classpath.pl"/>
@@ -223,8 +222,7 @@
 
       <packageset dir="${src1}">
         <include name="**"/>
-        <exclude name="**/.sf/**"/>
-        <exclude name="**/.cdl/**"/>
+        <exclude name="**/.*/**"/>
 
         <!-- Exclude the generated code because it has javadoc warnings
              we can't fix.
@@ -234,8 +232,7 @@
 
       <packageset dir="${src2}">
         <include name="**"/>
-        <exclude name="**/.sf/**"/>
-        <exclude name="**/.cdl/**"/>
+        <exclude name="**/.*/**"/>
       </packageset>
 
     </javadoc>
