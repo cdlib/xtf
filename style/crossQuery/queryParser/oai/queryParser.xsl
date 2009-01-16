@@ -177,7 +177,7 @@
          <xsl:when test="$verb='GetRecord'">
             <xsl:choose>
                <xsl:when test="not($identifier) or not($metadataPrefix)">
-                  <error message="OAI::getRecord::badArgument::{$badArgumentMessage}"/>
+                  <error message="OAI::GetRecord::badArgument::{$badArgumentMessage}"/>
                </xsl:when>
                <xsl:when test="$metadataPrefix != 'oai_dc'">
                   <error message="OAI::cannotDisseminateFormat::badArgument::{$cannotDisseminateFormatMessage}"/>

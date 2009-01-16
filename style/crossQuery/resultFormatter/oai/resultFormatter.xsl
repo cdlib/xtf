@@ -151,7 +151,7 @@
          <xsl:otherwise>
             <xsl:call-template name="oaiError">
                <xsl:with-param name="message">
-                  <xsl:value-of select="concat('OAI::ListIdentifiers::idDoesNotExist::',$idDoesNotExistMessage)"/>
+                  <xsl:value-of select="concat('GetRecord::idDoesNotExist::',$idDoesNotExistMessage)"/>
                </xsl:with-param>
             </xsl:call-template>
          </xsl:otherwise>
@@ -202,18 +202,18 @@
                </request>
                <ListIdentifiers>
                   <xsl:apply-templates select="crossQueryResult/docHit" mode="idOnly"/>
-               </ListIdentifiers>
                <xsl:if test="$totalDocs > $nextPage">
                   <resumptionToken completeListSize="{$totalDocs}" cursor="{$cursor}">
                      <xsl:value-of select="concat(replace($http.URL,'[;&amp;]resumptionToken=[0-9]+',''),'::',$nextPage)"/>
                   </resumptionToken>
                </xsl:if>
+               </ListIdentifiers>
             </OAI-PMH>
          </xsl:when>
          <xsl:otherwise>
             <xsl:call-template name="oaiError">
                <xsl:with-param name="message">
-                  <xsl:value-of select="concat('OAI::ListIdentifiers::noRecordsMatch::',$noRecordsMatchMessage)"/>
+                  <xsl:value-of select="concat('ListIdentifiers::noRecordsMatch::',$noRecordsMatchMessage)"/>
                </xsl:with-param>
             </xsl:call-template>
          </xsl:otherwise>
@@ -256,18 +256,18 @@
                </request>
                <ListRecords>
                   <xsl:apply-templates select="crossQueryResult/docHit"/>
-               </ListRecords>
                <xsl:if test="$totalDocs > $nextPage">
                   <resumptionToken completeListSize="{$totalDocs}" cursor="{$cursor}">
                      <xsl:value-of select="concat(replace($http.URL,'[;&amp;]resumptionToken=[0-9]+',''),'::',$nextPage)"/>
                   </resumptionToken>
                </xsl:if>
+               </ListRecords>
             </OAI-PMH>
          </xsl:when>
          <xsl:otherwise>
             <xsl:call-template name="oaiError">
                <xsl:with-param name="message">
-                  <xsl:value-of select="concat('OAI::ListIdentifiers::noRecordsMatch::',$noRecordsMatchMessage)"/>
+                  <xsl:value-of select="concat('ListRecords::noRecordsMatch::',$noRecordsMatchMessage)"/>
                </xsl:with-param>
             </xsl:call-template>
          </xsl:otherwise>
