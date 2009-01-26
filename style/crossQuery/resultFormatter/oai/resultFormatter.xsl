@@ -162,7 +162,7 @@
    <!-- verb: Identify -->
    <xsl:template name="Identify">
       
-      <xsl:variable name="earliestDateStamp" select="//docHit[1]/meta/dateStamp[1]"/>
+      <xsl:variable name="earliestDateStamp" select="//docHit[matches(meta/dateStamp,'^[0-9]{4}-[0-9]{2}-[0-9]{2}$')][1]/meta/dateStamp[1]"/>
       
       <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -174,10 +174,10 @@
          <Identify>
             <repositoryName>XTF Sample Repository</repositoryName>
             <!-- CHANGE -->
-            <baseURL>http://oaiserver.org</baseURL>
+            <baseURL>http://stage.escholarship.org/default/oai</baseURL>
             <protocolVersion>2.0</protocolVersion>
             <!-- CHANGE -->
-            <adminEmail>admin@oaiserver.org</adminEmail>
+            <adminEmail>kirk.hastings@ucop.edu</adminEmail>
             <earliestDatestamp>
                <xsl:value-of select="$earliestDateStamp"/>
             </earliestDatestamp>
