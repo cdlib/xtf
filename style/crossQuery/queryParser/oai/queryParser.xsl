@@ -341,9 +341,7 @@
             <xsl:when test="$verb='ListSets'">
                <facet field="facet-subject" sortGroupsBy="value" sortDocsBy="dateStamp" select="*"/>
                <and>
-                  <and field="display">
-                     <term>all</term>
-                  </and>
+                  <allDocs/>
                </and>
             </xsl:when>
             <!-- I really hate using these hard-coded dates -->
