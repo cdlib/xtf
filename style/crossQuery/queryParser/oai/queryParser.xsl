@@ -309,9 +309,9 @@
                            </xsl:if>
                         </range>
                      </xsl:when>
-                     <xsl:otherwise>
-                        <and field="all">
-                           <term>all</term>
+                      <xsl:otherwise>
+                        <and>
+                          <allDocs/>
                         </and>
                      </xsl:otherwise>
                   </xsl:choose>
