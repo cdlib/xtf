@@ -184,6 +184,7 @@ public class FastTokenizer extends Tokenizer
     charType['\u2116'] = 's'; // numero
 
     // Other symbols
+    charType['\u00a7'] = 's'; // section sign
     charType['\u00ae'] = 's'; // registered trademark
     charType['\u00a9'] = 's'; // copyright
     charType['\u2122'] = 's'; // trademark
