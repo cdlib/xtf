@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
-   <docHit rank="1" file="doc2.xml" totalHits="3">
+<crossQueryResult totalDocs="2" startDoc="1" endDoc="2">
+   <docHit rank="1" file="doc4.xml" totalHits="2">
+      <meta>
+         <testMeta>test</testMeta>
+      </meta>
+      <snippet rank="1">sa sb sc <hit>
+            <term>§</term>
+         </hit> sd se sf</snippet>
+      <snippet rank="2">ta tb tc<hit>
+            <term>§</term>
+         </hit>td te tf</snippet>
+   </docHit>
+   <docHit rank="2" file="doc2.xml" totalHits="3">
       <meta>
          <testMeta>test</testMeta>
       </meta>

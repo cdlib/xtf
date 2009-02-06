@@ -5,5 +5,6 @@
     <phrase><term>£</term><term>200</term></phrase>
     <term>©</term>
     <near slop="10"><term>¾</term><term>÷</term></near>
+    <term>§</term>
   </or>
 </query>

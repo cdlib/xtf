@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <testMeta xtf:meta="true">test</testMeta>
+    <symbols2>
+      sa sb sc § sd se sf
+      ta tb tc§td te tf
+    </symbols2>  
+</document>
