@@ -305,7 +305,7 @@ public class XMLTextProcessor extends DefaultHandler
 
   /** The base directory for the current Lucene database. */
   private String indexPath;
-
+  
   /** Object used to construct a "lazy tree" representation of the XML source
    *  file being processed. <br><br>
    *
@@ -347,9 +347,6 @@ public class XMLTextProcessor extends DefaultHandler
    *  text/tag being processed is.
    */
   private int inMeta = 0;
-
-  /** List of meta-info currently accumulated for the current meta-tag. */
-  private LinkedList metaInfo;
 
   /** The current meta-field data being processed. */
   private MetaField metaField;
@@ -419,7 +416,7 @@ public class XMLTextProcessor extends DefaultHandler
    *  section type is encountered. See the {@link SectionInfoStack} class for
    *  more about section nesting.
    */
-  private SectionInfoStack section = new SectionInfoStack();
+  private SectionInfoStack section;
 
   /** The namespace string used to identify attributes that must be processed
    *  by the <code>XMLTextProcessor</code> class. <br><br>
@@ -472,7 +469,7 @@ public class XMLTextProcessor extends DefaultHandler
     throws IOException 
   {
     fileQueue = new LinkedList();
-
+    
     try 
     {
       // Get a reference to the passed in configuration that all the
@@ -1148,17 +1145,17 @@ public class XMLTextProcessor extends DefaultHandler
 
     // Reset the meta info for the new document.
     metaBuf.setLength(0);
-    metaInfo = null;
 
     // Reset count of how many chunks we've written.
     chunkCount = 0;
 
     // Create an initial unnamed section with depth zero, indexing turned on, 
     // a blank section name, no section bump, a word bump of 1, no word boost,
-    // and a default sentence bump.
+    // default sentence bump, blank subdocument name, and empty meta-data.
     //
+    section = new SectionInfoStack();
     section.push();
-
+    
     // Now parse it.
     int result = parseText();
 
@@ -1429,8 +1426,6 @@ public class XMLTextProcessor extends DefaultHandler
         throw new RuntimeException("Meta-data fields may not nest");
 
       inMeta = 1;
-      if (metaInfo == null)
-        metaInfo = new LinkedList();
 
       // See if there is a "store" attribute set for this node. If not,
       // default to true.
@@ -1546,22 +1541,21 @@ public class XMLTextProcessor extends DefaultHandler
     else 
     {
       // Get the current section type and word boost.
-      String prevSectionType = section.sectionType();
-      float prevWordBoost = section.wordBoost();
-      int prevSpellFlag = section.spellFlag();
+      SectionInfo prev = section.prev();
 
       // Process the node specific attributes such as section type,
       // section bump, word bump, word boost, and so on.
       //
-      ProcessNodeAttributes(atts);
+      processNodeAttributes(atts);
 
       // If the section type changed, we need to start a new chunk.
-      if (section.sectionType() != prevSectionType ||
-          section.wordBoost() != prevWordBoost ||
-          section.spellFlag() != prevSpellFlag) 
+      if (section.sectionType() != prev.sectionType ||
+          section.wordBoost()   != prev.wordBoost   ||
+          section.spellFlag()   != prev.spellFlag   ||
+          section.subDocument() != prev.subDocument) 
       {
         // Clear out any remaining accumulated text.
-        forceNewChunk(prevSectionType, prevWordBoost, prevSpellFlag);
+        forceNewChunk(prev);
 
         // Diagnostic info.
         //Trace.tab();
@@ -1677,7 +1671,7 @@ public class XMLTextProcessor extends DefaultHandler
     //
     if (inMeta > 1)
       metaBuf.append("</" + localName + ">");
-
+    
     // If this is the end of a meta-data field, record it.
     if (inMeta == 1) 
     {
@@ -1718,7 +1712,7 @@ public class XMLTextProcessor extends DefaultHandler
       //
       boolean add = true;
       int nFound = 0;
-      for (Iterator i = metaInfo.iterator(); i.hasNext();) 
+      for (Iterator i = section.metaInfo().iterator(); i.hasNext();) 
       {
         MetaField mf = (MetaField)i.next();
         boolean found = mf.name.equals(metaField.name);
@@ -1748,7 +1742,7 @@ public class XMLTextProcessor extends DefaultHandler
           metaField.wordBoost = 1.0f;
 
         // Record the new field.
-        metaInfo.add(metaField);
+        section.metaInfo().add(metaField);
       }
 
       metaField = null;
@@ -1757,31 +1751,47 @@ public class XMLTextProcessor extends DefaultHandler
     }
     else if (inMeta > 1)
       inMeta--;
-
-    // Save the section type and word boost value before popping the current 
-    // section info off the stack.
-    //
-    String prevSectionType = section.sectionType();
-    float prevWordBoost = section.wordBoost();
-    int prevSpellFlag = section.spellFlag();
-
-    // Decrease the section stack depth as needed, possibly pulling
-    // the entire section entry off the stack.
-    //
-    section.pop();
-
-    // If the section type changed, force new text to start in a new chunk. 
-    if (section.sectionType() != prevSectionType ||
-        section.wordBoost() != prevWordBoost ||
-        section.spellFlag() != prevSpellFlag) 
+    else
     {
-      // Output any remaining accumulated text.
-      forceNewChunk(prevSectionType, prevWordBoost, prevSpellFlag);
-
-      // Diagnostic info.
-      //Trace.tab();
-      //Trace.debug("End Section [" + prevSectionType + "]");
-      //Trace.untab();
+      // For non-meta nodes, we need to pop the section stack. First, 
+      // save the section type and word boost value so we can use them
+      // if changes occur.
+      //
+      SectionInfo prev = section.prev();
+  
+      // Decrease the section stack depth as needed, possibly pulling
+      // the entire section entry off the stack.
+      //
+      section.pop();
+  
+      // If the section type changed, force new text to start in a new chunk. 
+      if (section.sectionType() != prev.sectionType ||
+          section.wordBoost() != prev.wordBoost ||
+          section.spellFlag() != prev.spellFlag) 
+      {
+        // Output any remaining accumulated text.
+        forceNewChunk(prev);
+  
+        // Diagnostic info.
+        //Trace.tab();
+        //Trace.debug("End Section [" + prevSectionType + "]");
+        //Trace.untab();
+      }
+      
+      // If the subdocument has changed...
+      if (section.subDocument() != prev.subDocument) 
+      {
+        // Clear out any partially accumulated chunks.         
+        forceNewChunk(prev);
+  
+        // Insert a docInfo chunk right here, if there are chunks to include.
+        if (chunkCount > 0)
+          saveDocInfo(prev);
+  
+        // We're now in a new section, and a new subdocument.
+        chunkStartNode = -1;
+        chunkWordOffset = -1;
+      }
     }
 
     // Cross-check to make sure our node counting matches the lazy tree.
@@ -1835,10 +1845,10 @@ public class XMLTextProcessor extends DefaultHandler
     throws SAXException 
   {
     // Index the remaining accumulated chunk (if any).
-    indexText(section.sectionType(), section.wordBoost(), section.spellFlag());
+    indexText(section.peek());
 
     // Save the document "header" info.
-    saveDocInfo();
+    saveDocInfo(section.peek());
 
     // Finish building the lazy tree
     if (lazyHandler != null)
@@ -2131,9 +2141,7 @@ public class XMLTextProcessor extends DefaultHandler
           trimAccumText(false);
 
           // Index the accumulated text.
-          indexText(section.sectionType(),
-                    section.wordBoost(),
-                    section.spellFlag());
+          indexText(section.peek());
 
           // Advance the punctuation start point for the next word to
           // the beginning of the word itself, since we already 
@@ -2209,26 +2217,17 @@ public class XMLTextProcessor extends DefaultHandler
    *  breaks or new section types does not overlap with any previously
    *  accumulated source text.
    *
-   *  @param  sectionType  The section type to apply to the previously
-   *                       accumulated chunk.
-   *
-   *  @param  wordBoost    The word boost to apply to the previously
-   *                       accumulated chunk.
-   *
-   *  @param  spellFlag    Whether to add words to the spellcheck
-   *                       dictionary. <br><br>
-   *
    *  @.notes
    *    This method writes out any accumulated text and resets the chunk
    *    tracking information to the start of a new chunk.
    */
-  private void forceNewChunk(String sectionType, float wordBoost, int spellFlag) 
+  private void forceNewChunk(SectionInfo secInfo) 
   {
     // If there is a full chunk that hasn't been written yet, do it
     // now.
     if (nextChunkStartIdx > 0) 
     {
-      indexText(sectionType, wordBoost, spellFlag);
+      indexText(secInfo);
 
       // Make the next chunk current.
       chunkStartNode = nextChunkStartNode;
@@ -2251,7 +2250,7 @@ public class XMLTextProcessor extends DefaultHandler
     }
 
     // Index whatever is left in the accumulated text buffer.
-    indexText(sectionType, wordBoost, spellFlag);
+    indexText(secInfo);
 
     // Since we're forcing a new chunk, advance the next chunk past
     // the one we just wrote.
@@ -2716,9 +2715,7 @@ public class XMLTextProcessor extends DefaultHandler
   /** Add the current accumulated chunk of text to the Lucene database for
    *  the active index. <br><br>
    *
-   *  @param  sectionType  The section type name for this chunk of text.
-   *  @param  wordBoost    The word boost value for this chunk of text.
-   *  @param  spellFlag    Whether to add words to spelling dictionary. <br><br>
+   *  @param  section      Info such as sectionType, wordBoost, etc.
    *
    *  @.notes
    *    This method peforms the final step of adding a chunk of assembled text
@@ -2731,7 +2728,7 @@ public class XMLTextProcessor extends DefaultHandler
    *    the XML node in which the chunk begins, the word offset of the chunk,
    *    and the "blurbified" text for the chunk. <br><br>
    */
-  private void indexText(String sectionType, float wordBoost, int spellFlag) 
+  private void indexText(SectionInfo secInfo) 
   {
     try 
     {
@@ -2772,8 +2769,16 @@ public class XMLTextProcessor extends DefaultHandler
     doc.add(new Field("key", curIdxSrc.key(), Field.Store.NO, Field.Index.UN_TOKENIZED));
 
     // Write the current section type as a stored, indexed, tokenized field.
-    if (sectionType != null && sectionType.length() > 0)
-      doc.add(new Field("sectionType", sectionType, Field.Store.YES, Field.Index.TOKENIZED));
+    if (secInfo.sectionType != null && secInfo.sectionType.length() > 0)
+      doc.add(new Field("sectionType", secInfo.sectionType, Field.Store.YES, Field.Index.TOKENIZED));
+    
+    // Write the subdocument id as a non-stored, indexed, non-tokenized field. It's
+    // non-tokenized because the intent is that it will contain some sort of
+    // subdocument identifier. And it's non-stored because the returning the subdoc
+    // will only be done at the docHit level, not the chunk level.
+    //
+    if (secInfo.subDocument != null && secInfo.subDocument.length() > 0)
+      doc.add(new Field("subDocument", secInfo.subDocument, Field.Store.NO, Field.Index.UN_TOKENIZED));
 
     // Convert the various integer field values to strings for writing.
     String nodeStr = Integer.toString(chunkStartNode);
@@ -2782,8 +2787,7 @@ public class XMLTextProcessor extends DefaultHandler
 
     // Diagnostic output.
     //Trace.tab();
-    //Trace.debug("node " + nodeStr + ", offset = " + wordOffsetStr);
-    //Trace.more(" text = [" + textStr + "]");
+    //Trace.info("Chunk: text = [" + textStr + "], subDoc = " + secInfo.subDocument);
     //Trace.untab();
 
     // Add the node number for this chunk. Store, but don't index or tokenize.
@@ -2796,12 +2800,12 @@ public class XMLTextProcessor extends DefaultHandler
     Field textField = new Field("text", textStr, Field.Store.YES, Field.Index.TOKENIZED);
 
     // Set the boost value for the text.
-    textField.setBoost(wordBoost);
+    textField.setBoost(secInfo.wordBoost);
 
     // Establish whether to add words to the spellcheck dictionary.
     XTFTextAnalyzer analyzer = (XTFTextAnalyzer)indexWriter.getAnalyzer();
     analyzer.clearMisspelledFields();
-    if (spellFlag == SectionInfo.noSpell)
+    if (secInfo.spellFlag == SectionInfo.noSpell)
       analyzer.addMisspelledField("text");
 
     // Finally, add the text in the chunk to the index as a stored, indexed,
@@ -3112,7 +3116,7 @@ public class XMLTextProcessor extends DefaultHandler
    *    {@link XMLTextProcessor} class description. <br><br>
    *
    */
-  private void ProcessNodeAttributes(Attributes atts) 
+  private void processNodeAttributes(Attributes atts) 
   {
     String valueStr;
 
@@ -3125,6 +3129,8 @@ public class XMLTextProcessor extends DefaultHandler
     int indexFlag = SectionInfo.parentIndex;
     int spellFlag = SectionInfo.parentSpell;
     int sectionBump = 0;
+    String subDocumentStr = "";
+    LinkedList metaInfo = null;
 
     // Process each of the specified node attributes, outputting warnings
     // for the ones we don't recognize.
@@ -3215,9 +3221,7 @@ public class XMLTextProcessor extends DefaultHandler
         if (trueOrFalse(valueStr, false)) 
         {
           // Clear out any partially accumulated chunks.         
-          forceNewChunk(section.sectionType(),
-                        section.wordBoost(),
-                        section.spellFlag());
+          forceNewChunk(section.peek());
 
           // Reset the chunk position to the node we're in now.
           chunkStartNode = -1;
@@ -3240,9 +3244,7 @@ public class XMLTextProcessor extends DefaultHandler
         if (wordBoost != newBoost) 
         {
           // Clear out any partially accumulated chunks.         
-          forceNewChunk(section.sectionType(),
-                        section.wordBoost(),
-                        section.spellFlag());
+          forceNewChunk(section.peek());
 
           // Reset the chunk position to the node we're in now.
           chunkStartNode = -1;
@@ -3279,9 +3281,7 @@ public class XMLTextProcessor extends DefaultHandler
         if (spellFlag != section.spellFlag()) 
         {
           // Clear out any partially accumulated chunks.         
-          forceNewChunk(section.sectionType(),
-                        section.wordBoost(),
-                        section.spellFlag());
+          forceNewChunk(section.peek());
 
           // Reset the chunk position to the node we're in now.
           chunkStartNode = -1;
@@ -3292,6 +3292,29 @@ public class XMLTextProcessor extends DefaultHandler
           //Trace.untab();
         }
       } // else if( atts.getQName(i).equalsIgnoreCase("xtfIndex") )
+      
+      // If the current attribute indicates a new subdocument, get it.  
+      else if (attName.equalsIgnoreCase("subDocument")) {
+        subDocumentStr = atts.getValue(i);
+        
+        // If the subdocument has changed...
+        if (subDocumentStr != section.subDocument()) 
+        {
+          // Clear out any partially accumulated chunks.         
+          forceNewChunk(section.peek());
+
+          // Insert a docInfo chunk right here, if there are chunks to include.
+          if (chunkCount > 0)
+            saveDocInfo(section.peek());
+
+          // We're now in a new section, and a new subdocument.
+          chunkStartNode = -1;
+          chunkWordOffset = -1;
+          
+          // A new subdocument means forking the metadata as well.
+          metaInfo = (LinkedList) section.metaInfo().clone();
+        }
+      }
 
       // If we got to this point, and we've encountered an unrecognized 
       // xtf:xxxx attribute, display a warning message (if enabled for 
@@ -3315,7 +3338,9 @@ public class XMLTextProcessor extends DefaultHandler
                  sectionBump,
                  wordBoost,
                  sentenceBump,
-                 spellFlag);
+                 spellFlag,
+                 subDocumentStr,
+                 metaInfo);
   } // private ProcessNodeAttributes()
 
   ////////////////////////////////////////////////////////////////////////////
@@ -3342,7 +3367,7 @@ public class XMLTextProcessor extends DefaultHandler
    *    text chunks, the date the document was added to the index, and any
    *    meta-data associated with the document. <br><br>
    */
-  private void saveDocInfo() 
+  private void saveDocInfo(SectionInfo secInfo) 
   {
     // Make a new document, to which we can add our fields.     
     Document doc = new Document();
@@ -3357,6 +3382,11 @@ public class XMLTextProcessor extends DefaultHandler
     doc.add(new Field("chunkCount",
                       Integer.toString(chunkCount),
                       Field.Store.YES, Field.Index.NO));
+    
+    // Reset the chunk count, in case this is just a subdocument within
+    // the larger text.
+    //
+    chunkCount = 0;
 
     // Add the key to the document header as a stored, indexed, 
     // non-tokenized field.
@@ -3364,13 +3394,21 @@ public class XMLTextProcessor extends DefaultHandler
     doc.add(new Field("key", curIdxSrc.key(), 
                       Field.Store.YES, Field.Index.UN_TOKENIZED));
 
-    // If record number is non-zero, write it out as a stored, non-indexed,
-    // non-tokenized field.
-    //
+    // If record number is non-zero, write it out as a stored, non-indexed field.
     int recordNum = curIdxRecord.recordNum();
     if (recordNum > 0) {
       doc.add(new Field("recordNum",
                         Integer.toString(recordNum),
+                        Field.Store.YES, Field.Index.NO));
+    }
+
+    // If subdocument name is non-empty, write it out as a stored, non-indexed field.
+    // Why not indexed? Because it's also put on the individual text chunks, and
+    // on those it is indexed. Search is across text chunks, not docInfo chunks.
+    //
+    if (secInfo.subDocument != null) {
+      doc.add(new Field("subDocument",
+                        secInfo.subDocument,
                         Field.Store.YES, Field.Index.NO));
     }
 
@@ -3394,7 +3432,7 @@ public class XMLTextProcessor extends DefaultHandler
     analyzer.clearFacetFields();
 
     // Make sure we got meta-info for this document.
-    if (metaInfo == null || metaInfo.isEmpty()) {
+    if (secInfo.metaInfo.isEmpty()) {
       Trace.tab();
       Trace.warning("*** Warning: No meta data found for document.");
       Trace.untab();
@@ -3404,7 +3442,7 @@ public class XMLTextProcessor extends DefaultHandler
       // Get an iterator so we can add the various meta fields we found for
       // the document (most usually, things like author, title, etc.)
       //
-      Iterator metaIter = metaInfo.iterator();
+      Iterator metaIter = secInfo.metaInfo.iterator();
 
       // Add all the meta fields to the docInfo chunk.
       while (metaIter.hasNext()) 

@@ -231,6 +231,8 @@ public class QueryResult
         " totalHits=\"" + docHit.totalSnippets() + "\"");
       if (docHit.recordNum() > 0)
         buf.append(" recordNum=\"" + docHit.recordNum() + "\"");
+      if (docHit.subDocument() != null)
+        buf.append(" subDocument=\"" + docHit.subDocument() + "\"");
       buf.append(">\n");
 
       Explanation explanation = docHit.explanation();

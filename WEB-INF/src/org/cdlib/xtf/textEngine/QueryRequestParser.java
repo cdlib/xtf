@@ -488,6 +488,14 @@ public class QueryRequestParser
       result = combo;
     }
 
+    // If a subDocument query was specified, add that to the mix.
+    SpanQuery subDoc = parseSubDocument(parent, field, maxSnippets);
+    if (subDoc != null) {
+      SpanQuery combo = new SpanSectionTypeQuery((SpanQuery)result, subDoc);
+      combo.setSpanRecording(((SpanQuery)result).getSpanRecording());
+      result = combo;
+    }
+
     // All done!
     return result;
   } // parseQuery()
@@ -571,7 +579,7 @@ public class QueryRequestParser
       EasyNode el = parent.child(i);
       if (!el.isElement())
         continue;
-      if (el.name().equals("sectionType"))
+      if (el.name().matches("^(sectionType|subDocument)$"))
         continue; // handled elsewhere
       else if (el.name().equalsIgnoreCase("resultData"))
         continue; // ignore, handled by client's resultFormatter.xsl
@@ -1078,7 +1086,7 @@ public class QueryRequestParser
       return null;
 
     // These sectionType queries only belong in the "text" field.
-    if (!(field.equals("text")))
+    if (!"text".equals(field))
       error(
         "'sectionType' element is only appropriate in queries on the 'text' field");
 
@@ -1092,6 +1100,35 @@ public class QueryRequestParser
 
     return (SpanQuery)ret;
   } // parseSectionType()
+
+  /**
+   * Parse a 'subDocument' query element, if one is present. If not,
+   * simply returns null.
+   */
+  private SpanQuery parseSubDocument(EasyNode parent, String field,
+                                     int maxSnippets)
+    throws QueryGenException 
+  {
+    // Find the subDocument element (if any)
+    EasyNode subDocument = parent.child("subDocument");
+    if (subDocument == null)
+      return null;
+
+    // These subDocument queries only belong in the "text" field.
+    if (!"text".equals(field))
+      error(
+        "'subDocument' element is only appropriate in queries on the 'text' field");
+
+    // Make sure it only has one child.
+    if (subDocument.nChildren() != 1)
+      error("'subDocument' element requires exactly " + "one child element");
+
+    Query ret = parseQuery(subDocument.child(0), "subDocument", maxSnippets);
+    if (!(ret instanceof SpanQuery))
+      error("'subDocument' sub-query must use proximity");
+
+    return (SpanQuery)ret;
+  } // parseSubDocument()
 
   /**
    * If the given element has a 'field' attribute, return its value;
@@ -1112,6 +1149,9 @@ public class QueryRequestParser
     if (attVal.equals("sectionType") &&
         (parentField == null || !parentField.equals("sectionType")))
       error("'sectionType' is not valid for the 'field' attribute");
+    if (attVal.equals("subDocument") &&
+        (parentField == null || !parentField.equals("subDocument")))
+      error("'subDocument' is not valid for the 'field' attribute");
     if (parentField != null && !parentField.equals(attVal))
       error("Cannot override ancestor 'field' attribute");
 
@@ -1352,7 +1392,7 @@ public class QueryRequestParser
         //
         notVec.add(parseQuery2(el, "not", field, maxSnippets));
       }
-      else if (el.name().equals("sectionType"))
+      else if (el.name().matches("^(sectionType|subDocument)$"))
         continue; // handled elsewhere
       else {
         SpanQuery q;

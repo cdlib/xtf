@@ -107,14 +107,18 @@ public class SearchTree extends LazyDocument
   /** Set of accented chars to remove diacritics from */
   CharMap accentMap;
 
-  /** Document hit from the text engine, containing snippets for this doc */
-  DocHit docHit;
+  /** Total number of hits (might be greater than the number of snippets */
+  int totalHits = 0;
 
-  /** Total number of text hits within this document */
+  /** Number of hit snippets within this document */
   int nHits = 0;
 
   /** Array of snippets sorted by descending score */
   Snippet[] hitsByScore = new Snippet[0];
+  
+  /** Original DocHit and number within it for each Snippet */
+  DocHit[] hitsToDocHit = new DocHit[0];
+  int[] hitsToDocHitNum = new int[0];
 
   /** Array of snippets sorted in document order */
   Snippet[] hitsByLocation = new Snippet[0];
@@ -251,6 +255,9 @@ public class SearchTree extends LazyDocument
 
   /** Name-code for all &lt;sectionType&gt; attributes */
   int sectionTypeAttrCode;
+  
+  /** Name-code for all &lt;subDocument&gt; attributes */
+  int subDocumentAttrCode;
 
   /**
    * Load the tree from a disk file, and get ready to search it. To start
@@ -287,6 +294,7 @@ public class SearchTree extends LazyDocument
     hitNumAttrCode = getNameCode("hitNum", false);
     continuesAttrCode = getNameCode("more", false);
     sectionTypeAttrCode = getNameCode("sectionType", false);
+    subDocumentAttrCode = getNameCode("subDocument", false);
 
     hitElementFingerprint = namePool.getFingerprint(xtfURI, "hit");
     snippetElementFingerprint = namePool.getFingerprint(xtfURI, "snippet");
@@ -360,13 +368,30 @@ public class SearchTree extends LazyDocument
 
     // Run the query and get the results.
     QueryResult result = processor.processRequest(req);
-    assert result.docHits.length <= 1;
-    docHit = (result.docHits.length > 0) ? result.docHits[0] : null;
-    nHits = (docHit != null) ? docHit.nSnippets() : 0;
+    
+    nHits = 0;
+    totalHits = 0;
+    for (int i = 0; i < result.docHits.length; i++) {
+      nHits += result.docHits[i].nSnippets();
+      totalHits += result.docHits[i].totalSnippets();
+    }
+    
+    hitsToDocHit = new DocHit[nHits];
+    hitsToDocHitNum = new int[nHits];
     hitsByScore = new Snippet[nHits];
-    for (int i = 0; i < nHits; i++)
-      hitsByScore[i] = docHit.snippet(i, false);
-
+    
+    int n = 0;
+    for (int i = 0; i < result.docHits.length; i++) {
+      DocHit docHit = result.docHits[i];
+      for (int j = 0; j < docHit.nSnippets(); j++) {
+        hitsToDocHit[n] = docHit;
+        hitsToDocHitNum[n] = j;
+        hitsByScore[n] = docHit.snippet(j, false);
+        n++;
+      }
+    }
+    assert n == nHits;
+    
     // We'll need the term map later when we're marking hits.
     if (nHits > 0) 
     {
@@ -396,9 +421,9 @@ public class SearchTree extends LazyDocument
 
           // Debugging help
           @SuppressWarnings("unused")
-          String str1 = docHit.snippet(s1.rank, true).text;
+          String str1 = hitsToDocHit[s1.rank].snippet(hitsToDocHitNum[s1.rank], true).text;
           @SuppressWarnings("unused")
-          String str2 = docHit.snippet(s2.rank, true).text;
+          String str2 = hitsToDocHit[s2.rank].snippet(hitsToDocHitNum[s2.rank], true).text;
           assert false : "Chunk hits should never overlap!";
           return 0;
         }
@@ -417,8 +442,8 @@ public class SearchTree extends LazyDocument
       {
         if (s2.startOffset < s1.endOffset) 
         {
-          s1 = docHit.snippet(s1.rank, true);
-          s2 = docHit.snippet(s2.rank, true);
+          s1 = hitsToDocHit[s1.rank].snippet(hitsToDocHitNum[s1.rank], true);
+          s2 = hitsToDocHit[s2.rank].snippet(hitsToDocHitNum[s2.rank], true);
 
           // Debugging help
           @SuppressWarnings("unused")
@@ -995,8 +1020,7 @@ public class SearchTree extends LazyDocument
     topSnippetNode = addElement(rootKid, snippetsElementCode, 2, true);
     topSnippetNode.setAttribute(0,
                                 totalHitCountAttrCode,
-                                (docHit != null)
-                                  ? Integer.toString(docHit.totalSnippets()) : "0");
+                                Integer.toString(totalHits));
     topSnippetNode.setAttribute(1, hitCountAttrCode, Integer.toString(nHits));
 
     if (nHits > 0)
@@ -1012,13 +1036,15 @@ public class SearchTree extends LazyDocument
   {
     // Figure out which hit is being referenced
     int hitNum = num - SNIPPET_MARKER;
-    Snippet snippet = realNotProxy ? docHit.snippet(hitNum, true)
-                      : // we need the text.
-                        hitsByScore[hitNum];
+    DocHit docHit = hitsToDocHit[hitNum];
+    Snippet snippet = realNotProxy 
+                      ? docHit.snippet(hitsToDocHitNum[hitNum], true) // we need the text.
+                      : hitsByScore[hitNum];
 
     // Make the element, and create its links to other elements.
     int nAttribs = 2 + (snippet.sectionType != null ? 1 : 0) +
-                   (suppressScores ? 0 : 1);
+                   (suppressScores ? 0 : 1) +
+                   (docHit.subDocument() == null ? 0 : 1);
     SearchElement snippetElement = realNotProxy
                                    ? (SearchElement)new SearchElementImpl(this)
                                    : (SearchElement)new ProxyElement(this);
@@ -1052,6 +1078,8 @@ public class SearchTree extends LazyDocument
       snippetElement.setAttribute(attrNum++,
                                   sectionTypeAttrCode,
                                   snippet.sectionType);
+    if (docHit.subDocument() != null)
+      snippetElement.setAttribute(attrNum++, subDocumentAttrCode, docHit.subDocument());
     assert attrNum == nAttribs;
 
     // If we're only making a proxy node, don't do the text stuff.

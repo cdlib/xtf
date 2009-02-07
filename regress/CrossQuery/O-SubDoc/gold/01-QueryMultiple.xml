@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="4" startDoc="1" endDoc="4">
+   <docHit rank="1" file="doc1.xml" totalHits="1" subDocument="10-a">
+      <meta>
+         <field1>value1</field1>
+         <field2>value2-a</field2>
+      </meta>
+      <snippet rank="1">i3 <hit>
+            <term>ix</term>
+         </hit> i4</snippet>
+   </docHit>
+   <docHit rank="2" file="doc1.xml" totalHits="1" subDocument="10-b">
+      <meta>
+         <field1>value1</field1>
+         <field2>value2-b</field2>
+      </meta>
+      <snippet rank="1">i5 <hit>
+            <term>ix</term>
+         </hit> i6</snippet>
+   </docHit>
+   <docHit rank="3" file="doc1.xml" totalHits="1">
+      <meta>
+         <field1>value1</field1>
+      </meta>
+      <snippet rank="1">i1 <hit>
+            <term>ix</term>
+         </hit> i2</snippet>
+   </docHit>
+   <docHit rank="4" file="doc1.xml" totalHits="1">
+      <meta>
+         <field1>value1</field1>
+      </meta>
+      <snippet rank="1">i7 <hit>
+            <term>ix</term>
+         </hit> i8</snippet>
+   </docHit>
+</crossQueryResult>

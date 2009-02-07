@@ -62,6 +62,12 @@ public abstract class DocHit extends FieldDoc
    * if this is the only record.
    */
   public abstract int recordNum();
+  
+  /**
+   * Retrieve this document's subdocument name, or null if there is
+   * no subdocument (the default).
+   */
+  public abstract String subDocument();
 
   /**
    * Retrieve a list of all meta-data name/value pairs associated with this

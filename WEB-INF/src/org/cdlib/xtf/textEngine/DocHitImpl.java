@@ -66,6 +66,9 @@ public class DocHitImpl extends DocHit
 
   /** Record number of this document within the main file */
   private int recordNum = 0;
+  
+  /** Record the subdocument within the main file, if any */
+  private String subDocument = null;
 
   /** Total number of chunks for this document */
   private int chunkCount = -1;
@@ -211,6 +214,8 @@ public class DocHitImpl extends DocHit
         chunkCount = Integer.parseInt(value);
       else if (name.equals("recordNum"))
         recordNum = Integer.parseInt(value);
+      else if (name.equals("subDocument"))
+        subDocument = value;
       else if (!name.equals("docInfo"))
         loadMetaField(name, value, docContents, metaData, f.isTokenized());
     }
@@ -349,6 +354,16 @@ public class DocHitImpl extends DocHit
       load();
     return recordNum;
   } // filePath()
+  
+  /**
+   * Retrieve the subdocument name of this section within the main
+   * file, if any.
+   */
+  public final String subDocument() {
+    if (docKey == null)
+      load();
+    return subDocument;
+  }
 
   /**
    * Retrieve a list of all meta-data name/value pairs associated with this

@@ -29,6 +29,7 @@ package org.cdlib.xtf.textIndexer;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+import java.util.LinkedList;
 import java.util.Stack;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,6 +71,15 @@ public class SectionInfoStack
    *  {@link org.cdlib.xtf.textIndexer.SectionInfo} objects.
    */
   private Stack infoStack = new Stack();
+  
+  /** Top-level list of meta-data */
+  private LinkedList defaultMetaInfo = new LinkedList();
+  
+  public SectionInfoStack()
+  {
+    push();
+    top().depth = Integer.MAX_VALUE / 2; // It can never be popped past
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -128,6 +138,16 @@ public class SectionInfoStack
    *                       {@link org.cdlib.xtf.textIndexer#spell spell},
    *                       {@link org.cdlib.xtf.textIndexer#noSpell noSpell}.
    *                       <br><br>
+   *                       
+   *  @param subDocument   A name of the subdocument being pushed. A subdocument
+   *                       is part of a document that is to be represented as a 
+   *                       single searchable unit in search results, but should be
+   *                       viewed in the context of its larger document. A subdoc
+   *                       can have its own meta-data. If the empty string ""
+   *                       is passed, the subdocument is unchanged.
+   *                       
+   *  @param metaInfo      List of meta-data for the subdocument being pushed. 
+   *                       If null, the parent meta-data list will be used.
    *
    *  @.notes
    *       This method compares the passed attributes to the section currently
@@ -142,12 +162,19 @@ public class SectionInfoStack
    *       class. <br><br>
    */
   public void push(int indexFlag, String sectionType, int sectionBump,
-                   float wordBoost, int sentenceBump, int spellFlag) 
+                   float wordBoost, int sentenceBump, int spellFlag,
+                   String subDocument, LinkedList metaInfo) 
   {
     int prevSectionBump = 0;
 
     // See what's on the top of the stack.
     SectionInfo info = top();
+    
+    // Be sure to use interned strings so we can use '==' comparison later.
+    if (sectionType != null)
+      sectionType = sectionType.intern();
+    if (subDocument != null)
+      subDocument = subDocument.intern();
 
     // If there's something on the stack...
     if (info != null) 
@@ -163,6 +190,14 @@ public class SectionInfoStack
       // If no section name was specified, inherit the parent's section name.
       if (sectionType == "")
         sectionType = info.sectionType;
+      
+      // If no subdocument was specified, inherit the parent's subdoc name.
+      if (subDocument == "")
+        subDocument = info.subDocument;
+      
+      // If no metaInfo was specified, inherit the parent's metaInfo
+      if (metaInfo == null)
+        metaInfo = info.metaInfo;
 
       // If the information being pushed is the same as what's already
       // on the top of the stack, simply increase the depth of the current
@@ -173,7 +208,9 @@ public class SectionInfoStack
                          sectionBump,
                          wordBoost,
                          sentenceBump,
-                         spellFlag)) 
+                         spellFlag,
+                         subDocument,
+                         metaInfo)) 
       {
         push();
         return;
@@ -203,7 +240,15 @@ public class SectionInfoStack
     // Likewise with the spell flag.
     if (spellFlag == SectionInfo.parentSpell)
       spellFlag = SectionInfo.defaultSpellFlag;
+    
+    // Likewise with the sectionType.
+    if (sectionType == "")
+      sectionType = SectionInfo.defaultSectionType;
 
+    // Likewise with the subdocument name.
+    if (subDocument == "")
+      subDocument = SectionInfo.defaultSubDocument;
+    
     // At this point, we need to push new section info on the stack, either
     // because there's nothing on the stack, or because the specified section
     // info doesn't match the previous section info.
@@ -214,7 +259,9 @@ public class SectionInfoStack
                                    prevSectionBump + sectionBump,
                                    wordBoost,
                                    sentenceBump,
-                                   spellFlag));
+                                   spellFlag,
+                                   subDocument,
+                                   metaInfo));
   } // public push( indexFlag, ... )
 
   //////////////////////////////////////////////////////////////////////////////
@@ -247,7 +294,9 @@ public class SectionInfoStack
       // index flag set to "true", no section bump, a word bump of one, no
       // no word boost, and a sentence bump of 5.
       //
-      push(new SectionInfo());
+      SectionInfo initialSec = new SectionInfo();
+      initialSec.metaInfo = defaultMetaInfo;
+      push(initialSec);
       return;
     }
 
@@ -297,15 +346,37 @@ public class SectionInfoStack
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /** Return a copy of the section currently at the top of the nesting
+  /** Return a reference to the section currently at the top of the nesting
    *  without popping the stack.
    *  <br><br>
    *
-   *  @return  A copy of the top entry in the nesting stack.
+   *  @return  A reference to the top entry in the nesting stack.
    *
    */
   public SectionInfo peek() {
     return top();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  /** Return a reference to the section just below the current one.
+   *  <br><br>
+   *
+   *  @return  A reference to the second-from-top entry in the nesting stack.
+   *
+   */
+  public SectionInfo prev() {
+    // If the stack is empty, there is no prev.
+    SectionInfo theTop = top();
+    if (theTop == null)
+      return null;
+    
+    // If the top element is already duped, there is no change.
+    if (theTop.depth > 0)
+      return theTop;
+
+    // Otherwise up-cast a reference to the previous thing on the stack.
+    return (SectionInfo)(infoStack.elementAt(infoStack.size() - 1));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -341,7 +412,8 @@ public class SectionInfoStack
    */
   public boolean valuesChanged(int indexFlag, String sectionType,
                                int sectionBump, float wordBoost,
-                               int sentenceBump, int spellFlag) 
+                               int sentenceBump, int spellFlag,
+                               String subDocument, LinkedList metaInfo) 
   {
     // If the stack is empty, tell the caller that the values have changed.
     if (isEmpty())
@@ -370,7 +442,7 @@ public class SectionInfoStack
     //  
     else
       sectionBump = -1;
-
+    
     // If any of the values passed differs from the ones on the stack,
     // tell the caller.
     //
@@ -379,7 +451,9 @@ public class SectionInfoStack
         sectionBump != info.sectionBump ||
         wordBoost != info.wordBoost ||
         sentenceBump != info.sentenceBump ||
-        spellFlag != info.spellFlag)
+        spellFlag != info.spellFlag ||
+        subDocument != info.subDocument ||
+        metaInfo != info.metaInfo)
       return true;
 
     // Otherwise, indicate that the values are the same.    
@@ -469,6 +543,30 @@ public class SectionInfoStack
     // Otherwise return the actual spell flag for the top entry.
     return top().spellFlag;
   } // spellFlag()
+  
+  /** Return the subdocument name for the top of the nesting stack.
+   * 
+   * @return    Returns the subdocument name, or null for the outer document.
+   */
+  public String subDocument()
+  {
+    // If the stack is empty, return the default subdocument (none).
+    if (isEmpty())
+      return null;
+
+    // Otherwise return the actual subdocument for the top entry.
+    return top().subDocument;
+  }
+  
+  public LinkedList metaInfo()
+  {
+    // If the stack is empty, use the default list.
+    if (isEmpty())
+      return defaultMetaInfo;
+
+    // Otherwise return the actual meta-info for the top entry.
+    return top().metaInfo;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 

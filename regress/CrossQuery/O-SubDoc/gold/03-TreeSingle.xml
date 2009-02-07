@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xtf="http://cdlib.org/xtf" xtf:hitCount="1" xtf:firstHit="1">
+   <xtf:snippets totalHitCount="1" hitCount="1">
+      <xtf:snippet rank="1" hitNum="1" subDocument="10-b">i5 <xtf:hit>
+            <xtf:term>ix</xtf:term>
+         </xtf:hit> i6</xtf:snippet>
+   </xtf:snippets>
+  <all xtf:hitCount="1" xtf:firstHit="1">
+      <field1 xtf:meta="true">value1</field1>
+
+    
+    
+        
+        i1 <xtf:term>ix</xtf:term> i2
+        
+        <unitA xtf:subDocument="10-a">
+            <field2 xtf:meta="true">value2-a</field2>
+            i3 <xtf:term>ix</xtf:term> i4
+        </unitA>
+
+        <unitB xtf:subDocument="10-b" xtf:hitCount="1" xtf:firstHit="1">
+            <field2 xtf:meta="true">value2-b</field2>
+            i5 <xtf:hit rank="1" hitNum="1" more="no">
+            <xtf:term>ix</xtf:term>
+         </xtf:hit> i6
+        </unitB>
+
+        
+        i7 <xtf:term>ix</xtf:term> i8
+  </all>
+</document>

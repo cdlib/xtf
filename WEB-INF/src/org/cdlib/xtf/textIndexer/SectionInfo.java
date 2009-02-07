@@ -1,5 +1,6 @@
 package org.cdlib.xtf.textIndexer;
 
+import java.util.LinkedList;
 
 /**
  * Copyright (c) 2004, Regents of the University of California
@@ -151,6 +152,16 @@ public class SectionInfo
   *  <br><br>
   */
   public final static String defaultSectionType = "";
+  
+  /** Default subdocument: Value = {@value}.
+  *  <br><br>
+  *
+  *  This is the default value applied to the
+  *  {@link org.cdlib.xtf.textIndexer.SectionInfo#subDocument subDocument}
+  *  field whenever a <code>SectionInfo</code> class is constructed.
+  *  <br><br>
+  */
+  public final static String defaultSubDocument = null;
 
   /** Default word bump for a section: Value = {@value}.
    *  <br><br>
@@ -345,6 +356,24 @@ public class SectionInfo
    *  <br><br>
    */
   public int spellFlag;
+  
+  /** Name for a subdocument. <br><br>
+   * 
+   * This field indicates a section of the document that should be treated
+   * as an individual searchable unit, but should be viewed in the context
+   * of its containing document. If null, the section is simply considered
+   * part of the document with no subdocument distinction.
+   */
+  public String subDocument;
+  
+  /** Meta-data collection list for a subdocument. <br><br>
+   * 
+   * This field contains a list of meta-data that will be added to when
+   * xtf:meta attributes are encountered while indexing the current 
+   * subdocument. Since only a subdocument can have unique meta-data, this 
+   * attribute should only be pushed when a new subdocument is begun.
+   */
+  public LinkedList metaInfo;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -374,6 +403,8 @@ public class SectionInfo
     this.wordBoost = defaultWordBoost;
     this.sentenceBump = defaultSentenceBump;
     this.spellFlag = defaultSpellFlag;
+    this.subDocument = null;
+    this.metaInfo = null;
   } // SectionInfo()
 
   //////////////////////////////////////////////////////////////////////////////
@@ -385,7 +416,7 @@ public class SectionInfo
    */
   public SectionInfo(int depth, int indexFlag, String sectionType,
                      int sectionBump, float wordBoost, int sentenceBump,
-                     int spellFlag) 
+                     int spellFlag, String subDocument, LinkedList metaInfo) 
   {
     this.depth = depth;
     this.indexFlag = indexFlag;
@@ -395,6 +426,9 @@ public class SectionInfo
     this.wordBoost = wordBoost;
     this.sentenceBump = sentenceBump;
     this.spellFlag = spellFlag;
+    this.subDocument = subDocument;
+    assert subDocument == null || subDocument.length() > 0;
+    this.metaInfo = metaInfo;
   } // sectionBump()
 
   //////////////////////////////////////////////////////////////////////////////
