@@ -379,7 +379,7 @@
                <xsl:value-of select="'20'"/>
             </xsl:when>
             <xsl:otherwise>
-               <xsl:value-of select="@totalDocs"/>
+               <xsl:value-of select="/crossQueryResult/@totalDocs"/>
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
@@ -412,7 +412,7 @@
    <xsl:template name="pages">
       
       <xsl:variable name="total" as="xs:integer">
-         <xsl:value-of select="@totalDocs"/>
+          <xsl:value-of select="/crossQueryResult/@totalDocs"/>
       </xsl:variable>
       
       <xsl:variable name="start" as="xs:integer">
@@ -880,13 +880,13 @@
       </xsl:variable>
       
       <xsl:choose>
-         <xsl:when test="facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link and count(descendant::group[docHit]) > 1]">
+          <xsl:when test="/crossQueryResult/facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link and count(descendant::group[docHit]) > 1]">
             <span style="color: red"><xsl:value-of select="upper-case($alpha)"/></span>
          </xsl:when>
-         <xsl:when test="facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link and count(docHit) > 0]">
+          <xsl:when test="/crossQueryResult/facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link and count(docHit) > 0]">
             <span style="color: red"><xsl:value-of select="upper-case($alpha)"/></span>
          </xsl:when>
-         <xsl:when test="facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link]">
+          <xsl:when test="/crossQueryResult/facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link]">
             <a href="{$xtfURL}{$crossqueryPath}?browse-{$browse-name}={$browse-link};sort={$browse-name}"><xsl:value-of select="$alpha"/></a>
          </xsl:when>
          <xsl:otherwise>
@@ -912,7 +912,7 @@
       <!-- Page Maximum: this will handle up to 1 million objects -->
       <xsl:param name="PM" select="11112"/>
       <!-- Total Documents -->
-      <xsl:param name="TD" select="@totalDocs"/>
+       <xsl:param name="TD" select="/crossQueryResult/@totalDocs"/>
       <!-- Page Number -->
       <xsl:param name="PN" select="($startDoc - 1) div 90"/>
       <!-- Start Document -->
@@ -960,7 +960,7 @@
    
    <xsl:template match="docHit" mode="robot">
       
-      <xsl:variable name="path" select="@path"/>
+       <xsl:variable name="path" select="/crossQueryResult/@path"/>
       
       <li>
          <a>
@@ -988,7 +988,7 @@
    <!-- ====================================================================== -->
    
    <!-- Facet -->
-   <xsl:template match="facet[matches(@field,'^facet-')]" exclude-result-prefixes="#all">
+    <xsl:template match="/crossQueryResult/facet[matches(@field,'^facet-')]" exclude-result-prefixes="#all">
       <xsl:variable name="field" select="replace(@field, 'facet-(.*)', '$1')"/>
       <xsl:variable name="needExpand" select="@totalGroups > count(group)"/>
       <div class="facet">
@@ -1058,7 +1058,7 @@
                   <xsl:apply-templates select="." mode="afterGroupValue"/>
                </td>
                <td class="col3">
-                  (<xsl:value-of select="@totalDocs"/>)
+                   (<xsl:value-of select="/crossQueryResult/@totalDocs"/>)
                </td>
             </xsl:otherwise>
          </xsl:choose>
@@ -1152,7 +1152,7 @@
                   <xsl:apply-templates select="." mode="afterGroupValue"/>
                </td>
                <td class="col3">
-                  (<xsl:value-of select="@totalDocs"/>)
+                   (<xsl:value-of select="/crossQueryResult/@totalDocs"/>)
                </td>
             </xsl:when>
             
@@ -1171,7 +1171,7 @@
                   <xsl:apply-templates select="." mode="afterGroupValue"/>
                </td>
                <td class="col3">
-                  (<xsl:value-of select="@totalDocs"/>)
+                   (<xsl:value-of select="/crossQueryResult/@totalDocs"/>)
                </td>
             </xsl:when>
                
