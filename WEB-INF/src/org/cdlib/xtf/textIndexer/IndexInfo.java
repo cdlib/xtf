@@ -1,5 +1,7 @@
 package org.cdlib.xtf.textIndexer;
 
+import java.util.ArrayList;
+
 
 /**
  * Copyright (c) 2004, Regents of the University of California
@@ -56,7 +58,7 @@ public class IndexInfo
   public String indexName;
 
   /** Name of a sub-directory to index, or null to index everything */
-  public String subDir;
+  public ArrayList<String> subDirs;
 
   /** Name of the path to the current index's Lucene database. */
   public String indexPath;

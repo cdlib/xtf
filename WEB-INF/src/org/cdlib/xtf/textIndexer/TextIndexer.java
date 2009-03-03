@@ -255,7 +255,8 @@ public class TextIndexer
           Trace.error("-optimize|-nooptimize                 Default: -optimize");
           Trace.error("-trace errors|warnings|info|debug     Default: -trace info");
           Trace.error(
-            "-dir <subdir>                         Default: (all data directories)");
+            "-dir <subdir1> -dir <subdir2>...      Default: (all data directories)");
+          Trace.error("-dirlist <fileOfSubdirs>");
           Trace.error("-buildlazy|-nobuildlazy               Default: -buildlazy");
           Trace.error(
             "-updatespell|-noupdatespell           Default: -updatespell");
@@ -315,18 +316,19 @@ public class TextIndexer
         String srcRootDir = Path.resolveRelOrAbs(xtfHomeFile,
                                                  cfgInfo.indexInfo.sourcePath);
 
-        // If a sub-directory was specified, limit to just that.
-        if (cfgInfo.indexInfo.subDir != null) {
-          srcRootDir = Path.resolveRelOrAbs(srcRootDir,
-                                            Path.normalizePath(
-                                              cfgInfo.indexInfo.subDir));
-        }
-
-        // Process everything below it (unless instructed to skip this part)
+        // Process the directories below it (unless instructed to skip this part)
         if (!cfgInfo.skipIndexing) 
         {
           srcTreeProcessor.open(cfgInfo);
-          srcTreeProcessor.processDir(new File(srcRootDir), 0);
+          if (cfgInfo.indexInfo.subDirs == null)
+            srcTreeProcessor.processDir(new File(srcRootDir), 0);
+          else 
+          {
+            for (String subDir : cfgInfo.indexInfo.subDirs) {
+              String subDirPath = Path.resolveRelOrAbs(srcRootDir, Path.normalizePath(subDir));
+              srcTreeProcessor.processDir(new File(subDirPath), 0);
+            }
+          }
           srcTreeProcessor.close();
 
           // Cull files which are present in the index but missing

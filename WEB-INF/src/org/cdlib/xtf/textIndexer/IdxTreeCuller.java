@@ -44,6 +44,7 @@ import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 import java.io.IOException;
+import java.util.HashSet;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -93,6 +94,16 @@ public class IdxTreeCuller
     // Start with no Path fields encountered, and no documents culled.
     int docCount = 0;
     int cullCount = 0;
+    
+    // If a subdirectory list was specified, make it into a quick-searching
+    // HashSet.
+    //
+    HashSet subdirs = null;
+    if (idxInfo.subDirs != null) {
+      subdirs = new HashSet();
+      for (String dir : idxInfo.subDirs)
+        subdirs.add(Path.normalizePath(dir));
+    }
 
     IndexReader indexReader = null;
     TermEnum termEnum = null;
@@ -123,9 +134,19 @@ public class IdxTreeCuller
         if (!indexName.equals(idxInfo.indexName))
           continue;
 
-        // If a subdirectory was specified, skip docs that aren't in it.
-        if (idxInfo.subDir != null && !relPath.startsWith(idxInfo.subDir))
-          continue;
+        // If a subdirectory was specified, skip docs that aren't within it.
+        if (subdirs != null)
+        {
+          // Check each level of the path.
+          File file = new File(relPath);
+          boolean found = false;
+          for (; !found && file != null; file = file.getParentFile()) {
+            if (subdirs.contains(Path.normalizePath(file.toString())))
+              found = true;
+          }
+          if (!found)
+            continue;
+        }
 
         // Track how many documents there are.
         docCount++;

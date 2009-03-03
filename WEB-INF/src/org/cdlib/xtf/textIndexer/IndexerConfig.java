@@ -29,6 +29,13 @@ package org.cdlib.xtf.textIndexer;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 import org.cdlib.xtf.util.*;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -214,8 +221,8 @@ public class IndexerConfig
     // Assume we haven't read the necessary arguments yet.
     boolean gotIdxName = false;
 
-    // Start with no sub-directory selected.
-    indexInfo.subDir = null;
+    // Start with no sub-directories selected.
+    indexInfo.subDirs = null;
 
     // Process the command line arguments based on where we left off
     // last time (if there was a last time.)
@@ -255,7 +262,8 @@ public class IndexerConfig
       }
 
       // If the user wants to specify that indexing should apply only
-      // to a specified sub-directory, record that info now.
+      // to a specified sub-directory, record that info now. This option
+      // can be repeated and/or mixed with "-dirList"
       //
       else if (args[i].equalsIgnoreCase("-dir")) 
       {
@@ -265,13 +273,60 @@ public class IndexerConfig
         if (++i >= args.length)
           return -1;
 
-        // This should only be specified max once per index.
-        if (indexInfo.subDir != null) {
-          Trace.error("Error: Only one directory may be specified per index");
+        // If no dir list already, make one.
+        if (indexInfo.subDirs == null)
+          indexInfo.subDirs = new ArrayList<String>();
+        
+        // Now add the newly specified directory.
+        indexInfo.subDirs.add(args[i]);
+      }
+
+      // If the user wants to specify a list of sub-directories to which
+      // indexing should only apply, record the contents of that list
+      // now. This option can be repeated and/or mixed with "-dir".
+      //
+      else if (args[i].equalsIgnoreCase("-dirList")) 
+      {
+        // If there aren't any more arguments, tell the caller
+        // that we failed to get enough info to continue.
+        //
+        if (++i >= args.length)
+          return -1;
+        
+        // Read in the file. The special name "-" can be used to
+        // specify stdin.
+        //
+        String fileName = args[i];
+        try {
+          InputStream inStream;
+          String filePath = Path.resolveRelOrAbs(xtfHomePath, fileName);
+          inStream = new FileInputStream(filePath);
+          
+          // Read each line and add it to the list.
+          BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
+          while (true) 
+          {
+            String line = reader.readLine();
+            if (line == null)
+              break;
+            String dirName = line.trim();
+            if (dirName.length() == 0)
+              continue;
+            
+            // If no dir list already, make one.
+            if (indexInfo.subDirs == null)
+              indexInfo.subDirs = new ArrayList<String>();
+            
+            // Now add the newly specified directory.
+            indexInfo.subDirs.add(dirName);
+          }
+          reader.close();
+        }
+        catch (IOException e) {
+          Trace.error("Error reading directory list");
+          Trace.error("");
           return -1;
         }
-
-        indexInfo.subDir = args[i];
       }
 
       // If the user asked for a clean index, flag it.
