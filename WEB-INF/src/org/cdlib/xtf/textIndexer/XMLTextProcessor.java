@@ -282,6 +282,9 @@ public class XMLTextProcessor extends DefaultHandler
    *  updated. See the {@link IndexInfo} class description for more details.
    */
   private IndexInfo indexInfo;
+  
+  /** Whether to ignore file modification times */
+  private boolean ignoreFileTimes;
 
   /** The base directory from which to resolve relative paths (if any) */
   private String xtfHomePath;
@@ -433,6 +436,18 @@ public class XMLTextProcessor extends DefaultHandler
   ////////////////////////////////////////////////////////////////////////////
 
   /**
+   * Version for source-level backward compatibility since this API is
+   * used sometimes externally. Defaults 'ignoreFileTimes' to false.
+   */
+  public void open(String homePath, IndexInfo idxInfo, boolean clean)
+    throws IOException
+  {
+    open(homePath, idxInfo, clean, false);
+  }
+  
+  ////////////////////////////////////////////////////////////////////////////
+
+  /**
    * Open a TextIndexer (Lucene) index for reading or writing. <br><br>
    *
    * The primary purpose of this method is to open the index identified by the
@@ -449,6 +464,9 @@ public class XMLTextProcessor extends DefaultHandler
    *
    * @param  clean    true to truncate any existing index; false to add to it.
    *                  <br><br>
+   *                  
+   * @param ignoreFileTimes true to ignore file time checks (only applies
+   *                  during incremental indexing).
    *
    * @.notes
    *   This method will create an index if it doesn't exist, or truncate an index
@@ -465,7 +483,8 @@ public class XMLTextProcessor extends DefaultHandler
    *                creation, or truncation of the Lucene index. <br><br>
    *
    */
-  public void open(String homePath, IndexInfo idxInfo, boolean clean)
+  public void open(String homePath, IndexInfo idxInfo, boolean clean,
+                   boolean ignoreFileTimes)
     throws IOException 
   {
     fileQueue = new LinkedList();
@@ -477,6 +496,7 @@ public class XMLTextProcessor extends DefaultHandler
       //
       this.indexInfo = idxInfo;
       this.xtfHomePath = homePath;
+      this.ignoreFileTimes = ignoreFileTimes;
 
       // Determine where the index database is located.
       indexPath = getIndexPath();
@@ -3618,8 +3638,8 @@ public class XMLTextProcessor extends DefaultHandler
         srcPath.lastModified(), 
         DateTools.Resolution.MILLISECOND);
 
-      // If the dates are different...
-      if (fileDateStr.compareTo(indexDateStr) != 0) 
+      // If the dates are different (or we're ignoring them)...
+      if (fileDateStr.compareTo(indexDateStr) != 0 || ignoreFileTimes) 
       {
         // Delete the old lazy file, if any. Might as well delete any
         // empty parent directories as well.

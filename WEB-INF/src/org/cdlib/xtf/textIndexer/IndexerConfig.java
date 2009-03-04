@@ -123,6 +123,15 @@ public class IndexerConfig
    *  false = Perform the main indexing pass. <br><br>
    */
   public boolean skipIndexing;
+  
+  /**
+   * Flag indicating whether or not to "force" indexing of items
+   * <br><br>
+   *
+   *  true  = Ignore file mod times during incremental indexing.  <br>
+   *  false = Normal file mod time check. <br><br>
+   */
+  public boolean force;
 
   /** Index specific information for the current index being created or
    *  updated.
@@ -155,6 +164,9 @@ public class IndexerConfig
 
     // Default to performing the main indexing pass
     skipIndexing = false;
+    
+    // Default to normal mod-time check in incremental mode
+    force = false;
 
     // Set the default trace level to display errors.
     traceLevel = Trace.info;
@@ -364,6 +376,10 @@ public class IndexerConfig
       // If the user asked for us to skip the main indexing pass, flag it.
       else if (args[i].equalsIgnoreCase("-skipindexing"))
         skipIndexing = true;
+      
+      // If the user asked us to ignore mod times, flag it.
+      else if (args[i].equalsIgnoreCase("-force"))
+        force = true;
 
       // If we found the -trace argument...
       else if (args[i].equalsIgnoreCase("-trace")) 
