@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    FileUtils test:
+    
+    Existence: true
+    Non-existence: false
+    
+    Length: 194
+    
+    Human bytes: 123
+    Human K: 12.06 Kb
+    Human M: 11.77 Mb
+    Human G: 11.50 Gb
+    
+    MD5: e80b5017098950fc58aad83c8c14978e

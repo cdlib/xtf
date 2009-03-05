@@ -6,8 +6,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.MessageDigest;
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -135,6 +139,138 @@ public class FileUtils
       return -1;
     return file.length();
   } // length()
+
+  /**
+   * Converts the size of a file to a human-readable string, e.g.
+   * "36 Kb", "1.2 Mb", etc.
+   * 
+   * @author                     Michael A. Russell
+   * 
+   * @param  longFileSize        The size to convert
+   * @return                     Human-readable string approximating that size.
+   */
+  public static String humanFileSize(Long longFileSize) 
+  {
+    /* If the input is negative, return a zero-length string.  */
+    if (longFileSize < 0) return("");
+
+    /* If it's up to 512, use the number itself.  */
+    if (longFileSize < 512) return(longFileSize.toString( ));
+
+    /* Provide a place to put the result of the division.  */
+    double doubleBytes;
+
+    /* We want at most two digits to the right of the decimal point.  */
+    DecimalFormat outputFormat = new DecimalFormat("0.00");
+
+    /* Provide a place to put the converted value.  */
+    StringBuffer outputStrBuf = new StringBuffer( );
+
+    /* Provide a "FieldPosition" object.  It looks like it's returned
+     * by the "format( )" method, but I don't really care about it.
+     * I haven't been able to find an example of how to use it, so
+     * I'll just try using zero, and see what that does.
+     */
+    FieldPosition fieldPos = new FieldPosition(0);
+
+    /* If it's up to 1024 * 512, express in terms of kilobytes.  */
+    if (longFileSize < (1024L * 512L)) {
+      doubleBytes = longFileSize.doubleValue( ) / 1024.0;
+      outputFormat.format(doubleBytes, outputStrBuf, fieldPos);
+      return(outputStrBuf.toString( ) + " Kb");
+    }
+
+    /* If it's up to 1024 * 1024 * 512, express in terms of megabytes.  */
+    if (longFileSize < (1024L * 1024L * 512L)) {
+      doubleBytes = longFileSize.doubleValue( ) / (1024.0 * 1024.0);
+      outputFormat.format(doubleBytes, outputStrBuf, fieldPos);
+      return(outputStrBuf.toString( ) + " Mb");
+    }
+
+    /* If it's up to 1024 * 1024 * 1024 * 512, express in terms of
+     * gigabytes.
+     */
+    if (longFileSize < (1024L * 1024L * 1024L * 512L)) {
+      doubleBytes = longFileSize.doubleValue( ) / (1024.0 * 1024.0 *
+          1024.0);
+      outputFormat.format(doubleBytes, outputStrBuf, fieldPos);
+      return(outputStrBuf.toString( ) + " Gb");
+    }
+
+    /* If it's up to 1024 * 1024 * 1024 * 1024 * 512, express in terms of
+     * terabytes.
+     */
+    if (longFileSize < (1024L * 1024L * 1024L * 1024L * 512L)) {
+      doubleBytes = longFileSize.doubleValue( ) / (1024.0 * 1024.0 *
+          1024.0 * 1024.0);
+      outputFormat.format(doubleBytes, outputStrBuf, fieldPos);
+      return(outputStrBuf.toString( ) + " Tb");
+    }
+
+    /* If it's up to 1024 * 1024 * 1024 * 1024 * 1024 * 512, express in
+     * terms of petabytes.
+     */
+    if (longFileSize < (1024L * 1024L * 1024L * 1024L * 1024L * 512L)) {
+      doubleBytes = longFileSize.doubleValue( ) / (1024.0 * 1024.0 *
+          1024.0 * 1024.0 * 1024.0);
+      outputFormat.format(doubleBytes, outputStrBuf, fieldPos);
+      return(outputStrBuf.toString( ) + " Pb");
+    }
+
+    /* Express in exabytes.  A long integer can be at most 2**63 - 1,
+     * and that's about 9 exabytes, so we don't need to go higher.
+     */
+    doubleBytes = longFileSize.doubleValue( ) / (1024.0 * 1024.0 *
+            1024.0 * 1024.0 * 1024.0 * 1024.0);
+    outputFormat.format(doubleBytes, outputStrBuf, fieldPos);
+    return(outputStrBuf.toString( ) + " Eb");
+  }
+  
+  /**
+   * Calculate the MD5 digest of a string.
+   * 
+   * @author                    Michael A. Russell
+   * 
+   * @param inputString         String to digest
+   * @return                    The string's MD5 hash
+   */
+  public static String md5Hash(String inputString) 
+  {
+    /* Get an md5 message digest object.  */
+    MessageDigest msgDigest;
+    try {
+      msgDigest = MessageDigest.getInstance("MD5");
+    }
+    catch (Exception e) {
+      /* NoSuchAlgorithmException probably.  Return a zero-length
+       * string.
+       */
+      return("");
+    }
+
+    /* Calculate the md5 digest for the input string.  */
+    msgDigest.update(inputString.getBytes( ), 0, inputString.length( ));
+
+    /* Get a BigInteger version of the md5 digest.  */
+    BigInteger bigInt;
+    try {
+      bigInt = new BigInteger(1, msgDigest.digest( ));
+    }
+    catch (Exception e) {
+      /* NumberFormatException probably.  Return a zero-length string.  */
+      return("");
+    }
+
+    /* Convert the BigInteger to a hex string.  */
+    String outputString = bigInt.toString(16);
+
+    /* If the number of characters is odd, then prefix a zero.  */
+    if (outputString.length( ) % 2 == 1)
+      outputString = "0" + outputString;
+
+    /* Return the result.  */
+    return(outputString);
+  }
 
   /**
    * Resolve the location of a file given the stylesheet context.
