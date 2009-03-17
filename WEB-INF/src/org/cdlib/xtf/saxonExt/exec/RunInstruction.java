@@ -36,18 +36,14 @@ package org.cdlib.xtf.saxonExt.exec;
  */
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.xml.transform.stream.StreamSource;
+
+import org.cdlib.xtf.util.ProcessRunner;
 
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.SimpleExpression;
@@ -154,140 +150,29 @@ class RunInstruction extends SimpleExpression
     if (inputExpr != null)
       inputBytes = inputExpr.getStream(context);
 
-    // Get ready to go
-    Process process = null;
-
-    InputStream stdout = null;
-    OutputGrabber stdoutGrabber = null;
-    InputStream stderr = null;
-    OutputGrabber stderrGrabber = null;
-
-    OutputStream stdin = null;
-    InputStuffer stdinStuffer = null;
-
-    Timer timer = new Timer();
-    Interrupter interrupter = null;
-
-    try 
-    {
-      // Fire up the process.
-      process = Runtime.getRuntime().exec(argArray);
-
-      // Stuff input into it (even if that input is nothing).
-      stdin = process.getOutputStream();
-      stdinStuffer = new InputStuffer(stdin, inputBytes);
-      stdinStuffer.start();
-
-      // Grab all the output
-      stdout = process.getInputStream();
-      stdoutGrabber = new OutputGrabber(stdout);
-      stderr = process.getErrorStream();
-      stderrGrabber = new OutputGrabber(stderr);
-
-      stdoutGrabber.start();
-      stderrGrabber.start();
-
-      // Set a timer so we can stop the process if it exceeds the timeout.
-      if (timeout > 0) {
-        interrupter = new Interrupter(Thread.currentThread());
-        timer.schedule(interrupter, timeout);
-      }
-
-      // Wait for the process to finish.
-      process.waitFor();
-    } // try
+    byte[] outputBytes = null;
+    try {
+      outputBytes = ProcessRunner.runAndGrab(argArray, inputBytes, timeout);
+    }
     catch (IOException e) 
     {
-      if (stdin != null)
-        try { stdin.close();  } catch (IOException e2) { /*ignore*/ }
-      if (stdout != null)
-        try { stdout.close(); } catch (IOException e2) { /*ignore*/ }
-      if (stderr != null)
-        try { stderr.close(); } catch (IOException e2) { /*ignore*/ }
-        
       dynamicError(
         "IO exception occurred processing external command '" + command +
         "': " + e,
         "EXEC005", context);
     }
     catch (InterruptedException e) {
-      if (stdinStuffer != null)
-        stdinStuffer.interrupt();
-      if (stdoutGrabber != null)
-        stdoutGrabber.interrupt();
-      if (stderrGrabber != null)
-        stderrGrabber.interrupt();
-      if (process != null)
-        process.destroy();
-      
       dynamicError(
         "External command '" + command + "' exceeded timeout of " +
         (new DecimalFormat().format(timeout / 1000.0)) + " sec",
         "EXEC002", context);
     }
-    finally {
-      if (interrupter != null) { 
-        synchronized (interrupter) {
-          timer.cancel(); // avoid further interruptions
-          interrupter.mainThread = null; // make sure it can't get to us
-          Thread.interrupted(); // clear out the interrupted flag.
-        }
-      }
+    catch (ProcessRunner.CommandFailedException e) {
+      dynamicError(e.getMessage(), "EXEC003", context);
     }
-
-    // Wait for the stuffer and grabbers to finish their work.
-    try 
-    {
-      if (stdinStuffer != null) { 
-        while (true) 
-        {
-          synchronized (stdinStuffer) {
-            if (stdinStuffer.done)
-              break;
-            stdinStuffer.wait();
-          }
-        }
-      }
-      while (true) { 
-        synchronized (stdoutGrabber) {
-          if (stdoutGrabber.done)
-            break;
-          stdoutGrabber.wait();
-        }
-      }
-      while (true) { 
-        synchronized (stderrGrabber) {
-          if (stderrGrabber.done)
-            break;
-          stderrGrabber.wait();
-        }
-      }
-    }
-    catch (InterruptedException e) {
-      assert false : "should not be interrupted at this stage";
-    }
-
-    // Make sure all the streams are closed (to avoid leaking.)
-    if (stdin != null)
-      try { stdin.close();  } catch (IOException e) { /*ignore*/ }
-    if (stdout != null)
-      try { stdout.close(); } catch (IOException e) { /*ignore*/ }
-    if (stderr != null)
-      try { stderr.close(); } catch (IOException e) { /*ignore*/ }
-
-    // If we got a non-zero exit status, and something came out on stderr,
-    // then throw an exception.
-    //
-    if (process.exitValue() != 00) {
-      String errStr = new String(stderrGrabber.outBytes);
-      dynamicError(
-        "External command '" + command + "' exited with status " +
-        process.exitValue() + ". Output from stderr:\n" + errStr,
-        "EXEC003", context);
-    }
-
+    
     // Return the results from stdout
-    return stdoutGrabber.outBytes;
+    return outputBytes;
   }
 
   /**
@@ -311,112 +196,5 @@ class RunInstruction extends SimpleExpression
     String[] argArray = (String[])args.toArray(new String[args.size()]);
     return argArray;
   }
-  
-  /** Used to interrupt the main thread if a timeout occurs */
-  private static class Interrupter extends TimerTask 
-  {
-    public Thread mainThread;
-
-    public Interrupter(Thread mainThread) {
-      this.mainThread = mainThread;
-    }
-
-    public synchronized void run() {
-      if (mainThread != null)
-        mainThread.interrupt();
-    }
-  } // class Interrupter
-
-  /**
-   * Class to stuff input into the process's input stream (an OutputStream to
-   * us).
-   */
-  private static class InputStuffer extends Thread 
-  {
-    private OutputStream outStream;
-    private byte[] bytes;
-    public Throwable error;
-    public boolean done = false;
-
-    public InputStuffer(OutputStream stream, byte[] bytes)
-      throws UnsupportedEncodingException 
-    {
-      this.outStream = stream;
-      this.bytes = bytes;
-    }
-
-    public void run() 
-    {
-      try 
-      {
-        // Write all the data.
-        outStream.write(bytes);
-
-        // Inform the process that this is the end now.
-        outStream.close();
-      } // try
-      catch (IOException e) 
-      {
-        error = e;
-      }
-      finally {
-        synchronized (this) {
-          done = true;
-          notifyAll();
-        }
-      }
-    } // run()
-  } // class InputStuffer
-
-  /**
-   * Class to accumulate the output from a process's output stream (which is
-   * an InputStream to us), and turn it into a string.
-   */
-  private static class OutputGrabber extends Thread 
-  {
-    private InputStream inStream;
-    private ByteArrayOutputStream buffer = new ByteArrayOutputStream(100);
-    public byte[] outBytes = new byte[0];
-    public Throwable error;
-    public boolean done = false;
-
-    public OutputGrabber(InputStream stream) {
-      this.inStream = stream;
-    }
-
-    public void run() 
-    {
-      // Read data until it's exhausted (we will be interrupted when it's time
-      // to stop.)
-      //
-      try 
-      {
-        byte[] tmp = new byte[4096];
-        while (true) 
-        {
-          // Read some stuff.
-          int got = inStream.read(tmp);
-          if (got < 0)
-            break;
-
-          // Save it up.
-          buffer.write(tmp, 0, got);
-        }
-
-        // Get a byte array that the caller can process.
-        outBytes = buffer.toByteArray();
-      } // try
-      catch (IOException e) 
-      {
-        error = e;
-      }
-      finally {
-        synchronized (this) {
-          done = true;
-          notifyAll();
-        }
-      }
-    } // run()
-  } // class OutputGrabber
   
 } // class RunInstruction
