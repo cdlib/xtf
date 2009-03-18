@@ -225,7 +225,7 @@
    <xsl:param name="maxPages" as="xs:integer">
       <xsl:choose>
          <xsl:when test="$docsPerPage > 0">
-            <xsl:value-of select="$maxHits div $docsPerPage"/>
+            <xsl:value-of select="ceiling($maxHits div $docsPerPage)"/>
          </xsl:when>
          <xsl:otherwise>
             <xsl:value-of select="0"/>
