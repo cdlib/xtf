@@ -348,6 +348,28 @@ public class XMLConfigParser extends DefaultHandler
         }
       }
 
+      // Validate the 'clone' attribute if present
+      val = atts.getValue("clone");
+      if (val != null) {
+        if ("yes".equals(val) || "1".equals(val) || "true".equals(val)) {
+          configInfo.indexInfo.cloneData = true;
+          String osName = System.getProperty("os.name");
+          if (osName.indexOf("Windows") >= 0) {
+            Trace.warning(
+                "Warning: data cloning probably will not work due to " +
+                "limitations of Windows filesystem support.");
+          }
+        }
+        else if ("no".equals(val) || "0".equals(val) || "false".equals(val))
+          configInfo.indexInfo.cloneData = false;
+        else {
+          Trace.error(
+            "Unrecognized value for 'clone' attribute of " +
+            "config option: '" + qName + "'");
+          System.exit(1);
+        }
+      }
+
       return;
     }
 

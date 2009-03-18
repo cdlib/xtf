@@ -246,17 +246,21 @@ public class TextIndexer
         {
           // Do so...
           Trace.error("Usage: textIndexer {options} -index indexname");
-          Trace.error("Available options:");
+          Trace.error("Basic options:");
           Trace.tab();
           Trace.error("-config <configfile>                  Default: -config textIndexer.conf");
-          Trace.error("-incremental|-clean                   Default: -incremental");
+          Trace.error("-incremental|-clean|-force            Default: -incremental");
+          Trace.error("-dir <subdir1> -dir <subdir2>...      Default: (all directories)");
+          Trace.error("-dirlist <fileOfSubdirs>              Default: (all directories)");
+          Trace.error("\n");
+          Trace.untab();
+          Trace.error("Advanced options:");
+          Trace.error("-nosync|-syncfrom <otherIndexDir>     Default: -nosync");
           Trace.error("-optimize|-nooptimize                 Default: -optimize");
           Trace.error("-trace errors|warnings|info|debug     Default: -trace info");
-          Trace.error("-dir <subdir1> -dir <subdir2>...      Default: (all data directories)");
-          Trace.error("-dirlist <fileOfSubdirs>              Default: (all data directories)");
-          Trace.error("-force|-noforce                       Default: -noforce");
           Trace.error("-buildlazy|-nobuildlazy               Default: -buildlazy");
           Trace.error("-updatespell|-noupdatespell           Default: -updatespell");
+          Trace.tab();
           Trace.error("\n");
           Trace.untab();
 
@@ -317,26 +321,34 @@ public class TextIndexer
         if (!cfgInfo.skipIndexing) 
         {
           srcTreeProcessor.open(cfgInfo);
-          if (cfgInfo.indexInfo.subDirs == null) {
-            File dir = new File(srcRootDir);
-            if (dir.isDirectory())
-              srcTreeProcessor.processDir(dir, 0);
-            else
-              Trace.warning("Warning: data directory '" + srcRootDir + "' not found.");
-          }
-          else 
+          
+          if (cfgInfo.indexInfo.cloneData) 
           {
+            Trace.info("Cloning Data Directories...");
+            if (cfgInfo.indexInfo.subDirs == null)
+              srcTreeProcessor.cloneData(new File(srcRootDir), true);
+            else {
+              for (String subDir : cfgInfo.indexInfo.subDirs) {
+                String subDirPath = Path.resolveRelOrAbs(srcRootDir, Path.normalizePath(subDir));
+                srcTreeProcessor.cloneData(new File(subDirPath), false);
+              }
+            }
+            Trace.more(Trace.info, " Done.");
+          }
+            
+          Trace.info("Scanning Data Directories...");
+          if (cfgInfo.indexInfo.subDirs == null)
+            srcTreeProcessor.processDir(new File(srcRootDir), true);
+          else {
             for (String subDir : cfgInfo.indexInfo.subDirs) {
               String subDirPath = Path.resolveRelOrAbs(srcRootDir, Path.normalizePath(subDir));
-              File subDirFile = new File(subDirPath);
-              if (subDirFile.isDirectory())
-                srcTreeProcessor.processDir(subDirFile, 1); // not zero-level
-              else
-                Trace.warning("Warning: data sub-directory '" + subDirPath + "' not found.");
+              srcTreeProcessor.processDir(new File(subDirPath), false);
             }
           }
-          srcTreeProcessor.close();
+          Trace.more(Trace.info, " Done.");
 
+          srcTreeProcessor.close();
+          
           // Cull files which are present in the index but missing
           // from the filesystem.
           //

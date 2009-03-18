@@ -56,6 +56,7 @@ import org.cdlib.xtf.cache.Dependency;
 import org.cdlib.xtf.cache.FileDependency;
 import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IndexUtil;
+import org.cdlib.xtf.util.DirSync;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredStore;
@@ -150,9 +151,6 @@ public class SrcTreeProcessor
     textProcessor.open(cfgInfo.xtfHomePath, cfgInfo.indexInfo, cfgInfo.clean,
         cfgInfo.force);
     cfgInfo.clean = false;
-
-    // Give some feedback.
-    Trace.info("Scanning Data Directories...");
   } // open()
 
   ////////////////////////////////////////////////////////////////////////////
@@ -175,9 +173,6 @@ public class SrcTreeProcessor
   public void close()
     throws IOException 
   {
-    // Done scanning now.
-    Trace.more(" Done.");
-
     // Flush the remaining open documents.    
     textProcessor.processQueuedTexts();
 
@@ -195,6 +190,15 @@ public class SrcTreeProcessor
 
   ////////////////////////////////////////////////////////////////////////////
 
+  String calcIndexPath()
+  {
+    String indexPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath,
+        cfgInfo.indexInfo.indexPath);
+    return Path.normalizePath(indexPath);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+
   /** Load the previous docSelector cache.
    *
    *  @param cfgInfo   The {@link org.cdlib.xtf.textIndexer#IndexerConfig IndexerConfig}
@@ -206,10 +210,7 @@ public class SrcTreeProcessor
     docSelCache.clear();
 
     // Figure out the path to the cache file
-    String indexPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath,
-                                            cfgInfo.indexInfo.indexPath);
-    indexPath = Path.normalizePath(indexPath);
-    docSelCacheFile = new File(indexPath + "docSelect.cache");
+    docSelCacheFile = new File(calcIndexPath() + "docSelect.cache");
 
     // Calculate all the file dependencies of the docSelector stylesheet.
     Iterator iter = stylesheetCache.getDependencies(docSelPath);
@@ -343,11 +344,10 @@ public class SrcTreeProcessor
    * This method iterates through a source directory's contents indexing any
    * valid files it finds, any processing any sub-directories. <br><br>
    *
-   * @param currFile   The current file to be processed. This may be a source
-   *                   XML file, a file to be skipped, or a subdirectory. <br><br>
+   * @param curDir     The current directory to be processed. <br><br>
    *
-   * @param level      The directory level we're currently processing (zero
-   *                   for top-level, 1 for its children, etc.) <br><br>
+   * @param topLevel   True if this directory is the top of the data
+   *                   tree. <br><br>
    *
    *  @throws   Exception  Any exceptions generated internally
    *                       by the <code>File</code> class or the
@@ -355,14 +355,24 @@ public class SrcTreeProcessor
    *                       class. <br><br>
    *
    */
-  public void processDir(File currFile, int level)
+  public void processDir(File curDir, boolean topLevel)
+    throws Exception 
+  {
+    if (cfgInfo.indexInfo.cloneData)
+      curDir = calcCloneDir(curDir, true);
+    processInternal(curDir, topLevel);
+  }
+  
+  ////////////////////////////////////////////////////////////////////////////
+
+  public void processInternal(File curDir, boolean topLevel)
     throws Exception 
   {
     // We're looking at a directory. Get the list of files it contains.
-    String[] fileStrs = currFile.getAbsoluteFile().list();
+    String[] fileStrs = curDir.getAbsoluteFile().list();
     if (fileStrs == null) {
       Trace.warning(
-        "Warning: error retrieving file list for directory: " + currFile);
+        "Warning: error retrieving file list for directory: " + curDir);
       return;
     }
 
@@ -377,12 +387,12 @@ public class SrcTreeProcessor
     docBuf.setLength(0);
     dirBuf.setLength(0);
 
-    String dirPath = Path.normalizePath(currFile.toString());
+    String dirPath = Path.normalizePath(curDir.toString());
     docBuf.append("<directory dirPath=\"" + StringUtil.escapeHTMLChars(dirPath) + "\">\n");
     int nFiles = 0;
     for (Iterator i = list.iterator(); i.hasNext();) 
     {
-      File subFile = new File(currFile, (String)i.next());
+      File subFile = new File(curDir, (String)i.next());
       if (!subFile.getAbsoluteFile().isDirectory()) 
       {
         docBuf.append("  <file fileName=\"");
@@ -411,12 +421,12 @@ public class SrcTreeProcessor
     String inStr = docBuf.toString();
     String filesAndTimes = dirBuf.toString();
     String dirKey;
-    if (level == 0)
+    if (topLevel)
       dirKey = cfgInfo.indexInfo.indexName + ":/";
     else
       dirKey = IndexUtil.calcDocKey(new File(cfgInfo.xtfHomePath),
-                                    cfgInfo.indexInfo,
-                                    currFile);
+                                    cfgInfo.indexInfo, curDir);
+    
     if (nFiles == 0)
       runStylesheet = false;
     else 
@@ -500,11 +510,11 @@ public class SrcTreeProcessor
 
     // Recursively try sub-directories.
     for (Iterator i = list.iterator(); i.hasNext();) {
-      File subFile = new File(currFile, (String)i.next());
+      File subFile = new File(curDir, (String)i.next());
       if (subFile.getAbsoluteFile().isDirectory())
-        processDir(subFile, level + 1);
+        processInternal(subFile, false);
     }
-  } // processDir()
+  } // processInternal()
 
   ////////////////////////////////////////////////////////////////////////////
 
@@ -655,8 +665,7 @@ public class SrcTreeProcessor
     // index's data directory.
     //
     String key = IndexUtil.calcDocKey(new File(cfgInfo.xtfHomePath),
-                                      cfgInfo.indexInfo,
-                                      srcPath);
+                                      cfgInfo.indexInfo, srcPath);
 
     // Calculate a proper system ID for this file.
     String systemId = srcPath.toURL().toString();
@@ -715,6 +724,46 @@ public class SrcTreeProcessor
     // Let the caller know we didn't skip the file.
     return true;
   } // processFile()
+  
+  ////////////////////////////////////////////////////////////////////////////
+
+  private File calcCloneDir(File srcDir, boolean topLevel) throws IOException
+  {
+    // Figure out the destination directory
+    File dstDir = new File(calcIndexPath(), "dataClone");
+    if (!topLevel) {
+      String subdirKey = IndexUtil.calcDocKey(new File(cfgInfo.xtfHomePath),
+                                              cfgInfo.indexInfo, srcDir);
+      String subdir = subdirKey.replaceFirst("[^:]*:", "");
+      dstDir = new File(dstDir, subdir);
+    }
+    return dstDir;
+  }
+  
+  ////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * When data cloning is turned on in the index configuration, this method
+   * is called to clone data from the given directory to the 'dataClone' 
+   * directory within the index.
+   * 
+   * @throws IOException If something goes wrong during synchronization
+   */
+  public void cloneData(File srcDir, boolean topLevel) throws IOException
+  {
+    // Figure out the destination directory, and create it if necessary.
+    File dstDir = calcCloneDir(srcDir, topLevel);
+    if (!dstDir.isDirectory()) {
+      if (!dstDir.mkdirs())
+        throw new IOException("Unable to create data clone directory '" + dstDir + "'");
+    }
+    
+    // We have a handy utility class that does cloning for us.
+    DirSync sync = new DirSync();
+    sync.syncDirs(srcDir, dstDir);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
 
   /** One entry in the docSelector cache */
   static class CacheEntry implements Serializable 

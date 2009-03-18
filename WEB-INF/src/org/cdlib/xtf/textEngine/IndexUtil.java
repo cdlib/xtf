@@ -152,8 +152,12 @@ public class IndexUtil
     // Figure out the part of the source file's path that matches the index
     // data directory.
     //
-    String fullSourcePath = Path.resolveRelOrAbs(xtfHome.toString(),
-                                                 idxInfo.sourcePath);
+    String sourcePath;
+    if (idxInfo.cloneData)
+      sourcePath = Path.normalizePath(idxInfo.indexPath) + "dataClone/";
+    else
+      sourcePath = idxInfo.sourcePath;
+    String fullSourcePath = Path.resolveRelOrAbs(xtfHome.toString(), sourcePath);
     String prefix = Path.calcPrefix(srcTextFile.getParent(),
                                     fullSourcePath.toString());
     if (prefix == null) {
@@ -232,12 +236,18 @@ public class IndexUtil
     // Figure out the part of the source file's path that matches the index
     // data directory.
     //
-    String fullSourcePath = Path.resolveRelOrAbs(xtfHomeFile, idxInfo.sourcePath);
+    String sourcePath;
+    if (idxInfo.cloneData)
+      sourcePath = Path.normalizePath(idxInfo.indexPath) + "dataClone/";
+    else
+      sourcePath = idxInfo.sourcePath;
+    
+    String fullSourcePath = Path.resolveRelOrAbs(xtfHomeFile, sourcePath);
     String prefix = Path.calcPrefix(srcTextFile.getParent(), fullSourcePath);
     if (prefix == null) {
       throw new IOException(
         "XML source file " + srcTextFile + " is not contained within " +
-        idxInfo.sourcePath);
+        sourcePath);
     }
 
     // Form the result using the index name and the non-overlapping part.

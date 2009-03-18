@@ -72,6 +72,12 @@ public class IndexInfo
    */
   public boolean scanAllDirs = false;
   
+  /**
+   * True to make a clone of the data in index/dataClone. Useful so that
+   * dynaXML can always get to files that match the index.
+   */
+  public boolean cloneData = false;
+  
   /** Path to stylesheet used to determine which documents to index */
   public String docSelectorPath;
 

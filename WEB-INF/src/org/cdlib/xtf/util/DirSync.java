@@ -70,7 +70,7 @@ public class DirSync
     try {
       String[] args = new String[1];
       args[0] = "perl";
-      System.out.println("Link cmds:\n" + linkCmds.toString());
+      //System.out.println("Link cmds:\n" + linkCmds.toString());
       ProcessRunner.runAndGrab(args, linkCmds.toString(), 0);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
@@ -169,28 +169,27 @@ public class DirSync
   }
   
   private void skipFile(File srcFile, File dstFile) {
-    System.out.format("Skip file %s == %s\n", srcFile.toString(), dstFile.toString());
+    //System.out.format("Skip file %s == %s\n", srcFile.toString(), dstFile.toString());
   }
 
   private void deleteFile(File file) throws IOException {
-    System.out.format("Delete file %s\n", file.toString());
+    //System.out.format("Delete file %s\n", file.toString());
     if (!file.delete())
       throw new IOException("Sync error: cannot delete file '" + file.toString() + "'");
   }
 
   private void deleteDir(File dir) throws IOException {
-    System.out.format("Delete dir %s\n", dir.toString());
+    //System.out.format("Delete dir %s\n", dir.toString());
     Path.deleteDir(dir);
   }
 
   private void copyFile(File srcFile, File dstFile) {
-    System.out.format("Copy file %s to %s\n", srcFile.toString(), dstFile.toString());
-    linkCmds.append("print 'hello';");
+    //System.out.format("Copy file %s to %s\n", srcFile.toString(), dstFile.toString());
     linkCmds.append("link('" + srcFile.toString() + "', '" + dstFile.toString() + "') or die;\n");
   }
 
   private void copyDir(File srcDir, File dstDir, int level) throws IOException {
-    System.out.format("Copy dir %s to %s\n", srcDir.toString(), dstDir.toString());
+    //System.out.format("Copy dir %s to %s\n", srcDir.toString(), dstDir.toString());
     if (!dstDir.mkdir())
       throw new IOException("Error creating directory '" + dstDir + "'");
     dstDir.setLastModified(srcDir.lastModified());
@@ -209,6 +208,7 @@ public class DirSync
     return list;
   }
   
+  /** Testing function */
   public static void main(String[] argv)
   {
     DirSync sync = new DirSync();

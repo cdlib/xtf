@@ -88,6 +88,22 @@ public class IndexerConfig
    */
   public boolean mustClean;
 
+  /**
+   * Flag indicating whether or not to "force" indexing of items.
+   * <br><br>
+   *
+   *  true  = Ignore file mod times during incremental indexing.  <br>
+   *  false = Normal file mod time check. <br><br>
+   */
+  public boolean force;
+  
+  /**
+   * Directory to synchronize index, lazy files, and cloned data from before
+   * starting our indexing pass. Useful for quickly building an incremental
+   * index to a different directory while the first index is still in use.
+   */
+  public String syncFromDir;
+
   /** Flag indicating whether to build lazy files during the indexing process.
    *  <br><br>
    *
@@ -124,15 +140,6 @@ public class IndexerConfig
    */
   public boolean skipIndexing;
   
-  /**
-   * Flag indicating whether or not to "force" indexing of items
-   * <br><br>
-   *
-   *  true  = Ignore file mod times during incremental indexing.  <br>
-   *  false = Normal file mod time check. <br><br>
-   */
-  public boolean force;
-
   /** Index specific information for the current index being created or
    *  updated.
    */
@@ -152,6 +159,12 @@ public class IndexerConfig
 
     // Default to incrementally updating the index. 
     clean = false;
+    
+    // Default to not forcing (e.g. do normal file time checking)
+    force = false;
+    
+    // Default to not syncing index and data
+    syncFromDir = null;
 
     // Default to building lazy files during the run.
     buildLazyFiles = true;
@@ -165,9 +178,6 @@ public class IndexerConfig
     // Default to performing the main indexing pass
     skipIndexing = false;
     
-    // Default to normal mod-time check in incremental mode
-    force = false;
-
     // Set the default trace level to display errors.
     traceLevel = Trace.info;
 
@@ -272,7 +282,7 @@ public class IndexerConfig
         indexInfo.indexName = args[i];
         gotIdxName = true;
       }
-
+      
       // If the user wants to specify that indexing should apply only
       // to a specified sub-directory, record that info now. This option
       // can be repeated and/or mixed with "-dirList"
@@ -342,12 +352,39 @@ public class IndexerConfig
       }
 
       // If the user asked for a clean index, flag it.
-      else if (args[i].equalsIgnoreCase("-clean"))
+      else if (args[i].equalsIgnoreCase("-clean")) {
         clean = true;
+        force = false;
+      }
 
       // If the user asked for an incremental index update, flag it.  
-      else if (args[i].equalsIgnoreCase("-incremental"))
+      else if (args[i].equalsIgnoreCase("-incremental")) {
         clean = false;
+        force = false;
+      }
+      
+      // If the user asked us to force indexing, flag it.
+      else if (args[i].equalsIgnoreCase("-force")) {
+        clean = false;
+        force = true;
+      }
+      
+      // If the user wants us to sync index from another dir, flag it.
+      else if (args[i].equalsIgnoreCase("-syncfrom")) 
+      {
+        // If there aren't any more arguments, tell the caller
+        // that we failed to get enough info to continue.
+        //
+        if (++i >= args.length)
+          return -1;
+      
+        // Record the directory
+        syncFromDir = args[i];
+      }
+      
+      // If user wants no index sync, flag it.
+      else if (args[i].equalsIgnoreCase("-nosync"))
+        syncFromDir = null;
 
       // If the user asked for optimization after build, flag it.
       else if (args[i].equalsIgnoreCase("-optimize"))
@@ -377,10 +414,6 @@ public class IndexerConfig
       else if (args[i].equalsIgnoreCase("-skipindexing"))
         skipIndexing = true;
       
-      // If the user asked us to ignore mod times, flag it.
-      else if (args[i].equalsIgnoreCase("-force"))
-        force = true;
-
       // If we found the -trace argument...
       else if (args[i].equalsIgnoreCase("-trace")) 
       {
