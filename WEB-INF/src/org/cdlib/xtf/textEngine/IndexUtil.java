@@ -153,7 +153,7 @@ public class IndexUtil
     // data directory.
     //
     String sourcePath;
-    if (idxInfo.cloneData)
+    if (idxInfo.cloneData && srcTextFile.toString().contains("/dataClone/"))
       sourcePath = Path.normalizePath(idxInfo.indexPath) + "dataClone/";
     else
       sourcePath = idxInfo.sourcePath;
@@ -237,7 +237,7 @@ public class IndexUtil
     // data directory.
     //
     String sourcePath;
-    if (idxInfo.cloneData)
+    if (idxInfo.cloneData && srcTextFile.toString().contains("/dataClone/"))
       sourcePath = Path.normalizePath(idxInfo.indexPath) + "dataClone/";
     else
       sourcePath = idxInfo.sourcePath;
