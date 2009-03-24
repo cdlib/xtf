@@ -2,6 +2,7 @@ package org.cdlib.xtf.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -44,6 +45,25 @@ import org.cdlib.xtf.util.ProcessRunner.CommandFailedException;
 public class DirSync 
 {
   private StringBuffer linkCmds;
+  private ArrayList<File> fixDirs = new ArrayList();
+  private ArrayList<Long> fixTimes = new ArrayList();
+  private SubDirFilter filter;
+
+  /**
+   * Initialize a directory syncer with no sub-directory filter
+   * (all sub-directories will be scanned.)
+   */
+  public DirSync() { 
+    this(null);
+  }
+  
+  /**
+   * Initialize with a sub-directory filter.
+   */
+  public DirSync(SubDirFilter filter) {
+    this.filter = filter;
+  }
+  
   
   /**
    * Sync the files from source to dest.
@@ -60,25 +80,6 @@ public class DirSync
     flushLinks();
   }
   
-  private void flushLinks() throws IOException 
-  {
-    // No links? Nothing to do.
-    if (linkCmds.length() == 0)
-      return;
-    
-    // Fire up Perl and run the script to make the links.
-    try {
-      String[] args = new String[1];
-      args[0] = "perl";
-      //System.out.println("Link cmds:\n" + linkCmds.toString());
-      ProcessRunner.runAndGrab(args, linkCmds.toString(), 0);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } catch (CommandFailedException e) {
-      throw new IOException(e.getMessage());
-    }
-  }
-
   /**
    * The main workhorse of the scanner.
    * 
@@ -159,7 +160,7 @@ public class DirSync
       }
       else {
         if (srcFile.isDirectory())
-          syncDirs(srcFile, dstFile, level+1);
+          copyDir(srcFile, dstFile, level+1);
         else
           skipFile(srcFile, dstFile);
         s++;
@@ -180,7 +181,8 @@ public class DirSync
 
   private void deleteDir(File dir) throws IOException {
     //System.out.format("Delete dir %s\n", dir.toString());
-    Path.deleteDir(dir);
+    if (filter == null || filter.inSet(dir.toString()))
+      Path.deleteDir(dir);
   }
 
   private void copyFile(File srcFile, File dstFile) {
@@ -190,12 +192,55 @@ public class DirSync
 
   private void copyDir(File srcDir, File dstDir, int level) throws IOException {
     //System.out.format("Copy dir %s to %s\n", srcDir.toString(), dstDir.toString());
-    if (!dstDir.mkdir())
-      throw new IOException("Error creating directory '" + dstDir + "'");
-    dstDir.setLastModified(srcDir.lastModified());
-    syncDirs(srcDir, dstDir, level);
+    if (filter == null || filter.inSet(srcDir.toString())) {
+      if (!dstDir.exists() && !dstDir.mkdir())
+        throw new IOException("Error creating directory '" + dstDir + "'");
+      syncDirs(srcDir, dstDir, level);
+      if (srcDir.lastModified() != dstDir.lastModified()) {
+        fixDirs.add(dstDir);
+        fixTimes.add(srcDir.lastModified());
+      }
+    }
   }
 
+  /**
+   * Create all the hard links that we determined need to be made. Since
+   * Java (as of 1.6) has no ability to create these, we call out and have
+   * Perl do it for us.
+   * 
+   * @throws IOException    If something goes wrong.
+   */
+  private void flushLinks() throws IOException 
+  {
+    // No links? Nothing to do.
+    if (linkCmds.length() == 0)
+      return;
+    
+    // Fire up Perl and run the script to make the links.
+    try {
+      String[] args = new String[1];
+      args[0] = "perl";
+      //System.out.println("Link cmds:\n" + linkCmds.toString());
+      ProcessRunner.runAndGrab(args, linkCmds.toString(), 0);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    } catch (CommandFailedException e) {
+      throw new IOException(e.getMessage());
+    }
+    
+    // Now that we've copied all the files, fix up the directory mod times.
+    assert fixDirs.size() == fixTimes.size(); // Should have added in parallel
+    for (int i = 0; i < fixDirs.size(); i++) {
+      File dstDir = fixDirs.get(i);
+      long time = fixTimes.get(i);
+      if (!dstDir.setLastModified(time))
+        throw new IOException("Error setting last modified date on dir '" + dstDir + "'");
+    }
+  }
+
+  /**
+   * Get a sorted list of the files (and subdirectories) within a directory.
+   */
   private static String[] readSortedDir(File dir)
   {
     String[] list = dir.list();
@@ -206,18 +251,5 @@ public class DirSync
       prev = s;
     }
     return list;
-  }
-  
-  /** Testing function */
-  public static void main(String[] argv)
-  {
-    DirSync sync = new DirSync();
-    try {
-      sync.syncDirs(new File("/Users/mhaye/tmp/dir1"), 
-                    new File("/Users/mhaye/tmp/dir2"));
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
   }
 }
