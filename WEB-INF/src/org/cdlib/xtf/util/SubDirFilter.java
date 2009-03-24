@@ -59,8 +59,10 @@ public class SubDirFilter
    */
   public void add(File dirFile) {
     targets.add(dirFile.toString());
-    for (String a : ancestorOrSelf(dirFile))
-      ancestors.add(a);
+    for (String a : ancestorOrSelf(dirFile)) {
+      if (!ancestors.add(a))
+        break;
+    }
   }
 
   /**
