@@ -30,21 +30,13 @@ package org.cdlib.xtf.textIndexer;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.sax.SAXSource;
@@ -89,9 +81,8 @@ public class SrcTreeProcessor
   private StringBuffer docBuf = new StringBuffer(1024);
   private StringBuffer dirBuf = new StringBuffer(1024);
   private String docSelPath;
-  private String docSelDependencies;
   private File docSelCacheFile;
-  private HashMap docSelCache = new HashMap();
+  private DocSelCache docSelCache = new DocSelCache();
 
   ////////////////////////////////////////////////////////////////////////////
 
@@ -223,7 +214,7 @@ public class SrcTreeProcessor
         depBuf.append("\n");
       }
     }
-    docSelDependencies = depBuf.toString();
+    docSelCache.dependencies = depBuf.toString();
 
     // If we're making a clean index, delete the old cache file.
     if (cfgInfo.clean) {
@@ -235,49 +226,27 @@ public class SrcTreeProcessor
     if (!docSelCacheFile.canRead())
       return;
 
-    // Open the file and read it. 
-    try 
-    {
-      FileInputStream fis = new FileInputStream(docSelCacheFile);
-      InflaterInputStream iis = new InflaterInputStream(fis);
-      ObjectInputStream ois = new ObjectInputStream(iis);
-
-      String fileVersion = ois.readUTF();
-      if (!fileVersion.equals("docSelectorCache v1.0")) {
-        Trace.warning(
-          "Warning: Unrecognized docSelector cache \"" + docSelCacheFile +
-          "\"");
-        docSelCache.clear();
-        return;
-      }
-
-      // Check the dependencies.
-      String fileDep = ois.readUTF();
-      if (!fileDep.equals(docSelDependencies)) {
-        Trace.debug(
-          "Note: docSelector stylesheet or sub-sheet " +
-          " has changed... throwing away " + "old docSelector cache.");
-        ois.close();
-        fis.close();
-        docSelCacheFile.delete();
-        docSelCache.clear();
-        return;
-      }
-
-      // And load the map.
-      docSelCache = (HashMap)ois.readObject();
+    // Read the file.
+    String thisDep = docSelCache.dependencies;
+    try {
+      docSelCache.load(docSelCacheFile);
     }
     catch (IOException e) {
       Trace.warning(
-        "Warning: Error loading docSelector cache \"" + docSelCacheFile +
-        "\": " + e);
+          "Warning: Error loading docSelector cache \"" + docSelCacheFile +
+          "\": " + e);
       docSelCache.clear();
       return;
     }
-    catch (Exception e) {
-      Trace.warning(
-        "Warning: Corrupt docSelector cache \"" + docSelCacheFile + "\"");
+    
+    // If the dependencies are different, toss it.
+    if (!docSelCache.dependencies.equals(thisDep)) {
+      Trace.debug(
+        "Note: docSelector stylesheet or sub-sheet " +
+        " has changed... throwing away " + "old docSelector cache.");
+      docSelCacheFile.delete();
       docSelCache.clear();
+      docSelCache.dependencies = thisDep;
       return;
     }
   } // loadCache()
@@ -288,52 +257,12 @@ public class SrcTreeProcessor
    */
   public void saveCache() 
   {
-    // Let's keep the old file intact until the new one is ready.
-    File newFile = new File(docSelCacheFile.toString() + ".new");
-    FileOutputStream fos = null;
-    DeflaterOutputStream dos = null;
-    ObjectOutputStream oos = null;
-
-    try 
-    {
-      // First, open the new file.
-      fos = new FileOutputStream(newFile);
-      dos = new DeflaterOutputStream(fos);
-      oos = new ObjectOutputStream(dos);
-
-      // Write the version info first.
-      oos.writeUTF("docSelectorCache v1.0");
-
-      // Next, write the current stylesheet dependency info.
-      oos.writeUTF(docSelDependencies);
-
-      // Now write the mapping.
-      oos.writeObject(docSelCache);
-
-      // All done. Close the new file.
-      oos.close();
-      dos.close();
-      fos.close();
-
-      // Get rid of the old file, and rename the new one.
-      docSelCacheFile.delete();
-      newFile.renameTo(docSelCacheFile);
+    try {
+      docSelCache.save(docSelCacheFile);
     }
     catch (IOException e) {
       Trace.warning(
-        "Warning: Error writing docSelector cache \"" + newFile + "\": " + e);
-
-      try {
-        if (oos != null)
-          oos.close();
-        if (fos != null)
-          fos.close();
-      }
-      catch (IOException e2) {
-      }
-
-      newFile.delete();
-      return;
+        "Warning: Error writing docSelector cache \"" + docSelCacheFile + "\": " + e);
     }
   } // saveCache()
 
@@ -431,7 +360,7 @@ public class SrcTreeProcessor
       runStylesheet = false;
     else 
     {
-      CacheEntry ent = (CacheEntry)docSelCache.get(dirKey);
+      DocSelCache.Entry ent = (DocSelCache.Entry)docSelCache.get(dirKey);
       if (ent == null)
         runStylesheet = true;
       else if (cfgInfo.force || !ent.filesAndTimes.equals(filesAndTimes)) {
@@ -495,7 +424,7 @@ public class SrcTreeProcessor
       // next time (that is, unless the directory contents or stylesheet
       // are different).
       //
-      docSelCache.put(dirKey, new CacheEntry(filesAndTimes, anyProcessed));
+      docSelCache.put(dirKey, new DocSelCache.Entry(filesAndTimes, anyProcessed));
     } // if nFiles > 0
 
     // In the old mode (scanAllDirs = false), if we found any files to process, 
@@ -763,20 +692,4 @@ public class SrcTreeProcessor
     sync.syncDirs(srcDir, dstDir);
   }
 
-  ////////////////////////////////////////////////////////////////////////////
-
-  /** One entry in the docSelector cache */
-  static class CacheEntry implements Serializable 
-  {
-    String filesAndTimes;
-    boolean anyProcessed;
-
-    CacheEntry() {
-    }
-
-    CacheEntry(String filesAndTimes, boolean anyProcessed) {
-      this.filesAndTimes = filesAndTimes;
-      this.anyProcessed = anyProcessed;
-    }
-  } // class CacheEntry
 } // class SrcTreeProcessor
