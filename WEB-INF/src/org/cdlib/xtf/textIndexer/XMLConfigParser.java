@@ -322,6 +322,22 @@ public class XMLConfigParser extends DefaultHandler
     {
       // Save it away as the database root directory. 
       configInfo.indexInfo.indexPath = Path.normalizePath(atts.getValue("path"));
+      
+      // Validate the 'rotation' attribute if present
+      String val = atts.getValue("rotate");
+      if (val != null) {
+        if ("yes".equals(val) || "true".equals(val) || "1".equals(val))
+          configInfo.indexInfo.rotate = true;
+        else if ("no".equals(val) || "false".equals(val) || "0".equals(val))
+          configInfo.indexInfo.rotate = false;
+        else {
+          Trace.error(
+            "Unrecognized value for 'rotation' attribute of " +
+            "config option: '" + qName + "'");
+          System.exit(1);
+        }
+      }
+
       return;
     }
 

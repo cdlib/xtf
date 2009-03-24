@@ -97,13 +97,6 @@ public class IndexerConfig
    */
   public boolean force;
   
-  /**
-   * Directory to synchronize index, lazy files, and cloned data from before
-   * starting our indexing pass. Useful for quickly building an incremental
-   * index to a different directory while the first index is still in use.
-   */
-  public String syncFromDir;
-
   /** Flag indicating whether to build lazy files during the indexing process.
    *  <br><br>
    *
@@ -140,6 +133,16 @@ public class IndexerConfig
    */
   public boolean skipIndexing;
   
+  /**
+   * Flag indicating whether or not to perform rotation (on indexes which
+   * are so marked).
+   * <br><br>
+   *
+   *  true  = Rotate indexes.  <br>
+   *  false = Do not rotate. <br><br>
+   */
+  public boolean rotate;
+  
   /** Index specific information for the current index being created or
    *  updated.
    */
@@ -163,9 +166,6 @@ public class IndexerConfig
     // Default to not forcing (e.g. do normal file time checking)
     force = false;
     
-    // Default to not syncing index and data
-    syncFromDir = null;
-
     // Default to building lazy files during the run.
     buildLazyFiles = true;
 
@@ -174,9 +174,12 @@ public class IndexerConfig
 
     // Default to making spellcheck dictionary (if enabled in the index's info)
     updateSpellDict = true;
-
+    
     // Default to performing the main indexing pass
     skipIndexing = false;
+    
+    // Default to always rotating indexes for which it's enabled
+    rotate = true;
     
     // Set the default trace level to display errors.
     traceLevel = Trace.info;
@@ -369,50 +372,33 @@ public class IndexerConfig
         force = true;
       }
       
-      // If the user wants us to sync index from another dir, flag it.
-      else if (args[i].equalsIgnoreCase("-syncfrom")) 
-      {
-        // If there aren't any more arguments, tell the caller
-        // that we failed to get enough info to continue.
-        //
-        if (++i >= args.length)
-          return -1;
-      
-        // Record the directory
-        syncFromDir = args[i];
-      }
-      
-      // If user wants no index sync, flag it.
-      else if (args[i].equalsIgnoreCase("-nosync"))
-        syncFromDir = null;
-
-      // If the user asked for optimization after build, flag it.
+      // If the user asked for optimization after build (or not), flag it.
       else if (args[i].equalsIgnoreCase("-optimize"))
         optimize = true;
-
-      // If the user asked for no optimization after build, flag it.
       else if (args[i].equalsIgnoreCase("-nooptimize"))
         optimize = false;
 
-      // If the user asked for optimization after build, flag it.
+      // If the user wants (or doesn't want) spelling update, flag it.
       else if (args[i].equalsIgnoreCase("-updatespell"))
         updateSpellDict = true;
-
-      // If the user asked for no optimization after build, flag it.
       else if (args[i].equalsIgnoreCase("-noupdatespell"))
         updateSpellDict = false;
 
-      // If the user asked for lazy files to be built, flag it.
+      // If the user asked for lazy files to be built (or not), flag it.
       else if (args[i].equalsIgnoreCase("-buildlazy"))
         buildLazyFiles = true;
-
-      // If the user asked for no lazy files to be built, flag it.
       else if (args[i].equalsIgnoreCase("-nobuildlazy"))
         buildLazyFiles = false;
 
       // If the user asked for us to skip the main indexing pass, flag it.
       else if (args[i].equalsIgnoreCase("-skipindexing"))
         skipIndexing = true;
+      
+      // If the user asked us to rotate or not, flag it.
+      else if (args[i].equalsIgnoreCase("-rotate"))
+        rotate = true;
+      else if (args[i].equalsIgnoreCase("-norotate"))
+        rotate = false;
       
       // If we found the -trace argument...
       else if (args[i].equalsIgnoreCase("-trace")) 

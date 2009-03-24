@@ -62,6 +62,9 @@ public class IndexInfo
 
   /** Name of the path to the current index's Lucene database. */
   public String indexPath;
+  
+  /** Whether index rotation is enabled */
+  public boolean rotate = false;
 
   /** Path to the source text for the current index. */
   public String sourcePath;
