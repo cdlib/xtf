@@ -35,6 +35,7 @@ package org.cdlib.xtf.textIndexer;
  * was made possible by a grant from the Andrew W. Mellon Foundation,
  * as part of the Melvyl Recommender Project.
  */
+
 import java.io.File;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -42,9 +43,9 @@ import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.SubDirFilter;
 import org.cdlib.xtf.util.Trace;
 import java.io.IOException;
-import java.util.HashSet;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -95,14 +96,12 @@ public class IdxTreeCuller
     int docCount = 0;
     int cullCount = 0;
     
-    // If a subdirectory list was specified, make it into a quick-searching
-    // HashSet.
-    //
-    HashSet subdirs = null;
+    // Make a quick-searching set of directories that are "in"
+    SubDirFilter subDirFilter = null;
     if (idxInfo.subDirs != null) {
-      subdirs = new HashSet();
+      subDirFilter = new SubDirFilter();
       for (String dir : idxInfo.subDirs)
-        subdirs.add(Path.normalizePath(dir));
+        subDirFilter.add(new File(Path.normalizePath(dir)));
     }
 
     IndexReader indexReader = null;
@@ -135,18 +134,8 @@ public class IdxTreeCuller
           continue;
 
         // If a subdirectory was specified, skip docs that aren't within it.
-        if (subdirs != null)
-        {
-          // Check each level of the path.
-          File file = new File(relPath);
-          boolean found = false;
-          for (; !found && file != null; file = file.getParentFile()) {
-            if (subdirs.contains(Path.normalizePath(file.toString())))
-              found = true;
-          }
-          if (!found)
-            continue;
-        }
+        if (subDirFilter != null && !subDirFilter.inSet(relPath))
+          continue;
 
         // Track how many documents there are.
         docCount++;
