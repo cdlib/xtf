@@ -50,12 +50,13 @@ public class IndexSync
   /**
    * Perform the minimum necessary work to ensure that the contents of dstDir
    * exactly match srcDir.
+   * @param indexName 
    * 
    * @throws IOException        If anything goes wrong.
    */
-  public void syncDirs(File srcDir, File dstDir) throws IOException
+  public void syncDirs(String indexName, File srcDir, File dstDir) throws IOException
   {
-    SubDirFilter filter = calcFilter(srcDir, dstDir);
+    SubDirFilter filter = calcFilter(indexName, srcDir, dstDir);
     DirSync dirSync = new DirSync(filter);
     dirSync.syncDirs(srcDir, dstDir);
   }
@@ -66,7 +67,7 @@ public class IndexSync
    * the whole thing.
    * @throws IOException If anything goes wrong.
    */
-  private SubDirFilter calcFilter(File srcDir, File dstDir) 
+  private SubDirFilter calcFilter(String indexName, File srcDir, File dstDir) 
     throws IOException 
   {
     SubDirFilter filter = new SubDirFilter();
@@ -108,10 +109,11 @@ public class IndexSync
         if (dstEntry != null && dstEntry.scanTime == e.getValue().scanTime)
           continue;
         
+        String keyDir = key.replaceFirst(":", "/");
         if (srcLazyDir != null)
-          filter.add(new File(srcLazyDir, key));
+          filter.add(new File(srcLazyDir, keyDir));
         if (srcCloneDir != null)
-          filter.add(new File(srcCloneDir, key));
+          filter.add(new File(srcCloneDir, keyDir));
       }
       
       for (String key : dstCache.keySet()) 
@@ -119,10 +121,11 @@ public class IndexSync
         if (srcCache.containsKey(key))
           continue;
         
+        String keyDir = key.replaceFirst(":", "/");
         if (srcLazyDir != null)
-          filter.add(new File(srcLazyDir, key));
+          filter.add(new File(srcLazyDir, keyDir));
         if (srcCloneDir != null)
-          filter.add(new File(srcCloneDir, key));
+          filter.add(new File(srcCloneDir, keyDir));
       }
     }
     

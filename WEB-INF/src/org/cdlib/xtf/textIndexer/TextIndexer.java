@@ -551,7 +551,7 @@ public class TextIndexer
     else {
       Trace.info("Bringing spare index clone up to date:");
       Trace.tab();
-      new IndexSync().syncDirs(newIndex, spareIndex);
+      new IndexSync().syncDirs(cfgInfo.indexInfo.indexName, newIndex, spareIndex);
       Trace.untab();
       Trace.info("Done.");
     }
