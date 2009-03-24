@@ -114,6 +114,8 @@ public class IdxTreeCuller
       String idxPath = Path.resolveRelOrAbs(xtfHome, idxInfo.indexPath);
       indexReader = IndexReader.open(idxPath);
       termEnum = indexReader.terms(new Term("key", ""));
+      File docSelCacheFile = null;
+      DocSelCache docSelCache = null;
 
       do 
       {
@@ -201,8 +203,19 @@ public class IdxTreeCuller
           // Track how many documents we've culled.
           cullCount++;
 
-          Trace.more(Trace.info, "Missing: Removed from Index.");
+          // We need to delete this directory from the DocSelCache as well.
+          if (docSelCache == null) {
+            // Figure out the path to the cache file
+            docSelCacheFile = new File(idxPath + "docSelect.cache");
+            docSelCache = new DocSelCache();
+            docSelCache.load(docSelCacheFile);
+          }
+          String dirKey = key.replaceFirst("/[^/]+$", "");
+          if (docSelCache.containsKey(dirKey))
+            docSelCache.remove(dirKey);
 
+          // Output info.
+          Trace.more(Trace.info, "Missing: Removed from Index.");
           Trace.untab();
         } // if( !currFile.exists() )
       }
@@ -235,6 +248,10 @@ public class IdxTreeCuller
       termEnum = null;
       indexReader.close();
       indexReader = null;
+      
+      // Write the doc selector cache if we modified it.
+      if (docSelCache != null)
+        docSelCache.save(docSelCacheFile);
 
       // The current index isn't empty, but if we deleted a
       // document from it, say so.
