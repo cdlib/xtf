@@ -29,11 +29,12 @@ package org.cdlib.xtf.textIndexer;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import org.cdlib.xtf.util.DirSync;
 import org.cdlib.xtf.util.SubDirFilter;
@@ -75,12 +76,12 @@ public class IndexSync
     String srcTime = oldestTime(srcDir);
     String dstTime = oldestTime(dstDir);
     
-    File srcCacheFile = new File(srcDir, "docSelect.cache");
-    File dstCacheFile = new File(dstDir, "docSelect.cache");
+    File srcScanFile = new File(srcDir, "scanDirs.list");
+    File dstScanFile = new File(dstDir, "scanDirs.list");
     
     if (srcTime.equals(dstTime) &&
-        srcCacheFile.canRead() &&
-        dstCacheFile.canRead())
+        srcScanFile.canRead() &&
+        dstScanFile.canRead())
     {
       File srcLazyDir = null;
       File srcCloneDir = null;
@@ -96,36 +97,36 @@ public class IndexSync
           filter.add(f);
       }
       
-      DocSelCache srcCache = new DocSelCache();
-      srcCache.load(srcCacheFile);
+      BufferedReader srcScanReader = new BufferedReader(new FileReader(srcScanFile));
+      BufferedReader dstScanReader = new BufferedReader(new FileReader(dstScanFile));
       
-      DocSelCache dstCache = new DocSelCache();
-      dstCache.load(dstCacheFile);
-      
-      for (Map.Entry<String, DocSelCache.Entry> e : srcCache.entrySet())
+      // Verify that the files are identical up to the point where dst ends.
+      boolean allMatch = true;
+      while (true)
       {
-        String key = e.getKey();
-        DocSelCache.Entry dstEntry = dstCache.get(key);
-        if (dstEntry != null && dstEntry.scanTime == e.getValue().scanTime)
-          continue;
-        
-        String keyDir = key.replaceFirst(":", "/");
-        if (srcLazyDir != null)
-          filter.add(new File(srcLazyDir, keyDir));
-        if (srcCloneDir != null)
-          filter.add(new File(srcCloneDir, keyDir));
+        String dstKey = dstScanReader.readLine();
+        if (dstKey == null)
+          break;
+        String srcKey = srcScanReader.readLine();
+        if (!dstKey.equals(srcKey))
+          allMatch = false;
       }
-      
-      for (String key : dstCache.keySet()) 
+
+      // If they match, we need only scan the directories in src that came later.
+      if (allMatch)
       {
-        if (srcCache.containsKey(key))
-          continue;
-        
-        String keyDir = key.replaceFirst(":", "/");
-        if (srcLazyDir != null)
-          filter.add(new File(srcLazyDir, keyDir));
-        if (srcCloneDir != null)
-          filter.add(new File(srcCloneDir, keyDir));
+        while (true)
+        {
+          String srcKey = srcScanReader.readLine();
+          if (srcKey == null)
+            break;
+          String scanDir = srcKey.replaceFirst(":", "/");
+          if (srcLazyDir != null)
+            filter.add(new File(srcLazyDir, scanDir));
+          if (srcCloneDir != null)
+            filter.add(new File(srcCloneDir, scanDir));
+          
+        }
       }
     }
     
@@ -140,30 +141,34 @@ public class IndexSync
   }
 
   /** 
-   * Determine the oldest file within a directory (or the dir itself) and
+   * Determine the oldest file within a directory (or the dir itself if empty) and
    * return a human-readable version of that time.
    */
   public static String oldestTime(File dir)
   {
-    long min = dir.lastModified();
+    long min = Long.MAX_VALUE;
     for (File f : dir.listFiles()) {
       if (f.lastModified() < min)
         min = f.lastModified();
     }
+    if (min == Long.MAX_VALUE)
+      min = dir.lastModified();
     return new SimpleDateFormat().format(new Date(min));
   }
 
   /** 
-   * Determine the newest file within a directory (or the dir itself) and
+   * Determine the newest file within a directory (or the dir itself if empty) and
    * return a human-readable version of that time.
    */
   public static String newestTime(File dir)
   {
-    long max = dir.lastModified();
+    long max = Long.MIN_VALUE;
     for (File f : dir.listFiles()) {
       if (f.lastModified() > max)
         max = f.lastModified();
     }
+    if (max == Long.MIN_VALUE)
+      max = dir.lastModified();
     return new SimpleDateFormat().format(new Date(max));
   }
 }

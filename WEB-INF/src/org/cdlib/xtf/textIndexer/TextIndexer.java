@@ -29,11 +29,16 @@ package org.cdlib.xtf.textIndexer;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.cdlib.xtf.util.DirSync;
 import org.cdlib.xtf.util.Path;
+import org.cdlib.xtf.util.SubDirFilter;
 import org.cdlib.xtf.util.Trace;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -398,7 +403,7 @@ public class TextIndexer
       Trace.info("");
 
       long timeMsec = System.currentTimeMillis() - startTime;
-      long timeSec = timeMsec / 1000;
+      long timeSec = (timeMsec+500) / 1000;
       long timeMin = timeSec / 60;
       long timeHour = timeMin / 60;
 
@@ -447,32 +452,42 @@ public class TextIndexer
     srcTreeProcessor.open(cfgInfo);
     
     // Start at the root directory specified by the config file. 
-    String srcRootDir = Path.resolveRelOrAbs(xtfHomeFile,
-                                             cfgInfo.indexInfo.sourcePath);
+    String srcRoot = Path.resolveRelOrAbs(xtfHomeFile,
+                                          cfgInfo.indexInfo.sourcePath);
+    File srcRootFile = new File(srcRoot);
 
+    // Also figure out where the index is going to go.
+    String indexPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath,
+        cfgInfo.indexInfo.indexPath);
+    File indexFile = new File(indexPath);
+    
+    // Record the directories that we scan, for incremental syncing runs later.
+    writeScanDirs(indexFile, cfgInfo.indexInfo);
+
+    // Make a filter for the specified source directories (null for all)
+    SubDirFilter subDirFilter = makeSubDirFilter(srcRootFile, cfgInfo);
+    
+    // If requested, clone the data and use that as our source.
     if (cfgInfo.indexInfo.cloneData) 
     {
-      Trace.info("Cloning Data Directories...");
-      if (cfgInfo.indexInfo.subDirs == null)
-        srcTreeProcessor.cloneData(new File(srcRootDir), true);
-      else {
-        for (String subDir : cfgInfo.indexInfo.subDirs) {
-          String subDirPath = Path.resolveRelOrAbs(srcRootDir, Path.normalizePath(subDir));
-          srcTreeProcessor.cloneData(new File(subDirPath), false);
-        }
-      }
+      Trace.info("Cloning Data Directories.");
+      
+      // Clone the source data.
+      File cloneRootFile = new File(indexFile, "dataClone/" + cfgInfo.indexInfo.indexName);
+      if (!cloneRootFile.exists() && !cloneRootFile.mkdirs())
+        throw new IOException("Error creating clone directory '" + cloneRootFile + "'");
+      DirSync sync = new DirSync(subDirFilter);
+      sync.syncDirs(srcRootFile, cloneRootFile);
+      
+      // Switch to using the clone data as our source
+      subDirFilter = makeSubDirFilter(cloneRootFile, cfgInfo);
+      srcRootFile = cloneRootFile;
+      
       Trace.more(Trace.info, " Done.");
     }
       
     Trace.info("Scanning Data Directories...");
-    if (cfgInfo.indexInfo.subDirs == null)
-      srcTreeProcessor.processDir(new File(srcRootDir), true);
-    else {
-      for (String subDir : cfgInfo.indexInfo.subDirs) {
-        String subDirPath = Path.resolveRelOrAbs(srcRootDir, Path.normalizePath(subDir));
-        srcTreeProcessor.processDir(new File(subDirPath), false);
-      }
-    }
+    srcTreeProcessor.processDir(srcRootFile, subDirFilter, true);
     Trace.more(Trace.info, " Done.");
 
     srcTreeProcessor.close();
@@ -485,7 +500,8 @@ public class TextIndexer
     Trace.info("Removing Missing Documents From Index:");
     Trace.tab();
 
-    culler.cullIndex(new File(cfgInfo.xtfHomePath), cfgInfo.indexInfo);
+    culler.cullIndex(new File(cfgInfo.xtfHomePath), cfgInfo.indexInfo, 
+                     srcRootFile, subDirFilter);
 
     Trace.untab();
     Trace.info("Done.");
@@ -493,6 +509,74 @@ public class TextIndexer
   
   
   //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Append the current subdirectories we're about to scan to the scanDirs.list
+   * file. This file is used in incremental index rotation to figure out which
+   * data and lazy subdirectories need to be scanned for changes.
+   */
+  private static void writeScanDirs(File indexFile, IndexInfo idxInfo) 
+    throws IOException 
+  {
+    File oldScanFile = new File(indexFile, "scanDirs.list");
+    File newScanFile = new File(indexFile, "scanDirs.list.new");
+    try
+    {
+      BufferedWriter scanWriter = new BufferedWriter(new FileWriter(newScanFile));
+      
+      if (oldScanFile.canRead())
+      {
+        // Copy the contents of the old file. We can't just append to the old file
+        // because it may be hard linked to a older index.
+        //
+        BufferedReader scanReader = new BufferedReader(new FileReader(oldScanFile));
+        while (true) {
+          String line = scanReader.readLine();
+          if (line == null)
+            break;
+          scanWriter.write(line+"\n");
+        }
+        scanReader.close();
+      }
+      
+      // And append directories being scanned this time.
+      if (idxInfo.subDirs == null)
+        scanWriter.write(idxInfo.indexName + ":/\n");
+      else {
+        for (String subdir : idxInfo.subDirs)
+          scanWriter.write(idxInfo.indexName + ":" + subdir + "\n");
+      }
+      scanWriter.close();
+      
+      // Finally, get rid of the old file.
+      newScanFile.renameTo(oldScanFile);
+    }
+    catch (IOException e) {
+      newScanFile.delete();
+      throw e;
+    }
+  }
+
+  
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Create a subdirectory filter, using the specified source root directory
+   * and the given configuration info.
+   */
+  private static SubDirFilter makeSubDirFilter(File srcRootFile, IndexerConfig cfgInfo) 
+  {
+    if (cfgInfo.indexInfo.subDirs == null)
+      return null;
+    SubDirFilter filter = new SubDirFilter();
+    for (String subdir : cfgInfo.indexInfo.subDirs)
+      filter.add(new File(Path.normalizePath(srcRootFile.toString() + "/" + subdir)));
+    return filter;
+  }
+
+  
+  //////////////////////////////////////////////////////////////////////////////
+
 
   /**
    * Rotates a rotation-enabled index.
@@ -515,21 +599,31 @@ public class TextIndexer
     File spareIndex = new File(Path.resolveRelOrAbs(
         xtfHomeFile, indexPath.replaceFirst("-new/$", "-spare/")));
     
-    // If there's a pending index, it means the servlets haven't gotten around
-    // to grabbing it yet, so we can't rotate yet.
-    //
-    if (pendingIndex.exists()) {
-      Trace.info("Rotation skipped: a previous index is still pending.");
-      return;
-    }
-    
     // If nothing has happened to the new index since the current one was
     // made, then it would be silly to rotate.
     //
     if (currentIndex.exists() &&
         IndexSync.newestTime(currentIndex).equals(IndexSync.newestTime(newIndex)))
     {
-      Trace.info("Rotation skipped: no changes found.");
+      Trace.info("Nothing has changed, so not rotating.");
+      return;
+    }
+    
+    // If nothing has happened to the new index since the current one was
+    // made, then it would be silly to rotate.
+    //
+    if (pendingIndex.exists() &&
+        IndexSync.newestTime(pendingIndex).equals(IndexSync.newestTime(newIndex)))
+    {
+      Trace.info("Nothing has changed, so not rotating.");
+      return;
+    }
+    
+    // If there's a pending index, it means the servlets haven't gotten around
+    // to grabbing it yet, so we can't rotate yet.
+    //
+    if (pendingIndex.exists()) {
+      Trace.info("A previous index is still pending, so not rotating.");
       return;
     }
     
