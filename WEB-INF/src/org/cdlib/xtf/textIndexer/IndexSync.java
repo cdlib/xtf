@@ -48,6 +48,8 @@ import org.cdlib.xtf.util.Trace;
  */
 public class IndexSync 
 {
+  private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S Z");
+  
   /**
    * Perform the minimum necessary work to ensure that the contents of dstDir
    * exactly match srcDir.
@@ -148,12 +150,14 @@ public class IndexSync
   {
     long min = Long.MAX_VALUE;
     for (File f : dir.listFiles()) {
+      if (f.getName().equals("scanDirs.list"))
+        continue;
       if (f.lastModified() < min)
         min = f.lastModified();
     }
     if (min == Long.MAX_VALUE)
       min = dir.lastModified();
-    return new SimpleDateFormat().format(new Date(min));
+    return dateFormat.format(new Date(min));
   }
 
   /** 
@@ -164,11 +168,13 @@ public class IndexSync
   {
     long max = Long.MIN_VALUE;
     for (File f : dir.listFiles()) {
+      if (f.getName().equals("scanDirs.list"))
+        continue;
       if (f.lastModified() > max)
         max = f.lastModified();
     }
     if (max == Long.MIN_VALUE)
       max = dir.lastModified();
-    return new SimpleDateFormat().format(new Date(max));
+    return dateFormat.format(new Date(max));
   }
 }
