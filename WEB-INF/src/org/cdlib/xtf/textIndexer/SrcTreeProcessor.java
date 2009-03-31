@@ -597,11 +597,14 @@ public class SrcTreeProcessor
     StructuredStore lazyStore = null;
     if (cfgInfo.buildLazyFiles) 
     {
-      // Figure out where to put the lazy tree file.
+      // Figure out where to put the lazy tree file. We don't create
+      // the directory just yet, since for non-XML files the store will
+      // never be used.
+      //
       File lazyFile = IndexUtil.calcLazyPath(new File(cfgInfo.xtfHomePath),
                                              cfgInfo.indexInfo,
                                              srcPath,
-                                             true);
+                                             false); // false: don't create yet
 
       // Use a file proxy so that we don't actually open the file handle
       // until (and if) the queued file is actually indexed.
