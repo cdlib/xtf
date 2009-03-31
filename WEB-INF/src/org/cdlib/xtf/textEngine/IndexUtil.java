@@ -154,7 +154,7 @@ public class IndexUtil
     //
     String sourcePath;
     if (idxInfo.cloneData && srcTextFile.toString().contains("/dataClone/"))
-      sourcePath = Path.normalizePath(idxInfo.indexPath) + "dataClone/";
+      sourcePath = Path.normalizePath(idxInfo.indexPath) + "dataClone/" + idxInfo.indexName + "/";
     else
       sourcePath = idxInfo.sourcePath;
     String fullSourcePath = Path.resolveRelOrAbs(xtfHome.toString(), sourcePath);
@@ -238,7 +238,7 @@ public class IndexUtil
     //
     String sourcePath;
     if (idxInfo.cloneData && srcTextFile.toString().contains("/dataClone/"))
-      sourcePath = Path.normalizePath(idxInfo.indexPath) + "dataClone/";
+      sourcePath = Path.normalizePath(idxInfo.indexPath) + "dataClone/" + idxInfo.indexName + "/";
     else
       sourcePath = idxInfo.sourcePath;
     
