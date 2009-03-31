@@ -48,10 +48,10 @@ import org.cdlib.xtf.cache.Dependency;
 import org.cdlib.xtf.cache.FileDependency;
 import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IndexUtil;
-import org.cdlib.xtf.util.DirSync;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredStore;
+import org.cdlib.xtf.util.SubDirFilter;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
 import org.xml.sax.InputSource;
@@ -273,10 +273,9 @@ public class SrcTreeProcessor
    * This method iterates through a source directory's contents indexing any
    * valid files it finds, any processing any sub-directories. <br><br>
    *
-   * @param curDir     The current directory to be processed. <br><br>
-   *
-   * @param topLevel   True if this directory is the top of the data
-   *                   tree. <br><br>
+   * @param curDir        The current directory to be processed. <br>
+   * @param subDirFilter  Sub-dirs to scan, or null for all. <br>
+   * @param topLevel      true for the top-level directory, false else. <br>     
    *
    *  @throws   Exception  Any exceptions generated internally
    *                       by the <code>File</code> class or the
@@ -284,19 +283,14 @@ public class SrcTreeProcessor
    *                       class. <br><br>
    *
    */
-  public void processDir(File curDir, boolean topLevel)
-    throws Exception 
-  {
-    if (cfgInfo.indexInfo.cloneData)
-      curDir = calcCloneDir(curDir, true);
-    processInternal(curDir, topLevel);
-  }
-  
-  ////////////////////////////////////////////////////////////////////////////
 
-  public void processInternal(File curDir, boolean topLevel)
+  public void processDir(File curDir, SubDirFilter subDirFilter, boolean topLevel)
     throws Exception 
   {
+    // If we're only doing a subset and this directory isn't in it, skip.
+    if (subDirFilter != null && !subDirFilter.approve(curDir))
+      return;
+    
     // We're looking at a directory. Get the list of files it contains.
     String[] fileStrs = curDir.getAbsoluteFile().list();
     if (fileStrs == null) {
@@ -441,9 +435,9 @@ public class SrcTreeProcessor
     for (Iterator i = list.iterator(); i.hasNext();) {
       File subFile = new File(curDir, (String)i.next());
       if (subFile.getAbsoluteFile().isDirectory())
-        processInternal(subFile, false);
+        processDir(subFile, subDirFilter, false);
     }
-  } // processInternal()
+  } // processDir()
 
   ////////////////////////////////////////////////////////////////////////////
 
@@ -654,42 +648,4 @@ public class SrcTreeProcessor
     return true;
   } // processFile()
   
-  ////////////////////////////////////////////////////////////////////////////
-
-  private File calcCloneDir(File srcDir, boolean topLevel) throws IOException
-  {
-    // Figure out the destination directory
-    File dstDir = new File(calcIndexPath(), "dataClone");
-    if (!topLevel) {
-      String subdirKey = IndexUtil.calcDocKey(new File(cfgInfo.xtfHomePath),
-                                              cfgInfo.indexInfo, srcDir);
-      String subdir = subdirKey.replaceFirst("[^:]*:", "");
-      dstDir = new File(dstDir, subdir);
-    }
-    return dstDir;
-  }
-  
-  ////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * When data cloning is turned on in the index configuration, this method
-   * is called to clone data from the given directory to the 'dataClone' 
-   * directory within the index.
-   * 
-   * @throws IOException If something goes wrong during synchronization
-   */
-  public void cloneData(File srcDir, boolean topLevel) throws IOException
-  {
-    // Figure out the destination directory, and create it if necessary.
-    File dstDir = calcCloneDir(srcDir, topLevel);
-    if (!dstDir.isDirectory()) {
-      if (!dstDir.mkdirs())
-        throw new IOException("Unable to create data clone directory '" + dstDir + "'");
-    }
-    
-    // We have a handy utility class that does cloning for us.
-    DirSync sync = new DirSync();
-    sync.syncDirs(srcDir, dstDir);
-  }
-
 } // class SrcTreeProcessor
