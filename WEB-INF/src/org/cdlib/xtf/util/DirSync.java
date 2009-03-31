@@ -181,7 +181,7 @@ public class DirSync
 
   private void deleteDir(File dir) throws IOException {
     //System.out.format("Delete dir %s\n", dir.toString());
-    if (filter == null || filter.inSet(dir.toString()))
+    if (filter == null || filter.approve(dir.toString()))
       Path.deleteDir(dir);
   }
 
@@ -192,7 +192,7 @@ public class DirSync
 
   private void copyDir(File srcDir, File dstDir, int level) throws IOException {
     //System.out.format("Copy dir %s to %s\n", srcDir.toString(), dstDir.toString());
-    if (filter == null || filter.inSet(srcDir.toString())) {
+    if (filter == null || filter.approve(srcDir.toString())) {
       if (!dstDir.exists() && !dstDir.mkdir())
         throw new IOException("Error creating directory '" + dstDir + "'");
       syncDirs(srcDir, dstDir, level);
@@ -201,6 +201,8 @@ public class DirSync
         fixTimes.add(srcDir.lastModified());
       }
     }
+    //else
+    //  System.out.format("Skip dir %s\n", srcDir.toString());
   }
 
   /**

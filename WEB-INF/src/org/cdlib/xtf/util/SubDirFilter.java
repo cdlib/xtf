@@ -69,10 +69,16 @@ public class SubDirFilter
    * Checks if the given directory is in the set, where "in" is defined as
    * having an ancestor or descendant within the set.
    */
-  public boolean inSet(String dir)
+  public boolean approve(String dir) {
+    return approve(new File(Path.normalizePath(dir)));
+  }
+  
+  /**
+   * Checks if the given directory is in the set, where "in" is defined as
+   * having an ancestor or descendant within the set.
+   */
+  public boolean approve(File dirFile)
   {
-    File dirFile = new File(Path.normalizePath(dir));
-    
     // If this dir has descendants in the set, yes.
     if (ancestors.contains(dirFile.toString()))
       return true;
