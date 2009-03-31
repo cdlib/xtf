@@ -78,7 +78,7 @@ public class DocSelCache extends HashMap
       ois = new ObjectInputStream(iis);
 
       String fileVersion = ois.readUTF();
-      if (!fileVersion.equals("docSelectorCache v2.2")) {
+      if (!fileVersion.equals("docSelectorCache v1.0")) {
         Trace.warning("Unrecognized docSelector cache \"" + file + "\"");
         return;
       }
@@ -129,7 +129,7 @@ public class DocSelCache extends HashMap
       oos = new ObjectOutputStream(dos);
 
       // Write the version info first.
-      oos.writeUTF("docSelectorCache v2.2");
+      oos.writeUTF("docSelectorCache v1.0");
 
       // Next, write the current stylesheet dependency info.
       oos.writeUTF(dependencies);
@@ -211,7 +211,6 @@ public class DocSelCache extends HashMap
   static class Entry implements Serializable 
   {
     String  filesAndTimes;
-    long    scanTime;
     boolean anyProcessed;
 
     Entry() { // only used by serialization
@@ -219,7 +218,6 @@ public class DocSelCache extends HashMap
 
     Entry(String filesAndTimes, boolean anyProcessed) {
       this.filesAndTimes = filesAndTimes;
-      this.scanTime = System.currentTimeMillis();
       this.anyProcessed = anyProcessed;
     }
   } // class CacheEntry
