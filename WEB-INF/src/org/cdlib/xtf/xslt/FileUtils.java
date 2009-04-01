@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
@@ -28,6 +29,7 @@ import org.xml.sax.InputSource;
 
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.trace.InstructionInfo;
 import net.sf.saxon.trans.XPathException;
 
 /*
@@ -273,12 +275,40 @@ public class FileUtils
   }
 
   /**
+   * Unfortunately the interface for getting systemId from an XPath context changed
+   * between Saxon 9.0 and Saxon 9.1, so we jump through hoops to be compatible
+   * with both.
+   */
+  private static String getSystemId(XPathContext context)
+  {
+    try {
+      // Saxon 9.0 and below
+      return context.getOrigin().getInstructionInfo().getSystemId();
+    }
+    catch (NoSuchMethodError e)
+    {
+      // Saxon 9.1 and above
+      for (Method method : context.getClass().getMethods()) {
+        if (method.getName().equals("getOrigin")) 
+        {
+          try {
+            return ((InstructionInfo)method.invoke(context)).getSystemId();
+          } catch (Exception e2) {
+            throw new RuntimeException(e2);
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  
+  /**
    * Resolve the location of a file given the stylesheet context.
    */
   private static File resolveFile(XPathContext context, String filePath) 
   {
-    String stylesheetPath = context.getOrigin().getInstructionInfo()
-                            .getSystemId();
+    String stylesheetPath = getSystemId(context);
     stylesheetPath = stylesheetPath.replaceFirst("^file:", "");
     stylesheetPath = stylesheetPath.replaceAll("%20", " "); // fix spaces from Saxon on Windows
     File stylesheetDir = new File(stylesheetPath).getParentFile();
@@ -297,8 +327,7 @@ public class FileUtils
    */
   public static String resolvePath(XPathContext context, String filePath)
   {
-    String stylesheetPath = context.getOrigin().getInstructionInfo()
-                            .getSystemId();
+    String stylesheetPath = getSystemId(context);
     stylesheetPath = stylesheetPath.replaceFirst("^file:", "");
     stylesheetPath = stylesheetPath.replaceAll("%20", " "); // fix spaces from Saxon on Windows
     File stylesheetDir = new File(stylesheetPath).getParentFile();
