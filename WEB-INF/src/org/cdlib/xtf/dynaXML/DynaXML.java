@@ -97,9 +97,6 @@ public class DynaXML extends TextServlet
   /** Locator used to find lazy and non-lazy document files */
   private DocLocator docLocator = createDocLocator();
 
-  /** Set to only allow lazy documents (set by TestableDynaXML only) */
-  protected static boolean forceLazy = false;
-
   /**
    * Called by the superclass to find out the name of our specific config
    * file.
@@ -588,12 +585,6 @@ public class DynaXML extends TextServlet
       //
       if (docReq.query != null)
         throw new UnsupportedQueryException();
-
-      // If we're required to use a lazy store, throw an exception since
-      // we couldn't find one.
-      //
-      if (forceLazy)
-        throw new InvalidDocumentException();
 
       // Can't find a lazy store... does the original source file exist?
       if (!docReq.source.startsWith("http://")) {

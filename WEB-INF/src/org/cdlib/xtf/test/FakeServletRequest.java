@@ -372,7 +372,7 @@ public class FakeServletRequest implements HttpServletRequest
   }
 
   public String getRemoteAddr() {
-    return "192.168.1.1";
+    return "1.2.3.4";
   }
 
   public String getRemoteHost() {

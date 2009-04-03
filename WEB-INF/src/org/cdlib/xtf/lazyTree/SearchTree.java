@@ -1395,4 +1395,8 @@ public class SearchTree extends LazyDocument
       }
     } // for iter
   } // pruneUnused()
+
+  public int getTotalHits() {
+    return totalHits;
+  }
 } // class SearchTree
