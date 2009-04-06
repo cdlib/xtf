@@ -533,6 +533,16 @@ public class XMLConfigParser extends DefaultHandler
       return;
     }
 
+    // If the current tag points to validation specs...
+    if (qName.equalsIgnoreCase("validation")) 
+    {
+      // Save it away
+      configInfo.indexInfo.validationPath = Path.normalizePath(
+        atts.getValue("path"));
+
+      return;
+    }
+
     Trace.error("Unknown config option: '" + qName + "'");
     System.exit(1);
   } // public startElement()

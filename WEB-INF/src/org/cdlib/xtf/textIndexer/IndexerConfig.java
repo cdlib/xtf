@@ -134,6 +134,16 @@ public class IndexerConfig
   public boolean skipIndexing;
   
   /**
+   * Flag indicating whether or not to perform validation (on indexes which
+   * are so marked).
+   * <br><br>
+   *
+   *  true  = Validate indexes.  <br>
+   *  false = Do not validate. <br><br>
+   */
+  public boolean validate;
+  
+  /**
    * Flag indicating whether or not to perform rotation (on indexes which
    * are so marked).
    * <br><br>
@@ -177,6 +187,9 @@ public class IndexerConfig
     
     // Default to performing the main indexing pass
     skipIndexing = false;
+    
+    // Default to always validating indexes for which it's enabled
+    validate = true;
     
     // Default to always rotating indexes for which it's enabled
     rotate = true;
@@ -393,6 +406,12 @@ public class IndexerConfig
       // If the user asked for us to skip the main indexing pass, flag it.
       else if (args[i].equalsIgnoreCase("-skipindexing"))
         skipIndexing = true;
+      
+      // If the user asked us to validate or not, flag it.
+      else if (args[i].equalsIgnoreCase("-validate"))
+        validate = true;
+      else if (args[i].equalsIgnoreCase("-novalidate"))
+        validate = false;
       
       // If the user asked us to rotate or not, flag it.
       else if (args[i].equalsIgnoreCase("-rotate"))

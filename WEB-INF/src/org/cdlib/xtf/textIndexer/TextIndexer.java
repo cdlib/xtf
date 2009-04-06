@@ -36,6 +36,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.FSDirectory;
+import org.cdlib.xtf.textEngine.IndexValidator;
 import org.cdlib.xtf.util.DirSync;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.SubDirFilter;
@@ -269,6 +272,8 @@ public class TextIndexer
           Trace.error("-trace errors|warnings|info|debug     Default: -trace info");
           Trace.error("-buildlazy|-nobuildlazy               Default: -buildlazy");
           Trace.error("-updatespell|-noupdatespell           Default: -updatespell");
+          Trace.error("-rotate|-norotate                     Default: -rotate");
+          Trace.error("-validate|-novalidate                 Default: -validate");
           Trace.tab();
           Trace.error("\n");
           Trace.untab();
@@ -382,7 +387,18 @@ public class TextIndexer
         Trace.info("Skipping Spellcheck Dictionary Pass.");
       }
       
-      // Finally, perform index rotation if specified.
+      // Validate the index if specified.
+      if (cfgInfo.indexInfo.validationPath != null &&
+          cfgInfo.indexInfo.validationPath.length() > 0)
+      {
+        Trace.info("");
+        if (cfgInfo.validate)
+          doValidation(cfgInfo);
+        else
+          Trace.info("Skipping Index Validation.");
+      }
+      
+      // Finally, perform index rotation if specified (and the index supports it)
       if (cfgInfo.indexInfo.rotate)
       {
         if (cfgInfo.rotate)
@@ -391,7 +407,10 @@ public class TextIndexer
           Trace.info("Performing Index Rotation:");
           Trace.tab();
 
-          doRotation(cfgInfo, xtfHomeFile);
+          doRotation(cfgInfo);
+          
+          Trace.untab();
+          Trace.info("Done.");
         }
         else {
           Trace.info("");
@@ -583,21 +602,22 @@ public class TextIndexer
    * 
    * @throws IOException if anything goes wrong 
    */
-  private static void doRotation(IndexerConfig cfgInfo, File xtfHomeFile) 
+  private static void doRotation(IndexerConfig cfgInfo) 
     throws IOException 
   {
     // Let's figure out the paths to the various versions of the index
     String indexPath = cfgInfo.indexInfo.indexPath;
     assert indexPath.endsWith("-new/"); // Should have been modified above
     
-    File newIndex = new File(
-        Path.resolveRelOrAbs(xtfHomeFile, indexPath));
-    File currentIndex = new File(Path.resolveRelOrAbs(
-        xtfHomeFile, indexPath.replaceFirst("-new/$", "/")));
-    File pendingIndex = new File(Path.resolveRelOrAbs(
-        xtfHomeFile, indexPath.replaceFirst("-new/$", "-pending/")));
-    File spareIndex = new File(Path.resolveRelOrAbs(
-        xtfHomeFile, indexPath.replaceFirst("-new/$", "-spare/")));
+    String home = cfgInfo.xtfHomePath;
+    File newIndex = new File(Path.resolveRelOrAbs(home, 
+        indexPath));
+    File currentIndex = new File(Path.resolveRelOrAbs(home, 
+        indexPath.replaceFirst("-new/$", "/")));
+    File pendingIndex = new File(Path.resolveRelOrAbs(home, 
+        indexPath.replaceFirst("-new/$", "-pending/")));
+    File spareIndex = new File(Path.resolveRelOrAbs(home, 
+        indexPath.replaceFirst("-new/$", "-spare/")));
     
     // If nothing has happened to the new index since the current one was
     // made, then it would be silly to rotate.
@@ -654,8 +674,24 @@ public class TextIndexer
     Trace.info("Rotating Indexes:  [pending]  <-  [new]  <-  [spare]");
     renameOrElse(newIndex, pendingIndex);
     renameOrElse(spareIndex, newIndex);
-    Trace.untab();
-    Trace.info("Done.");
+  }
+  
+  private static void doValidation(IndexerConfig cfgInfo) throws IOException
+  {
+    // First, open the index.
+    String indexPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath,
+        cfgInfo.indexInfo.indexPath);
+    IndexReader reader = IndexReader.open(FSDirectory.getDirectory(
+                            Path.normalizePath(indexPath)));
+    
+    // Then validate if specified in the index.
+    IndexValidator validator = new IndexValidator();
+    if (validator.validate(cfgInfo.xtfHomePath, indexPath, reader))
+      return;
+    
+    Trace.error("Indexing aborted.");
+    Trace.error("");
+    System.exit(1);
   }
 
   /**

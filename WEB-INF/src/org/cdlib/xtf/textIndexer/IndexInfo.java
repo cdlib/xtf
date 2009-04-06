@@ -142,6 +142,16 @@ public class IndexInfo
    */
   public String accentMapPath;
 
+  /** Path to a set of validation specifications for this index. This is
+   *  essentially a list of URLs, with specifications on how many hits
+   *  should be returned by each one. Validation is applied at index time
+   *  to determine if the index is valid (and before rotating), and is
+   *  also applied by the servlets before rotating in a new index.
+   *
+   *  The file should be XML in the defined format.
+   */
+  public String validationPath;
+
   /** Whether to create a spellcheck dictionary for this index */
   public boolean createSpellcheckDict = false;
 

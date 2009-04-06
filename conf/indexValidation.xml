@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<!-- URLs used to validate an index, whether newly created or incrementally -->
+<!-- updated.                                                               -->
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+<index-validation>
+  <crossQuery minHits="40">http://myserver.org/search?browse-all=yes</crossQuery>
+  <dynaXML minHits="650">http://myserver.org/view?docId=tei/ft958009mm/ft958009mm.xml;query=africa;brand=default</dynaXML>
+</index-validation>

@@ -706,29 +706,12 @@ public class XMLTextProcessor extends DefaultHandler
       doc.add(new Field("chunkSize", indexInfo.getChunkSizeStr(), Field.Store.YES, Field.Index.NO));
       doc.add(new Field("chunkOvlp", indexInfo.getChunkOvlpStr(), Field.Store.YES, Field.Index.NO));
 
-      // If a plural map was specified, copy it to the index directory.
-      if (indexInfo.pluralMapPath != null &&
-          indexInfo.pluralMapPath.length() > 0) 
-      {
-        String fileName = new File(indexInfo.pluralMapPath).getName();
-        String sourcePath = Path.normalizeFileName(
-          xtfHomePath + indexInfo.pluralMapPath);
-        String targetPath = Path.normalizeFileName(indexPath + fileName);
-        Path.copyFile(new File(sourcePath), new File(targetPath));
-        doc.add(new Field("pluralMap", fileName, Field.Store.YES, Field.Index.NO));
-      }
-
-      // If an accent map was specified, copy it to the index directory.
-      if (indexInfo.accentMapPath != null &&
-          indexInfo.accentMapPath.length() > 0) 
-      {
-        String fileName = new File(indexInfo.accentMapPath).getName();
-        String sourcePath = Path.normalizeFileName(
-          xtfHomePath + indexInfo.accentMapPath);
-        String targetPath = Path.normalizeFileName(indexPath + fileName);
-        Path.copyFile(new File(sourcePath), new File(targetPath));
-        doc.add(new Field("accentMap", fileName, Field.Store.YES, Field.Index.NO));
-      }
+      // If plural map, accent map, and/or validation files were specified, copy them to the
+      // index directory.
+      //
+      copyDependentFile(indexInfo.pluralMapPath,  "pluralMap", doc);
+      copyDependentFile(indexInfo.accentMapPath,  "accentMap", doc);
+      copyDependentFile(indexInfo.validationPath, "validation", doc);
 
       // Copy the stopwords to the index
       String stopWords = indexInfo.stopWords;
@@ -747,6 +730,19 @@ public class XMLTextProcessor extends DefaultHandler
       }
     } // finally
   } // createIndex()
+
+  ////////////////////////////////////////////////////////////////////////////
+
+  private void copyDependentFile(String filePath, String fieldName, Document doc)
+      throws IOException 
+  {
+    if (filePath != null && filePath.length() > 0) { 
+      File sourceFile = new File(Path.resolveRelOrAbs(xtfHomePath, filePath));
+      File targetFile = new File(new File(indexPath), sourceFile.getName());
+      Path.copyFile(sourceFile, targetFile);
+      doc.add(new Field(fieldName, sourceFile.getName(), Field.Store.YES, Field.Index.NO));
+    }
+  }
 
   ////////////////////////////////////////////////////////////////////////////
 
