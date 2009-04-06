@@ -284,6 +284,10 @@ public class Trace
     getThreadTrace().t_error(msg);
   }
 
+  public static void error(String msg, Object ... args) {
+    getThreadTrace().t_error(String.format(msg, args));
+  }
+
   /** Internal threaded helper for {@link #error(String)}. */
   private void t_error(String msg) 
   {
@@ -312,6 +316,10 @@ public class Trace
     getThreadTrace().t_warning(msg);
   }
 
+  public static void warning(String msg, Object ... args) {
+    getThreadTrace().t_warning(String.format(msg, args));
+  }
+  
   /** Internal threaded helper for {@link #warning(String)}. */
   private void t_warning(String msg) 
   {
@@ -340,6 +348,10 @@ public class Trace
     getThreadTrace().t_info(msg);
   }
 
+  public static void info(String msg, Object ... args) {
+    getThreadTrace().t_info(String.format(msg, args));
+  }
+  
   /** Internal threaded helper for {@link #info(String)}. */
   private void t_info(String msg) 
   {
@@ -366,6 +378,10 @@ public class Trace
    */
   public static void debug(String msg) {
     getThreadTrace().t_debug(msg);
+  }
+
+  public static void debug(String msg, Object ... args) {
+    getThreadTrace().t_debug(String.format(msg, args));
   }
 
   /** Internal threaded helper for {@link #debug(String)}. */
