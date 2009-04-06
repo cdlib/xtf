@@ -1,9 +1,18 @@
 package org.cdlib.xtf.util;
 
-import java.util.Vector;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.Configuration;
+import net.sf.saxon.om.AllElementStripper;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tinytree.TinyBuilder;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
 
 /*
@@ -46,13 +55,40 @@ public class EasyNode
   private NodeInfo wrapped;
 
   /** Attribute names for this node */
-  private Vector attrNames;
+  private ArrayList<String> attrNames;
 
   /** Attribute values for this node */
-  private Vector attrValues;
+  private ArrayList<String> attrValues;
 
   /** Child elements for this node */
-  private Vector children;
+  private ArrayList<EasyNode> children;
+  
+  /** Configuration used for parsing XML files */
+  private static Configuration config = new Configuration();
+  
+  /**
+   * Convenience method to read an XML file and return the root node.
+   */
+  public static EasyNode readXMLFile(String path) {
+    return readXMLFile(new File(path));
+  }
+  
+  /**
+   * Convenience method to read an XML file and return the root node.
+   */
+  public static EasyNode readXMLFile(File path)
+  {
+    // Read in the document (it's in XML format)
+    StreamSource src = new StreamSource(path);
+    NodeInfo doc = null;
+    try {
+      doc = TinyBuilder.build(src, new AllElementStripper(), config);
+      return new EasyNode(doc);
+    }
+    catch (XPathException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   /** Wrap a NodeInfo */
   public EasyNode(NodeInfo toWrap) {
@@ -68,8 +104,8 @@ public class EasyNode
     if (attrNames != null)
       return;
 
-    attrNames = new Vector();
-    attrValues = new Vector();
+    attrNames = new ArrayList();
+    attrValues = new ArrayList();
 
     NodeInfo attr;
     AxisIterator iter = wrapped.iterateAxis(Axis.ATTRIBUTE);
@@ -90,7 +126,7 @@ public class EasyNode
     if (children != null)
       return;
 
-    children = new Vector();
+    children = new ArrayList();
 
     NodeInfo child;
     AxisIterator iter = wrapped.iterateAxis(Axis.CHILD);
@@ -115,6 +151,12 @@ public class EasyNode
     getAttrs();
     return (String)attrNames.get(index);
   } // attrName()
+  
+  /** Get a list of all attribute names */
+  public List<String> attrNames() {
+    getAttrs();
+    return attrNames;
+  }
 
   /** Get a specific numbered attribute's value */
   public String attrValue(int index) {
@@ -162,6 +204,12 @@ public class EasyNode
     }
     return null;
   } // child()
+  
+  /** Get all the children */
+  public List<EasyNode> children() {
+    getChildren();
+    return children;
+  }
 
   /** Get the parent of this node (if any) */
   public EasyNode parent() {
