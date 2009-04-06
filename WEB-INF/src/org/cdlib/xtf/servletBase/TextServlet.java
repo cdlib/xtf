@@ -276,26 +276,10 @@ public abstract class TextServlet extends HttpServlet
       // Read in the configuration file.
       TextConfig config = readConfig(configPath);
 
-      // Set up the Trace facility. We want timestamps.
-      Trace.printTimestamps(true);
-
-      // Make sure output lines get flushed immediately, since we may
-      // be sharing the log file with other servlets.
+      // Set up the trace facility so it prints timestamps. Then print out
+      // trace info that we're restarting the servlet.
       //
-      Trace.setAutoFlush(true);
-
-      // Establish the trace output level.
-      Trace.setOutputLevel(
-          (config.logLevel.equals("silent")) ? Trace.silent
-        : (config.logLevel.equals("errors")) ? Trace.errors
-        : (config.logLevel.equals("warnings")) ? Trace.warnings
-        : (config.logLevel.equals("debug")) ? Trace.debug : Trace.info);
-
-      // And let everyone know the servlet has restarted
-      Trace.error("");
-      Trace.error("*** SERVLET RESTART: " + getServletInfo() + " ***");
-      Trace.error("");
-      Trace.error("Log level: " + config.logLevel);
+      setupTrace(config);
 
       // Create the caches
       stylesheetCache = new StylesheetCache(config.stylesheetCacheSize,
@@ -306,6 +290,37 @@ public abstract class TextServlet extends HttpServlet
       isInitted = true;
     }
   } // firstTimeInit()
+
+  /**
+   * Sets up the trace facility for serlvet operation:
+   *   1. Print timestamps with each line
+   *   2. Flush output immediately rather than buffering til end of line
+   *   3. Output level from config
+   *   4. Log a message that we're restarting the servlet
+   */
+  protected void setupTrace(TextConfig config) 
+  {
+    // Set up the Trace facility. We want timestamps.
+    Trace.printTimestamps(true);
+
+    // Make sure output lines get flushed immediately, since we may
+    // be sharing the log file with other servlets.
+    //
+    Trace.setAutoFlush(true);
+
+    // Establish the trace output level.
+    Trace.setOutputLevel(
+        (config.logLevel.equals("silent")) ? Trace.silent
+      : (config.logLevel.equals("errors")) ? Trace.errors
+      : (config.logLevel.equals("warnings")) ? Trace.warnings
+      : (config.logLevel.equals("debug")) ? Trace.debug : Trace.info);
+
+    // And let everyone know the servlet has restarted
+    Trace.error("");
+    Trace.error("*** SERVLET RESTART: " + getServletInfo() + " ***");
+    Trace.error("");
+    Trace.error("Log level: " + config.logLevel);
+  } // setupTrace()
 
   /**
    * General service method. We set a watch on each request in case it

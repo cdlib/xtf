@@ -35,6 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cdlib.xtf.crossQuery.CrossQuery;
+import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.test.FakeServletConfig;
 import org.cdlib.xtf.test.FakeServletContext;
 import org.cdlib.xtf.test.FakeServletRequest;
@@ -68,12 +69,16 @@ public class TestableCrossQuery extends CrossQuery
    * @param baseDir the XTF home directory.
    * @throws ServletException if anything goes wrong.
    */
-  public void init(String baseDir) throws ServletException
+  public TestableCrossQuery(String baseDir) throws ServletException
   {
     FakeServletContext context = new FakeServletContext();
     FakeServletConfig config = new FakeServletConfig(context, baseDir, "crossQuery");
     super.init(config);
   }
+  
+  /** For test mode, do nothing to the current trace flags. */
+  @Override
+  protected void setupTrace(TextConfig config) { }
 
   /**
    * Simplified method to test-get the given URL. Throws away the output
