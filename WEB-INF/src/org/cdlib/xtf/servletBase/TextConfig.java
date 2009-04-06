@@ -29,17 +29,10 @@ package org.cdlib.xtf.servletBase;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import javax.xml.transform.stream.StreamSource;
-import net.sf.saxon.Configuration;
-import net.sf.saxon.om.AllElementStripper;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.tinytree.TinyBuilder;
-import net.sf.saxon.trans.XPathException;
 import org.cdlib.xtf.util.*;
 
 /** Common members and methods for servlet configuration classes */
@@ -113,9 +106,6 @@ public abstract class TextConfig
   /** All the configuration attributes in the form of name/value pairs */
   public AttribList attribs = new AttribList();
 
-  /** Configuration used for parsing XML files */
-  private Configuration config = new Configuration();
-  
   /* Private temporaries for use during parsing */
   private String tokenizeParam;
   private String tokenizeTokenizer;
@@ -137,17 +127,9 @@ public abstract class TextConfig
     try 
     {
       // Read in the document (it's in XML format)
-      StreamSource src = new StreamSource(new File(path));
-      NodeInfo doc = null;
-      try {
-        doc = TinyBuilder.build(src, new AllElementStripper(), config);
-      }
-      catch (XPathException e) {
-        throw new RuntimeException(e);
-      }
-
+      EasyNode root = EasyNode.readXMLFile(path);
+      
       // Make sure the root tag is correct.
-      EasyNode root = new EasyNode(doc);
       String rootTag = root.name();
       if (rootTag.equals("") && root.nChildren() == 1) {
         root = root.child(0);
