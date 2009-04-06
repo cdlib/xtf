@@ -63,7 +63,7 @@ public class FakeServletRequest implements HttpServletRequest
     url = url.replaceAll("&amp;", "&");
     this.url = url;
 
-    StringTokenizer tok1 = new StringTokenizer(url, "?&");
+    StringTokenizer tok1 = new StringTokenizer(url, "?&;");
     if (tok1.hasMoreTokens())
       tok1.nextToken();
 
