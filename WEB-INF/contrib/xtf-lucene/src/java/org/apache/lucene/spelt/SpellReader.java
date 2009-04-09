@@ -64,9 +64,6 @@ import org.apache.lucene.util.StringUtil;
  */
 public class SpellReader 
 {
-  /** The spell index directory */
-  File spellDir;
-
   /** Keys in the edit map file */
   private IntList edMapKeys;
 
@@ -121,16 +118,16 @@ public class SpellReader
    *
    * @param spellIndexDir   directory containing the spelling dictionary
    */
-  public static SpellReader open(File spellIndexDir)
+  public static SpellReader open(File spellDir)
     throws IOException 
   {
     SpellReader reader = new SpellReader();
-    reader.spellDir = spellIndexDir;
     reader.stopSet = null;
     reader.wordEquiv = WordEquiv.DEFAULT;
-    reader.openEdmap();
-    reader.loadFreqSamples();
-    reader.loadWordFreqs();
+    reader.openEdmap(spellDir);
+    reader.loadFreqSamples(spellDir);
+    reader.loadWordFreqs(spellDir);
+    reader.openPairFreqs(spellDir);
     return reader;
   }
   
@@ -158,8 +155,8 @@ public class SpellReader
     this.wordEquiv = eq;
   }
 
-  /** Read the index for the edit map file */
-  private void openEdmap()
+  /** Read the index for the edit map file */ 
+  private void openEdmap(File spellDir)
     throws IOException 
   {
     long startTime = System.currentTimeMillis();
@@ -479,8 +476,8 @@ public class SpellReader
     if (terms.length == 0)
       return null;
 
-    // Load pair frequency data if we haven't already.
-    openPairFreqs();
+    // Must have already opened frequency data file.
+    assert pairFreqs != null;
 
     // Start with a null change, but reduce its score so we hopefully end
     // up suggesting something.
@@ -854,7 +851,7 @@ public class SpellReader
   }
 
   /** Get the term frequency sample array for our dictionary. */
-  private void loadFreqSamples()
+  private void loadFreqSamples(File spellDir)
     throws IOException 
   {
     // Default if no frequencies found will be to turn off frequency boosting
@@ -906,7 +903,7 @@ public class SpellReader
   }
 
   /** Get the term frequency sample array for our dictionary. */
-  private void loadWordFreqs()
+  private void loadWordFreqs(File spellDir)
     throws IOException 
   {
     // Find the word frequency file and open it
@@ -938,7 +935,7 @@ public class SpellReader
     }
   }
 
-  private void openPairFreqs()
+  private void openPairFreqs(File spellDir)
     throws IOException 
   {
     if (pairFreqs == null) {

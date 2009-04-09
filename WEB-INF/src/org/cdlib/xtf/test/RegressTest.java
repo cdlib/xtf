@@ -327,6 +327,7 @@ public class RegressTest
     {
       String inSpec = readFile(inFile);
       QueryProcessor processor = new DefaultQueryProcessor();
+      processor.setXtfHome(dir);
       QueryRequest request = new QueryRequestParser().parseRequest(queryDoc,
                                                                    new File(dir));
 

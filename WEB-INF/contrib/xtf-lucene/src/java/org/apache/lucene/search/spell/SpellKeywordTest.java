@@ -91,7 +91,7 @@ public class SpellKeywordTest
 
     // Create a query processor, and open the index.
     indexDir = Path.resolveRelOrAbs(new File(".").getAbsoluteFile(), "index");
-    XtfSearcher searcher = DefaultQueryProcessor.getXtfSearcher(indexDir);
+    XtfSearcher searcher = new XtfSearcher(indexDir, 30);
 
     // Attach a debug stream to the spell reader.
     SpellReader spellReader = searcher.spellReader();
@@ -210,6 +210,7 @@ public class SpellKeywordTest
 
     // Now process the query.
     DefaultQueryProcessor queryProcessor = new DefaultQueryProcessor();
+    queryProcessor.setXtfHome(new File(".").getAbsoluteFile().toString());
     QueryResult res = queryProcessor.processRequest(req);
 
     // See if it made a spelling suggestion. If not, return the original.
