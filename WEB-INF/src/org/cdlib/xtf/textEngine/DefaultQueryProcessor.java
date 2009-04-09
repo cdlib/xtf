@@ -127,11 +127,19 @@ public class DefaultQueryProcessor extends QueryProcessor
   /** Document normalization factor (calculated from {@link #maxDocScore}) */
   private float docScoreNorm;
 
+  /** Used to warm up indexes prior to use */
+  private static IndexWarmer indexWarmer;
+
   /** Comparator used for sorting strings in "sparse" indexes */
   private static final SparseStringComparator sparseStringComparator = new SparseStringComparator();
 
   /** Comparator used for sorting strings in "compact" indexes */
   private static final FlippableStringComparator compactStringComparator = new FlippableStringComparator();
+  
+  /** Record an index warmer to use for background warming. */
+  public static void setIndexWarmer(IndexWarmer warmer) {
+    indexWarmer = warmer;
+  }
 
   /**
    * This is main entry point. Takes a pre-parsed query request and handles
@@ -156,13 +164,13 @@ public class DefaultQueryProcessor extends QueryProcessor
     //
     Vector hitVec = new Vector(10);
 
-    String indexPath = req.indexPath;
-
-    XtfSearcher xtfSearcher = getXtfSearcher(indexPath);
+    if (indexWarmer == null)
+      throw new IOException("Fatal: must call setIndexWarmer() before DefaultQueryProcessor.processRequest()");
 
     // Get a reader, searcher, and document number map that will all be
     // consistent with each other and up-to-date.
     //
+    XtfSearcher xtfSearcher = indexWarmer.getSearcher(req.indexPath);
     synchronized (xtfSearcher) {
       xtfSearcher.update();
       indexReader = xtfSearcher.indexReader();
@@ -398,25 +406,6 @@ public class DefaultQueryProcessor extends QueryProcessor
     // All done.
     return result;
   } // processReq()
-
-  /**
-   * Get the XtfSearcher, which holds a reference to the Lucene index reader,
-   * cached chunk info, etc.
-   */
-  public static XtfSearcher getXtfSearcher(String indexPath)
-    throws IOException 
-  {
-    XtfSearcher xtfSearcher = null;
-    synchronized (searchers) 
-    {
-      xtfSearcher = (XtfSearcher)searchers.get(indexPath);
-      if (xtfSearcher == null) {
-        xtfSearcher = new XtfSearcher(indexPath, 30); // 30-sec update chk
-        searchers.put(indexPath, xtfSearcher);
-      }
-    }
-    return xtfSearcher;
-  }
 
   /**
    * Checks spelling of query terms, if spelling suggestion is enabled and

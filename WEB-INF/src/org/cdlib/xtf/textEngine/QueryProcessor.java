@@ -61,4 +61,11 @@ public abstract class QueryProcessor
    */
   public void resetCache() {
   }
+  
+  /**
+   * Optional method: set the XTF home directory (used for background
+   * warming in the default query processor.)
+   */
+  public void setXtfHome(String homeDir) {
+  }  
 }

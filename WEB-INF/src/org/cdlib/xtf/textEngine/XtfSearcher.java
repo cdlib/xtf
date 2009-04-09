@@ -75,8 +75,11 @@ public class XtfSearcher
   /** Last time we checked for out-of-date */
   private long lastCheckTime;
 
-  /** Version number of the index last time we checked */
+  /** Version number of the index in memory */
   private long curVersion;
+
+  /** Version number of index on disk */
+  private long newVersion;
 
   /** Reader used to access the index */
   private IndexReader indexReader;
@@ -120,12 +123,38 @@ public class XtfSearcher
   public XtfSearcher(String indexPath, int updateCheckSeconds)
     throws IOException 
   {
+    this(indexPath, FSDirectory.getDirectory(indexPath), updateCheckSeconds);
+  } // XtfSearcher
+
+  /**
+   * Construct a searcher set on the given directory.
+   *
+   * @param indexPath             Path to index directory
+   * @param dir                   Lucene version of the index directory
+   * @param updateCheckSeconds    How often to check for an updated index
+   */
+  public XtfSearcher(String indexPath, Directory dir, int updateCheckSeconds)
+    throws IOException 
+  {
     this.indexPath = indexPath;
-    directory = FSDirectory.getDirectory(indexPath);
+    this.directory = dir;
     curVersion = -99;
     updatePeriod = ((long)updateCheckSeconds) * 1000;
     update();
   } // XtfSearcher
+
+  /**
+   * Check if the version we have in memory is up-to-date relative to that
+   * on disk.
+   */
+  public boolean isUpToDate() throws IOException
+  {
+    // Get the version on disk. If it's the same as the one we have in
+    // memory, no problem.
+    //
+    newVersion = IndexReader.getCurrentVersion(directory);
+    return (newVersion == curVersion);
+  }
 
   /**
    * Ensures that this searcher is up-to-date with regards to the index on
@@ -147,8 +176,11 @@ public class XtfSearcher
     // Get the version on disk. If it's the same as the one we have in
     // memory, no problem.
     //
-    long ver = IndexReader.getCurrentVersion(directory);
-    if (ver == curVersion)
+    if (isUpToDate())
+      return;
+    
+    // If we've been requested to never re-update, forget it.
+    if (curVersion >= 0 && updatePeriod == 0)
       return;
 
     // Okay, better re-open to get the fresh data.
@@ -232,8 +264,8 @@ public class XtfSearcher
     // Determine which fields are tokenized.
     tokenizedFields = readTokenizedFields(indexPath, indexReader);
 
-    // Remember the version that we've checked.
-    curVersion = ver;
+    // Remember the version that's now in memory.
+    curVersion = newVersion;
   } // update()
 
   /**

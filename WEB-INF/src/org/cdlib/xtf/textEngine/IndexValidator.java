@@ -57,7 +57,6 @@ import org.cdlib.xtf.util.Trace;
  */
 public class IndexValidator
 {
-  private String baseDir;
   private TestableCrossQuery crossQuery;
   private TestableDynaXML dynaXML;
   private int nErrs;
@@ -74,7 +73,16 @@ public class IndexValidator
   public boolean validate(String baseDir, String indexPath, IndexReader indexReader) 
     throws IOException
   {
-    this.baseDir = baseDir;
+    // Create the servlets we'll use for testing.
+    try {
+      crossQuery = new TestableCrossQuery(baseDir);
+      crossQuery.overrideIndexDir(indexPath);
+      
+      dynaXML = new TestableDynaXML(baseDir);
+      dynaXML.overrideIndexDir(indexPath);
+    } catch (ServletException e) {
+      throw new IOException(e.getMessage());
+    }
     
     // Fetch the index information chunk.
     Hits match = new IndexSearcher(indexReader).search(new TermQuery(new Term("indexInfo", "1")));
@@ -104,8 +112,8 @@ public class IndexValidator
       
       // If any errors, abort.
       if (nErrs > 0) {
-        Trace.info(String.format("Validation failed: %d error(s)", nErrs));
         Trace.untab();
+        Trace.error(String.format("Validation failed: %d error(s)", nErrs));
         return false;
       }
         
@@ -115,13 +123,13 @@ public class IndexValidator
       return true;
     }
     catch (NumberFormatException err) {
-      Trace.info("Validation failed: non-numeric attribute found in validation specification");
       Trace.untab();
+      Trace.error("Validation failed: non-numeric attribute found in validation specification");
       return false;
     } 
     catch (Exception err) {
-      Trace.info("Validation failed: " + err.getMessage());
       Trace.untab();
+      Trace.error("Validation failed: " + err.getMessage());
       return false;
     }
   }
@@ -176,31 +184,32 @@ public class IndexValidator
     int nHits = 0;
     int prevTraceLevel = Trace.getOutputLevel();
     if (node.name().equals("crossQuery")) { 
-      if (crossQuery == null)
-        crossQuery = new TestableCrossQuery(baseDir);
-      Trace.info("crossQuery: [%s]", url);
+      Trace.info("crossQuery: [%s] ...", url);
       Trace.setOutputLevel(Trace.warnings);
       crossQuery.service(url);
       nHits = crossQuery.nHits();
     }
     else if (node.name().equals("dynaXML")) {
-      if (dynaXML == null)
-        dynaXML = new TestableDynaXML(baseDir);
-      Trace.info("dynaXML:    [%s]", url);
+      Trace.info("dynaXML:    [%s] ...", url);
       Trace.setOutputLevel(Trace.warnings);
       dynaXML.service(url);
       nHits = dynaXML.nHits();
     }
+    else if (node.isText())
+      return;
     Trace.setOutputLevel(prevTraceLevel);
     
     if (minHits != 0 && nHits < minHits) {
-      Trace.error("    Failed: %d hits found but at least %d required", nHits, minHits);
+      Trace.more(Trace.info, " Failed:");
+      Trace.error("            Validation required at least %d hits, but query returned %d", minHits, nHits);
       ++nErrs;
     }
+    else
+      Trace.more(Trace.info, " Done.");
   }
 
   /** Internal exception for quickly passing errors up the call chain. */
-  private class ValidationError extends Exception {
+  public static class ValidationError extends Exception {
     ValidationError(String msg, Object ... args) {
       super(String.format(msg, args));
     }
