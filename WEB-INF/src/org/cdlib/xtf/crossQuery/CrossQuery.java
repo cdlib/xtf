@@ -153,6 +153,14 @@ public class CrossQuery extends TextServlet
   public String getServletInfo() {
     return "crossQuery search servlet";
   } // getServletInfo()
+  
+  /**
+   * Simple method to get a query processor. Can be overridden to do special
+   * processing.
+   */
+  protected QueryProcessor getQueryProcessor() {
+    return TextServlet.createQueryProcessor();
+  }
 
   /**
   * Creates the query request, processes it, and formats the results.
@@ -181,7 +189,7 @@ public class CrossQuery extends TextServlet
       return;
 
     // Process it to generate result document hits
-    QueryProcessor proc = createQueryProcessor();
+    QueryProcessor proc = getQueryProcessor();
     QueryResult queryResult = proc.processRequest(queryReq);
 
     // Format the hits for the output document.

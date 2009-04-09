@@ -35,12 +35,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cdlib.xtf.crossQuery.CrossQuery;
+import org.cdlib.xtf.crossQuery.QueryRoute;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.test.FakeServletConfig;
 import org.cdlib.xtf.test.FakeServletContext;
 import org.cdlib.xtf.test.FakeServletRequest;
 import org.cdlib.xtf.test.FakeServletResponse;
 import org.cdlib.xtf.test.NullOutputStream;
+import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
+import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryResult;
 import org.cdlib.xtf.util.AttribList;
@@ -58,11 +61,10 @@ import org.cdlib.xtf.util.AttribList;
  */
 public class TestableCrossQuery extends CrossQuery 
 {
+  private String baseDir;
+  private String indexDirOverride;
   private ThreadLocal<Integer> nHits = new ThreadLocal<Integer>();
   
-  /** Return the number of hits in the last request processed by this thread */
-  public int nHits() { return nHits.get(); }
-
   /**
    * Simplified initialization for use outside a real servlet container.
    * 
@@ -71,14 +73,46 @@ public class TestableCrossQuery extends CrossQuery
    */
   public TestableCrossQuery(String baseDir) throws ServletException
   {
+    this.baseDir = baseDir;
     FakeServletContext context = new FakeServletContext();
     FakeServletConfig config = new FakeServletConfig(context, baseDir, "crossQuery");
     super.init(config);
   }
   
+  /** Allows overriding the directory specified in future query requests. */
+  public void overrideIndexDir(String dir) {
+    indexDirOverride = dir;
+  }
+  
+  /** Return the number of hits in the last request processed by this thread */
+  public int nHits() { return nHits.get(); }
+
   /** For test mode, do nothing to the current trace flags. */
   @Override
   protected void setupTrace(TextConfig config) { }
+
+  /** Allow overriding the index directory */
+  @Override
+  protected QueryRequest runQueryParser(HttpServletRequest req,
+                                        HttpServletResponse res,
+                                        QueryRoute route, 
+                                        AttribList attribs)
+    throws Exception 
+  {
+    QueryRequest queryReq = super.runQueryParser(req, res, route, attribs);
+    if (indexDirOverride != null)
+      queryReq.indexPath = indexDirOverride;
+    return queryReq;
+  }
+  
+  /** For test mode, don't do background warming. */
+  @Override
+  protected QueryProcessor getQueryProcessor()
+  {
+    DefaultQueryProcessor processor = new DefaultQueryProcessor();
+    processor.setXtfHome(baseDir);
+    return processor;
+  }
 
   /**
    * Simplified method to test-get the given URL. Throws away the output

@@ -48,6 +48,9 @@ import org.cdlib.xtf.test.FakeServletContext;
 import org.cdlib.xtf.test.FakeServletRequest;
 import org.cdlib.xtf.test.FakeServletResponse;
 import org.cdlib.xtf.test.NullOutputStream;
+import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
+import org.cdlib.xtf.textEngine.QueryProcessor;
+import org.cdlib.xtf.util.AttribList;
 import org.xml.sax.SAXException;
 
 /**
@@ -59,10 +62,9 @@ import org.xml.sax.SAXException;
  */
 public class TestableDynaXML extends DynaXML 
 {
+  private String baseDir;
+  private String indexDirOverride;
   private ThreadLocal<Integer> nHits = new ThreadLocal<Integer>();
-  
-  /** Return the number of hits in the last request processed by this thread */
-  public int nHits() { return nHits.get(); }
   
   /**
    * Simplified initialization for use outside a real servlet container.
@@ -72,14 +74,44 @@ public class TestableDynaXML extends DynaXML
    */
   public TestableDynaXML(String baseDir) throws ServletException
   {
+    this.baseDir = baseDir;
     FakeServletContext context = new FakeServletContext();
     FakeServletConfig config = new FakeServletConfig(context, baseDir, "dynaXML");
     super.init(config);
   }
   
+  /** Allows overriding the directory specified in future query requests. */
+  public void overrideIndexDir(String dir) {
+    indexDirOverride = dir;
+  }
+  
+  /** Return the number of hits in the last request processed by this thread */
+  public int nHits() { return nHits.get(); }
+  
   /** For test mode, do nothing to the current trace flags. */
   @Override
   protected void setupTrace(TextConfig config) { }
+  
+  /** Allow overriding the index directory */
+  @Override
+  protected DocRequest runDocReqParser(HttpServletRequest req,
+                                       AttribList attribs)
+    throws Exception
+  {
+    DocRequest docRequest = super.runDocReqParser(req, attribs);
+    if (indexDirOverride != null && docRequest.query != null)
+      docRequest.query.indexPath = indexDirOverride;
+    return docRequest;
+  }
+
+  /** For test mode, don't do background warming. */
+  @Override
+  protected QueryProcessor getQueryProcessor()
+  {
+    DefaultQueryProcessor processor = new DefaultQueryProcessor();
+    processor.setXtfHome(baseDir);
+    return processor;
+  }
 
   /**
    * Simplified method to test-get the given URL. Throws away the output
