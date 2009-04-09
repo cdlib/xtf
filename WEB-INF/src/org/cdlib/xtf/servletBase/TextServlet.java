@@ -79,6 +79,7 @@ import org.apache.lucene.limit.TermLimitException;
 import org.cdlib.xtf.saxonExt.sql.SQLConnect;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.IndexUtil;
+import org.cdlib.xtf.textEngine.IndexWarmer;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textIndexer.tokenizer.XTFTokenizer;
 import org.cdlib.xtf.util.Attrib;
@@ -130,6 +131,9 @@ public abstract class TextServlet extends HttpServlet
 
   /** Keeps track, per thread, of the HTTP servlet response */
   private static ThreadLocal curResponse = new ThreadLocal();
+
+  /** Used for warming up indexes in the background */
+  private static IndexWarmer indexWarmer;
 
   /**
    * During tokenization, the '*' wildcard has to be changed to a word
@@ -873,7 +877,16 @@ public abstract class TextServlet extends HttpServlet
       // Try to create an object of the correct class.
       if (className != null)
         theClass = Class.forName(className);
-      return (QueryProcessor)theClass.newInstance();
+      QueryProcessor processor = (QueryProcessor)theClass.newInstance();
+      
+      // Enable background index warming
+      if (indexWarmer == null) {
+        indexWarmer = new IndexWarmer(Path.normalizePath(TextServlet.getCurServlet().getRealPath("")), 30);
+        DefaultQueryProcessor.setIndexWarmer(indexWarmer);
+      }
+      
+      // And we're done.
+      return processor;
     }
     catch (ClassCastException e) {
       Trace.error(
