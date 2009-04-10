@@ -36,6 +36,7 @@ import java.util.HashMap;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
 /**
@@ -76,10 +77,22 @@ public class IndexWarmer
   public synchronized XtfSearcher getSearcher(String indexPath) 
     throws IOException
   {
-    // Look up (or create if necessary) the entry for this path.
+    indexPath = Path.resolveRelOrAbs(xtfHome, indexPath);
     Entry ent = entries.get(indexPath);
+
+    // If this is the background warmer thread, this must be a request as part
+    // of validation so use the new searcher.
+    //
+    if (Thread.currentThread() == bgThread) {
+      String nonPendingPath = indexPath.replaceAll("-pending$", "");
+      ent = entries.get(nonPendingPath);
+      assert ent != null;
+      return ent.newSearcher;
+    }
+    
+    // Look up (or create if necessary) the entry for this path.
     if (ent == null) {
-      ent = new Entry(indexPath);
+      ent = new Entry(Path.resolveRelOrAbs(xtfHome, indexPath));
       entries.put(indexPath, ent);
     }
     
@@ -102,12 +115,6 @@ public class IndexWarmer
       //       waiting for the background warmer to pick it up.
       ;
     }
-    
-    // If this is the background warmer thread, this must be a request as part
-    // of validation so use the new searcher.
-    //
-    if (ent.newSearcher != null && Thread.currentThread() == bgThread)
-      return ent.newSearcher;
     
     // All done.
     return ent.curSearcher;
@@ -219,8 +226,10 @@ public class IndexWarmer
           if (dir instanceof FlippingDirectory)
           {
             // Rotate  [spare] <- [current] <- [pending]
-            if (!ent.currentPath.renameTo(ent.sparePath))
-              throw new IOException(String.format("Error renaming '%s' to '%s'", ent.currentPath, ent.sparePath));
+            if (ent.currentPath.exists()) {
+              if (!ent.currentPath.renameTo(ent.sparePath))
+                throw new IOException(String.format("Error renaming '%s' to '%s'", ent.currentPath, ent.sparePath));
+            }
             if (!ent.pendingPath.renameTo(ent.currentPath))
               throw new IOException(String.format("Error renaming '%s' to '%s'", ent.pendingPath, ent.currentPath));
             
@@ -247,7 +256,7 @@ public class IndexWarmer
         //
         ent.exception = exc;
         Trace.untab();
-        Trace.error(String.format("Error warming index '%s': %s", ent.indexPath, exc.getMessage()));
+        Trace.error(String.format("Error warming index '%s': %s", ent.indexPath, exc.toString()));
       }
     }
     
@@ -269,8 +278,8 @@ public class IndexWarmer
 
     Entry(String indexPath)
     {
-      this.indexPath = indexPath;
-      currentPath        = new File(indexPath);
+      this.indexPath  = indexPath;
+      currentPath     = new File(indexPath);
       File parentDir  = currentPath.getParentFile();
       newPath         = new File(parentDir, currentPath.getName() + "-new");
       sparePath       = new File(parentDir, currentPath.getName() + "-spare");
