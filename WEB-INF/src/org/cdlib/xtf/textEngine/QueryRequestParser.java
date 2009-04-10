@@ -968,7 +968,7 @@ public class QueryRequestParser
       req.maxDocs = onceOnlyAttrib(req.maxDocs, el, attrName);
 
     else if (attrName.equals("indexPath"))
-      req.indexPath = onceOnlyPath(req.indexPath, el, attrName);
+      req.indexPath = onceOnlyAttrib(req.indexPath, el, attrName);
 
     else if (attrName.equals("termLimit"))
       req.termLimit = onceOnlyAttrib(req.termLimit, el, attrName);
