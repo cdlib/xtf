@@ -42,6 +42,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.cdlib.xtf.textEngine.IndexUtil;
+import org.cdlib.xtf.textEngine.NativeFSDirectory;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.SubDirFilter;
 import org.cdlib.xtf.util.Trace;
@@ -108,7 +109,7 @@ public class IdxTreeCuller
       // throw, skip the index.
       //
       String idxPath = Path.resolveRelOrAbs(xtfHome, idxInfo.indexPath);
-      indexReader = IndexReader.open(idxPath);
+      indexReader = IndexReader.open(NativeFSDirectory.getDirectory(idxPath));
       termEnum = indexReader.terms(new Term("key", ""));
 
       do 

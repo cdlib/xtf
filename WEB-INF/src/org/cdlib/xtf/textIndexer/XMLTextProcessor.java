@@ -71,6 +71,7 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.spelt.SpellWriter;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.bigram.BigramStopFilter;
@@ -83,6 +84,7 @@ import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.Constants;
+import org.cdlib.xtf.textEngine.NativeFSDirectory;
 import org.cdlib.xtf.textEngine.XtfSearcher;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.FastStringReader;
@@ -524,7 +526,7 @@ public class XMLTextProcessor extends DefaultHandler
         Path.createPath(indexPath);
 
         // Get a Lucene style directory.
-        FSDirectory idxDir = FSDirectory.getDirectory(indexPath);
+        FSDirectory idxDir = NativeFSDirectory.getDirectory(indexPath);
 
         // If an index doesn't exist there, create it.
         if (!IndexReader.indexExists(idxDir))
@@ -692,11 +694,9 @@ public class XMLTextProcessor extends DefaultHandler
       Path.deleteDir(new File(indexPath));
 
       // First, make the index.
-      indexWriter = new IndexWriter(indexPath,
-                                    new XTFTextAnalyzer(
-                                                        stopSet,
-                                                        pluralMap,
-                                                        accentMap),
+      Directory indexDir = NativeFSDirectory.getDirectory(indexPath);
+      indexWriter = new IndexWriter(indexDir,
+                                    new XTFTextAnalyzer(stopSet, pluralMap, accentMap),
                                     true);
 
       // Then add the index info chunk to it.
@@ -3730,7 +3730,7 @@ public class XMLTextProcessor extends DefaultHandler
     spellWriter = null;
 
     if (indexReader == null)
-      indexReader = IndexReader.open(indexPath);
+      indexReader = IndexReader.open(NativeFSDirectory.getDirectory(indexPath));
 
     if (indexSearcher == null)
       indexSearcher = new IndexSearcher(indexReader);
@@ -3770,7 +3770,8 @@ public class XMLTextProcessor extends DefaultHandler
     // Create an index writer, using the selected index db Path
     // and create mode. Pass it our own text analyzer. 
     //
-    indexWriter = new IndexWriter(indexPath, analyzer, false);
+    Directory indexDir = NativeFSDirectory.getDirectory(indexPath);
+    indexWriter = new IndexWriter(indexDir, analyzer, false);
 
     // Since we end up adding tons of little 'documents' to Lucene, it's much 
     // faster to queue up a bunch in RAM before sorting and writing them out. 

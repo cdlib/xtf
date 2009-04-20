@@ -35,7 +35,6 @@ import java.util.HashMap;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
@@ -202,13 +201,13 @@ public class IndexWarmer
         //
         if (ent.newPath.exists() && ent.pendingPath.exists()) {
           indexPath = ent.pendingPath;
-          dir = new FlippingDirectory(FSDirectory.getDirectory(indexPath));
+          dir = new FlippingDirectory(NativeFSDirectory.getDirectory(indexPath));
         }
         
         // Old-style warming is simpler.
         else {
           indexPath = ent.currentPath;
-          dir = FSDirectory.getDirectory(indexPath);
+          dir = NativeFSDirectory.getDirectory(indexPath);
         }
         
         // Okay, load up the index along with ancillary files. Disable its update check.
@@ -237,7 +236,7 @@ public class IndexWarmer
             // so that the Lucene IndexReader doesn't have to close and reopen
             // all its files.
             //
-            ((FlippingDirectory)dir).flipTo(FSDirectory.getDirectory(ent.currentPath));
+            ((FlippingDirectory)dir).flipTo(NativeFSDirectory.getDirectory(ent.currentPath));
           }
           
           // Finally record the flip in the entry, so that future requests will

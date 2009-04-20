@@ -37,10 +37,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.IndexValidator;
 import org.cdlib.xtf.textEngine.IndexWarmer;
+import org.cdlib.xtf.textEngine.NativeFSDirectory;
 import org.cdlib.xtf.util.DirSync;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.SubDirFilter;
@@ -689,7 +689,7 @@ public class TextIndexer
     // First, open the index.
     String indexPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath,
         cfgInfo.indexInfo.indexPath);
-    IndexReader reader = IndexReader.open(FSDirectory.getDirectory(
+    IndexReader reader = IndexReader.open(NativeFSDirectory.getDirectory(
                             Path.normalizePath(indexPath)));
     
     // Then validate if specified in the index.

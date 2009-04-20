@@ -49,7 +49,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.spelt.SpellReader;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.cdlib.xtf.textIndexer.TextIndexer;
 import org.cdlib.xtf.util.CharMap;
 import org.cdlib.xtf.util.Path;
@@ -123,7 +122,7 @@ public class XtfSearcher
   public XtfSearcher(String indexPath, int updateCheckSeconds)
     throws IOException 
   {
-    this(indexPath, FSDirectory.getDirectory(indexPath), updateCheckSeconds);
+    this(indexPath, NativeFSDirectory.getDirectory(indexPath), updateCheckSeconds);
   } // XtfSearcher
 
   /**

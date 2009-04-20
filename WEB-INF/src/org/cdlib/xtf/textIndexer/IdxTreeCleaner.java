@@ -32,6 +32,7 @@ package org.cdlib.xtf.textIndexer;
 import java.io.File;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.cdlib.xtf.textEngine.NativeFSDirectory;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
@@ -142,7 +143,7 @@ public class IdxTreeCleaner
     // throw, skip the index.
     //
     try {
-      indexReader = IndexReader.open(idxDirToClean);
+      indexReader = IndexReader.open(NativeFSDirectory.getDirectory(idxDirToClean));
     }
     catch (Throwable t) {
       Trace.warning(

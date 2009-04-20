@@ -59,7 +59,7 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.cdlib.xtf.textEngine.NativeFSDirectory;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
@@ -224,7 +224,7 @@ public class IndexMerge
             "Error: Cannot locate index in directory '" + idxPath + "'");
         }
 
-        Directory srcDir = FSDirectory.getDirectory(idxPath);
+        Directory srcDir = NativeFSDirectory.getDirectory(idxPath);
         dirInfos[i] = readInfo(idxPath, srcDir);
 
         // Check for parameter compatibility
@@ -333,7 +333,7 @@ public class IndexMerge
     Trace.tab();
 
     // Open the writer for the target Lucene index
-    IndexWriter writer = new IndexWriter(dirInfos[0].path,
+    IndexWriter writer = new IndexWriter(NativeFSDirectory.getDirectory(dirInfos[0].path),
                                          new StandardAnalyzer(),
                                          createTarget);
 

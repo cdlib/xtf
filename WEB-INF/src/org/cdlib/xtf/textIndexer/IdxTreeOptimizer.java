@@ -32,7 +32,9 @@ package org.cdlib.xtf.textIndexer;
 import java.io.File;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.cdlib.xtf.textEngine.NativeFSDirectory;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
 
@@ -131,9 +133,8 @@ public class IdxTreeOptimizer
       // Try to open the index for writing. If we fail and 
       // throw, skip the index.
       //
-      IndexWriter indexWriter = new IndexWriter(idxDirToOptimize,
-                                                new StandardAnalyzer(),
-                                                false);
+      Directory dir = NativeFSDirectory.getDirectory(idxDirToOptimize);
+      IndexWriter indexWriter = new IndexWriter(dir, new StandardAnalyzer(), false);
 
       // Previously we were paranoid about using compound files, on the
       // mistaken assumption that indexes could not be modified. This is
