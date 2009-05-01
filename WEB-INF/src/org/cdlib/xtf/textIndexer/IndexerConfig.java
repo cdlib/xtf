@@ -361,7 +361,7 @@ public class IndexerConfig
           reader.close();
         }
         catch (IOException e) {
-          Trace.error("Error reading directory list");
+          Trace.error("Error reading directory list: " + e.toString());
           Trace.error("");
           return -1;
         }
