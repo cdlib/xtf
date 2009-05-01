@@ -277,7 +277,8 @@ public class ContextMarker
         sortTerms.addAll(terms);
         Collections.sort(sortTerms);
         System.out.println("Terms: " + sortTerms.toString());
-        assert false : "first term in span not in term map - perhaps wrong analyzer was used?";
+        assert false : "First term in span not in term map - perhaps wrong analyzer was used? " +
+                       "Can be caused by a field having inconsistent xtf:tokenize commands in prefiler.";
       }
 
       String endTerm = iter1.term();
