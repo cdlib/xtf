@@ -87,6 +87,9 @@ public class ContextMarker
   /** End of the previous context */
   private int prevEndWord = -1;
 
+  /** Field name (for debugging) */
+  private String field;
+
   /**
    * Mark context, spans, and terms within the given field of this document.
    * Context around each hit will be up to 80 characters (including the
@@ -184,13 +187,14 @@ public class ContextMarker
                                              terms,
                                              stopSet,
                                              iter,
-                                             collector);
+                                             collector,
+                                             field);
     marker.mark(posOrderSpans, maxContext);
   }
 
   /** Construct a new marker */
   public ContextMarker(int maxContext, int termMode, Set terms, Set stopSet,
-                       WordIter wordIter, MarkCollector collector) 
+                       WordIter wordIter, MarkCollector collector, String field) 
   {
     this.maxContext = maxContext;
     this.termMode = termMode;
@@ -198,6 +202,7 @@ public class ContextMarker
     this.stopSet = stopSet;
     this.iter0 = wordIter;
     this.collector = collector;
+    this.field = field;
   }
 
   /**
@@ -278,7 +283,8 @@ public class ContextMarker
         Collections.sort(sortTerms);
         System.out.println("Terms: " + sortTerms.toString());
         assert false : "First term in span not in term map - perhaps wrong analyzer was used? " +
-                       "Can be caused by a field having inconsistent xtf:tokenize commands in prefiler.";
+                       "Can be caused by a field having inconsistent xtf:tokenize commands in prefiler. " +
+                       "The affected field is '" + field + "'.";
       }
 
       String endTerm = iter1.term();
