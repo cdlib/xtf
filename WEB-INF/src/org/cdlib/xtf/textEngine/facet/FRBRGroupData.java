@@ -37,6 +37,7 @@ package org.cdlib.xtf.textEngine.facet;
  */
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.StringTokenizer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.util.IntList;
@@ -92,7 +93,7 @@ public class FRBRGroupData extends DynamicGroupData
   /**
    * Read in the FRBR data for the a delimited list of fields.
    */
-  public void init(IndexReader indexReader, String params)
+  public void init(IndexReader indexReader, Set tokFields, String params)
     throws IOException 
   {
     // Record the input
@@ -121,8 +122,15 @@ public class FRBRGroupData extends DynamicGroupData
         else
           throw new RuntimeException("Unknown control marker: " + tok);
       }
-      else
+      else 
+      {
+        // Our algorithms fail badly on tokenized fields, so flag that.
+        if (tokFields.contains(tok))
+          throw new RuntimeException("XTF's FRBR algorithms cannot work with tokenized fields, e.g. '" + tok + "'");
+        
+        // Field is okay, add it to our list.
         fields.add(tok);
+      }
     }
 
     // And fetch the doc/tag data for those fields.
@@ -275,7 +283,7 @@ public class FRBRGroupData extends DynamicGroupData
         }
         continue;
       }
-
+      
       // See if it's close enough to call it a match.
       if (!multiFieldMatch(mainDoc, compDoc))
         continue;
@@ -284,7 +292,7 @@ public class FRBRGroupData extends DynamicGroupData
       int group = docGroups.get(mainDoc);
       docGroups.set(compDoc, group);
     }
-
+    
     // Continue title iteration, since the title matched (even if no docs 
     // matched).
     //
@@ -355,9 +363,8 @@ public class FRBRGroupData extends DynamicGroupData
           authorScore = scoreAuthorMatch(matchTags1, matchTags2);
           break;
         case FRBRData.TYPE_DATE:
-
-          //debugFieldMatch("date", doc1, doc2);
-          //dateScore = scoreDateMatch(matchTags1, matchTags2);
+          debugFieldMatch("date", doc1, doc2);
+          dateScore = scoreDateMatch(matchTags1, matchTags2);
           break;
         case FRBRData.TYPE_ID:
           debugFieldMatch("id", doc1, doc2);
@@ -370,7 +377,7 @@ public class FRBRGroupData extends DynamicGroupData
     // Is the total score high enough?
     int totalScore = titleScore + authorScore + dateScore + idScore;
 
-    //if (compareField(FRBRData.TYPE_TITLE, doc1, doc2) != 0 && totalScore >= 150) {
+    //if (totalScore >= 150) {
     if (false) {
       outputDisplayKey("Match: ", doc1);
       outputDisplayKey("   vs: ", doc2);
@@ -765,32 +772,45 @@ public class FRBRGroupData extends DynamicGroupData
       return 50;
 
     // Parse the years
-    String str1 = data.tags.getString(tag1);
-    String str2 = data.tags.getString(tag2);
-    int year1 = -99;
-    int year2 = -99;
-    try {
-      year1 = Integer.parseInt(str1);
-    }
-    catch (NumberFormatException e) {
-    }
-    try {
-      year2 = Integer.parseInt(str2);
-    }
-    catch (NumberFormatException e) {
-    }
+    data.tags.getChars(tag1, chars1);
+    data.tags.getChars(tag2, chars2);
+    int year1 = parseYear(chars1);
+    int year2 = parseYear(chars2);
 
     // If either is missing, no match.
     if (year1 < 0 || year2 < 0)
       return 0;
+    
+    // If the years are equal, considert that only slightly bad.
+    if (year1 == year2)
+      return -20;
 
-    // If within 2 years, consider that only slightly bad.
+    // If not equal but still within 2 years, that's a bit worse.
     if (Math.abs(year1 - year2) <= 2)
-      return -25;
+      return -40;
 
     // All other cases: no match.
-    return -50;
+    return -60;
   } // scoreDateMatch
+
+  /**
+   * Search characters for a series of 4 digits, and consider that a year.
+   */
+  private int parseYear(TagChars chars) 
+  {
+    int num = 0;
+    for (int i=0; i<chars.length(); i++) {
+      char ch = chars.charAt(i);
+      if (ch >= '0' && ch <= '9') {
+        num = (num * 10) + (ch - '0');
+        if (num > 1800 && num < 2100)
+          return num;
+      }
+      else
+        num = 0;
+    }
+    return -99;
+  }
 
   /**
    * Score the potential match of two lists of identifiers.
@@ -803,8 +823,6 @@ public class FRBRGroupData extends DynamicGroupData
 
     // See how many match exactly, and how many we need to skip.
     int p1 = 0;
-
-    // See how many match exactly, and how many we need to skip.
     int p2 = 0;
     final int size1 = list1.size();
     final int size2 = list2.size();

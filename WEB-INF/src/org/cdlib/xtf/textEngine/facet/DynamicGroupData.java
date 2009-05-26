@@ -36,6 +36,8 @@ package org.cdlib.xtf.textEngine.facet;
  * as part of the Melvyl Recommender Project.
  */
 import java.io.IOException;
+import java.util.Set;
+
 import org.apache.lucene.index.IndexReader;
 
 /**
@@ -45,9 +47,10 @@ import org.apache.lucene.index.IndexReader;
 public abstract class DynamicGroupData extends GroupData 
 {
   /**
-   * Initialize the data from the given index reader and parameter string.
+   * Initialize the data from the given index reader, set of tokenized fields, 
+   * and parameter string.
    */
-  public abstract void init(IndexReader indexReader, String params)
+  public abstract void init(IndexReader indexReader, Set tokFields, String params)
     throws IOException;
 
   /**
