@@ -881,7 +881,7 @@ public abstract class TextServlet extends HttpServlet
       
       // Enable background index warming
       if (indexWarmer == null) {
-        indexWarmer = new IndexWarmer(Path.normalizePath(TextServlet.getCurServlet().getRealPath("")), 30);
+        indexWarmer = new IndexWarmer(Path.normalizePath(TextServlet.getCurServlet().getRealPath("")), 5);
         DefaultQueryProcessor.setIndexWarmer(indexWarmer);
       }
       
