@@ -236,11 +236,15 @@
          <xsl:value-of select="if ($expand = $plainName) then '*' else $topGroups"/>
          <!-- For each chosen facet value -->
          <xsl:for-each select="//param[matches(@name, concat('f[0-9]+-',$plainName))]">
-            <!-- Escape characters that have special meaning in facet language -->
-            <xsl:variable name="escapedValue" select="
-               if (matches(@value, '[#:|*()\\=\[\]]')) 
-               then concat('&quot;', @value, '&quot;') 
-               else @value"/>
+            <!-- Quote parts of the value that have special meaning in facet language -->
+            <xsl:variable name="escapedValue">
+               <xsl:variable name="pieces">
+                  <xsl:for-each select="tokenize(@value, '::')">
+                     <piece str="{if (matches(., '[#:|*()\\=\[\]]')) then concat('&quot;', ., '&quot;') else string(.)}"/>
+                  </xsl:for-each>
+               </xsl:variable>
+               <xsl:value-of select="string-join($pieces/piece/@str, '::')"/>
+            </xsl:variable>
             <!-- Select the value itself -->
             <xsl:value-of select="concat('|', $escapedValue)"/>
             <!-- And select its immediate children -->
@@ -261,4 +265,5 @@
                              else $sort }">
       </facet>
    </xsl:template>
+   
 </xsl:stylesheet>
