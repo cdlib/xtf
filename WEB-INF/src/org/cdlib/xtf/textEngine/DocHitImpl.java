@@ -216,8 +216,16 @@ public class DocHitImpl extends DocHit
         recordNum = Integer.parseInt(value);
       else if (name.equals("subDocument"))
         subDocument = value;
-      else if (!name.equals("docInfo"))
-        loadMetaField(name, value, docContents, metaData, f.isTokenized());
+      else if (!name.equals("docInfo")) 
+      {
+        // Note: We cannot use f.isTokenized() below, because in the case of
+        //       facet values we tokenize in Lucene-land but in XTF land
+        //       consider them to be un-tokenized. Hence the use of
+        //       snippetMaker.tokFields() instead.
+        //
+        loadMetaField(name, value, docContents, metaData, 
+                      snippetMaker.tokFields().contains(f.name()));
+      }
     }
 
     // We should have gotten at least the special fields.

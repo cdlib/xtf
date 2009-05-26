@@ -87,6 +87,14 @@ public class SnippetMaker
   /** Accented chars to remove diacritics from */
   private CharMap accentMap;
 
+  /** 
+   * The fields that were specified as tokenized at index time. Not exactly
+   * the same as field.isTokenized() because facet values, while tokenized
+   * from Lucene's point of view, are not tokenized from the XTF point of
+   * view.
+   */
+  private Set tokFields;
+  
   /** Target # of characters to include in the snippet. */
   private int maxContext;
 
@@ -111,8 +119,8 @@ public class SnippetMaker
    * @param termMode      Where to mark terms (all, only in spans, etc.)
    */
   public SnippetMaker(IndexReader reader, DocNumMap docNumMap, Set stopSet,
-                      WordMap pluralMap, CharMap accentMap, int maxContext,
-                      int termMode) 
+                      WordMap pluralMap, CharMap accentMap, Set tokFields,
+                      int maxContext, int termMode) 
   {
     this.reader = reader;
     this.docNumMap = docNumMap;
@@ -121,6 +129,7 @@ public class SnippetMaker
     this.stopSet = stopSet;
     this.pluralMap = pluralMap;
     this.accentMap = accentMap;
+    this.tokFields = tokFields;
     this.maxContext = maxContext;
     this.termMode = termMode;
 
@@ -155,6 +164,11 @@ public class SnippetMaker
   /** Obtain the document number map used to make snippets */
   public DocNumMap docNumMap() {
     return docNumMap;
+  }
+  
+  /** Obtain the set of tokenized fields */
+  public Set tokFields() {
+    return tokFields;
   }
 
   /**

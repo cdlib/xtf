@@ -118,6 +118,9 @@ public class DefaultQueryProcessor extends QueryProcessor
   /** Whether the index is "sparse" (i.e. more than 5 chunks per doc) */
   private boolean isSparse;
 
+  /** Names of fields that are tokenized in this index */
+  private Set tokFields;
+
   /** Total number of documents hit (not just those that scored high) */
   private int nDocsHit;
 
@@ -182,6 +185,7 @@ public class DefaultQueryProcessor extends QueryProcessor
       accentMap = xtfSearcher.accentMap();
       spellReader = xtfSearcher.spellReader();
       isSparse = xtfSearcher.isSparse();
+      tokFields = xtfSearcher.tokenizedFields();
     }
 
     // Apply a work limit to the query if we were requested to. If no
@@ -227,7 +231,6 @@ public class DefaultQueryProcessor extends QueryProcessor
     // Perform standard tokenization tasks: change words to lowercase,
     // remove apostrophes, etc.
     //
-    Set tokFields = xtfSearcher.tokenizedFields();
     query = new StdTermRewriter(tokFields).rewriteQuery(query);
 
     // If a plural map is present, change plural words to non-plural.
@@ -356,6 +359,7 @@ public class DefaultQueryProcessor extends QueryProcessor
                                                  stopSet,
                                                  pluralMap,
                                                  accentMap,
+                                                 tokFields,
                                                  req.maxContext,
                                                  req.termMode);
     for (int i = req.startDoc; i < nFound; i++) 
@@ -778,7 +782,7 @@ public class DefaultQueryProcessor extends QueryProcessor
     }
 
     // Initialize the new instance, and we're done.
-    dynData.init(indexReader, params);
+    dynData.init(indexReader, tokFields, params);
     return dynData;
   } // createDynamicGroup()
 
