@@ -1058,7 +1058,7 @@
                   <xsl:apply-templates select="." mode="afterGroupValue"/>
                </td>
                <td class="col3">
-                   (<xsl:value-of select="/crossQueryResult/@totalDocs"/>)
+                  (<xsl:value-of select="@totalDocs"/>)
                </td>
             </xsl:otherwise>
          </xsl:choose>
@@ -1152,7 +1152,7 @@
                   <xsl:apply-templates select="." mode="afterGroupValue"/>
                </td>
                <td class="col3">
-                   (<xsl:value-of select="/crossQueryResult/@totalDocs"/>)
+                  (<xsl:value-of select="@totalDocs"/>)
                </td>
             </xsl:when>
             
@@ -1171,7 +1171,7 @@
                   <xsl:apply-templates select="." mode="afterGroupValue"/>
                </td>
                <td class="col3">
-                   (<xsl:value-of select="/crossQueryResult/@totalDocs"/>)
+                  (<xsl:value-of select="@totalDocs"/>)
                </td>
             </xsl:when>
                
