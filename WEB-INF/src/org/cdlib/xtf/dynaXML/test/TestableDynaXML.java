@@ -49,6 +49,7 @@ import org.cdlib.xtf.test.FakeServletRequest;
 import org.cdlib.xtf.test.FakeServletResponse;
 import org.cdlib.xtf.test.NullOutputStream;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
+import org.cdlib.xtf.textEngine.IndexWarmer;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.util.AttribList;
 import org.xml.sax.SAXException;
@@ -64,6 +65,7 @@ public class TestableDynaXML extends DynaXML
 {
   private String baseDir;
   private String indexDirOverride;
+  private IndexWarmer indexWarmer;
   private ThreadLocal<Integer> nHits = new ThreadLocal<Integer>();
   
   /**
@@ -85,6 +87,11 @@ public class TestableDynaXML extends DynaXML
     indexDirOverride = dir;
   }
   
+  /** Allows overriding default index warmer. */
+  public void setIndexWarmer(IndexWarmer warmer) {
+    indexWarmer = warmer;
+  }
+  
   /** Return the number of hits in the last request processed by this thread */
   public int nHits() { return nHits.get(); }
   
@@ -104,12 +111,15 @@ public class TestableDynaXML extends DynaXML
     return docRequest;
   }
 
-  /** For test mode, don't do background warming. */
+  /** For test mode, allow override of index warmer. Default to foreground warming. */
   @Override
-  protected QueryProcessor getQueryProcessor()
+  public QueryProcessor createQueryProcessor()
   {
     DefaultQueryProcessor processor = new DefaultQueryProcessor();
     processor.setXtfHome(baseDir);
+    if (indexWarmer == null)
+      indexWarmer = new IndexWarmer(baseDir, 0);
+    processor.setIndexWarmer(indexWarmer);
     return processor;
   }
 

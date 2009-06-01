@@ -131,7 +131,7 @@ public class DefaultQueryProcessor extends QueryProcessor
   private float docScoreNorm;
 
   /** Used to warm up indexes prior to use */
-  private static IndexWarmer indexWarmer;
+  private IndexWarmer indexWarmer;
 
   /** Comparator used for sorting strings in "sparse" indexes */
   private static final SparseStringComparator sparseStringComparator = new SparseStringComparator();
@@ -140,7 +140,7 @@ public class DefaultQueryProcessor extends QueryProcessor
   private static final FlippableStringComparator compactStringComparator = new FlippableStringComparator();
   
   /** Record an index warmer to use for background warming. */
-  public static void setIndexWarmer(IndexWarmer warmer) {
+  public void setIndexWarmer(IndexWarmer warmer) {
     indexWarmer = warmer;
   }
 

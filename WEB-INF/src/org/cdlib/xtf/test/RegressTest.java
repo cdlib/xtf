@@ -60,7 +60,6 @@ import net.sf.saxon.tree.TreeBuilder;
 import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.SearchTree;
 import org.cdlib.xtf.servletBase.StylesheetCache;
-import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.IndexWarmer;
@@ -331,7 +330,7 @@ public class RegressTest
       QueryProcessor processor = new DefaultQueryProcessor();
       processor.setXtfHome(dir);
       IndexWarmer indexWarmer = new IndexWarmer(Path.normalizePath(dir), 5);
-      DefaultQueryProcessor.setIndexWarmer(indexWarmer);
+      processor.setIndexWarmer(indexWarmer);
       QueryRequest request = new QueryRequestParser().parseRequest(queryDoc,
                                                                    new File(dir));
 

@@ -133,7 +133,7 @@ public abstract class TextServlet extends HttpServlet
   private static ThreadLocal curResponse = new ThreadLocal();
 
   /** Used for warming up indexes in the background */
-  private static IndexWarmer indexWarmer;
+  private static HashMap<String,IndexWarmer> indexWarmers = new HashMap();
 
   /**
    * During tokenization, the '*' wildcard has to be changed to a word
@@ -866,7 +866,7 @@ public abstract class TextServlet extends HttpServlet
    * supplied implementation. If not, a {@link DefaultQueryProcessor} is
    * created.
    */
-  public static QueryProcessor createQueryProcessor() 
+  public QueryProcessor createQueryProcessor() 
   {
     // Check the system property.
     final String propName = "org.cdlib.xtf.QueryProcessorClass";
@@ -880,10 +880,16 @@ public abstract class TextServlet extends HttpServlet
       QueryProcessor processor = (QueryProcessor)theClass.newInstance();
       
       // Enable background index warming
-      if (indexWarmer == null) {
-        indexWarmer = new IndexWarmer(Path.normalizePath(TextServlet.getCurServlet().getRealPath("")), 5);
-        DefaultQueryProcessor.setIndexWarmer(indexWarmer);
+      IndexWarmer warmer = null;
+      synchronized (indexWarmers) {
+        String xtfHome = Path.normalizePath(TextServlet.getCurServlet().getRealPath(""));
+        warmer = indexWarmers.get(xtfHome);
+        if (warmer == null) {
+          warmer = new IndexWarmer(xtfHome, 5);
+          indexWarmers.put(xtfHome, warmer);
+        }
       }
+      processor.setIndexWarmer(warmer);
       
       // And we're done.
       return processor;

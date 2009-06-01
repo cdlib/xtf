@@ -37,9 +37,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.lucene.index.IndexReader;
-import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
 import org.cdlib.xtf.textEngine.IndexValidator;
-import org.cdlib.xtf.textEngine.IndexWarmer;
 import org.cdlib.xtf.textEngine.NativeFSDirectory;
 import org.cdlib.xtf.util.DirSync;
 import org.cdlib.xtf.util.Path;
@@ -680,12 +678,6 @@ public class TextIndexer
   
   private static void doValidation(IndexerConfig cfgInfo) throws IOException
   {
-    // Disable background index warming, since we need to do validation in
-    // the foreground.
-    //
-    IndexWarmer nullWarmer = new IndexWarmer(cfgInfo.xtfHomePath, 0);
-    DefaultQueryProcessor.setIndexWarmer(nullWarmer);
-    
     // First, open the index.
     String indexPath = Path.resolveRelOrAbs(cfgInfo.xtfHomePath,
         cfgInfo.indexInfo.indexPath);

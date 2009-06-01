@@ -43,6 +43,7 @@ import org.cdlib.xtf.test.FakeServletRequest;
 import org.cdlib.xtf.test.FakeServletResponse;
 import org.cdlib.xtf.test.NullOutputStream;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
+import org.cdlib.xtf.textEngine.IndexWarmer;
 import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryResult;
@@ -63,6 +64,7 @@ public class TestableCrossQuery extends CrossQuery
 {
   private String baseDir;
   private String indexDirOverride;
+  private IndexWarmer indexWarmer;
   private ThreadLocal<Integer> nHits = new ThreadLocal<Integer>();
   
   /**
@@ -82,6 +84,11 @@ public class TestableCrossQuery extends CrossQuery
   /** Allows overriding the directory specified in future query requests. */
   public void overrideIndexDir(String dir) {
     indexDirOverride = dir;
+  }
+  
+  /** Allows overriding default index warmer. */
+  public void setIndexWarmer(IndexWarmer warmer) {
+    indexWarmer = warmer;
   }
   
   /** Return the number of hits in the last request processed by this thread */
@@ -105,12 +112,15 @@ public class TestableCrossQuery extends CrossQuery
     return queryReq;
   }
   
-  /** For test mode, don't do background warming. */
+  /** For test mode, allow override of index warmer. Default to foreground warming. */
   @Override
-  protected QueryProcessor getQueryProcessor()
+  public QueryProcessor createQueryProcessor()
   {
     DefaultQueryProcessor processor = new DefaultQueryProcessor();
     processor.setXtfHome(baseDir);
+    if (indexWarmer == null)
+      indexWarmer = new IndexWarmer(baseDir, 0);
+    processor.setIndexWarmer(indexWarmer);
     return processor;
   }
 

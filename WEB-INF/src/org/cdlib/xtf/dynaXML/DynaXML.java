@@ -58,7 +58,6 @@ import org.cdlib.xtf.servletBase.RedirectException;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.textEngine.IndexUtil;
-import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.EasyNode;
@@ -530,14 +529,6 @@ public class DynaXML extends TextServlet
   } // apply()
   
   /**
-   * Get a query processor we can utilize. Can be overridden for specialized
-   * processing.
-   */
-  protected QueryProcessor getQueryProcessor() {
-    return TextServlet.createQueryProcessor();
-  }
-
-  /**
    * Does the work of locating and loading the source document. Handles
    * fetching a file from a URL, lazy file, or a plain XML file on disk.
    * Also fires up a text query if requested.
@@ -625,7 +616,7 @@ public class DynaXML extends TextServlet
                                            docReq.indexName,
                                            new File(docReq.source));
       SearchTree tree = new SearchTree(config, docKey, lazyStore);
-      tree.search(getQueryProcessor(), docReq.query);
+      tree.search(createQueryProcessor(), docReq.query);
       sourceDoc = tree;
     }
     else {

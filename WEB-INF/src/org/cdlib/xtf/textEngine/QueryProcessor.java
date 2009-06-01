@@ -67,5 +67,11 @@ public abstract class QueryProcessor
    * warming in the default query processor.)
    */
   public void setXtfHome(String homeDir) {
-  }  
+  }
+
+  /**
+   * Optional method: set the background warmer for indexes.
+   */
+  public void setIndexWarmer(IndexWarmer warmer) {
+  }
 }
