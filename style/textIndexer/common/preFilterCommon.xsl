@@ -5,6 +5,7 @@
    xmlns:xtf="http://cdlib.org/xtf"
    xmlns:saxon="http://saxon.sf.net/"
    xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils"
+   xmlns:CharUtils="java:org.cdlib.xtf.xslt.CharUtils"
    extension-element-prefixes="saxon FileUtils"
    exclude-result-prefixes="#all">
    
@@ -217,7 +218,7 @@
       
       <!-- Normalize Spaces & Case-->
       <xsl:variable name="lower-title">
-         <xsl:value-of select="translate(normalize-space($title), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+         <xsl:value-of select="lower-case(normalize-space($title))"/>
       </xsl:variable>
       
       <!-- Remove Punctuation -->
@@ -248,9 +249,14 @@
       
       <xsl:param name="creator"/>
       
+      <!-- Remove accent marks and other diacritics -->
+      <xsl:variable name="no-accents-name">
+         <xsl:value-of select="CharUtils:applyAccentMap('../../../conf/accentFolding/accentMap.txt', $creator)"/>
+      </xsl:variable>
+      
       <!-- Normalize Spaces & Case-->
       <xsl:variable name="lower-name">
-         <xsl:value-of select="translate(normalize-space($creator), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+         <xsl:value-of select="lower-case(normalize-space($no-accents-name))"/>
       </xsl:variable>
       
       <!-- Remove additional authors and information -->
@@ -451,14 +457,22 @@
       
       <xsl:param name="string"/>
       
-      <xsl:variable name="cleanString" select="lower-case(string($string))"/>
+      <!-- Remove accent marks and other diacritics -->
+      <xsl:variable name="no-accents-name">
+         <xsl:value-of select="CharUtils:applyAccentMap('../../../conf/accentFolding/accentMap.txt', $string)"/>
+      </xsl:variable>
+      
+      <!-- Normalize Spaces & Case-->
+      <xsl:variable name="lower-name">
+         <xsl:value-of select="lower-case(normalize-space($no-accents-name))"/>
+      </xsl:variable>
       
       <xsl:choose>
-         <xsl:when test="matches($cleanString,'^\W*[a-z]')">
-            <xsl:value-of select="replace($cleanString,'^\W*([a-z]).*','$1$1')"/>
+         <xsl:when test="matches($lower-name,'^\W*[a-z]')">
+            <xsl:value-of select="replace($lower-name,'^\W*([a-z]).*','$1$1')"/>
          </xsl:when>
          <xsl:otherwise>
-            <xsl:value-of select="'other'"/>
+            <xsl:value-of select="'99'"/>
          </xsl:otherwise>
       </xsl:choose>
       
