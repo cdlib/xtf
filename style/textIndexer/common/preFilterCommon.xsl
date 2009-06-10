@@ -468,11 +468,12 @@
       </xsl:variable>
       
       <xsl:choose>
-         <xsl:when test="matches($lower-name,'^\W*[a-z]')">
-            <xsl:value-of select="replace($lower-name,'^\W*([a-z]).*','$1$1')"/>
+         <xsl:when test="matches($lower-name,'^.*?[a-z].*$')">
+            <xsl:value-of select="replace($lower-name,'^.*?([a-z]).*$','$1$1')"/>
          </xsl:when>
          <xsl:otherwise>
-            <xsl:value-of select="'99'"/>
+            <!-- Can't find any letters... put it on the first tab. -->
+            <xsl:value-of select="'aa'"/>
          </xsl:otherwise>
       </xsl:choose>
       
