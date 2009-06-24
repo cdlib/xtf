@@ -63,15 +63,15 @@ public class FakeServletResponse implements HttpServletResponse
   }
 
   public void addDateHeader(String name, long date) {
-    assert false;
+    return;
   }
 
   public void addHeader(String name, String value) {
-    assert false;
+    return;
   }
 
   public void addIntHeader(String name, int value) {
-    assert false;
+    return;
   }
 
   public boolean containsHeader(String name) {
@@ -114,15 +114,15 @@ public class FakeServletResponse implements HttpServletResponse
   }
 
   public void setDateHeader(String name, long date) {
-    assert false;
+    return;
   }
 
   public void setHeader(String name, String value) {
-    assert false;
+    return;
   }
 
   public void setIntHeader(String name, int value) {
-    assert false;
+    return;
   }
 
   public void setStatus(int sc, String sm) {
