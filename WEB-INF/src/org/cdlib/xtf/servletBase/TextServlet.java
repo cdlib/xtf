@@ -395,9 +395,25 @@ public abstract class TextServlet extends HttpServlet
                                  config.runawayNormalTime * 1000,
                                  config.runawayKillTime * 1000);
       }
+      
+      // In general it doesn't make sense to cache pages served by XTF servlets.
+      // This becomes especially evident when the book bag comes into play. So
+      // we need to set HTTP headers so that browsers (and proxies) won't cache
+      // our pages.
+      //
+      // Set to expire far in the past.
+      res.setHeader("Expires", "Sat, 6 May 1995 12:00:00 GMT");
+      // Set standard HTTP/1.1 no-cache headers.
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+      // Set IE extended HTTP/1.1 no-cache headers (use addHeader).
+      res.addHeader("Cache-Control", "post-check=0, pre-check=0");
+      // Set standard HTTP/1.0 no-cache header.
+      res.setHeader("Pragma", "no-cache");
 
+      // Let the specific servlet serve the request.
       super.service(req, res);
 
+      // And make sure all output gets to the client.
       res.getOutputStream().flush();
     }
     finally {
