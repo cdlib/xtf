@@ -85,6 +85,8 @@ import org.cdlib.xtf.textIndexer.tokenizer.XTFTokenizer;
 import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.EasyNode;
+import org.cdlib.xtf.util.FastStringReader;
+import org.cdlib.xtf.util.FastTokenizer;
 import org.cdlib.xtf.util.GeneralException;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.ThreadWatcher;
@@ -1252,11 +1254,23 @@ public abstract class TextServlet extends HttpServlet
     try 
     {
       XTFTokenizer toks = new XTFTokenizer(new StringReader(str));
+      FastTokenizer ftoks = new FastTokenizer(new FastStringReader(str));
       int prevEnd = 0;
       while (true) {
         Token tok = toks.next();
         if (tok == null)
           break;
+        
+        // Ensure that FastTokenizer produces *exactly* the same results. If it doesn't,
+        // that means our index is probably messed up. This way we'll catch these problems
+        // pro-actively instead of relying on end users to realize that there's some
+        // nefarious reason their queries come back with nothing.
+        //
+        Token ftok = ftoks.next();
+        assert ftok != null && ftok.termText().equals(tok.termText()) :
+               "Internal XTF bug: FastTokenizer isn't functioning the same as XTFTokenizer. " +
+               "Please report this problem to the xtf-user group, along with your query.";
+        
         if (tok.startOffset() > prevEnd)
           addToken(fmt, str.substring(prevEnd, tok.startOffset()), false);
         prevEnd = tok.endOffset();

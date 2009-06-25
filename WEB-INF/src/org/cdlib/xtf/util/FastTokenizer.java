@@ -97,6 +97,13 @@ public class FastTokenizer extends Tokenizer
     setCharType('a', '\u0e50', '\u0e59');
     setCharType('a', '\u0ed0', '\u0ed9');
     setCharType('a', '\u1040', '\u1049');
+    
+    // CJK characters
+    setCharType('s', '\u3040', '\u318f');
+    setCharType('s', '\u3300', '\u337f');
+    setCharType('s', '\u3400', '\u3d2d');
+    setCharType('s', '\u4e00', '\u9fff');
+    setCharType('s', '\uf900', '\ufaff');
 
     // XTF internal markers
     charType['\uEBEB'] = 'a'; // start-of-field marker
@@ -188,6 +195,7 @@ public class FastTokenizer extends Tokenizer
     charType['\u00ae'] = 's'; // registered trademark
     charType['\u00a9'] = 's'; // copyright
     charType['\u2122'] = 's'; // trademark
+
   };
 
   /** Utility method used when setting up the character type table */
@@ -233,7 +241,7 @@ public class FastTokenizer extends Tokenizer
     //
     if (type == 's')
       tpos++;
-    else 
+    else
     {
       // Gobble up a string of alpha-numeric characters.
       while (tpos < tlen) {
