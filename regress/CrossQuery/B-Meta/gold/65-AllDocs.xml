@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="10" startDoc="1" endDoc="10">
+<crossQueryResult totalDocs="11" startDoc="1" endDoc="11">
    <docHit rank="1" file="doc1.xml" totalHits="0">
       <meta>
          <title>The Opening of the Apartheid Mind: Options for the New South Africa</title>
@@ -35,7 +35,14 @@
          <foo>bar</foo>
       </meta>
    </docHit>
-   <docHit rank="4" file="doc2.xml" totalHits="0">
+   <docHit rank="4" file="doc12.xml" totalHits="0">
+      <meta>
+         <title>菊花形盛物籃</title>
+         <creator>Tanabe, Kōunsai</creator>
+         <identifier>kt6n39q2pc</identifier>
+      </meta>
+   </docHit>
+   <docHit rank="5" file="doc2.xml" totalHits="0">
       <meta>
          <title>The Problems of a Political Animal: Community, Justice, and Conflict in Aristotelian Political Thought</title>
          <creator>Bernard R. Yack</creator>
@@ -53,7 +60,7 @@
          <rights>UCOnly</rights>
       </meta>
    </docHit>
-   <docHit rank="5" file="doc3.xml" totalHits="0">
+   <docHit rank="6" file="doc3.xml" totalHits="0">
       <meta>
          <title>Thirty-Eight Witnesses: The Kitty Genovese Case</title>
          <creator>A.M. Rosenthal</creator>
@@ -69,7 +76,7 @@
          <rights>Public</rights>
       </meta>
    </docHit>
-   <docHit rank="6" file="doc4.xml" totalHits="0">
+   <docHit rank="7" file="doc4.xml" totalHits="0">
       <meta>
          <title>Asylia: Territorial Inviolability in the Hellenistic World</title>
          <creator>Kent J. Rigsby</creator>
@@ -88,7 +95,7 @@
          <rights>UCOnly</rights>
       </meta>
    </docHit>
-   <docHit rank="7" file="doc5.xml" totalHits="0">
+   <docHit rank="8" file="doc5.xml" totalHits="0">
       <meta>
          <title>California Riparian Systems: Ecology, Conservation, and Productive Management</title>
          <creator>Richard E. Warner and Kathleen M. Hendrix, editors</creator>
@@ -103,7 +110,7 @@
          <rights>Public</rights>
       </meta>
    </docHit>
-   <docHit rank="8" file="doc7.xml" totalHits="0">
+   <docHit rank="9" file="doc7.xml" totalHits="0">
       <meta>
          <title>Cormorants &lt; on &gt; the Run</title>
          <creator>J.T. &amp; Ripper</creator>
@@ -116,7 +123,7 @@
          <foo>bar</foo>
       </meta>
    </docHit>
-   <docHit rank="9" file="doc8.xml" totalHits="0">
+   <docHit rank="10" file="doc8.xml" totalHits="0">
       <meta>
          <title>Earthquake Madness</title>
          <creator>anonymous</creator>
@@ -129,7 +136,7 @@
          <foo>bar</foo>
       </meta>
    </docHit>
-   <docHit rank="10" file="doc9.xml" totalHits="0">
+   <docHit rank="11" file="doc9.xml" totalHits="0">
       <meta>
          <title>Orange and Blue: Colors That Don't Work Together</title>
          <creator>Jeffy Color Wheel</creator>

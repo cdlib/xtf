@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc12.xml" totalHits="0">
+      <meta>
+         <title>
+            <snippet rank="1">菊花形盛物<hit>
+                  <term>籃</term>
+               </hit>
+            </snippet>
+         </title>
+         <creator>Tanabe, Kōunsai</creator>
+         <identifier>kt6n39q2pc</identifier>
+      </meta>
+   </docHit>
+</crossQueryResult>
