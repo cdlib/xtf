@@ -597,7 +597,8 @@ public class SearchTree extends LazyDocument
     // Get the associated text node. This will have the effect of generating
     // the element we need.
     //
-    getNode(hitsByLocation[hitNum].startNode);
+    NodeImpl tn = getNode(hitsByLocation[hitNum].startNode);
+    assert tn instanceof SearchTextImpl : "Lazy file text node does not match index node number";
 
     // The element we want should now be in the cache.
     SearchElementImpl el = (SearchElementImpl)nodeCache.get(
