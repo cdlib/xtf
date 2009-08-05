@@ -121,12 +121,12 @@ public class DefaultDocLocator implements DocLocator
       return null;
 
     // Figure out where the lazy file is (or should be.)
-    File lazyFile = IndexUtil.calcLazyPath(new File(servlet.getRealPath("")),
-                                           new File(indexConfigPath),
-                                           indexName,
-                                           new File(sourcePath),
-                                           false);
-
+    File lazyFile = calcLazyPath(new File(servlet.getRealPath("")),
+                                 new File(indexConfigPath),
+                                 indexName,
+                                 new File(sourcePath),
+                                 false);
+      
     // Get the config flag telling us whether we're allowed to build lazy
     // files outside of indexing.
     //
@@ -180,6 +180,18 @@ public class DefaultDocLocator implements DocLocator
     // Cool. Open the lazy file.
     return StructuredFile.open(lazyFile);
   } // getLazyStore()
+
+  /**
+   * Wrapper for IndexUtil.calcLazyPath(); useful for derived classes to supply their
+   * own implementation.
+   */
+  public File calcLazyPath(
+    File xtfHome, File idxConfigFile,
+    String idxName, File srcTextFile,
+    boolean createDir) throws IOException 
+  {
+    return IndexUtil.calcLazyPath(xtfHome, idxConfigFile, idxName, srcTextFile, createDir);
+  }
 
   /**
    * Retrieve the data stream for an XML source document.

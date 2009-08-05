@@ -29,6 +29,7 @@ package org.cdlib.xtf.dynaXML.test;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -38,6 +39,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 
+import org.cdlib.xtf.dynaXML.DefaultDocLocator;
+import org.cdlib.xtf.dynaXML.DocLocator;
 import org.cdlib.xtf.dynaXML.DocRequest;
 import org.cdlib.xtf.dynaXML.DynaXML;
 import org.cdlib.xtf.dynaXML.InvalidDocumentException;
@@ -49,8 +52,10 @@ import org.cdlib.xtf.test.FakeServletRequest;
 import org.cdlib.xtf.test.FakeServletResponse;
 import org.cdlib.xtf.test.NullOutputStream;
 import org.cdlib.xtf.textEngine.DefaultQueryProcessor;
+import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.IndexWarmer;
 import org.cdlib.xtf.textEngine.QueryProcessor;
+import org.cdlib.xtf.textIndexer.IndexInfo;
 import org.cdlib.xtf.util.AttribList;
 import org.xml.sax.SAXException;
 
@@ -176,4 +181,46 @@ public class TestableDynaXML extends DynaXML
   {
     throw new RuntimeException(exc);
   } // genErrorPage()
+  
+  @Override
+  public DocLocator createDocLocator() 
+  {
+    DocLocator loc = new DefaultDocLocator() 
+    {
+      @Override
+      public File calcLazyPath(File xtfHome, File idxConfigFile,
+                               String idxName, File srcTextFile,
+                               boolean createDir) throws IOException
+      {
+        // If no index directory override, do the usual thing.
+        if (indexDirOverride == null)
+          return super.calcLazyPath(xtfHome, idxConfigFile, idxName, srcTextFile, createDir);
+        
+        // First, load the particular index info from the config file (though if
+        // we've already loaded it, the cache will just return it.)
+        //
+        try {
+          IndexInfo idxInfo = IndexUtil.getIndexInfo(idxConfigFile, idxName);
+          String oldIndexPath = idxInfo.indexPath;
+          try {
+            // Temporarily override the path.
+            idxInfo.indexPath = indexDirOverride;
+            
+            // Use the other form of calcLazyPath() to do the rest of the work.
+            return IndexUtil.calcLazyPath(xtfHome, idxInfo, srcTextFile, createDir);
+          }
+          finally {
+            // Restore the path in the index info.
+            idxInfo.indexPath = oldIndexPath;
+          }
+        }
+        catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+    };
+    
+    loc.setServlet(this);
+    return loc;
+  }
 } // class TestableDynaXML
