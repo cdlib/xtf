@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -15,7 +16,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,6 +70,9 @@ public class PipeRequestInstruction extends SimpleExpression
   protected int nArgs;
   protected InputElement.InputInstruction inputExpr;
   protected String method;
+  
+  protected static LinkedList<WeakReference<ByteBuffer>> buffers = new LinkedList();
+  protected static final int BUF_SIZE = 32*1024;
 
   public PipeRequestInstruction(Expression url, int timeout, String method, List args) 
   {
@@ -87,6 +93,34 @@ public class PipeRequestInstruction extends SimpleExpression
     for (int i = 0; i < args.size(); i++)
       sub[i] = (Expression)args.get(i);
     setArguments(sub);
+  }
+  
+  // Get a buffer to use for I/O. Uses previously allocated buffer if possible.
+  protected static synchronized ByteBuffer getBuffer()
+  {
+    ByteBuffer buf;
+    
+    // Look for a previous buffer we can use.
+    ListIterator<WeakReference<ByteBuffer>> iter = buffers.listIterator();
+    while (iter.hasNext())
+    {
+      WeakReference<ByteBuffer> ref = iter.next();
+      buf = ref.get();
+      iter.remove();
+      if (buf != null)
+        return buf;
+    }
+    
+    // Not found, create a new one.
+    buf = ByteBuffer.wrap(new byte[BUF_SIZE]);
+    return buf;
+  }
+  
+  // Return a buffer so it can be re-used later.
+  protected static synchronized void returnBuffer(ByteBuffer buf)
+  {
+    buf.clear();
+    buffers.add(new WeakReference(buf));
   }
 
   /**
@@ -119,6 +153,10 @@ public class PipeRequestInstruction extends SimpleExpression
   {
     BufferedWriter sockWriter = null;
     InputStreamReader sockReader = null;
+    ByteBuffer byteBuf = null;
+    SocketChannel sockChan = null;
+    Selector selector = null;
+    SelectionKey selKey = null;
 
     try
     {
@@ -157,15 +195,13 @@ public class PipeRequestInstruction extends SimpleExpression
       // We're going to want to time things.
       long startTime = System.currentTimeMillis();
       
-      System.out.println("Begin PipeRequest");
-      
       // Create a socket to the host
       InetAddress addr = InetAddress.getByName(host);
       InetSocketAddress sockAddr = new InetSocketAddress(addr, port);
-      SocketChannel sockChan = SocketChannel.open();
+      sockChan = SocketChannel.open();
       sockChan.configureBlocking(false);
-      Selector selector = Selector.open();
-      SelectionKey selKey = sockChan.register(selector, SelectionKey.OP_CONNECT);
+      selector = Selector.open();
+      selKey = sockChan.register(selector, SelectionKey.OP_CONNECT);
       if (!sockChan.connect(sockAddr))
         connectWithTimeout(context, startTime, sockChan, selector);
 
@@ -202,34 +238,31 @@ public class PipeRequestInstruction extends SimpleExpression
       int lineNum = 0;
 
       // Grab the first part of the response into our buffer
-      byte[] buf = new byte[4096];
-      int bufPos = 0;
+      byteBuf = getBuffer();
+      byte[] bytes = byteBuf.array();
       boolean eof = false;
       selKey.interestOps(SelectionKey.OP_READ);
       boolean needSelect = true;
-      while (bufPos < buf.length && !eof)
+      while (byteBuf.hasRemaining() && !eof)
       {
         if (needSelect) {
           if (selector.select(timeRemaining(context, startTime)) > 0)
             needSelect = false;
         }
-        ByteBuffer bb = ByteBuffer.wrap(buf, bufPos, buf.length - bufPos);
-        int got = sockChan.read(bb);
+        int got = sockChan.read(byteBuf);
         if (got == 0)
           needSelect = true;
         else if (got < 0)
           eof = true;
-        else
-          bufPos += got;
       }
       
       // Find the end of the headers.
       int newlineCt = 0;
       int i;
-      for (i=0; i<bufPos; i++) {
-        if (buf[i] == '\r')
+      for (i=0; i<byteBuf.position(); i++) {
+        if (bytes[i] == '\r')
           continue;
-        else if (buf[i] == '\n') {
+        else if (bytes[i] == '\n') {
           ++newlineCt;
           if (newlineCt == 2)
             break;
@@ -238,13 +271,13 @@ public class PipeRequestInstruction extends SimpleExpression
           newlineCt = 0;
       }
       
-      if (i == bufPos)
+      if (i == byteBuf.position())
         dynamicError("No HTTP headers returned, or headers too long.", "IMPI0003", context);
       int headerEnd = i+1; // skip newline
       
       // Parse all the headers and copy them to the servlet response.
       BufferedReader headerReader = new BufferedReader(
-          new InputStreamReader(new ByteArrayInputStream(buf, 0, headerEnd)));
+          new InputStreamReader(new ByteArrayInputStream(bytes, 0, headerEnd)));
       while ((line = headerReader.readLine()) != null) {
         if (lineNum == 0) {
           if (!line.matches("^HTTP/1.[^ ]+ +([0-9]+) .*$"))
@@ -272,8 +305,8 @@ public class PipeRequestInstruction extends SimpleExpression
 
       // Pump the rest through without any interpretation.
       OutputStream servletOutputStream = res.getOutputStream();
-      if (bufPos > headerEnd)
-        servletOutputStream.write(buf, headerEnd, bufPos - headerEnd);
+      if (byteBuf.position() > headerEnd)
+        servletOutputStream.write(bytes, headerEnd, byteBuf.position() - headerEnd);
       while (!eof)
       {
         if (needSelect) {
@@ -281,17 +314,15 @@ public class PipeRequestInstruction extends SimpleExpression
           if (selector.select(timeRemaining(context, startTime)) > 0)
             needSelect = false;
         }
-        ByteBuffer bb = ByteBuffer.wrap(buf);
-        int got = sockChan.read(bb);
+        byteBuf.clear();
+        int got = sockChan.read(byteBuf);
         if (got == 0)
           needSelect = true;
         else if (got < 0)
           eof = true;
         else
-          servletOutputStream.write(buf, 0, got);
+          servletOutputStream.write(bytes, 0, got);
       }
-      
-      System.out.println("End PipeRequest");
     } catch (IOException e) {
       dynamicError("IO Error during pipe request: " + e.toString(), "IMPI0005", context);
     }
@@ -299,10 +330,16 @@ public class PipeRequestInstruction extends SimpleExpression
       try {
         if (sockWriter != null)
           sockWriter.close();
-        //if (sockOutStream != null)
-        //  sockOutStream.close();
         if (sockReader != null)
           sockReader.close();
+        if (selKey != null)
+          selKey.cancel();
+        if (selector != null)
+          selector.close();
+        if (sockChan != null)
+          sockChan.close();
+        if (byteBuf != null)
+          returnBuffer(byteBuf);
       }
       catch (IOException e) {
         // ignore
