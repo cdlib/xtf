@@ -101,7 +101,7 @@ public class ArgElement extends XSLGeneralVariable
   public void validate()
     throws XPathException 
   {
-    if (!(getParent() instanceof RunElement)) {
+    if (!(getParent() instanceof RunElement) && !(getParent() instanceof PipeRequestElement)) {
       compileError("parent node must be exec:run");
     }
     if (select != null) 
