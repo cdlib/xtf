@@ -1,21 +1,12 @@
 package org.cdlib.xtf.saxonExt.exec;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.lang.ref.WeakReference;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -28,7 +19,6 @@ import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.SimpleExpression;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.Item;
-import net.sf.saxon.trans.DynamicError;
 import net.sf.saxon.trans.XPathException;
 
 /*
@@ -71,9 +61,73 @@ public class PipeRequestInstruction extends SimpleExpression
   protected InputElement.InputInstruction inputExpr;
   protected String method;
   
-  protected static LinkedList<WeakReference<ByteBuffer>> buffers = new LinkedList();
-  protected static final int BUF_SIZE = 32*1024;
+  // Keep some buffers around for re-use, to minimize per-request mem gobbling.
+  protected static final int MAX_SPARE_BUFS = 4;
+  protected static final int BUF_SIZE = 32*1024; // 32 Kbytes
+  protected static LinkedList spareBuffers = new LinkedList();
 
+  /**
+   * Allocate a buffer to use for I/O. Uses previously allocated buffer if 
+   * possible (that buffer must have been deallocated using deallocBuffer()).
+   */
+  protected static synchronized byte[] allocBuffer()
+  {
+    byte[] buf = null;
+    
+    // Look for a previous buffer we can use.
+    ListIterator iter = spareBuffers.listIterator();
+    while (iter.hasNext() && buf == null)
+    {
+      Object obj = iter.next();
+      iter.remove();
+      
+      // If it's a weak reference, the buffer might still be around.
+      if (obj instanceof WeakReference) 
+      {
+        WeakReference<byte[]> ref = (WeakReference<byte[]>)obj;
+        buf = ref.get();
+      }
+      else
+        buf = (byte[]) obj;
+    }
+
+    // If no buffers available to re-use, create a new one.
+    if (buf == null)
+      buf = new byte[BUF_SIZE];
+    
+    // All done.
+    return buf;
+  }
+  
+  /**
+   * Return a buffer so it can be re-used later. If we already have enough
+   * spare buffers then make it a weak reference so the buffer can be 
+   * garbage-collected.
+   */
+  protected static synchronized void deallocBuffer(byte[] buf)
+  {
+    // Remove buffers which got garbage-collected from the list.
+    ListIterator iter = spareBuffers.listIterator();
+    while (iter.hasNext()) {
+      Object obj = iter.next();
+      if (obj instanceof WeakReference && ((WeakReference)obj).get() == null)
+        iter.remove();
+    }
+      
+    // If we could use another permanent buffer, keep forever.
+    if (spareBuffers.size() < MAX_SPARE_BUFS)
+      spareBuffers.addFirst(buf);
+    else 
+    {
+      // Otherwise make a weak reference so the buffer can be garbage
+      // collected. There's still the chance that we'll get to re-use
+      // it.
+      //
+      spareBuffers.addFirst(new WeakReference(buf));
+    }
+  }
+
+  // Constructor.
   public PipeRequestInstruction(Expression url, int timeout, String method, List args) 
   {
     this.url = url;
@@ -95,34 +149,6 @@ public class PipeRequestInstruction extends SimpleExpression
     setArguments(sub);
   }
   
-  // Get a buffer to use for I/O. Uses previously allocated buffer if possible.
-  protected static synchronized ByteBuffer getBuffer()
-  {
-    ByteBuffer buf;
-    
-    // Look for a previous buffer we can use.
-    ListIterator<WeakReference<ByteBuffer>> iter = buffers.listIterator();
-    while (iter.hasNext())
-    {
-      WeakReference<ByteBuffer> ref = iter.next();
-      buf = ref.get();
-      iter.remove();
-      if (buf != null)
-        return buf;
-    }
-    
-    // Not found, create a new one.
-    buf = ByteBuffer.wrap(new byte[BUF_SIZE]);
-    return buf;
-  }
-  
-  // Return a buffer so it can be re-used later.
-  protected static synchronized void returnBuffer(ByteBuffer buf)
-  {
-    buf.clear();
-    buffers.add(new WeakReference(buf));
-  }
-
   /**
    * A subclass must provide one of the methods evaluateItem(), iterate(), or process().
    * This method indicates which of the three is provided.
@@ -135,51 +161,22 @@ public class PipeRequestInstruction extends SimpleExpression
     return "exec:pipeRequest";
   }
   
-  private long timeRemaining(XPathContext context, long startTime) 
-    throws DynamicError
-  {
-    // If no timeout, no need to enforce anything.
-    if (timeout <= 0)
-      return 0;
-    
-    long spent = System.currentTimeMillis() - startTime;
-    if (spent >= timeout)
-      dynamicError("Request timed out", "IMPI0001", context);
-    return timeout - spent;
-  }
-  
+  /**
+   * The real workhorse.
+   */
   public Item evaluateItem(XPathContext context)
     throws XPathException 
   {
-    BufferedWriter sockWriter = null;
-    InputStreamReader sockReader = null;
-    ByteBuffer byteBuf = null;
-    SocketChannel sockChan = null;
-    Selector selector = null;
-    SelectionKey selKey = null;
-
+    byte[] buf = null;
+    OutputStream postOut = null;
+    InputStream reqIn = null;
+    OutputStream servOut = null;
+    
     try
     {
-      // Check the protocol and extract the host part of the URL
-      String initialUrl = url.evaluateAsString(context);
-      URL parsedUrl = new URL(initialUrl);
-  
-      if (!parsedUrl.getProtocol().equals("http"))
-        dynamicError("Error: only HTTP protocol is supported", "IMPI0001", context);
-      
-      String host = parsedUrl.getHost();
-      if (parsedUrl.getHost() == null)
-        dynamicError("Error: must specify full URL including host name", "IMPI0002", context);
-  
-      // Get the port.
-      int port = parsedUrl.getPort();
-      if (port < 0)
-        port = 80;
-        
-      // Build the rest of the URL.
+      // Build the full URL
       StringBuilder sb = new StringBuilder();
-      sb.append(parsedUrl.getPath());
-      
+      sb.append(url.evaluateAsString(context)); // protocol://server[:port]/path
       for (int c = 0; c < nArgs; c++) {
         if (c == 0)
           sb.append("?");
@@ -190,200 +187,88 @@ public class PipeRequestInstruction extends SimpleExpression
         sb.append(strVal);
       } // for c
       
-      String pathWithArgs = sb.toString();
+      URL fullURL = new URL(sb.toString());
       
-      // We're going to want to time things.
-      long startTime = System.currentTimeMillis();
-      
-      // Create a socket to the host
-      InetAddress addr = InetAddress.getByName(host);
-      InetSocketAddress sockAddr = new InetSocketAddress(addr, port);
-      sockChan = SocketChannel.open();
-      sockChan.configureBlocking(false);
-      selector = Selector.open();
-      selKey = sockChan.register(selector, SelectionKey.OP_CONNECT);
-      if (!sockChan.connect(sockAddr))
-        connectWithTimeout(context, startTime, sockChan, selector);
-
-      // Send header
-      ByteArrayOutputStream sockOutStream = new ByteArrayOutputStream();
-      sockWriter = new BufferedWriter(new OutputStreamWriter(sockOutStream, "UTF8"));
+      // Get a connection object and set timeout on it.
+      HttpURLConnection conn = (HttpURLConnection) fullURL.openConnection();
+      if (timeout > 0) {
+        conn.setConnectTimeout(timeout);
+        conn.setReadTimeout(timeout);
+      }
       
       // Is there input to send? If so use POST instead of GET
       byte[] inputBytes = new byte[0];
       if (inputExpr != null)
         inputBytes = inputExpr.getStream(context);
       
-      if (method.equals("POST") || inputBytes.length > 0) {
-        sockWriter.write("POST " + pathWithArgs + " HTTP/1.0\r\n");
-        sockWriter.write("Content-Length: " + inputBytes.length + "\r\n");
-        sockWriter.write("Content-Type: text/plain\r\n");
-        sockWriter.write("\r\n");
-        sockWriter.flush();
-        sockOutStream.write(inputBytes);
-        sockOutStream.flush();
-      }
-      else {
-        sockWriter.write("GET " + pathWithArgs + " HTTP/1.0\r\n\r\n");
-        sockWriter.flush();
-      }
-
-      // Write it to the socket.
-      writeWithTimeout(context, startTime, sockChan, selector, selKey, 
-                       sockOutStream.toByteArray());
-      
-      // Get response
-      HttpServletResponse res = TextServlet.getCurResponse();
-      String line;
-      int lineNum = 0;
-
-      // Grab the first part of the response into our buffer
-      byteBuf = getBuffer();
-      byte[] bytes = byteBuf.array();
-      boolean eof = false;
-      selKey.interestOps(SelectionKey.OP_READ);
-      boolean needSelect = true;
-      while (byteBuf.hasRemaining() && !eof)
+      if (method.equals("POST") || inputBytes.length > 0) 
       {
-        if (needSelect) {
-          if (selector.select(timeRemaining(context, startTime)) > 0)
-            needSelect = false;
-        }
-        int got = sockChan.read(byteBuf);
-        if (got == 0)
-          needSelect = true;
-        else if (got < 0)
-          eof = true;
+        // Set properties for a POST.
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "text/plain");
+        conn.setRequestProperty("Content-Length", Integer.toString(inputBytes.length));
+        conn.setUseCaches(false);
+        conn.setDoInput(true);
+        conn.setDoOutput(true);
+        
+        // Send the request data.
+        conn.connect();
+        postOut = conn.getOutputStream();
+        postOut.write(inputBytes);
+        postOut.flush();
+        postOut.close();
+        postOut = null;
+      }
+      else 
+      {
+        // Standard GET request... default properties are fine.
+        conn.connect();
       }
       
-      // Find the end of the headers.
-      int newlineCt = 0;
-      int i;
-      for (i=0; i<byteBuf.position(); i++) {
-        if (bytes[i] == '\r')
-          continue;
-        else if (bytes[i] == '\n') {
-          ++newlineCt;
-          if (newlineCt == 2)
-            break;
-        }
-        else
-          newlineCt = 0;
-      }
+      // Copy the HTTP status to our outgoing response.
+      HttpServletResponse servletResponse = TextServlet.getCurResponse();
+      int resCode = conn.getResponseCode();
+      servletResponse.setStatus(resCode);
       
-      if (i == byteBuf.position())
-        dynamicError("No HTTP headers returned, or headers too long.", "IMPI0003", context);
-      int headerEnd = i+1; // skip newline
-      
-      // Parse all the headers and copy them to the servlet response.
-      BufferedReader headerReader = new BufferedReader(
-          new InputStreamReader(new ByteArrayInputStream(bytes, 0, headerEnd)));
-      while ((line = headerReader.readLine()) != null) {
-        if (lineNum == 0) {
-          if (!line.matches("^HTTP/1.[^ ]+ +([0-9]+) .*$"))
-            dynamicError("Incomprehensible HTTP response", "IMPI0004", context);
-          String resCodeStr = line.replaceFirst("^[^ ]+ ", "").replaceFirst(" .*$", "");
-          int resCode = Integer.parseInt(resCodeStr);
-          String resMsg = line.replaceFirst("^.* [0-9]+ ?", "");
-          if (resCode != 200)
-            res.sendError(resCode, resMsg);
-          else
-            res.setStatus(resCode);
-        }
-        else if (line.trim().length() == 0)
+      // Copy all the applicable HTTP headers to our outgoing response.
+      for (int i=0; true; i++) {
+        String key = conn.getHeaderFieldKey(i);
+        String val = conn.getHeaderField(i);
+        if (val == null)
           break;
-        else {
-          String hdrName = line.replaceAll(":.*", "");
-          String hdrVal  = line.replaceAll("[^:]+: ?", "");
-          
-          // Ignore certain headers, as the servlet container handles them for us.
-          if (!hdrName.equalsIgnoreCase("Connection"))
-            res.setHeader(hdrName, hdrVal);
-        }
-        ++lineNum;
+        if (key != null && !key.equals("Connection"))
+          servletResponse.setHeader(key, val);
       }
 
-      // Pump the rest through without any interpretation.
-      OutputStream servletOutputStream = res.getOutputStream();
-      if (byteBuf.position() > headerEnd)
-        servletOutputStream.write(bytes, headerEnd, byteBuf.position() - headerEnd);
-      while (!eof)
-      {
-        if (needSelect) {
-          //selKey = sockChan.register(selector, SelectionKey.OP_READ);
-          if (selector.select(timeRemaining(context, startTime)) > 0)
-            needSelect = false;
-        }
-        byteBuf.clear();
-        int got = sockChan.read(byteBuf);
-        if (got == 0)
-          needSelect = true;
-        else if (got < 0)
-          eof = true;
-        else
-          servletOutputStream.write(bytes, 0, got);
-      }
-    } catch (IOException e) {
-      dynamicError("IO Error during pipe request: " + e.toString(), "IMPI0005", context);
+      // Pump through the rest of the response without any interpretation.
+      reqIn = conn.getInputStream();
+      servOut = servletResponse.getOutputStream();
+      buf = allocBuffer();
+      int got;
+      while ((got = reqIn.read(buf)) >= 0)
+        servOut.write(buf, 0, got);
+      servOut.flush();
+      
+    } 
+    catch (SocketTimeoutException e) {
+      dynamicError("External piped request timed out", "IMPI0002", context);
+    }
+    catch (IOException e) {
+      dynamicError("IO Error during pipe request: " + e.toString(), "IMPI0001", context);
     }
     finally {
-      try {
-        if (sockWriter != null)
-          sockWriter.close();
-        if (sockReader != null)
-          sockReader.close();
-        if (selKey != null)
-          selKey.cancel();
-        if (selector != null)
-          selector.close();
-        if (sockChan != null)
-          sockChan.close();
-        if (byteBuf != null)
-          returnBuffer(byteBuf);
-      }
-      catch (IOException e) {
-        // ignore
-      }
+      if (buf != null)
+        deallocBuffer(buf);
+      if (servOut != null)
+        try { servOut.close(); } catch (IOException e) { /* ignore */ }
+      if (reqIn != null)
+        try { reqIn.close(); } catch (IOException e) { /* ignore */ }
+      if (postOut != null)
+        try { postOut.close(); } catch (IOException e) { /* ignore */ }
     }
         
     // All done.
     return null;
-  }
-
-  private void writeWithTimeout(XPathContext context, long startTime,
-                                SocketChannel sockChan, 
-                                Selector selector, SelectionKey selKey,
-                                byte[] bytesToWrite) 
-  throws IOException, DynamicError 
-  {
-    selKey.interestOps(SelectionKey.OP_WRITE);
-    
-    int pos = 0;
-    boolean needSelect = true;
-    while (pos < bytesToWrite.length)
-    {
-      if (needSelect) {
-        if (selector.select(timeRemaining(context, startTime)) > 0)
-          needSelect = false;
-      }
-      ByteBuffer bb = ByteBuffer.wrap(bytesToWrite, pos, bytesToWrite.length - pos); 
-      int nWritten = sockChan.write(bb);
-      pos += nWritten;
-    }
-  }
-
-  private void connectWithTimeout(XPathContext context, long startTime,
-                                  SocketChannel sockChan, Selector selector) 
-    throws DynamicError, IOException 
-  {
-    while (true)
-    {
-      if (selector.select(timeRemaining(context, startTime)) <= 0)
-        continue;
-      if (!sockChan.finishConnect())
-        dynamicError("Finish connect failed", "IMPI0004", context);
-      return;
-    }
   }
 
 } // class PipeImageInstruction
