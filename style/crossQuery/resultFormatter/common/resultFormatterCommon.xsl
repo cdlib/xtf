@@ -1030,7 +1030,7 @@
                 editURL:replaceEmpty(
                    editURL:remove($queryString, 
                                   concat('f[0-9]+-',$field,'=',editURL:escapeRegex($value))),
-                                  'browse-all=yes'))">
+                   'browse-all=yes'))">
       </xsl:variable>
       
       <tr>
