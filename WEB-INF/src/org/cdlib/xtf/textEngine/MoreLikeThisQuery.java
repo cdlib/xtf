@@ -334,6 +334,13 @@ public class MoreLikeThisQuery extends Query
       // Boost if necessary.
       if (fieldBoosts != null)
         fieldQuery.setBoost(fieldBoosts[i]);
+      
+      // We currently don't support more-like-this queries on the full text.
+      // It would involve de-chunking, and also fancier logic to pick the
+      // "most interesting" terms in the first place.
+      //
+      if (fieldNames[i].equals("text"))
+        throw new RuntimeException("MoreLikeThisQuery does not support 'text' field.");
 
       // And add to the main query.
       query.add(fieldQuery, BooleanClause.Occur.SHOULD);
