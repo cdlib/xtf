@@ -31,7 +31,7 @@ package org.cdlib.xtf.saxonExt.mail;
  */
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -43,15 +43,13 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.cdlib.xtf.saxonExt.ElementWithContent;
 import org.cdlib.xtf.saxonExt.InstructionWithContent;
 
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.instruct.TailCall;
-import net.sf.saxon.om.AttributeCollection;
-import net.sf.saxon.om.Axis;
-import net.sf.saxon.style.ExtensionInstruction;
 import net.sf.saxon.trans.DynamicError;
 import net.sf.saxon.trans.XPathException;
 
@@ -62,58 +60,23 @@ import net.sf.saxon.trans.XPathException;
  *
  * @author Martin Haye
  */
-public class SendElement extends ExtensionInstruction 
+public class SendElement extends ElementWithContent 
 {
-  HashMap<String, Expression> outAtts = new HashMap<String, Expression>();
-
   public void prepareAttributes()
     throws XPathException 
   {
-    // Parse the attributes.
     String[] mandatoryAtts = { "smtpHost", "from", "to", "subject" };
     String[] optionalAtts = { "smtpUser", "smtpPassword", "useSSL" };
-    
-    AttributeCollection inAtts = getAttributeList();
-    for (int i = 0; i < inAtts.getLength(); i++) 
-    {
-      String attName = inAtts.getLocalName(i);
-      for (String m : mandatoryAtts) {
-          if (m.equals(attName))
-            outAtts.put(attName, makeAttributeValueTemplate(inAtts.getValue(i)));
-      }
-      for (String m : optionalAtts) {
-          if (m.equals(attName))
-            outAtts.put(attName, makeAttributeValueTemplate(inAtts.getValue(i)));
-      }
-    }
-    
-    // Make sure all manditory attributes were specified
-    for (String m : mandatoryAtts) {
-        if (!outAtts.containsKey(m)) {
-          reportAbsence(m);
-          return;
-        }
-    }    
-  } // prepareAttributes()
-
-  /**
-   * Determine whether this type of element is allowed to contain a template-body
-   */
-  public boolean mayContainSequenceConstructor() {
-    return true;
+    parseAttributes(mandatoryAtts, optionalAtts);
   }
 
-  
-  public Expression compile(Executable exec)
-    throws XPathException 
-  {
-    Expression content = compileSequenceConstructor(exec, iterateAxis(Axis.CHILD), true);
-    return new SendInstruction(outAtts, content);
+  public Expression compile(Executable exec) throws XPathException { 
+    return new SendInstruction(attribs, compileContent(exec));
   }
 
   private static class SendInstruction extends InstructionWithContent 
   {
-    public SendInstruction(HashMap<String, Expression> attribs, Expression content) 
+    public SendInstruction(Map<String, Expression> attribs, Expression content) 
     {
       super("mail:send", attribs, content);
     }

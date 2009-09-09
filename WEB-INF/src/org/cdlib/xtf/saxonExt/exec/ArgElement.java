@@ -35,6 +35,7 @@ package org.cdlib.xtf.saxonExt.exec;
  * was made possible by a grant from the Andrew W. Mellon Foundation,
  * as part of the Melvyl Recommender Project.
  */
+
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.RoleLocator;
 import net.sf.saxon.expr.TypeChecker;
@@ -101,7 +102,7 @@ public class ArgElement extends XSLGeneralVariable
   public void validate()
     throws XPathException 
   {
-    if (!(getParent() instanceof RunElement) && !(getParent() instanceof PipeRequestElement)) {
+    if (!(getParent() instanceof RunElement)) {
       compileError("parent node must be exec:run");
     }
     if (select != null) 

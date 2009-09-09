@@ -56,6 +56,7 @@ import net.sf.saxon.value.Value;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
+
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
 
 /**
@@ -109,7 +110,7 @@ public class InputElement extends XSLGeneralVariable
   public void validate()
     throws XPathException 
   {
-    if (!(getParent() instanceof RunElement) && !(getParent() instanceof PipeRequestElement)) {
+    if (!(getParent() instanceof RunElement)) {
       compileError("parent node must be exec:run");
     }
     if (select != null) 

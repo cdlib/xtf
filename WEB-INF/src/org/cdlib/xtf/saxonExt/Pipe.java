@@ -2,7 +2,7 @@ package org.cdlib.xtf.saxonExt;
 
 
 /*
- * Copyright (c) 2004, Regents of the University of California
+ * Copyright (c) 2009, Regents of the University of California
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,21 +35,19 @@ package org.cdlib.xtf.saxonExt;
  * was made possible by a grant from the Andrew W. Mellon Foundation,
  * as part of the Melvyl Recommender Project.
  */
-import org.cdlib.xtf.saxonExt.exec.ArgElement;
-import org.cdlib.xtf.saxonExt.exec.InputElement;
-import org.cdlib.xtf.saxonExt.exec.PipeImageElement;
-import org.cdlib.xtf.saxonExt.exec.RunElement;
+import org.cdlib.xtf.saxonExt.pipe.PipeFileElement;
+import org.cdlib.xtf.saxonExt.pipe.PipeRequestElement;
 
 import net.sf.saxon.style.ExtensionElementFactory;
 
 /**
- * Front-end to the "Exec" Saxon extension, which allows stylesheets to call
- * command-line programs, with proper error handling, timeouts, and format
- * conversion.
+ * Front-end to the "Pipe" Saxon extension, which allows stylesheets to pipe
+ * files, or results of external HTTP requests, directly as the stylesheet's
+ * HTTP response.
  *
  * @author Martin Haye
  */
-public class Exec implements ExtensionElementFactory 
+public class Pipe implements ExtensionElementFactory 
 {
   /**
   * Identify the class to be used for stylesheet elements with a given local name.
@@ -59,17 +57,11 @@ public class Exec implements ExtensionElementFactory
   */
   public Class getExtensionClass(String localname) 
   {
-    if (localname.equals("run"))
-      return RunElement.class;
-    
-    if (localname.equals("pipeImage"))
-      return PipeImageElement.class;
+    if (localname.equals("pipeRequest"))
+      return PipeRequestElement.class;
 
-    if (localname.equals("arg") || localname.equals("argument"))
-      return ArgElement.class;
-
-    if (localname.equals("input"))
-      return InputElement.class;
+    if (localname.equals("pipeFile"))
+      return PipeFileElement.class;
 
     return null;
   }
