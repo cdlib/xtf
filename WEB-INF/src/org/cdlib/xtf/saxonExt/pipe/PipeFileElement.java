@@ -96,13 +96,12 @@ public class PipeFileElement extends ElementWithContent
       servletResponse.setHeader("Content-length", Long.toString(file.length()));
       servletResponse.setHeader("Content-type", attribs.get("mimeType").evaluateAsString(context));
       
-      // If no file name specified, use the one in the path by default.
+      // If file name specified, add the Content-disposition header.
       String fileName;
-      if (attribs.containsKey("fileName"))
+      if (attribs.containsKey("fileName")) {
         fileName = attribs.get("fileName").evaluateAsString(context);
-      else
-        fileName = file.getName();
-      servletResponse.setHeader("Content-disposition", "attachment; filename=\"" + fileName + "\"");
+        servletResponse.setHeader("Content-disposition", "attachment; filename=\"" + fileName + "\"");
+      }
       
       // Now copy the file to the output stream.
       byte[] buf = null;
