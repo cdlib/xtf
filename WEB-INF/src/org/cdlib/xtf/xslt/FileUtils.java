@@ -13,8 +13,10 @@ import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -306,7 +308,7 @@ public class FileUtils
   /**
    * Resolve the location of a file given the stylesheet context.
    */
-  private static File resolveFile(XPathContext context, String filePath) 
+  public static File resolveFile(XPathContext context, String filePath) 
   {
     String stylesheetPath = getSystemId(context);
     stylesheetPath = stylesheetPath.replaceFirst("^file:", "");
@@ -352,6 +354,75 @@ public class FileUtils
     String result = fmt.format(new Date());
     return result;
   } // curDateTime()
+  
+  /**
+   * All minutes have this many milliseconds except the last minute of the day on a day defined with
+   * a leap second.
+   */
+  private static final long MILLISECS_PER_MINUTE = 60*1000;
+  
+  /**
+   * Number of milliseconds per hour, except when a leap second is inserted.
+   */
+  private static final long MILLISECS_PER_HOUR   = 60*MILLISECS_PER_MINUTE;
+  
+  /**
+   * Number of leap seconds per day except on 
+   * <BR/>1. days when a leap second has been inserted, e.g. 1999 JAN  1.
+   * <BR/>2. Daylight-savings "spring forward" or "fall back" days.
+   */
+  private static final long MILLISECS_PER_DAY = 24*MILLISECS_PER_HOUR;
+
+  /**
+   * Compute the number of days, hours, or minutes that have elapsed between
+   * the given time and now.
+   * 
+   * @param context     Context used to figure out which stylesheet is calling
+   *                    the function.
+   * @param targetDateStr The target date
+   * @param units       Units to return: 'days', 'hours', or 'minutes'. Plural
+   *                    is optional, and single-letter abbreviations are accepted.
+   * @param formatStr   The format of the target date; see {@link SimpleDateFormat}.
+   * @return
+   */
+  public static long timeSince(XPathContext context, 
+                               String targetDateStr, String units, String formatStr) 
+  {
+    try {
+      // First, parse the target time.
+      SimpleDateFormat fmt = getDateFormat(formatStr);
+      Date targetDate = fmt.parse(targetDateStr);
+      Calendar tmpCal = Calendar.getInstance();
+      tmpCal.setTime(targetDate);
+      long targetMillis = adjustedMillis(tmpCal);
+      
+      // Now get the current time for comparison
+      tmpCal.setTime(new Date());
+      long currentMillis = adjustedMillis(tmpCal);
+      long diff = currentMillis - targetMillis;
+      
+      // Compute the answer in the desired units.
+      if (units.matches("d|D|day|Day|days|Days"))
+        return diff / MILLISECS_PER_DAY;
+      else if (units.matches("h|H|hour|Hour|hours|Hours"))
+        return diff / MILLISECS_PER_HOUR;
+      else if (units.matches("m|M|min|Min|minute|Minute|minutes|Minutes"))
+        return diff / MILLISECS_PER_MINUTE;
+      else
+        throw new RuntimeException("timeSince units must be days, hours, or minutes (or d/h/m)");
+    }
+    catch (ParseException e) {
+      throw new RuntimeException("error parsing date '" + targetDateStr + "'");
+    }
+  }
+  
+  /**
+   * Gets the time in milliseconds from a Calendar, adjusting for timezone
+   * so that day subtraction works properly.
+   */
+  private static long adjustedMillis(Calendar cal) {
+    return cal.getTimeInMillis() +  cal.getTimeZone().getOffset(cal.getTimeInMillis() );
+  }
 
   /**
    * Get a SimpleDateFormatter for the given format string. If one has
