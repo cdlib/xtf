@@ -51,12 +51,14 @@ import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.om.NamePool;
+import net.sf.saxon.trace.TraceListener;
 import net.sf.saxon.trans.KeyManager;
 import net.sf.saxon.tree.TreeBuilder;
 
 import org.cdlib.xtf.servletBase.RedirectException;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
+import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IndexUtil;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.util.AttribList;
@@ -74,6 +76,7 @@ import org.cdlib.xtf.lazyTree.LazyDocument;
 import org.cdlib.xtf.lazyTree.LazyKeyManager;
 import org.cdlib.xtf.lazyTree.LazyTreeBuilder;
 import org.cdlib.xtf.lazyTree.PersistentTree;
+import org.cdlib.xtf.lazyTree.LazyProfilingListener;
 import org.cdlib.xtf.lazyTree.SearchTree;
 
 /**
@@ -207,7 +210,15 @@ public class DynaXML extends TextServlet
       // If profiling is enabled, we have to notify the stylesheet
       // cache.
       //
-      stylesheetCache.enableProfiling(config.stylesheetProfiling);
+      StylesheetCache.TraceListenerFactory tlf = null;
+      if (config.stylesheetProfiling) {
+        tlf = new StylesheetCache.TraceListenerFactory() {
+          public TraceListener createListener() {
+            return new LazyProfilingListener();
+          }
+        };
+      }
+      stylesheetCache.enableProfiling(tlf);
 
       // Set the default output content type
       res.setContentType("text/html");

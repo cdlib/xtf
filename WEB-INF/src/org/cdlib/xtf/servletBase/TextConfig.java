@@ -96,6 +96,9 @@ public abstract class TextConfig
    * performed.
    */
   public Pattern sessionEncodeURLPattern = null;
+  
+  /** Whether to print out a stylesheet profile after each request */
+  public boolean stylesheetProfiling = false;
 
   /** 
    * List of parameters to tokenize specially. Default: empty (meaning use
@@ -267,6 +270,10 @@ public abstract class TextConfig
         tokenizeParam = null;
         tokenizeTokenizer = null;
       }
+      return true;
+    }
+    else if (tagAttr.equalsIgnoreCase("stylesheetProfiling.profile")) {
+      stylesheetProfiling = parseBoolean(tagAttr, strVal);
       return true;
     }
 

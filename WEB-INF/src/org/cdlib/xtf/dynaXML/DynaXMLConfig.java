@@ -71,9 +71,6 @@ class DynaXMLConfig extends TextConfig
   /** Max amount of time (seconds) before IP list is automatically reloaded */
   public int ipListCacheExpire = 15 * 60; // 15 minutes
 
-  /** Whether to print out a stylesheet profile after each request */
-  public boolean stylesheetProfiling = false;
-  
   /** Whether to use lazy files */
   public boolean useLazyFiles = true;
   
@@ -146,10 +143,6 @@ class DynaXMLConfig extends TextConfig
     }
     else if (tagAttr.equalsIgnoreCase("loginCache.expire")) {
       loginCacheExpire = parseInt(tagAttr, strVal);
-      return true;
-    }
-    else if (tagAttr.equalsIgnoreCase("stylesheetProfiling.profile")) {
-      stylesheetProfiling = parseBoolean(tagAttr, strVal);
       return true;
     }
     else if (tagAttr.equalsIgnoreCase("lazyTrees.use")) {

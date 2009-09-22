@@ -18,7 +18,7 @@ import net.sf.saxon.trace.TraceListener;
  *
  * @author Martin Haye
  */
-public class ProfilingListener implements TraceListener 
+public class LazyProfilingListener implements TraceListener 
 {
   /**
    * Stack of instructions, used to keep track of what XSLT instruction is

@@ -43,7 +43,10 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.trace.TraceListener;
 import net.sf.saxon.tree.TreeBuilder;
+
+import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.servletBase.TextConfig;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.servletBase.RedirectException;
@@ -70,6 +73,9 @@ public class CrossQuery extends TextServlet
 
   /** Used to format decimal numbers */
   protected static DecimalFormat decimalFormat = new DecimalFormat();
+  
+  /** Used for stylesheet profiling, if enabled */
+  protected TimeProfilingListener profListener;
 
   /**
    * Called by the superclass to find out the name of our specific config
@@ -115,6 +121,21 @@ public class CrossQuery extends TextServlet
     {
       // Set the default output content type
       res.setContentType("text/html");
+
+      // If profiling is enabled, we have to notify the stylesheet
+      // cache.
+      //
+      StylesheetCache.TraceListenerFactory tlf = null;
+      if (config.stylesheetProfiling) {
+        tlf = new StylesheetCache.TraceListenerFactory() {
+          public TraceListener createListener() {
+            if (profListener == null)
+              profListener = new TimeProfilingListener();
+            return profListener;
+          }
+        };
+      }
+      stylesheetCache.enableProfiling(tlf);
 
       // If in step mode, output the frameset and top frame...
       String stepStr = stepSetup(req, res);
@@ -489,6 +510,15 @@ public class CrossQuery extends TextServlet
 
     // Do it!
     trans.transform(sourceDoc, createFilteredReceiver(trans, req, res));
+    
+    // Print profile if requested.
+    if (config.stylesheetProfiling) {
+      Trace.info("Profile for request: " + getRequestURL(req));
+      Trace.tab();
+      profListener.printProfile();
+      Trace.untab();
+      Trace.info("End of profile.");
+    }
   } // formatHits()
 
   /**

@@ -137,7 +137,7 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
   boolean allPermanent = false;
 
   /** Notified of profile-related events */
-  private ProfilingListener profileListener;
+  private LazyProfilingListener profileListener;
 
   /** Counter to govern periodic checking for thread time limit */
   private int killCheckCounter = 0;
@@ -152,8 +152,8 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
                        .allocateDocumentNumber();
 
     // Check if we're being profiled.
-    if (config.getTraceListener() instanceof ProfilingListener)
-      profileListener = (ProfilingListener)config.getTraceListener();
+    if (config.getTraceListener() instanceof LazyProfilingListener)
+      profileListener = (LazyProfilingListener)config.getTraceListener();
   }
 
   /**

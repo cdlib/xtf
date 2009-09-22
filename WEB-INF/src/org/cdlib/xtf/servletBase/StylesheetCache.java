@@ -40,11 +40,11 @@ import javax.xml.transform.sax.SAXSource;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.om.NamePool;
+import net.sf.saxon.trace.TraceListener;
 
 import org.xml.sax.InputSource;
 import org.cdlib.xtf.cache.FileDependency;
 import org.cdlib.xtf.cache.GeneratingCache;
-import org.cdlib.xtf.lazyTree.ProfilingListener;
 import org.cdlib.xtf.util.*;
 
 /**
@@ -55,8 +55,12 @@ public class StylesheetCache extends GeneratingCache
 {
   private boolean dependencyChecking = false;
   private GeneratingCache dependencyReceiver = null;
-  private boolean enableProfiling = false;
+  private TraceListenerFactory traceListenerFactory = null;
   private TransformerFactory factory;
+  
+  public interface TraceListenerFactory {
+    TraceListener createListener();
+  }
   
   /**
    * Constructor.
@@ -114,10 +118,11 @@ public class StylesheetCache extends GeneratingCache
 
   /**
    * Enable or disable profiling (only affects stylesheets that are
-   * not already cached)
+   * not already cached). If the factory is null, profiling is
+   * disabled.
    */
-  public void enableProfiling(boolean flag) {
-    enableProfiling = flag;
+  public void enableProfiling(TraceListenerFactory tlf) {
+    traceListenerFactory = tlf;
   }
 
   /**
@@ -145,9 +150,9 @@ public class StylesheetCache extends GeneratingCache
         throw new GeneralException("Cannot read stylesheet: " + path);
 
       // Set up the profiling listener, if profiling is enabled
-      if (enableProfiling) {
-        ProfilingListener profilingListener = new ProfilingListener();
-        factory.setAttribute(FeatureKeys.TRACE_LISTENER, profilingListener);
+      if (traceListenerFactory != null) {
+        TraceListener listener = traceListenerFactory.createListener();
+        factory.setAttribute(FeatureKeys.TRACE_LISTENER, listener);
         factory.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
       }
   
