@@ -2,7 +2,7 @@ package org.cdlib.xtf.saxonExt;
 
 
 /*
- * Copyright (c) 2006, Regents of the University of California
+ * Copyright (c) 2006-2009, Regents of the University of California
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,18 +35,10 @@ package org.cdlib.xtf.saxonExt;
  * was made possible by a grant from the Andrew W. Mellon Foundation,
  * as part of the Melvyl Recommender Project.
  */
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
-import org.cdlib.xtf.servletBase.TextServlet;
-import net.sf.saxon.expr.Expression;
-import net.sf.saxon.expr.SimpleExpression;
-import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.instruct.Executable;
-import net.sf.saxon.om.Item;
+import org.cdlib.xtf.saxonExt.redirect.HttpErrorElement;
+import org.cdlib.xtf.saxonExt.redirect.RedirectElement;
+
 import net.sf.saxon.style.ExtensionElementFactory;
-import net.sf.saxon.style.ExtensionInstruction;
-import net.sf.saxon.trans.DynamicError;
-import net.sf.saxon.trans.XPathException;
 
 /**
  * Implements the "Redirect" Saxon extension, which allows stylesheets to
@@ -67,74 +59,11 @@ public class Redirect implements ExtensionElementFactory
   */
   public Class getExtensionClass(String localname) 
   {
-    if (localname.equals("send"))
-      return SendElement.class;
+    if (localname.equals("send") || localname.equalsIgnoreCase("sendRedirect"))
+      return RedirectElement.class;
+    if (localname.equalsIgnoreCase("sendHttpError"))
+      return HttpErrorElement.class;
 
     return null;
   }
-
-  /**
-   * Implements a Saxon instruction that executes an external process and
-   * properly formats the result. Provides timeout and error checking.
-   *
-   * @author Martin Haye
-   */
-  public static class SendElement extends ExtensionInstruction 
-  {
-    Expression urlExp;
-
-    public void prepareAttributes()
-      throws XPathException 
-    {
-      // Get mandatory 'url' attribute
-      String urlAtt = getAttributeList().getValue("", "url");
-      if (urlAtt == null) {
-        reportAbsence("url");
-        return;
-      }
-      urlExp = makeAttributeValueTemplate(urlAtt);
-    } // prepareAttributes()
-
-    public Expression compile(Executable exec)
-      throws XPathException 
-    {
-      return new SendInstruction(urlExp);
-    }
-
-    private class SendInstruction extends SimpleExpression 
-    {
-      Expression urlExp;
-
-      public SendInstruction(Expression urlExp) {
-        this.urlExp = urlExp;
-      }
-
-      /**
-       * A subclass must provide one of the methods evaluateItem(), iterate(), or process().
-       * This method indicates which of the three is provided.
-       */
-      public int getImplementationMethod() {
-        return Expression.EVALUATE_METHOD;
-      }
-
-      public String getExpressionType() {
-        return "redirect:send";
-      }
-
-      public Item evaluateItem(XPathContext context)
-        throws XPathException 
-      {
-        HttpServletResponse res = TextServlet.getCurResponse();
-        String url = urlExp.evaluateAsString(context);
-        String encodedUrl = res.encodeRedirectURL(url);
-        try {
-          res.sendRedirect(encodedUrl);
-        }
-        catch (IOException e) {
-          throw new DynamicError(e);
-        }
-        return null;
-      } // evaluateItem()
-    } // class SendInstruction
-  } // class SendElement
 } // class Redirect
