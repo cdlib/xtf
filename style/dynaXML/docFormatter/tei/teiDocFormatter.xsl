@@ -115,7 +115,7 @@
    <xsl:param name="chunk.id">
       <xsl:choose>
          <xsl:when test="$hit.rank != '0' and key('hit-rank-dynamic', $hit.rank)/ancestor::*[matches(name(),'^div')]">
-            <xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/ancestor::*[matches(name(),'^div')][1]/@*[local-name()='id']"/>
+            <xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/ancestor::*[matches(local-name(),'^div')][1]/@*:id"/>
          </xsl:when>
          <xsl:otherwise>
             <xsl:value-of select="'0'"/>
@@ -126,7 +126,7 @@
    <xsl:param name="toc.id">
       <xsl:choose>
          <xsl:when test="$hit.rank != '0' and key('hit-rank-dynamic', $hit.rank)/ancestor::*[matches(name(),'^div')]">
-            <xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/ancestor::*[matches(name(),'^div')][1]/parent::*/@*[local-name()='id']"/>
+            <xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/ancestor::*[matches(local-name(),'^div')][1]/parent::*/@*:id"/>
          </xsl:when>
          <xsl:otherwise>
             <xsl:value-of select="'0'"/>
@@ -216,11 +216,13 @@
    
    <xsl:template name="create.anchor">
       <xsl:choose>
-         <xsl:when test="($query != '0' and $query != '') and $hit.rank != '0'">
-            <xsl:text>#</xsl:text><xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/@hitNum"/>
-         </xsl:when>
+         <!-- First so it takes precedence over computed hit.rank -->
          <xsl:when test="($query != '0' and $query != '') and $set.anchor != '0'">
             <xsl:text>#</xsl:text><xsl:value-of select="$set.anchor"/>
+         </xsl:when>
+         <!-- Next is hit.rank -->
+         <xsl:when test="($query != '0' and $query != '') and $hit.rank != '0'">
+            <xsl:text>#</xsl:text><xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/@hitNum"/>
          </xsl:when>
          <xsl:when test="($query != '0' and $query != '') and $chunk.id != '0'">
             <xsl:text>#</xsl:text><xsl:value-of select="key('div-id', $chunk.id)/@xtf:firstHit"/>
