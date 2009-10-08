@@ -702,7 +702,7 @@ Item number <xsl:value-of select="$num"/>:
                <td class="col3">
                   <xsl:choose>
                      <xsl:when test="meta/year">
-                        <xsl:value-of select="replace(meta/year,'^.+ ','')"/>
+                        <xsl:value-of select="replace(meta/year[1],'^.+ ','')"/>
                      </xsl:when>
                      <xsl:otherwise>
                         <xsl:apply-templates select="meta/date"/>
