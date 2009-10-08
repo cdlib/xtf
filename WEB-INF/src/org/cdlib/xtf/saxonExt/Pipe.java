@@ -36,6 +36,7 @@ package org.cdlib.xtf.saxonExt;
  * as part of the Melvyl Recommender Project.
  */
 import org.cdlib.xtf.saxonExt.pipe.PipeFileElement;
+import org.cdlib.xtf.saxonExt.pipe.PipeFopElement;
 import org.cdlib.xtf.saxonExt.pipe.PipeRequestElement;
 
 import net.sf.saxon.style.ExtensionElementFactory;
@@ -62,6 +63,9 @@ public class Pipe implements ExtensionElementFactory
 
     if (localname.equals("pipeFile"))
       return PipeFileElement.class;
+
+    if (localname.equals("pipeFOP"))
+      return PipeFopElement.class;
 
     return null;
   }

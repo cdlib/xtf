@@ -6,8 +6,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/cql-java.jar" sourcepath="WEB-INF/lib/source/cql-java-0.7"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/marc4j.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/lucene-core-2.1.0.jar" sourcepath="WEB-INF/lib/source/lucene-2.1.0"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/saxonb-8.9.jar" sourcepath="WEB-INF/lib/source/saxonb-8.9"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/lucene-core-2.1.0.jar" sourcepath="/Users/mhaye/Projects/lucene-trunk/java/trunk/src/java"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/saxonb-8.9.jar" sourcepath="/Users/mhaye/Projects/saxonb8-9/source"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/PDFBox-0.7.3.jar" sourcepath="WEB-INF/lib/source/PDFBox-0.7.3"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/FontBox-0.1.0.jar"/>
@@ -17,5 +17,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Tomcat"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/tm-extractors-1.0.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/poi-3.0.2-FINAL.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/fop-core-0.94.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/fop-libs-0.94.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/iText-2.1.7.jar" sourcepath="/Users/mhaye/Projects/iText-2.1.7/src"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
