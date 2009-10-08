@@ -93,8 +93,9 @@
          so the code below runs only once.
       -->
       <xsl:variable name="file" select="concat('../../data/',$docId)"/>
+      <xsl:variable name="stub" select="if ($docId and FileUtils:exists($file)) then FileUtils:readXMLStub($file) else ()"/>
       <xsl:variable name="fileType">
-         <xsl:for-each select="FileUtils:readXMLStub($file)">
+         <xsl:for-each select="$stub">
             
             <xsl:variable name="root-element-name" select="name(*[1])"/>
             <xsl:variable name="pid" select="unparsed-entity-public-id($root-element-name)"/>
