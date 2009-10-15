@@ -104,35 +104,40 @@ public class PipeFileElement extends ElementWithContent
       }
       
       // Now copy the file to the output stream.
-      byte[] buf = null;
-      InputStream fileIn = null;
-      OutputStream servOut = null;
-      try
-      {
-        fileIn = new FileInputStream(file);
-        servOut = servletResponse.getOutputStream();
-        buf = PipeBufferPool.allocBuffer();
-        int got;
-        while ((got = fileIn.read(buf)) >= 0)
-          servOut.write(buf, 0, got);
-        servOut.flush();
-      } 
+      try {
+        copyFileToStream(file, servletResponse.getOutputStream());
+      }
       catch (IOException e) {
         dynamicError("IO Error while piping file: " + e.toString(), "PIPE_FILE_002", context);
-      }
-      finally 
-      {
-        // Clean up after ourselves.
-        if (buf != null)
-          PipeBufferPool.deallocBuffer(buf);
-        if (servOut != null)
-          try { servOut.close(); } catch (IOException e) { /* ignore */ }
-        if (fileIn != null)
-          try { fileIn.close(); } catch (IOException e) { /* ignore */ }
       }
           
       // All done.
       return null;
+    }
+  }
+  
+  /** Utility method to copy the contents of a file into an output stream */
+  public static void copyFileToStream(File inFilePath, OutputStream outStream) 
+    throws IOException
+  {
+    InputStream fileIn = null;
+    byte[] buf = null;
+    try
+    {
+      fileIn = new FileInputStream(inFilePath);
+      buf = PipeBufferPool.allocBuffer();
+      int got;
+      while ((got = fileIn.read(buf)) >= 0)
+        outStream.write(buf, 0, got);
+      outStream.flush();
+    } 
+    finally 
+    {
+      // Clean up after ourselves.
+      if (buf != null)
+        PipeBufferPool.deallocBuffer(buf);
+      if (fileIn != null)
+        try { fileIn.close(); } catch (IOException e) { /* ignore */ }
     }
   }
 }

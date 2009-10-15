@@ -33,6 +33,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import javax.xml.transform.sax.SAXResult;
 import org.cdlib.xtf.saxonExt.ElementWithContent;
 import org.cdlib.xtf.saxonExt.InstructionWithContent;
 import org.cdlib.xtf.servletBase.TextServlet;
+import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.xslt.FileUtils;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -85,7 +87,7 @@ public class PipeFopElement extends ElementWithContent
     String[] mandatoryAtts = { };
     String[] optionalAtts = { "fileName", 
                               "author", "creator", "keywords", "producer", "title",
-                              "appendPDF" };
+                              "appendPDF", "fallbackIfError" };
     parseAttributes(mandatoryAtts, optionalAtts);
   }
 
@@ -163,41 +165,75 @@ public class PipeFopElement extends ElementWithContent
           Transformer transformer = transFactory.newTransformer(); // identity transformer
 
           // Now run FOP
+          ByteArrayOutputStream finalOut = new ByteArrayOutputStream();
           if (attribs.containsKey("appendPDF")) 
           {
             ByteArrayOutputStream tmpOut = new ByteArrayOutputStream();
             Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foAgent, tmpOut);
             transformer.transform(src, new SAXResult(fop.getDefaultHandler()));
-            appendPdf(context, tmpOut.toByteArray(), servletResponse);
+            appendPdf(context, tmpOut.toByteArray(), finalOut);
           }
           else 
           {
-            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foAgent, servletResponse.getOutputStream());
+            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foAgent, finalOut);
             transformer.transform(src, new SAXResult(fop.getDefaultHandler()));
           }
+          
+          // Now we know the output length.
+          servletResponse.setHeader("Content-length", Integer.toString(finalOut.size()));
+          
+          // Go ahead and send it.
+          servletResponse.getOutputStream().write(finalOut.toByteArray());
         }
-      } catch (IOException e) {
-        dynamicError("IO Error while piping FOP: " + e.toString(), "PIPE_FOP_001", context);
-      } catch (TransformerException e) {
-        dynamicError("Transform Error while piping FOP: " + e.toString(), "PIPE_FOP_002", context);
-      } catch (FOPException e) {
-        dynamicError("FOP Error while piping FOP: " + e.toString(), "PIPE_FOP_003", context);
-      } catch (DocumentException e) {
-        dynamicError("PDF Copy Error while piping FOP: " + e.toString(), "PIPE_FOP_004", context);
+      } 
+      catch (Throwable e) 
+      {
+        // Fall back if requested
+        if (attribs.containsKey("fallbackIfError")) 
+        {
+          Trace.warning("pipeFop failed, falling back to just piping PDF file:" + e.toString());
+          String fallbackStr = attribs.get("fallbackIfError").evaluateAsString(context);
+          if (fallbackStr.matches("yes|Yes|true|True|1") && attribs.containsKey("appendPDF")) {
+            try {
+              String path = attribs.get("appendPDF").evaluateAsString(context);
+              File file = FileUtils.resolveFile(context, path);
+              servletResponse.setHeader("Content-length", Long.toString(file.length()));
+              PipeFileElement.copyFileToStream(file, servletResponse.getOutputStream());
+              e = null;
+            }
+            catch (IOException e2) {
+              e = e2;
+            }
+          }
+        }
+        
+        // Process the resulting exception
+        if (e == null)
+          ; // pass
+        else if (e instanceof IOException)
+          dynamicError("IO Error while piping FOP: " + e.toString(), "PIPE_FOP_001", context);
+        else if (e instanceof TransformerException)
+          dynamicError("Transform Error while piping FOP: " + e.toString(), "PIPE_FOP_002", context);
+        else if (e instanceof FOPException)
+          dynamicError("FOP Error while piping FOP: " + e.toString(), "PIPE_FOP_003", context);
+        else if (e instanceof DocumentException)
+          dynamicError("PDF Copy Error while piping FOP: " + e.toString(), "PIPE_FOP_004", context);
+        else
+          dynamicError("Error while piping FOP: " + e.toString(), "PIPE_FOP_005", context);
       }
 
       // All done.
       return null;
     }
 
-    private void appendPdf(XPathContext context, byte[] origPdfData, HttpServletResponse servletResponse)
+    private void appendPdf(XPathContext context, byte[] origPdfData, OutputStream outStream)
         throws IOException, DocumentException, BadPdfFormatException, XPathException
     {
       // Read in the PDF that FOP generated.
       PdfReader pdfReader = new PdfReader(origPdfData);
       pdfReader.consolidateNamedDestinations();
       Document pdfDocument = new Document(pdfReader.getPageSizeWithRotation(1));
-      PdfCopy pdfWriter = new PdfCopy(pdfDocument, servletResponse.getOutputStream());
+      PdfCopy pdfWriter = new PdfCopy(pdfDocument, outStream);
       pdfDocument.open();
       
       // Copy bookmarks from the FOP-generated PDF
