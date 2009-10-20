@@ -85,7 +85,10 @@ public class XTFSaxonErrorListener implements ErrorListener
                       ? "Validation Error " : "Saxon Error ") +
                      getLocationMessage(exception) + ": " +
                      wordWrap(getExpandedMessage(exception));
-    Trace.error(message);
+    
+    // Socket exceptions are too common to log as errors
+    if (!message.contains("ClientAbortException") && !message.contains("SocketException"))
+      Trace.error(message);
     
     // Record this error in the thread-local list, so it can later be
     // retrieved by getThreadErrors().
@@ -176,7 +179,7 @@ public class XTFSaxonErrorListener implements ErrorListener
     String locmessage = "";
     String systemId = null;
     int lineNumber = -1;
-    if (loc instanceof DOMLocator) 
+    if (loc instanceof DOMLocator && !"null".equals(((DOMLocator)loc).getOriginatingNode().getNodeName())) 
     {
       locmessage += "at " +
         ((DOMLocator)loc).getOriginatingNode().getNodeName() + ' ';
@@ -184,7 +187,7 @@ public class XTFSaxonErrorListener implements ErrorListener
     else if (loc instanceof InstructionInfoProvider) {
       String instructionName = getInstructionName(((InstructionInfoProvider)loc),
                                                   context);
-      if (!"".equals(instructionName)) {
+      if (instructionName != null && !"".equals(instructionName)) {
         locmessage += "at " + instructionName + ' ';
       }
       systemId = ((InstructionInfoProvider)loc).getInstructionInfo()
