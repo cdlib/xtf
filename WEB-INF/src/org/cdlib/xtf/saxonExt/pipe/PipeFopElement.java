@@ -37,6 +37,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Source;
@@ -81,13 +85,17 @@ import net.sf.saxon.trans.XPathException;
 public class PipeFopElement extends ElementWithContent 
 {
   private static FopFactory fopFactory;
+  private static Lock fopLock = new ReentrantLock();
   
   public void prepareAttributes() throws XPathException 
   {
     String[] mandatoryAtts = { };
     String[] optionalAtts = { "fileName", 
                               "author", "creator", "keywords", "producer", "title",
-                              "appendPDF", "fallbackIfError" };
+                              "appendPDF", 
+                              "fallbackIfError", // default: yes 
+                              "waitTime"         // default: 5 (seconds)
+                            };
     parseAttributes(mandatoryAtts, optionalAtts);
   }
 
@@ -114,20 +122,73 @@ public class PipeFopElement extends ElementWithContent
       HttpServletResponse servletResponse = TextServlet.getCurResponse();
       servletResponse.setHeader("Content-type", "application/pdf");
       
-      // If file name specified, add the Content-disposition header.
+      // If output file name specified, add the Content-disposition header.
       String fileName;
       if (attribs.containsKey("fileName")) {
         fileName = attribs.get("fileName").evaluateAsString(context);
         servletResponse.setHeader("Content-disposition", "attachment; filename=\"" + fileName + "\"");
       }
       
+      // Build the full path to the PDF file we're going to append, if any.
+      File fileToAppend = null;
+      if (attribs.containsKey("appendPDF")) {
+        String path = attribs.get("appendPDF").evaluateAsString(context);
+        fileToAppend = FileUtils.resolveFile(context, path);
+      }
+
       try {
 
-        // According to the Apache docs, FOP may not be thread-safe. So, we need to
-        // single-thread it.
+        // Interesting workaround: using FOP normally results in an AWT "Window"
+        // being created. However, since we're running in a servlet container, this
+        // isn't generally desirable (and often isn't possible.) So we let AWT know
+        // that it's running in "headless" mode, and this prevents the window from
+        // being created.
         //
-        synchronized(FopFactory.class) 
-        {
+        System.setProperty("java.awt.headless", "true");
+        
+        // Despite generally being a NodeInfo, 'content' doesn't seem to work directly
+        // as a Source. Fortunately TinyBuilder gives us very fast way to convert it.
+        //
+        Item contentItem = content.evaluateItem(context);
+        Source src = TinyBuilder.build((Source)contentItem, null, context.getConfiguration());
+        
+        // Setup JAXP using identity transformer
+        TransformerFactory transFactory = new net.sf.saxon.TransformerFactoryImpl();
+        Transformer transformer = transFactory.newTransformer(); // identity transformer
+
+        // So that we can keep the lock on FOP short, and also so we can send an
+        // accurate Content-length header to the client, we'll accumulate the FOP output
+        // in a byte buffer. We use the Apache ByteArrayOutputStream class since it
+        // doesn't constantly realloc-copy when the buffer needs to grow.
+        //
+        ByteArrayOutputStream fopOut = new ByteArrayOutputStream();
+        
+        // According to the Apache docs, FOP may not be thread-safe. So, we need to
+        // single-thread it. However, we must at all costs keep requests from backing
+        // up behind each other in a scenario where many clients are making requests
+        // all at once. So put a time limit on it.
+        //
+        int lockTime;
+        if (attribs.containsKey("waitTime"))
+          lockTime = Integer.parseInt(attribs.get("waitTime").evaluateAsString(context));
+        else
+          lockTime = 5; // default to waiting 5 seconds
+        boolean gotLock = false;
+        try {
+          if (lockTime <= 0) {
+            gotLock = true;
+            fopLock.lock();
+          }
+          else
+            gotLock = fopLock.tryLock(lockTime, TimeUnit.SECONDS);
+        
+          // Failure to get the lock is an error. However, this exception will
+          // be caught below and, if requested, we'll fall back to just outputting
+          // the append PDF.
+          //
+          if (!gotLock)
+            throw new TimeoutException("Timed out trying to obtain FOP lock");
+          
           // For speed, only create FOP factory if we haven't already got one.
           if (fopFactory == null)
             fopFactory = FopFactory.newInstance();
@@ -144,61 +205,47 @@ public class PipeFopElement extends ElementWithContent
             foAgent.setProducer(attribs.get("producer").evaluateAsString(context));
           if (attribs.containsKey("title"))
             foAgent.setTitle(attribs.get("title").evaluateAsString(context));
-          
-
-          // Interesting workaround: using FOP normally results in an AWT "Window"
-          // being created. However, since we're running in a servlet container, this
-          // isn't generally desirable (and often isn't possible.) So we let AWT know
-          // that it's running in "headless" mode, and this prevents the window from
-          // being created.
-          //
-          System.setProperty("java.awt.headless", "true");
-          
-          // Despite generally being a NodeInfo, 'content' doesn't seem to work directly
-          // as a Source. Fortunately TinyBuilder gives us very fast way to convert it.
-          //
-          Item contentItem = content.evaluateItem(context);
-          Source src = TinyBuilder.build((Source)contentItem, null, context.getConfiguration());
-          
-          // Setup JAXP using identity transformer
-          TransformerFactory transFactory = new net.sf.saxon.TransformerFactoryImpl();
-          Transformer transformer = transFactory.newTransformer(); // identity transformer
 
           // Now run FOP
-          ByteArrayOutputStream finalOut = new ByteArrayOutputStream();
-          if (attribs.containsKey("appendPDF")) 
-          {
-            ByteArrayOutputStream tmpOut = new ByteArrayOutputStream();
-            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foAgent, tmpOut);
-            transformer.transform(src, new SAXResult(fop.getDefaultHandler()));
-            appendPdf(context, tmpOut.toByteArray(), finalOut);
-          }
-          else 
-          {
-            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foAgent, finalOut);
-            transformer.transform(src, new SAXResult(fop.getDefaultHandler()));
-          }
-          
-          // Now we know the output length.
-          servletResponse.setHeader("Content-length", Integer.toString(finalOut.size()));
-          
-          // Go ahead and send it.
-          servletResponse.getOutputStream().write(finalOut.toByteArray());
+          Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foAgent, fopOut);
+          transformer.transform(src, new SAXResult(fop.getDefaultHandler()));
         }
+        finally 
+        {
+          // Always release the FOP lock when we're done, regardless of what happened.
+          if (gotLock)
+            fopLock.unlock();
+        }
+        
+        // Now that we've released the FOP lock, check if we need to append a PDF or not.
+        ByteArrayOutputStream finalOut;
+        if (fileToAppend != null) { 
+          finalOut = new ByteArrayOutputStream(fopOut.size() + (int)fileToAppend.length());
+          appendPdf(context, fopOut.toByteArray(), fileToAppend, finalOut);
+        }
+        else 
+          finalOut = fopOut;
+        
+        // Now we know the output length, so let the client know and then send it.
+        servletResponse.setHeader("Content-length", Integer.toString(finalOut.size()));
+        servletResponse.getOutputStream().write(finalOut.toByteArray());
       } 
       catch (Throwable e) 
       {
-        // Fall back if requested
-        if (attribs.containsKey("fallbackIfError")) 
+        assert fopLock.tryLock();
+        
+        // If requested, fall back to simply piping the PDF file itself, without any FOP prefix.
+        if (attribs.containsKey("appendPDF"))
         {
-          Trace.warning("pipeFop failed, falling back to just piping PDF file:" + e.toString());
-          String fallbackStr = attribs.get("fallbackIfError").evaluateAsString(context);
-          if (fallbackStr.matches("yes|Yes|true|True|1") && attribs.containsKey("appendPDF")) {
+          String fallbackStr = "yes"; // default to yes if not specified
+          if (attribs.containsKey("fallbackIfError"))
+            fallbackStr = attribs.get("fallbackIfError").evaluateAsString(context);
+          if (fallbackStr.matches("yes|Yes|true|True|1")) 
+          {
             try {
-              String path = attribs.get("appendPDF").evaluateAsString(context);
-              File file = FileUtils.resolveFile(context, path);
-              servletResponse.setHeader("Content-length", Long.toString(file.length()));
-              PipeFileElement.copyFileToStream(file, servletResponse.getOutputStream());
+              Trace.warning("Warning: pipeFop failed, falling back to just piping PDF file. Cause: " + e.toString());
+              servletResponse.setHeader("Content-length", Long.toString(fileToAppend.length()));
+              PipeFileElement.copyFileToStream(fileToAppend, servletResponse.getOutputStream());
               e = null;
             }
             catch (IOException e2) {
@@ -207,26 +254,34 @@ public class PipeFopElement extends ElementWithContent
           }
         }
         
-        // Process the resulting exception
-        if (e == null)
-          ; // pass
-        else if (e instanceof IOException)
-          dynamicError("IO Error while piping FOP: " + e.toString(), "PIPE_FOP_001", context);
-        else if (e instanceof TransformerException)
-          dynamicError("Transform Error while piping FOP: " + e.toString(), "PIPE_FOP_002", context);
-        else if (e instanceof FOPException)
-          dynamicError("FOP Error while piping FOP: " + e.toString(), "PIPE_FOP_003", context);
-        else if (e instanceof DocumentException)
-          dynamicError("PDF Copy Error while piping FOP: " + e.toString(), "PIPE_FOP_004", context);
-        else
-          dynamicError("Error while piping FOP: " + e.toString(), "PIPE_FOP_005", context);
+        // Process any resulting exception into a Saxon dynamic error.
+        if (e != null) {
+          String code;
+          if (e instanceof IOException)
+            code = "PIPE_FOP_001";
+          else if (e instanceof TransformerException)
+            code = "PIPE_FOP_002";
+          else if (e instanceof FOPException)
+            code = "PIPE_FOP_003";
+          else if (e instanceof DocumentException)
+            code = "PIPE_FOP_004";
+          else if (e instanceof TimeoutException)
+            code = "PIPE_FOP_005";
+          else
+            code = "PIPE_FOP_006";
+          dynamicError(e, "Error while piping FOP: " + e.toString(), code, context);
+        }
       }
 
       // All done.
       return null;
     }
 
-    private void appendPdf(XPathContext context, byte[] origPdfData, OutputStream outStream)
+    /** Do the work of joining the FOP output and a PDF together. **/
+    private void appendPdf(XPathContext context, 
+                           byte[] origPdfData, 
+                           File fileToAppend,
+                           OutputStream outStream)
         throws IOException, DocumentException, BadPdfFormatException, XPathException
     {
       // Read in the PDF that FOP generated.
@@ -247,12 +302,8 @@ public class PipeFopElement extends ElementWithContent
       for (int i = 1; i <= nOrigPages; i++)
         pdfWriter.addPage(pdfWriter.getImportedPage(pdfReader, i));
       
-      // Build the full path to the PDF file we're going to append.
-      String path = attribs.get("appendPDF").evaluateAsString(context);
-      File file = FileUtils.resolveFile(context, path);
-      
       // Read in the append PDF
-      PdfReader pdfReader2 = new PdfReader(new BufferedInputStream(new FileInputStream(file)));
+      PdfReader pdfReader2 = new PdfReader(new BufferedInputStream(new FileInputStream(fileToAppend)));
       pdfReader2.consolidateNamedDestinations();
       
       // Copy its bookmarks, shifting up their page targets.
@@ -274,5 +325,6 @@ public class PipeFopElement extends ElementWithContent
       // And we're done.
       pdfDocument.close();
     }
+    
   }
 }
