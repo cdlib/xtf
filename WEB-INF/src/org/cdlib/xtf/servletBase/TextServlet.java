@@ -42,11 +42,13 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -1379,21 +1381,24 @@ public abstract class TextServlet extends HttpServlet
   protected void genErrorPage(HttpServletRequest req, HttpServletResponse res,
                               Exception exc) 
   {
-    // Contort to obtain a string version of the stack trace.
-    ByteArrayOutputStream traceStream = new ByteArrayOutputStream();
-    exc.printStackTrace(new PrintStream(traceStream));
-    String strStackTrace = traceStream.toString();
-    
-    // If Saxon errors occurred, put those at the top of the trace.
+    // If Saxon errors occurred, use those as the stack trace.
+    String strStackTrace;
     String[] saxonErrors = XTFSaxonErrorListener.getThreadErrors();
     if (saxonErrors != null) {
       StringBuffer buf = new StringBuffer();
       for (String s : saxonErrors)
         buf.append(s + "\n");
       buf.append("\n");
-      strStackTrace = buf.toString() + strStackTrace;
+      strStackTrace = buf.toString();
     }
-
+    else
+    {
+      // Contort to obtain a string version of the Java stack trace.
+      ByteArrayOutputStream traceStream = new ByteArrayOutputStream();
+      exc.printStackTrace(new PrintStream(traceStream));
+      strStackTrace = traceStream.toString();
+    }
+    
     String htmlStackTrace = makeHtmlString(strStackTrace);
 
     try 
@@ -1436,9 +1441,8 @@ public abstract class TextServlet extends HttpServlet
       }
 
       // Figure out just the last part of the exception class name.
-      String className = exc.getClass().getName().replaceAll(".*\\.", "").replaceAll(
-        ".*\\$",
-        "").replaceAll("Exception", "").replaceAll("Error", "");
+      String className = exc.getClass().getName().replaceAll(".*\\.", "").
+        replaceAll(".*\\$", "").replaceAll("Exception", "").replaceAll("Error", "");
 
       // Now make a document that the stylesheet can parse. Inside it
       // we'll put the exception info.
@@ -1469,32 +1473,65 @@ public abstract class TextServlet extends HttpServlet
         }
       }
 
+      // Socket exceptions are pretty common (clients disconnect all the time before
+      // they finish downloading a page or file), so work extra hard to identify those.
+      //
+      boolean isSocketExc = false;
+      HashSet<Object> alreadyTraversed = new HashSet();
+      for (Throwable t = exc; !isSocketExc && t != null && !alreadyTraversed.contains(t); )
+      {
+        // Avoid infinite loops
+        alreadyTraversed.add(t);
+        
+        // This is what you would expect
+        if (t instanceof SocketException)
+          isSocketExc = true;
+        
+        // But this is actually what happens in Tomcat
+        else if (t.getClass().getName().contains("ClientAbortException"))
+          isSocketExc = true;
+        
+        // Unwrap things
+        else if (t instanceof TransformerException && ((TransformerException)t).getException() != null)
+          t = ((TransformerException)t).getException();
+        else if (t.getCause() != null)
+          t = t.getCause();
+      }
+      
       // Give the stack trace, but only if this is *not* a normal
       // servlet exception. (The normal ones happen normally, and
       // thus don't need stack traces for debugging.)
       //
+      boolean isSevere = true;
       if (!(exc instanceof ExcessiveWorkException) &&
           !(exc instanceof TermLimitException) &&
+          !(exc instanceof SocketException) &&
+          !isSocketExc &&
           (!(exc instanceof GeneralException) ||
-          ((GeneralException)exc).isSevere())) 
+           ((GeneralException)exc).isSevere()))
       {
+        isSevere = false;
+      }
+      
+      if (isSevere) {
         doc.append("<stackTrace>\n" + htmlStackTrace + "</stackTrace>\n");
         trans.setParameter("stackTrace", new StringValue(htmlStackTrace));
       }
 
       doc.append("</" + className + ">\n");
 
-      // If this is a severe problem, log it.
-      if (!(exc instanceof GeneralException) ||
-          ((GeneralException)exc).isSevere()) 
-      {
+      // If this is a socket exception or a severe problem, log it.
+      if (isSocketExc)
+        Trace.warning("Warning (socket exception): " + msg.toString());
+      else if (isSevere)
         Trace.error("Error: " + doc.toString().replaceAll("<br/>\n", ""));
-      }
 
-      // Now produce the error page.
-      StreamSource src = new StreamSource(new StringReader(doc.toString()));
-      StreamResult dst = new StreamResult(out);
-      trans.transform(src, dst);
+      // If the response hasn't been committed, send back the formatted error page.
+      if (!res.isCommitted()) {
+        StreamSource src = new StreamSource(new StringReader(doc.toString()));
+        StreamResult dst = new StreamResult(out);
+        trans.transform(src, dst);
+      }
     }
     catch (Exception e) {
       // For some reason, we couldn't load or run the error generator.
@@ -1503,18 +1540,21 @@ public abstract class TextServlet extends HttpServlet
       try 
       {
         Trace.error(
-          "Unable to generate error page because: " + e.getMessage() + "\n" +
-          "Original problem: " + exc.getMessage() + "\n" + strStackTrace);
+          "Unable to generate error page because: " + e.toString() + "\n" +
+          "Original problem: " + exc.toString() + "\n" + strStackTrace);
 
-        ServletOutputStream out = res.getOutputStream();
-
-        out.println("<HTML><BODY>");
-        out.println("<B>Servlet configuration error:</B><br/>");
-        out.println("Unable to generate error page: " + e.getMessage() +
-                    "<br>");
-        out.println("Caused by: " + exc.getMessage() + "<br/>" +
-                    htmlStackTrace);
-        out.println("</BODY></HTML>");
+        // The output stream is only writable if not already commited.
+        if (!res.isCommitted()) {
+          ServletOutputStream out = res.getOutputStream();
+  
+          out.println("<HTML><BODY>");
+          out.println("<B>Servlet configuration error:</B><br/>");
+          out.println("Unable to generate error page: " + e.toString() +
+                      "<br>");
+          out.println("Caused by: " + exc.toString() + "<br/>" +
+                      htmlStackTrace);
+          out.println("</BODY></HTML>");
+        }
       }
       catch (IOException e2) {
         // We couldn't even write to the output stream. Give up.
