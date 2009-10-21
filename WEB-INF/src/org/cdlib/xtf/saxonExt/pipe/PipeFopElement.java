@@ -232,8 +232,6 @@ public class PipeFopElement extends ElementWithContent
       } 
       catch (Throwable e) 
       {
-        assert fopLock.tryLock();
-        
         // If requested, fall back to simply piping the PDF file itself, without any FOP prefix.
         if (attribs.containsKey("appendPDF"))
         {
