@@ -81,8 +81,27 @@ class LatencyCutoffStream extends ServletOutputStream
   public void write(byte[] b, int off, int len)
     throws IOException 
   {
-    if (!isReported && total > limit)
-      reportLatency();
+    if (!isReported) 
+    {
+      if (total > limit)
+        reportLatency();
+      
+      // If a chunk is being written that will put us over the limit,
+      // first dump the part before the limit, then report the cutoff 
+      // latency, then dump the chunk after.
+      //
+      else if (total+len > limit)
+      {
+      	assert len > 0;
+        int beforeLen = limit - total;
+        assert beforeLen > 0 && beforeLen < len;
+        realOut.write(b, off, beforeLen);
+        total += beforeLen;
+        off += beforeLen;
+        len -= beforeLen;
+        reportLatency();
+      }
+    }
     realOut.write(b, off, len);
     total += len;
   }
