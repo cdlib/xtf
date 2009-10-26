@@ -59,6 +59,7 @@ import org.cdlib.xtf.servletBase.TextServlet;
 public class RedirectElement extends ExtensionInstruction 
 {
   Expression urlExp;
+  Expression permanentExp;
 
   public void prepareAttributes()
     throws XPathException 
@@ -70,6 +71,11 @@ public class RedirectElement extends ExtensionInstruction
       return;
     }
     urlExp = makeAttributeValueTemplate(urlAtt);
+    
+    // Get optional 'permanent' attribute
+    String permAtt = getAttributeList().getValue("", "permanent");
+    if (permAtt != null)
+      permanentExp = makeAttributeValueTemplate(permAtt);
   } // prepareAttributes()
 
   public Expression compile(Executable exec)
@@ -104,8 +110,17 @@ public class RedirectElement extends ExtensionInstruction
       HttpServletResponse res = TextServlet.getCurResponse();
       String url = urlExp.evaluateAsString(context);
       String encodedUrl = res.encodeRedirectURL(url);
+      String permanentStr = "no";
+      if (permanentExp != null)
+        permanentStr = permanentExp.evaluateAsString(context);
+      
       try {
-        res.sendRedirect(encodedUrl);
+        if (permanentStr.matches("yes|Yes|true|True|1")) {
+          res.setHeader("Location", encodedUrl);
+          res.sendError(301);           // HTTP 301 Moved Permanently
+        }
+        else
+          res.sendRedirect(encodedUrl); // HTTP 302 Moved Temporarily
       }
       catch (IOException e) {
         throw new DynamicError(e);
