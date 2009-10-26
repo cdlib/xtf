@@ -764,6 +764,10 @@ public class QueryRequestParser
         queryList.add(q);
       }
     }
+    
+    // If no sub-queries, there's nothing to do.
+    if (queryList.isEmpty())
+      return null;
 
     // Form the final query.
     SpanQuery[] subQueries = (SpanQuery[])queryList.toArray(
