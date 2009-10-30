@@ -253,7 +253,7 @@
    <!-- grab url -->
    <xsl:param name="http.URL"/>
    <!-- extract query string and clean it up -->
-   <xsl:param name="queryString" select="editURL:remove(replace($http.URL, '.+search\?|.+oai\?', ''),'startDoc')"/> 
+   <xsl:param name="queryString" select="editURL:remove(replace($http.URL, '.+search(\?|$)|.+oai(\?|$)', ''),'startDoc')"/> 
    
    <!-- Hidden Query String -->
    <xsl:template name="hidden.query">
