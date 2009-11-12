@@ -185,7 +185,7 @@
       <facet-subject>
          <xsl:attribute name="xtf:meta" select="'true'"/>
          <xsl:attribute name="xtf:facet" select="'yes'"/>
-         <xsl:value-of select="string(.)"/>
+         <xsl:value-of select="normalize-unicode(string(.))"/>
       </facet-subject>
    </xsl:template>
    
