@@ -68,7 +68,11 @@
    <!-- Parameters                                                             -->
    <!-- ====================================================================== -->
    
-   <xsl:param name="docId"/>
+   <xsl:param name="http.URL"/>
+   <xsl:variable name="ercPat" select="'^(http://[^?]+)/erc/([^?]+)\?q$'"/>
+   <!-- Normally this is a URL parameter, but for ERC we also support an 
+        abbreviated form where it's part of the main URL instead. -->
+   <xsl:param name="docId" select="replace($http.URL, $ercPat, '$2')"/>
    <xsl:param name="query" select="'0'"/>
    <xsl:param name="query-join" select="'0'"/>
    <xsl:param name="query-exclude" select="'0'"/>
@@ -138,7 +142,8 @@
          into an HTML page
       -->
       <style path="{
-         if      ($fileType = 'ead') then 'style/dynaXML/docFormatter/ead/eadDocFormatter.xsl'
+         if (matches($http.URL, $ercPat)) then 'style/dynaXML/docFormatter/erc/ercDocFormatter.xsl'
+         else if ($fileType = 'ead') then 'style/dynaXML/docFormatter/ead/eadDocFormatter.xsl'
          else if ($fileType = 'nlm') then 'style/dynaXML/docFormatter/nlm/nlmDocFormatter.xsl'
          else if ($fileType = 'tei') then 'style/dynaXML/docFormatter/tei/teiDocFormatter.xsl'
          else                             'style/dynaXML/docFormatter/default/docFormatter.xsl'}"/>
