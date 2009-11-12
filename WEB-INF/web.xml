@@ -67,6 +67,11 @@
         </servlet-mapping>
         
         <servlet-mapping>
+            <servlet-name>dynaXML</servlet-name>
+            <url-pattern>/erc/*</url-pattern>
+        </servlet-mapping>
+        
+        <servlet-mapping>
             <servlet-name>SRU</servlet-name>
             <url-pattern>/SRU</url-pattern>
         </servlet-mapping>
