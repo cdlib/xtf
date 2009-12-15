@@ -139,6 +139,9 @@ public class DefaultQueryProcessor extends QueryProcessor
   /** Comparator used for sorting strings in "compact" indexes */
   private static final FlippableStringComparator compactStringComparator = new FlippableStringComparator();
   
+  /** Comparator used to sort by total number of hits */
+  private static final TotalHitsComparator totalHitsComparator = new TotalHitsComparator();
+  
   /** Record an index warmer to use for background warming. */
   public void setIndexWarmer(IndexWarmer warmer) {
     indexWarmer = warmer;
@@ -986,6 +989,8 @@ public class DefaultQueryProcessor extends QueryProcessor
               throw new RuntimeException("Illegal modifier on sortDocsBy 'score'");
             fields[i] = SortField.FIELD_SCORE;
           }
+          else if (name.equals("totalHits"))
+            fields[i] = new SortField(finalName, totalHitsComparator, reverse);
           else if (isSparse)
             fields[i] = new SortField(finalName, sparseStringComparator, reverse);
           else
@@ -1035,18 +1040,24 @@ public class DefaultQueryProcessor extends QueryProcessor
 
     public final boolean insertInto(PriorityQueue queue) 
     {
-      boolean justMade = false;
-      if (docHit == null) {
+      if (docHit == null)
         docHit = new DocHitImpl(doc, score);
-        justMade = true;
+
+      try 
+      {
+        docHit.setSpanSource(spanSrc);
+        boolean inserted = queue.insert(docHit);
+        
+        // If we're keeping this hit, make sure spans have been grabbed. 
+        if (inserted)
+          docHit.totalSnippets();
+        
+        return inserted;
+      }
+      finally {
+        docHit.setSpanSource(null); // prevent memory leaks
       }
 
-      boolean inserted = queue.insert(docHit);
-
-      if (inserted && justMade)
-        docHit.setSpans(spanSrc.getSpans(doc));
-
-      return inserted;
     }
   } // class DocHitMaker
 

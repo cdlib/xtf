@@ -36,6 +36,7 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Explanation;
+import org.apache.lucene.search.FieldSpanSource;
 import org.apache.lucene.search.Weight;
 import org.apache.lucene.search.spans.FieldSpans;
 import org.cdlib.xtf.util.AttribList;
@@ -51,6 +52,9 @@ public class DocHitImpl extends DocHit
   /** Used to load and format snippets */
   private SnippetMaker snippetMaker;
 
+  /** Source of spans. Only valid during collection. */
+  private FieldSpanSource fieldSpanSource;
+  
   /** Spans per field */
   private FieldSpans fieldSpans;
 
@@ -94,10 +98,10 @@ public class DocHitImpl extends DocHit
   }
 
   /**
-   * Sets the spans after they've been recorded and de-duped.
+   * Sets the source for spans (to perform deduplication)
    */
-  void setSpans(FieldSpans spans) {
-    this.fieldSpans = spans;
+  void setSpanSource(FieldSpanSource src) {
+    this.fieldSpanSource = src;
   }
 
   /**
@@ -339,8 +343,12 @@ public class DocHitImpl extends DocHit
    * in the original query that produced this hit.
    */
   public Set textTerms() {
-    if (fieldSpans == null)
-      return null;
+    if (fieldSpans == null) {
+      if (fieldSpanSource != null)
+        fieldSpans = fieldSpanSource.getSpans(doc);
+      else
+        return null;
+    }
     return fieldSpans.getTerms("text");
   }
 
@@ -388,8 +396,12 @@ public class DocHitImpl extends DocHit
    *  specified in the query.)
    */
   public final int totalSnippets() {
-    if (fieldSpans == null)
-      return 0;
+    if (fieldSpans == null) {
+      if (fieldSpanSource != null)
+        fieldSpans = fieldSpanSource.getSpans(doc);
+      else
+        return 0;
+    }
     return fieldSpans.getSpanTotal("text");
   }
 
@@ -398,8 +410,12 @@ public class DocHitImpl extends DocHit
    * in the original query.)
    */
   public final int nSnippets() {
-    if (fieldSpans == null)
-      return 0;
+    if (fieldSpans == null) {
+      if (fieldSpanSource != null)
+        fieldSpans = fieldSpanSource.getSpans(doc);
+      else
+        return 0;
+    }
     return fieldSpans.getSpanCount("text");
   }
 
