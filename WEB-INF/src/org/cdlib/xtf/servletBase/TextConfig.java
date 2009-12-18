@@ -99,6 +99,13 @@ public abstract class TextConfig
   
   /** Whether to print out a stylesheet profile after each request */
   public boolean stylesheetProfiling = false;
+  
+  /** 
+   * Whether to allow browsers to cache XTF pages. Defaults to true 
+   * for backward compatibility but set to false in new XTF
+   * installations, which is safer.
+   */
+  public boolean allowBrowserCaching = true;
 
   /** 
    * List of parameters to tokenize specially. Default: empty (meaning use
@@ -274,6 +281,10 @@ public abstract class TextConfig
     }
     else if (tagAttr.equalsIgnoreCase("stylesheetProfiling.profile")) {
       stylesheetProfiling = parseBoolean(tagAttr, strVal);
+      return true;
+    }
+    else if (tagAttr.equalsIgnoreCase("cacheControl.allowBrowserCaching")) {
+      allowBrowserCaching = parseBoolean(tagAttr, strVal);
       return true;
     }
 
