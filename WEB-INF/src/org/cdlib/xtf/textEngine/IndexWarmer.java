@@ -54,6 +54,11 @@ public class IndexWarmer
   
   /**
    * Construct the warmer and start up the background warming thread.
+   * 
+   * @param xtfHome             Filesystem path to the XTF home directory
+   * @param updateInterval      Minimum number of seconds between
+   *                            warming one index and the next, or 0 to
+   *                            disable background warming.
    */
   public IndexWarmer(String xtfHome, int updateInterval)
   {
@@ -107,11 +112,14 @@ public class IndexWarmer
       // NOTE: We cannot validate in the foreground thread, because it messes up
       //       the thread-local variables that keep track of the current HTTP
       //       request, current servlet, etc.
+      //
+      // Actually, we don't want to validate this anyway. When we start up, we
+      // really need to use something, whether it validates or not.
+      //
       ;
-      // TODO: Figure out a way to validate in the background thread.
-      ;
-      // TODO: Also, figure a way to rotate in a brand-new index without
-      //       waiting for the background warmer to pick it up.
+      // TODO: Figure a way to rotate in a brand-new index without waiting for 
+      //       the background warmer to pick it up. Tricky, since this method
+      //       is synchronized, so the background thread can't do anything.
       ;
     }
     
@@ -126,6 +134,7 @@ public class IndexWarmer
   private static class BgThread extends Thread
   {
     private IndexWarmer warmer;
+    private long prevWarmTime = 0;
     
     BgThread(IndexWarmer warmer) {
       this.warmer = warmer;
@@ -138,15 +147,22 @@ public class IndexWarmer
       {
         // Wait a while.
         try {
-          Thread.sleep(warmer.updateInterval * 1000);
+          Thread.sleep(5000); // check every 5 seconds
         } catch (InterruptedException e) {
           return;
         }
         
         // See if any index needs to be warmed up.
         Entry toUpdate = scanForUpdates();
-        if (toUpdate != null)
-          warm(toUpdate);
+        if (toUpdate != null) 
+        {
+          // Space our updates so we aren't constantly warming.
+          long curTime = System.currentTimeMillis();
+          if (curTime - prevWarmTime >= (warmer.updateInterval * 1000)) {
+            warm(toUpdate);
+            prevWarmTime = curTime;
+          }
+        }
       }
     }
     
@@ -157,9 +173,12 @@ public class IndexWarmer
       {
         for (Entry ent : warmer.entries.values()) 
         {
-          // Skip entries that failed for any reason.
-          if (ent.exception != null)
-            continue;
+          // Retry failed entries every 5 minutes or so.
+          if (ent.exception != null) {
+            if (System.currentTimeMillis() - ent.exceptionTime < 5000)
+              continue;
+            ent.exception = null;
+          }
           
           // If it's a rotating index (and something is pending), rotate now.
           if (ent.newPath.exists() && (ent.pendingPath.exists() || ent.sparePath.exists())) 
@@ -254,6 +273,7 @@ public class IndexWarmer
         // Recording the exception will prevent us from re-trying.
         //
         ent.exception = exc;
+        ent.exceptionTime = System.currentTimeMillis();
         Trace.untab();
         Trace.error(String.format("Error warming index '%s': %s", ent.indexPath, exc.toString()));
       }
@@ -273,7 +293,9 @@ public class IndexWarmer
     
     XtfSearcher curSearcher;
     XtfSearcher newSearcher;
+    
     Throwable   exception;
+    long        exceptionTime;
 
     Entry(String indexPath)
     {
