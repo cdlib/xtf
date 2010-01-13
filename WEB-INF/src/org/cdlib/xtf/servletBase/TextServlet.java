@@ -45,15 +45,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.StringTokenizer;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -519,7 +518,20 @@ public abstract class TextServlet extends HttpServlet
    * request. This is a bit tricky since different servlet containers
    * return slightly different info.
    */
-  public static String getRequestURL(HttpServletRequest req) 
+  public static String getRequestURL(HttpServletRequest req)
+  {
+    return getRequestURL(req, false);
+  }
+  
+  /**
+   * Gets the full URL, including query parameters, from an HTTP
+   * request. This is a bit tricky since different servlet containers
+   * return slightly different info.
+   * 
+   * @param raw true to suppress un-escaping of % codes and probable
+   *            utf-8 coding in the URL.
+   */
+  public static String getRequestURL(HttpServletRequest req, boolean raw) 
   {
     // Start with the basics
     String url = req.getRequestURL().toString();
@@ -538,9 +550,11 @@ public abstract class TextServlet extends HttpServlet
     if (url.indexOf("jsessionid") >= 0)
       url = url.replaceAll("[&;]jsessionid=[a-zA-Z0-9]+", "");
 
-    // Translate escaping and UTF coding if necessary
-    url = decodeURL(url);
-    url = convertUTF8inURL(url);
+    // Translate escaping and UTF coding if necessary and requested
+    if (!raw) {
+      url = decodeURL(url);
+      url = convertUTF8inURL(url);
+    }
 
     // All done.
     return url;
@@ -654,6 +668,7 @@ public abstract class TextServlet extends HttpServlet
     //
     Enumeration i = req.getHeaderNames();
     trans.setParameter("http.URL", getRequestURL(req));
+    trans.setParameter("http.rawURL", getRequestURL(req, true));
     while (i.hasMoreElements()) {
       String name = (String)i.nextElement();
       String value = req.getHeader(name);
@@ -914,7 +929,7 @@ public abstract class TextServlet extends HttpServlet
         String xtfHome = Path.normalizePath(TextServlet.getCurServlet().getRealPath(""));
         warmer = indexWarmers.get(xtfHome);
         if (warmer == null) {
-          warmer = new IndexWarmer(xtfHome, 5);
+          warmer = new IndexWarmer(xtfHome, 60); // TODO: Make interval configurable
           indexWarmers.put(xtfHome, warmer);
         }
       }
@@ -1615,14 +1630,16 @@ public abstract class TextServlet extends HttpServlet
       this.inReq = inReq;
     }
 
+    ArrayList<String> paramNames;
     HashMap<String, ArrayList<String>> params;
-
+    
     private void init() 
     {
       if (params != null)
         return;
 
-      params = new HashMap<String, ArrayList<String>>();
+      paramNames = new ArrayList();
+      params = new HashMap();
       
       Enumeration paramNames = inReq.getParameterNames();
       while (paramNames.hasMoreElements()) 
@@ -1632,6 +1649,7 @@ public abstract class TextServlet extends HttpServlet
 
         for (String val : vals)
         {
+          // If no semicolon, there's no need for special processing.
           if (val.indexOf(';') < 0) 
           {
             if (!paramName.equals("jsessionid"))
@@ -1639,6 +1657,19 @@ public abstract class TextServlet extends HttpServlet
             continue;
           }
           
+          // We need to know if any semicolons or equal signs here were actually escaped
+          // in the URL. This is a complex routine and if it fails it could really bring 
+          // down a production system. So fall back if necessary to printing a warning
+          // and just going on the old way.
+          //
+          try {
+            val = protectChars(paramName, val);
+          }
+          catch (Throwable t) {
+            Trace.warning("Warning: unexpected error protecting URL escape codes: " + t.toString());
+          }
+          
+          // Break up semicolon separated things.
           StringTokenizer tokenizer = new StringTokenizer(val, ";");
           String name = paramName;
           StringBuffer valbuf = new StringBuffer();
@@ -1662,13 +1693,13 @@ public abstract class TextServlet extends HttpServlet
               if (!name.equals("jsessionid"))
                 addParam(name,valbuf.toString());
               valbuf.setLength(0);
-              name = tok.substring(0, equalPos);
-              valbuf.append(tok.substring(equalPos + 1));
+              name = unprotectChars(tok.substring(0, equalPos));
+              valbuf.append(unprotectChars(tok.substring(equalPos + 1)));
             }
             else {
               if (valbuf.length() > 0)
                 valbuf.append(";"); // put back
-              valbuf.append(tok);
+              valbuf.append(unprotectChars(tok));
             }
           } // while
           
@@ -1677,11 +1708,100 @@ public abstract class TextServlet extends HttpServlet
         } // for
       } // while
     } // init()
+
+    /** Special code to protect semicolons in protectChars() */
+    private char semiChar = '\uE010';
     
+    /** Special code to protect equal signs in protectChars() */
+    private char equalChar = '\uE012';
+    
+    private char[] hexChars = "0123456789ABCDEF".toCharArray();
+
+    /**
+     * Protect '=' and ';' characters that were actually escaped with % codes in
+     * the original URL. Escaping indicates that the user wanted to query for
+     * these, so we should not use them as parameter separators. 
+     * 
+     * @param paramName Name of the parameter we're working on
+     * @param val       Unescaped value to protect
+     * @return          Value with % coded '=' or ';' translated to
+     *                  equalChar or semiChar respectively.
+     */
+    private String protectChars(String paramName, String val)
+    {
+      // Unfortunately, the servlet container has already un-escaped the
+      // % codes for us. So we need to refer to the original raw URL to
+      // see if they were there. Originally the idea was to form a great
+      // big regular expression to match the relevant part of the URL 
+      // and extract the parts that are '=' or ';'. However, Java gets
+      // pretty inefficient on such a complicated regex, so we have to
+      // roll our own.
+      //
+      String origUrl = TextServlet.getRequestURL(inReq, true);
+      int start = 0;
+      char[] origChars = origUrl.toCharArray();
+      char[] valChars = val.toCharArray();
+      String lookFor = paramName + "=";
+      while (true) 
+      {
+        StringBuilder newVal = new StringBuilder(val.length());
+        int origPos = origUrl.indexOf(lookFor, start);
+        if (origPos < 0) {
+          Trace.warning("Warning: failed to match escape codes for param '" + paramName + "' in URL '" + origUrl + "'");
+          return val;
+        }
+        
+        int sp = origPos + lookFor.length();
+        int i;
+        for (i=0; i<valChars.length; i++) {
+          char ch = valChars[i];
+          char uch = Character.toUpperCase(ch);
+          if (uch < 256 &&
+              origChars[sp] == '%' && 
+              sp < origChars.length-2 &&
+              origChars[sp+1] == hexChars[uch / 16] &&
+              origChars[sp+2] == hexChars[uch % 16])
+          {
+            if (ch == ';')
+              newVal.append(semiChar);
+            else if (ch == '=')
+              newVal.append(equalChar);
+            else
+              newVal.append(ch);
+            sp += 3;
+          }
+          else if (origChars[sp] == ch) {
+            newVal.append(ch);
+            ++sp;
+          }
+          else
+            break;
+        }
+        if (i == valChars.length)
+          return newVal.toString();
+        start = sp+1;
+      }
+    }
+    
+    /**
+     * Translates protected '=' and ';' characters from protectChars above
+     * back into regular characters.
+     * 
+     * @param val       Value possibly containing protected characters.
+     * @return          Same value but with unprotected characters.
+     */
+    private String unprotectChars(String val)
+    {
+      val = val.replace(semiChar, ';');
+      val = val.replace(equalChar, '=');
+      return val;
+    }
+      
     private void addParam(String name, String val)
     {
       ArrayList<String> vals = params.get(name);
       if (vals == null) {
+        paramNames.add(name);
         vals = new ArrayList<String>();
         params.put(name, vals);
       }
@@ -1692,12 +1812,7 @@ public abstract class TextServlet extends HttpServlet
     public Enumeration getParameterNames() 
     {
       init();
-      
-      Set keys = params.keySet();
-      ArrayList<String> keyColl = new ArrayList<String>(keys);
-      Collections.sort(keyColl);
-      final Iterator iter = keyColl.iterator();
-      
+      final Iterator iter = paramNames.iterator();
       return new Enumeration() {
         public boolean hasMoreElements() { return iter.hasNext(); } 
         public Object nextElement() { return iter.next(); }
