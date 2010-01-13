@@ -179,7 +179,7 @@ public class QueryResult
   {
     // Do the info for the group itself.
     buf.append(
-      "<group value=\"" + group.value.replaceAll("\"", "&quot;") + "\" " +
+      "<group value=\"" + TextServlet.makeHtmlString(group.value) + "\" " +
       "rank=\"" + (group.rank + 1) + "\" " + "totalSubGroups=\"" +
       group.totalSubGroups + "\" " + "totalDocs=\"" + group.totalDocs + "\" " +
       "startDoc=\"" + (group.endDoc > 0 ? group.startDoc + 1 : 0) + "\" " +
@@ -313,3 +313,4 @@ public class QueryResult
     buf.append("</spelling>\n");
   } // structureSuggestions()
 } // class QueryResult
+ 
