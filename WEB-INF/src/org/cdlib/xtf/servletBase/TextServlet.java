@@ -1755,12 +1755,8 @@ public abstract class TextServlet extends HttpServlet
         int i;
         for (i=0; i<valChars.length; i++) {
           char ch = valChars[i];
-          char uch = Character.toUpperCase(ch);
-          if (uch < 256 &&
-              origChars[sp] == '%' && 
-              sp < origChars.length-2 &&
-              origChars[sp+1] == hexChars[uch / 16] &&
-              origChars[sp+2] == hexChars[uch % 16])
+          boolean pctMatch = matchHex(origChars, sp, origChars.length, ch);
+          if (pctMatch) 
           {
             if (ch == ';')
               newVal.append(semiChar);
@@ -1781,6 +1777,22 @@ public abstract class TextServlet extends HttpServlet
           return newVal.toString();
         start = sp+1;
       }
+    }
+
+    /** See if there's a '%XX' hex code at the given position for the value. */
+    private boolean matchHex(char[] src, int sp, int max, int val)
+    {
+      if (max - sp < 3)
+        return false;
+      if (val > 255)
+        return false;
+      if (src[sp] != '%')
+        return false;
+      if (Character.toUpperCase(src[sp+1]) != hexChars[val >> 4])
+        return false;
+      if (Character.toUpperCase(src[sp+2]) != hexChars[val & 0xF])
+        return false;
+      return true;
     }
     
     /**
