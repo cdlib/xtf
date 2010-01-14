@@ -86,8 +86,15 @@ public class FacetTokenizer extends TokenStream
       if (pos < 0)
         pos = str.length();
 
-      // Form the new token and advance.
+      // Grab the string, and un-do the temporary escaping of XML-special
+      // characters.
+      //
       String term = str.substring(0, pos);
+      term = term.replace("&lt;", "<");
+      term = term.replace("&gt;", ">");
+      term = term.replace("&amp;", "&");
+      
+      // Form the new token and advance.
       t = new Token(term, 0, pos);
       pos += 2;
 

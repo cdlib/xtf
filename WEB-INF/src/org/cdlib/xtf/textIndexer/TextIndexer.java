@@ -127,7 +127,7 @@ public class TextIndexer
   public static final String CURRENT_VERSION = "2.2";
   
   /** The minimum index version that we can read */
-  public static final String REQUIRED_VERSION = "2.0";
+  public static final String REQUIRED_VERSION = "2.2";
   
   //////////////////////////////////////////////////////////////////////////////
 

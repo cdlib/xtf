@@ -2,7 +2,7 @@ package org.cdlib.xtf.textIndexer;
 
 
 /*
- * Copyright (c) 2004, Regents of the University of California
+ * Copyright (c) 2005-2009, Regents of the University of California
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,9 @@ package org.cdlib.xtf.textIndexer;
  */
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -85,6 +88,9 @@ public class TagFilter extends TokenFilter
 
   /** Queued tokens */
   private LinkedList tokenQueue = new LinkedList();
+  
+  /** Pattern used to detect entities stuck onto a token. */
+  private static final Pattern followingEntityPat = Pattern.compile("^(.*)&(\\w+)$");
 
   /**
    * Construct a token stream to mark XML elements.
@@ -148,23 +154,23 @@ public class TagFilter extends TokenFilter
         return null;
 
       // Is this an entity ref?
-      if (startPos > 0 && srcChars[startPos - 1] == '&') 
+      if (startPos > 0 && srcChars[startPos - 1] == '&')
+        return interpretEntityRef(curToken.termText(), startPos-1, endPos+1);
+      
+      // Is there an entity ref later in this token?
+      Matcher m = followingEntityPat.matcher(curToken.termText());
+      if (m.matches() && 
+          endPos < (srcChars.length-1) &&
+          srcChars[endPos] == ';')
       {
-        String tokVal;
-        if (curToken.termText().equals("amp"))
-          tokVal = "&";
-        else if (curToken.termText().equals("lt"))
-          tokVal = "<";
-        else if (curToken.termText().equals("gt"))
-          tokVal = ">";
-        else if (curToken.termText().equals("quot"))
-          tokVal = "\"";
-        else if (curToken.termText().equals("apos"))
-          tokVal = "'";
-        else
-          return null;
-
-        return new Token(tokVal, startPos - 1, endPos + 1, XML_TYPE);
+        String beforeStr = m.group(1);
+        String entityStr = m.group(2);
+        Token beforeTok = new Token(beforeStr, startPos, startPos + m.end(1), curToken.type());
+        Token entityTok = interpretEntityRef(entityStr, startPos + m.start(2) - 1, endPos + 1);
+        if (entityTok == null)
+          return beforeTok;
+        tokenQueue.add(beforeTok);
+        return entityTok;
       }
 
       // Is this start of an element? If not, return it verbatim.
@@ -291,6 +297,39 @@ public class TagFilter extends TokenFilter
 
     return null;
   } // processNext()
+
+  /** 
+   * Subroutine that translates an entity reference to its corresponding
+   * character token. This step un-does the temporary translation performed by
+   * XMLTextIndexer that protected these characters from interpretation as
+   * start/end tags. Thus, this step is performed only on tokens that are not
+   * specifically part of an XML start or end tag.
+   * 
+   * @param termText    The entity string to interpret, sans & or ;
+   * @param startPos    Starting text position for the new token
+   * @param endPos      Ending text position for the new token
+   * @return            The new token, or null if not termText wasn't a
+   *                    recognized XML entity.
+   */
+  private Token interpretEntityRef(String termText, int startPos, int endPos) {
+    {
+      String tokVal;
+      if (termText.equals("amp"))
+        tokVal = "&";
+      else if (termText.equals("lt"))
+        tokVal = "<";
+      else if (termText.equals("gt"))
+        tokVal = ">";
+      else if (termText.equals("quot"))
+        tokVal = "\"";
+      else if (termText.equals("apos"))
+        tokVal = "'";
+      else
+        return null;
+
+      return new Token(tokVal, startPos, endPos, XML_TYPE);
+    }
+  }
 
   /**
    * Basic regression test
