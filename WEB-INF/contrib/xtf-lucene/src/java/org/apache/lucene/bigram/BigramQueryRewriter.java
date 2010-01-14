@@ -96,10 +96,14 @@ public class BigramQueryRewriter extends QueryRewriter
       return false;
 
     // Let's do some sanity checking
-    assert pos > 0 && pos < str.length() - 1 : "bi-gram tilde cannot be at start or end of term";
+    if (!(pos > 0 && pos < str.length() - 1))
+      return false;
     String before = str.substring(0, pos);
     String after = str.substring(pos + 1);
-    assert stopWords.contains(before) || stopWords.contains(after);
+    
+    // Sometimes the original token contains a bi-gram. Don't barf on it.
+    if (!stopWords.contains(before) || stopWords.contains(after))
+      return false;
 
     // It's a bi-gram.
     return true;
