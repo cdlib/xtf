@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+  <moreSpecial xtf:meta="true">
+    Compact equations: 3&lt;4 and 7&gt;6
+    XML-like things: My &lt;element&gt; never ends. 
+    This &amp;amp; that. 
+    These&amp;all&lt;run&gt;together.
+  </moreSpecial>
+</document>
+

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc4.xml" totalHits="0">
+      <meta>
+         <moreSpecial>
+            <snippet rank="1">Compact equations: 3<hit>
+                  <term>&lt;</term>
+               </hit>4</snippet> 
+            <snippet rank="2">and 7<hit>
+                  <term>&gt;</term>
+               </hit>6
+    XML-</snippet>
+            <snippet rank="3">like things: My <hit>
+                  <term>&lt;</term>
+               </hit>
+            </snippet>
+            <snippet rank="4">element<hit>
+                  <term>&gt;</term>
+               </hit> never</snippet> 
+            <snippet rank="5">ends. 
+    This <hit>
+                  <term>&amp;</term>
+               </hit>amp;</snippet> 
+            <snippet rank="6">that. 
+    These<hit>
+                  <term>&amp;</term>
+               </hit>
+            </snippet>
+            <snippet rank="7">all<hit>
+                  <term>&lt;</term>
+               </hit>
+            </snippet>
+            <snippet rank="8">run<hit>
+                  <term>&gt;</term>
+               </hit>together.</snippet>
+         </moreSpecial>
+      </meta>
+   </docHit>
+</crossQueryResult>
