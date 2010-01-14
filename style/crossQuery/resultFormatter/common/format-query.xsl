@@ -74,46 +74,22 @@
       <!-- terms -->
       <xsl:variable name="terms">
          <xsl:for-each select=".//term/text()">
-            <xsl:value-of select="."/>
-            <text>%20</text>
+            <xsl:value-of select="editURL:escapeRegex(editURL:protectValue(.))"/>
+            <text>[+ ]?</text>
          </xsl:for-each>
       </xsl:variable>
       <!-- query removal url -->
-      <xsl:variable name="removeString">
-         <xsl:analyze-string select="$queryString" regex="([^=;]+)=([^;]+)">
-            <xsl:matching-substring>
-               <xsl:variable name="param" select="regex-group(1)"/>
-               <xsl:variable name="value" select="regex-group(2)"/>
-               <xsl:choose>
-                  <!-- things to remove -->
-                  <xsl:when test="matches($param,'smode')"/>
-                  <xsl:when test="matches($param,$field)"/>
-                  <xsl:when test="matches($field,replace($param,'f[0-9]','facet')) and matches($terms,editURL:escapeRegex($value))"/>
-                  <xsl:when test="matches($param,'sectionType') and matches($field,'text|query')"/>
-                  <xsl:when test="matches($param,'expand')"/>
-                  <!-- keep everything else -->
-                  <xsl:otherwise>
-                     <xsl:value-of select="."/>
-                  </xsl:otherwise>
-               </xsl:choose>
-            </xsl:matching-substring>
-            <xsl:non-matching-substring>
-               <xsl:value-of select="."/>
-            </xsl:non-matching-substring>
-         </xsl:analyze-string>
-      </xsl:variable>
+      <xsl:variable name="v1" select="editURL:remove($queryString, concat('(smode|expand|', $field, ')'))"/>
+      <xsl:variable name="v2" select="if (matches($field,'text|query')) then editURL:remove($v1, 'sectionType') else $v1"/>
+      <xsl:variable name="v3" select="editURL:remove($v2, concat(replace($field, 'facet-', 'f[0-9]+-'),'=',$terms))"/>
+      <xsl:variable name="removeString" select="editURL:replaceEmpty($v3, 'browse-all=yes')"/>
       
       <!-- If unchanged, it probably means there's a 'freeform' query that we don't understand,
            so remove that.
       -->
-      <xsl:variable name="almostFinal" select="if ($removeString = $queryString)
+      <xsl:variable name="finalString" select="if ($removeString = $queryString)
          then replace($removeString, 'freeformQuery=[^=;]+', '')
          else $removeString"/>
-      
-      <!-- if nothing remains, add "browse-all=yes" to the query -->
-      <xsl:variable name="finalString" select="if (matches(editURL:clean($almostFinal), '^$')) 
-         then concat('browse-all=yes;', $almostFinal) 
-         else $almostFinal"/>
       
       <xsl:choose>
          <!-- hidden queries -->

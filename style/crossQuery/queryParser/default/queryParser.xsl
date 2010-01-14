@@ -240,7 +240,12 @@
             <xsl:variable name="escapedValue">
                <xsl:variable name="pieces">
                   <xsl:for-each select="tokenize(@value, '::')">
-                     <piece str="{if (matches(., '[#:|*()\\=\[\]]')) then concat('&quot;', ., '&quot;') else string(.)}"/>
+                     <piece str="{if (matches(., '[#:|*()\\=\[\]&quot;&lt;&gt;&amp;]')) 
+                                  then concat(
+                                         '&quot;', 
+                                         replace(string(.), '&quot;', '\\&quot;'), 
+                                        '&quot;')
+                                  else string(.)}"/>
                   </xsl:for-each>
                </xsl:variable>
                <xsl:value-of select="string-join($pieces/piece/@str, '::')"/>

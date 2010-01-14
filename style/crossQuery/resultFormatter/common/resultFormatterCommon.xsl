@@ -251,9 +251,20 @@
    
    <!-- Query String -->
    <!-- grab url -->
-   <xsl:param name="http.URL"/>
+   <xsl:param name="servlet.URL"/>
+   
    <!-- extract query string and clean it up -->
-   <xsl:param name="queryString" select="editURL:remove(replace($http.URL, '.+search(\?|$)|.+oai(\?|$)', ''),'startDoc')"/> 
+   <xsl:param name="queryString">
+      <xsl:variable name="pieces">
+         <xsl:value-of select="replace($servlet.URL, '.+search(\?|$)|.+oai(\?|$)', '')"/>
+         <xsl:for-each select="//param">
+            <xsl:if test="string-length(@value) &gt; 0 and @name != 'startDoc'">
+               <xsl:value-of select="concat(@name, '=', editURL:protectValue(@value), ';')"/>
+            </xsl:if>
+         </xsl:for-each>
+      </xsl:variable>
+      <xsl:value-of select="editURL:clean(string-join($pieces, ''))"/>
+   </xsl:param>
    
    <!-- Hidden Query String -->
    <xsl:template name="hidden.query">
@@ -287,13 +298,17 @@
       <xsl:param name="param"/>
       <xsl:param name="value"/>
       
+      <!-- Protect ampersands, semicolons, etc. in the value so they 
+           don't get interpreted as URL parameter separators. -->
+      <xsl:variable name="protectedValue" select="editURL:protectValue($value)"/>
+      
       <xsl:variable name="regex" select="concat('(^|;)', $param, '[^;]*(;|$)')"/>
       <xsl:choose>
          <xsl:when test="matches($url, $regex)">
-            <xsl:value-of select="editURL:clean(replace($url, $regex, concat(';', $param, '=', $value, ';')))"/>
+            <xsl:value-of select="editURL:clean(replace($url, $regex, concat(';', $param, '=', $protectedValue, ';')))"/>
          </xsl:when>
          <xsl:otherwise>
-            <xsl:value-of select="editURL:clean(concat($url, ';', $param, '=', $value))"/>
+            <xsl:value-of select="editURL:clean(concat($url, ';', $param, '=', $protectedValue))"/>
          </xsl:otherwise>
       </xsl:choose>
    </xsl:function>
@@ -316,9 +331,22 @@
    -->
    <xsl:function name="editURL:escapeRegex">
       <xsl:param name="val"/>
-      <xsl:value-of select="replace($val, '([.\?*+{}()|^\[\]])', '\\$1')"/>
+      <xsl:value-of select="replace($val, '([.\\?*+{}()|^\[\]$])', '\\$1')"/>
    </xsl:function>
    
+   <!-- Utility function to escape ampersands, equal signs, and other characters
+   that have special meaning in a URL. -->
+   <xsl:function name="editURL:protectValue">
+      <xsl:param name="value"/>
+      <xsl:value-of select="replace(replace(replace(replace(replace(replace($value,
+                              '%',     '%25'),
+                              '[+]',   '%2B'),
+                              '&amp;', '%26'), 
+                              ';',     '%3B'), 
+                              '=',     '%3D'),
+                              '#',     '%23')"/>
+   </xsl:function>
+      
    <!-- Function to replace an empty URL with a value. If the URL isn't empty
         it is returned unchanged. By the way, certain parameters such as
         "expand" are still counted as empty.
@@ -340,7 +368,7 @@
    <xsl:function name="editURL:clean">
       <xsl:param name="v0"/>
       <!-- Change old ampersands to new easy-to-read semicolons -->
-      <xsl:variable name="v1" select="replace($v0, '&amp;', ';')"/>
+      <xsl:variable name="v1" select="replace($v0, '&amp;([^&amp;=;]+=)', ';$1')"/>
       <!-- Get rid of empty parameters -->
       <xsl:variable name="v2" select="replace($v1, '[^;=]+=(;|$)', '')"/>
       <!-- Replace ";;" with ";" -->
@@ -530,7 +558,7 @@
    <!-- ====================================================================== -->
    
    <xsl:template match="subject">
-      <a href="{$xtfURL}{$crossqueryPath}?subject={.};subject-join=exact;smode={$smode};rmode={$rmode};style={$style};brand={$brand}">
+      <a href="{$xtfURL}{$crossqueryPath}?subject={editURL:protectValue(.)};subject-join=exact;smode={$smode};rmode={$rmode};style={$style};brand={$brand}">
          <xsl:apply-templates/>
       </a>
       <xsl:if test="not(position() = last())">
@@ -1029,7 +1057,8 @@
          concat(xtfURL, $crossqueryPath, '?',
                 editURL:replaceEmpty(
                    editURL:remove($queryString, 
-                                  concat('f[0-9]+-',$field,'=',editURL:escapeRegex($value))),
+                                  concat('f[0-9]+-',$field,'=',
+                                         editURL:escapeRegex(editURL:protectValue($value)))),
                    'browse-all=yes'))">
       </xsl:variable>
       
