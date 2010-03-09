@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc5.xml" totalHits="0">
+      <meta>
+         <shallow>
+            <p>This is a paragraph.</p>
+         </shallow>
+         <shallow attr1="a1" attr2="a2">
+            <p>Paragraph 2.</p>
+         </shallow>
+         <shallow>
+            <p>And lastly, paragraph 3.</p>
+         </shallow>
+      </meta>
+   </docHit>
+</crossQueryResult>

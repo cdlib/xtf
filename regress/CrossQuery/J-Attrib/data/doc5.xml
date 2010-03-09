@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Test file showing XML element directly below metadata-->
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <shallow xtf:meta="true">
+        <p>This is a paragraph.</p>
+    </shallow>
+    <shallow  attr1="a1" attr2="a2" xtf:meta="true">
+        <p>Paragraph 2.</p>
+    </shallow>
+    <shallow xtf:meta="true">
+        <p>And lastly, paragraph 3.</p>
+    </shallow>
+</document>
