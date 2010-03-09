@@ -96,13 +96,13 @@ public class BigramQueryRewriter extends QueryRewriter
       return false;
 
     // Let's do some sanity checking
-    if (!(pos > 0 && pos < str.length() - 1))
+    if (pos < 0 || pos >= str.length() - 1)
       return false;
     String before = str.substring(0, pos);
     String after = str.substring(pos + 1);
     
     // Sometimes the original token contains a bi-gram. Don't barf on it.
-    if (!stopWords.contains(before) || stopWords.contains(after))
+    if (!stopWords.contains(before) && !stopWords.contains(after)) // This wasn't correctly inverted before!
       return false;
 
     // It's a bi-gram.
