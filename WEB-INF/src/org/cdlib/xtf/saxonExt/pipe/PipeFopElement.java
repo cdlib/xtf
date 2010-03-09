@@ -30,11 +30,14 @@ package org.cdlib.xtf.saxonExt.pipe;
  */
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +57,11 @@ import org.cdlib.xtf.saxonExt.InstructionWithContent;
 import org.cdlib.xtf.servletBase.TextServlet;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.xslt.FileUtils;
+import org.xml.sax.SAXException;
+
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.ConfigurationException;
+import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.fop.apps.FOPException;
@@ -84,7 +92,7 @@ import net.sf.saxon.trans.XPathException;
  */
 public class PipeFopElement extends ElementWithContent 
 {
-  private static FopFactory fopFactory;
+  private static HashMap<String, FopFactory> fopFactories = new HashMap();
   private static Lock fopLock = new ReentrantLock();
   
   public void prepareAttributes() throws XPathException 
@@ -93,7 +101,8 @@ public class PipeFopElement extends ElementWithContent
     String[] optionalAtts = { "fileName", 
                               "author", "creator", "keywords", "producer", "title",
                               "appendPDF", 
-                              "fallbackIfError", // default: yes 
+                              "fallbackIfError", // default: yes
+                              "fontDirs",        // default: none
                               "waitTime"         // default: 5 (seconds)
                             };
     parseAttributes(mandatoryAtts, optionalAtts);
@@ -190,8 +199,7 @@ public class PipeFopElement extends ElementWithContent
             throw new TimeoutException("Timed out trying to obtain FOP lock");
           
           // For speed, only create FOP factory if we haven't already got one.
-          if (fopFactory == null)
-            fopFactory = FopFactory.newInstance();
+          FopFactory fopFactory = createFopFactory(context);
           
           // Apply the optional things that can be added to the PDF header
           FOUserAgent foAgent = fopFactory.newFOUserAgent();
@@ -273,6 +281,61 @@ public class PipeFopElement extends ElementWithContent
 
       // All done.
       return null;
+    }
+
+    /** Create a FOP factory and configure it, if we don't already have one. */ 
+    private FopFactory createFopFactory(XPathContext context) 
+      throws ConfigurationException, SAXException, IOException, XPathException 
+    {
+      // See if any font directories were specified.
+      String fontDirs = "";
+      if (attribs.containsKey("fontDirs"))
+        fontDirs = attribs.get("fontDirs").evaluateAsString(context);
+      
+      // If we've already created a factory with this set of font directories,
+      // don't re-create (it's expensive.)
+      //
+      if (fopFactories.containsKey(fontDirs))
+        return fopFactories.get(fontDirs);
+      
+      // Gotta make a new one.
+      FopFactory factory = FopFactory.newInstance();
+      if (fontDirs.length() > 0) 
+      {
+        // The only way I've figured out to put font search directories into the 
+        // factory is to feed in an XML config file. So construct one.
+        //
+        StringBuilder buf = new StringBuilder();
+        buf.append("<?xml version=\"1.0\"?>" +
+                   "<fop version=\"1.0\">" +
+                   "  <renderers>" +
+                   "    <renderer mime=\"application/pdf\">" +
+                   "      <fonts>");
+        
+        for (String dir : fontDirs.split(";"))
+          buf.append("        <directory>" + dir + "</directory>");
+        
+        buf.append("      </fonts>" +
+                   "    </renderer>" +
+                   "  </renderers>" +
+                   "</fop>");
+
+        // Jump through hoops to make the XML into an InputStream
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        OutputStreamWriter osw = new OutputStreamWriter(bos);
+        osw.write(buf.toString());
+        osw.flush();
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+        
+        // Build the configuration and stick it into the factory.
+        DefaultConfigurationBuilder cfgBuilder = new DefaultConfigurationBuilder();
+        Configuration config = cfgBuilder.build(bis);
+        factory.setUserConfig(config);
+      }
+      
+      // Cache this factory so we don't have to create it again (they're expensive.)
+      fopFactories.put(fontDirs, factory);
+      return factory;
     }
 
     /** Do the work of joining the FOP output and a PDF together. **/

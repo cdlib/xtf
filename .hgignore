@@ -1,6 +1,7 @@
 ^data/
 ^index/
 ^WEB-INF/classes/
+^WEB-INF/lib/src/
 ^regress/.*/IndexDB/
 ^regress/.*/actual/
 .*\.swp$
