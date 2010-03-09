@@ -83,9 +83,6 @@ public class DocHitImpl extends DocHit
   /** Explanation of this document's score */
   private Explanation explanation;
 
-  /** Bump marker used to denote different meta-data fields w/ same name */
-  private static final char bumpMarker = Constants.BUMP_MARKER;
-
   /**
    * Construct a document hit. Package-private because these should only
    * be constructed inside the text engine.
@@ -257,85 +254,72 @@ public class DocHitImpl extends DocHit
     else
       markedValue = value;
 
-    // Now fix up the result. This involves two operations:
+    // Now fix up the result. This involves three transformations:
     // (1) Strip the special start-of-field and end-of-field tokens; and
     // (2) Insert proper <element>...</element> tags if they were left out
     //     to save index space.
+    // (3) Lucene will fail subtly if we add two fields with the same 
+    //     name. Basically, the terms for each field are added at 
+    //     overlapping positions, causing a phrase search to easily 
+    //     span them. To counter this, the text indexer artificially 
+    //     introduces bump markers between them. And now, we reverse 
+    //     the process so it's invisible to the end-user.
     //
-    StringBuffer buf = new StringBuffer(markedValue.length() * 2);
-    int prevStart = 0;
-    boolean startFound = false;
-    for (int i = 0; i < markedValue.length(); i++) 
+    // Note: the previous version of this code did not handle XML elements
+    //       as the only content of a metadata field, and did not handle
+    //       XML in multiple valued fields.
+    //
+    StringBuilder buf = new StringBuilder(markedValue.length() * 2);
+    char[] chars = markedValue.toCharArray();
+    for (int i = 0; i < chars.length; i++) 
     {
-      char c = markedValue.charAt(i);
-      if (c == Constants.FIELD_START_MARKER) 
-      {
-        startFound = true;
-        if (i > 0 && markedValue.charAt(i - 1) == '>') {
-          int tagStart = buf.lastIndexOf("<$ ");
-          if (tagStart < prevStart)
-            throw new RuntimeException("Invalid tag data");
-          buf.replace(tagStart + 1, tagStart + 2, name);
-        }
-        else {
-          buf.append("<");
-          buf.append(name);
-          buf.append(">");
-        }
+      char c = chars[i];
+      
+      // Insert element start tag. There will be a placeholder if there were
+      // attributes, otherwise we have to fill in the whole thing.
+      //
+      if (c == '<' && i < markedValue.length()-2 && markedValue.charAt(i+1) == '$') {
+        buf.append('<');
+        buf.append(name);
+        i++; // skip $
+        continue;
       }
-      else if (c == Constants.FIELD_END_MARKER) {
-        buf.append("</");
+      else if (buf.length() == 0) {
+        buf.append('<');
         buf.append(name);
         buf.append(">");
       }
-      else
+      
+      // Copy normal characters.
+      if (c != Constants.FIELD_START_MARKER &&
+          c != Constants.FIELD_END_MARKER &&
+          c != Constants.BUMP_MARKER)
+      {
         buf.append(c);
-    } // for i
-
-    // Un-tokenized fields won't have the start/end tokens. So add the
-    // <element>...</element> tags anyway.
-    //
-    if (!startFound) {
-      if (buf.length() > 3 && buf.substring(0, 3).equals("<$ "))
-        buf.replace(1, 2, name);
-      else
-        buf.insert(0, "<" + name + ">");
-      buf.append("</" + name + ">");
-    }
-
-    //System.out.println( "\n" );
-    //System.out.println( "Value: " + markedValue );
-    //System.out.println( "  -->: " + buf.toString() );
-    markedValue = buf.toString();
-
-    // Lucene will fail subtly if we add two fields with the same 
-    // name. Basically, the terms for each field are added at 
-    // overlapping positions, causing a phrase search to easily 
-    // span them. To counter this, the text indexer artificially 
-    // introduces bump markers between them. And now, we reverse 
-    // the process so it's invisible to the end-user.
-    //
-    if (markedValue.indexOf(bumpMarker) < 0) {
-      metaData.put(name, markedValue);
-      return;
-    }
-
-    int startPos = 0;
-    while (startPos < markedValue.length()) 
-    {
-      int bumpPos = markedValue.indexOf(bumpMarker, startPos);
-      if (bumpPos < 0) {
-        metaData.put(name, markedValue.substring(startPos));
-        break;
       }
-
-      String val = markedValue.substring(startPos, bumpPos);
-      metaData.put(name, val);
-
-      startPos = 1 + markedValue.indexOf(bumpMarker, bumpPos + 1);
-      if (Character.isWhitespace(markedValue.charAt(startPos)))
-        startPos++;
-    }
+      
+      // At end of field (or subfield), insert element end tag and write the metadata.
+      if (i == chars.length-1 || c == Constants.BUMP_MARKER) {
+        buf.append("</");
+        buf.append(name);
+        buf.append('>');
+        String cleanedVal = buf.toString();
+        metaData.put(name, cleanedVal);
+        buf.delete(0, buf.length());
+        
+        // Bump markers come in pairs; skip past the second one.
+        if (c == Constants.BUMP_MARKER) {
+          i++;
+          while (i < chars.length && chars[i] != Constants.BUMP_MARKER)
+            i++;
+          i++;
+          // Eat extra space after the bump marker
+          if (i < chars.length && Character.isWhitespace(chars[i]))
+            i++;
+          i--; // because loop above will increment it
+        }
+      }
+    } // for i
   } // loadMetaField()
 
   /**
