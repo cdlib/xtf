@@ -4,3 +4,4 @@
 ^regress/.*/IndexDB/
 ^regress/.*/actual/
 .*\.swp$
+.*.orig$
