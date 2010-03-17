@@ -235,7 +235,14 @@ public class IndexWarmer
         // Validate this new index. If it fails, don't flip.
         IndexValidator val = new IndexValidator();
         if (!val.validate(warmer.xtfHome, indexPath.toString(), ent.newSearcher.indexReader()))
-          throw new IndexValidator.ValidationError("Index validation failed.");
+        {
+          // We used to abort the warming here, but it actually doesn't make
+          // much sense. If somebody went to the trouble of manually rotating
+          // the index in (after the indexer presumably failed validating it)
+          // then we should obey and go ahead.
+          //
+          Trace.warning("Index validation failed; using index anyway.");
+        }
         
         // Ready to flip! Make sure everybody is locked out while we do it.
         synchronized (warmer) 
