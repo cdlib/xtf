@@ -1,0 +1,2 @@
+iText version: 5.0.1
+  iText.jar
