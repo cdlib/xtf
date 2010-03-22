@@ -163,4 +163,8 @@ public class FakeServletContext implements ServletContext
   public void setAttribute(String name, Object object) {
     assert false;
   }
+
+  public String getContextPath() {
+    return null;
+  }
 } // class FakeServletContext

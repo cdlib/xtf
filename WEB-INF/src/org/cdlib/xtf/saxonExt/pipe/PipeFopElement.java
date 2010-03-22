@@ -70,12 +70,21 @@ import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.BadPdfFormatException;
-import com.lowagie.text.pdf.PdfCopy;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.SimpleBookmark;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.BadPdfFormatException;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfCopy;
+import com.itextpdf.text.pdf.PdfDictionary;
+import com.itextpdf.text.pdf.PdfImportedPage;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfObject;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfString;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.SimpleBookmark;
+import com.itextpdf.text.pdf.PdfCopy.PageStamp;
 
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.XPathContext;
@@ -95,15 +104,22 @@ public class PipeFopElement extends ElementWithContent
   private static HashMap<String, FopFactory> fopFactories = new HashMap();
   private static Lock fopLock = new ReentrantLock();
   
+  private enum MergeAt { START, END };
+  private enum MergeMode { SEQUENTIAL, OVERLAY, UNDERLAY };
+  
   public void prepareAttributes() throws XPathException 
   {
     String[] mandatoryAtts = { };
     String[] optionalAtts = { "fileName", 
                               "author", "creator", "keywords", "producer", "title",
-                              "appendPDF", 
-                              "fallbackIfError", // default: yes
-                              "fontDirs",        // default: none
-                              "waitTime"         // default: 5 (seconds)
+                              "overrideMetadata", // default: no
+                              "appendPDF",        // backward compatibility only (no default)
+                              "mergePDFFile",     // default: none
+                              "mergeAt",          // "begin", *"end"
+                              "mergeMode",        // *"sequential", "overlay", "underlay"
+                              "fallbackIfError",  // default: yes
+                              "fontDirs",         // default: none
+                              "waitTime"          // default: 5 (seconds)
                             };
     parseAttributes(mandatoryAtts, optionalAtts);
   }
@@ -132,19 +148,44 @@ public class PipeFopElement extends ElementWithContent
       servletResponse.setHeader("Content-type", "application/pdf");
       
       // If output file name specified, add the Content-disposition header.
-      String fileName;
-      if (attribs.containsKey("fileName")) {
-        fileName = attribs.get("fileName").evaluateAsString(context);
+      String fileName = getAttribStr("fileName", context);
+      if (fileName != null && fileName.length() != 0)
         servletResponse.setHeader("Content-disposition", "attachment; filename=\"" + fileName + "\"");
+      
+      // Get name of file to merge, if any.
+      String nameToMerge = getAttribStr("mergePDFFile", context,
+                       /*backward-compatibility:*/ getAttribStr("appendPDF", context, null));
+      
+      // Resolve it to a full path.
+      File fileToMerge = null;
+      if (nameToMerge != null) {
+        fileToMerge = FileUtils.resolveFile(context, nameToMerge);
+        if (!fileToMerge.canRead())
+          dynamicError("Cannot read file '" + fileToMerge.toString() + "'", "PIPE_FOP_010", context);
       }
       
-      // Build the full path to the PDF file we're going to append, if any.
-      File fileToAppend = null;
-      if (attribs.containsKey("appendPDF")) {
-        String path = attribs.get("appendPDF").evaluateAsString(context);
-        fileToAppend = FileUtils.resolveFile(context, path);
-      }
-
+      // Merge mode (if any)
+      MergeMode mergeMode = MergeMode.SEQUENTIAL;
+      String tmp = getAttribStr("mergeMode", context);
+      if (tmp.equalsIgnoreCase("sequential"))
+        mergeMode = MergeMode.SEQUENTIAL;
+      else if (tmp.equalsIgnoreCase("overlay"))
+        mergeMode = MergeMode.OVERLAY;
+      else if (tmp.equalsIgnoreCase("underlay"))
+        mergeMode = MergeMode.UNDERLAY;
+      else
+        dynamicError("Unrecognized merge mode '" + tmp + "'", "PIPE_FOP_008", context);
+        
+      // Merge location (if any)
+      MergeAt mergeAt = MergeAt.START;
+      tmp = getAttribStr("mergeAt", context);
+      if (tmp.equalsIgnoreCase("start"))
+        mergeAt = MergeAt.START;
+      else if (tmp.equalsIgnoreCase("end"))
+        mergeAt = MergeAt.END;
+      else
+        dynamicError("Unrecognized merge at '" + tmp + "'", "PIPE_FOP_009", context);
+      
       try {
 
         // Interesting workaround: using FOP normally results in an AWT "Window"
@@ -225,11 +266,12 @@ public class PipeFopElement extends ElementWithContent
             fopLock.unlock();
         }
         
-        // Now that we've released the FOP lock, check if we need to append a PDF or not.
+        // Now that we've released the FOP lock, check if we need to merge a PDF or not.
+        
         ByteArrayOutputStream finalOut;
-        if (fileToAppend != null) { 
-          finalOut = new ByteArrayOutputStream(fopOut.size() + (int)fileToAppend.length());
-          appendPdf(context, fopOut.toByteArray(), fileToAppend, finalOut);
+        if (fileToMerge != null) { 
+          finalOut = new ByteArrayOutputStream(fopOut.size() + (int)fileToMerge.length());
+          mergePdf(context, fopOut.toByteArray(), fileToMerge, mergeMode, mergeAt, finalOut);
         }
         else 
           finalOut = fopOut;
@@ -241,17 +283,14 @@ public class PipeFopElement extends ElementWithContent
       catch (Throwable e) 
       {
         // If requested, fall back to simply piping the PDF file itself, without any FOP prefix.
-        if (attribs.containsKey("appendPDF"))
+        if (fileToMerge != null)
         {
-          String fallbackStr = "yes"; // default to yes if not specified
-          if (attribs.containsKey("fallbackIfError"))
-            fallbackStr = attribs.get("fallbackIfError").evaluateAsString(context);
-          if (fallbackStr.matches("yes|Yes|true|True|1")) 
+          if (getAttribBool("fallbackIfError", context, true))
           {
             try {
               Trace.warning("Warning: pipeFop failed, falling back to just piping PDF file. Cause: " + e.toString());
-              servletResponse.setHeader("Content-length", Long.toString(fileToAppend.length()));
-              PipeFileElement.copyFileToStream(fileToAppend, servletResponse.getOutputStream());
+              servletResponse.setHeader("Content-length", Long.toString(fileToMerge.length()));
+              PipeFileElement.copyFileToStream(fileToMerge, servletResponse.getOutputStream());
               e = null;
             }
             catch (IOException e2) {
@@ -338,47 +377,141 @@ public class PipeFopElement extends ElementWithContent
       return factory;
     }
 
-    /** Do the work of joining the FOP output and a PDF together. **/
-    private void appendPdf(XPathContext context, 
+    /** 
+     * Do the work of joining the FOP output and a PDF together. This involves
+     * several steps:
+     * 
+     *  1. Based on parameters specified in the PipeFOP command, determine how
+     *     the pages will overlap.
+     *  2. Merge bookmarks and metadata
+     *  3. Output the pages  
+     */
+    private void mergePdf(XPathContext context, 
                            byte[] origPdfData, 
                            File fileToAppend,
+                           MergeMode mergeMode, 
+                           MergeAt mergeAt, 
                            OutputStream outStream)
-        throws IOException, DocumentException, BadPdfFormatException, XPathException
+      throws IOException, DocumentException, BadPdfFormatException, XPathException
     {
-      // Read in the PDF that FOP generated.
-      PdfReader pdfReader = new PdfReader(origPdfData);
-      pdfReader.consolidateNamedDestinations();
-      Document pdfDocument = new Document(pdfReader.getPageSizeWithRotation(1));
+      PdfReader[] readers = new PdfReader[2];
+      HashMap<String,String>[] infos = new HashMap[2];
+      int[] nInPages = new int[2];
+      int[] pageOffsets = new int[2];
+      int nOutPages = 0;
+      
+      // Read in the PDF that FOP generated and the one we're merging
+      readers[0] = new PdfReader(origPdfData);
+      readers[1] = new PdfReader(new BufferedInputStream(new FileInputStream(fileToAppend)));
+      
+      // Perform processing that's identical for both
+      for (int i=0; i<2; i++) 
+      {
+        readers[i].consolidateNamedDestinations();
+        infos[i] = readers[i].getInfo();
+        nInPages[i] = readers[i].getNumberOfPages();
+      }
+      
+      // Calculate page offsets depending on the merge mode.
+      switch (mergeMode) 
+      {
+        case SEQUENTIAL:
+          nOutPages = nInPages[0] + nInPages[1];
+          switch (mergeAt) {
+            case START:
+              pageOffsets[0] = nInPages[1];
+              pageOffsets[1] = 0;
+              break;
+            case END:
+              pageOffsets[0] = 0;
+              pageOffsets[1] = nInPages[0];
+              break;
+          }
+          break;
+          
+        case OVERLAY:
+        case UNDERLAY:
+          nOutPages = Math.max(nInPages[0], nInPages[1]);
+          pageOffsets[0] = 0;
+          if (mergeAt == MergeAt.END)
+            pageOffsets[1] = Math.max(0, nInPages[0] - nInPages[1]);
+          else
+            pageOffsets[1] = 0;
+          break;
+      }
+      
+      // Construct the copying writer
+      Document pdfDocument = new Document(readers[0].getPageSizeWithRotation(1));
       PdfCopy pdfWriter = new PdfCopy(pdfDocument, outStream);
       pdfDocument.open();
       
-      // Copy bookmarks from the FOP-generated PDF
+      // Merge the metadata
+      mergeMetadata(infos, pdfWriter, context);
+      
+      // Copy bookmarks from both PDFs
       ArrayList allBookmarks = new ArrayList();
-      List bookmarks1 = SimpleBookmark.getBookmark(pdfReader);
-      if (bookmarks1 != null)
-          allBookmarks.addAll(bookmarks1);
-      
-      // Copy pages from the FOP-generated PDF
-      int nOrigPages = pdfReader.getNumberOfPages();
-      for (int i = 1; i <= nOrigPages; i++)
-        pdfWriter.addPage(pdfWriter.getImportedPage(pdfReader, i));
-      
-      // Read in the append PDF
-      PdfReader pdfReader2 = new PdfReader(new BufferedInputStream(new FileInputStream(fileToAppend)));
-      pdfReader2.consolidateNamedDestinations();
-      
-      // Copy its bookmarks, shifting up their page targets.
-      List bookmarks2 = SimpleBookmark.getBookmark(pdfReader2);
-      if (bookmarks2 != null) {
-        SimpleBookmark.shiftPageNumbers(bookmarks2, nOrigPages, null);
-        allBookmarks.addAll(bookmarks2);
+      for (int i=0; i<2; i++) {
+        List bookmarks = SimpleBookmark.getBookmark(readers[i]);
+        if (bookmarks != null) {
+          if (pageOffsets[i] != 0)
+            SimpleBookmark.shiftPageNumbers(bookmarks, pageOffsets[i], null);
+          allBookmarks.addAll(bookmarks);
+        }
       }
       
-      // And copy the append pages
-      int nAppendPages = pdfReader2.getNumberOfPages();
-      for (int i = 1; i <= nAppendPages; i++)
-        pdfWriter.addPage(pdfWriter.getImportedPage(pdfReader2, i));
+      PageInfo[] basePages = new PageInfo[nOutPages];
+      PageInfo[] mergePages = new PageInfo[nOutPages];
       
+      // Gather all the info we'll need to merge the pages. For some reason,
+      // iText needs us to make all the template images before using any
+      // of them.
+      //
+      for (int i = 0; i < nOutPages; i++)
+      {
+        for (int j=0; j<2; j++)
+        {
+          int inPageNum = i - pageOffsets[j];
+          if (inPageNum < 0 || inPageNum >= nInPages[j])
+            continue;
+          
+          PageInfo info = new PageInfo();
+          info.reader = readers[j];
+          info.pageNum = inPageNum+1;
+          
+          if (basePages[i] == null)
+            basePages[i] = info;
+          else {
+            info.impPage = pdfWriter.getImportedPage(info.reader, info.pageNum);
+            info.image = Image.getInstance(info.impPage);
+            mergePages[i] = info;
+          }
+        }
+      }
+
+      for (int i = 0; i < nOutPages; i++)
+      {
+        PageInfo base = basePages[i];
+        base.impPage = pdfWriter.getImportedPage(base.reader, base.pageNum);
+        
+        if (mergePages[i] != null)
+        {
+          PageStamp ps = pdfWriter.createPageStamp(base.impPage);
+          PdfContentByte contentBuf = null;
+          if (mergeMode == MergeMode.OVERLAY)
+            contentBuf = ps.getOverContent();
+          else if (mergeMode == MergeMode.UNDERLAY)
+            contentBuf = ps.getUnderContent();
+          else
+            assert false : "page offset calculations were wrong";
+          
+          Image img = Image.getInstance(mergePages[i].image); // this is the trick
+          contentBuf.addImage(img, base.impPage.getWidth(), 0, 0, base.impPage.getHeight(), 0, 0);
+          ps.alterContents();
+        }
+        
+        pdfWriter.addPage(base.impPage);
+      }
+            
       // Set the combined bookmarks.
       if (!allBookmarks.isEmpty())
         pdfWriter.setOutlines(allBookmarks);
@@ -386,6 +519,49 @@ public class PipeFopElement extends ElementWithContent
       // And we're done.
       pdfDocument.close();
     }
+
+    /**
+     * Merge metadata from the FOP-generated PDF and a PDF we're merging into it.
+     * Generally metadata in the merge file takes precedence over the FOP metadata,
+     * but the "overrideMetadata" option reverses that behavior.
+     */
+    private void mergeMetadata(HashMap<String, String>[] infos, PdfWriter pdfWriter, XPathContext context) 
+      throws XPathException 
+    {
+      boolean override = getAttribBool("overrideMetadata", context, false);
+      HashMap<String, String> toPut = new HashMap();
+      if (override) {
+        toPut.putAll(infos[1]);
+        toPut.putAll(infos[0]);
+      }
+      else {
+        toPut.putAll(infos[0]);
+        toPut.putAll(infos[1]);
+      }
+      
+      PdfDictionary outInfo = pdfWriter.getInfo();
+      for (String key : toPut.keySet())
+      {
+        // Keep iText as the producer
+        if (key.equals("Producer"))
+          continue;
+        
+        // Filter out empty values.
+        String val = toPut.get(key).trim();
+        if (val.length() == 0)
+          continue;
+        
+        // Add the new metadata
+        outInfo.put(new PdfName(key), new PdfString(val, PdfObject.TEXT_UNICODE));
+      }
+    }
     
-  }
+    private static class PageInfo
+    {
+      PdfReader reader;
+      int pageNum;
+      PdfImportedPage impPage;
+      Image image;
+    } 
+  }  
 }

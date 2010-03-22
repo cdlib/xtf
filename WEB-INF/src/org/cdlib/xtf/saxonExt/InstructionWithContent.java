@@ -86,6 +86,34 @@ public abstract class InstructionWithContent extends Instruction
       adoptChildExpression(exp);
     adoptChildExpression(content);
   }
+  
+  // XTF convenience functions
+  public String getAttribStr(String attrName, XPathContext context) 
+    throws XPathException 
+  {
+    return getAttribStr(attrName, context, null);
+  }
+  
+  public String getAttribStr(String attrName, XPathContext context, String defaultVal) 
+    throws XPathException
+  {
+    if (!attribs.containsKey(attrName))
+      return defaultVal;
+    return attribs.get(attrName).evaluateAsString(context);
+  }
+  
+  public boolean getAttribBool(String attrName, XPathContext context, boolean defaultVal) 
+    throws XPathException
+  {
+    String str = getAttribStr(attrName, context);
+    if (str == null)
+      return defaultVal;
+    if (str.toLowerCase().matches("1|yes|true"))
+      return true;
+    if (str.toLowerCase().matches("0|no|false"))
+      return false;
+    return defaultVal;
+  }
 
   /**
    * Simplify an expression. This performs any static optimization (by rewriting the expression
