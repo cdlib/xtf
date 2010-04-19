@@ -1537,7 +1537,8 @@ public class XMLTextProcessor extends DefaultHandler
                                 tokenize,
                                 isFacet,
                                 spell,
-                                boost);
+                                boost,
+                                false);
       assert metaBuf.length() == 0 : "Should have cleared meta-buf";
 
       // If there are non-XTF attributes on the node, record them.
@@ -1740,6 +1741,13 @@ public class XMLTextProcessor extends DefaultHandler
       {
         MetaField mf = (MetaField)i.next();
         boolean found = mf.name.equals(metaField.name);
+        
+        // Overwrite inherited field of the same name
+        if (found && mf.isInherited) {
+          i.remove();
+          continue;
+        }
+        
         if (found)
           ++nFound;
         if (found && mf.tokenize && !mf.isFacet) {
@@ -3159,6 +3167,7 @@ public class XMLTextProcessor extends DefaultHandler
     int spellFlag = SectionInfo.parentSpell;
     int sectionBump = 0;
     String subDocumentStr = "";
+    boolean subDocumentMetaInherit = true;
     LinkedList metaInfo = null;
 
     // Process each of the specified node attributes, outputting warnings
@@ -3343,12 +3352,41 @@ public class XMLTextProcessor extends DefaultHandler
           // We're now in a new section, and a new subdocument.
           chunkStartNode = -1;
           chunkWordOffset = -1;
-          
-          // A new subdocument means forking the metadata as well.
-          metaInfo = (LinkedList) section.metaInfo().clone();
         }
       }
+      
+      // If the current attribute affects inheritance...
+      else if (attName.equalsIgnoreCase("noInHeritMeta") || attName.equalsIgnoreCase("inheritMeta")) 
+      {
+        // Translate the attribute value to a boolean true or false.
+        subDocumentMetaInherit = trueOrFalse(atts.getValue(i), true);
 
+        // Invert if "noInheritMeta" was used instead of "inheritMeta" 
+        if (attName.equalsIgnoreCase("noInHeritMeta"))
+          subDocumentMetaInherit = !subDocumentMetaInherit;
+        
+      } // else if (attName.equalsIgnoreCase("noInHeritMeta") || attName.equalsIgnoreCase("inheritMeta"))
+
+      // If the current attribute is the index flag...
+      else if (attName.equalsIgnoreCase("index")) 
+      {
+        // Determine the default "index" flag value from the parent
+        // section.
+        //
+        boolean defaultIndexFlag = (section.indexFlag() == SectionInfo.index)
+                                   ? true : false;
+
+        // Get the value of the "index" attribute.
+        valueStr = atts.getValue(i);
+
+        // Build the final index flag based on the attribute and default
+        // values passed.
+        //
+        indexFlag = trueOrFalse(valueStr, defaultIndexFlag) ? SectionInfo.index
+                    : SectionInfo.noIndex;
+      } // else if( atts.getQName(i).equalsIgnoreCase("xtfIndex") )
+
+      
       // If we got to this point, and we've encountered an unrecognized 
       // xtf:xxxx attribute, display a warning message (if enabled for 
       // output.)
@@ -3361,7 +3399,23 @@ public class XMLTextProcessor extends DefaultHandler
         Trace.untab();
       }
     } // for( int i = 0; i < atts.getLength(); i++ )
-
+    
+    // A new subdocument means forking the metadata as well (unless inheritance disabled)
+    if (!subDocumentStr.equals(""))
+    {
+      metaInfo = new LinkedList();
+      LinkedList<MetaField> parentInfo = (LinkedList)section.metaInfo();
+      if (subDocumentMetaInherit && parentInfo != null)
+      {
+        for (MetaField parentField : parentInfo)
+        {
+          MetaField newField = (MetaField) parentField.clone();
+          newField.isInherited = true;
+          metaInfo.add(newField);
+        }
+      }
+    }
+    
     // Finally, push the new section info. Note that if all the values passed
     // match the parent values exactly, this call will simply increase the 
     // depth of the parent to save space.
@@ -3476,7 +3530,7 @@ public class XMLTextProcessor extends DefaultHandler
       // Get an iterator so we can add the various meta fields we found for
       // the document (most usually, things like author, title, etc.)
       //
-      Iterator metaIter = secInfo.metaInfo.iterator();
+      Iterator<MetaField> metaIter = secInfo.metaInfo.iterator();
 
       // Add all the meta fields to the docInfo chunk.
       while (metaIter.hasNext()) 
@@ -3813,7 +3867,7 @@ public class XMLTextProcessor extends DefaultHandler
   } // private openIdxForWriting()  
 
   ////////////////////////////////////////////////////////////////////////////
-  private class MetaField 
+  private class MetaField implements Cloneable
   {
     public String name;
     public String value;
@@ -3823,10 +3877,11 @@ public class XMLTextProcessor extends DefaultHandler
     public boolean isFacet;
     public boolean spell;
     public float wordBoost;
+    public boolean isInherited;
 
     public MetaField(String name, boolean store, boolean index,
                      boolean tokenize, boolean isFacet, boolean spell,
-                     float wordBoost) 
+                     float wordBoost, boolean isInherited) 
     {
       this.name = name;
       this.store = store;
@@ -3836,7 +3891,13 @@ public class XMLTextProcessor extends DefaultHandler
       this.spell = spell;
       this.wordBoost = wordBoost;
     }
-  } // private class MetaField
+    
+    // Creates an exact copy of this field and its value.
+    public Object clone() { 
+      try { return super.clone(); }
+      catch (CloneNotSupportedException e) { throw new RuntimeException(e); }
+    } // clone()
+} // private class MetaField
 
   ////////////////////////////////////////////////////////////////////////////
   private class FileQueueEntry 

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="6" startDoc="1" endDoc="6">
+   <docHit rank="1" file="doc1.xml" totalHits="0">
+      <meta>
+         <field1>value1</field1>
+         <field2>value2</field2>
+      </meta>
+   </docHit>
+   <docHit rank="2" file="doc1.xml" totalHits="0" subDocument="10-a">
+      <meta>
+         <field1>value1</field1>
+         <field2>value2-a</field2>
+      </meta>
+   </docHit>
+   <docHit rank="3" file="doc1.xml" totalHits="0" subDocument="10-a1">
+      <meta>
+         <field1>value1</field1>
+         <field2>value2-a</field2>
+         <field3>value3-1</field3>
+      </meta>
+   </docHit>
+   <docHit rank="4" file="doc1.xml" totalHits="0" subDocument="10-a2">
+      <meta>
+         <field3>value3-2</field3>
+      </meta>
+   </docHit>
+   <docHit rank="5" file="doc1.xml" totalHits="0" subDocument="10-b">
+      <meta>
+         <field2>value2-b</field2>
+      </meta>
+   </docHit>
+   <docHit rank="6" file="doc1.xml" totalHits="0">
+      <meta>
+         <field1>value1</field1>
+         <field2>value2</field2>
+      </meta>
+   </docHit>
+</crossQueryResult>

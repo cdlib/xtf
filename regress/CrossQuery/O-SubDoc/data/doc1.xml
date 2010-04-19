@@ -3,6 +3,7 @@
 <document xmlns:xtf="http://cdlib.org/xtf">
   <all>
     <field1 xtf:meta="true">value1</field1>
+    <field2 xtf:meta="true">value2</field2>"
 
     <!-- Data for testing searchUnit processing -->
     
@@ -12,9 +13,17 @@
         <unitA xtf:subDocument="10-a">
             <field2 xtf:meta="true">value2-a</field2>
             i3 ix i4
+            <unitA1 xtf:subDocument="10-a1">
+                i3a ix i4a
+                <field3 xtf:meta="true">value3-1</field3>
+            </unitA1>
+            <unitA2 xtf:subDocument="10-a2" xtf:noInheritMeta="true">
+                i3b ix i4b
+                <field3 xtf:meta="true">value3-2</field3>
+            </unitA2>
         </unitA>
 
-        <unitB xtf:subDocument="10-b">
+        <unitB xtf:subDocument="10-b" xtf:inheritMeta="no">
             <field2 xtf:meta="true">value2-b</field2>
             i5 ix i6
         </unitB>
