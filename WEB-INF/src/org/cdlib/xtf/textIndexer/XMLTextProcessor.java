@@ -192,6 +192,13 @@ public class XMLTextProcessor extends DefaultHandler
   /** The current XML node we are currently reading source text from. */
   private int curNode = -1;
 
+  /** Number of words encountered so far for the current document. Used to
+   *  to determine whether any real data has been encountered requiring
+   *  a sub-document docInfo chunk (we don't want to write them for empty
+   *  sections.)
+   */
+  private int docWordCount = 0;
+
   /** Number of words encountered so far for the current XML node. Used to
    *  to track the current working position in a node. This value is recorded
    *  in {@link XMLTextProcessor#chunkWordOffset chunkWordOffset} whenever a
@@ -1162,8 +1169,9 @@ public class XMLTextProcessor extends DefaultHandler
     // Reset the meta info for the new document.
     metaBuf.setLength(0);
 
-    // Reset count of how many chunks we've written.
+    // Reset count of how many chunks and words we've written.
     chunkCount = 0;
+    docWordCount = 0;
 
     // Create an initial unnamed section with depth zero, indexing turned on, 
     // a blank section name, no section bump, a word bump of 1, no word boost,
@@ -1800,8 +1808,10 @@ public class XMLTextProcessor extends DefaultHandler
         // Clear out any partially accumulated chunks.         
         forceNewChunk(prev);
   
-        // Insert a docInfo chunk right here, if there are chunks to include.
-        if (chunkCount > 0)
+        // Insert a docInfo chunk right here, if there are words to include. Note
+        // that intervening chunks with no new words don't deserve a new chunk.
+        //
+        if (docWordCount > 0)
           saveDocInfo(prev);
   
         // We're now in a new section, and a new subdocument.
@@ -2125,8 +2135,11 @@ public class XMLTextProcessor extends DefaultHandler
         //
         chunkWordCount++;
         nextChunkWordCount++;
-        if (!word.termText().equals(Constants.VIRTUAL_WORD))
+        if (!word.termText().equals(Constants.VIRTUAL_WORD)) {
           nodeWordCount++;
+          docWordCount++;
+        }
+          
 
         // If we've got all the words required for the current chunk...
         if (chunkWordCount == chunkWordSize) 
@@ -3319,8 +3332,12 @@ public class XMLTextProcessor extends DefaultHandler
           // Clear out any partially accumulated chunks.         
           forceNewChunk(section.peek());
 
-          // Insert a docInfo chunk right here, if there are chunks to include.
-          if (chunkCount > 0)
+          // Insert a docInfo chunk right here, if there are any words that need
+          // to be associated with a sub-doc. Note that if there are no intervening
+          // words between sub-docs we don't want to insert useless (and confusing)
+          // empty sub-docs.
+          //
+          if (docWordCount > 0)
             saveDocInfo(section.peek());
 
           // We're now in a new section, and a new subdocument.
@@ -3400,9 +3417,10 @@ public class XMLTextProcessor extends DefaultHandler
                       Field.Store.YES, Field.Index.NO));
     
     // Reset the chunk count, in case this is just a subdocument within
-    // the larger text.
+    // the larger text. Also reset the word counter for this sub-doc.
     //
     chunkCount = 0;
+    docWordCount = 0;
 
     // Add the key to the document header as a stored, indexed, 
     // non-tokenized field.
