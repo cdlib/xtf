@@ -1526,18 +1526,13 @@ public abstract class TextServlet extends HttpServlet
       // servlet exception. (The normal ones happen normally, and
       // thus don't need stack traces for debugging.)
       //
-      boolean isSevere = true;
-      if (!(exc instanceof ExcessiveWorkException) &&
-          !(exc instanceof TermLimitException) &&
-          !(exc instanceof SocketException) &&
-          !isSocketExc &&
-          (!(exc instanceof GeneralException) ||
-           ((GeneralException)exc).isSevere()))
-      {
-        isSevere = false;
-      }
+      boolean isNormalException = isSocketExc ||
+          exc instanceof ExcessiveWorkException ||
+          exc instanceof TermLimitException ||
+          exc instanceof SocketException ||
+          (exc instanceof GeneralException && !((GeneralException)exc).isSevere());
       
-      if (isSevere) {
+      if (!isNormalException) {
         doc.append("<stackTrace>\n" + htmlStackTrace + "</stackTrace>\n");
         trans.setParameter("stackTrace", new StringValue(htmlStackTrace));
       }
@@ -1547,7 +1542,7 @@ public abstract class TextServlet extends HttpServlet
       // If this is a socket exception or a severe problem, log it.
       if (isSocketExc)
         Trace.warning("Warning (socket exception): " + msg.toString());
-      else if (isSevere)
+      else if (!isNormalException)
         Trace.error("Error: " + doc.toString().replaceAll("<br/>\n", ""));
 
       // If the response hasn't been committed, send back the formatted error page.
