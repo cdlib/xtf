@@ -15,7 +15,7 @@
   <property name="doc"     location="javadoc"/>
   <property name="lucene-jar" location="${lib}/lucene-core-2.1.0.jar"/>
   <property name="saxon-jar" location="${lib}/saxonb-8.9.jar"/>
-  <property name="libs"    value="${lucene-jar}:${saxon-jar}:${lib}/servlet.jar:${lib}/PDFBox-0.7.3.jar:${lib}/log4j-1.2.9.jar:${lib}/Tidy.jar:${lib}/cql-java.jar:${lib}/marc4j.jar:${lib}/activation.jar:${lib}/mail.jar:${lib}/tm-extractors-1.0.jar:${lib}/poi-3.0.2-FINAL.jar:${lib}/fop-core-0.94.jar:${lib}/fop-libs-0.94.jar:${lib}/iText-2.1.7.jar"/>
+  <property name="libs"    value="${lucene-jar}:${saxon-jar}:${lib}/servlet.jar:${lib}/PDFBox-0.7.3.jar:${lib}/log4j-1.2.9.jar:${lib}/Tidy.jar:${lib}/cql-java.jar:${lib}/marc4j.jar:${lib}/activation.jar:${lib}/mail.jar:${lib}/tm-extractors-1.0.jar:${lib}/poi-3.0.2-FINAL.jar:${lib}/fop-core-0.94.jar:${lib}/fop-libs-0.94.jar:${lib}/iText.jar"/>
 
   <target name="init">
     <!-- Create the time stamp -->
