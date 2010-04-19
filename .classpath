@@ -9,8 +9,6 @@
 	<classpathentry kind="lib" path="WEB-INF/lib/lucene-core-2.1.0.jar" sourcepath="/Users/mhaye/Projects/lucene-trunk/java/trunk/src/java"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/saxonb-8.9.jar" sourcepath="/Users/mhaye/Projects/saxonb8-9/"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/PDFBox-0.7.3.jar" sourcepath="WEB-INF/lib/source/PDFBox-0.7.3"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/FontBox-0.1.0.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/Tidy.jar" sourcepath="WEB-INF/lib/source/jtidy-20060730"/>
@@ -20,5 +18,7 @@
 	<classpathentry kind="lib" path="WEB-INF/lib/fop-libs-0.94.jar" sourcepath="WEB-INF/lib/src/fop-src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Tomcat 6"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/iText.jar" sourcepath="/Users/mhaye/Projects/iText-5.0.1/src/core"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/fontBox.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/pdfBox.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>

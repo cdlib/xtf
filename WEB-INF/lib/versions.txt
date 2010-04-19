@@ -1,2 +1,8 @@
 iText version: 5.0.1
   iText.jar
+
+PDFBox version: 1.1.0
+  pdfBox.jar
+
+FontBox version: 1.1.0
+  fontBox.jar
