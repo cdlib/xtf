@@ -199,6 +199,12 @@ public class XMLTextProcessor extends DefaultHandler
    */
   private int docWordCount = 0;
 
+  /** 
+   * Number of sub-documents encountered in the main document. Used to
+   * know whether a main docInfo chunk needs to be written.
+   */
+  private int subDocumentCount = 0;
+
   /** Number of words encountered so far for the current XML node. Used to
    *  to track the current working position in a node. This value is recorded
    *  in {@link XMLTextProcessor#chunkWordOffset chunkWordOffset} whenever a
@@ -1166,6 +1172,8 @@ public class XMLTextProcessor extends DefaultHandler
     nextChunkWordCount = 0;
     nextChunkWordOffset = 0;
 
+    subDocumentCount = 0;
+
     forcedChunk = false;
     inMeta = 0;
 
@@ -1822,8 +1830,10 @@ public class XMLTextProcessor extends DefaultHandler
         // Insert a docInfo chunk right here, if there are words to include. Note
         // that intervening chunks with no new words don't deserve a new chunk.
         //
-        if (docWordCount > 0)
+        if (docWordCount > 0) {
           saveDocInfo(prev);
+          ++subDocumentCount;
+        }
   
         // We're now in a new section, and a new subdocument.
         chunkStartNode = -1;
@@ -1881,11 +1891,16 @@ public class XMLTextProcessor extends DefaultHandler
   public void endDocument()
     throws SAXException 
   {
-    // Index the remaining accumulated chunk (if any).
-    indexText(section.peek());
+    // Save the document "header" info if anything has been indexed, or
+    // if no sub-docs were found (meaning it's a text-less document.)
+    //
+    if (docWordCount > 0 || subDocumentCount == 0)
+    {
+      // Index the remaining accumulated chunk (if any).
+      indexText(section.peek());
 
-    // Save the document "header" info.
-    saveDocInfo(section.peek());
+      saveDocInfo(section.peek());
+    }
 
     // Finish building the lazy tree
     if (lazyHandler != null)
@@ -3349,8 +3364,10 @@ public class XMLTextProcessor extends DefaultHandler
           // words between sub-docs we don't want to insert useless (and confusing)
           // empty sub-docs.
           //
-          if (docWordCount > 0)
+          if (docWordCount > 0) {
             saveDocInfo(section.peek());
+            ++subDocumentCount;
+          }
 
           // We're now in a new section, and a new subdocument.
           chunkStartNode = -1;

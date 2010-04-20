@@ -36,5 +36,10 @@
 
         
         i7 <xtf:term>ix</xtf:term> i8
+        
+        <unitC xtf:subDocument="10-c">
+            <field2 xtf:meta="true">value2-c</field2>
+            i9 <xtf:term>ix</xtf:term> iA
+        </unitC>
   </all>
 </document>

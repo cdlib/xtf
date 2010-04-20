@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="6" startDoc="1" endDoc="6">
+<crossQueryResult totalDocs="7" startDoc="1" endDoc="7">
    <docHit rank="1" file="doc1.xml" totalHits="1" subDocument="10-a">
       <meta>
          <field1>value1</field1>
@@ -19,7 +19,25 @@
             <term>ix</term>
          </hit> i4a</snippet>
    </docHit>
-   <docHit rank="3" file="doc1.xml" totalHits="1" subDocument="10-a2">
+   <docHit rank="3" file="doc1.xml" totalHits="1">
+      <meta>
+         <field1>value1</field1>
+         <field2>value2</field2>
+      </meta>
+      <snippet rank="1">i7 <hit>
+            <term>ix</term>
+         </hit> i8</snippet>
+   </docHit>
+   <docHit rank="4" file="doc1.xml" totalHits="1" subDocument="10-c">
+      <meta>
+         <field1>value1</field1>
+         <field2>value2-c</field2>
+      </meta>
+      <snippet rank="1">i9 <hit>
+            <term>ix</term>
+         </hit> iA</snippet>
+   </docHit>
+   <docHit rank="5" file="doc1.xml" totalHits="1" subDocument="10-a2">
       <meta>
          <field3>value3-2</field3>
       </meta>
@@ -27,7 +45,7 @@
             <term>ix</term>
          </hit> i4b</snippet>
    </docHit>
-   <docHit rank="4" file="doc1.xml" totalHits="1">
+   <docHit rank="6" file="doc1.xml" totalHits="1">
       <meta>
          <field1>value1</field1>
          <field2>value2</field2>
@@ -36,21 +54,12 @@
             <term>ix</term>
          </hit> i2</snippet>
    </docHit>
-   <docHit rank="5" file="doc1.xml" totalHits="1" subDocument="10-b">
+   <docHit rank="7" file="doc1.xml" totalHits="1" subDocument="10-b">
       <meta>
          <field2>value2-b</field2>
       </meta>
       <snippet rank="1">i5 <hit>
             <term>ix</term>
          </hit> i6</snippet>
-   </docHit>
-   <docHit rank="6" file="doc1.xml" totalHits="1">
-      <meta>
-         <field1>value1</field1>
-         <field2>value2</field2>
-      </meta>
-      <snippet rank="1">i7 <hit>
-            <term>ix</term>
-         </hit> i8</snippet>
    </docHit>
 </crossQueryResult>

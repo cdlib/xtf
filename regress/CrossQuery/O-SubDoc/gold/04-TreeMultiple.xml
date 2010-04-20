@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document xmlns:xtf="http://cdlib.org/xtf" xtf:hitCount="6" xtf:firstHit="1">
-   <xtf:snippets totalHitCount="6" hitCount="6">
-      <xtf:snippet rank="1" hitNum="6" subDocument="10-a">i3 <xtf:hit>
+<document xmlns:xtf="http://cdlib.org/xtf" xtf:hitCount="7" xtf:firstHit="1">
+   <xtf:snippets totalHitCount="7" hitCount="7">
+      <xtf:snippet rank="1" hitNum="7" subDocument="10-a">i3 <xtf:hit>
             <xtf:term>ix</xtf:term>
          </xtf:hit> i4</xtf:snippet>
       <xtf:snippet rank="2" hitNum="1" subDocument="10-a1">i3a <xtf:hit>
             <xtf:term>ix</xtf:term>
          </xtf:hit> i4a</xtf:snippet>
-      <xtf:snippet rank="3" hitNum="1" subDocument="10-a2">i3b <xtf:hit>
-            <xtf:term>ix</xtf:term>
-         </xtf:hit> i4b</xtf:snippet>
-      <xtf:snippet rank="4" hitNum="1">i1 <xtf:hit>
-            <xtf:term>ix</xtf:term>
-         </xtf:hit> i2</xtf:snippet>
-      <xtf:snippet rank="5" hitNum="1" subDocument="10-b">i5 <xtf:hit>
-            <xtf:term>ix</xtf:term>
-         </xtf:hit> i6</xtf:snippet>
-      <xtf:snippet rank="6" hitNum="1">i7 <xtf:hit>
+      <xtf:snippet rank="3" hitNum="1">i7 <xtf:hit>
             <xtf:term>ix</xtf:term>
          </xtf:hit> i8</xtf:snippet>
+      <xtf:snippet rank="4" hitNum="1" subDocument="10-c">i9 <xtf:hit>
+            <xtf:term>ix</xtf:term>
+         </xtf:hit> iA</xtf:snippet>
+      <xtf:snippet rank="5" hitNum="1" subDocument="10-a2">i3b <xtf:hit>
+            <xtf:term>ix</xtf:term>
+         </xtf:hit> i4b</xtf:snippet>
+      <xtf:snippet rank="6" hitNum="1">i1 <xtf:hit>
+            <xtf:term>ix</xtf:term>
+         </xtf:hit> i2</xtf:snippet>
+      <xtf:snippet rank="7" hitNum="1" subDocument="10-b">i5 <xtf:hit>
+            <xtf:term>ix</xtf:term>
+         </xtf:hit> i6</xtf:snippet>
    </xtf:snippets>
-  <all xtf:hitCount="6" xtf:firstHit="1">
+  <all xtf:hitCount="7" xtf:firstHit="1">
       <field1 xtf:meta="true">value1</field1>
       <field2 xtf:meta="true">value2</field2>"
 
@@ -62,5 +65,12 @@
         i7 <xtf:hit rank="1" hitNum="6" more="no">
          <xtf:term>ix</xtf:term>
       </xtf:hit> i8
+        
+        <unitC xtf:subDocument="10-c" xtf:hitCount="1" xtf:firstHit="7">
+            <field2 xtf:meta="true">value2-c</field2>
+            i9 <xtf:hit rank="1" hitNum="7" more="no">
+            <xtf:term>ix</xtf:term>
+         </xtf:hit> iA
+        </unitC>
   </all>
 </document>

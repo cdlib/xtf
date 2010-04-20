@@ -30,5 +30,10 @@
 
         <!-- in the outer document -->
         i7 ix i8
+        
+        <unitC xtf:subDocument="10-c">
+            <field2 xtf:meta="true">value2-c</field2>
+            i9 ix iA
+        </unitC>
   </all>
 </document>
