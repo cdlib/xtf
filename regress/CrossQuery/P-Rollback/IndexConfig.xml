@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<textIndexer-config>
+
+  <index name="all">
+       <db path="./IndexDB"/>
+       <src path="./data"/>
+       <docSelector path="./docSelector.xsl"/>
+       <chunk size="40" overlap="20"/>
+       <stopwords list="fribble snoot smarmy"/>
+       <spellCheck createDict="no"/>
+  </index>
+
+</textIndexer-config>

@@ -1077,7 +1077,8 @@ public class XMLTextProcessor extends DefaultHandler
           processText(idxFile, idxRec, recordNum);
         } // while
       }
-      catch (SAXException e) {
+      catch (SAXException e) 
+      {
         throw new RuntimeException(e);
       }
 
@@ -1333,6 +1334,22 @@ public class XMLTextProcessor extends DefaultHandler
 
       Trace.info(message);
 
+      // We need to delete any chunks that did make it through for this document,
+      // otherwise they would end up improperly tacked onto the beginning of the
+      // next document.
+      //
+      if (docWordCount > 0 || subDocumentCount > 0)
+      {
+        try {
+          openIdxForReading();
+          indexReader.deleteDocuments(new Term("key", curIdxSrc.key()));
+        }
+        catch (Throwable t2) {
+          Trace.warning("Warning: Error deleting partially complete document's chunks: " + 
+                        t2.getClass() + ": " + t2.getMessage());
+        }
+      }
+      
       return -1;
     } // try( to filter the input file )
 

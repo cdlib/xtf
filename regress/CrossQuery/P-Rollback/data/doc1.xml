@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <title xtf:meta="yes">First document</title>
+    <p>
+        The first document is about war.
+        
+        <inner xtf:proximityBreak="yes">
+            Spectators were amazed by the copious quantity of
+            blood Spectators were amazed by the copious quantity
+            of blood Spectators were amazed by the copious
+            quantity of blood Spectators were amazed by the 
+            copious quantity of blood Spectators were amazed 
+            by the copious quantity of blood Spectators were 
+            amazed by the copious quantity of blood Spectators 
+            were amazed by the copious quantity of blood
+        </inner>
+
+        <inner xtf:proximityBreak="yes">
+            The following element is intended to trigger an error in stylesheet: <problem>I am bad</problem>
+        </inner>
+        
+        <inner xtf:proximityBreak="yes">
+            More about war.
+        </inner>
+    </p>
+</document>

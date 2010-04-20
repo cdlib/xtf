@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc2.xml" totalHits="4">
+      <meta>
+         <title>Second document</title>
+      </meta>
+      <snippet rank="1">The second document is about <hit>
+            <term>dogs</term>
+         </hit>. It doesn't trigger any</snippet>
+      <snippet rank="2">errors. It's just about <hit>
+            <term>dogs</term>
+         </hit>,</snippet>
+      <snippet rank="3">
+         <hit>
+            <term>dogs</term>
+         </hit>, and</snippet>
+      <snippet rank="4">more <hit>
+            <term>dogs</term>
+         </hit>.</snippet>
+   </docHit>
+</crossQueryResult>

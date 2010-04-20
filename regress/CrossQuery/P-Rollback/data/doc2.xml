@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <title xtf:meta="yes">Second document</title>
+    <p>
+        The second document is about dogs.
+        It doesn't trigger any errors.
+        It's just about dogs, dogs, and more dogs.
+    </p>
+</document>
