@@ -71,6 +71,14 @@ public class PDFToString
     if (stripper == null)
       stripper = new PDFTextStripper();
 
+    // Workaround: using PDFTextStripper normally results in a Window
+    // being created. However, since we're running in a servlet container, this
+    // isn't generally desirable (and often isn't possible.) So we let AWT know
+    // that it's running in "headless" mode, and this prevents the window from
+    // being created.
+    //
+    System.setProperty("java.awt.headless", "true");
+    
     XMLFormatter formatter = new XMLFormatter();
 
     try 
