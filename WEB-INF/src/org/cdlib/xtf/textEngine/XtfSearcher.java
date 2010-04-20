@@ -219,16 +219,6 @@ public class XtfSearcher
     if (stopWords != null && stopWords.length() > 0)
       stopSet = BigramQueryRewriter.makeStopSet(stopWords);
 
-    // If there's a plural map specified, load it.
-    String pluralMapName = doc.get("pluralMap");
-    if (pluralMapName != null && pluralMapName.length() > 0) {
-      File pluralFile = new File(indexPath, pluralMapName);
-      InputStream stream = new FileInputStream(pluralFile);
-      if (pluralMapName.endsWith(".gz"))
-        stream = new GZIPInputStream(stream);
-      pluralMap = new WordMap(stream);
-    }
-
     // If there's an accent map specified, load it.
     String accentMapName = doc.get("accentMap");
     if (accentMapName != null && accentMapName.length() > 0) {
@@ -237,6 +227,19 @@ public class XtfSearcher
       if (accentMapName.endsWith(".gz"))
         stream = new GZIPInputStream(stream);
       accentMap = new CharMap(stream);
+    }
+
+    // If there's a plural map specified, load it. Be sure to apply
+    // the accent map, if any, so that plural words get mapped
+    // whether they're accented or not.
+    //
+    String pluralMapName = doc.get("pluralMap");
+    if (pluralMapName != null && pluralMapName.length() > 0) {
+      File pluralFile = new File(indexPath, pluralMapName);
+      InputStream stream = new FileInputStream(pluralFile);
+      if (pluralMapName.endsWith(".gz"))
+        stream = new GZIPInputStream(stream);
+      pluralMap = new WordMap(stream, accentMap);
     }
 
     // If there's a spelling correction dictionary, attach to it.

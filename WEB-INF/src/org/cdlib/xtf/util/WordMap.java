@@ -66,17 +66,20 @@ public class WordMap
   private ArrayList blockHeads = new ArrayList(100);
 
   /** Construct a word map by reading in a file. */
-  public WordMap(File f)
+  public WordMap(File f, CharMap charMap)
     throws IOException 
   {
-    readFile(new BufferedReader(new FileReader(f)));
+    readFile(new BufferedReader(new FileReader(f)), charMap);
   }
 
-  /** Construct a word map by reading from an InputStream. */
-  public WordMap(InputStream s)
+  /** 
+   * Construct a word map by reading from an InputStream. If a non-null
+   * character map is specified, all entries are filtered through it.
+   */
+  public WordMap(InputStream s, CharMap charMap)
     throws IOException 
   {
-    readFile(new BufferedReader(new InputStreamReader(s)));
+    readFile(new BufferedReader(new InputStreamReader(s)), charMap);
   }
 
   /** Look up a word, and return the corresponding value, or null if none. */
@@ -137,9 +140,10 @@ public class WordMap
    * block. The file need not be in sorted order.
    *
    * @param  reader  Reader to get the data from
+   * @param  charMap Accent map to filter entries with, or null for none.
    * @throws IOException
    */
-  private void readFile(BufferedReader reader)
+  private void readFile(BufferedReader reader, CharMap  charMap)
     throws IOException 
   {
     TreeMap entries = new TreeMap();
@@ -169,6 +173,16 @@ public class WordMap
 
       if (key.length() == 0 || val.length() == 0)
         continue;
+      
+      // Map characters if a mapping was specified.
+      if (charMap != null) {
+        String newKey = charMap.mapWord(key);
+        if (newKey != null)
+          key = newKey;
+        String newVal = charMap.mapWord(val);
+        if (newVal != null)
+          val = newVal;
+      }
 
       // Record the entry.
       entries.put(key, val);

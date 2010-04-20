@@ -587,20 +587,6 @@ public class XMLTextProcessor extends DefaultHandler
           ") doesn't match config (" + indexInfo.stopWords + ")");
       }
 
-      // Read in the plural map, if there is one.
-      String pluralMapName = doc.get("pluralMap");
-      if (pluralMapName != null && pluralMapName.length() > 0) 
-      {
-        File pluralMapFile = new File(
-          Path.normalizePath(indexPath + pluralMapName));
-        InputStream stream = new FileInputStream(pluralMapFile);
-
-        if (pluralMapName.endsWith(".gz"))
-          stream = new GZIPInputStream(stream);
-
-        pluralMap = new WordMap(stream);
-      }
-
       // Read in the accent map, if there is one.
       String accentMapName = doc.get("accentMap");
       if (accentMapName != null && accentMapName.length() > 0) 
@@ -613,6 +599,23 @@ public class XMLTextProcessor extends DefaultHandler
           stream = new GZIPInputStream(stream);
 
         accentMap = new CharMap(stream);
+      }
+
+      // Read in the plural map, if there is one. Be sure to apply
+      // the accent map (if any) to it so that plurals get mapped
+      // whether they're accented or not.
+      //
+      String pluralMapName = doc.get("pluralMap");
+      if (pluralMapName != null && pluralMapName.length() > 0) 
+      {
+        File pluralMapFile = new File(
+          Path.normalizePath(indexPath + pluralMapName));
+        InputStream stream = new FileInputStream(pluralMapFile);
+
+        if (pluralMapName.endsWith(".gz"))
+          stream = new GZIPInputStream(stream);
+
+        pluralMap = new WordMap(stream, accentMap);
       }
 
       // Read in the the list of all the tokenized fields (if any).

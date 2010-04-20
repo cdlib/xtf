@@ -236,13 +236,13 @@ public class DefaultQueryProcessor extends QueryProcessor
     //
     query = new StdTermRewriter(tokFields).rewriteQuery(query);
 
-    // If a plural map is present, change plural words to non-plural.
-    if (pluralMap != null)
-      query = new PluralFoldingRewriter(pluralMap, tokFields).rewriteQuery(query);
-
     // If an accent map is present, remove diacritics.
     if (accentMap != null)
       query = new AccentFoldingRewriter(accentMap, tokFields).rewriteQuery(query);
+
+    // If a plural map is present, change plural words to non-plural.
+    if (pluralMap != null)
+      query = new PluralFoldingRewriter(pluralMap, tokFields).rewriteQuery(query);
 
     // Rewrite the query for bigrams (if we have stop-words to deal with.)
     if (stopSet != null)

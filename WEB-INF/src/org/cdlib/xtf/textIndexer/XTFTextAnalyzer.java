@@ -297,15 +297,18 @@ public class XTFTextAnalyzer extends Analyzer
     if (spellWriter != null && !misspelledFields.contains(fieldName))
       result = new SpellWritingFilter(result, spellWriter);
 
-    // If a plural map was specified, fold plural and singular words together.
-    if (pluralMap != null)
-      result = new PluralFoldingFilter(result, pluralMap);
-
     // If an accent map was specified, fold accented and unaccented chars
-    // together.
+    // together. We need to do this before plural mapping so that if a word
+    // is both accented and plural, it gets mapped correctly. For instance,
+    // pœblicos, pœblico, publicos and publico should all end up mapping
+    // to "publico" (assuming the plural mapping pœblicos|pœblico is present.)
     //
     if (accentMap != null)
       result = new AccentFoldingFilter(result, accentMap);
+
+    // If a plural map was specified, fold plural and singular words together.
+    if (pluralMap != null)
+      result = new PluralFoldingFilter(result, pluralMap);
 
     // Convert stop-words to bi-grams (if any stop words were specified). We must
     // do this after XtfSpecialTokensFilter to ensure that special tokens don't

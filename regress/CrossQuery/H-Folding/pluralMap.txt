@@ -3,3 +3,4 @@ wars|war
 killings|killing
 problems|problem
 scholars|scholar
+pœblicos|pœblico
