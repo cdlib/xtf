@@ -300,8 +300,8 @@ public class XTFTextAnalyzer extends Analyzer
     // If an accent map was specified, fold accented and unaccented chars
     // together. We need to do this before plural mapping so that if a word
     // is both accented and plural, it gets mapped correctly. For instance,
-    // pœblicos, pœblico, publicos and publico should all end up mapping
-    // to "publico" (assuming the plural mapping pœblicos|pœblico is present.)
+    // publicos, publico and their accented counterparts should all end up mapping
+    // to "publico" (assuming the plural mapping publicos|publico is present.)
     //
     if (accentMap != null)
       result = new AccentFoldingFilter(result, accentMap);

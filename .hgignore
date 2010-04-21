@@ -2,6 +2,8 @@
 ^index/
 ^WEB-INF/classes/
 ^WEB-INF/lib/src/
+^WEB-INF/dist/
+^WEB-INF/javadoc/
 ^regress/.*/IndexDB/
 ^regress/.*/actual/
 .*\.swp$

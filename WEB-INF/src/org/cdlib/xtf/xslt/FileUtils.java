@@ -146,9 +146,7 @@ public class FileUtils
 
   /**
    * Converts the size of a file to a human-readable string, e.g.
-   * "36 Kb", "1.2 Mb", etc.
-   * 
-   * @author                     Michael A. Russell
+   * "36 Kb", "1.2 Mb", etc. Contributor: Michael A. Russell
    * 
    * @param  longFileSize        The size to convert
    * @return                     Human-readable string approximating that size.
@@ -231,9 +229,7 @@ public class FileUtils
   }
   
   /**
-   * Calculate the MD5 digest of a string.
-   * 
-   * @author                    Michael A. Russell
+   * Calculate the MD5 digest of a string. Contributor: Michael A. Russell
    * 
    * @param inputString         String to digest
    * @return                    The string's MD5 hash
@@ -383,7 +379,7 @@ public class FileUtils
    * @param units       Units to return: 'days', 'hours', or 'minutes'. Plural
    *                    is optional, and single-letter abbreviations are accepted.
    * @param formatStr   The format of the target date; see {@link SimpleDateFormat}.
-   * @return
+   * @return number of days, hours or minutes elapsed
    */
   public static long timeSince(XPathContext context, 
                                String targetDateStr, String units, String formatStr) 

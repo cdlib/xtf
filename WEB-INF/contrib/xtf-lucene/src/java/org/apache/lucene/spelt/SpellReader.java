@@ -116,7 +116,7 @@ public class SpellReader
    * dictionary), call {@link #setStopwords(Set)}. To specify a non-default
    * word equivalency, call {@link #setWordEquiv(WordEquiv)}.
    *
-   * @param spellIndexDir   directory containing the spelling dictionary
+   * @param spellDir   directory containing the spelling dictionary
    */
   public static SpellReader open(File spellDir)
     throws IOException 

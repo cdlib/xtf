@@ -2787,7 +2787,7 @@ public class XMLTextProcessor extends DefaultHandler
   /** Add the current accumulated chunk of text to the Lucene database for
    *  the active index. <br><br>
    *
-   *  @param  section      Info such as sectionType, wordBoost, etc.
+   *  @param  secInfo      Info such as sectionType, wordBoost, etc.
    *
    *  @.notes
    *    This method peforms the final step of adding a chunk of assembled text

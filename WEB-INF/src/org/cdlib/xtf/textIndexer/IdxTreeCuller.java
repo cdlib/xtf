@@ -61,7 +61,7 @@ import java.io.IOException;
  * for that document are removed from the index. <br><br>
  *
  * To use this class, simply instantiate a copy, and call the
- * {@link #cullIndex(File,IndexInfo) cullIndex()}
+ * {@link #cullIndex(File,IndexInfo,File,SubDirFilter) cullIndex()}
  * method on a directory containing an index. Note that the directory passed
  * may also be a root directory with many index sub-directories if desired.
  */
