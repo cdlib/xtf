@@ -41,5 +41,12 @@
             <field2 xtf:meta="true">value2-c</field2>
             i9 <xtf:term>ix</xtf:term> iA
         </unitC>
+      
+        <unitD xtf:subDocument="10-d">
+            <field2 xtf:meta="true">value2-d</field2>
+            <unitD1 xtf:subDocument="10-d1">
+                <field3 xtf:meta="true">value3-d</field3>
+            </unitD1>
+        </unitD>
   </all>
 </document>

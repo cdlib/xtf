@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crossQueryResult totalDocs="7" startDoc="1" endDoc="7">
+<crossQueryResult totalDocs="9" startDoc="1" endDoc="9">
    <docHit rank="1" file="doc1.xml" totalHits="0">
       <meta>
          <field1>value1</field1>
@@ -39,6 +39,19 @@
       <meta>
          <field1>value1</field1>
          <field2>value2-c</field2>
+      </meta>
+   </docHit>
+   <docHit rank="8" file="doc1.xml" totalHits="0" subDocument="10-d1">
+      <meta>
+         <field1>value1</field1>
+         <field2>value2-d</field2>
+         <field3>value3-d</field3>
+      </meta>
+   </docHit>
+   <docHit rank="9" file="doc1.xml" totalHits="0" subDocument="10-d">
+      <meta>
+         <field1>value1</field1>
+         <field2>value2-d</field2>
       </meta>
    </docHit>
 </crossQueryResult>

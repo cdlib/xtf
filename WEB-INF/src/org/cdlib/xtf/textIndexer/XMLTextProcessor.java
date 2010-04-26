@@ -200,10 +200,10 @@ public class XMLTextProcessor extends DefaultHandler
   private int docWordCount = 0;
 
   /** 
-   * Number of sub-documents encountered in the main document. Used to
+   * Sub-documents that have been written out. Used to
    * know whether a main docInfo chunk needs to be written.
    */
-  private int subDocumentCount = 0;
+  private HashSet<String> subDocsWritten;
 
   /** Number of words encountered so far for the current XML node. Used to
    *  to track the current working position in a node. This value is recorded
@@ -1173,7 +1173,7 @@ public class XMLTextProcessor extends DefaultHandler
     nextChunkWordCount = 0;
     nextChunkWordOffset = 0;
 
-    subDocumentCount = 0;
+    subDocsWritten = new HashSet();
 
     forcedChunk = false;
     inMeta = 0;
@@ -1338,7 +1338,7 @@ public class XMLTextProcessor extends DefaultHandler
       // otherwise they would end up improperly tacked onto the beginning of the
       // next document.
       //
-      if (docWordCount > 0 || subDocumentCount > 0)
+      if (docWordCount > 0 || subDocsWritten.size() > 0)
       {
         try {
           openIdxForReading();
@@ -1844,12 +1844,13 @@ public class XMLTextProcessor extends DefaultHandler
         // Clear out any partially accumulated chunks.         
         forceNewChunk(prev);
   
-        // Insert a docInfo chunk right here, if there are words to include. Note
-        // that intervening chunks with no new words don't deserve a new chunk.
+        // Insert a docInfo chunk right here, if there are words to include or the
+        // sub-doc hasn't been written yet. Note that intervening chunks with no 
+        // new words don't deserve a new docInfo.
         //
-        if (docWordCount > 0) {
+        if (docWordCount > 0 || !subDocsWritten.contains(prev.subDocument)) {
           saveDocInfo(prev);
-          ++subDocumentCount;
+          subDocsWritten.add(prev.subDocument);
         }
   
         // We're now in a new section, and a new subdocument.
@@ -1911,7 +1912,7 @@ public class XMLTextProcessor extends DefaultHandler
     // Save the document "header" info if anything has been indexed, or
     // if no sub-docs were found (meaning it's a text-less document.)
     //
-    if (docWordCount > 0 || subDocumentCount == 0)
+    if (docWordCount > 0 || subDocsWritten.isEmpty())
     {
       // Index the remaining accumulated chunk (if any).
       indexText(section.peek());
@@ -3383,7 +3384,7 @@ public class XMLTextProcessor extends DefaultHandler
           //
           if (docWordCount > 0) {
             saveDocInfo(section.peek());
-            ++subDocumentCount;
+            subDocsWritten.add(section.peek().subDocument);
           }
 
           // We're now in a new section, and a new subdocument.
