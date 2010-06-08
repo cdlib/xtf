@@ -123,6 +123,9 @@ import org.cdlib.xtf.util.Trace;
  */
 public class TextIndexer 
 {
+  /** The version to be shown to the user (does not need to string compare as higher than prev.) */
+  public static final String SHOW_VERSION = "2.2";
+  
   /** The version of the text indexer (placed into any indexes created) */
   public static final String CURRENT_VERSION = "2.2b";
   
@@ -168,7 +171,7 @@ public class TextIndexer
       long startTime = System.currentTimeMillis();
 
       // Regardless of whether we succeed or fail, say our name.
-      Trace.info("TextIndexer v" + CURRENT_VERSION);
+      Trace.info("TextIndexer v" + SHOW_VERSION);
       Trace.info("");
       Trace.tab();
 
