@@ -2,7 +2,7 @@ package org.cdlib.xtf.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -69,7 +69,7 @@ public class WordMap
   public WordMap(File f, CharMap charMap)
     throws IOException 
   {
-    readFile(new BufferedReader(new FileReader(f)), charMap);
+    readFile(new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8")), charMap);
   }
 
   /** 
@@ -79,7 +79,7 @@ public class WordMap
   public WordMap(InputStream s, CharMap charMap)
     throws IOException 
   {
-    readFile(new BufferedReader(new InputStreamReader(s)), charMap);
+    readFile(new BufferedReader(new InputStreamReader(s, "UTF-8")), charMap);
   }
 
   /** Look up a word, and return the corresponding value, or null if none. */
