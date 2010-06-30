@@ -275,7 +275,6 @@ public class MoreLikeThisQuery extends Query
 
     // Exclude the original document in the result set.
     Query ret = new MoreLikeWrapper(this, rawQuery);
-    Trace.info("More-like query: " + ret);
     if (Trace.getOutputLevel() >= Trace.debug)
       Trace.debug("More-like query: " + ret);
 
