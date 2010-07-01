@@ -94,6 +94,9 @@ public class QueryRequest implements Cloneable
   /** Optional: the raw output of the query parser stylesheet */
   public String parserOutput = null;
 
+  /** Optional: list of metadata fields to return (defaults to all) */
+  public String returnMetaFields = null;
+
   // Creates an exact copy of this query request.
   public Object clone() 
   {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Test the 'returnMetaFields' attribute on a query, which should limit the
+     set of metadata fields returned. 
+-->
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB" returnMetaFields="title, subject">
+  <term field="title">apartheid</term>
+</query>

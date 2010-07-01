@@ -364,7 +364,8 @@ public class DefaultQueryProcessor extends QueryProcessor
                                                  accentMap,
                                                  tokFields,
                                                  req.maxContext,
-                                                 req.termMode);
+                                                 req.termMode,
+                                                 req.returnMetaFields);
     for (int i = req.startDoc; i < nFound; i++) 
     {
       if (req.explainScores) {

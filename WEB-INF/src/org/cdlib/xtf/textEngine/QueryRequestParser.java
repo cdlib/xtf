@@ -984,6 +984,9 @@ public class QueryRequestParser
              attrName.equals("sortMetaFields")) // old, for compatibility
       req.sortMetaFields = onceOnlyAttrib(req.sortMetaFields, el, attrName);
 
+    else if (attrName.equals("returnMetaFields"))
+      req.returnMetaFields = onceOnlyAttrib(req.returnMetaFields, el, attrName);
+
     else if (attrName.equals("maxContext") || attrName.equals("contextChars"))
       req.maxContext = onceOnlyAttrib(req.maxContext, el, attrName);
 

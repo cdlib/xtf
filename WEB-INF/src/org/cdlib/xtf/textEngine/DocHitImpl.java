@@ -194,6 +194,9 @@ public class DocHitImpl extends DocHit
     catch (IOException e) {
       throw new HitLoadException(e);
     }
+    
+    // The query request may have specified a limited set of fields to return.
+    Set returnMetaFields = snippetMaker.returnMetaFields();
 
     // Record the ones of interest.
     metaData = new AttribList();
@@ -217,8 +220,10 @@ public class DocHitImpl extends DocHit
         recordNum = Integer.parseInt(value);
       else if (name.equals("subDocument"))
         subDocument = value;
-      else if (!name.equals("docInfo")) 
-      {
+      else if (name.equals("docInfo"))
+        ; // skip the docInfo field since it's internal
+      else if (returnMetaFields == null || returnMetaFields.contains(name))
+      {    
         // Note: We cannot use f.isTokenized() below, because in the case of
         //       facet values we tokenize in Lucene-land but in XTF land
         //       consider them to be un-tokenized. Hence the use of

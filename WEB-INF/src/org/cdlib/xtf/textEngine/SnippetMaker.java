@@ -31,6 +31,8 @@ package org.cdlib.xtf.textEngine;
  */
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.apache.lucene.analysis.Analyzer;
@@ -101,6 +103,9 @@ public class SnippetMaker
   /** Where to mark terms (all, only in spans, etc.) */
   private int termMode;
 
+  /** List of metadata fields to return in the doc hits, or null for all */
+  private Set<String> returnMetaFields;
+
   // Precompiled patterns for quickly matching common chars special to XML
   private static final Pattern ampPattern = Pattern.compile("&");
   private static final Pattern ltPattern = Pattern.compile("<");
@@ -117,10 +122,11 @@ public class SnippetMaker
    * @param accentMap     Accented chars to remove diacritics from
    * @param maxContext    Target # chars for hit + context
    * @param termMode      Where to mark terms (all, only in spans, etc.)
+   * @param string 
    */
   public SnippetMaker(IndexReader reader, DocNumMap docNumMap, Set stopSet,
                       WordMap pluralMap, CharMap accentMap, Set tokFields,
-                      int maxContext, int termMode) 
+                      int maxContext, int termMode, String returnMetaFields) 
   {
     this.reader = reader;
     this.docNumMap = docNumMap;
@@ -132,6 +138,11 @@ public class SnippetMaker
     this.tokFields = tokFields;
     this.maxContext = maxContext;
     this.termMode = termMode;
+    
+    if (returnMetaFields != null)
+      this.returnMetaFields = new HashSet(Arrays.asList(returnMetaFields.split("[, ]+")));
+    else
+      this.returnMetaFields = null;
 
     // Use the indexer's actual analyzer, so that our results always
     // agree (especially the positions which are critical.)
@@ -169,6 +180,11 @@ public class SnippetMaker
   /** Obtain the set of tokenized fields */
   public Set tokFields() {
     return tokFields;
+  }
+  
+  /** Obtain the set of fields that should be returned in doc hits (null for all) */
+  public Set returnMetaFields() {
+    return returnMetaFields;
   }
 
   /**
