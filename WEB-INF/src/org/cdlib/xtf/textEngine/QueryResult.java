@@ -177,9 +177,14 @@ public class QueryResult
    */
   private void structureGroup(ResultGroup group, StringBuffer buf) 
   {
+    // Translate the "<empty>" marker to ""
+    String groupValue = group.value;
+    if (groupValue.equals("<empty>"))
+      groupValue = "";
+    
     // Do the info for the group itself.
     buf.append(
-      "<group value=\"" + TextServlet.makeHtmlString(group.value) + "\" " +
+      "<group value=\"" + TextServlet.makeHtmlString(groupValue) + "\" " +
       "rank=\"" + (group.rank + 1) + "\" " + "totalSubGroups=\"" +
       group.totalSubGroups + "\" " + "totalDocs=\"" + group.totalDocs + "\" " +
       "startDoc=\"" + (group.endDoc > 0 ? group.startDoc + 1 : 0) + "\" " +

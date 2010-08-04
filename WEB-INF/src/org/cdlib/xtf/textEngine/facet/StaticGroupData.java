@@ -167,7 +167,10 @@ public class StaticGroupData extends GroupData
         // Add a group key for this term. Also, if it's hierarchical,
         // find the ancestor groups and add them to the child map.
         //
-        Integer termKey = addTermKey(term.text(), groupVec, groupMap, childMap);
+        String termText = term.text();
+        if (termText.length() == 0)
+          termText = "<empty>";
+        Integer termKey = addTermKey(termText, groupVec, groupMap, childMap);
 
         // Now process each document which contains this term.
         termPositions.seek(termEnum);
