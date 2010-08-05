@@ -39,6 +39,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 import org.apache.lucene.chunk.DocNumMap;
 import org.apache.lucene.document.Document;
@@ -77,6 +80,8 @@ public class IndexDump
       int startArg = 0;
       boolean showUsage = false;
       boolean termFreqMode = false;
+      boolean allFieldsMode = false;
+      boolean xmlMode = false;
 
       // Make sure the XTF_HOME environment variable is specified.
       cfgInfo.xtfHomePath = System.getProperty("xtf.home");
@@ -103,7 +108,7 @@ public class IndexDump
         // to scan and a field to dump. That requires three args; if we don't 
         // get that many, we will show the usage text and bail.
         //
-        if (args.length < 4)
+        if (args.length < 3)
           showUsage = true;
 
         // We have enough arguments, so...
@@ -152,32 +157,61 @@ public class IndexDump
           startArg = ret;
         } // else( args.length >= 4 )
 
-        // Is term frequency mode enabled?
-        if (startArg < args.length &&
-            args[startArg].equalsIgnoreCase("-termFreq")) 
-        {
-          startArg++;
-          termFreqMode = true;
-        }
-
-        // Find all the field names that should be dumped.
+        // Parse additional mode parameters
         Vector fieldNames = new Vector();
-        while (startArg < args.length && args[startArg].equals("-field")) 
+        while (startArg < args.length)
         {
-          startArg++;
-          if (startArg == args.length || args[startArg].startsWith("-"))
-            showUsage = true;
-          else 
+          System.out.println(args[startArg]);
+          
+          // Is term frequency mode enabled?
+          if (args[startArg].equalsIgnoreCase("-termFreq")) 
           {
-            if (args[startArg].equals("text") && !termFreqMode) {
-              Trace.error("Error: contents of the 'text' field cannot be dumped");
-              System.exit(1);
-            }
-            fieldNames.add(args[startArg]);
             startArg++;
+            termFreqMode = true;
+          }
+  
+          // Is all fields mode enabled?
+          else if (args[startArg].equalsIgnoreCase("-allFields")) 
+          {
+            startArg++;
+            allFieldsMode = true;
+          }
+  
+          // Is XML mode enabled?
+          else if (args[startArg].equalsIgnoreCase("-xml")) 
+          {
+            startArg++;
+            xmlMode = true;
+          }
+          
+          // Is a field name specified?
+          else if (args[startArg].equals("-field"))
+          {
+            startArg++;
+            if (startArg == args.length || args[startArg].startsWith("-"))
+              showUsage = true;
+            else 
+            {
+              if (args[startArg].equals("text") && !termFreqMode) {
+                Trace.error("Error: contents of the 'text' field cannot be dumped");
+                System.exit(1);
+              }
+              fieldNames.add(args[startArg]);
+              startArg++;
+            }
+          }
+          
+          // Barf on other parameters
+          else {
+            showUsage = true;
+            break;
           }
         }
-        if (fieldNames.isEmpty())
+
+        // Do a little checking for sanity
+        System.out.format("\nallFields:%b, fieldNames:%s\n", allFieldsMode, fieldNames.toString());
+        if ((allFieldsMode && !fieldNames.isEmpty()) ||
+            (!allFieldsMode && fieldNames.isEmpty()))
           showUsage = true;
 
         String[] fieldNameArray = (String[])fieldNames.toArray(
@@ -190,8 +224,8 @@ public class IndexDump
           Trace.error("  usage: ");
           Trace.tab();
           Trace.error(
-            "indexDump {-config <configfile>} " + "-index <indexname> " +
-            "{-termFreq} " + "-field fieldName1 {-field fieldName2}*... \n\n");
+            "indexDump {-config <configfile>} -index <indexname> " +
+            "{-xml} {-termFreq} {-allFields|-field fieldName1 {-field fieldName2}*}... \n\n");
           Trace.untab();
 
           // And then bail.
@@ -212,7 +246,7 @@ public class IndexDump
         if (termFreqMode)
           dumpTermFreqs(indexReader, docNumMap, fieldNameArray, out);
         else
-          dumpFields(indexReader, fieldNameArray, out);
+          dumpFields(indexReader, fieldNameArray, xmlMode, allFieldsMode, out);
 
         // Close the index reader, and make sure all output is displayed.
         indexReader.close();
@@ -240,52 +274,98 @@ public class IndexDump
     System.exit(0);
   } // main()
 
+
   //////////////////////////////////////////////////////////////////////////////
-  private static void dumpFields(IndexReader indexReader, String[] fieldNames,
-                                 Writer out)
+  private static void dumpDelimitedRecord(ArrayList<Field> fieldData, Writer out)
     throws IOException 
   {
+    String prevName = null;
+    for (Field f : fieldData)
+    {
+      if (prevName != null) {
+        if (f.name().equals(prevName))
+          out.write(";");
+        else
+          out.write("|");
+      }
+      prevName = f.name();
+
+      out.write(stripValue(f.stringValue(), true));
+    }
+    out.write("|\n");
+  }
+  
+
+  //////////////////////////////////////////////////////////////////////////////
+  private static void dumpXmlRecord(ArrayList<Field> fieldData, Writer out)
+    throws IOException 
+  {
+    out.write("  <document>\n");
+    for (Field f : fieldData)
+    {
+      out.write("    <" + f.name() + ">");
+      out.write(stripValue(f.stringValue(), false));
+      out.write("</" + f.name() + ">\n");
+    }
+    out.write("  </document>\n");
+  }
+  
+  //////////////////////////////////////////////////////////////////////////////
+  private static void dumpFields(IndexReader indexReader, String[] fieldNames,
+                                 boolean xmlMode, boolean allFieldsMode, Writer out)
+    throws IOException 
+  {
+    if (xmlMode) {
+      out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      out.write("<xtfIndexDocuments>\n");
+    }
+      
     // Iterate every document.
     int maxDoc = indexReader.maxDoc();
     for (int i = 0; i < maxDoc; i++) 
     {
+      // Skip deleted docs
       if (indexReader.isDeleted(i))
+        continue;
+      
+      // Skip non-metadata docs (e.g. indexInfo, text blocks)
+      Document doc = indexReader.document(i);
+      if (doc.getField("docInfo") == null)
         continue;
 
       // See if any of the desired fields are present, and if so, record
       // their values.
       //
-      Document doc = indexReader.document(i);
-      Vector toPrint = new Vector();
-      boolean gotAny = false;
-      for (int j = 0; j < fieldNames.length; j++) 
-      {
-        Field[] got = doc.getFields(fieldNames[j]);
-        if (got == null || got.length == 0) {
-          toPrint.add("");
-          continue;
+      ArrayList<Field> toPrint = new ArrayList();
+      if (allFieldsMode) {
+        for (Field f : (List<Field>)doc.getFields())
+        {
+          // Only output user fields (i.e. skip XTF-internal fields)
+          if (!f.name().matches("^(docInfo|chunkCount|key|fileDate)$"))
+            toPrint.add(f);
         }
-
-        StringBuffer buf = new StringBuffer();
-        for (int k = 0; k < got.length; k++) {
-          if (k > 0)
-            buf.append(";");
-          buf.append(stripValue(got[k].stringValue()));
-        }
-        toPrint.add(buf.toString());
-        gotAny = true;
       }
-
-      // If we got any values, print out all of them (even the empties.)
-      if (gotAny) 
+      else
       {
-        for (int j = 0; j < toPrint.size(); j++) {
-          out.write((String)toPrint.get(j));
-          out.write("|");
+        for (int j = 0; j < fieldNames.length; j++) 
+        {
+          Field[] got = doc.getFields(fieldNames[j]);
+          if (got != null)
+            toPrint.addAll(Arrays.asList(got));
         }
-        out.write("\n");
+      }
+      
+      if (!toPrint.isEmpty())
+      {
+        if (xmlMode)
+          dumpXmlRecord(toPrint, out);
+        else
+          dumpDelimitedRecord(toPrint, out);
       }
     }
+    
+    if (xmlMode)
+      out.write("</xtfIndexDocuments>\n");
   } // dumpFields()
 
   //////////////////////////////////////////////////////////////////////////////
@@ -371,10 +451,10 @@ public class IndexDump
    * field and value markers ('|' and ';') to something else so they won't
    * be taken for markers.
    */
-  private static String stripValue(String str) 
+  private static String stripValue(String str, boolean changeDelimiters) 
   {
     char[] in = str.toCharArray();
-    char[] out = new char[in.length];
+    char[] out = new char[in.length * 2];
     int outLen = 0;
 
     for (int i = 0; i < in.length; i++) 
@@ -393,10 +473,18 @@ public class IndexDump
           out[outLen++] = ';';
           break;
         case ';':
-          out[outLen++] = ',';
+          out[outLen++] = changeDelimiters ? ',' : in[i];
           break;
         case '|':
-          out[outLen++] = '.';
+          out[outLen++] = changeDelimiters ? '.' : in[i];
+          break;
+        case '\n':
+          if (changeDelimiters) {
+            out[outLen++] = '\\';
+            out[outLen++] = 'n';
+          }
+          else
+            out[outLen++] = in[i];
           break;
         default:
           out[outLen++] = in[i];
