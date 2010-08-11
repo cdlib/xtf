@@ -4,3 +4,4 @@ killings|killing
 problems|problem
 scholars|scholar
 públicos|público
+relations|relation

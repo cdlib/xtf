@@ -307,6 +307,9 @@ public class XtfSearcher
     
     // Of course, the "text" field is always tokenized.
     tokenizedFields.add("text");
+    
+    // Also of interest: the "sectionType" special field is always tokenized.
+    tokenizedFields.add("sectionType");
 
     // All done.
     return tokenizedFields;
