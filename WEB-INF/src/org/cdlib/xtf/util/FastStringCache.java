@@ -38,11 +38,11 @@ package org.cdlib.xtf.util;
  *
  * @author Martin Haye
  */
-public class FastStringCache 
+public class FastStringCache<T>
 {
   private int size;
-  private StringHash oldHash;
-  private StringHash newHash;
+  private StringHash<T> oldHash;
+  private StringHash<T> newHash;
 
   /**
    * Construct a new cache. Basically, two hash tables are used, each with
@@ -69,10 +69,10 @@ public class FastStringCache
   }
 
   /** Retrieve the value for the given key, or null if not found. */
-  public Object get(String key) 
+  public T get(String key) 
   {
     // First, check the new hash
-    Object retVal = newHash.get(key);
+    T retVal = newHash.get(key);
     if (retVal == null) 
     {
       // Darn. Check the old hash. If it's there, put it into the new hash
@@ -93,7 +93,7 @@ public class FastStringCache
    * Add a key/value pair to the cache. May result in pushing older items
    * out of the cache.
    */
-  public void put(String key, Object val) 
+  public void put(String key, T val) 
   {
     // If the new hash is full, swap and create a new empty hash.
     if (newHash.size() >= size) {

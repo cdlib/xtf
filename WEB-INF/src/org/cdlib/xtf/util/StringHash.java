@@ -39,7 +39,7 @@ import org.apache.lucene.util.Prime;
  *
  * @author Martin Haye
  */
-public class StringHash 
+public class StringHash<T> 
 {
   private final int hashSize;
   private final Ent[] ents;
@@ -63,7 +63,7 @@ public class StringHash
    * value is replaced. Using null for the value can be useful if one only
    * needs to check for key presence using contains().
    */
-  public void put(String key, Object val) 
+  public void put(String key, T val) 
   {
     int bucket = hashSlot(key);
 
@@ -114,8 +114,8 @@ public class StringHash
    * @param key   Key to look for
    * @return      The associated value, or null if not found.
    */
-  public Object get(String key) {
-    for (Ent e = ents[hashSlot(key)]; e != null; e = e.next)
+  public T get(String key) {
+    for (Ent<T> e = ents[hashSlot(key)]; e != null; e = e.next)
       if (key.equals(e.key))
         return e.val;
     return null;
@@ -130,9 +130,9 @@ public class StringHash
    * Keeps track of a single entry in the hash table. Can be linked to form
    * a chain.
    */
-  private class Ent {
+  private static class Ent<T> {
     String key;
-    Object val;
+    T val;
     Ent next;
   } // private class Ent
 

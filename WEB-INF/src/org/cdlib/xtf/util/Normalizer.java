@@ -49,6 +49,19 @@ public class Normalizer
    */
   public static String normalize(String in)
   {
+    // If the word doesn't have any unusual chars, we can skip the slow
+    // process of normalizing it.
+    //
+    boolean allSafe = true;
+    for (int i=0; i<in.length(); i++) {
+      if ((in.charAt(i) & ~0x7F) != 0)
+        allSafe = false;
+    }
+    
+    if (allSafe)
+      return in;
+
+    // Load platform-specific normalization code (differs between JDK 1.5 and 1.6)
     if (platformNormalizer == null) {
       try {
         platformNormalizer = new Jdk16Normalizer();
@@ -63,6 +76,7 @@ public class Normalizer
       }
     }
 
+    // And go for it.
     return platformNormalizer.normalize(in);
   }
 
