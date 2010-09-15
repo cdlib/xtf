@@ -37,7 +37,7 @@
    <!-- Heads                                                                  -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='head']">
+   <xsl:template match="*:head">
       
       <xsl:variable name="type" select="parent::*/@type"/>
       
@@ -131,7 +131,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='docAuthor']">
+   <xsl:template match="*:docAuthor">
       <h4><xsl:apply-templates/></h4>
    </xsl:template>
    
@@ -139,7 +139,7 @@
    <!-- Verse                                                                  -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='lg']">
+   <xsl:template match="*:lg">
       <xsl:choose>
          <xsl:when test="@type='stanza' and parent::lg">
             <tr>
@@ -154,7 +154,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='l']">
+   <xsl:template match="*:l">
       <xsl:choose>
          <xsl:when test="parent::lg">
             <tr>
@@ -182,7 +182,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='seg']">
+   <xsl:template match="*:seg">
       <xsl:if test="position() > 1">
          <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
       </xsl:if>
@@ -193,15 +193,15 @@
    <!-- Speech                                                                 -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='sp']">
+   <xsl:template match="*:sp">
       <xsl:apply-templates/><br/>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='speaker']">
+   <xsl:template match="*:speaker">
       <b><xsl:apply-templates/></b>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='sp']/*[local-name()='p']">
+   <xsl:template match="*:sp/*:p">
       <p class="noindent"><xsl:apply-templates/></p>
    </xsl:template>
    
@@ -209,7 +209,7 @@
    <!-- Lists                                                                  -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='list']">
+   <xsl:template match="*:list">
       <xsl:choose>
          <xsl:when test="@type='gloss'">
             <dl><xsl:apply-templates/></dl>
@@ -249,7 +249,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='item']">
+   <xsl:template match="*:item">
       <xsl:choose>
          <xsl:when test="parent::list[@type='gloss']">
             <dd><xsl:apply-templates/></dd>
@@ -260,11 +260,11 @@
       </xsl:choose>
    </xsl:template>
    
-   <xsl:template  match="*[local-name()='label']">
+   <xsl:template  match="*:label">
       <dt><xsl:apply-templates/></dt>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='name']">
+   <xsl:template match="*:name">
       <xsl:apply-templates/>
    </xsl:template>
    
@@ -272,7 +272,7 @@
    <!-- Notes                                                                  -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='note']">
+   <xsl:template match="*:note">
       <xsl:choose>
          <xsl:when test="@type='footnote' or @place='foot'">
             <xsl:if test="$doc.view='popup' or $doc.view='print'">
@@ -281,7 +281,7 @@
          </xsl:when>
          <xsl:when test="@type='endnote' or @place='end'">
             <xsl:choose>
-               <xsl:when test="$anchor.id=@*[local-name()='id']">
+               <xsl:when test="$anchor.id=@*:id">
                   <a name="X"></a>
                   <div class="note-hi">
                      <xsl:apply-templates/>
@@ -307,7 +307,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='p'][ancestor::note[@type='footnote' or @place='foot']]">
+   <xsl:template match="*:p[ancestor::note[@type='footnote' or @place='foot']]">
       
       <xsl:variable name="n" select="parent::note/@n"/>
       
@@ -322,7 +322,7 @@
       
    </xsl:template>
    
-   <xsl:template match="*[local-name()='p'][ancestor::note[@type='endnote' or @place='end']]">
+   <xsl:template match="*:p[ancestor::note[@type='endnote' or @place='end']]">
       
       <xsl:variable name="n" select="parent::note/@n"/>
       
@@ -345,9 +345,9 @@
                
                <xsl:variable name="corresp" select="parent::note/@corresp"/>
                
-               <xsl:variable name="chunk" select="key('ref-id', $corresp)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"/>
+               <xsl:variable name="chunk" select="key('ref-id', $corresp)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*:id"/>
                
-               <xsl:variable name="toc" select="key('div-id', $chunk)/parent::*/@*[local-name()='id']"/>
+               <xsl:variable name="toc" select="key('div-id', $chunk)/parent::*/@*:id"/>
                
                <span class="down1">
                   <xsl:text> [</xsl:text>
@@ -367,7 +367,7 @@
    <!-- Paragraphs                                                             -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='p'][not(ancestor::note[@type='endnote' or @place='end'])]">
+   <xsl:template match="*:p[not(ancestor::note[@type='endnote' or @place='end'])]">
       
       <xsl:choose>
          <xsl:when test="@rend='center'">
@@ -432,47 +432,47 @@
    <!-- Other Text Blocks                                                      -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='epigraph']">
+   <xsl:template match="*:epigraph">
       <blockquote><xsl:apply-templates/></blockquote><br/>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='epigraph']/*[local-name()='bibl']">
+   <xsl:template match="*:epigraph/*:bibl">
       <p class="right"><xsl:apply-templates/></p>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='byline']">
+   <xsl:template match="*:byline">
       <p class="right"><xsl:apply-templates/></p>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='cit']">
+   <xsl:template match="*:cit">
       <xsl:apply-templates/>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='cit']/*[local-name()='bibl']">
+   <xsl:template match="*:cit/*:bibl">
       <p class="right"><xsl:apply-templates/></p>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='quote']">
+   <xsl:template match="*:quote">
       <xsl:apply-templates/>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='q']">
+   <xsl:template match="*:q">
       <blockquote><xsl:apply-templates/></blockquote>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='date']">
+   <xsl:template match="*:date">
       <xsl:apply-templates/>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='foreign']">
+   <xsl:template match="*:foreign">
       <i><xsl:apply-templates/></i>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='address']">
+   <xsl:template match="*:address">
       <xsl:apply-templates/>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='addrLine']">
+   <xsl:template match="*:addrLine">
       <xsl:apply-templates/><br/>
    </xsl:template>
    
@@ -480,18 +480,18 @@
    <!-- Bibliographies                                                         -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='listBibl']">
-      <xsl:if test="$anchor.id=@*[local-name()='id']">
+   <xsl:template match="*:listBibl">
+      <xsl:if test="$anchor.id=@*:id">
          <a name="X"></a>
       </xsl:if>
       <xsl:apply-templates/>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='bibl']">
+   <xsl:template match="*:bibl">
       <xsl:choose>
          <xsl:when test="parent::listBibl">
             <xsl:choose>
-               <xsl:when test="$anchor.id=@*[local-name()='id']">
+               <xsl:when test="$anchor.id=@*:id">
                   <a name="X"></a>
                   <div class="bibl-hi">
                      <p class="hang">
@@ -514,7 +514,7 @@
    
    <!-- Because of order in the following, "rend" takes precedence over "level" -->
    
-   <xsl:template match="*[local-name()='title']">
+   <xsl:template match="*:title">
       <xsl:choose>
          <xsl:when test="@rend='italic'">
             <i><xsl:apply-templates/></i>
@@ -540,7 +540,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='author']">
+   <xsl:template match="*:author">
       <xsl:choose>
          <xsl:when test="@rend='hide'">
             <xsl:text>&#x2014;&#x2014;&#x2014;</xsl:text>
@@ -555,7 +555,7 @@
    <!-- Formatting                                                             -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='hi']">
+   <xsl:template match="*:hi">
       <xsl:choose>
          <xsl:when test="@rend='bold'">
             <b><xsl:apply-templates/></b>
@@ -587,7 +587,7 @@
       </xsl:choose>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='lb']">
+   <xsl:template match="*:lb">
       <br/>
    </xsl:template>
    
@@ -595,7 +595,7 @@
    <!-- References                                                             -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='ref']">
+   <xsl:template match="*:ref">
       
       <!-- variables -->
       <xsl:variable name="target" select="@target"/>
@@ -605,10 +605,10 @@
                <xsl:value-of select="$target"/>
             </xsl:when>
             <xsl:when test="@type='noteref' or @type='endnote'">
-               <xsl:value-of select="key('endnote-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"/>
+               <xsl:value-of select="key('endnote-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*:id"/>
             </xsl:when>
             <xsl:when test="@type='fnoteref'">
-               <xsl:value-of select="key('fnote-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"/>
+               <xsl:value-of select="key('fnote-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*:id"/>
             </xsl:when>
             <xsl:when test="@type='pageref'">
                <xsl:choose>
@@ -616,25 +616,25 @@
                      <xsl:value-of select="'endnotes'"/>
                   </xsl:when>
                   <xsl:otherwise>
-                     <xsl:value-of select="key('pb-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"/>
+                     <xsl:value-of select="key('pb-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*:id"/>
                   </xsl:otherwise>
                </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
-               <xsl:value-of select="key('generic-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*[local-name()='id']"/>
+               <xsl:value-of select="key('generic-id', $target)/ancestor::*[matches(local-name(), '^div[1-6]$')][1]/@*:id"/>
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
-      <xsl:variable name="toc" select="key('div-id', $chunk)/parent::*/@*[local-name()='id']"/>
+      <xsl:variable name="toc" select="key('div-id', $chunk)/parent::*/@*:id"/>
       <xsl:variable name="class">
          <xsl:choose>
-            <xsl:when test="$anchor.id=@*[local-name()='id']">ref-hi</xsl:when>
+            <xsl:when test="$anchor.id=@*:id">ref-hi</xsl:when>
             <xsl:otherwise>ref</xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
       
       <!-- back link scrolling -->
-      <xsl:if test="$anchor.id=@*[local-name()='id']">
+      <xsl:if test="$anchor.id=@*:id">
          <a name="X"></a>
       </xsl:if>
       
@@ -692,7 +692,7 @@
       
    </xsl:template>
    
-   <xsl:template match="*[local-name()='xref']">
+   <xsl:template match="*:xref">
       <xsl:choose>
          <xsl:when test="@type='pdf'">
             <a class="ref">
@@ -719,7 +719,7 @@
    <!-- Figures                                                                -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='figure']">
+   <xsl:template match="*:figure">
       
       <xsl:variable name="img_src">
          <xsl:choose>
@@ -761,7 +761,7 @@
          </xsl:choose>
       </xsl:variable>
       
-      <xsl:if test="$anchor.id=@*[local-name()='id']">
+      <xsl:if test="$anchor.id=@*:id">
          <a name="X"></a>
       </xsl:if>
       
@@ -868,7 +868,7 @@
       
    </xsl:template>
    
-   <xsl:template match="*[local-name()='figDesc']">
+   <xsl:template match="*:figDesc">
       <br/><span class="down1"><xsl:if test="@n"><xsl:value-of select="@n"/>. </xsl:if><xsl:apply-templates/></span>
    </xsl:template>
    
@@ -876,10 +876,10 @@
    <!-- Milestones                                                             -->
    <!-- ====================================================================== -->
    
-   <xsl:template match="*[local-name()='pb']">
+   <xsl:template match="*:pb">
       <xsl:choose>
          <!-- xsl:when test="not(following-sibling::*)"/ -->
-         <xsl:when test="$anchor.id=@*[local-name()='id']">
+         <xsl:when test="$anchor.id=@*:id">
             <a name="X"></a>
             <hr class="pb"/>
             <div align="center">&#x2015; <span class="run-head"><xsl:value-of select="@n"/></span> &#x2015;</div>
@@ -891,9 +891,9 @@
       </xsl:choose>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='milestone']">
+   <xsl:template match="*:milestone">
       
-      <xsl:if test="$anchor.id=@*[local-name()='id']">
+      <xsl:if test="$anchor.id=@*:id">
          <a name="X"></a>
       </xsl:if>
       

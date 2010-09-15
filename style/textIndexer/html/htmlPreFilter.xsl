@@ -120,9 +120,9 @@
    <!-- title -->
    <xsl:template name="get-htm-title">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.title']">
+         <xsl:when test="//*:meta[@name='dc.title']">
             <title xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.title'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.title'][1]/@content"/>
             </title>
          </xsl:when>
       </xsl:choose>
@@ -131,9 +131,9 @@
    <!-- creator -->
    <xsl:template name="get-htm-creator">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.creator']">
+         <xsl:when test="//*:meta[@name='dc.creator']">
             <creator xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.creator'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.creator'][1]/@content"/>
             </creator>
          </xsl:when>
       </xsl:choose>
@@ -142,8 +142,8 @@
    <!-- subject -->
    <xsl:template name="get-htm-subject">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.subject']">
-            <xsl:for-each select="//*[local-name()='meta'][@name='dc.subject']">
+         <xsl:when test="//*:meta[@name='dc.subject']">
+            <xsl:for-each select="//*:meta[@name='dc.subject']">
                <subject xtf:meta="true">
                   <xsl:value-of select="@content"/>
                </subject>
@@ -155,9 +155,9 @@
    <!-- description -->
    <xsl:template name="get-htm-description">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.description']">
+         <xsl:when test="//*:meta[@name='dc.description']">
             <description xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.description'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.description'][1]/@content"/>
             </description>
          </xsl:when>
       </xsl:choose>
@@ -166,9 +166,9 @@
    <!-- publisher -->
    <xsl:template name="get-htm-publisher">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.publisher']">
+         <xsl:when test="//*:meta[@name='dc.publisher']">
             <publisher xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.publisher'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.publisher'][1]/@content"/>
             </publisher>
          </xsl:when>
       </xsl:choose>
@@ -177,9 +177,9 @@
    <!-- contributor -->
    <xsl:template name="get-htm-contributor">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.contributor']">
+         <xsl:when test="//*:meta[@name='dc.contributor']">
             <contributor xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.contributor'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.contributor'][1]/@content"/>
             </contributor>
          </xsl:when>
       </xsl:choose>
@@ -188,9 +188,9 @@
    <!-- date -->
    <xsl:template name="get-htm-date">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.date']">
+         <xsl:when test="//*:meta[@name='dc.date']">
             <date xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.date'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.date'][1]/@content"/>
             </date>
          </xsl:when>
       </xsl:choose>
@@ -204,9 +204,9 @@
    <!-- format -->
    <xsl:template name="get-htm-format">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.format']">
+         <xsl:when test="//*:meta[@name='dc.format']">
             <format xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.format'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.format'][1]/@content"/>
             </format>
          </xsl:when>
       </xsl:choose>
@@ -215,9 +215,9 @@
    <!-- identifier -->
    <xsl:template name="get-htm-identifier">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.identifier']">
+         <xsl:when test="//*:meta[@name='dc.identifier']">
             <identifier xtf:meta="true" xtf:tokenize="no">
-               <xsl:value-of select="replace(replace(//*[local-name()='meta'][@name='dc.identifier'][1]/@content,'^.+/',''),'\.[A-Za-z]+$','')"/>
+               <xsl:value-of select="replace(replace(//*:meta[@name='dc.identifier'][1]/@content,'^.+/',''),'\.[A-Za-z]+$','')"/>
             </identifier>
          </xsl:when>
          <xsl:otherwise>
@@ -231,9 +231,9 @@
    <!-- source -->
    <xsl:template name="get-htm-source">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.source']">
+         <xsl:when test="//*:meta[@name='dc.source']">
             <source xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.date'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.date'][1]/@content"/>
             </source>
          </xsl:when>
       </xsl:choose>
@@ -242,9 +242,9 @@
    <!-- language -->
    <xsl:template name="get-htm-language">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.date']">
+         <xsl:when test="//*:meta[@name='dc.date']">
             <language xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.source'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.source'][1]/@content"/>
             </language>
          </xsl:when>
       </xsl:choose>
@@ -253,9 +253,9 @@
    <!-- relation -->
    <xsl:template name="get-htm-relation">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.relation']">
+         <xsl:when test="//*:meta[@name='dc.relation']">
             <relation xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.relation'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.relation'][1]/@content"/>
             </relation>
          </xsl:when>
       </xsl:choose>
@@ -264,9 +264,9 @@
    <!-- coverage -->
    <xsl:template name="get-htm-coverage">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.coverage']">
+         <xsl:when test="//*:meta[@name='dc.coverage']">
             <coverage xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.coverage'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.coverage'][1]/@content"/>
             </coverage>
          </xsl:when>
       </xsl:choose>
@@ -275,9 +275,9 @@
    <!-- rights -->
    <xsl:template name="get-htm-rights">
       <xsl:choose>
-         <xsl:when test="//*[local-name()='meta'][@name='dc.rights']">
+         <xsl:when test="//*:meta[@name='dc.rights']">
             <rights xtf:meta="true">
-               <xsl:value-of select="//*[local-name()='meta'][@name='dc.rights'][1]/@content"/>
+               <xsl:value-of select="//*:meta[@name='dc.rights'][1]/@content"/>
             </rights>
          </xsl:when>
       </xsl:choose>
@@ -287,8 +287,8 @@
    <xsl:template name="oai-datestamp">
       <dateStamp xtf:meta="true" xtf:tokenize="no">
          <xsl:choose>
-            <xsl:when test="//*[local-name()='meta'][@name='dc.date']">
-               <xsl:value-of select="concat(parse:year(string(//*[local-name()='meta'][@name='dc.date'][1]/@content)),'-01-01')"/>
+            <xsl:when test="//*:meta[@name='dc.date']">
+               <xsl:value-of select="concat(parse:year(string(//*:meta[@name='dc.date'][1]/@content)),'-01-01')"/>
             </xsl:when>
             <xsl:otherwise>
                <!-- I don't know, what would you put? -->
@@ -300,7 +300,7 @@
    
    <!-- OAI sets -->
    <xsl:template name="oai-set">
-      <xsl:for-each select="//*[local-name()='meta'][@name='dc.subject']">
+      <xsl:for-each select="//*:meta[@name='dc.subject']">
          <set xtf:meta="true">
             <xsl:value-of select="@content"/>
          </set>
