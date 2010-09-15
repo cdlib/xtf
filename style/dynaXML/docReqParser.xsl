@@ -128,6 +128,11 @@
                   matches($ns,'tei')">
                   <xsl:value-of select="'tei'"/>
                </xsl:when>
+               <!-- Look for METS-encoded scanned books -->
+               <xsl:when test="matches($root-element-name,'^METS') and 
+                               document($file)//scribe:book" xmlns:scribe="http://archive.org/scribe/xml">
+                  <xsl:value-of select="'book'"/>
+               </xsl:when>
                <!-- Default processing for XML files -->
                <xsl:otherwise>
                   <xsl:value-of select="'default'"/>
@@ -146,6 +151,7 @@
          else if ($fileType = 'ead') then 'style/dynaXML/docFormatter/ead/eadDocFormatter.xsl'
          else if ($fileType = 'nlm') then 'style/dynaXML/docFormatter/nlm/nlmDocFormatter.xsl'
          else if ($fileType = 'tei') then 'style/dynaXML/docFormatter/tei/teiDocFormatter.xsl'
+         else if ($fileType = 'book') then 'style/dynaXML/docFormatter/book/bookDocFormatter.xsl'
          else                             'style/dynaXML/docFormatter/default/docFormatter.xsl'}"/>
       
       <!-- ==================================================================

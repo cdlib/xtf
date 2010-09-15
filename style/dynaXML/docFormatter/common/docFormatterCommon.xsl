@@ -2,6 +2,7 @@
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:xtf="http://cdlib.org/xtf"
    xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:editURL="http://cdlib.org/xtf/editURL"
    xmlns:session="java:org.cdlib.xtf.xslt.Session"
    extension-element-prefixes="session"
    exclude-result-prefixes="#all">
@@ -41,6 +42,12 @@
    -->
    
    <!-- ====================================================================== -->
+   <!-- Common Functions                                                       -->
+   <!-- ====================================================================== -->
+   
+   <xsl:import href="../../../common/editURL.xsl"/>
+
+   <!-- ====================================================================== -->
    <!-- Global Keys                                                            -->
    <!-- ====================================================================== -->
    
@@ -69,7 +76,7 @@
       <xsl:if test="$source">;source=<xsl:value-of select="$source"/></xsl:if>
    </xsl:variable>
    
-   <xsl:param name="query.string" select="concat('docId=', $docId, $sourceStr)"/>
+   <xsl:param name="query.string" select="concat('docId=', editURL:protectValue($docId), $sourceStr)"/>
    
    <xsl:param name="doc.path"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$query.string"/></xsl:param>
    
@@ -199,7 +206,7 @@
                            <xsl:attribute name="href">javascript://</xsl:attribute>
                            <xsl:attribute name="onclick">
                               <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/><xsl:text>?docId=</xsl:text><xsl:value-of
-                                 select="$docId"/><xsl:text>;doc.view=citation</xsl:text><xsl:text>','popup','width=800,height=400,resizable=yes,scrollbars=no')</xsl:text>
+                                 select="editURL:protectValue($docId)"/><xsl:text>;doc.view=citation</xsl:text><xsl:text>','popup','width=800,height=400,resizable=yes,scrollbars=no')</xsl:text>
                            </xsl:attribute>
                            <xsl:text>Citation</xsl:text>
                         </a>
@@ -234,7 +241,7 @@
                   <p><xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='creator'][1]"/>. 
                      <xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='title'][1]"/>. 
                      <xsl:value-of select="/*/*[local-name()='meta']/*[local-name()='year'][1]"/>.<br/>
-                     [<xsl:value-of select="concat($xtfURL,$dynaxmlPath,'?docId=',$docId)"/>]</p>
+                     [<xsl:value-of select="concat($xtfURL,$dynaxmlPath,'?docId=',editURL:protectValue($docId))"/>]</p>
                   <a>
                      <xsl:attribute name="href">javascript://</xsl:attribute>
                      <xsl:attribute name="onClick">
