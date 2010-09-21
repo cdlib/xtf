@@ -2,6 +2,8 @@
    xmlns:parse="http://cdlib.org/xtf/parse"
    xmlns:xtf="http://cdlib.org/xtf"
    xmlns:METS="http://www.loc.gov/METS/"
+   xmlns:scribe="http://archive.org/scribe/xml"
+   xmlns:local="http://cdlib.org/local"
    exclude-result-prefixes="#all">
    
    <!--
@@ -39,7 +41,6 @@
    <!-- ====================================================================== -->
    
    <xsl:import href="../common/preFilterCommon.xsl"/>
-   
    <!-- ====================================================================== -->
    <!-- Output parameters                                                      -->
    <!-- ====================================================================== -->
@@ -53,6 +54,24 @@
    <!-- ====================================================================== -->
    
    <xsl:variable name="metsMeta" select="//METS:xmlData/metadata"/>
+   
+   <xsl:variable name="pageAssertions">
+      <xsl:for-each select="//scribe:pageNumData/scribe:assertion">
+         <assertion pageNum="scribe:pageNum/string()" leafNum="scribe:leafNum/string()"/>
+      </xsl:for-each>
+   </xsl:variable>
+   
+   <xsl:variable name="numPages" select="count(//scribe:pageData/scribe:page)"/>
+      
+   <xsl:variable name="leafToPage" select="local:makeLeafToPage(1, 0, 1, $pageAssertions)"/>
+   
+   <!-- ====================================================================== -->
+   <!-- Keys for speedy processing                                             -->
+   <!-- ====================================================================== -->
+   
+   <xsl:key name="leafToPage" 
+            match="//scribe:pageNumData/scribe:assertion" 
+            use="scribe:leafNum/string()"/>
    
    <!-- ====================================================================== -->
    <!-- Default: identity transformation                                       -->
@@ -69,16 +88,19 @@
    <!-- ====================================================================== -->
    
    <xsl:template match="/*">
-      <xsl:copy>
+      <xtf-converted-book>
          <xsl:namespace name="xtf" select="'http://cdlib.org/xtf'"/>
-         <xsl:copy-of select="@*"/>
          <xsl:call-template name="get-meta"/>
-         <xsl:apply-templates/>
-      </xsl:copy>
+         <xsl:message>
+            Pages:
+            <xsl:call-template name="convertPages"/>
+         </xsl:message>
+         <xsl:call-template name="convertPages"/>
+      </xtf-converted-book>
    </xsl:template>
    
    <!-- ====================================================================== -->
-   <!-- NLM Indexing                                                           -->
+   <!-- Book METS Indexing                                                     -->
    <!-- ====================================================================== -->
    
    <!-- Ignored Elements -->
@@ -374,6 +396,40 @@
             <xsl:value-of select="'public'"/>
          </set>
       </xsl:if>
+   </xsl:template>
+   
+   <!-- ====================================================================== -->
+   <!-- Page processing                                                        -->
+   <!-- ====================================================================== -->
+   
+   <xsl:template name="convertPages">
+      <xsl:apply-templates select="//scribe:pageData/scribe:page"/>
+   </xsl:template>
+   
+   <xsl:function name="local:makeLeafToPage">
+      <xsl:param name="prevLeafNum"/>
+      <xsl:param name="isAsserted"/>
+      <xsl:param name="prevPageNum"/>
+      <xsl:param name="assertions"/>
+      
+      <xsl:variable name="firstAssertion" select="$assertions/assertion[1]"/>
+      <xsl:variable name="otherAssertions" select="$assertions/assertion[position() &gt; 1]"/>
+      
+      <xsl:message>Assertion: <xsl:copy-of select="$firstAssertion"/></xsl:message>
+      
+      <xsl:for-each select="$prevLeafNum to $numPages">
+         <!-- TODO -->
+      </xsl:for-each>
+   </xsl:function>
+   
+   <xsl:template match="scribe:page">
+      <xsl:variable name="leafNum" select="number(@leafNum)"/>
+      <page leafNum="{@leafNum}">
+         <xsl:variable name="pageNum" select="key('leafToPage', @leafNum)//*:pageNum"/>
+         <xsl:if test="$pageNum">
+            <xsl:attribute name="pageNum" select="$pageNum"/>
+         </xsl:if>
+      </page>
    </xsl:template>
    
 </xsl:stylesheet>
