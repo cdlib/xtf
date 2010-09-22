@@ -1,11 +1,13 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
-   xmlns:parse="http://cdlib.org/xtf/parse"
-   xmlns:xtf="http://cdlib.org/xtf"
-   xmlns:METS="http://www.loc.gov/METS/"
-   xmlns:scribe="http://archive.org/scribe/xml"
+   xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils"
    xmlns:local="http://cdlib.org/local"
-   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns:METS="http://www.loc.gov/METS/"
+   xmlns:parse="http://cdlib.org/xtf/parse"
+   xmlns:saxon="http://saxon.sf.net/"
+   xmlns:scribe="http://archive.org/scribe/xml"
    xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns:xtf="http://cdlib.org/xtf"
    exclude-result-prefixes="#all">
    
    <!--
@@ -440,6 +442,7 @@
       </xsl:choose>
    </xsl:template>
    
+   <!-- Convert all the pages in the book to our compact, single-file format. -->
    <xsl:template name="convertPages">
       
       <!--<xsl:message>
@@ -450,34 +453,98 @@
          </xsl:for-each>-->
       
       <xsl:for-each select="//scribe:pageData/scribe:page">
-         <xsl:variable name="leafData">
-            <xsl:call-template name="processPage"/>
-         </xsl:variable>
-         <xsl:message><xsl:copy-of select="$leafData"/></xsl:message>
+         <xsl:call-template name="processPage"/>
       </xsl:for-each>
    </xsl:template>
    
+   <!-- Convert a single leaf -->
    <xsl:template name="processPage">
       <xsl:variable name="leafNum" select="number(@leafNum)"/>
       <leaf leafNum="{$leafNum}" 
             pageNum="{$leafToPage/mapping[@leafNum = $leafNum]/@pageNum}"
             type="{scribe:pageType}"
             access="{scribe:addToAccessFormats}">
+         
+         <!-- Jump through hoops to find the image file -->
          <xsl:variable name="pageDiv" select="key('pageDivs', $leafNum)"/>
          <xsl:variable name="fileIDs" select="$pageDiv//METS:fptr/string(@FILEID)"/>
          <xsl:variable name="files" select="//METS:file[@ID = $fileIDs]"/>
          <xsl:variable name="imgFileLoc" select="$files[matches(@MIMETYPE, 'image/')]/METS:FLocat/string(@xlink:href)"/>
-         <xsl:attribute name="imgFile" select="$imgFileLoc"/>
-         
-         <xsl:if test="scribe:cropBox">
-            <cropBox 
-               x="{replace(scribe:cropBox/scribe:x, '.0$', '')}"
-               y="{replace(scribe:cropBox/scribe:y, '.0$', '')}"
-               w="{replace(scribe:cropBox/scribe:w, '.0$', '')}"
-               h="{replace(scribe:cropBox/scribe:h, '.0$', '')}"/>
+         <xsl:if test="$imgFileLoc">
+            <xsl:attribute name="imgFile" select="$imgFileLoc"/>
          </xsl:if>
          
+         <!-- Copy the crop box dimensions -->
+         <xsl:if test="scribe:cropBox">
+            <cropBox 
+               x="{replace(scribe:cropBox/scribe:x, '\.0$', '')}"
+               y="{replace(scribe:cropBox/scribe:y, '\.0$', '')}"
+               w="{replace(scribe:cropBox/scribe:w, '\.0$', '')}"
+               h="{replace(scribe:cropBox/scribe:h, '\.0$', '')}"/>
+         </xsl:if>
+         
+         <!-- Now process the DJVU XML -->
+         <xsl:variable name="xmlFileLoc" select="$files[matches(@MIMETYPE, 'text/xml')]/METS:FLocat/string(@xlink:href)"/>
+         <xsl:variable name="docpath" select="saxon:system-id()"/>
+         <xsl:variable name="base" select="replace($docpath, '(.*)/[^/]+$', '$1')"/>
+         <xsl:variable name="xmlPath" select="concat($base, '/', $xmlFileLoc)"/>
+         <xsl:if test="$xmlFileLoc and FileUtils:exists($xmlPath)">
+            <xsl:variable name="xmlDoc" select="document($xmlPath)"/>
+            <xsl:choose>
+               <xsl:when test="$xmlDoc/DjVuXML">
+                  <xsl:for-each select="$xmlDoc//LINE">
+                     <xsl:call-template name="processLine"/>
+                  </xsl:for-each>
+               </xsl:when>
+               <xsl:otherwise>
+                  <noDjVuFound/>
+               </xsl:otherwise>
+            </xsl:choose>            
+         </xsl:if>
       </leaf>
+   </xsl:template>
+   
+   <!-- Convert one line on the leaf. -->
+   <xsl:template name="processLine">
+      <xsl:variable name="words">
+         <xsl:for-each select="WORD">
+            <xsl:variable name="coords" select="tokenize(@coords, ',')"/>
+            <xsl:variable name="nums" select="$coords[1] cast as xs:integer,
+                                              $coords[2] cast as xs:integer,
+                                              $coords[3] cast as xs:integer,
+                                              $coords[4] cast as xs:integer"/>
+            <xsl:choose>
+               <!-- Not sure why the top and bottom are in a weird order, but we adjust -->
+               <xsl:when test="$nums[2] &lt; $nums[4]">
+                  <word l="{$nums[1]}" t="{$nums[2]}" r="{$nums[3]}" b="{$nums[4]}"/>
+               </xsl:when>
+               <xsl:otherwise>
+                  <word l="{$nums[1]}" t="{$nums[4]}" r="{$nums[3]}" b="{$nums[2]}"/>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:for-each>
+      </xsl:variable>
+      <line l="{min($words/word/@l)}"
+            t="{min($words/word/@t)}"
+            r="{max($words/word/@r)}"
+            b="{max($words/word/@b)}">
+         <xsl:attribute name="spacing">
+            <xsl:for-each select="$words/word">
+               <xsl:variable name="pos" select="position()"/>
+               <xsl:variable name="prev" select="preceding-sibling::*[1]"/>
+               <xsl:if test="$prev">
+                  <xsl:value-of select="concat(' ', @l - $prev/@r, ' ')"/>
+               </xsl:if>
+               <xsl:value-of select="@r - @l"/>
+            </xsl:for-each>
+         </xsl:attribute>
+         <xsl:for-each select="WORD">
+            <xsl:if test="position() &gt; 1">
+               <xsl:text> </xsl:text>
+            </xsl:if>
+            <xsl:value-of select="replace(string(.), ' ', '_')"/>
+         </xsl:for-each>
+      </line>
    </xsl:template>
    
 </xsl:stylesheet>
