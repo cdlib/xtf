@@ -4,6 +4,7 @@
    xmlns:METS="http://www.loc.gov/METS/"
    xmlns:scribe="http://archive.org/scribe/xml"
    xmlns:local="http://cdlib.org/local"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
    exclude-result-prefixes="#all">
    
    <!--
@@ -57,13 +58,21 @@
    
    <xsl:variable name="pageAssertions">
       <xsl:for-each select="//scribe:pageNumData/scribe:assertion">
-         <assertion pageNum="scribe:pageNum/string()" leafNum="scribe:leafNum/string()"/>
+         <xsl:sort select="number(scribe:pageNum/string())"/>
+         <assertion pageNum="{scribe:pageNum/string()}" leafNum="{scribe:leafNum/string()}"/>
       </xsl:for-each>
    </xsl:variable>
    
-   <xsl:variable name="numPages" select="count(//scribe:pageData/scribe:page)"/>
+   <xsl:variable name="numLeaves" select="count(//scribe:pageData/scribe:page)"/>
       
-   <xsl:variable name="leafToPage" select="local:makeLeafToPage(1, 0, 1, $pageAssertions)"/>
+   <xsl:variable name="leafToPage">
+      <xsl:call-template name="makeLeafToPage">
+         <xsl:with-param name="prevLeafNum" select="1"/>
+         <xsl:with-param name="isAsserted" select="false()"/>
+         <xsl:with-param name="prevPageNum" select="1"/>
+         <xsl:with-param name="assertions" select="$pageAssertions/*"/>
+      </xsl:call-template>
+   </xsl:variable>
    
    <!-- ====================================================================== -->
    <!-- Keys for speedy processing                                             -->
@@ -403,33 +412,64 @@
    <!-- ====================================================================== -->
    
    <xsl:template name="convertPages">
-      <xsl:apply-templates select="//scribe:pageData/scribe:page"/>
+      <xsl:message>
+         leafToPage: 
+      </xsl:message>
+      <xsl:for-each select="$leafToPage/*">
+         <xsl:message><xsl:copy-of select="."/></xsl:message>
+      </xsl:for-each>
+      <xsl:for-each select="//scribe:pageData/scribe:page">
+         <xsl:call-template name="processPage">
+            
+         </xsl:call-template>
+      </xsl:for-each>
    </xsl:template>
    
-   <xsl:function name="local:makeLeafToPage">
+   <xsl:template name="makeLeafToPage">
       <xsl:param name="prevLeafNum"/>
       <xsl:param name="isAsserted"/>
       <xsl:param name="prevPageNum"/>
       <xsl:param name="assertions"/>
       
-      <xsl:variable name="firstAssertion" select="$assertions/assertion[1]"/>
-      <xsl:variable name="otherAssertions" select="$assertions/assertion[position() &gt; 1]"/>
+      <xsl:variable name="firstAssertion" select="$assertions[1]"/>
+      <xsl:variable name="otherAssertions" select="$assertions[position() &gt; 1]"/>
       
-      <xsl:message>Assertion: <xsl:copy-of select="$firstAssertion"/></xsl:message>
+      <xsl:variable name="assertedPageNum" select="$firstAssertion/@pageNum cast as xs:integer"/>
+      <xsl:variable name="assertedLeafNum" select="$firstAssertion/@leafNum cast as xs:integer"/>
       
-      <xsl:for-each select="$prevLeafNum to $numPages">
-         <!-- TODO -->
+      <xsl:variable name="pageNum" select="if ($isAsserted) then $assertedPageNum else 1"/>
+      <xsl:variable name="leafNum" select="if ($isAsserted) then $assertedLeafNum else $assertedLeafNum - $assertedPageNum + 1"/>
+      
+      <xsl:message>Assertion: page <xsl:value-of select="$pageNum"/> == leaf <xsl:value-of select="$leafNum"/></xsl:message>
+
+      <xsl:for-each select="$prevLeafNum to $leafNum - 1">
+         <xsl:variable name="outPage" select=". - $prevLeafNum + $prevPageNum"/>
+         <output leafNum="{.}" pageNum="{if ($outPage >= $pageNum) then concat('n', .) else $outPage}"/>
       </xsl:for-each>
-   </xsl:function>
+
+      <xsl:choose>
+         <xsl:when test="count($otherAssertions)">
+            <xsl:call-template name="makeLeafToPage">
+               <xsl:with-param name="prevLeafNum" select="$leafNum"/>
+               <xsl:with-param name="prevPageNum" select="$pageNum"/>
+               <xsl:with-param name="isAsserted" select="true()"/>
+               <xsl:with-param name="assertions" select="$otherAssertions"/>
+            </xsl:call-template>
+         </xsl:when>
+         <xsl:otherwise>
+            
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:template>
    
-   <xsl:template match="scribe:page">
+   <xsl:template name="processPage">
       <xsl:variable name="leafNum" select="number(@leafNum)"/>
-      <page leafNum="{@leafNum}">
+      <!--<page leafNum="{@leafNum}">
          <xsl:variable name="pageNum" select="key('leafToPage', @leafNum)//*:pageNum"/>
          <xsl:if test="$pageNum">
             <xsl:attribute name="pageNum" select="$pageNum"/>
          </xsl:if>
-      </page>
+      </page>-->
    </xsl:template>
    
 </xsl:stylesheet>
