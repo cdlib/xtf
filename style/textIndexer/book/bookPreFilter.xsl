@@ -5,6 +5,7 @@
    xmlns:scribe="http://archive.org/scribe/xml"
    xmlns:local="http://cdlib.org/local"
    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    exclude-result-prefixes="#all">
    
    <!--
@@ -78,19 +79,9 @@
    <!-- Keys for speedy processing                                             -->
    <!-- ====================================================================== -->
    
-   <xsl:key name="leafToPage" 
-            match="//scribe:pageNumData/scribe:assertion" 
-            use="scribe:leafNum/string()"/>
-   
-   <!-- ====================================================================== -->
-   <!-- Default: identity transformation                                       -->
-   <!-- ====================================================================== -->
-   
-   <xsl:template match="@*|node()">
-      <xsl:copy>
-         <xsl:apply-templates select="@*|node()"/>
-      </xsl:copy>
-   </xsl:template>
+   <xsl:key name="pageDivs" 
+            match="//METS:div[@TYPE='page']" 
+            use="@ORDER cast as xs:integer"/>
    
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
@@ -100,10 +91,6 @@
       <xtf-converted-book>
          <xsl:namespace name="xtf" select="'http://cdlib.org/xtf'"/>
          <xsl:call-template name="get-meta"/>
-         <xsl:message>
-            Pages:
-            <xsl:call-template name="convertPages"/>
-         </xsl:message>
          <xsl:call-template name="convertPages"/>
       </xtf-converted-book>
    </xsl:template>
@@ -411,44 +398,32 @@
    <!-- Page processing                                                        -->
    <!-- ====================================================================== -->
    
-   <xsl:template name="convertPages">
-      <xsl:message>
-         leafToPage: 
-      </xsl:message>
-      <xsl:for-each select="$leafToPage/*">
-         <xsl:message><xsl:copy-of select="."/></xsl:message>
-      </xsl:for-each>
-      <xsl:for-each select="//scribe:pageData/scribe:page">
-         <xsl:call-template name="processPage">
-            
-         </xsl:call-template>
-      </xsl:for-each>
-   </xsl:template>
-   
    <xsl:template name="makeLeafToPage">
       <xsl:param name="prevLeafNum"/>
       <xsl:param name="isAsserted"/>
       <xsl:param name="prevPageNum"/>
       <xsl:param name="assertions"/>
       
+      <!-- Standard recursive gyrations for XSLT -->
       <xsl:variable name="firstAssertion" select="$assertions[1]"/>
       <xsl:variable name="otherAssertions" select="$assertions[position() &gt; 1]"/>
       
+      <!-- Grab the asserted page to leaf correspondence -->
       <xsl:variable name="assertedPageNum" select="$firstAssertion/@pageNum cast as xs:integer"/>
       <xsl:variable name="assertedLeafNum" select="$firstAssertion/@leafNum cast as xs:integer"/>
       
+      <!-- Handle the part of the sequence before the first correspondence, if any. -->
       <xsl:variable name="pageNum" select="if ($isAsserted) then $assertedPageNum else 1"/>
       <xsl:variable name="leafNum" select="if ($isAsserted) then $assertedLeafNum else $assertedLeafNum - $assertedPageNum + 1"/>
       
-      <xsl:message>Assertion: page <xsl:value-of select="$pageNum"/> == leaf <xsl:value-of select="$leafNum"/></xsl:message>
-
       <xsl:for-each select="$prevLeafNum to $leafNum - 1">
          <xsl:variable name="outPage" select=". - $prevLeafNum + $prevPageNum"/>
-         <output leafNum="{.}" pageNum="{if ($outPage >= $pageNum) then concat('n', .) else $outPage}"/>
+         <mapping leafNum="{.}" pageNum="{if ($outPage >= $pageNum) then concat('n', .) else $outPage}"/>
       </xsl:for-each>
 
       <xsl:choose>
          <xsl:when test="count($otherAssertions)">
+            <!-- Now recursively process the remaining assertions -->
             <xsl:call-template name="makeLeafToPage">
                <xsl:with-param name="prevLeafNum" select="$leafNum"/>
                <xsl:with-param name="prevPageNum" select="$pageNum"/>
@@ -457,19 +432,52 @@
             </xsl:call-template>
          </xsl:when>
          <xsl:otherwise>
-            
+            <!-- Handle leaves after the last assertion -->
+            <xsl:for-each select="$leafNum to $numLeaves">
+               <mapping leafNum="{.}" pageNum="{. - $leafNum + $pageNum}"/>
+            </xsl:for-each>
          </xsl:otherwise>
       </xsl:choose>
    </xsl:template>
    
+   <xsl:template name="convertPages">
+      
+      <!--<xsl:message>
+         leafToPage: 
+      </xsl:message>
+      <xsl:for-each select="$leafToPage/*">
+         <xsl:message><xsl:copy-of select="."/></xsl:message>
+         </xsl:for-each>-->
+      
+      <xsl:for-each select="//scribe:pageData/scribe:page">
+         <xsl:variable name="leafData">
+            <xsl:call-template name="processPage"/>
+         </xsl:variable>
+         <xsl:message><xsl:copy-of select="$leafData"/></xsl:message>
+      </xsl:for-each>
+   </xsl:template>
+   
    <xsl:template name="processPage">
       <xsl:variable name="leafNum" select="number(@leafNum)"/>
-      <!--<page leafNum="{@leafNum}">
-         <xsl:variable name="pageNum" select="key('leafToPage', @leafNum)//*:pageNum"/>
-         <xsl:if test="$pageNum">
-            <xsl:attribute name="pageNum" select="$pageNum"/>
+      <leaf leafNum="{$leafNum}" 
+            pageNum="{$leafToPage/mapping[@leafNum = $leafNum]/@pageNum}"
+            type="{scribe:pageType}"
+            access="{scribe:addToAccessFormats}">
+         <xsl:variable name="pageDiv" select="key('pageDivs', $leafNum)"/>
+         <xsl:variable name="fileIDs" select="$pageDiv//METS:fptr/string(@FILEID)"/>
+         <xsl:variable name="files" select="//METS:file[@ID = $fileIDs]"/>
+         <xsl:variable name="imgFileLoc" select="$files[matches(@MIMETYPE, 'image/')]/METS:FLocat/string(@xlink:href)"/>
+         <xsl:attribute name="imgFile" select="$imgFileLoc"/>
+         
+         <xsl:if test="scribe:cropBox">
+            <cropBox 
+               x="{replace(scribe:cropBox/scribe:x, '.0$', '')}"
+               y="{replace(scribe:cropBox/scribe:y, '.0$', '')}"
+               w="{replace(scribe:cropBox/scribe:w, '.0$', '')}"
+               h="{replace(scribe:cropBox/scribe:h, '.0$', '')}"/>
          </xsl:if>
-      </page>-->
+         
+      </leaf>
    </xsl:template>
    
 </xsl:stylesheet>
