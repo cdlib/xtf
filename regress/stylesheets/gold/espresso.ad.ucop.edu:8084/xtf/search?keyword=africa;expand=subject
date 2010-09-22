@@ -1,0 +1,381 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8; charset=UTF-8" /><title>XTF: Search Results</title><link rel="stylesheet" href="css/default/results.css" type="text/css" /><script src="script/yui/yahoo-dom-event.js" type="text/javascript"></script><script src="script/yui/connection-min.js" type="text/javascript"></script></head><body><div class="header">
+         <img src="icons/default/xtf_logo.gif" width="302" height="18" alt="eXtensible Text Framework" class="xtf-logo" />
+         <img src="icons/default/your_logo.gif" width="100" height="40" alt="graphic" class="your-logo" />
+         <br class="clear" />
+      </div><div class="resultsHeader"><table><tr><td colspan="2" class="right"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?smode=showBag">Bookbag</a>
+                           (<span id="bagCount">0</span>)
+                        </td></tr><tr><td><div class="query"><div class="label"><b>Search:</b></div><div class="subQuery">
+   
+   
+   
+   
+      
+         
+            <span class="subhit">africa</span>
+          in <b> keywords</b> <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes">[X]</a><br />
+         
+      
+   
+</div></div></td><td class="right"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?keyword=africa;expand=subject;smode=simple-modify">Modify Search</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search">New Search</a></td></tr><tr><td><b>Results:</b> 
+                        <span id="itemCount">12</span> Items</td><td class="right">Browse by <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes">Facet</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-title=first;sort=title">Title</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=first;sort=creator">Author</a></td></tr><tr><td><form method="get" action="http://espresso.ad.ucop.edu:8084/xtf/search"><b>Sorted by: </b><select size="1" name="sort"><option value="" selected="selected">relevance</option><option value="title">title</option><option value="creator">author</option><option value="year">publication date</option><option value="reverse-year">reverse date</option></select><input type="hidden" name="keyword" value="africa" /><input type="hidden" name="expand" value="subject" /> <input type="submit" value="Go!" /></form></td><td class="right">Page: 1</td></tr></table></div><div class="results"><table><tr><td class="facet"><div class="facet"><div class="facetName">Subject</div><div class="facetLess"><i><a href="http://espresso.ad.ucop.edu:8084/xtf/search?keyword=africa">less</a></i></div><div class="facetGroup"><table><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=African American authors">African American authors</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=African History">African History</a></td><td class="col3">
+                  (2)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=African Studies">African Studies</a></td><td class="col3">
+                  (2)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=American Literature">American Literature</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=American literature--African American authors--Study and teaching">American literature--African American authors--Study and teaching</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=Anthropology">Anthropology</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=Biological Sciences: Genetics">Biological Sciences: Genetics</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=Cultural Anthropology">Cultural Anthropology</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=Native Americans">Native Americans</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=Nuclear War">Nuclear War</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=Physical Sciences: Applied Mathematics">Physical Sciences: Applied Mathematics</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=Politics">Politics</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=Research Article">Research Article</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=South Africa">South Africa</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=alcohol">alcohol</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=consolidation">consolidation</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=destination choices">destination choices</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=globalization">globalization</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=grape growers">grape growers</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=korean wine consumers">korean wine consumers</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=wine grapes">wine grapes</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=wine preferences">wine preferences</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=wine production">wine production</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=wine tourism">wine tourism</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-subject=wine-marketing strategy">wine-marketing strategy</a></td><td class="col3">
+                  (1)
+               </td></tr></table></div></div><div class="facet"><div class="facetName">Date</div><div class="facetGroup"><table><tr><td class="col1"><a href="search?keyword=africa;expand=subject;f1-date=2007"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-date=2007">2007</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1"><a href="search?keyword=africa;expand=subject;f1-date=2005"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-date=2005">2005</a></td><td class="col3">
+                  (3)
+               </td></tr><tr><td class="col1"><a href="search?keyword=africa;expand=subject;f1-date=2003"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-date=2003">2003</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1"><a href="search?keyword=africa;expand=subject;f1-date=2001"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-date=2001">2001</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1"><a href="search?keyword=africa;expand=subject;f1-date=1997"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-date=1997">1997</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1"><a href="search?keyword=africa;expand=subject;f1-date=1994"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-date=1994">1994</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1"><a href="search?keyword=africa;expand=subject;f1-date=1993"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-date=1993">1993</a></td><td class="col3">
+                  (2)
+               </td></tr><tr><td class="col1"><a href="search?keyword=africa;expand=subject;f1-date=1989"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?keyword=africa;expand=subject;f1-date=1989">1989</a></td><td class="col3">
+                  (2)
+               </td></tr></table></div></div></td><td class="docHit"><div id="main_1" class="docHit"><table><tr><td class="col1"><b>1</b></td><td class="col2"><b>Author:  </b></td><td class="col3">David Attwell</td><td class="col4"><script type="text/javascript">
+                                    add_1 = function() {
+                                       var span = YAHOO.util.Dom.get('add_1');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=ft5k4006q3',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_1"><a href="javascript:add_1()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=tei/ft5k4006q3/ft5k4006q3.xml;query=africa;brand=default">J. M. Coetzee: South <span class="hit">Africa</span> and the Politics of Writing</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_tei.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1993</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=South Africa;subject-join=exact;smode=simple;rmode=none;style=;brand=default">South <span class="hit">Africa</span></a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=African History;subject-join=exact;smode=simple;rmode=none;style=;brand=default">African History</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />109 hits    
+                  </td><td class="col3" colspan="2">...South <a href="view?docId=tei/ft5k4006q3/ft5k4006q3.xml;query=africa;brand=default;hit.rank=1" class="hit">Africa</a> and the Politics of Writing...<br />...is Elizabeth's text, South <a href="view?docId=tei/ft5k4006q3/ft5k4006q3.xml;query=africa;brand=default;hit.rank=2" class="hit">Africa</a> means not only death—the...<br />...on the 1970s in South <a href="view?docId=tei/ft5k4006q3/ft5k4006q3.xml;query=africa;brand=default;hit.rank=3" class="hit">Africa</a> and for drawing my attention to...<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_1 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_1');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=ft5k4006q3',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_1"><a href="javascript:getMoreLike_1()">Find</a></span></td></tr></table></div><div id="main_2" class="docHit"><table><tr><td class="col1"><b>2</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Heribert Adam and Kogila Moodley</td><td class="col4"><script type="text/javascript">
+                                    add_2 = function() {
+                                       var span = YAHOO.util.Dom.get('add_2');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=ft958009mm',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_2"><a href="javascript:add_2()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=tei/ft958009mm/ft958009mm.xml;query=africa;brand=default">The Opening of the Apartheid Mind: Options for the New South <span class="hit">Africa</span></a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_tei.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1993</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=African Studies;subject-join=exact;smode=simple;rmode=none;style=;brand=default">African Studies</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Politics;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Politics</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=African History;subject-join=exact;smode=simple;rmode=none;style=;brand=default">African History</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />682 hits    
+                  </td><td class="col3" colspan="2">...Options for the New South <a href="view?docId=tei/ft958009mm/ft958009mm.xml;query=africa;brand=default;hit.rank=1" class="hit">Africa</a>...<br />...Perspectives on Southern <a href="view?docId=tei/ft958009mm/ft958009mm.xml;query=africa;brand=default;hit.rank=2" class="hit">Africa</a>...<br />...South <a href="view?docId=tei/ft958009mm/ft958009mm.xml;query=africa;brand=default;hit.rank=3" class="hit">Africa</a> in Comparative Perspective...<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_2 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_2');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=ft958009mm',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_2"><a href="javascript:getMoreLike_2()">Find</a></span></td></tr></table></div><div id="main_3" class="docHit"><table><tr><td class="col1"><b>3</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Roy Richard Grinker, III</td><td class="col4"><script type="text/javascript">
+                                    add_3 = function() {
+                                       var span = YAHOO.util.Dom.get('add_3');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=ft6q2nb3zj',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_3"><a href="javascript:add_3()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=tei/ft6q2nb3zj/ft6q2nb3zj.xml;query=africa;brand=default">Houses in the Rainforest: Ethnicity and Inequality Among Farmers and Foragers in Central <span class="hit">Africa</span></a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_tei.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1994</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Anthropology;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Anthropology</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=African Studies;subject-join=exact;smode=simple;rmode=none;style=;brand=default">African Studies</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Cultural Anthropology;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Cultural Anthropology</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />66 hits    
+                  </td><td class="col3" colspan="2">...and Inequality among Farmers and Foragers in Central <a href="view?docId=tei/ft6q2nb3zj/ft6q2nb3zj.xml;query=africa;brand=default;hit.rank=1" class="hit">Africa</a>...<br />...concern in this region of <a href="view?docId=tei/ft6q2nb3zj/ft6q2nb3zj.xml;query=africa;brand=default;hit.rank=2" class="hit">Africa</a> with managing coexisting...<br />...made by other anthropologists in central <a href="view?docId=tei/ft6q2nb3zj/ft6q2nb3zj.xml;query=africa;brand=default;hit.rank=3" class="hit">Africa</a>....<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_3 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_3');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=ft6q2nb3zj',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_3"><a href="javascript:getMoreLike_3()">Find</a></span></td></tr></table></div><div id="main_4" class="docHit"><table><tr><td class="col1"><b>4</b></td><td class="col2"><b>Author:  </b></td><td class="col3">William A. Schwartz and Charles Derber</td><td class="col4"><script type="text/javascript">
+                                    add_4 = function() {
+                                       var span = YAHOO.util.Dom.get('add_4');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=ft1n39n7wg',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_4"><a href="javascript:add_4()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=tei/ft1n39n7wg/ft1n39n7wg.xml;query=africa;brand=default">The Nuclear Seduction: Why the Arms Race Doesn't Matter— and What Does</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_tei.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1989</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Nuclear War;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Nuclear War</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />28 hits    
+                  </td><td class="col3" colspan="2">...three of them (Israel, South <a href="view?docId=tei/ft1n39n7wg/ft1n39n7wg.xml;query=africa;brand=default;hit.rank=1" class="hit">Africa</a>, and India) have regular...<br />...superpowers, China, South <a href="view?docId=tei/ft1n39n7wg/ft1n39n7wg.xml;query=africa;brand=default;hit.rank=2" class="hit">Africa</a>, and Cuba are substantially...<br />...war, 120 -125; 263 n.125 <a href="view?docId=tei/ft1n39n7wg/ft1n39n7wg.xml;query=africa;brand=default;hit.rank=3" class="hit">Africa</a>, 141 Allison, Graham T. ,...<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_4 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_4');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=ft1n39n7wg',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_4"><a href="javascript:getMoreLike_4()">Find</a></span></td></tr></table></div><div id="main_5" class="docHit"><table><tr><td class="col1"><b>5</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Sullivan, Amy D.</td><td class="col4"><script type="text/javascript">
+                                    add_5 = function() {
+                                       var span = YAHOO.util.Dom.get('add_5');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=pnas.181325198',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_5"><a href="javascript:add_5()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=nlm/pnas/pnas.xml;query=africa;brand=default">The coreceptor mutation CCR5Δ32 influences the dynamics of HIV epidemics and is selected for by HIV</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_nlm.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2001</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Physical Sciences: Applied Mathematics;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Physical Sciences: Applied Mathematics</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Biological Sciences: Genetics;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Biological Sciences: Genetics</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />7 hits    
+                  </td><td class="col3" colspan="2">...this paper. ) Sub-Saharan <a href="view?docId=nlm/pnas/pnas.xml;query=africa;brand=default;hit.rank=1" class="hit">Africa</a> has been hardest hit, with...<br />...has spread in sub-Saharan <a href="view?docId=nlm/pnas/pnas.xml;query=africa;brand=default;hit.rank=2" class="hit">Africa</a> has not been adequately...<br />...in much of sub-Saharan <a href="view?docId=nlm/pnas/pnas.xml;query=africa;brand=default;hit.rank=3" class="hit">Africa</a>). In addition, we assume that...<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_5 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_5');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=pnas.181325198',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_5"><a href="javascript:getMoreLike_5()">Find</a></span></td></tr></table></div><div id="main_6" class="docHit"><table><tr><td class="col1"><b>6</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Graham Brown</td><td class="col4"><script type="text/javascript">
+                                    add_6 = function() {
+                                       var span = YAHOO.util.Dom.get('add_6');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=2660',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_6"><a href="javascript:add_6()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/text/2660/2660.txt">Linking Wine Preferences to the Choice of Wine Tourism Destinations</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_text.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2005</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine preferences;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine preferences</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine tourism;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine tourism</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=destination choices;subject-join=exact;smode=simple;rmode=none;style=;brand=default">destination choices</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />6 hits    
+                  </td><td class="col3" colspan="2">...differentiation South <span class="hit">Africa</span> 4 (1.2) 2 (0) 11 (55.6)...<br />...to a lesser extent South <span class="hit">Africa</span>) proves. Image enhancement...<br />...future research. South <span class="hit">Africa</span> shows modest growth potential....<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_6 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_6');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=2660',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_6"><a href="javascript:getMoreLike_6()">Find</a></span></td></tr></table></div><div id="main_7" class="docHit"><table><tr><td class="col1"><b>7</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Ellison, Ralph</td><td class="col4"><script type="text/javascript">
+                                    add_7 = function() {
+                                       var span = YAHOO.util.Dom.get('add_7');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=MSS83111',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_7"><a href="javascript:add_7()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=ead/ellison/ellison.xml;query=africa;brand=default">Papers of Ralph Ellison 
+1890-1996
+             (bulk 1933-1990)</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_ead.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1997</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=African American authors;subject-join=exact;smode=simple;rmode=none;style=;brand=default">African American authors</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=American literature--African American authors--Study and teaching;subject-join=exact;smode=simple;rmode=none;style=;brand=default">American literature--African American authors--Study and teaching</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />2 hits    
+                  </td><td class="col3" colspan="2">...<a href="view?docId=ead/ellison/ellison.xml;query=africa;brand=default;hit.rank=1" class="hit">Africa</a>, 1953, 1959 (Container 179)...<br />...<a href="view?docId=ead/ellison/ellison.xml;query=africa;brand=default;hit.rank=2" class="hit">Africa</a>, 1943-1989 See also Oversize...<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_7 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_7');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=MSS83111',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_7"><a href="javascript:getMoreLike_7()">Find</a></span></td></tr></table></div><div id="main_8" class="docHit"><table><tr><td class="col1"><b>8</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Dale Heien</td><td class="col4"><script type="text/javascript">
+                                    add_8 = function() {
+                                       var span = YAHOO.util.Dom.get('add_8');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=calag57-3',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_8"><a href="javascript:add_8()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/pdf/calag57-3/calag57-3.pdf">California’s wine industry enters new era</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_pdf.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2003</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine grapes;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine grapes</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=grape growers;subject-join=exact;smode=simple;rmode=none;style=;brand=default">grape growers</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine production;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine production</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=globalization;subject-join=exact;smode=simple;rmode=none;style=;brand=default">globalization</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=consolidation;subject-join=exact;smode=simple;rmode=none;style=;brand=default">consolidation</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />2 hits    
+                  </td><td class="col3" colspan="2">...are Argentina (5%), South <span class="hit">Africa</span> (3%), Australia (2%) and...<br />...and Australia, Chile and South <span class="hit">Africa</span> have large acreages of...<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_8 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_8');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=calag57-3',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_8"><a href="javascript:getMoreLike_8()">Find</a></span></td></tr></table></div><div id="main_9" class="docHit"><table><tr><td class="col1"><b>9</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Kyuho Lee</td><td class="col4"><script type="text/javascript">
+                                    add_9 = function() {
+                                       var span = YAHOO.util.Dom.get('add_9');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=2000',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_9"><a href="javascript:add_9()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/text/2000/2000.txt">Exploring the Korean Wine Market</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_text.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2005</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=korean wine consumers;subject-join=exact;smode=simple;rmode=none;style=;brand=default">korean wine consumers</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine-marketing strategy;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine-marketing strategy</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />2 hits    
+                  </td><td class="col3" colspan="2">...United States, and South <span class="hit">Africa</span>, have entered the world’s...<br />...1.56 Korea 3.08 1.54 South <span class="hit">Africa</span> 2.67 1.51 Note: 7-point...<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_9 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_9');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=2000',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_9"><a href="javascript:getMoreLike_9()">Find</a></span></td></tr></table></div><div id="main_10" class="docHit"><table><tr><td class="col1"><b>10</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Arnold Krupat</td><td class="col4"><script type="text/javascript">
+                                    add_10 = function() {
+                                       var span = YAHOO.util.Dom.get('add_10');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=ft2g5004sk',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_10"><a href="javascript:add_10()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=tei/ft2g5004sk/ft2g5004sk.xml;query=africa;brand=default">The Voice in the Margin: Native American Literature and the Canon</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_tei.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1989</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=American Literature;subject-join=exact;smode=simple;rmode=none;style=;brand=default">American Literature</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Native Americans;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Native Americans</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />3 hits    
+                  </td><td class="col3" colspan="2">...A Range of Poetries from <a href="view?docId=tei/ft2g5004sk/ft2g5004sk.xml;query=africa;brand=default;hit.rank=1" class="hit">Africa</a>, America, Asia, and Oceania....<br />...Range of Poetries from <a href="view?docId=tei/ft2g5004sk/ft2g5004sk.xml;query=africa;brand=default;hit.rank=2" class="hit">Africa</a>, America, Asia, and Oceania (...<br />...up their Pillars in <a href="view?docId=tei/ft2g5004sk/ft2g5004sk.xml;query=africa;brand=default;hit.rank=3" class="hit">Africa</a>.  .  .  .  But behold, how Jesus...<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_10 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_10');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=ft2g5004sk',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_10"><a href="javascript:getMoreLike_10()">Find</a></span></td></tr></table></div><div id="main_11" class="docHit"><table><tr><td class="col1"><b>11</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Lionel H. Opie</td><td class="col4"><script type="text/javascript">
+                                    add_11 = function() {
+                                       var span = YAHOO.util.Dom.get('add_11');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=1683',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_11"><a href="javascript:add_11()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/text/1683/1683.txt">The red wine hypothesis: from concepts to protective signalling molecules</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_text.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2007</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=alcohol;subject-join=exact;smode=simple;rmode=none;style=;brand=default">alcohol</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />1 hit    
+                  </td><td class="col3" colspan="2">...3, 7935 Observatory, South <span class="hit">Africa</span> Received 30 January 2007;...<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_11 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_11');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=1683',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_11"><a href="javascript:getMoreLike_11()">Find</a></span></td></tr></table></div><div id="main_12" class="docHit"><table><tr><td class="col1"><b>12</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Indap, Amit R</td><td class="col4"><script type="text/javascript">
+                                    add_12 = function() {
+                                       var span = YAHOO.util.Dom.get('add_12');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=1471-2105-6-303',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_12"><a href="javascript:add_12()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=nlm/bmc/bmc.xml;query=africa;brand=default">Analysis of concordance of different haplotype block partitioning algorithms</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_nlm.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2005</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Research Article;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Research Article</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Matches:  </b><br />1 hit    
+                  </td><td class="col3" colspan="2">...sample of chromosomes from <a href="view?docId=nlm/bmc/bmc.xml;query=africa;brand=default;hit.rank=1" class="hit">Africa</a>, Asia, and Europe. The...<br /></td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_12 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_12');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=1471-2105-6-303',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_12"><a href="javascript:getMoreLike_12()">Find</a></span></td></tr></table></div></td></tr></table></div><div class="footer">
+         <a href="mailto:you@yourserver.com">Comments? Questions?</a>
+      </div></body></html>

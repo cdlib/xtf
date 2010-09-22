@@ -1,0 +1,81 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8; charset=UTF-8" /><title>XTF: Search Results</title><link rel="stylesheet" href="css/default/results.css" type="text/css" /><script src="script/yui/yahoo-dom-event.js" type="text/javascript"></script><script src="script/yui/connection-min.js" type="text/javascript"></script></head><body><div class="header">
+         <img src="icons/default/xtf_logo.gif" width="302" height="18" alt="eXtensible Text Framework" class="xtf-logo" />
+         <img src="icons/default/your_logo.gif" width="100" height="40" alt="graphic" class="your-logo" />
+         <br class="clear" />
+      </div><div class="resultsHeader"><table><tr><td colspan="2" class="right"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?smode=showBag">Bookbag</a>
+                        (<span id="bagCount">0</span>)
+                     </td></tr><tr><td><b>Browse by: </b>Author</td><td class="right"><a href="http://espresso.ad.ucop.edu:8084/xtf/search">New Search</a></td></tr><tr><td><b>Results: </b>3 Items</td><td class="right">Browse by <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes">Facet</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-title=first;sort=title">Title</a>  | Author</td></tr><tr><td colspan="2" class="center"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=aa;sort=creator">A</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=bb;sort=creator">B</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=cc;sort=creator">C</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=dd;sort=creator">D</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ee;sort=creator">E</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ff;sort=creator">F</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=gg;sort=creator">G</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=hh;sort=creator">H</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ii;sort=creator">I</a> | J | <span style="color: red">K</span> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ll;sort=creator">L</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=mm;sort=creator">M</a> | N | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=oo;sort=creator">O</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=pp;sort=creator">P</a> | Q | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=rr;sort=creator">R</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ss;sort=creator">S</a> | T | U | V | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ww;sort=creator">W</a> | Y | Z | OTHER</td></tr></table></div><div class="results"><table><tr><td><div id="main_1" class="docHit"><table><tr><td class="col1"> </td><td class="col2"><a name="M"></a><b>Author:  </b></td><td class="col3">Meera Khare</td><td class="col4"><script type="text/javascript">
+                                    add_1 = function() {
+                                       var span = YAHOO.util.Dom.get('add_1');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=1430',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_1"><a href="javascript:add_1()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/text/1430/1430.txt">The Wine-Cup in Mughal Court Culture—From Hedonism to Kingship</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_text.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2005</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=hedonism;subject-join=exact;smode=simple;rmode=none;style=;brand=default">hedonism</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Mughal History;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Mughal History</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_1 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_1');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=1430',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_1"><a href="javascript:getMoreLike_1()">Find</a></span></td></tr></table></div><div id="main_2" class="docHit"><table><tr><td class="col1"> </td><td class="col2"><a name="A"></a><b>Author:  </b></td><td class="col3">Arthur L. Klatsky</td><td class="col4"><script type="text/javascript">
+                                    add_2 = function() {
+                                       var span = YAHOO.util.Dom.get('add_2');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=5851',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_2"><a href="javascript:add_2()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/text/5851/5851.txt">Wine, Liquor, Beer, and Mortality</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_text.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2002</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=alcohol drinking;subject-join=exact;smode=simple;rmode=none;style=;brand=default">alcohol drinking</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=alcoholic beverages;subject-join=exact;smode=simple;rmode=none;style=;brand=default">alcoholic beverages</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=beer;subject-join=exact;smode=simple;rmode=none;style=;brand=default">beer</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=mortality;subject-join=exact;smode=simple;rmode=none;style=;brand=default">mortality</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=risk;subject-join=exact;smode=simple;rmode=none;style=;brand=default">risk</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_2 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_2');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=5851',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_2"><a href="javascript:getMoreLike_2()">Find</a></span></td></tr></table></div><div id="main_3" class="docHit"><table><tr><td class="col1"> </td><td class="col2"><a name="A"></a><b>Author:  </b></td><td class="col3">Arnold Krupat</td><td class="col4"><script type="text/javascript">
+                                    add_3 = function() {
+                                       var span = YAHOO.util.Dom.get('add_3');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=ft2g5004sk',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_3"><a href="javascript:add_3()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=tei/ft2g5004sk/ft2g5004sk.xml;query=;brand=default">The Voice in the Margin: Native American Literature and the Canon</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_tei.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1989</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=American Literature;subject-join=exact;smode=simple;rmode=none;style=;brand=default">American Literature</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Native Americans;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Native Americans</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_3 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_3');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=ft2g5004sk',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_3"><a href="javascript:getMoreLike_3()">Find</a></span></td></tr></table></div></td></tr></table></div><div class="footer">
+         <a href="mailto:you@yourserver.com">Comments? Questions?</a>
+      </div></body></html>

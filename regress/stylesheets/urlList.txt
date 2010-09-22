@@ -1,0 +1,2 @@
+http://espresso.ad.ucop.edu:8084/xtf/search?keyword=africa
+http://espresso.ad.ucop.edu:8084/xtf/view?docId=tei/ft958009mm/ft958009mm.xml;query=africa;brand=default
