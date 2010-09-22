@@ -161,13 +161,91 @@
             <link rel="stylesheet" type="text/css" href="{$root.URL}css/default/bbar.css" /> 
          </head>
          <body>
+            <!-- Standard button bar, but not using frames -->
             <xsl:variable name="bbarPage">
                <xsl:call-template name="bbar"/>
             </xsl:variable>
-            <xsl:copy-of select="$bbarPage//*:body/*"/>               
+            <xsl:copy-of select="$bbarPage//*:body/*"/>
+            
+            <!-- Dynamic javascript for this book -->
+            <script type="text/javascript">
+               <xsl:comment> Dynamic javascript with specific page parameters for this book. </xsl:comment>
+               
+               br = new BookReader();
+               
+               br.titleLeaf = <xsl:value-of select="(/*/leaf[@type='Title Page']/@leafNum, 1)[1]"/>;
+               
+               //   We have three numbering systems to deal with here:
+               //   1. "Leaf": Numbered sequentially starting at 1. This is a page from the original scan. 
+               //              Most of these are to be shown but a few (e.g. color cards) should be suppressed
+               //              for pleasant viewing. Hence...
+               //              
+               //   2. "Index": Also sequential starting at 1, but representing only the viewable pages. So the
+               //               number of index values is less than or equal to the number of leaves.
+               //               Example: if pages 3-9 are not viewable, the mapping from Index to Leaf would be:
+               //               
+               //                  index 1 : leaf 1
+               //                  index 2 : leaf 2
+               //                  index 3 : leaf 10
+               //                  index 4 : leaf 11
+               //                  etc.
+               //               
+               //   3. "Page": This is the human-readable, logical page number. So for instance, the cover page
+               //              doesn't count, and embedded color plates are often not numbered. The number of
+               //              page numbers is less than or equal to the number of indexes. Continuing our
+               //              example from above, let's say that "Page 1" of the book is leaf 10. The
+               //              mapping from page to index to leaf is:
+               //              
+               //                 page 1 : index 3 : leaf 10
+               //                 page 2 : index 4 : leaf 11
+               //                 etc.
+               
+               br.numLeafs <!--sic--> = <xsl:value-of select="max(/*/leaf/number(@leafNum))"/>;
+               
+               br.pageNumToPage = {};
+               br.indexToPage = {};
+               br.leafToPage = {};
+               
+               br.Page = function(w, h, imgFile, leafNum, indexNum, pageNum) {
+                  this.w = w;
+                  this.h = h;
+                  this.imgFile = imgFile;
+                  this.leafNum = leafNum;
+                  this.indexNum = indexNum;
+                  this.pageNum = pageNum;
+                  
+                  br.leafToPage[indexNum] = this;
+                  br.indexToPage[indexNum] = this;
+                  br.pageNumToPage[pageNum] = this;
+               };
+               
+               br.getPageWidth = function(index) {
+                  return br.indexToPage[index].w;
+               }
+               
+               br.getPageHeight = function(index) {
+                  return br.indexToPage[index].h;
+               }
+               
+               br.canRotatePage = function(index) { return false; } // We don't support rotation (yet anyway)
+               
+               br.pages = [
+                  <xsl:variable name="quote" select="'&quot;'"/>
+                  <xsl:for-each select="/*/leaf[@access='true']">new br.Page(<xsl:value-of select="
+                     concat(
+                        cropBox/@w, ',', 
+                        cropBox/@h, ',',
+                        $quote, @imgFile, $quote, ',',
+                        @leafNum,   ',',
+                        position(), ',',
+                        if (@pageNum &gt; 0) then @pageNum else 'null')"/>),
+                  </xsl:for-each>
+               ];
+            </script>
          </body>
       </html>
    </xsl:template>
+   
    
    <!-- ====================================================================== -->
    <!-- Print Template                                                         -->

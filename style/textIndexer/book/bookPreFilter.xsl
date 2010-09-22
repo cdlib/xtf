@@ -420,7 +420,9 @@
       
       <xsl:for-each select="$prevLeafNum to $leafNum - 1">
          <xsl:variable name="outPage" select=". - $prevLeafNum + $prevPageNum"/>
-         <mapping leafNum="{.}" pageNum="{if ($outPage >= $pageNum) then concat('n', .) else $outPage}"/>
+         <xsl:if test="$outPage &lt; $pageNum">
+            <mapping leafNum="{.}" pageNum="{$outPage}"/>
+         </xsl:if>
       </xsl:for-each>
 
       <xsl:choose>
@@ -461,9 +463,13 @@
    <xsl:template name="processPage">
       <xsl:variable name="leafNum" select="number(@leafNum)"/>
       <leaf leafNum="{$leafNum}" 
-            pageNum="{$leafToPage/mapping[@leafNum = $leafNum]/@pageNum}"
             type="{scribe:pageType}"
             access="{scribe:addToAccessFormats}">
+         
+         <!-- Associate a logical page number, if any. -->
+         <xsl:if test="$leafToPage/mapping[@leafNum = $leafNum]/@pageNum">
+            <xsl:attribute name="pageNum" select="$leafToPage/mapping[@leafNum = $leafNum]/@pageNum"/>
+         </xsl:if>
          
          <!-- Jump through hoops to find the image file -->
          <xsl:variable name="pageDiv" select="key('pageDivs', $leafNum)"/>
