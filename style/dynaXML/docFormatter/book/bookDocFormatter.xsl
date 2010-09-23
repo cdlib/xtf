@@ -167,7 +167,7 @@
             </xsl:variable>
             <xsl:copy-of select="$bbarPage//*:body/*"/>
             
-            <div id="BookReader" style="left:10px; right:200px; top:10px; bottom:2em;">x</div> 
+            <div id="BookReader" style="left:6px; right:6px; top:110px; bottom:6px;">x</div> 
             
             <!-- Dynamic javascript for this book -->
             <script type="text/javascript">
