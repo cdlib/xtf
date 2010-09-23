@@ -66,7 +66,7 @@
    <xsl:param name="dynaxmlPath" select="if (matches($servlet.path, 'org.cdlib.xtf.crossQuery.CrossQuery')) then 'org.cdlib.xtf.dynaXML.DynaXML' else 'view'"/>
    
    <xsl:param name="docId"/>
-   <xsl:param name="docPath" select="replace($docId, '[A-Za-z0-9]+\.xml$', '')"/>
+   <xsl:param name="docPath" select="replace($docId, '[^/\\]+\.xml$', '')"/>
    
    <!-- If an external 'source' document was specified, include it in the
       query string of links we generate. -->

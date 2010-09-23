@@ -167,13 +167,24 @@
             </xsl:variable>
             <xsl:copy-of select="$bbarPage//*:body/*"/>
             
+            <div id="BookReader" style="left:10px; right:200px; top:10px; bottom:2em;">x</div> 
+            
             <!-- Dynamic javascript for this book -->
             <script type="text/javascript">
+               
                <xsl:comment> Dynamic javascript with specific page parameters for this book. </xsl:comment>
+               
+               // Set some config variables -- $$$ NB: Config object format has not been finalized
+               var brConfig = {};
+               brConfig["mode"] = 1;
                
                br = new BookReader();
                
-               br.titleLeaf = <xsl:value-of select="(/*/leaf[@type='Title Page']/@leafNum, 1)[1]"/>;
+               <xsl:for-each select="/*/leaf[@access='true']">
+                  <xsl:if test="@type = 'Title Page'">
+                     br.titleLeaf = <xsl:value-of select="position() - 1"/>;
+                  </xsl:if>
+               </xsl:for-each>
                
                //   We have three numbering systems to deal with here:
                //   1. "Leaf": Numbered sequentially starting at 1. This is a page from the original scan. 
@@ -200,8 +211,6 @@
                //                 page 2 : index 4 : leaf 11
                //                 etc.
                
-               br.numLeafs <!--sic--> = <xsl:value-of select="max(/*/leaf/number(@leafNum))"/>;
-               
                br.pageNumToPage = {};
                br.indexToPage = {};
                br.leafToPage = {};
@@ -220,11 +229,86 @@
                };
                
                br.getPageWidth = function(index) {
-                  return br.indexToPage[index].w;
+                  return this.indexToPage[index].w;
                }
                
                br.getPageHeight = function(index) {
-                  return br.indexToPage[index].h;
+                  return this.indexToPage[index].h;
+               }
+               
+               br.getPageURI = function(index, reduce, rotate) {
+                  return "<xsl:value-of select="$doc.dir"/>" + this.indexToPage[index].imgFile.replace(".jp2", ".jpg");
+               }
+               
+               br.getPageNum = function(index) {
+                  var num = this.indexToPage[index].pageNum;
+                  return num ? num : "n"+index;
+               }
+               
+               br.leafNumToIndex = function(leafNum) {
+                  return this.leafToPage[leafNum].indexNum;
+               }
+               
+               br.getPageSide = function(index) {
+                  //assume the book starts with a cover (right-hand leaf)
+                  //we should really get handside from scandata.xml
+                  
+                  
+                  // $$$ we should get this from scandata instead of assuming the accessible
+                  //     leafs are contiguous
+                  if ('rl' != this.pageProgression) {
+                     // If pageProgression is not set RTL we assume it is LTR
+                     if (0 == (index % 1)) {
+                        // Even-numbered page
+                        return 'R';
+                     } else {
+                        // Odd-numbered page
+                        return 'L';
+                     }
+                  } else {
+                     // RTL
+                     if (0 == (index % 1)) {
+                        return 'L';
+                     } else {
+                        return 'R';
+                     }
+                  }
+               }
+               
+               // This function returns the left and right indices for the user-visible
+               // spread that contains the given index.  The return values may be
+               // null if there is no facing page or the index is invalid.
+               br.getSpreadIndices = function(pindex) {
+                  // $$$ we could make a separate function for the RTL case and
+                  //      only bind it if necessary instead of always checking
+                  // $$$ we currently assume there are no gaps
+                  
+                  var spreadIndices = [null, null]; 
+                  if ('rl' == this.pageProgression) {
+                     // Right to Left
+                     if (this.getPageSide(pindex) == 'R') {
+                        spreadIndices[1] = pindex;
+                        spreadIndices[0] = pindex + 1;
+                     } else {
+                        // Given index was LHS
+                        spreadIndices[0] = pindex;
+                        spreadIndices[1] = pindex - 1;
+                     }
+                  } else {
+                     // Left to right
+                     if (this.getPageSide(pindex) == 'L') {
+                        spreadIndices[0] = pindex;
+                        spreadIndices[1] = pindex + 1;
+                     } else {
+                        // Given index was RHS
+                        spreadIndices[1] = pindex;
+                        spreadIndices[0] = pindex - 1;
+                     }
+                  }
+               
+                  //console.log("   index %d mapped to spread %d,%d", pindex, spreadIndices[0], spreadIndices[1]);
+                  
+                  return spreadIndices;
                }
                
                br.canRotatePage = function(index) { return false; } // We don't support rotation (yet anyway)
@@ -237,11 +321,21 @@
                         cropBox/@h, ',',
                         $quote, @imgFile, $quote, ',',
                         @leafNum,   ',',
-                        position(), ',',
+                        position() - 1, ',',
                         if (@pageNum &gt; 0) then @pageNum else 'null')"/>),
                   </xsl:for-each>
                ];
+               
+               br.numLeafs /*sic*/ = br.pages.length;
+               
+               br.bookTitle= 'Fighting France; from Dunkerque to Belfort';
+               br.bookUrl  = 'http://www.archive.org/details/fightingfrancefr00whariala';
+               
+               br.init();
+               
+               
             </script>
+            
          </body>
       </html>
    </xsl:template>
