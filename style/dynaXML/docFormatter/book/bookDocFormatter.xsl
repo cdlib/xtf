@@ -229,11 +229,11 @@
                };
                
                br.getPageWidth = function(index) {
-                  return this.indexToPage[index].w;
+                  return (index in this.indexToPage) ? this.indexToPage[index].w : NaN;
                }
                
                br.getPageHeight = function(index) {
-                  return this.indexToPage[index].h;
+                  return (index in this.indexToPage) ? this.indexToPage[index].h : NaN;
                }
                
                br.getPageURI = function(index, reduce, rotate) {
