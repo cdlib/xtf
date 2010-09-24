@@ -154,6 +154,7 @@
                <xsl:value-of select="$doc.title"/>
             </title>
             <link rel="stylesheet" type="text/css" href="{$root.URL}css/bookreader/BookReader.css"/>
+            <link rel="stylesheet" type="text/css" href="{$root.URL}css/bookreader/BookReaderXTF.css"/>
             <script type="text/javascript" src="{$root.URL}script/bookreader/jquery-1.2.6.min.js"></script>
             <script type="text/javascript" src="{$root.URL}script/bookreader/jquery.easing.1.3.js"></script>
             <script type="text/javascript" src="{$root.URL}script/bookreader/BookReader.js"></script>    
@@ -241,12 +242,17 @@
                }
                
                br.getPageNum = function(index) {
+                  if (!(index in this.indexToPage))
+                     return null;
                   var num = this.indexToPage[index].pageNum;
                   return num ? num : "n"+index;
                }
                
                br.leafNumToIndex = function(leafNum) {
-                  return this.leafToPage[leafNum].indexNum;
+                  var page = this.leafToPage[leafNum];
+                  if (page == undefined)
+                     return NaN;
+                  return page.indexNum;
                }
                
                br.getPageSide = function(index) {
@@ -258,7 +264,7 @@
                   //     leafs are contiguous
                   if ('rl' != this.pageProgression) {
                      // If pageProgression is not set RTL we assume it is LTR
-                     if (0 == (index % 1)) {
+                     if (0 == (Math.abs(index) % 2)) {
                         // Even-numbered page
                         return 'R';
                      } else {
@@ -267,7 +273,7 @@
                      }
                   } else {
                      // RTL
-                     if (0 == (index % 1)) {
+                     if (0 == (Math.abs(index) % 2)) {
                         return 'L';
                      } else {
                         return 'R';
@@ -331,8 +337,16 @@
                br.bookTitle= 'Fighting France; from Dunkerque to Belfort';
                br.bookUrl  = 'http://www.archive.org/details/fightingfrancefr00whariala';
                
+               br.imagesBaseURL = "css/bookreader/images";
+               
+               br.autofit = "height"; // for some reason BookReader doesn't set this.
+               
                br.init();
                
+               // $$$ hack to workaround sizing bug when starting in two-up mode
+               $(document).ready(function() {
+                  $(window).trigger('resize');
+               });
                
             </script>
             

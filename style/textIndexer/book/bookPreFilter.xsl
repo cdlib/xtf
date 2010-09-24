@@ -436,10 +436,8 @@
             </xsl:call-template>
          </xsl:when>
          <xsl:otherwise>
-            <!-- Handle leaves after the last assertion -->
-            <xsl:for-each select="$leafNum to $numLeaves">
-               <mapping leafNum="{.}" pageNum="{. - $leafNum + $pageNum}"/>
-            </xsl:for-each>
+            <!-- Handle last asserted leaf. -->
+            <mapping leafNum="{$leafNum}" pageNum="{$pageNum}"/>
          </xsl:otherwise>
       </xsl:choose>
    </xsl:template>
