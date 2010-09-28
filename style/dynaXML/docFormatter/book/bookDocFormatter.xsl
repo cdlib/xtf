@@ -88,6 +88,7 @@
    
    <xsl:param name="root.URL"/>
    <xsl:param name="doc.title" select="/xtf-converted-book/xtf:meta/title"/>
+   <xsl:param name="servlet.dir"/>
    <!-- for docFormatterCommon.xsl -->
    <xsl:param name="css.path" select="'css/default/'"/>
    <xsl:param name="icon.path" select="'css/default/'"/>
@@ -259,8 +260,20 @@
                   return (index in this.indexToPage) ? this.indexToPage[index].h : NaN;
                }
                
+               // Use the Djatoka image server to convert and scale the JP2 page files.
                br.getPageURI = function(index, reduce, rotate) {
-                  return "<xsl:value-of select="$doc.dir"/>" + this.indexToPage[index].imgFile.replace(".jp2", ".jpg");
+                  var page = this.indexToPage[index];
+                  // Scaling by maximum dimension seems to be faster in Djatoka for some reason.
+                  var maxDim = Math.max(page.w, page.h);
+                  var scale = parseInt(maxDim / reduce);
+                  var amp = String.fromCharCode(38); // raw ampersands are tough to output in XSLT
+                  return "http://localhost:8080/adore-djatoka/resolver?url_ver=Z39.88-2004"
+                         + amp + "rft_id=file:" + encodeURIComponent("<xsl:value-of select="concat($servlet.dir, 'data/', $docPath)"/>" + this.indexToPage[index].imgFile)
+                         + amp + "svc_id=info:lanl-repo/svc/getRegion"
+                         + amp + "svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000"
+                         + amp + "svc.format=image/jpeg"
+                         + amp + "svc.scale=" + scale
+                         + amp + "svc.rotate=0";
                }
                
                br.getPageNum = function(index) {
