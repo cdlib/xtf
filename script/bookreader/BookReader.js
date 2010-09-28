@@ -2533,21 +2533,33 @@ BookReader.prototype.getPageWidth2UP = function(index) {
 
 // search()
 //______________________________________________________________________________
+// Universal function to begin a search. Calls overridable doSearch to do the
+// work.
 BookReader.prototype.search = function(term) {
     term = term.replace(/\//g, ' '); // strip slashes
     this.searchTerm = term;
+    $('#BookReaderSearchBox').val(term);
+    $('#BookReaderSearchResults').html('Searching...');
+    this.doSearch();
+}
+
+// doSearch()
+//______________________________________________________________________________
+// Overridable function that calls the search engine and parses the results in
+// a callback. This version is IA-specific but can be overridden if desired.
+BookReader.prototype.doSearch = function(term) {
     $('#BookReaderSearchScript').remove();
     var script  = document.createElement("script");
     script.setAttribute('id', 'BookReaderSearchScript');
     script.setAttribute("type", "text/javascript");
     script.setAttribute("src", 'http://'+this.server+'/BookReader/flipbook_search_br.php?url='+escape(this.bookPath + '_djvu.xml')+'&term='+term+'&format=XML&callback=br.BRSearchCallback');
     document.getElementsByTagName('head')[0].appendChild(script);
-    $('#BookReaderSearchBox').val(term);
-    $('#BookReaderSearchResults').html('Searching...');
 }
 
 // BRSearchCallback()
 //______________________________________________________________________________
+// Default callback of overridable doSearch(). Parses IA-specific search results
+// to construct a SearchResult object, and passes that to updateSearchResults().
 BookReader.prototype.BRSearchCallback = function(txt) {
     //alert(txt);
     if (jQuery.browser.msie) {
@@ -2559,6 +2571,63 @@ BookReader.prototype.BRSearchCallback = function(txt) {
         var dom = parser.parseFromString(txt, "text/xml");    
     }
     
+    var pages = dom.getElementsByTagName('PAGE');
+    var results = new Array();
+    
+    for (var i = 0; i < pages.length; i++){
+        //console.log(pages[i].getAttribute('file').substr(1) +'-'+ parseInt(pages[i].getAttribute('file').substr(1), 10));
+        
+        var re = new RegExp (/_(\d{4})\.djvu/);
+        var reMatch = re.exec(pages[i].getAttribute('file'));
+        var leaf = parseInt(reMatch[1], 10);
+        var index = this.leafNumToIndex(leaf);
+        if (null != index) {
+            var children = pages[i].childNodes;
+            var result = {'index':index, 'context':''};
+            for (var j=0; j<children.length; j++) {
+                //console.log(j + ' - ' + children[j].nodeName);
+                //console.log(children[j].firstChild.nodeValue);
+                if ('CONTEXT' == children[j].nodeName) {
+                    result.context += children[j].firstChild.nodeValue;
+                } else if ('WORD' == children[j].nodeName) {
+                    result.context += '<b>'+children[j].firstChild.nodeValue+'</b>';
+                    result.index = index;
+                    //coordinates are [left, bottom, right, top, [baseline]]
+                    //we'll skip baseline for now...
+                    var coords = children[j].getAttribute('coords').split(',',4);
+                    if (4 == coords.length) {
+                        result.l = parseInt(coords[0]);
+                        result.b = parseInt(coords[1]);
+                        result.r = parseInt(coords[2]);
+                        result.t = parseInt(coords[3]);
+                    }
+                }
+            }
+        }
+        result.context = context;
+        results.push(result);
+    }
+
+    this.updateSearchResults(results);
+}
+
+// updateSearchResults()
+//______________________________________________________________________________
+// Processes an array of intermediate search result objects, displaying each 
+// result in the result div, and updating all the page highlights. The input
+// objects should have the following properties:
+//
+//   index: the page index of the search hit
+//    -or-
+//   leaf: the leaf number (will be mapped with leafNumToIndex)
+//
+//   context: text surrounding the found search term, plus the term itself.
+//            Typically the term should have <b>..</b> tags around it.
+//
+//   l, b, r, t: Pixel coordinates to highlight
+BookReader.prototype.updateSearchResults = function(newResults) {
+
+    // Clear the results pane and all existing highlights
     $('#BookReaderSearchResults').empty();    
     $('#BookReaderSearchResults').append('<ul>');
     
@@ -2569,47 +2638,28 @@ BookReader.prototype.BRSearchCallback = function(txt) {
         delete this.searchResults[key];
     }
     
-    var pages = dom.getElementsByTagName('PAGE');
+    // Display the search results, and build a table by index
+    this.searchResults = {};
     
-    if (0 == pages.length) {
+    if (0 == newResults.length) {
         // $$$ it would be nice to echo the (sanitized) search result here
         $('#BookReaderSearchResults').append('<li>No search results found</li>');
-    } else {    
-        for (var i = 0; i < pages.length; i++){
-            //console.log(pages[i].getAttribute('file').substr(1) +'-'+ parseInt(pages[i].getAttribute('file').substr(1), 10));
-    
-            
-            var re = new RegExp (/_(\d{4})\.djvu/);
-            var reMatch = re.exec(pages[i].getAttribute('file'));
-            var index = parseInt(reMatch[1], 10);
-            //var index = parseInt(pages[i].getAttribute('file').substr(1), 10);
-            
-            var children = pages[i].childNodes;
-            var context = '';
-            for (var j=0; j<children.length; j++) {
-                //console.log(j + ' - ' + children[j].nodeName);
-                //console.log(children[j].firstChild.nodeValue);
-                if ('CONTEXT' == children[j].nodeName) {
-                    context += children[j].firstChild.nodeValue;
-                } else if ('WORD' == children[j].nodeName) {
-                    context += '<b>'+children[j].firstChild.nodeValue+'</b>';
-                    
-                    var index = this.leafNumToIndex(index);
-                    if (null != index) {
-                        //coordinates are [left, bottom, right, top, [baseline]]
-                        //we'll skip baseline for now...
-                        var coords = children[j].getAttribute('coords').split(',',4);
-                        if (4 == coords.length) {
-                            this.searchResults[index] = {'l':parseInt(coords[0]), 'b':parseInt(coords[1]), 'r':parseInt(coords[2]), 't':parseInt(coords[3]), 'div':null};
-                        }
-                    }
-                }
-            }
-            var pageName = this.getPageName(index);
-            var middleX = (this.searchResults[index].l + this.searchResults[index].r) >> 1;
-            var middleY = (this.searchResults[index].t + this.searchResults[index].b) >> 1;
+    } else {
+        var countPerIndex = {};
+        for (var i in newResults) {
+            var result = newResults[i];
+            if (!('index' in result))
+              result.index = this.leafNumToIndex(result.leaf);
+            result.div = null;
+            var pageName = this.getPageName(result.index);
+            var middleX = (result.l + result.r) >> 1;
+            var middleY = (result.t + result.b) >> 1;
             //TODO: remove hardcoded instance name
-            $('#BookReaderSearchResults').append('<li><b><a href="javascript:br.jumpToIndex('+index+','+middleX+','+middleY+');">' + pageName + '</a></b> - ' + context + '</li>');
+            $('#BookReaderSearchResults').append('<li><b><a href="javascript:br.jumpToIndex('+result.index+','+middleX+','+middleY+');">' + pageName + '</a></b> - ' + result.context + '</li>');
+            // Add a fractional part to the index before sticking in our table, to allow for multiple hits per page.
+            while (result.index in this.searchResults)
+                result.index += .001;
+            this.searchResults[result.index] = result;
         }
     }
     $('#BookReaderSearchResults').append('</ul>');

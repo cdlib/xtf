@@ -115,34 +115,6 @@
    </xsl:template>
    
    <!-- ====================================================================== -->
-   <!-- Anchor Template                                                        -->
-   <!-- ====================================================================== -->
-   
-   <xsl:template name="create.anchor">
-      <xsl:choose>
-         <xsl:when test="($query != '0' and $query != '') and $hit.rank != '0'">
-            <xsl:text>#</xsl:text><xsl:value-of select="key('hit-rank-dynamic', $hit.rank)/@hitNum"/>
-         </xsl:when>
-         <xsl:when test="$anchor.id != '0' and $anchor.id != ''">
-            <xsl:choose>
-               <xsl:when test="key('div-id',$anchor.id)/@xtf:firstHit">
-                  <xsl:text>#</xsl:text><xsl:value-of select="key('div-id',$anchor.id)/@xtf:firstHit"/>
-               </xsl:when>
-               <xsl:otherwise>
-                  <xsl:text>#</xsl:text><xsl:value-of select="$anchor.id"/>
-               </xsl:otherwise>
-            </xsl:choose>
-         </xsl:when>
-         <xsl:when test="$query != '0' and $query != ''">
-            <xsl:text>#</xsl:text><xsl:value-of select="/*/@xtf:firstHit"/>
-         </xsl:when>
-         <xsl:otherwise>
-            <xsl:text>#X</xsl:text>
-         </xsl:otherwise>
-      </xsl:choose>
-   </xsl:template>
-
-   <!-- ====================================================================== -->
    <!-- Content Template                                                       -->
    <!-- ====================================================================== -->
    
@@ -168,7 +140,19 @@
             </xsl:variable>
             <xsl:copy-of select="$bbarPage//*:body/*"/>
             
-            <div id="BookReader" style="left:6px; right:6px; top:110px; bottom:6px;">x</div> 
+            <xsl:choose>
+               <xsl:when test="$query">
+                  <div id="BookReader" style="left:6px; right:196px; top:110px; bottom:6px;">x</div> 
+                  <div id="BookReaderSearch" style="width:190px; right:6px; top:110px; bottom:6px;"> 
+                     <div id="BookReaderSearchResults"> 
+                        Search results
+                     </div> 
+                  </div> 
+               </xsl:when>
+               <xsl:otherwise>
+                  <div id="BookReader" style="left:6px; right:6px; top:110px; bottom:6px;">x</div> 
+               </xsl:otherwise>
+            </xsl:choose>
             
             <!-- Dynamic javascript for this book -->
             <script type="text/javascript">
@@ -224,7 +208,7 @@
                   this.indexNum = indexNum;
                   this.pageNum = pageNum;
                   
-                  br.leafToPage[indexNum] = this;
+                  br.leafToPage[leafNum] = this;
                   br.indexToPage[indexNum] = this;
                   br.pageNumToPage[pageNum] = this;
                };
@@ -332,6 +316,13 @@
                   </xsl:for-each>
                ];
                
+               // Override the default doSearch
+               br.doSearch = function() {
+                  this.updateSearchResults([
+                     <xsl:apply-templates select="/*/leaf[@xtf:hitCount]//(xtf:hit|xtf:more)" mode="search-results"/>
+                  ]);
+               }
+               
                br.numLeafs /*sic*/ = br.pages.length;
                
                br.bookTitle= 'Fighting France; from Dunkerque to Belfort';
@@ -346,6 +337,7 @@
                // $$$ hack to workaround sizing bug when starting in two-up mode
                $(document).ready(function() {
                   $(window).trigger('resize');
+                  br.search('dunkerque');
                });
                
             </script>
@@ -354,6 +346,117 @@
       </html>
    </xsl:template>
    
+   <!-- Workhorse to generate the box around each hit and the term(s) inside it -->
+   <xsl:template match="xtf:hit | xtf:more" mode="search-results">
+      
+      <!-- Locate the hit, line and leaf this hit is part of -->
+      <xsl:variable name="hitNum" select="@hitNum"/>
+      <xsl:variable name="line" select="ancestor::line"/>
+      <xsl:variable name="leaf" select="$line/ancestor::leaf"/>
+      
+      <!-- The top and bottom of the line are easy to find, as are the leaf dimensions. -->
+      <xsl:variable name="top" select="$line/@t"/>
+      <xsl:variable name="bottom" select="$line/@b"/>
+      <xsl:variable name="leafWidth" select="$leaf/cropBox/@w"/>
+      <xsl:variable name="leafHeight" select="$leaf/cropBox/@h"/>
+      
+      
+      <!-- The line data contains spacing that looks like this: "23 3 14 5 16...". Here's how
+         to interpret the data in this sample:
+         
+         23 = width of 1st word
+         3 = space between 1st and 2nd words
+         14 = width of 2nd word
+         5 = space between 2nd and 3rd words
+         16 = width of 3rd word
+         ...etc...
+         
+         To be useful in our XSLT code, we need to split out the values into a sequence
+         that we can index by position. That's what the xsl:analyze-string does here.
+      -->
+      <xsl:variable name="lineSpacing">
+         <xsl:analyze-string select="$line/@spacing" regex="\s+">
+            <xsl:non-matching-substring>
+               <spacing xmlns="" width="{.}"/>
+            </xsl:non-matching-substring>
+         </xsl:analyze-string>
+      </xsl:variable>
+      
+      <!-- To determine the left-hand boundary of the box for the hit or term, we
+         need to figure out how many words are before it. Then we can use the
+         spacing data to determine the exact coordinate. -->
+      <xsl:variable name="textBeforeStart">
+         <xsl:if test="local-name() = 'term'">
+            <xsl:for-each select="parent::*/preceding-sibling::node()">
+               <xsl:value-of select="string(.)"/>
+            </xsl:for-each>
+         </xsl:if>
+         <xsl:for-each select="preceding-sibling::node()">
+            <xsl:value-of select="string(.)"/>
+         </xsl:for-each>
+      </xsl:variable>
+      
+      <xsl:variable name="left" select="$line/@l + xtf:sumSpacing($lineSpacing, $textBeforeStart, 0)"/>
+      
+      <!-- Similarly, we compute the right-hand box boundary by adding the spacing for
+         the words inside the hit. -->
+      <xsl:variable name="textBeforeEnd" select="concat($textBeforeStart, string(.))"/>
+      <xsl:variable name="right" select="$line/@l + xtf:sumSpacing($lineSpacing, $textBeforeEnd, -1)"/>
+      
+      <!-- Whew, that was a lot of computation. We're finally ready to generate the box. 
+           We want a little padding so the yellow box is bigger than the word. 
+           For some reason, the top needs a bit more than the others, and the
+           bottom doesn't need any. 
+      -->
+      <!-- Spit out the leaf number and context. The context comes from the snippet element at the doc top -->
+      { 'leaf':<xsl:value-of select="$leaf/@leafNum"/>,
+        'context':'<xsl:apply-templates select="/*/xtf:snippets/xtf:snippet[@hitNum=$hitNum]" mode="hit-context"/>',
+        'l': <xsl:value-of select="max((0,            $left   - 1))"/>,
+        't': <xsl:value-of select="max((0,            $top    - 2))"/>,
+        'r': <xsl:value-of select="min(($leafWidth,   $right  + 1))"/>,
+        'b': <xsl:value-of select="min(($leafHeight,  $bottom + 0))"/>,
+      },
+   </xsl:template>
+   
+   <!-- This function sums up the spacing for a given number of words. Used to determine
+      the left and right coordinates of a hit. -->
+   <xsl:function name="xtf:sumSpacing">
+      <xsl:param name="lineSpacing"/>
+      <xsl:param name="textBefore"/>
+      <xsl:param name="tail"/>
+      
+      <!-- For each word (that is, a series of non-space characters) make a mark. -->
+      <xsl:variable name="trimmedTextBefore" select="if ($tail) then $textBefore else replace($textBefore, '\S+$', '')"/>
+      <xsl:variable name="wordsBefore">
+         <xsl:analyze-string select="$trimmedTextBefore" regex="\s+">
+            <xsl:non-matching-substring>1</xsl:non-matching-substring>
+         </xsl:analyze-string>
+      </xsl:variable>
+      
+      <!-- Count the marks we just made -->
+      <xsl:variable name="nWordsBefore" select="string-length($wordsBefore)"/>
+      
+      <!-- Grab the spacing for each of those words, plus the space between them -->
+      <xsl:variable name="spacingBefore" select="$lineSpacing/*[position() &lt;= (($nWordsBefore * 2) + $tail)]"/>
+      
+      <!-- And return the sum -->
+      <xsl:value-of select="sum($spacingBefore/@width)"/>
+   </xsl:function>
+   
+   <xsl:template match="xtf:snippet" mode="hit-context">
+      <xsl:apply-templates mode="hit-context"/>
+   </xsl:template>
+   
+   <xsl:template match="xtf:term" mode="hit-context">
+      <b>
+         <xsl:apply-templates mode="hit-context"/>
+      </b>
+   </xsl:template>
+   
+   <xsl:template match="text()" mode="hit-context">
+      <xsl:variable name="quote" select="'&quot;'"/>
+      <xsl:value-of select="replace(., $quote, '')"/>
+   </xsl:template>
    
    <!-- ====================================================================== -->
    <!-- Print Template                                                         -->
