@@ -2686,11 +2686,12 @@ BookReader.prototype.updateSearchHilites1UP = function() {
 
     for (var key in this.searchResults) {
         
-        if (jQuery.inArray(parseInt(key), this.displayedIndices) >= 0) {
+        var index = parseInt(key);
+        if (jQuery.inArray(index, this.displayedIndices) >= 0) {
             var result = this.searchResults[key];
             if (null == result.div) {
                 result.div = document.createElement('div');
-                $(result.div).attr('className', 'BookReaderSearchHilite').appendTo('#pagediv'+key);
+                $(result.div).attr('className', 'BookReaderSearchHilite').appendTo('#pagediv'+index);
                 //console.log('appending ' + key);
             }    
             $(result.div).css({
@@ -2839,8 +2840,8 @@ BookReader.prototype.twoPagePlaceFlipAreas = function() {
 BookReader.prototype.updateSearchHilites2UP = function() {
 
     for (var key in this.searchResults) {
-        key = parseInt(key, 10);
-        if (jQuery.inArray(key, this.displayedIndices) >= 0) {
+        var index = parseInt(key, 10);
+        if (jQuery.inArray(index, this.displayedIndices) >= 0) {
             var result = this.searchResults[key];
             if (null == result.div) {
                 result.div = document.createElement('div');
@@ -2850,14 +2851,14 @@ BookReader.prototype.updateSearchHilites2UP = function() {
 
             // We calculate the reduction factor for the specific page because it can be different
             // for each page in the spread
-            var height = this._getPageHeight(key);
-            var width  = this._getPageWidth(key)
+            var height = this._getPageHeight(index);
+            var width  = this._getPageWidth(index)
             var reduce = this.twoPage.height/height;
             var scaledW = parseInt(width*reduce);
             
             var gutter = this.twoPageGutter();
             var pageL;
-            if ('L' == this.getPageSide(key)) {
+            if ('L' == this.getPageSide(index)) {
                 pageL = gutter-scaledW;
             } else {
                 pageL = gutter;
