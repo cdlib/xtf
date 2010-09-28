@@ -135,10 +135,46 @@
          </head>
          <body>
             <!-- Standard button bar, but not using frames -->
-            <xsl:variable name="bbarPage">
-               <xsl:call-template name="bbar"/>
-            </xsl:variable>
-            <xsl:copy-of select="$bbarPage//*:body/*"/>
+            <div class="bbar">
+               <table border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                     <td colspan="3" align="center">
+                        <xsl:copy-of select="$brand.header"/>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td class="left">
+                        <a href="{$xtfURL}search" target="_top">Home</a><xsl:text> | </xsl:text>
+                        <xsl:choose>
+                           <xsl:when test="session:getData('queryURL')">
+                              <a href="{session:getData('queryURL')}" target="_top">Return to Search Results</a>
+                           </xsl:when>
+                           <xsl:otherwise>
+                              <span class="notActive">Return to Search Results</span>
+                           </xsl:otherwise>
+                        </xsl:choose>
+                     </td>
+                     <td width="34%" class="center">
+                        <form action="{$xtfURL}{$dynaxmlPath}" target="_top" method="get">
+                           <input name="query" type="text" size="15"/>
+                           <input type="hidden" name="docId" value="{$docId}"/>
+                           <input type="hidden" name="hit.rank" value="1"/>
+                           <input type="submit" value="Search this Item"/>
+                        </form>
+                     </td>
+                     <td class="right">
+                        <a>
+                           <xsl:attribute name="href">javascript://</xsl:attribute>
+                           <xsl:attribute name="onclick">
+                              <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/><xsl:text>?docId=</xsl:text><xsl:value-of
+                                 select="editURL:protectValue($docId)"/><xsl:text>;doc.view=citation</xsl:text><xsl:text>','popup','width=800,height=400,resizable=yes,scrollbars=no')</xsl:text>
+                           </xsl:attribute>
+                           <xsl:text>Citation</xsl:text>
+                        </a>
+                     </td>
+                  </tr>
+               </table>
+            </div>
             
             <xsl:choose>
                <xsl:when test="$query">
@@ -161,13 +197,15 @@
                
                // Set some config variables -- $$$ NB: Config object format has not been finalized
                var brConfig = {};
-               brConfig["mode"] = 1;
+               brConfig["mode"] = 2;
                
                br = new BookReader();
+               br.mode = 2;
                
+               <!-- If no query, start on the title page if there is one -->
                <xsl:for-each select="/*/leaf[@access='true']">
                   <xsl:if test="@type = 'Title Page'">
-                     br.titleLeaf = <xsl:value-of select="position() - 1"/>;
+                     br.titleLeaf = <xsl:value-of select="position()"/>;
                   </xsl:if>
                </xsl:for-each>
                
@@ -337,7 +375,17 @@
                // $$$ hack to workaround sizing bug when starting in two-up mode
                $(document).ready(function() {
                   $(window).trigger('resize');
-                  br.search('dunkerque');
+                  <xsl:if test="$query">
+                     br.doSearch();
+                     <xsl:choose>
+                        <xsl:when test="$hit.rank">
+                           br.jumpToSearchResult(<xsl:value-of select="$hit.rank"/>);
+                        </xsl:when>
+                        <xsl:otherwise>
+                           br.jumpToSearchResult(<xsl:value-of select="1"/>);
+                        </xsl:otherwise>
+                     </xsl:choose>
+                  </xsl:if>
                });
                
             </script>
@@ -411,10 +459,11 @@
       <!-- Spit out the leaf number and context. The context comes from the snippet element at the doc top -->
       { 'leaf':<xsl:value-of select="$leaf/@leafNum"/>,
         'context':'<xsl:apply-templates select="/*/xtf:snippets/xtf:snippet[@hitNum=$hitNum]" mode="hit-context"/>',
-        'l': <xsl:value-of select="max((0,            $left   - 1))"/>,
-        't': <xsl:value-of select="max((0,            $top    - 2))"/>,
-        'r': <xsl:value-of select="min(($leafWidth,   $right  + 1))"/>,
-        'b': <xsl:value-of select="min(($leafHeight,  $bottom + 0))"/>,
+        'clientKey':<xsl:value-of select="if ($hit.rank) then @rank else @hitNum"/>,
+        'l': <xsl:value-of select="max((0,            $left   - 10))"/>,
+        't': <xsl:value-of select="max((0,            $top    - 10))"/>,
+        'r': <xsl:value-of select="min(($leafWidth,   $right  + 10))"/>,
+        'b': <xsl:value-of select="min(($leafHeight,  $bottom + 10))"/>,
       },
    </xsl:template>
    
@@ -454,7 +503,7 @@
    </xsl:template>
    
    <xsl:template match="text()" mode="hit-context">
-      <xsl:variable name="quote" select="'&quot;'"/>
+      <xsl:variable name="quote" select="'xx&quot;'"/>
       <xsl:value-of select="replace(., $quote, '')"/>
    </xsl:template>
    

@@ -2625,6 +2625,8 @@ BookReader.prototype.BRSearchCallback = function(txt) {
 //            Typically the term should have <b>..</b> tags around it.
 //
 //   l, b, r, t: Pixel coordinates to highlight
+//
+//   clientKey (optional): used for jumpToSearchResult()
 BookReader.prototype.updateSearchResults = function(newResults) {
 
     // Clear the results pane and all existing highlights
@@ -2645,6 +2647,7 @@ BookReader.prototype.updateSearchResults = function(newResults) {
         // $$$ it would be nice to echo the (sanitized) search result here
         $('#BookReaderSearchResults').append('<li>No search results found</li>');
     } else {
+        var jumpToFirst = null;
         var countPerIndex = {};
         for (var i in newResults) {
             var result = newResults[i];
@@ -2668,6 +2671,23 @@ BookReader.prototype.updateSearchResults = function(newResults) {
     $('#BookReaderSearchBox').val(this.searchTerm);
 
     this.updateSearchHilites();
+}
+
+// jumpToSearchResult(clientKey)
+//______________________________________________________________________________
+// Jumps to a particular search result, identified by client key, in the current
+// result set.
+BookReader.prototype.jumpToSearchResult = function(clientKey) {
+    for (var i in this.searchResults) {
+        var result = this.searchResults[i];
+        if (result.clientKey == clientKey) {
+            var middleX = (result.l + result.r) >> 1;
+            var middleY = (result.t + result.b) >> 1;
+            this.jumpToIndex(result.index, middleX, middleY);
+            return true;
+        }
+    }
+    return false;
 }
 
 // updateSearchHilites()
