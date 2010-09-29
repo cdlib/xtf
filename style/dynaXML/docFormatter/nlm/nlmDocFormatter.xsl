@@ -2,6 +2,7 @@
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
    xmlns:xtf="http://cdlib.org/xtf"
    xmlns:session="java:org.cdlib.xtf.xslt.Session"
+   xmlns:editURL="http://cdlib.org/xtf/editURL"
    xmlns="http://www.w3.org/1999/xhtml"
    extension-element-prefixes="session"
    exclude-result-prefixes="#all">
@@ -81,6 +82,7 @@
    
    <xsl:include href="ViewNLM-v2.3.xsl"/>
    <xsl:include href="search.xsl"/>
+   <xsl:include href="../../../common/editURL.xsl"/>
    
    <!-- ====================================================================== -->
    <!-- Define Keys                                                            -->
@@ -249,7 +251,7 @@
                </xsl:choose>
             </td>
             <td>
-               <a href="{$xtfURL}{$dynaxmlPath}?docId={$docId};query={$query};brand={$brand};anchor.id={@id}" target="_top">
+               <a href="{$xtfURL}{$dynaxmlPath}?docId={editURL:protectValue($docId)};query={$query};brand={$brand};anchor.id={@id}" target="_top">
                   <xsl:value-of select="title"/>
                </a>
             </td>
