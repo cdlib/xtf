@@ -151,7 +151,7 @@
          else if ($fileType = 'ead') then 'style/dynaXML/docFormatter/ead/eadDocFormatter.xsl'
          else if ($fileType = 'nlm') then 'style/dynaXML/docFormatter/nlm/nlmDocFormatter.xsl'
          else if ($fileType = 'tei') then 'style/dynaXML/docFormatter/tei/teiDocFormatter.xsl'
-         else if ($fileType = 'book') then 'style/dynaXML/docFormatter/book/bookDocFormatter.xsl'
+         else if ($fileType = 'book') then 'style/dynaXML/docFormatter/bookreader/bookDocFormatter.xsl'
          else                             'style/dynaXML/docFormatter/default/docFormatter.xsl'}"/>
       
       <!-- ==================================================================

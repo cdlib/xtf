@@ -179,8 +179,8 @@
                            <xsl:variable name="metsData" select="document($file)"/>
                            <xsl:if test="$metsData//scribe:book" xmlns:scribe="http://archive.org/scribe/xml">
                               <indexFile fileName="{$fileName}"
-                                 preFilter="style/textIndexer/book/bookPreFilter.xsl"
-                                 displayStyle="style/dynaXML/docFormatter/book/bookDocFormatter.xsl"/>
+                                 preFilter="style/textIndexer/bookreader/bookPreFilter.xsl"
+                                 displayStyle="style/dynaXML/docFormatter/bookreader/bookDocFormatter.xsl"/>
                            </xsl:if>
                         </xsl:when>
                         <!-- Default processing for XML files -->
@@ -218,7 +218,7 @@
          </xsl:when>
          
          <!-- Plain text files. Exception: skip book/*.txt as they're typically subordinate. -->
-         <xsl:when test="ends-with(@fileName, '.txt') and not(matches($dirPath, '/book/'))">
+         <xsl:when test="ends-with(@fileName, '.txt') and not(matches($dirPath, '/bookreader/'))">
             <indexFile fileName="{@fileName}" 
                type="text"
                preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
