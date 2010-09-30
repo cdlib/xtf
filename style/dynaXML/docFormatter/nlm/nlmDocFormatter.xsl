@@ -204,22 +204,26 @@
    <!-- ====================================================================== -->
    
    <xsl:template name="toc">
-      <html xml:lang="en" lang="en">
-         <head>
-            <title>
-               <xsl:value-of select="$doc.title"/>
-            </title>
-            <link rel="stylesheet" type="text/css" href="{$css.path}toc.css"/>
-         </head>
-         <body>
-            <div class="toc">
-               <h4><xsl:value-of select="$doc.title"/></h4>
-               <hr/>
-               <xsl:apply-templates select="/article/body/sec" mode="toc"/>
-               <hr/>
-            </div>
-         </body>
-      </html>
+      <xsl:call-template name="translate">
+         <xsl:with-param name="resultTree">
+            <html xml:lang="en" lang="en">
+               <head>
+                  <title>
+                     <xsl:value-of select="$doc.title"/>
+                  </title>
+                  <link rel="stylesheet" type="text/css" href="{$css.path}toc.css"/>
+               </head>
+               <body>
+                  <div class="toc">
+                     <h4><xsl:value-of select="$doc.title"/></h4>
+                     <hr/>
+                     <xsl:apply-templates select="/article/body/sec" mode="toc"/>
+                     <hr/>
+                  </div>
+               </body>
+            </html>
+         </xsl:with-param>
+      </xsl:call-template>
    </xsl:template>
    
    <xsl:template match="sec" mode="toc">

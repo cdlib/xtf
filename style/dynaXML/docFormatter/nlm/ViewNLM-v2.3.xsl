@@ -553,16 +553,16 @@
 	<!-- ============================================================= -->
 
 	<xsl:template name="language">
-		<xsl:param name="lang"/>
+		<xsl:param name="nlmlang"/>
 		<xsl:choose>
-			<xsl:when test="$lang='fr' or $lang='FR'"> (Fre).</xsl:when>
-			<xsl:when test="$lang='jp' or $lang='JP'"> (Jpn).</xsl:when>
-			<xsl:when test="$lang='ru' or $lang='RU'"> (Rus).</xsl:when>
-			<xsl:when test="$lang='de' or $lang='DE'"> (Ger).</xsl:when>
-			<xsl:when test="$lang='se' or $lang='SE'"> (Swe).</xsl:when>
-			<xsl:when test="$lang='it' or $lang='IT'"> (Ita).</xsl:when>
-			<xsl:when test="$lang='he' or $lang='HE'"> (Heb).</xsl:when>
-			<xsl:when test="$lang='sp' or $lang='SP'"> (Spa).</xsl:when>
+			<xsl:when test="$nlmlang='fr' or $nlmlang='FR'"> (Fre).</xsl:when>
+			<xsl:when test="$nlmlang='jp' or $nlmlang='JP'"> (Jpn).</xsl:when>
+			<xsl:when test="$nlmlang='ru' or $nlmlang='RU'"> (Rus).</xsl:when>
+			<xsl:when test="$nlmlang='de' or $nlmlang='DE'"> (Ger).</xsl:when>
+			<xsl:when test="$nlmlang='se' or $nlmlang='SE'"> (Swe).</xsl:when>
+			<xsl:when test="$nlmlang='it' or $nlmlang='IT'"> (Ita).</xsl:when>
+			<xsl:when test="$nlmlang='he' or $nlmlang='HE'"> (Heb).</xsl:when>
+			<xsl:when test="$nlmlang='sp' or $nlmlang='SP'"> (Spa).</xsl:when>
 		</xsl:choose>
 	</xsl:template>
 
@@ -5099,7 +5099,7 @@
                or article-title[@xml:lang!='EN']">
 
 			<xsl:call-template name="language">
-				<xsl:with-param name="lang" select="article-title/@xml:lang"/>
+				<xsl:with-param name="nlmlang" select="article-title/@xml:lang"/>
 			</xsl:call-template>
 		</xsl:if>
 
@@ -5107,7 +5107,7 @@
               or source[@xml:lang!='EN']">
 
 			<xsl:call-template name="language">
-				<xsl:with-param name="lang" select="source/@xml:lang"/>
+				<xsl:with-param name="nlmlang" select="source/@xml:lang"/>
 			</xsl:call-template>
 		</xsl:if>
 

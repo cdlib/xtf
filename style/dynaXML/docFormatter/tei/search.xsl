@@ -94,7 +94,7 @@
             </a>
             <xsl:text>&#160;</xsl:text>
          </xsl:when>
-         <xsl:when test="key('hit-num-dynamic', string($prev))/ancestor::*[local-name()='div1']">
+         <xsl:when test="key('hit-num-dynamic', string($prev))/ancestor::*:div1">
             <xsl:variable name="targetChunk" select="key('hit-num-dynamic', string($prev))/ancestor::*[matches(local-name(), '^div')][1]/@*:id"/>
             <a>
                <xsl:attribute name="href">

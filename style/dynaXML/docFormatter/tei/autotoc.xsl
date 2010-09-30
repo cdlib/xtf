@@ -44,7 +44,7 @@
                      <xsl:value-of select="$doc.path"/>;brand=<xsl:value-of select="$brand"/>;<xsl:value-of select="$search"/>
                   </xsl:attribute>
                   <xsl:attribute name="target">_top</xsl:attribute>
-                  <xsl:value-of select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']/*[local-name()='titlePart'][@type='main']"/>
+                  <xsl:value-of select="/*/*:text/*:front/*:titlePage/*:titlePart[@type='main']"/>
                </a>
             </td>
          </tr>
@@ -56,13 +56,13 @@
       </xsl:if>
       <hr/>
       <!-- front -->
-      <xsl:apply-templates select="/*/*[local-name()='text']/*[local-name()='front']/*[matches(name(),'^div')]" mode="toc"/>
+      <xsl:apply-templates select="/*/*:text/*:front/*[matches(name(),'^div')]" mode="toc"/>
       <br/>
       <!-- body -->
-      <xsl:apply-templates select="/*/*[local-name()='text']/*[local-name()='body']/*[matches(name(),'^div')]" mode="toc"/>
+      <xsl:apply-templates select="/*/*:text/*:body/*[matches(name(),'^div')]" mode="toc"/>
       <br/>
       <!-- back -->
-      <xsl:apply-templates select="/*/*[local-name()='text']/*[local-name()='back']/*[matches(name(),'^div')]" mode="toc"/>
+      <xsl:apply-templates select="/*/*:text/*:back/*[matches(name(),'^div')]" mode="toc"/>
       <!-- hit summary -->
       <xsl:if test="($query != '0') and ($query != '')">
          <hr/>
@@ -76,7 +76,7 @@
    <xsl:template match="*[matches(name(),'^div')]" mode="toc" exclude-result-prefixes="#all">
       
       <!-- head element -->
-      <xsl:variable name="head" select="*[local-name()='head']"/>
+      <xsl:variable name="head" select="*:head"/>
       <!-- hit count for this node -->
       <xsl:variable name="hit.count">
          <xsl:choose>
@@ -128,12 +128,12 @@
                </xsl:choose>
                <!-- create expand/collapse buttons -->
                <xsl:choose>
-                  <xsl:when test="(number($toc.depth) &lt; ($level + 1) and *[matches(name(),'^div')]/*[local-name()='head']) and (not(@*[local-name()='id'] = key('div-id', $toc.id)/ancestor-or-self::*/@*[local-name()='id']))">
+                  <xsl:when test="(number($toc.depth) &lt; ($level + 1) and *[matches(name(),'^div')]/*:head) and (not(@*:id = key('div-id', $toc.id)/ancestor-or-self::*/@*:id))">
                      <td class="expand">
                         <xsl:call-template name="expand"/>
                      </td>
                   </xsl:when>
-                  <xsl:when test="(number($toc.depth) > $level and *[matches(name(),'^div')]/*[local-name()='head']) or (@*[local-name()='id'] = key('div-id', $toc.id)/ancestor-or-self::*/@*[local-name()='id'])">
+                  <xsl:when test="(number($toc.depth) > $level and *[matches(name(),'^div')]/*:head) or (@*:id = key('div-id', $toc.id)/ancestor-or-self::*/@*:id)">
                      <td class="expand">
                         <xsl:call-template name="collapse"/>
                      </td>
@@ -156,16 +156,16 @@
                </xsl:if>
                <!-- actual title -->
                <td class="head">
-                  <xsl:apply-templates select="*[local-name()='head'][1]" mode="toc"/>
+                  <xsl:apply-templates select="*:head[1]" mode="toc"/>
                </td>
             </tr>
          </table>
          <!-- process node children if required -->
          <xsl:choose>
-            <xsl:when test="number($toc.depth) > $level and *[matches(name(),'^div')]/*[local-name()='head']">
+            <xsl:when test="number($toc.depth) > $level and *[matches(name(),'^div')]/*:head">
                <xsl:apply-templates select="*[matches(name(),'^div')]" mode="toc"/>
             </xsl:when>
-            <xsl:when test="@*[local-name()='id'] = key('div-id', $toc.id)/ancestor-or-self::*/@*[local-name()='id']">
+            <xsl:when test="@*:id = key('div-id', $toc.id)/ancestor-or-self::*/@*:id">
                <xsl:apply-templates select="*[matches(name(),'^div')]" mode="toc"/>
             </xsl:when>
          </xsl:choose>
@@ -173,7 +173,7 @@
    </xsl:template>
    
    <!-- processs head element for toc -->
-   <xsl:template match="*[local-name()='head']" mode="toc" exclude-result-prefixes="#all">
+   <xsl:template match="*:head" mode="toc" exclude-result-prefixes="#all">
       
       <!-- hierarchical level -->
       <xsl:variable name="level" select="count(ancestor::*[matches(name(),'^div')])"/>
@@ -183,17 +183,17 @@
          <xsl:choose>
             <!-- if this node is not terminal, expand this node -->
             <xsl:when test="parent::*[matches(name(),'^div')]/*[matches(name(),'^div')]">
-               <xsl:value-of select="parent::*[matches(name(),'^div')]/@*[local-name()='id']"/>
+               <xsl:value-of select="parent::*[matches(name(),'^div')]/@*:id"/>
             </xsl:when>
             <!-- if this node is terminal, expand the parent node -->
             <xsl:otherwise>
-               <xsl:value-of select="parent::*[matches(name(),'^div')]/parent::*[matches(name(),'^div')]/@*[local-name()='id']"/>
+               <xsl:value-of select="parent::*[matches(name(),'^div')]/parent::*[matches(name(),'^div')]/@*:id"/>
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
       
       <xsl:choose>
-         <xsl:when test="$chunk.id=ancestor::*[1]/@*[local-name()='id']">
+         <xsl:when test="$chunk.id=ancestor::*[1]/@*:id">
             <a name="X"/>
             <div class="l{$level}">
                <span class="toc-hi">
@@ -205,7 +205,7 @@
             <div class="l{$level}">
                <a>
                   <xsl:attribute name="href">
-                     <xsl:value-of select="$doc.path"/>;chunk.id=<xsl:value-of select="ancestor::*[1]/@*[local-name()='id']"/>;toc.depth=<xsl:value-of select="$toc.depth"/>;toc.id=<xsl:value-of select="$local.toc.id"/>;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/>
+                     <xsl:value-of select="$doc.path"/>;chunk.id=<xsl:value-of select="ancestor::*[1]/@*:id"/>;toc.depth=<xsl:value-of select="$toc.depth"/>;toc.id=<xsl:value-of select="$local.toc.id"/>;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/><xsl:call-template name="create.anchor"/>
                   </xsl:attribute>
                   <xsl:attribute name="target">_top</xsl:attribute>
                   <xsl:apply-templates select="." mode="text-only"/>
@@ -251,7 +251,7 @@
    
    <!-- templates for expanding and collapsing single nodes -->
    <xsl:template name="expand" exclude-result-prefixes="#all">
-      <xsl:variable name="local.toc.id" select="@*[local-name()='id']"/>
+      <xsl:variable name="local.toc.id" select="@*:id"/>
       <a>
          <xsl:attribute name="href">
             <xsl:value-of select="$doc.path"/>;chunk.id=<xsl:value-of select="$chunk.id"/>;toc.id=<xsl:value-of select="$local.toc.id"/>;brand=<xsl:value-of select="$brand"/><xsl:value-of select="$search"/>
@@ -264,8 +264,8 @@
    <xsl:template name="collapse" exclude-result-prefixes="#all">
       <xsl:variable name="local.toc.id"><!-- HERE -->
          <xsl:choose>
-            <xsl:when test="*[local-name()='head'] and @*[local-name()='id']">
-               <xsl:value-of select="parent::*[*[local-name()='head'] and @*[local-name()='id']]/@*[local-name()='id']"/>
+            <xsl:when test="*:head and @*:id">
+               <xsl:value-of select="parent::*[*:head and @*:id]/@*:id"/>
             </xsl:when>
             <xsl:otherwise>
                <xsl:value-of select="0"/>
@@ -312,7 +312,7 @@
       <xsl:value-of select="."/>
    </xsl:template>
    
-   <xsl:template match="*[local-name()='lb']" mode="text-only">
+   <xsl:template match="*:lb" mode="text-only">
       <xsl:text>&#160;</xsl:text>
    </xsl:template>
    

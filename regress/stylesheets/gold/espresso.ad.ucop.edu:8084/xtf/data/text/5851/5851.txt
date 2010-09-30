@@ -1,0 +1,1059 @@
+American Journal of Epidemiology Vol. 158, No. 6 
+Copyright © 2003 by the Johns Hopkins Bloomberg School of Public Health Printed in U.S.A. 
+All rights reserved DOI: 10.1093/aje/kwg184 
+
+Wine, Liquor, Beer, and Mortality 
+
+Arthur L. Klatsky1,2, Gary D. Friedman2, Mary Anne Armstrong2, and Harald Kipp2 
+
+1 Division of Cardiology, Department of Medicine, Kaiser Permanente Medical Center, Oakland, CA. 
+2 Division of Research, Kaiser Permanente Medical Care Program, Oakland, CA. 
+
+Received for publication July 11, 2002; accepted for publication March 25, 2003. 
+
+A substantially increased risk for heavy drinkers and a slightly reduced risk for lighter drinkers results in the J-
+shaped alcohol-mortality curve. Limited data suggest a more favorable mortality experience for drinkers of wine 
+than for drinkers of liquor or beer. To examine these relations, the authors performed a cohort study of 
+participants in a large Northern California prepaid health care program. Demographic and history data were 
+collected from 128,934 adults undergoing health evaluations in 1978–1985, with subsequent death ascertained 
+by an automated linkage system. Cox proportional hazards models with eight covariates were used to determine 
+relative risk estimates according to total alcohol intake and days per week of drinking wine, wine types, beer, or 
+liquor. The J-shaped alcohol-mortality relation was stable for 20 years. Independently, frequency of wine drinking 
+was associated with lower mortality risk (p < 0.001) largely because of lower coronary disease risk. Similar risk 
+reductions were associated with red wine, white wine, other types of wine, and combinations of wine types. Much 
+of the lower risk associated with light drinking was related to wine drinking. The authors conclude that drinkers of 
+any type of wine have a lower mortality risk than do beer or liquor drinkers, but it remains unclear whether this 
+reduced risk is due to nonalcoholic wine ingredients, drinking pattern, or associated traits. 
+
+alcohol drinking; alcoholic beverages; beer; mortality; risk; wine 
+
+Abbreviations: CI, confidence interval; ICD-9, International Classification of Diseases, Ninth Revision. 
+
+A balanced view of alcohol drinking and health should 
+consider harmful and beneficial effects, amount of alcohol, 
+beverage choice, and drinking patterns. Mortality has been 
+studied as one specific global measure. Heavy drinking, 
+defined as usual daily intake of three or more standard-sized 
+drinks, carries excess mortality from cardiovascular and 
+noncardiovascular causes (1–13), presumably due to both 
+physiologic effects of alcohol and behavioral traits of heavy 
+drinkers. It is unclear whether choice of wine, liquor, or beer 
+plays a role in the adverse effects of heavy alcohol drinking, 
+and relatively few studies have examined this aspect. 
+
+Lighter drinking carries lower total mortality risk (1–16), 
+largely because of lower coronary disease risk. Behavioral 
+traits of light drinkers compared with those of abstainers 
+probably also play some role in the lower risk for light 
+drinkers. However, demonstration of plausible protective 
+mechanisms of alcohol against coronary disease, including 
+an effect via high density lipoprotein cholesterol and anti-
+
+thrombotic actions (17–24), has resulted in widespread 
+acceptance of a protective hypothesis (25–30). 
+
+Interest in possible additional benefits of wine developed 
+when international comparisons (31, 32) showed that 
+persons in wine-drinking countries had a lower coronary 
+disease mortality risk than persons in countries where the 
+preponderant beverages were beer or liquor. Further support 
+came from demonstration of potentially protective non-
+alcohol antioxidant and antithrombotic compounds in wine, 
+especially red wine (25, 33–35). Prospective population 
+studies have provided no consensus that wine is more protective 
+than liquor or beer against coronary disease (36–41). 
+
+Limited data exist about beverage choice and total 
+mortality. Danish studies show that wine drinkers, compared 
+with beer or liquor drinkers, have lower risks of total 
+mortality (42, 43), cancer (44), and stroke (45), and a French 
+report indicates lower total and cardiovascular disease 
+mortality (46). Attention to behavioral and other user trait 
+
+Reprint requests to Dr. Arthur L. Klatsky, Kaiser Permanente Medical Center, 280 West McArthur Boulevard, Oakland, CA 94611 (e-mail: 
+arthur.klatsky@kp.org). 
+
+585 Am J Epidemiol 2003;158:585–595 
+
+
+586 Klatsky et al. 
+
+differences (36–50) has generally found more favorable 
+health traits among wine drinkers. 
+
+A Kaiser Permanente (Oakland, California) report of 
+4,501 deaths in 1978–1988 among 128,934 persons (8) 
+compared subsets (29 percent of deaths) of those who drank 
+preponderantly wine, beer, or liquor (“preferrers”). Wine 
+and beer preferrers had a nonsignificantly lower total 
+mortality risk; the relative risk versus liquor preferrers was 
+
+0.9 for each type (p > 0.05). Wine preferrers had a lower 
+cardiovascular mortality risk (relative risk vs. liquor = 0.7, 
+p = 0.01), but beer drinkers did not (relative risk vs. liquor = 
+0.9, p = 0.2). With more data needed, here we present findings 
+involving 10 additional follow-up years with a total of 
+16,431 deaths. A more comprehensive analysis of the role of 
+beverage choice is the major focus. 
+MATERIALS AND METHODS 
+
+Subjects and data 
+
+The Institutional Review Board of the Kaiser Permanente 
+Medical Care Program approved the study protocols. Baseline 
+data were derived from 1978–1985 health examinations 
+of 128,934 adults in San Francisco and Oakland, California. 
+Voluntarily taken as a health appraisal, the examination 
+included health measurements and queries about sociodemographic 
+status, habits, and medical history (51). Usable data 
+about alcohol were supplied by 79.8 percent of examinees. 
+Persons not supplying data consisted largely of those taking 
+the examination in the absence of the special alcohol questionnaire 
+research clerk and those who declined (largely 
+persons who were not fluent in English). 
+
+Lifelong abstainers (n = 15,498) were defined as persons 
+who reported no alcohol drinking during the past year and 
+“never or almost never” drinking. Ex-drinkers (n = 4,194) 
+were nondrinkers during the previous year who indicated 
+prior drinking. Current drinkers reported usual amount as 
+less than once per month (“special occasions only”), more 
+than once per month but less than one drink per day, or daily 
+number of drinks: one or two, three to five, six to eight, and 
+nine or more. Size of “drinks” was not specified in this 
+query. Drinkers received separate questions (47) about the 
+number of days per week that they drank wine, liquor, or 
+beer. Wine drinkers were asked to write in “type(s) of wine 
+you usually drink,” leading to classification as red table wine 
+only (n = 3,128), white table wine only (n = 10,762), both red 
+and white table wine (n = 15,461), and “other specified” 
+wine (fortified, champagne, rose, combinations) (n = 4,619) 
+as well as wine drinkers who did not respond to the “type of 
+wine” query (n = 33,388). Table 1 presents selected further 
+details about the study population. 
+
+Mortality ascertainment 
+
+We followed subjects through December 1998 or known 
+death by using an automated matching system (52) to ascertain 
+death in California. We accepted primary International 
+Classification of Diseases, Ninth Revision (ICD-9) death 
+certificate codes, converting from International Classification of Diseases, Eighth Revision codes when necessary. We 
+
+studied deaths from all causes, cardiovascular causes (ICD-9 
+codes 390–459), noncardiovascular causes (all except ICD-9 
+codes 390–459), cancer (ICD-9 codes 140–209), coronary 
+disease (ICD-9 codes 410–414), respiratory conditions 
+(ICD-9 codes 460–519), liver disease/cirrhosis (ICD-9 code 
+571), and unnatural causes (ICD-9 codes 800–999). 
+Presumption of complete follow-up yielded a calculated 
+2,211,000 person-years, but estimates (52) suggest a sensitivity 
+of 89 percent for the method used. 
+
+Analytical methods 
+
+We used Cox proportional hazards models determined by 
+the PHREG procedure of Statistical Analysis System software, 
+release 6.12 (SAS Institute, Inc., Cary, North Carolina). 
+Covariates in multivariate models included age, sex, 
+race, education (no college, some college, college graduate), 
+marital status (now married, never married, formerly 
+married), body mass index (weight (kg)/height (m)2), cigarette 
+smoking (never, ex-smoker, <1 pack/day, ≥1 pack/day), 
+and a composite of affirmative responses (any “yes”) to 12 
+coronary disease risk or symptom items (47, 53). An indicator 
+of drinking variability (47), constructed from queries 
+about drinking on weekends versus weekdays, during the 
+past day or week versus usual, and during the past year 
+versus the past 10 years, was a covariate in some models. 
+
+We studied total alcohol drinking categorically, with lifelong 
+abstainers used as the referent for ex-drinkers and five 
+drinking categories. Some models included four drinking 
+categories, up to three or more drinks per day. Analyses of 
+beverage choice excluded lifelong abstainers, ex-drinkers, 
+and drinkers reporting drinking less than once per month. All 
+analyses of beverage choice presented here were controlled 
+for total alcohol intake by using as the referent for total 
+alcohol persons reporting alcohol drinking more than 
+monthly but less than one drink per day. In most models, 
+choice of wine, liquor, and beer was a continuous variable 
+derived from days per week for each type, with the following 
+assigned values: never or almost never, 0.0; once per week or 
+less, 0.5; 2–3 days per week, 2.5; 4–5 days per week, 4.5; 
+and daily or almost daily, 6.5. The models for type of wine 
+were identical except that wine days per week was categorized 
+into subgroups. The beverage types and wine types in 
+these analyses were modeled simultaneously. The number of 
+days per week for the beverage types showed good correlation 
+with the number of drinks per week of the types in a 
+1984–1985 subset (47). 
+
+For drinkers who drank more than once per month, we 
+defined beverage preference as drinking one beverage type 
+exclusively or on more days per week than either of the other 
+two types (47). Drinkers without a preference reported two 
+or three types with equal frequency. We studied total alcohol 
+intake in these groups and for all persons who reported 
+drinking wine, beer, or liquor 2 or more days per week. We 
+also compared those who preferred wine, liquor, or beer with 
+nonpreferrers. To further compare drinkers of the beverage 
+types, we studied those who exclusively reported each type 
+(i.e., drank none of the other two types). 
+
+In this paper, we present results as relative risks with 95 
+percent confidence intervals and associated p values. 
+
+Am J Epidemiol 2003;158:585–595 
+
+
+Wine, Liquor, Beer, and Mortality 587 
+
+TABLE 1. Confirmed deaths through 1998 among 128,934 subjects studied to determine the associations 
+of wine, liquor, and beer drinking with mortality, Northern California* 
+
+Men Women 
+
+All Deaths All Deaths 
+(n = 56,926) (n = 9,102) (n = 72,008) (n = 7,329) 
+
+No. % No. % No. % No. % 
+
+Alcohol drinking 
+Never 4,125 7.2 807 8.9 11,373 15.8 1,645 22.4 
+Ex-drinker 2,390 4.2 674 7.4 1,804 2.5 317 4.3 
+<1 drink/month 8,105 14.2 1,376 15.1 19,312 26.8 2,055 28.0 
+>1 drink/month; <1 drink/day 21,264 37.4 2,623 28.8 26,631 37.0 1,819 24.8 
+1–2 drinks/day 13,512 23.7 2,127 23.4 9,896 13.7 1,073 14.6 
+3–5 drinks/day 5,905 10.5 1,122 12.3 2,523 3.5 350 4.8 
+≥6 drinks/day 1,535 2.7 371 4.1 469 0.7 71 1.0 
+
+Drink ≥2 days/week† 
+Wine 14,383 25.3 2,019 22.2 15,209 21.1 1,077 14.7 
+Liquor 13,279 23.3 2,812 30.9 8,080 11.2 1,231 16.8 
+Beer 16,455 28.9 1,931 21.2 5,484 7.6 395 5.4 
+
+Preference‡ 
+Wine 6,562 11.5 898 9.9 10,965 15.2 677 9.2 
+Liquor 5,249 9.2 1,415 15.5 3,933 5.5 792 10.8 
+Beer 8,927 15.7 901 9.9 2,825 3.9 220 3.0 
+None§ 21,478 37.7 3,029 33.2 10,786 14.9 1,624 22.2 
+
+Exclusive type¶ 
+Wine 841 1.5 172 1.9 2,686 3.7 206 2.8 
+Liquor 874 1.5 332 3.6 909 1.3 259 3.5 
+Beer 1,140 2.0 179 2.0 413 0.6 73 1.0 
+
+* Some percentages do not total 100 because of rounding. 
+† Without regard for amount of other beverage types. 
+‡ For persons drinking more than once per month, indicates drinking the type at least 2 days per week and more 
+often than either of the other types. 
+§ Indicates reporting two or more types with equal frequency. 
+¶ Indicates drinking the type ≥2 days/week and the other types “never or almost never.” 
+
+RESULTS 
+
+Relations of total alcohol intake to mortality 
+
+The mean baseline age of the study population was 40.6 
+years; of the 16,431 persons who later died, it was 60.8 years 
+(mean age at death, 69.5 years). Multivariate data showed 
+that heavy and ex-drinkers had an increased relative risk of 
+total mortality (table 2), consistent in subgroups of race, age 
+brackets, smoking, and interval to death (data not shown). 
+Lighter drinkers had a lower relative risk of total mortality, 
+which was more evident for women (p > 0.05 for men); this 
+finding was otherwise fairly consistent in subgroups (data 
+not shown). 
+
+Of all 16,431 deaths, 62 percent (n = 10,150) were attributed 
+to noncardiovascular causes, the three largest subsets 
+being cancer (n = 4,878), respiratory conditions (n = 1,412), 
+and unnatural causes (n = 949). Of 6,281 (38 percent of the 
+total) deaths attributed to cardiovascular causes, about half 
+(n = 3,049) were due to coronary disease. An increased relative 
+risk for heavy drinkers came substantially from cancer, 
+
+liver cirrhosis, respiratory conditions, and unnatural causes, 
+with a slight contribution from cardiovascular causes. The 
+increased relative risk for ex-drinkers was largely attributable 
+to cancer, cirrhosis, respiratory conditions, and cardiovascular 
+causes. Women who reported light drinking had a 
+lower relative risk of death from coronary and respiratory 
+disease. Male light drinkers had less of a reduction than 
+women in the relative risk of coronary disease death, but the 
+p value was 0.003 for one or two drinks per day, with consistency 
+in race groups (data not shown). Male light drinkers 
+had no reduced relative risk of respiratory death. 
+
+Mortality from all causes in beverage choice groups 
+
+For heavy drinkers, the increased total mortality risk was 
+lower for those drinking beer 2 or more days per week than 
+for those drinking either wine or liquor 2 or more days per 
+week (table 3). Light drinkers who reported drinking either 
+beer or wine 2 or more days per week, but not liquor, had a 
+lower total mortality risk. The increased risk for heavy 
+
+Am J Epidemiol 2003;158:585–595 
+
+
+588 Klatsky et al. 
+
+TABLE 2. Adjusted risk of death† through 1998 for all persons from all causes and various diagnoses according to total alcohol 
+intake compared with abstinence, Northern California 
+
+Relative risk for each drinking category† 
+Deaths (no.) 
+Ex-drinker <1 drink/month 
+>1 drink/month; 
+<1 drink/day 1–2 drinks/day 3–5 drinks/day ≥6 drinks/day 
+All causes 16,431 1.2** 1.0 0.9** 0.9** 1.1 1.4** 
+Men 9,102 1.3** 1.1 0.9 0.9 1.1 1.5** 
+Women 7,329 1.2** 0.9† 0.8** 0.9* 1.1 1.6** 
+Noncardiovascular causes 10,150 1.3** 1.0 0.9 1.0 1.2** 1.6** 
+Men 5,651 1.3* 1.0 1.0 1.0 1.1* 1.5** 
+Women 4,499 1.3** 1.0 0.9 1.0 1.2† 1.9** 
+Cardiovascular causes 6,281 1.1† 1.0 0.8** 0.8** 0.9† 1.1 
+Men 3,451 1.3* 1.2† 1.0 0.9 0.9 1.3† 
+Women 2,830 1.0 0.9 0.7** 0.8** 0.9 1.1 
+Coronary disease 3,054 1.2 1.0 0.8** 0.7** 0.8* 1.0 
+Men 1,855 1.3† 1.1 0.9 0.8* 0.8 1.1 
+Women 1,199 1.1 0.9 0.6** 0.6** 0.8 0.8 
+Cancer 4,878 1.4** 1.1 1.1 1.1 1.3** 1.4** 
+Men 2,536 1.4* 1.2† 1.1 1.1 1.3* 1.4* 
+Women 2,342 1.4* 1.0 1.0 1.1 1.3* 1.7* 
+Cirrhosis 232 3.4* 0.9 1.2 2.7* 6.9** 14.9** 
+Men 146 1.7 0.7 0.5 1.3 3.3* 8.3** 
+Women 86 6.5* 1.2 2.5 4.7* 14.2** 15.2** 
+Respiratory conditions 1,412 1.4† 0.9 0.8† 0.9 1.3† 1.7* 
+Men 754 1.8** 1.1 0.9 1.0 1.7* 2.2** 
+Women 658 0.9 0.8 0.7† 0.8 1.0 0.9 
+Unnatural causes 949 1.1 1.1 1.1 1.1 1.4† 2.2** 
+Men 625 1.0 0.9 1.0 1.0 1.3 1.8† 
+Women 324 1.3 1.3 1.2 1.4 1.2 5.0** 
+
+* p < 0.01; ** p < 0.001. 
+† Computed by using Cox proportional hazards models controlled for age, sex, race, body mass index, education, marital status, smoking, and a coronary 
+disease risk/symptoms variable; referent, lifelong abstainers. 
+drinking was lower in preponderant (“preferrers”) and exclusive 
+wine drinkers than in corresponding liquor and beer 
+subsets. Only two deaths occurred in heavy, exclusive wine 
+drinkers, limiting data interpretation. 
+
+Frequency of beverage choice and risk of death 
+
+Independent of total alcohol intake, wine drinking 
+frequency was associated with lower risk of total mortality 
+and several other endpoints, most notably coronary disease 
+and respiratory deaths (table 4). Respiratory death results 
+were similar for influenza/pneumonia (ICD-9 codes 480– 
+487, n = 664) and chronic respiratory conditions (ICD-9 
+codes 490–496, n = 532) (data not shown). Only a slightly 
+lower risk of cancer was associated with wine drinking 
+frequency, and deaths from cirrhosis and unnatural causes 
+were not inversely related to wine drinking frequency. 
+Frequency of liquor drinking was independently related to 
+higher cirrhosis risk, and beer drinking frequency was 
+weakly related to increased noncardiovascular risk among 
+women. 
+
+The relative risks shown in this paper represent risks per 
+days per week. We also performed analyses with beverage 
+
+types entered as categories of days per week. When the analyses 
+were conducted in this way, the relative risks of coronary 
+disease mortality for categories of wine drinking 
+frequency were 0.94 (p = 0.3) for less than once per week, 
+
+0.84 (p = 0.04) for 2–3 days per week, 0.77 (p = 0.04) for 
+4–5 days per week, and 0.67 (p < 0.001) for daily or almost 
+daily. For coronary disease mortality in men, the relative risk 
+for drinking wine daily or almost daily was 0.78 (p = 0.02); 
+for women, it was 0.48 (p < 0.001). For all persons, the relative 
+risk of coronary disease mortality for daily or almost 
+daily drinking of liquor was 0.99 (p = 0.9); for beer, it was 
+0.92 (p = 0.4). 
+The variability index was independently related to risk of 
+death (data not shown). However, its introduction into the 
+model had little effect on the relations of beverage type to 
+risk of death (data not shown). 
+
+The lower risk of death for wine drinkers was consistent in 
+subsets of age, smoking, education, and death date. This 
+paper presents details for smoking and death date subsets. 
+For total mortality, the relative risks for wine drinking per 
+day per week were 0.97 (95 percent confidence interval (CI): 
+0.95, 0.99) for never smokers, 0.96 (95 percent CI: 0.94, 
+0.98) for ex-smokers, and 0.96 (95 percent CI: 0.95, 0.98) for 
+
+Am J Epidemiol 2003;158:585–595 
+
+
+Wine, Liquor, Beer, and Mortality 589 
+
+TABLE 3. Adjusted risk of death† through 1998 from all causes in various beverage choice groups 
+according to total alcohol intake compared with abstinence, Northern California 
+
+Relative risk for each drinking category‡ 
+Group‡ Deaths (no.) 
+<1 drink/day 1–2 drinks/day 3–5 drinks/day ≥6 drinks/day 
+Drink wine ≥2 days/week 3,096 0.8*** 0.8*** 0.9 1.3** 
+Drink liquor ≥2 days/week 4,043 0.9 0.9 1.1 1.4*** 
+Drink beer ≥2 days/week 2,326 0.7** 0.7*** 0.7* 0.9 
+Prefer wine 1,575 0.8*** 0.8*** 0.9 1.2 
+Prefer liquor 2,207 0.9* 0.9 1.1* 1.5*** 
+Prefer beer 1,121 0.9* 1.0 1.2** 1.7*** 
+Have no preference 4,653 0.9*** 0.9*** 1.0 1.3*** 
+Drink wine exclusively 378 0.8* 0.8*** 1.0 0.5 
+Drink liquor exclusively 591 0.9 1.0 1.2 1.8*** 
+Drink beer exclusively 252 0.9 1.2 1.3 2.0*** 
+
+* p < 0.05; ** p < 0.01; *** p < 0.001. 
+† For persons drinking more than once per month; computed by using Cox proportional hazards models 
+controlled for age, sex, race, body mass index, education, marital status, smoking, and a coronary disease risk/ 
+symptoms variable; referent, lifelong abstainers. 
+‡ Refer to the Materials and Methods section of the text and the footnotes to table 1 for definitions. Each row 
+represents a separate analysis, with lifelong abstainers as the referent for the total drinking amounts. 
+current smokers (p < 0.001 for all three subsets). For death 
+date subsets, the relative risks were 0.95 (95 percent CI: 
+0.93, 0.96) for deaths in 1978–1988, 0.96 (95 percent CI: 
+0.94, 0.98) for deaths in 1989–1993, and 0.96 (95 percent CI: 
+0.94, 0.98) for deaths in 1993–1998 (p < 0.001 for all three 
+subsets). A lower risk related to wine was not observed for 
+African Americans and Asian Americans (data not shown), 
+who drank wine less often than Whites did. Among Whites, 
+African Americans, and Asian Americans, the proportions 
+reporting wine drinking at least 2 days per week were 23.4 
+percent, 10.1 percent, and 8.9 percent, respectively. In 
+contrast, in 38 total mortality subset analyses for liquor or 
+beer frequency, only one subset (ex-smokers) showed a 
+borderline decreased risk (data not shown). 
+
+On the basis of the responses of 12,600 subjects in 1974– 
+1975 to a supplemental query about the number of drinks 
+they consumed per day of each beverage type (47), we estimated 
+that beverage preferrers consumed, on average, 80–90 
+percent of their drinks as the preferred beverage. Data 
+showed less risk for wine preferrers, especially of cardiovascular 
+deaths, and a higher risk of noncardiovascular death for 
+liquor preferrers. When nonpreferrers were used as the 
+referent and we controlled for total alcohol intake, the relative 
+risks of noncardiovascular death for preferrers were 0.89 
+(95 percent CI: 0.82, 0.95) for wine (p < 0.001), 1.08 (95 
+percent CI: 1.01, 1.16) for liquor (p = 0.02), and 1.05 (95 
+percent CI: 0.97, 1.14) for beer. For cardiovascular death, the 
+corresponding relative risks were 0.78 (95 percent CI: 0.70, 
+0.86) for wine (p < 0.001), 1.02 (95 percent CI: 0.93, 1.12) 
+for liquor, and 1.02 (95 percent CI: 0.90, 1.16) for beer. For 
+coronary disease deaths, the relative risks were 0.72 for wine 
+preferrers (p < 0.001), 0.79 for men (p = 0.007), and 0.62 for 
+women (p < 0.001). 
+
+There were 693 deaths among persons reporting drinking 
+any wine but no liquor or beer, 601 deaths among those who 
+
+reported drinking any liquor but no beer or wine, and 414 
+deaths among those reporting drinking any beer but no wine 
+or liquor. Comparing these groups for total mortality risk in 
+multivariate analyses showed the following relative risks: 
+wine versus liquor, 0.82 (95 percent CI: 0.73, 0.92; p < 
+0.001); wine versus beer, 0.83 (95 percent CI: 0.73, 0.97; p = 
+0.02); and beer versus liquor, 0.98 (95 percent CI: 0.97, 
+1.11). This apparent lower risk for wine drinkers was due 
+primarily to the data on women; for example, comparing the 
+wine drinkers with the liquor and beer drinkers combined 
+yielded the following relative risks for wine versus liquor/ 
+beer: men, 0.93 (95 percent CI: 0.81, 1.08); women, 0.74 (95 
+percent CI: 0.64, 0.86; p < 0.001). 
+
+Type of wine 
+
+Almost identical reductions in risk were associated with 
+drinking either red or white table wine exclusively, both red 
+and white table wine, or “other” wine (table 5). Of the wine 
+groups, men constituted 61 percent of the red only, 41 
+percent of the white only, 52 percent of the red and white, 
+58 percent of the other specified, and 49 percent of the 
+unspecified. 
+
+Covariate relations 
+
+As an indication of comparability with established predictors 
+of coronary disease, a few examples of the relative risks 
+for total mortality follow: male versus female, 1.6 (95 
+percent CI: 1.6, 1.7); African-American versus White, 1.2 
+(95 percent CI: 1.1, 1.2); Asian-American versus White, 0.8 
+(95 percent CI: 0.7, 0.9); college graduate versus no college, 
+
+0.8 (95 percent CI: 0.7, 0.8); smoking one or more packs of 
+cigarettes per day versus having never smoked, 2.3 (95 
+percent CI: 2.2, 2.4); not married versus married, 1.1 (95 
+Am J Epidemiol 2003;158:585–595 
+
+
+590 Klatsky et al. 
+
+TABLE 4. Adjusted risk of death† through 1998 for selected diagnoses per day per week of wine, liquor, 
+and beer intake, Northern California 
+
+Group (no. of deaths in drinkers drinking >once/month) Wine Liquor Beer 
+All causes (n = 11,542) 0.96*** 1.01 1.01 
+Men (n = 6,772) 0.96*** 1.00 1.00 
+Women (n = 4,770) 0.95*** 1.00 1.04** 
+Noncardiovascular causes (n = 7,306) 0.97*** 1.01 1.00 
+Men (n = 4,307) 0.98** 1.01 0.99 
+Women (n = 2,999) 0.96*** 1.01 1.04* 
+All cardiovascular causes (n = 4,236) 0.95*** 1.00 1.00 
+Men (n = 2,465) 0.96*** 0.99 1.00 
+Women (n = 1,771) 0.94*** 1.00 1.02 
+Coronary disease (n = 2,025) 0.94*** 1.00 0.98 
+Men (n = 1,305) 0.96** 0.99 0.98 
+Women (n = 720) 0.90*** 1.02 0.95 
+Cancer (n = 3,453) 0.98* 1.00 0.99 
+Men (n = 1,888) 0.99 1.01 0.99 
+Women (n = 1,565) 0.96* 1.00 1.03 
+Cirrhosis (n = 191) 0.99 1.10** 1.02 
+Men (n = 124) 0.95 1.10* 1.01 
+Women (n = 67) 1.05 1.10 1.08 
+Respiratory conditions (n = 990) 0.94*** 0.98 1.00 
+Men (n = 550) 0.95* 0.98 1.00 
+Women (n = 440) 0.93* 0.97 1.01 
+Unnatural causes (n = 718) 0.97 1.03 1.05* 
+Men (n = 508) 0.97 1.02 1.04 
+Women (n = 210) 0.98 1.07 1.09 
+
+* p < 0.05 but ≥ 0.01; ** p < 0.01 but ≥ 0.001; *** p < 0.001. 
+† For persons drinking more than once per month; controlled for age, sex, race, education, marital status, 
+smoking, body mass index, and total alcohol intake. 
+percent CI: 1.1, 1.2); and body mass index (per kg/m2), 1.01 
+(95 percent CI: 1.00, 1.01) (all p values < 0.001). 
+
+Beverage choice and coronary disease death 
+
+Lower risk at lighter drinking levels was present for most 
+groups drinking any of the three beverage types 2 or more 
+days per week, as preferrers, or exclusively (table 6). This 
+reduction was greatest for wine and smallest for liquor. 
+Small numbers of exclusive drinkers resulted in several 
+unstable estimates. 
+
+DISCUSSION 
+
+Wine drinking and risk 
+
+The major finding in these data was the independent relation 
+of wine drinking frequency to lower total mortality risk. 
+This interpretation was buttressed by consistency in most 
+population subsets. Perhaps most convincing was the lower 
+risk associated with wine drinking frequency at each of three 
+total drinking levels (less than one, one or two, and three or 
+more drinks per day). The reduction in wine-related risk was 
+
+clearest for deaths attributed to coronary disease and respiratory 
+causes. 
+
+Problems of interpretation and confounding 
+
+Since any independent effect of wine on mortality is likely 
+to be additional to the role of alcohol, interpretive problems 
+are substantial. Although data from populations that drink 
+preponderantly wine (e.g., Mediterranean countries) show a 
+lower risk of coronary disease death than do data from other 
+countries (31, 32), these studies lacked information about 
+individuals and thus were inadequately controlled for major 
+confounders. International differences in coding criteria may 
+also play a role, since the Mediterranean countries do not 
+enjoy greater overall longevity than other developed countries 
+(32). Prospective cohort studies using data about individuals 
+have shown statistically significant inverse relations 
+of light drinking to coronary disease for beer (2, 8, 37), 
+liquor (16, 37), and wine (36, 37, 42, 43, 46) and tend to 
+show inverse, nonsignificant relations for all beverage types 
+(38, 39). 
+
+Persons in Northern California who drink preponderantly 
+wine are more often women, college graduates, nonsmokers, 
+
+Am J Epidemiol 2003;158:585–595 
+
+
+Wine, Liquor, Beer, and Mortality 591 
+
+TABLE 5. Adjusted risk of death† through 1998 for selected diagnoses per day per week of intake of wine 
+types, Northern California 
+
+Wine type (no. of deaths) 
+
+Red only White only Red and white Other specified Unspecified 
+(n = 355) (n = 808) (n = 1,635) (n = 572) (n = 3,556) 
+All causes 0.97** 0.96*** 0.97*** 0.98* 0.97*** 
+Men 0.97** 0.99 0.97** 0.99 0.97*** 
+Women 0.98* 0.94*** 0.96*** 0.96* 0.96* 
+All cardiovascular causes 0.94** 0.95** 0.96** 0.98 0.96*** 
+Men 0.94* 0.95* 0.98 0.99 0.96** 
+Women 0.97 0.93* 0.92*** 0.95 0.95* 
+All noncardiovascular causes 0.98 0.97 0.97*** 0.98 0.97** 
+Men 0.99 1.00 0.97** 0.99 0.98* 
+Women 0.98 0.94** 0.96* 0.96 0.97* 
+Coronary disease 0.94* 0.95* 0.98 0.94* 0.93*** 
+Men 0.95 0.98 1.00 0.95 0.94** 
+Women 0.93 0.89* 0.92* 0.91 0.92* 
+
+* p < 0.05 but ≥ 0.01; ** p < 0.01 but ≥ 0.001; *** p < 0.001. 
+† For persons drinking more than once per month; controlled for age, sex, race, education, marital status, 
+smoking, body mass index, total alcohol intake, and days/week of liquor and beer drinking. Refer to the Materials 
+and Methods section of the text for definitions of wine types. 
+and temperate drinkers, characteristics even more than did consumers of other beverage types. Since drinking 
+pronounced in persons drinking wine exclusively (47). In pattern probably has a role in health effects (38, 43, 58–60), 
+Denmark, wine drinking is associated with better percep-the usual pattern of ingesting wine slowly with food may be 
+tions of overall health (49), higher socioeconomic status and important. In this context, a recent report that beer drinkers 
+intelligence quotients (50), and intake of a “healthy” diet are more likely than wine drinkers to progress to heavier 
+(high in fruits, vegetables, fish, salads, and olive oil) (48). drinking is both interesting and potentially important (61). In 
+Higher socioeconomic status is associated with good health, a comprehensive review of possible benefits of wine addiand 
+healthy habits tend to be clustered in the same person tional to those of alcohol (62), the conclusion was reached 
+(54–56). A report on University of North Carolina alumni that confounding is a likely factor. We agree that uncon
+
+
+(57) showed that wine drinkers had healthier lifestyle habits trolled traits in our analyses (e.g., dietary, exercise) were 
+TABLE 6. Adjusted risk of death† through 1998 from coronary disease in beverage choice groups 
+according to total alcohol intake compared with abstainers, Northern California 
+
+Relative risk for each drinking category 
+Group (no. of coronary disease deaths)‡ >1 drink/month; 
+<1 drink/day 1–2 drinks/day 3–5 drinks/day ≥6 drinks/day 
+Drink wine ≥2 days/week (n = 480) 0.7*** 0.6*** 0.6*** 0.8 
+Drink liquor ≥2 days/week (n = 686) 0.8* 0.8** 0.8 1.0 
+Drink beer ≥2 days/week (n = 329) 0.7* 0.7*** 0.7* 0.9 
+Prefer wine (n = 235) 0.6*** 0.5*** 0.6** 1.1 
+Prefer liquor (n = 383) 0.7** 0.8* 0.9 1.0 
+Prefer beer (n = 140) 0.6** 0.6*** 0.8 1.0 
+Have no preference (n = 831) 0.7 0.6** 1.0 1.1 
+Drink wine exclusively (n = 109) 0.5** 0.4*** 0.9 0.7 
+Drink liquor exclusively (n = 186) 0.5* 1.0 1.0 1.6 
+Drink beer exclusively (n = 62) 0.3* 0.7 0.8 1.1 
+
+* p < 0.05; ** p < 0.01; *** p < 0.001. 
+† Computed by using Cox proportional hazards models controlled for age, sex, race, body mass index, 
+education, marital status, smoking, and coronary disease risk/symptoms variable; referent, lifelong abstainers. 
+‡ Refer to the Materials and Methods section of the text and the footnotes to table 1 for definitions. 
+Am J Epidemiol 2003;158:585–595 
+
+
+592 Klatsky et al. 
+
+probably more favorable to wine drinkers, making some of 
+the apparent additional benefit of wine due to residual 
+confounding. 
+
+Protective wine ingredients 
+
+Antioxidant and antithrombotic substances, mostly in red 
+wine and potentially beneficial against atherothrombotic 
+disease and cancer, have been extensively detailed in 
+reviews (35, 38, 41). The hypothesis that these substances 
+protect against coronary disease is appealing, since oxidative 
+modification of low density lipoprotein cholesterol is 
+involved in the development of atherosclerotic plaques. 
+Antioxidant compounds may well be antiatherogenic, yet 
+prospective clinical trials of antioxidant supplements are 
+inconclusive (63–65). Since, in our data, all wine types 
+seemed equally protective, nonalcoholic factors responsible 
+for the lower risk among wine drinkers would have to be 
+present in both red and white wine. 
+
+Heavy drinking and beverage choice 
+
+Some aspects of these data suggest attenuation of 
+increased risk for heavier wine drinkers compared with 
+heavier liquor or beer drinkers. For example, wine drinking 
+frequency showed less relation to cirrhosis risk than liquor or 
+beer drinking did. Attenuation of increased risk in heavy 
+drinkers preferring or exclusively drinking wine must be 
+interpreted in light of the probability that confounding by 
+“healthy” traits becomes progressively more likely in these 
+groups (47). Of 71,600 persons drinking any beverage type 2 
+or more days per week, 52 percent were preferrers, but only 
+10 percent were exclusive drinkers of one beverage type. 
+Liquor drinkers are most likely and wine drinkers least likely 
+to consume larger-than-standard drinks (47), another factor 
+probably important in the risk for chronic heavy drinkers. 
+
+The risk of alcoholic liver cirrhosis is related primarily to 
+lifetime alcohol intake (66). In countries with preponderant 
+wine drinking, most heavy drinkers drink the prevalent 
+beverage, resulting in reports of other wine-induced disorders, 
+including hypertension (67), cardiomyopathy (68, 69), 
+and peripheral neuropathy (70). It is thus clear that heavy 
+chronic wine drinking carries substantial risks. 
+
+The relation of heavy drinking to coronary disease is 
+incompletely resolved (27, 39). Studies of coronary disease 
+mortality have generally shown a U-curve relation to total 
+alcohol intake (27), with heavy drinkers at higher risk than 
+lighter drinkers and, in some studies, abstainers. Some 
+studies of nonfatal coronary disease fail to show an upturn in 
+risk with heavy drinking. Questions arise about misattribution 
+of some deaths to coronary disease (27). Beverage 
+choice for heavy drinkers, via drinking pattern, size of 
+drinks, or risk trait differences, could play a selective role in 
+apparent coronary disease mortality. In particular, a binge 
+pattern among some beer drinkers, with associated deaths 
+from cardiac rhythm disturbances, might account for the 
+disparity between this report of coronary disease mortality 
+and our report (36) that both wine and beer drinking carried 
+a lower risk of nonfatal coronary events. 
+
+Total alcohol intake and mortality 
+
+The J-shaped alcohol-mortality relation was stable for 20 
+years in this cohort. With longer follow-up, there was more 
+apparent protection for women regarding coronary disease 
+and total mortality. Thus, the magnitude of the sex disparity 
+among light drinkers increased. This finding is not readily 
+explained by known sex differences in potential mechanisms 
+for alcohol’s benefit, such as increased high density lipoprotein 
+cholesterol levels, antithrombotic effects, endothelial 
+effects, or decreased insulin resistance (23–25, 41). Equivalent 
+alcohol doses do result in higher average blood alcohol 
+levels in women than in men because of women’s smaller 
+size, larger body fat proportion, and reduced gastric metabolism 
+of ethanol (27, 41). More benefit from lighter drinking 
+and more harm from heavy drinking might ensue. Drinking 
+pattern is another probable factor, since men, on average, 
+binge drink more than women (27, 41, 69). If wine is associated 
+with extra benefit, the fact that women in this study 
+were more likely to drink preponderantly wine may also be a 
+factor. 
+
+We previously attributed apparent protection from lighter 
+drinking against deaths from respiratory conditions to probable 
+less-overt or -occult coronary disease (8). It is also 
+possible that light drinking and wine drinking in particular are 
+directly protective against death from pneumonia and chronic 
+respiratory conditions, but mechanisms were not evident to us. 
+
+Is lower risk due entirely to wine? 
+
+In some respects, our findings are in general agreement 
+with those from Danish and French studies that suggest a 
+benefit primarily from wine (42–46). However, our study 
+shows that each beverage type apparently protects against 
+coronary disease mortality (table 6). Previous studies and 
+evidence that protective mechanisms are related to ethyl 
+alcohol mitigate against the hypothesis that only wine offers 
+coronary disease protection (27, 37, 38). Epidemiologic data 
+from beer-drinking populations (2, 11) are especially 
+convincing. Yet, the unexpected strength and consistency in 
+our data showing an apparent additional benefit from wine 
+raises the likelihood of a causal association. 
+
+Limitations 
+
+Determination of habits only at baseline is a limitation, but 
+drinking amount and beverage preference were relatively 
+stable in this population (37, 71). Additionally, relations of 
+beverage choice to mortality risk were as strong in the last 5 
+years as for those who died earlier. It is possible that wine 
+drinkers might be more likely than liquor or beer drinkers to 
+persist with their drinking as they become older. A second 
+limitation is our lack of data about wine type for more than 
+50 percent of wine drinkers and about the proportions of red 
+and white wine consumed by persons reporting both types. 
+However, persons in “red only” and “white only” categories 
+represent clearly defined groups that showed quite similar 
+mortality risks. A third limitation is the already mentioned 
+inability to control for some traits with probable relations to 
+beverage choice and/or mortality risk. There was also prob-
+
+Am J Epidemiol 2003;158:585–595 
+
+
+Wine, Liquor, Beer, and Mortality 593 
+
+able residual confounding for controlled variables; for 
+example, control for packs per day of cigarette smoking does 
+not fully measure the effective dose of harmful components. 
+
+A fourth limitation is ascertainment of deaths only in California. 
+However, while previous pilot studies indicate that 7– 
+17 percent of current or former health care plan members die 
+outside of California (52), we do not believe that these findings 
+are likely to reflect bias related to alcohol drinking or 
+beverage choice. Excluding the known dead, we examined 
+proportions of persons remaining in the health plan in 1998 
+as a plausible marker for continued residence in California, 
+with the following results: entire cohort, 56.1 percent; 
+drinkers of wine 2 or more days per week, 55.7 percent; and 
+preferrers of wine; 56.6 percent. A fifth limitation was our 
+lack of control for drink size, known in this population to be, 
+on average, largest for liquor drinkers and smallest for wine 
+drinkers (47). Thus, “moderate” liquor drinkers might 
+include a larger proportion of heavier drinkers than exists 
+among “moderate” wine drinkers. Finally, like all reported 
+studies of alcoholic beverage choice and mortality, this study 
+was observational. Only a controlled clinical trial can 
+account completely for all confounders. 
+
+Conclusions 
+
+Frequency of wine drinking but not of liquor or beer 
+drinking was independently related to lower mortality risk, 
+especially for coronary disease and respiratory deaths. Red, 
+white, and other types of wine had similar relations to lower 
+risk. Associated traits and/or drinking patterns among wine 
+drinkers and/or a specific benefit from wine may be 
+involved. 
+
+ACKNOWLEDGMENTS 
+
+This work was supported by grants from the Alcoholic 
+Beverage Medical Research Foundation of Baltimore, Maryland; 
+the National Institute of Alcoholism and Alcohol 
+Abuse (1 RO1 AA 10830-01); and the Wine Institute of San 
+Francisco, California. 
+
+The authors thank Cynthia Landy for assistance with data 
+collection and Sally McBride Allen and Teresa Klask for 
+technical assistance. 
+
+REFERENCES 
+
+1. Pearl R. Alcohol and longevity. New York, NY: Alfred A.
+Knopf, 1926.
+2. Blackwelder WC, Yano K, Rhoads GG, et al. Alcohol and mortality: 
+The Honolulu Heart Study. Am J Med 1980;68:164–9. 
+3. Kozararevic DJ, McGee D, Vojvodic N, et al. Frequency of 
+alcohol consumption and morbidity and mortality: The Yugoslavia 
+Cardiovascular Disease Study. Lancet 1980;1:613–16. 
+4. Klatsky AL, Armstrong MA, Friedman GD. Alcohol and mortality: 
+a ten year Kaiser-Permanente experience. Ann Intern 
+Med 1981;95:139–45. 
+5. Gordon T, Doyle JT. Drinking and mortality: The Albany
+Study. Am J Epidemiol 1987;125:263–70.
+6. Boffetta P, Garfinkle A. Alcohol drinking and mortality among 
+men enrolled in an American Cancer Society prospective study. 
+Epidemiology 1990;1:342–8. 
+7. Doll R, Peto R, Hall E, et al. Mortality in relation to consumption 
+of alcohol: 13 years’ observations on British doctors. BMJ 
+1994;309:911–18. 
+8. Klatsky AL, Armstrong MA, Friedman GD. Alcohol and mortality. 
+Ann Intern Med 1992;117:646–54. 
+9. Fuchs CS, Stampfer MJ, Colditz GA, et al. Alcohol consumption 
+and mortality among women. N Engl J Med 1995;332: 
+1245–50. 
+10. Camargo CA Jr, Hennekens CH, Gaziano JM, et al. Prospective 
+study of moderate alcohol consumption and mortality in US 
+male physicians. Arch Intern Med 1997;157:79–85. 
+11. Keil U, Chambless LE, Doring A, et al. The relation of alcohol 
+intake to coronary heart disease and all-cause mortality in a 
+beer-drinking population. Epidemiology 1997;8:150–6. 
+12. Thun MJ, Peto R, Lopez AD, et al. Alcohol consumption and 
+mortality among middle-aged and elderly U.S. adults. N Engl J 
+Med 1997;337:1705–14. 
+13. Yuan JM, Ross RK, Gao YT, et al. Follow up study of moderate 
+alcohol intake and mortality among middle aged men in Shanghai, 
+China. BMJ 1997;314:18–23. 
+14. Stampfer MJ, Colditz GA, Willett WC, et al. Prospective study 
+of moderate alcohol consumption and the risk of coronary disease 
+and stroke in women. N Engl J Med 1988;319:267–73. 
+15. Klatsky AL, Armstrong MA, Friedman GD. Risk of cardiovascular 
+mortality in alcohol drinkers, ex-drinkers and nondrinkers. 
+Am J Cardiol 1990;66:1237–42. 
+16. Rimm EB, Giovannucci EL, Willett WC, et al. Prospective 
+study of alcohol consumption and risk of coronary disease in 
+men. Lancet 1991;338:464–8. 
+17. Criqui MH, Cowan LD, Tyroler HA, et al. Lipoproteins as 
+mediators for the effects of alcohol consumption and cigarette 
+smoking on cardiovascular mortality: results from the Lipid 
+Research Clinics Follow-up Study. Am J Epidemiol 1987;126: 
+629–37. 
+18. Langer RD, Criqui MH, Reed DM. Lipoproteins and blood 
+pressure as biological pathways for effect of moderate alcohol 
+consumption on coronary heart disease. Circulation 1992;85: 
+910–15. 
+19. Renaud S, de Lorgeril M. Wine, alcohol, platelets, and the 
+French paradox for coronary heart disease. Lancet 1992;339: 
+1523–6. 
+20. Reeder VC, Aikens ML, Li XN, et al. Alcohol and the fibrinolytic 
+system. In: Zakhari S, Wassef M, eds. Alcohol and the 
+cardiovascular system. 31st ed. Bethesda, MD: National Institutes 
+of Health, 1996:393–411. (NIH publication no. 96-4133). 
+(National Institute on Alcohol Abuse and Alcoholism research 
+monograph no. 31). 
+21. Gaziano JM, Buring JE, Breslow JL, et al. Moderate alcohol 
+intake, increased levels of high-density lipoprotein and its sub-
+fractions, and decreased risk of myocardial infarction. N Engl J 
+Med 1993;329:1829–34. 
+22. Greenberg SS, David Giles MD, Lancaster J. Alcohol, nitric 
+oxide, and vascular smooth muscle. In: Zakhari S, Wassef M, 
+eds. Alcohol and the cardiovascular system. Bethesda, MD: 
+National Institutes of Health, 1996:479–565. (NIH publication 
+no. 96-4133). (National Institute on Alcohol Abuse and Alcoholism 
+research monograph no. 31). 
+23. Dreon DM, Krauss RM. Alcohol, lipids and lipoproteins. In: 
+Zakhari S, Wassef M, eds. Alcohol and the cardiovascular system. 
+1st ed. Bethesda, MD: National Institutes of Health, 1996: 
+369–91. (NIH publication no. 96-4133). (National Institute on 
+Alcohol Abuse and Alcoholism research monograph no. 31). 
+24. Zakhari S. Molecular mechanisms underlying alcohol-induced 
+Am J Epidemiol 2003;158:585–595 
+
+
+594 Klatsky et al. 
+
+cardioprotection: contribution of hemostatic components. 
+Alcohol Clin Exp Res 1999;23:1108–10. 
+
+25. Grobbee DE, Rimm EB, Keil U, et al. Alcohol and the cardiovascular 
+system. In: MacDonald I, ed. Health issues related to 
+alcohol consumption. Oxford, United Kingdom: Blackwell Science, 
+1999:125–80. 
+26. Maclure M. Demonstration of deductive meta-analysis: ethanol 
+intake and risk of myocardial infarction. Epidemiol Rev 1993; 
+15:328–51. 
+27. Klatsky AL. Epidemiology of coronary heart disease—influence 
+of alcohol. Alcohol Clin Exp Res 1994;18:88–96. 
+28. Fagrell B, De Faire U, Criqui M, et al. The effects of light to 
+moderate drinking on cardiovascular diseases. J Intern Med 
+1999;246:331–40. 
+29. Marmot MG. Alcohol and coronary heart disease. Int J Epidemiol 
+2001;30:724–9. 
+30. Hines LM, Rimm EB. Moderate alcohol consumption and coronary 
+heart disease: a review. Postgrad Med J 2001;77:747–52. 
+31. St Leger AS, Cochrane AL, Moore F. Factors associated with 
+cardiac mortality in developed countries with particular reference 
+to the consumption of wine. Lancet 1979;1:1018–20. 
+32. Criqui MH, Ringel BL. Does diet or alcohol explain the French 
+paradox? Lancet 1994;344:1719–23. 
+33. Frankel EN, Kanner J, German JB, et al. Inhibition of oxidation 
+of human low-density lipoprotein by phenolic substances in red 
+wine. Lancet 1993;341:454–7. 
+34. Pace-Asciak CR, Hahn S, Diamandis EP, et al. The red wine 
+phenolics trans-resveratrol and quercetin block human platelet 
+aggregation and eicosanoid synthesis: implications for protection 
+against coronary heart disease. Clin Chim Acta 1995;235: 
+207–19. 
+35. Booyse FM, Parks DA. Moderate wine and alcohol consumption: 
+beneficial effects on cardiovascular disease. Thromb Haemost 
+2001;86:517–28. 
+36. Klatsky AL, Armstrong MA. Alcohol beverage choice and risk 
+of coronary artery disease mortality: do red wine drinkers fare 
+best? Am J Cardiol 1993;71:467–9. 
+37. Klatsky AL, Armstrong MA, Friedman GD. Red wine, white 
+wine, liquor, beer, and risk for coronary artery disease hospitalization. 
+Am J Cardiol 1997;80:416–20. 
+38. Rimm EB, Klatsky A, Grobbee D, et al. Review of moderate 
+alcohol consumption and reduced risk of coronary heart disease: 
+is the effect due to beer, wine, or spirits? BMJ 1996;312: 
+731–6. 
+39. Cleophas TJ. Wine, beer and spirits and the risk of myocardial 
+infarction: a systematic review. Biomed Pharmacother 1999; 
+53:417–43. 
+40. Wannamethee SG, Shaper AG. Type of alcoholic drink and risk 
+of major coronary heart disease events and all-cause mortality. 
+Am J Public Health 1999;89:685–90. 
+41. Paoletti R, Klatsky AL, Poli A, et al, eds. Moderate alcohol 
+consumption and cardiovascular disease. Dordrecht, the Netherlands: 
+Kluwer Academic Publishers, 2000. 
+42. Grønbæk M, Deis A, Sørensen TI, et al. Mortality associated 
+with moderate intakes of wine, beer or spirits. BMJ 1995;310: 
+1165–9. 
+43. Grønbæk M, Becker U, Johansen D, et al. Type of alcohol consumed 
+and mortality from all causes, coronary heart disease, 
+and cancer. Ann Intern Med 2000;133:411–19. 
+44. Prescott E, Grønbæk M, Becker U, et al. Alcohol intake and the 
+risk of lung cancer: influence of type of alcoholic beverage. Am 
+J Epidemiol 1999;149:463–70. 
+45. Truelsen T, Grønbæk M, Schnohr P, et al. Intake of beer, wine, 
+and spirits and risk of stroke: The Copenhagen City Heart 
+Study. Stroke 1998;29:2467–72. 
+46. Renaud SC, Gueguen R, Siest G, et al. Wine, beer, and mortality 
+in middle-aged men from eastern France. Arch Intern Med 
+1999;159:1865–70. 
+
+47. Klatsky AL, Armstrong MA, Kipp H. Correlates of alcoholic 
+beverage preference: traits of persons who choose wine, liquor 
+or beer. Br J Addict 1990;85:1279–89. 
+48. Tjonneland A, Grønbæk M, Stripp C, et al. Wine intake and diet 
+in a random sample of 48763 Danish men and women. Am J 
+Clin Nutr 1999;69:49–54. 
+49. Grønbæk M, Mortensen EL, Mygind K, et al. Beer, wine, spirits 
+and subjective health. J Epidemiol Community Health 1999;53: 
+721–4. 
+50. Mortensen EL, Jensen HH, Sanders SA, et al. Better psychological 
+functioning and higher social status may largely explain the 
+apparent health benefits of wine: a study of wine and beer 
+drinking in young Danish adults. Arch Intern Med 2001;161: 
+1844–8. 
+51. Collen MF, Davis LF. The multitest laboratory in health care. J 
+Occup Med 1969;11:355–60. 
+52. Arellano MG, Peterson GR, Petitti DB, et al. The California 
+Automated Mortality Linkage System (CAMLIS). Am J Public 
+Health 1984;74:1324–30. 
+53. Klatsky AL, Armstrong MA, Friedman GD. Relations of alcoholic 
+beverage use to subsequent coronary artery disease hospitalizations. 
+Am J Cardiol 1986;58:710–14. 
+54. Kaplan GA, Keil JE. Socioeconomic factors and cardiovascular 
+disease: a review of the literature. Circulation 1993;88:1973– 
+98. 
+55. Marmot M, Wilkerson RG, eds. Social determinants of health. 
+New York, NY: Oxford University Press, 1999. 
+56. Kilander L, Berglund L, Boberg M, et al. Education, lifestyle 
+factors and mortality from cardiovascular disease and cancer: a 
+25-year follow-up of Swedish 50-year old men. Int J Epidemiol 
+2001;30:1119–26. 
+57. Barefoot JC, Grønbæk M, Feaganes JR, et al. Alcoholic beverage 
+preference, diet, and health habits in the UNC Alumni 
+Heart Study. Am J Clin Nutr 2002;76:466–72. 
+58. Puddey IB, Rakic V, Dimmitt SB, et al. Influence of pattern of 
+drinking on cardiovascular disease and cardiovascular risk factors—
+a review. Addiction 1999;94:649–63. 
+59. Trevisan M, Schisterman E, Mennotti A, et al. Drinking pattern 
+and mortality: the Italian Risk Factor and Life Expectancy 
+pooling project. Ann Epidemiol 2001;11:312–19. 
+60. Del Rio C, Prada C, Alvarez FJ. Beverage effects on patterns of 
+alcohol consumption. Alcohol Clin Exp Res 1995;19:1583–6. 
+61. Jensen MK, Andersen AT, Sorensen TIA, et al. Alcoholic beverage 
+preference and risk of becoming a heavy drinker. 
+Epidemiology 2002;13:127–32. 
+62. Grønbæk M. Factors influencing the relation between alcohol 
+and mortality—with focus on wine. J Intern Med 2001;250: 
+291–308. 
+63. Warnholtz A, Munzel T. Why do antioxidants fail to provide 
+clinical benefit? Curr Control Trials Cardiovasc Med 2000;1: 
+38–40. 
+64. Heinecke JW. Is the emperor wearing clothes? Clinical trials of 
+vitamin E and the LDL oxidation hypothesis. Arterioscler 
+Thromb Vasc Biol 2001;21:1261–4. 
+65. Marchioli R, Schweiger C, Levantesi G, et al. Antioxidant vitamins 
+and prevention of cardiovascular disease: epidemiological 
+and clinical trial data. Lipids 2001;36(suppl):S53–63. 
+66. Lelbach WK. Epidemiology of alcohol use and its gastrointestinal 
+complications. In: Seitz HK, Kommerell B, eds. Alcohol-
+related diseases in gastroenterology. Berlin, Germany: Springer 
+Verlag, 1985:1–18. 
+67. Lian C. L’alcoholisme cause d’hypertension arterielle. (In 
+French). Bull Acad Med (Paris) 1915;74:525–8. 
+68. Urbano-Marquez A, Estrich R, Navarro-Lopez F, et al. The 
+Am J Epidemiol 2003;158:585–595 
+
+
+Wine, Liquor, Beer, and Mortality 595 
+
+effects of alcoholism on skeletal and cardiac muscle. N Engl J 
+Med 1989;320:409–15. 
+
+69. Gillet C, Juilliere Y, Pirollet P, et al. Alcohol consumption and 
+primary dilated cardiomyopathy: comparison with a population 
+of patients with coronary disease. (In French). Rev Med Interne 
+1993;14:941–8. 
+70. Vittadini G, Buonocore M, Colli G, et al. Alcoholic polyneuropathy: 
+a clinical and epidemiological study. Alcohol Alcohol 
+2001;36:393–400. 
+71. Midanik LT, Klatsky AL, Armstrong MA. Changes in drinking 
+behavior: demographic, psychosocial, and biomedical factors. 
+Int J Addict 1990;25:599–619. 
+Am J Epidemiol 2003;158:585–595 
+
+

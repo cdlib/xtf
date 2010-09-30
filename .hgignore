@@ -6,5 +6,6 @@
 ^WEB-INF/javadoc/
 ^regress/.*/IndexDB/
 ^regress/.*/actual/
+^regress/.*/.*\.log$
 .*\.swp$
 .*.orig$

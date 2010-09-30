@@ -1,0 +1,1474 @@
+Journal of Travel Research 
+
+
+http://jtr.sagepub.com 
+
+Linking Wine Preferences to the Choice of Wine Tourism Destinations 
+
+Graham Brown and Donald Getz 
+Journal of Travel Research 2005; 43; 266 
+DOI: 10.1177/0047287504272027 
+
+
+The online version of this article can be found at:
+
+
+http://jtr.sagepub.com/cgi/content/abstract/43/3/266
+
+
+Published by: 
+http://www.sagepublications.com 
+
+On behalf of: 
+Travel and Tourism Research Association 
+
+Additional services and information for Journal of Travel Research can be found at:
+Email Alerts: http://jtr.sagepub.com/cgi/alerts
+Subscriptions: http://jtr.sagepub.com/subscriptions
+Reprints: http://www.sagepub.com/journalsReprints.nav
+Permissions: http://www.sagepub.com/journalsPermissions.nav
+
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+Linking Wine Preferences to the
+Choice of Wine Tourism Destinations
+
+
+GRAHAM BROWN AND DONALD GETZ 
+
+This article explores the links between wine consumers’ 
+preferences for wine from particular countries or regions 
+and their interest in, and propensity to travel to, specific wine 
+regions. Data from a convenience sample of 161 wine consumers 
+in Calgary, Canada, revealed that specific appellation-oforigin 
+preferences (e.g., for Australian or French wines) do 
+have an influence on travel preferences and patterns. Nearly 
+70% of respondents preferred to drink wines from particular 
+origins, and planned wine-related travel by respondents 
+closely matched those geographic preferences. Other factors, 
+however, were also shown to be important in shaping 
+wine tourism destinations, including distance and cognitive 
+factors. Implications are drawn for wine tourism marketing 
+and for destination-choice theory. Recommendations are 
+made for future research. 
+
+Keywords: wine preferences; wine tourism; destination 
+choices 
+
+Wine tourism is a form of special-interest travel based on 
+the desire to visit wine-producing regions or in which travelers 
+are induced to visit wine-producing regions, and wineries 
+in particular, while traveling for other reasons (Getz 2000). 
+Of interest in this article are the factors shaping long-distance 
+wine tourism (defined here as being travel away from one’s 
+home region for 1 or more nights) and particularly the influence 
+of wine preferences based on geographic origin (i.e., 
+their appellation). The specific question being investigated is 
+whether a preference for drinking wine from particular countries 
+or regions will motivate consumers to visit those areas 
+for wine-related reasons. 
+
+One of the major themes expressed in the wine tourism 
+literature is the need for more consumer-based research (Hall 
+et al. 2000) and in particular the need to better understand the 
+characteristics, motives, and preferences of wine tourists 
+(Charters and Ali-Knight 2002). The link between wine consumption 
+and wine-related travel has largely been neglected, 
+with most studies of wine tourists drawing from winery visitors 
+rather than wine consumers in general. If a link can be 
+demonstrated between wine preferences by origin of the 
+wine and resultant travel to those regions, it will have important 
+implications for wine and wine tourism marketing. 
+Some theoretical implications regarding destination choice 
+would also follow. 
+
+WINE TOURISM AND WINE CONSUMERS 
+
+What Motivates the Wine Tourist? 
+
+Reviews of research on wine tourists are contained in 
+books by Hall et al (2000) and Getz (2000). Additional material 
+has been published in various journals, especially in the 
+International Journal of Wine Marketing. Several conference 
+proceedings are available that deal in whole or part with 
+wine tourism (e.g., Dowling and Carlsen 1998; Cullen, 
+Pickering, and Phillips 2002). 
+
+Mitchell, Hall, and McIntosh (2000) concluded that 
+much of the research concerned supply-side issues from the 
+perspective of wineries hosting visitors, and much less had 
+been completed on demand-related questions. In particular, 
+little is known about the international or long-distance wine 
+tourist, partly because of the tendency to sample winery visitors 
+(who are normally operationalized as “wine tourists”) 
+and partly owing to the general absence of travel-related content 
+in wine consumer research. For the purposes of this article, 
+long-haul tourists are defined as those who travel outside 
+their home region for 1 or more nights (as opposed to day-
+trippers or excursionists). 
+
+Charters and Ali-Knight (2000) determined from a sample 
+of Western Australian winery visitors that about one-
+third could be called “wine lovers” who desired a learning 
+experience at wineries; they had a “comprehensive grounding 
+in wine education.” A small component of this segment 
+was called the “connoisseur,” and this group was much more 
+interested in learning about wine production. The implication 
+is that wine tourists might seek out destinations that offer 
+
+Graham Brown is the Foundation Professor of Tourism Management 
+in the School of International Business at the University of 
+South Australia, Adelaide. He acts as the network coordinator for 
+the Co-operative Research Centres for Sustainable Tourism for 
+South Australia. The authors are grateful for funding from University 
+of Calgary, Haskayne School of Business, and particularly the 
+Canadian Pacific Visiting Professor program. 
+
+Donald Getz is a professor in the Haskayne School of Business, 
+University of Calgary, Canada. He has both a personal and research 
+interest in wine and wine tourism as well as family businesses, 
+event management, and event tourism. 
+
+Journal of Travel Research, Vol. 43, February 2005, 266-276 
+DOI: 10.1177/0047287504272027 
+© 2005 Sage Publications 
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+JOURNAL OF TRAVEL RESEARCH 267 
+
+the learning experience they desire, although Charters and 
+Ali-Knight also concluded that a “bundle of benefits,” and 
+not just wine-related experiences, appealed to wine lovers. 
+
+Johnson’s (1998) typology of “generalist” versus “specialist” 
+is germane. Johnson argued that some winery visitors 
+take the visit more seriously than others and have therefore 
+different needs. Presumably, the specialist is similar to the 
+wine lover of other typologies. The place of wine in lifestyles 
+has also been examined, leading Hall et al. (2000) to have 
+concluded that the experiential aspects of lifestyle (such as 
+socializing, travel, entertaining, and dining out) are more 
+important than the materialistic aspects. 
+
+One large-scale consumer study is directly pertinent. The 
+Travel Activities and Motivation Survey (TAMS), commissioned 
+in part by the Canadian Tourism Commission (Lang 
+Research Inc. 2001), included the development of a wine and 
+cuisine index reflecting travel related to food and wine. The 
+study determined that 12.9% of adult Canadians and 17.9% 
+of adult Americans had a high level of interest in wine and 
+cuisine-related travel, and an additional 17.2% of Canadians 
+and 17.2% of Americans had moderate interest. Segmentation 
+revealed that the greatest interest levels in Canada 
+occurred among young and mature couples and young and 
+mature singles, and that interest increased with household 
+income and education levels. Overall, the best target segment 
+was identified as being “affluent mature and senior couples.” 
+
+The Appeal of Wine Regions 
+
+There is a growing body of research-based literature on 
+the attractiveness of wine-producing regions plus considerable 
+opinion on how to develop these destinations. Very little 
+in this body of literature, however, provides insight or evidence 
+concerning the link between wine preferences and 
+wine-related travel. Prevailing attitudes in the wine and tourism 
+industry associate wine quality with wine tourism 
+demand. For example, one of the first regional wine tourism 
+strategies was prepared for Western Australia in 1998. Wine 
+tourism was defined as “travel for the experience of wineries 
+and wine regions and their links to the Australian lifestyle 
+and encompasses service provision and destination marketing” 
+(Carlsen and Dowling 2001, p. 46). A SWOT analysis 
+of strengths, weaknesses, opportunities, and threats, based 
+on consultations, yielded a number of perceived strengths, 
+including premium quality wines; a unique, attractive environment; 
+regional produce and fine cuisine; a variety of lifestyle 
+experiences; a variety of accommodation styles and 
+price range; a range of associated regional crafts and merchandise; 
+a range of existing events in wine regions; many 
+existing small family-owned and -operated wineries; many 
+new ventures in the wine and tourism business; and a high 
+level of support. 
+
+In a study of critical success factors for wine tourism, 
+Getz et al. (1999) obtained the opinions of wine and tourism-
+industry professionals in both Australia and Washington 
+State. Results showed clearly that professionals believed 
+wine quality to be one of the top attractions, and this is a frequent 
+theme in wine tourism development and planning. The 
+implication would appear to be that tasting quality wines 
+motivates visits to wineries. 
+
+Although there has been little in the way of systematic or 
+comparative research into the appeal of wine regions, 
+Charters and Ali-Knight (2000) admonished that wine tourist 
+
+expectations are likely to vary from region to region. No one 
+set of critical success factors will apply everywhere. 
+
+Williams (2001a, 2001b) studied the evolution of wine 
+region imagery as reflected in the advertising pages of Wine 
+Spectator magazine. He concluded that imagery shifted 
+through the decade of the 1990s from an emphasis on wine 
+production and related facilities to more aesthetic and experiential 
+dimensions. The imagery of wine country as a rural 
+paradise has been conveyed to wine consumers, in which leisure, 
+cuisine, scenery, and outdoor activities are bountiful. 
+But Williams noted that consumer research on perceived and 
+preferred wine country imagery is needed to permit proper 
+wine region positioning. 
+
+Bruwer (2003) thought the appeal of wine regions to be 
+based on “difference of place,” and these differences must be 
+branded. Both natural and cultural features are important, but 
+attractiveness is also related to distance (real and perceived) 
+to markets. 
+
+Wine tourism and wine exports should be mutually reinforcing. 
+Sharples (2002), for example, suggested that the 
+reputation (i.e., how well known it is for quality) and export 
+of Chilean wines fuel wine tourism to that country. Consumers 
+who have experienced a wine-producing region might be 
+more likely to become loyal customers and to spread a positive 
+word about the wines. What is unknown are the dynamics 
+of this interaction and the resulting pattern of travel 
+preferences and choices. 
+
+Chaney (2002) argued that many consumers simplify 
+their wine choices by picking them on the basis of country of 
+origin, and noted that many retailers display wines by country 
+and region of origin. Chaney further observed a link 
+between preferences and travel among UK wine consumers, 
+noting that “for most people part of the travel experience 
+involves sampling the local food and drink in a relaxed environment.” 
+Travel experiences therefore influenced her 
+respondents as to future wine choices. 
+
+Destination Choice Theory 
+
+What does wine say about the destination—as opposed 
+to, say, food or manufactured products—that might create a 
+desire to visit? If wine can be considered an indirect influence 
+on travel choices, what exactly are the properties of 
+greatest importance (e.g., wine quality, intangibles like lifestyle 
+association, or specific landscape imagery)? 
+
+A review of well-known travel and destination choice 
+models, many of which are compared by Hudson (2000) and 
+Pizam and Mansfeld (2000), suggests that wine can have 
+several impacts on destination choice, both push factors 
+(motives and the like) and pull factors (i.e., the attractiveness 
+of destinations). The “choice model” described by Ryan 
+(2002, p. 62) is used as a framework for the following discussion, 
+a summary of which is provided in Figure 1. Ryan’s 
+model is particularly useful in permitting the wine-related 
+factors to be linked to five generic choice factors. 
+
+Tourist variables (needs, motives, personality, lifestyle, 
+life stage, and experience). Needs (e.g., Maslow’s hierarchy, 
+reviewed in both Hudson 2000 and Ryan 2002) are at the root 
+of travel and leisure motives, but no one “needs” to drink 
+wine or visit wine regions. Rather, basic human needs are in 
+part met through leisure and travel experiences. Interactions 
+among personality, lifestyle, life stage, and experience shape 
+specific travel motivations, and these can include the follow-
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+268 FEBRUARY 2005 
+
+FIGURE 1 
+WINE-RELATED FACTORS IN THE DESTINATION 
+CHOICE MODEL 
+
+Wine-Related Factors 
+
+Tourist variables: Basic needs are met through 
+needs, motives, wine tourism experiences; these 
+personality, lifestyle, motivate travel 
+life stage, experience Learning about wine and culture, 
+wine and landscape 
+Sharing wine tourism experiences 
+with significant others and 
+likeminded travelers 
+Gaining esteem (through 
+acquired 
+knowledge and experiences; 
+to “master” wine) 
+Serious leisure and involvement 
+(wine central to lifestyle; 
+amateurism) 
+Relaxation in wine regions (idyllic 
+rural landscapes) 
+Marketing variables Preferences for particular wines 
+and destination by origin country or specific 
+awareness appellation 
+Destination branding by wine 
+companies 
+Wine tastings specific to their 
+origin 
+Comarketing by destination 
+marketing organizations 
+(DMOs) 
+and wine industry 
+Personal visits to wineries and 
+wine regions, plus word of 
+mouth, influence future travel 
+Affective association Cultural and historic links favor 
+of destinations certain destinations (e.g., North 
+Americans and European links) 
+Exports of wines affect availability 
+and encourage loyalty 
+Pilgrimages to famous and 
+important wineries and wine 
+regions 
+Authenticity of the cultural 
+experience (wine as an integral 
+part of lifestyle) 
+Tourist destination The “evoked set” of known and 
+preferences preferred wine-specific 
+destinations versus general-
+purpose travel preferences 
+Situational variables Risk reduction; cost and distance 
+barriers; packaging; knowledge 
+about the wine regions 
+
+Source: Adapted from Ryan (2002). 
+
+ing generic types (from Ryan 2002, p. 35, following Beard 
+and Ragheb 1983): intellectual (to learn, explore, and discover), 
+social (linked to friendship and interpersonal relationships, 
+plus the need for the esteem of others), compe
+
+
+tence-mastery (to achieve, master, challenge, and compete), 
+and stimulus-avoidance (to escape or relax). 
+
+Of particular relevance to most forms of special interest 
+travel are the intellectual and competence-mastery motivations. 
+In terms of wine tourism, these appear to translate into 
+the genre-defining activities of visiting wineries and vineyards 
+to learn about wine (see Charters and Ali-Knight 2000 
+for a pertinent discussion). Escape and relaxation are also 
+clearly associated with wine regions, because the imagery 
+presented of wine regions stresses an idyllic rural and cultural 
+experience or lifestyle. As a result, wine consumers 
+who read Wine Spectator are potentially inculcated with a 
+belief that wine regions are worthy of a visit (Williams 
+2001a, 2001b). Increasingly, wine regions are being developed 
+with spas, golfing, special events, country inns, and 
+other pleasant diversions (Getz 2000). 
+
+The social dimension should also be prominent in wine 
+tourism and not just through travel with likeminded people 
+or meeting them in the wine region. In terms of life stage, the 
+presence of a “significant other” who is also a wine lover 
+might encourage wine tourism, whereas having children at 
+home is possibly a disincentive. Belonging to a wine club or 
+having other wine consumers as one’s reference group might 
+strongly influence the value placed on wine tourism. 
+
+The wine consumer’s level of involvement with wine in 
+general or particular wines has been studied in the context of 
+wine purchase behavior, but the tourism dimension has 
+barely been addressed (see Lockshin and Spawton 2001 for 
+an overview). Studies of leisure and recreation involvement 
+(e.g., Havitz and Dimanche 1999) suggest, by extension, that 
+those who are highly involved with wine can be expected to 
+explicitly value wine as a central part of their lifestyle and to 
+exhibit behaviors such as joining clubs, making wine (as a 
+hobbyist), reading about it, and collecting or cellaring preferred 
+wines. Highly involved wine consumers (about one-
+third of the total) like to learn and will refer to the region of 
+origin as one purchase cue (Lockshin and Spawton 2001). 
+According to those researchers, very few consumers stick to 
+one brand but like to try the unfamiliar and search for the 
+unknown brands from familiar regions. 
+
+The highly involved wine consumer engages in “serious 
+leisure,” defined by Stebbins (1992) as being typified by the 
+acquisition of specific knowledge and skills, perseverance, 
+amateurism (e.g., making wine at home), searching for durable 
+benefits or self-actualization, enhancement of self-
+image, and self-gratification. Serious leisure often encompasses 
+one’s entire social world, and Ravenscroft and van 
+Westering (2001) have discussed wine involvement in these 
+terms. 
+
+The concept of recreation activity specialization is 
+closely related to involvement. Bryan (1977) conceptualized 
+a continuum of behavior from the general to the specialized, 
+which is reflected by equipment, skills used, and preferences 
+for specific recreation settings. Ditton, Loomis, and Choi 
+(1992) added a “social worlds” perspective in which at one 
+end of a continuum is the least specialized subworld and its 
+members and at the other end is the most specialized 
+subworld and its members. Scott and Shafer (2001) argued 
+that recreational specialization has generally been treated by 
+leisure researchers as a measure of intensity of involvement, 
+and has been used to explore variation among activity participants 
+in terms of their preferences, motivations, attitudes, 
+and the like, but they stressed a developmental process in 
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+JOURNAL OF TRAVEL RESEARCH 269 
+
+which specialization is a progression in behaviors, skills, and 
+commitment. They argued that progression is not a typical 
+path but may well be the least common trajectory among 
+recreation participants. 
+
+Marketing variables and destination awareness. Marketing 
+of wine destinations is done by tourism organizations as 
+well as individual wineries and wine companies. The wine 
+industry often associates their brands with specific appellations 
+and promotes visits to their wineries (see Getz 2000 for 
+a case study of Australia’s Southcorp). As the number of potential 
+wine destinations has been steadily increasing, owing 
+to both the spread of wine production and the growing importance 
+assigned to wine tourism, it is becoming more 
+difficult to find competitive advantages. 
+
+Awareness of the wine-producing region can be 
+increased through repeated purchase of wines (which might 
+have pertinent information on the label), discussions with 
+other wine consumers, formal wine tastings, background 
+reading on wines, or comarketing by wineries and wine destinations. 
+The vast majority of wines are, however, sold without 
+much in the way of destination information or imagery 
+on the labels, and in some countries (including Canada), 
+wines made from imported grape juice can be sold with misleading 
+origins. Consumers who are highly involved with 
+wine in their lifestyle or who are interested in specific wines 
+by origin might be more likely to enjoy learning about wine-
+producing regions regardless of their travel experiences and 
+propensity. 
+
+Marketing efforts might not always be a determining factor 
+in attracting wine tourists. Research by Dodd (1995) concerning 
+visitors to Texas wineries found that word-of-mouth 
+recommendations were the most important source of information 
+used, followed by previous exposure to the winery’s 
+labels and other sources. Brochures were most important to 
+visitors living more than 30 miles from the visited winery. 
+
+Affective associations of destinations. Although wine 
+production is expanding geographically around the world 
+(now including countries like India, China, and Japan), wine 
+has strong and positive associations with certain countries. 
+This is based in part on culture (such as the strong links between 
+North America and Europe) and the volume and quality 
+of wine exports (which more recently favors Australia 
+and South America). 
+
+The notion of “pilgrimage” is also relevant. In social settings 
+such as wine clubs and wine tastings, or among wine-
+loving friends, there is a high probability that word of mouth 
+as well as formal information about wine regions will be 
+shared. An element of status might very well be associated 
+with visits to famous or even out-of-the-way wine regions. 
+Much as golfers “collect” experiences at different courses, 
+wine lovers might sequentially visit wine regions in search of 
+novelty and variety. And just as golfers might strongly desire 
+to play at St. Andrews in Scotland, the home of golf, wine 
+lovers might desire to make a pilgrimage to the origins of 
+famous or preferred wines. 
+
+Many wine-related Web sites provide evidence that consumers 
+think in terms of pilgrimage, and marketers use this 
+concept in their wine tourism promotions. For example, Lee 
+Foster (2003) expressed it this way: “Every traveler with an 
+interest in wine and food owes himself or herself, at some 
+
+point in life, a pilgrimage to Bordeaux. I will always remember 
+my own journey to this gustatory shrine.” 
+
+What sets a pilgrimage apart from other special-interest 
+travel is that very specific sites hold deep meaning for the 
+visitors. There will be a search for authenticity, often manifested 
+in seeing the actual grapes, physical plant, and personnel 
+that produce favored wines. It might also be argued that 
+famous wine regions, like Bordeaux, are pilgrimage destinations 
+even for those who prefer wines from elsewhere. If 
+true, this would suggest that the Bordeaux “brand” holds 
+“equity” for the destination as well as its wine producers (see 
+Lockshin and Spawton 2001 for a discussion of brands, 
+involvement, and wine tourism). 
+
+Wine tourist research in Canada has made it clear that 
+wine tourists also seek cultural experiences and engage in 
+active outdoors pursuits (Williams and Kelly 2001; Lang 
+Research Inc. 2001). The wine region must therefore offer a 
+bundle of benefits, not just wine-related opportunities. If 
+wine tourists are better educated and more sophisticated travelers, 
+then they are more likely than others to be demanding 
+of their selected destinations. 
+
+Tourist destination preferences. The concept of an 
+“evoked set” (Howard 1963) of destinations is pertinent. According 
+to Um and Crompton (2000, p. 87), it is the mental 
+list of destinations consisting of “those remaining from an 
+initial awareness set after some reduction process has been 
+implemented.” Um and Crompton argued that when applied 
+to tourism, the evoked set should be thought of as “probable 
+destinations” within some period of time. This contrasts with 
+the “inept set” of those rejected. An “inert set” of destinations 
+includes those that cannot be evaluated by the 
+consumer because of a lack of information. 
+
+The implication is that potential wine tourists will possess 
+a short list of preferred or likely destinations. At a general 
+level, in the minds of wine tourists, the evoked set could 
+consist of all wine regions—because each would offer something 
+new. Or, when asked about their likely travel to wine 
+regions, the evoked set might be much narrower. It could be 
+based on the normal barriers of time and distance and/or 
+wine-specific criteria such as reputation for wine, preference 
+for those wines, or knowledge about the wine experiences 
+available in each. The current research is the first to explore 
+actual and preferred wine tourism destinations among a 
+group of consumers in their home city. 
+
+Situational variables. Um and Crompton (2000) said that 
+final destination choice has more to do with constraints and 
+risk-reduction behavior than with the attributes of destinations—
+which are important in the awareness and evoked 
+sets. Actual travel decisions are affected by many situational 
+variables, and these have not been examined for wine tourists. 
+This current research does examine the influence of 
+distance and packaging. 
+
+RESEARCH METHOD 
+
+What is unique about the current consumer research is 
+that it covers wine-related travel habits and preferences of 
+wine consumers who do not live near a wine region and were 
+not selected on the basis of their travel patterns or winery visits. 
+It is exploratory research in that a convenience sample 
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+270 FEBRUARY 2005 
+
+was taken, and no attempt is made to generalize the findings 
+to a larger population. 
+
+Data were obtained from a self-completion questionnaire 
+completed by 161 wine consumers in Calgary, Canada—a 
+city not geographically close to any wine regions. The 
+respondents all belonged to one of several social wine clubs 
+(not a purchasing club) or attended a wine-tasting event held 
+at a retail outlet. There was no prescreening, so actual travel 
+behavior and wine preferences were initially unknown. 
+Through the cooperation of the retailer, surveys were handed 
+out and collected from attendees at a wine-tasting event. Two 
+wine clubs agreed to provide mailing lists of their members, 
+and each was sent a questionnaire with a postage-paid, return 
+envelope included. 
+
+The wine consumer questionnaire was developed in part 
+through a focus group in which a small number of wine consumers 
+who drank socially together were asked to informally 
+discuss their involvement with wine, their wine preferences, 
+and the connection to wine tourism. It became clear that for 
+some wine lovers, travel in general led to an interest in wine 
+(especially from living abroad), whereas for others, wine 
+tourism follows naturally from growing involvement with 
+wine as part of their lifestyle. 
+
+The questionnaire was structured similar to the order of 
+results presented below, beginning with general questions on 
+wine purchases and preferences, then on past travel involving 
+wine, and finally on future intentions. This article does 
+not report all of the findings but concentrates on establishing 
+the link between preferences and destinations. In the ensuing 
+results section, the specific relevant questions and metrics 
+are noted. 
+
+The response rate is unknown, but a large proportion of 
+the questionnaires that were distributed were completed. The 
+number returned was considered adequate to achieve the 
+study objectives, and the sample frame ensured that respondents 
+exhibited an interest in wine. This represented the only 
+requirement for inclusion in the study, and a comparison 
+with a sample selected at random from the entire population 
+was not necessary. 
+
+RESULTS 
+
+Profile of the Calgary Respondents 
+
+Table 1 profiles the respondents, showing basic demographics 
+and socioeconomic characteristics. Almost half 
+(48.4%) were males, and the average age was 49. Seventy 
+percent were married, but only 29% had children living at 
+home. Of those with children at home, the mean age of the 
+offspring was 17 years. The sample contains a large proportion 
+of self-employed (30.1%) compared to employed 
+(45.5%), and a fairly high level of retirees (20.5%). They 
+were very well educated: 67% had completed or were working 
+on a university degree, of which 29% were postgraduate; 
+another 22% had completed or were attending a college. 
+Given their education levels and employment characteristics, 
+it is no surprise to find high household incomes. 
+
+Overall, it can be seen that this sample of wine consumers 
+were mostly mature, married adults in an upper socioeconomic 
+group. This certainly fits the North American profile 
+of wine consumers in general (as profiled in Getz 2000 and in 
+the TAMS study by Lang Research Inc. 2001). 
+
+TABLE 1
+PROFILE OF THE CALGARY RESPONDENTS (N = 161)
+
+
+Age Mean: 49 
+22-29: 8 (5.4%) 
+30-39: 19 (12.8) 
+40-49: 45 (30.4) 
+50-59: 50 (33.8) 
+60-69: 23 (15.5) 
+70-71: 3 (2.0) 
+
+Gender Males: 48.4% 
+Females: 51.6% 
+
+Marital status Married: 70% 
+
+Respondents with children 29% 
+living at home Mean age of children living 
+at home: 17 
+Range: 2-37 for youngest 
+
+Employment status Employed: 45.5% 
+Self-employed: 30.1 
+Retired: 20.5 
+Unemployed: 3.8 
+
+Education (highest level High school: 7.7% 
+completed or in progress) College: 23.1 
+University 39.7 
+Postgraduate 29.5 
+
+Household income (in Under $20,000: 1.7% 
+Canadian dollars) $20,000-39,000: 5.8 
+$40,000-59,000: 11.6 
+$60,000-79,000: 16.5 
+$80,000-99,000: 14.9 
+$100,000-119,000: 16.5 
+$120-139,000: 10.7,000 
+$140,000-159,000: 2.5 
+$160,000 +: 19.8 
+
+Ever involved professionally 5.6% 
+in wine industry 
+Wine club membership 57% belonged to 1 or more 
+(average 1.59 clubs) 
+Wine tastings attended in 89% (average 8 tastings) 
+previous 12 months 
+
+Wine Consumption Patterns 
+
+Owing to the sampling frame, all respondents were wine 
+consumers—mostly members of a wine club or attendees at a 
+wine tasting hosted by a retailer. More than half (57%) of the 
+respondents were members in one or more wine clubs (average 
+for those who were members: 1.59 clubs), but it must be 
+remembered that this is largely an artifact of the sampling. 
+Eighty-nine percent had been to a wine tasting in the past 
+year, with the average number (among those going to tastings) 
+being an impressive 8 tastings. Nearly three-quarters 
+owned books about wine, with the average number owned 
+being 7. Thirty-eight percent read magazines about wine, 
+with an average of 1.55 magazine subscriptions among those 
+who subscribed at all. This fact suggests that wine magazines 
+are not reaching the majority of serious wine consumers. 
+Slightly more than one-quarter make their own wine, and so 
+it is clear that hobbyist winemakers are also serious wine 
+consumers. 
+
+In terms of making wine purchases, the average number 
+was 29 times in the past 12 months, with spending averaging 
+$136 (Canadian) a month. All the respondents bought some 
+quantity. The main price range paid for a wine bottle was 
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+JOURNAL OF TRAVEL RESEARCH 271 
+
+TABLE 2 
+
+RELATIONSHIPS BETWEEN PREFERRED WINE, WINE REGIONS PREVIOUSLY VISITED, 
+AND WINE REGIONS MOST LIKELY TO BE VISITED 
+
+Number of
+Mentions: Number of
+Preferring Number of Mentions:
+Wine from Mentions: Most Likely
+
+
+This Country Have to Visit, 
+
+(% of Sample, Already Next
+Summing Visited 3 Years
+All Three (% Visited % to Visit
+
+
+COUNTRY Preferences) for Wine) for Wine) Comments on Each Country’s Position 
+
+France 80 (23.2) 36 (56) 71 (46.5) Classic wine destination; always a winner 
+Australia 69 (20.6) 15 (60) 48 (44.1) Major growth potential for wine tourism 
+Canada 42 (12.2) 89 (45) 71 (46.0) Close to home; wine tourism will continue to grow 
+Italy 40 (11.6) 10 (30) 46 (47.5) Classic wine destination; always a winner 
+United States 40 (11.6) 56 (50) 78 (51.5) Close to home; wine tourism will continue to grow 
+Chile 32 (9.3) 3 (0) 6 (33.3) Modest potential; constrained by distance and lack of 
+
+differentiation 
+Germany 8 (2.3) 6 (33.3) 8 (0.0) Performing well below potential 
+New Zealand 7 (2.0) 8 (25) 6 (60.0) Potential could be enhanced through packaging with Australia 
+Spain 6 (1.7) 2 (100) 9 (71.0) Potential to grow but lacks regional differentiation 
+South Africa 4 (1.2) 2 (0) 11 (55.6) Potential to grow; constrained by distance but benefits from 
+
+appealing image 
+Argentina 3 (0.9) 0 1 Terra incognita; constrained by distance and lack of knowledge 
+Portugal 3 (0.9) 5 (0) 3 (0) The rest of Europe needs differentiation 
+Greece 0 3 (50) 0 
+Slovakia 0 1 (0) 0 
+Europe 3 (0.9) 3 (33.3) 5 (50) 
+United Kingdom 0 1 
+Slovenia 0 1 
+Hungary 0 1 
+Various 
+
+international 3 (0.9) 
+North American 2 (0.6) 
+Australia/ 
+
+New Zealand 2 (0.6) 
+South American 1 (0.3) 
+
+between $13 and $30, inclusive of midpriced to premium 
+wines but not luxury brands. Sixty-one percent maintained a 
+wine cellar, with an average of 319 bottles per cellar among 
+those who had one. No data were collected on preference for, 
+or consumption of, types of wine (e.g., reds, whites, sparkling, 
+fortified, or dessert). 
+
+Wine Preferences by Origin 
+
+Table 2 displays data on the three variables of relevance 
+to the question of whether wine preferences by origin or 
+appellation lead to wine tourism to specific wine regions. 
+The nature of the data (number of times mentioned) and the 
+measures used (percentages) make it impossible to establish 
+a statistical correlation between these three variables, so a 
+qualitative evaluation is provided. 
+
+Respondents were asked first if they “prefer to buy wines 
+produced in particular regions?” (yes or no), and if the 
+answer was yes, they were asked to write in the names of up 
+to three regions, starting with their most favorite. The names 
+of regions or countries provided were of great interest, given 
+the goal of linking wine preferences with wine tourism destinations, 
+but so too were the ways in which respondents interpreted 
+the word region. 
+
+Nearly 70% preferred to buy wine from one or more particular 
+region. This is not specifically a measure of loyalty, 
+because appellation preferences might very well change 
+throughout time. Table 2 shows the combination of three 
+choices, with France being top choice with 80 mentions and 
+accounting for 23.2% of all origins mentioned. Australia, 
+Italy, the United States, Chile, and Canada were the other 
+major wine sources mentioned. The popularity of Australia 
+is likely to be in part an artifact of the sampling frame, 
+because one of the clubs sampled was an Australian wine 
+club. 
+
+The data on wine preferences also provide an insight to 
+the interpretation of the word region and how consumers 
+perceive wine origins in a geographical sense. The main 
+regions of France and Italy are well known, so it is no surprise 
+that Bordeaux (15 mentions), Rhone (15), and Burgundy 
+(7) were very popular and that 7 other French regions 
+were mentioned. Similarly, within Italy there were specific 
+preferences for wines from Tuscany (7 mentions) and three 
+other regions. In Canada and the United States, three levels 
+were recorded: country, state/province, and specific wine 
+regions. This can perhaps be attributed to more intimate 
+knowledge based on proximity and previous visits. Californian 
+wines were the most popular (21 mentions for the state 
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+272 FEBRUARY 2005 
+
+as a whole plus Napa receiving 4 and Sonoma 1). The nearby 
+province of British Columbia was the most frequently mentioned 
+origin of favored Canadian wines (12 mentions plus 
+11 others specifically for the Okanagan Valley). 
+
+Other countries that produce preferred wines were not as 
+well known when it comes to regions and subregions. 
+Although Australian wines were mentioned 69 times (20.6% 
+of the total), only four specific appellations were mentioned, 
+with the top one being Barossa with 3 mentions. Although 
+Chilean wines were also popular (32 mentions and 9.3% of 
+the total), no one mentioned a region within that country. 
+German wines were not very popular (8 mentions), but 
+respondents did mention two regions; the Mosel (2 mentions) 
+and Rhinefalz (1). Only the Rioja region of Spain was 
+specifically identified (1 mention), and in all the other countries 
+mentioned, there was no regional differentiation. 
+
+On one hand, affiliation with an origin-specific wine club 
+or attendance at country-specific wine tastings should 
+increase consumers’ knowledge and possibly their regional 
+preferences. On the other hand, the fame and availability of 
+wines from specific countries and regions should influence 
+consumer preferences. It might be impossible to prove which 
+comes first, so a mutually reinforcing process could be at 
+work. It would, however, seem that the special interest of the 
+respondents creates knowledge about wine regions that, in 
+turn, provides a mechanism for enhanced geographical 
+awareness. This heightened knowledge provides scope, at a 
+minimum, for a more sophisticated approach to destination 
+decision making in countries that are subject to the relevant 
+insight. 
+
+Previous Wine-Related Travel 
+
+The second variable quantified in Table 2 is that of previous 
+visits to wine-producing destinations. Respondents were 
+asked to write in the names of any regions they had visited in 
+the past 5 years and, for each region, to indicate the purpose 
+(see below for details). 
+
+Fully 79% of respondents had visited a wine-producing 
+region in the past five years, which is remarkable given Calgary’s 
+distance from the nearest region, the Okanagan Valley 
+in British Columbia. The percentage of visits made for wine-
+related purposes ranged from 0 to 100%, but more important 
+is the fact that three destinations (i.e., France, the United 
+States, and Australia) attracted both high numbers of visits 
+and at least 50% of them were for wine-related reasons. 
+Canadian destinations were most frequently mentioned (89 
+times), of which 45% were wine-related trips. 
+
+Table 2 indicates the proportion of travelers who traveled 
+because of their interest in wine. The specific instruction was 
+to write in “main reasons for visit to the region” after a general 
+introduction stated, “We are also interested to learn 
+whether your interest in wine was the main reason for visiting 
+the region or if other reasons were more important in 
+your decision.” Answers were coded into four categories: 
+wine related (accounting for 45% of all trips mentioned), 
+vacations (37.7%), conference (6.1%), visiting family 
+(9.6%), and scenery (0.9%). If two reasons were equally 
+mentioned, and one was wine, the answer was coded as being 
+wine related. 
+
+The influence of proximity is shown in the popularity of 
+British Columbia, although it must be noted that British 
+Columbia is the preferred holiday destination in general for 
+
+residents of Calgary. The Okanagan Valley attracted 59 
+mentioned trips, of which 46% were wine related. The other 
+top North American regions visited were California (Napa 
+Valley in particular, with 20 mentioned trips, of which 61% 
+were wine related), Washington State (8 and 62.5%), and 
+other parts of British Columbia (the Fraser Valley near Vancouver 
+and Vancouver Island). The top overseas country visited 
+was France (36 and 56%), with 8 regions mentioned 
+(Burgundy was highest at 6 and 67%). Australia had 
+attracted 15 trips, of which 60% were wine related, and 4 
+regions were mentioned (Hunter Valley at 3 and 100% was 
+highest). The other popular overseas destinations had been 
+Italy, with 3 regions mentioned; New Zealand (4); Germany 
+(2); and Portugal (1). 
+
+Distance is evidently less important than might be 
+expected when it comes to major wine-related destinations: 
+witness the popularity of France, Italy, Australia, and New 
+Zealand. The negligible performance of South America (3 
+had visited Chile, but none of the visits was wine related, and 
+none mentioned Argentina) suggests that other factors were 
+much more important. 
+
+Planned travel. Future wine-related travel was examined, 
+first with the question “How interested are you in visiting a 
+wine-producing region in the next three years?” Five response 
+categories were provided, and 51.3% checked Definitely 
+plan to visit a wine region. In addition, 19.4 % were 
+very interested, and 18.8% were interested. Only 1.9% were 
+definitely not interested. 
+
+Table 2 displays the levels of interest in future visits to 
+wine regions, following the question “Please list the wine-
+producing regions you would be most likely to visit in the 
+next three years.” Although respondents were asked to rank 
+their answers from most likely downwards, all the replies 
+have been combined for this table. Respondents were also 
+asked to write in their main reasons, and the results were 
+coded in the same way as for the question on wine regions 
+previously visited. Overall, 46.7% of the reasons were wine-
+specific or included wine (wine was sometimes mentioned 
+equally with other reasons). 
+
+The United States is the top likely future destination for 
+travel in general as well as for wine-related travel, and three 
+levels of destination (national, state/provincial, and region) 
+were mentioned. Presumably, mentioning the United States 
+in general suggests either multiple visits to wine regions or 
+some degree of uncertainty. California, however, is well 
+enough known by respondents to constitute a wine destination 
+on its own (it was mentioned by 36, with 44% wine 
+related). In addition, Napa on its own also has great appeal 
+(26 and 62%). 
+
+Canada and France were virtually equal in their appeal 
+for future trips (both 71 mentions and about 46% wine 
+related). Within Canada, the Okanagan Valley was the preferred 
+future destination (38, 43%), whereas France as a 
+whole is perceived to be a wine destination (38, 34.5%) as 
+are specific regions (Bordeaux 8, 75%; Burgundy 7, 67%; 
+and Loire 5, 20%). Italy and Australia were also almost equal 
+as preferred future destinations for both general travel and 
+wine-related purposes. Five Australian regions were mentioned 
+(from 1 to 3 times only,) but it is largely seen as a single 
+destination. Italy, on the other hand, both is a single destination 
+(26, 28.6%) and contains the popular wine destination 
+of Tuscany (another 15 mentions, 67% wine related). 
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+JOURNAL OF TRAVEL RESEARCH 273 
+
+Future research should examine the actual patterns of 
+wine tourism to examine the routes, linkages, and country or 
+regional combinations. The Calgary data do hint that Europe 
+in particular, and to a lesser extent Australia plus New Zealand, 
+are considered to be logical combinations for wine-
+related travel. 
+
+The Relationship between Preferred Wine and Wine-
+Related Travel. Although the relationships shown in Table 2 
+cannot be statistically quantified, a qualitative interpretation 
+has been provided under the heading comments on each 
+country’s position. This summary concentrates on each 
+country’s attractiveness as a wine destination, but additional 
+insights are made below on the apparent links between wine 
+popularity by origin and travel to that origin. 
+
+Two countries, France and Italy, stand out as “classic” 
+tourism and wine destinations, because both possess an 
+abundance of cultural, landscape, and wine-related attractiveness. 
+They are perennial favorites for Calgarians and 
+North Americans in general. Their future as wine destinations 
+is assured. Many wine consumers prefer the wines of 
+France (23%) and Italy (12%), although it is worth noting 
+that twice as many preferred French wines than Italian. It is 
+also clear that these countries attract wine-related trips from 
+many wine consumers who did indicate a preference for their 
+wines. It seems probable that multiple regions in the two 
+countries will often be combined in one visit and possibly 
+with other European wine regions as well. 
+
+Australia emerges as possessing major wine tourism 
+growth potential on both the basis of wine preferences (21% 
+of respondents preferred Australian wines) and likely future 
+visits for wine and general purposes. Wine consumers who 
+visit Australia for other reasons are highly likely to seek out 
+specific wine regions, especially the Hunter Valley because 
+it is close to Sydney. New Zealand shows some potential and 
+probably could benefit from the demand for Australia 
+through 2-country packaging for wine tourists. 
+
+Both Canada and the United States benefit from proximity 
+to Calgary, and both general-purpose and wine-related 
+travel will likely continue to grow. California’s Napa Valley 
+is a classic destination, and the Okanagan Valley in British 
+Columbia is achieving this status among Calgarians. Sonoma 
+could benefit more from joint promotions with Napa. 
+Because of proximity and the frequency of travel by 
+Calgarians to British Columbia, the Okanagan will undoubtedly 
+become a differentiated wine tourism destination, with 
+the distinctive South Okanagan poised to become an 
+appellation. 
+
+Chile and Argentina have been labeled terra incognita 
+because of their lack of internal differentiation and low levels 
+of planned visitation. The preference for Chilean wines in 
+particular (9%) has not yet translated into travel preference, 
+presumably because of a lack of knowledge about the wine 
+tourism product or low travel appeal in general. It is not distance 
+alone that penalizes South America, as the appeal of 
+Australia (and to a lesser extent South Africa) proves. Image 
+enhancement and detailed information directed at wine consumers 
+are a necessity for South American wine regions. 
+
+Germany is somewhat of an enigma in that it compares 
+poorly to France and Italy, yet offers numerous wine routes 
+and distinctive regions combined with interesting scenery 
+and cultural opportunities. The Mosel and Rhine Valleys do 
+have an identifiable but modest appeal within the Calgary 
+
+sample, but this country is clearly underachieving. The problem 
+could be complacency on the part of the German wine 
+industry and tourism agencies. There is also the possibility 
+that Germany is identified as mostly a white wine producer 
+and that serious wine tourists seek out the regions producing 
+red wines, but that hypothesis will have to be tested in future 
+research. 
+
+South Africa shows modest growth potential. Its image is 
+just recovering from the decades of wine embargoes and is 
+still weak in North America. The image of its wine regions is 
+appealing, however, and it can quite possibly benefit from 
+being environmentally and culturally exotic. 
+
+Spain also shows modest potential but appears to suffer 
+mainly from a lack of regional differentiation. Only Rioja is 
+known among the Calgarians, so improved information and 
+image enhancement should result in more travel. The same 
+can be said of Portugal and the rest of Europe. There are 
+many wine regions that Calgarians appear to know little or 
+nothing about. One response suggests that family ties, for 
+example with Slovenia or Slovakia, lead to wine tourism, so 
+perhaps the “visiting friends and relatives” market in North 
+America could be exploited in promoting wine tourism. 
+
+A proportional map of the wine world. Figure 2 is a proportional 
+map of the wine world as indicated by the wine-
+related travel preferences of the sampled Calgary wine consumers. 
+The proportions are based on the number of respondents 
+indicating that they would most likely visit these destinations 
+in the next 5 years for wine-related reasons (e.g., the 
+United States had 78 mentions, and Canada and France received 
+71 each). Within Canada, British Columbia dominates—
+in part because of proximity—whereas California 
+dominates the United States. France and Italy are differentiated 
+by regions in the minds of these respondents, but other 
+countries are not. 
+
+The map cannot be generalized to the whole population 
+of wine consumers or Calgarians, because the sample introduced 
+one or more biases particularly favoring Australia. 
+Nevertheless, there can be little doubt that wine consumers 
+are potential wine tourists who form an evoked set of preferred 
+wine tourism destinations based in part on their wine 
+preferences. Other factors likely explaining this evoked set 
+include knowledge about the wine regions and general perceptions 
+of destination attractiveness. In this context, the 
+“classic destinations” of France and Italy will always remain 
+popular. Cultural differences among consumers in different 
+countries should be tested regarding their “wine tourism 
+worlds,” and a random sample of consumers might also 
+produce significant variations. 
+
+CONCLUSIONS 
+
+This exploratory research sought to identify a link 
+between wine preferences by appellation with long-distance, 
+wine tourism destination choices (past and projected) among 
+a sample of wine consumers. Given the measures used, the 
+strength of this relationship (as shown in Figure 2) cannot be 
+tested statistically. Because a causal link cannot be demonstrated, 
+qualitative analysis of each destination’s position 
+was undertaken. 
+
+The top preferences included the classic wine destinations 
+of France and Italy, close-to-home destinations in 
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+274 FEBRUARY 2005 
+
+FIGURE 2
+PROPORTIONAL MAP OF WINE DESTINATIONS MOST LIKELY TO BE VISITED BY CALGARY WINE CONSUMERS
+(SHOWING NUMBER OF RESPONDENTS MENTIONING EACH COUNTRY AND THE PERCENT SAYING THE TRIP
+WOULD BE WINE RELATED; ALSO SHOWING THE NUMBER OF REGIONS MENTIONED IN EACH COUNTRY)
+
+
+(71; 46% for wine) 
+(5 regions; British 
+Columbia dominant) 
+
+CANADA 
+
+(78; 51.55% 
+6 regions; 
+(California dominant) 
+USA 
+FRANCE 
+(71; 46.5%) 
+(9 regions) 
+REST OF 
+EUROPE & Europe 
+in general 
+8(25%) 
+
+GERMANY 
+(8; 0%) 
+(2 regions) 
+
+ITALY 
+
+(46; 47.5%) 
+(4 regions) 
+
+AUSTRALIA 
+(48; 44.1% 
+(5 regions) 
+PORTUGAL
+3(0)
+(1 region)
+SPAIN
+9 (71%)
+(1 region)
+
+
+
+ARGENTINA AFRICA 
+NEW 
+(6; 33.3%) 1 (0) (11; 55.6%) 
+
+CHILE 
+
+ZEALAND 
+(6; 60%) 
+
+SOUTH
+
+
+Canada and the United States, and the major growth potential 
+country of Australia. Proximity was definitely a factor, 
+reflected in the popularity of the closest wine regions in British 
+Columbia (but not close enough to be a day trip) and California. 
+But distance alone does not fully explain the link, as 
+proven by the popularity of Australia relative to South 
+America and South Africa. 
+
+The poor performance of Germany and other European 
+countries relative to France and Italy suggests strongly that 
+marketing and image are also important in differentiating 
+wine tourism destinations, unless this is a reflection of preferences 
+for certain types of wine such as red versus white. 
+France and Italy are widely favored as general tourism destinations 
+for their combinations of history, culture, food, and 
+wine. Several countries (notably, Argentina and lesser European 
+wine-producing nations) emerged as terra incognita in 
+the minds of Calgary wine consumers, because the consumers 
+did not relate to specific wine regions or appellations 
+within those countries. 
+
+Several wine tourism destinations showed a degree of 
+potential to develop this market, with New Zealand potentially 
+gaining by cooperating with Australia, and South 
+Africa holding a strong image but demonstrating weak performance 
+so far. Spain shows potential if it can communicate 
+more about its wine regions, because only Rioja was known. 
+Similarly, the increasing popularity of Chilean wines in 
+
+Canada should translate into future wine tourism if Chile can 
+convince wine consumers of its general destination appeal 
+and differentiate its appellations. 
+
+Practical marketing implications are suggested by this 
+research. First and foremost, increasing wine exports from a 
+country or region can result in wine tourism to that area—but 
+tourism and the wine industry must be allies in realizing the 
+benefits. The wine consumer needs information about the 
+origins of the wine, and strong geographical differentiation 
+between countries and within countries is required. 
+
+Those charged with developing and marketing wine tourism 
+would do well to consider social wine clubs and countrythemed 
+wine tastings to spread their messages to responsive 
+target segments. Clubs and tastings appear to be primary 
+ways in which preferences are either established or reinforced, 
+and in which information is shared about wine 
+regions. 
+
+Theory and Future Research 
+
+It was found that nearly 70% of 161 wine consumers in 
+Calgary expressed a preference for one or more wines by 
+their origin, and within the same sample, there was a high 
+level of past and projected travel for wine-related reasons to 
+the wine regions from which preferred wines originated. 
+This relationship is neither causal nor linear but gives rise to 
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+JOURNAL OF TRAVEL RESEARCH 275 
+
+the hypothesis that wine preferences do influence travel 
+choices and in particular will influence wine-related travel. 
+
+This research suggests that both push and pull factors are 
+likely to be at work in generating long-distance wine tourism 
+and that the personal dimension (i.e., Ryan’s “tourist variables”) 
+is probably most important. For those engaged in 
+serious leisure or with high levels of involvement in wine (as 
+part of their lifestyle), there is likely a strong predisposition 
+for pleasure travel to wine regions—or at least to include 
+wine in general-purpose travel. In this context, the actual 
+choice of wine destination is of most interest, including the 
+question of what role is played by wine preferences. 
+
+First, in the context of special-interest tourism, it appears 
+that consumer involvement with wine or other leisure and 
+lifestyle pursuits will directly influence both the awareness 
+and evoked sets of preferred destinations. In this research, it 
+was found that wine consumers had visited and will likely 
+visit a select group of wine regions based on both their preferences 
+for wine from certain regions and their awareness 
+and perceptions of what those wine regions offer. 
+
+It can be concluded that certain leisure and lifestyle interests 
+(especially for those people who are highly involved or 
+engaged in serious leisure) automatically carry with them a 
+heightened interest in travel to a particular set of destinations. 
+Behaviors and activities most associated with the pursuit 
+(e.g., wine tasting and learning about wine), and the 
+desire for making a pilgrimage to famous and important 
+places that hold special meaning, shape the choice of travel 
+destinations. 
+
+Furthermore, for leisure pursuits that engender an evoked 
+set of desirable destinations (such as the specific number of 
+known wine-producing regions), consumers will possibly 
+engage in sequential travel—to satisfy both their need for pilgrimage 
+to the most important places and their desire for 
+novelty within the evoked set. The desire for mastery or self-
+esteem within the subculture of wine lovers might also lead 
+to a desire for visiting remote and minor wine-producing 
+regions, as these visits may increase one’s knowledge and 
+reputation within their circle of wine lovers. More refined 
+research will be required to examine the sequential patterns 
+of wine tourism, and to test the hypothesis that there are 
+important destination choice factors related to pilgrimage, 
+novelty, mastery or self-esteem. For example, after the obligatory 
+pilgrimage to France and Italy, which wine regions 
+become most appealing? Or do wine lovers go back to their 
+favorite wine regions repeatedly? 
+
+Another theoretical question arises from the observation 
+made in this research that wine consumers engage in wine-
+related activities while traveling for other purposes. 
+Although respondents traveled to many destinations for reasons 
+other than wine, where possible they included wine in 
+their activities. Research will be required to determine the 
+relative contribution of wine to the overall destination 
+choice, and how wine-related activities are accommodated 
+within other-purpose travel. 
+
+In the context of recreation activity specialization, there 
+are some clues provided in this research suggesting that 
+Bryan’s (1977) concept of specialization will apply to wine 
+consumption and wine tourism, but this will have to await 
+future testing. Specifically, the data suggest that there is a 
+highly involved group of wine consumers who engage more 
+in specialized behavior, but the data do not shed light on how 
+their specialization occurred. It is also unknown how exactly 
+
+the specialized “social world” (Ditton, Loomis, and Choi 
+1992) of wine lovers links to destination choices, but the evidence 
+suggests that appellation-specific wine tastings and 
+the networking associated with social wine clubs are influential. 
+And with regard to the argument made by Scott and 
+Shafer (2001) that progression to specialization is the least 
+common path, it is unknown what exactly constitutes the finest 
+level of specialization in wine tourism. The research only 
+suggests a hypothesis that specialization results in travel to 
+wine regions that are farther away, are more precisely 
+defined appellations or subregions, and more precisely 
+match wine preferences by origin. 
+
+Several other important research questions are suggested. 
+Are there gender or age differences? The notion of wine pilgrimage 
+and the authenticity of pilgrimage sites or areas 
+deserves examination from the travelers’ perspectives. This 
+might be a good problem for ethnographic or participant 
+observation research. 
+
+A large-scale, random survey of the general population 
+(preferably in different countries) would enable several 
+important determinations. This research has examined only 
+wine consumers, but to what extent do nonconsumers engage 
+in wine tourism? 
+
+The wine tourism world map constructed on the basis of 
+the limited sampling of Calgarians is likely to be different 
+when all wine consumers are consulted and to vary by city and 
+country, thereby necessitating random sampling within targeted 
+populations. 
+
+How one gets started in the specialization continuum is 
+another important practical and theoretical question that 
+requires examination through more systematic coverage. 
+
+REFERENCES 
+
+Beard, J., and M. Ragheb (1983). “Measuring Leisure Motivation.” Journal 
+of Leisure Research, 15 (3): 219-28. 
+
+Bruwer, J. (2003). “South African Wine Routes: Some Perspectives on the 
+Wine Tourism Industry’s Structural Dimensions and Wine Tourism 
+Product.” Tourism Management, 24 (4): 423-35. 
+
+Bryan, H. (1977). “Leisure Value Systems and Recreational Specialization: 
+The Case of Trout Fishermen.” Journal of Leisure Research,9 
+(3):174-87. 
+
+Carlsen, J., and R. Dowling (2001). “Regional Wine Tourism: A Plan of Development 
+for Western Australia.” Tourism Recreation Research,26 
+(2): 45-52. 
+
+Chaney, I. (2002). “Promoting Wine by Country.” International Journal of 
+Wine Marketing, 14 (1): 34-42. 
+
+Charters, S., and J. Ali-Knight (2000). “Wine Tourism: A Thirst for Knowl-
+edge?” International Journal of Wine Marketing, 12 (3): 70-81.
+——— (2002). “Who Is the Wine Tourist?” Tourism Management, 23 (3):
+
+
+311-19. 
+
+Cullen, C., G. Pickering, and R. Phillips (2002). Bacchus to the Future: Proceedings 
+of the Inaugural Brock University Wine Conference. St. 
+Catherines, Canada: Brock University. 
+
+Ditton, R., D. Loomis, and S. Choi (1992). “Recreation Specialization: 
+Reconceptualization from a Social Worlds Perspective.” Journal of 
+Leisure Research, 24 (1): 33-51. 
+
+Dodd, T. (1995). “Opportunities and Pitfalls of Tourism in a Developing 
+Wine Industry.” International Journal of Wine Marketing, 7 (1): 5-16. 
+
+Dowling, R., and J. Carlsen, eds. (1998). Wine Tourism: Perfect Partners. 
+Proceedings of the First Australian Wine Tourism Conference, Margaret 
+River, Australia, May. Canberra, Australia: Bureau of Tourism 
+Research. 
+
+Foster, L. (2003). “A Pilgrimage to Bordeaux: The Bordeaux Wine Country 
+of France.” http://www.fostertravel.com/FRBORD.html (accessed 
+October 2003). 
+
+Getz, D. (2000). Explore Wine Tourism: Management, Development, Destinations. 
+New York: Cognizant. 
+
+Getz, D., R. Dowling, J. Carlsen, and D. Anderson (1999). “Critical Success 
+Factors for Wine Tourism.” International Journal of Wine Marketing, 
+11 (3): 20-43. 
+
+Hall, M., L. Sharples, B. Cambourne, and N. Macionis (2000). Wine Tourism 
+around the World. Oxford: Butterworth-Heinemann. 
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+
+276 FEBRUARY 2005 
+
+Havitz, M., and F. Dimanche (1999). “Leisure Involvement Revisited: Drive 
+Properties and Paradoxes.” Journal of Leisure Research, 31 (2): 122
+
+
+49. 
+Howard, J. (1963). Marketing Management Analysis and Planning. Homewood, 
+IL: Irwin. 
+Hudson, S. (2000). “Consumer Behavior Related to Tourism.” In Consumer 
+Behavior in Travel and Tourism, edited by A. Pizam and Y. Mansfeld. 
+New York: Haworth, pp. 7-32. 
+
+Johnson, G. (1998). “Tourism in New Zealand: A National Survey of Wineries.” 
+Master’ thesis, University of Otago, Dunedin, New Zealand. 
+
+Lang Research Inc. (2001). TAMS (Travel Activities and Motivation Survey): 
+Wine and Culinary. http://www.tourism.gov.on.ca/english/ 
+tourdiv/tams. 
+
+Lockshin, L., and T. Spawton (2001). “Using Involvement and Brand Equity 
+to Develop a Wine Tourism Strategy.” International Journal of Wine 
+Marketing, 13 (1): 72-82. 
+
+Mitchell, R., M. Hall, and A. McIntosh (2000). “Wine Tourism and Consumer 
+Behaviour.” In Wine Tourism around the World, edited by M. 
+Hall, L. Sharples, B. Cambourne, and N. Macionis. Oxford: 
+Butterworth-Heinemann, pp. 115-35. 
+
+Pizam, A., and Y. Mansfeld, eds. (2000). Consumer Behavior in Travel and 
+Tourism. New York: Haworth. 
+
+Ravenscroft, N., and J. van Westering (2001). “Wine Tourism, Culture and 
+the Everyday: A Theoretical Note.” Tourism and Hospitality Research, 
+3 (2): 149-63. 
+
+Ryan, C., ed. (2002). The Tourist Experience. 2nd ed. London: Continuum. 
+
+Scott, D., and C. Shafer (2001). “Recreational Specialization: A Critical 
+Look at the Construct.” Journal of Leisure Research, 33 (2): 319-44. 
+
+Sharples, L. (2002). “Wine Tourism in Chile: A Brave New Step for a Brave 
+New World.” International Journal of Wine Marketing, 14 (2): 43-54. 
+
+Stebbins, R. (1992). Amateurs, Professionals and Serious Leisure. Montreal, 
+Canada: McGill University Press. 
+
+Um, S., and J. Crompton (2000). “The Roles of Image and Perceived Constraints 
+at Different Stages in the Tourist’s Destination Decision Process.” 
+In Consumer Behavior in Travel and Tourism, edited by A. 
+Pizam and Y. Mansfeld. New York: Haworth, pp. 81-102. 
+
+Williams, P. (2001a). “The Evolving Images of Wine Tourism Destinations.” 
+Tourism Recreation Research, 26 (2): 3-10. 
+
+——— (2001b). “Positioning Wine Tourism Destinations: An Image Analysis.” 
+International Journal of Wine Marketing, 13 (3): 42-60. 
+
+Williams, P., and J. Kelly (2001). “Cultural Wine Tourists: Product Development 
+Considerations for British Columbia’s Resident Wine Tourism 
+Market.” International Journal of Wine Marketing, 13 (3): 59-77. 
+
+Downloaded from http://jtr.sagepub.com at CALIFORNIA DIGITAL LIBRARY on November 6, 2007 
+
+© 2005 SAGE Publications. All rights reserved. Not for commercial use or unauthorized distribution. 
+
+

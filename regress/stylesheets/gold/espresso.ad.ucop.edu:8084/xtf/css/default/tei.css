@@ -1,0 +1,179 @@
+/* dynaXML CONTENT stylesheet for TEI */
+
+@import url("content.css");
+
+/* DIVS */
+
+DIV.content {
+margin-top: 15px;
+margin-left: 28px;
+margin-right: 28px;
+}
+
+DIV.illgrp {
+text-align: center;
+}
+
+DIV.table {
+text-align: center;
+}
+
+/* HEADINGS */
+
+h1,h2,h3,h4,h5,h6 {
+line-height: 120%;
+}
+
+h1 {font-size: 2em;}
+h2 {font-size: 1.5em;}
+h3 {font-size: 1.17em;}
+
+/* TEXT BLOCKS */
+
+BLOCKQUOTE  {
+font-size: 80%;
+margin-left: 3%;
+margin-right: 3%;
+margin-top: 3%;
+margin-bottom: 3%
+}
+
+P.normal {
+text-indent: 4%;
+margin-top: 0.5%;
+margin-bottom: 0;
+}
+
+P.indent {
+text-indent: 4%;
+margin-top: 0.5%;
+margin-bottom: 0;
+}
+
+P.noindent {
+text-indent: 0;
+margin-top: 0.5%;
+margin-bottom: 0;
+}
+
+P.padded {
+text-indent: 4%;
+margin-top: 0.5%;
+margin-bottom: 2em; 
+}
+
+P.hang {
+text-indent: -2em;
+margin-left: 2em;
+margin-top: 0;
+margin-bottom: 0;
+}
+
+P.right  {
+text-indent: 0;
+text-align: right;
+margin-top: 0;
+margin-bottom: 0; 
+}
+
+P.center  {
+text-indent: 0;
+text-align: center;
+margin-top: 0;
+margin-bottom: 0; 
+}
+
+/* LISTS */
+
+UL.nobull  {
+list-style-type: none;
+}
+
+UL.alpha  {
+list-style-type: lower-alpha;
+}
+
+OL.nobull  {
+list-style-type: none;
+}
+
+OL.alpha  {
+list-style-type: lower-alpha;
+}
+
+/* HR */
+
+HR.pb {
+color: #DDDDDD;
+height: 1px;
+margin-top: 3%;
+}
+
+/* FONT CHANGES */
+
+.normal  {
+font-style: normal;
+}
+
+.sc  {
+font-variant: small-caps;
+}
+
+.up1  {
+font-size: 120%;
+}
+
+.down1  {
+font-size: 80%;
+}
+
+.center  {
+text-align: center;
+}
+
+.right  {
+text-align: right;
+}
+
+.ref  {
+font-size: 80%;
+font-weight: bold;
+line-height: 0px;
+}
+
+.ref-hi  {
+font-size: 80%;
+font-weight: bold;
+line-height: 0px;
+background-color: #FFCC66;
+}
+
+.note  {
+font-size: 80%;
+margin-top: 0;
+margin-bottom: 0;
+}
+
+.note-hi  {
+font-size: 80%;
+margin-top: 0;
+margin-bottom: 0;
+background-color: #E9EEF4;
+}
+
+.inline-note  {
+font-size: 80%;
+font-family: Arial, sans-serif;
+margin-top: 0;
+margin-bottom: 0;
+background-color: silver;
+}
+
+.bibl-hi  {
+font-weight: bold;
+background-color: #E9EEF4;
+}
+
+.run-head  { 
+color: gray;
+}

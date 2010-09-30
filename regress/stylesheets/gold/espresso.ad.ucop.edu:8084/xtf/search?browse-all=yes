@@ -1,0 +1,515 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8; charset=UTF-8" /><title>XTF: Search Results</title><link rel="stylesheet" href="css/default/results.css" type="text/css" /><script src="script/yui/yahoo-dom-event.js" type="text/javascript"></script><script src="script/yui/connection-min.js" type="text/javascript"></script></head><body><div class="header">
+         <img src="icons/default/xtf_logo.gif" width="302" height="18" alt="eXtensible Text Framework" class="xtf-logo" />
+         <img src="icons/default/your_logo.gif" width="100" height="40" alt="graphic" class="your-logo" />
+         <br class="clear" />
+      </div><div class="resultsHeader"><table><tr><td colspan="2" class="right"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?smode=showBag">Bookbag</a>
+                           (<span id="bagCount">0</span>)
+                        </td></tr><tr><td><div class="query"><div class="label"><b>Browse by:</b></div><div class="subQuery"> All</div></div></td><td class="right"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes;smode=simple-modify">Modify Search</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search">New Search</a></td></tr><tr><td><b>Results:</b> 
+                        <span id="itemCount">42</span> Items</td><td class="right">Browse by Facet | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-title=first;sort=title">Title</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=first;sort=creator">Author</a></td></tr><tr><td><form method="get" action="http://espresso.ad.ucop.edu:8084/xtf/search"><b>Sorted by: </b><select size="1" name="sort"><option value="" selected="selected">relevance</option><option value="title">title</option><option value="creator">author</option><option value="year">publication date</option><option value="reverse-year">reverse date</option></select><input type="hidden" name="browse-all" value="yes" /> <input type="submit" value="Go!" /></form></td><td class="right">Page: 1 <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes;startDoc=21">2</a> <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes;startDoc=41">3</a>  <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes;startDoc=21">Next</a></td></tr></table></div><div class="results"><table><tr><td class="facet"><div class="facet"><div class="facetName">Subject</div><div class="facetGroup"><table><tr><td class="col1">•</td><td class="col2"><a href="search?f1-subject=Wine and wine making">Wine and wine making</a></td><td class="col3">
+                  (5)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?f1-subject=XML">XML</a></td><td class="col3">
+                  (4)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?f1-subject=HTML">HTML</a></td><td class="col3">
+                  (3)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?f1-subject=World Wide Web">World Wide Web</a></td><td class="col3">
+                  (3)
+               </td></tr><tr><td class="col1">•</td><td class="col2"><a href="search?f1-subject=African History">African History</a></td><td class="col3">
+                  (2)
+               </td></tr></table></div><div class="facetMore"><i><a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes;expand=subject">more</a></i></div></div><div class="facet"><div class="facetName">Date</div><div class="facetGroup"><table><tr><td class="col1"><a href="search?f1-date=2007"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=2007">2007</a></td><td class="col3">
+                  (4)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=2006"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=2006">2006</a></td><td class="col3">
+                  (6)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=2005"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=2005">2005</a></td><td class="col3">
+                  (11)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=2003"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=2003">2003</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=2002"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=2002">2002</a></td><td class="col3">
+                  (5)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=2001"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=2001">2001</a></td><td class="col3">
+                  (2)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=2000"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=2000">2000</a></td><td class="col3">
+                  (3)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=1999"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=1999">1999</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=1997"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=1997">1997</a></td><td class="col3">
+                  (3)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=1994"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=1994">1994</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=1993"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=1993">1993</a></td><td class="col3">
+                  (2)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=1992"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=1992">1992</a></td><td class="col3">
+                  (1)
+               </td></tr><tr><td class="col1"><a href="search?f1-date=1989"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default//i_expand.gif" border="0" alt="expand" /></a></td><td class="col2"><a href="search?f1-date=1989">1989</a></td><td class="col3">
+                  (2)
+               </td></tr></table></div></div></td><td class="docHit"><div id="main_1" class="docHit"><table><tr><td class="col1"><b>1</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Bell, Alexander Graham, 1847-1922</td><td class="col4"><script type="text/javascript">
+                                    add_1 = function() {
+                                       var span = YAHOO.util.Dom.get('add_1');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=bell',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_1"><a href="javascript:add_1()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=ead/bell/bell.xml;query=;brand=default">Alexander Graham Bell Family Papers 1834-1970 (bulk 1855-1922)</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_ead.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1999</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Aeronautics;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Aeronautics</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Deaf--Education;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Deaf--Education</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Elocution;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Elocution</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Eugenics;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Eugenics</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Marine engineering;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Marine engineering</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Presidents--United States;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Presidents--United States</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Science;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Science</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Speech--Physiological aspects;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Speech--Physiological aspects</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Technology;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Technology</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Telephone--History;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Telephone--History</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_1 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_1');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=bell',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_1"><a href="javascript:getMoreLike_1()">Find</a></span></td></tr></table></div><div id="main_2" class="docHit"><table><tr><td class="col1"><b>2</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Clay, Henry, 1777-1852</td><td class="col4"><script type="text/javascript">
+                                    add_2 = function() {
+                                       var span = YAHOO.util.Dom.get('add_2');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=MSS16105',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_2"><a href="javascript:add_2()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=ead/clay/clay.xml;query=;brand=default">Henry Clay Family Papers
+1732-1927 
+            (bulk 1814-1852)</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_ead.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2000</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Burr Conspiracy, 1805-1807;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Burr Conspiracy, 1805-1807</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Banks and banking--Kentucky--Lexington;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Banks and banking--Kentucky--Lexington</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Diplomatic and consular service, American--19th century;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Diplomatic and consular service, American--19th century</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Diplomatic and consular service, American--Portugal;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Diplomatic and consular service, American--Portugal</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Elections--United States;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Elections--United States</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Indians of North America--Texas;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Indians of North America--Texas</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Mexicans--Texas;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Mexicans--Texas</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Nullification;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Nullification</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Practice of law--Kentucky--Lexington;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Practice of law--Kentucky--Lexington</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Presidents--United States--Election--1824;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Presidents--United States--Election--1824</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Presidents--United States--Election--1832;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Presidents--United States--Election--1832</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Presidents--United States--Election--1844;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Presidents--United States--Election--1844</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Presidents--United States--Election--1856;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Presidents--United States--Election--1856</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Public lands--United States;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Public lands--United States</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Slavery--Washington (D.C.);subject-join=exact;smode=simple;rmode=none;style=;brand=default">Slavery--Washington (D.C.)</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Tariff--United States;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Tariff--United States</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_2 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_2');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=MSS16105',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_2"><a href="javascript:getMoreLike_2()">Find</a></span></td></tr></table></div><div id="main_3" class="docHit"><table><tr><td class="col1"><b>3</b></td><td class="col2"><b>Author:  </b></td><td class="col3">De Forest, Lee, 1873-1961</td><td class="col4"><script type="text/javascript">
+                                    add_3 = function() {
+                                       var span = YAHOO.util.Dom.get('add_3');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=deforest',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_3"><a href="javascript:add_3()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=ead/deforest/deforest.xml;query=;brand=default">Papers of Lee De Forest 1884-1955</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_ead.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1997</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Electronics;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Electronics</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Inventions;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Inventions</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Preparatory schools;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Preparatory schools</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Radio;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Radio</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Sound--Recording and reproducing;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Sound--Recording and reproducing</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Sound--Transmission;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Sound--Transmission</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Wireless communication systems;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Wireless communication systems</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_3 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_3');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=deforest',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_3"><a href="javascript:getMoreLike_3()">Find</a></span></td></tr></table></div><div id="main_4" class="docHit"><table><tr><td class="col1"><b>4</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Ellison, Ralph</td><td class="col4"><script type="text/javascript">
+                                    add_4 = function() {
+                                       var span = YAHOO.util.Dom.get('add_4');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=MSS83111',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_4"><a href="javascript:add_4()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=ead/ellison/ellison.xml;query=;brand=default">Papers of Ralph Ellison 
+1890-1996
+             (bulk 1933-1990)</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_ead.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1997</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=African American authors;subject-join=exact;smode=simple;rmode=none;style=;brand=default">African American authors</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=American literature--African American authors--Study and teaching;subject-join=exact;smode=simple;rmode=none;style=;brand=default">American literature--African American authors--Study and teaching</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_4 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_4');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=MSS83111',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_4"><a href="javascript:getMoreLike_4()">Find</a></span></td></tr></table></div><div id="main_5" class="docHit"><table><tr><td class="col1"><b>5</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Feiffer, Jules</td><td class="col4"><script type="text/javascript">
+                                    add_5 = function() {
+                                       var span = YAHOO.util.Dom.get('add_5');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=feiffer',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_5"><a href="javascript:add_5()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=ead/feiffer/feiffer.xml;query=;brand=default">Papers of Jules Feiffer 1919-1995 (bulk 1950-1990)</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_ead.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2000</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=American drama;subject-join=exact;smode=simple;rmode=none;style=;brand=default">American drama</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=American fiction;subject-join=exact;smode=simple;rmode=none;style=;brand=default">American fiction</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Caricatures and cartoons;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Caricatures and cartoons</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Motion picture plays;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Motion picture plays</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_5 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_5');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=feiffer',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_5"><a href="javascript:getMoreLike_5()">Find</a></span></td></tr></table></div><div id="main_6" class="docHit"><table><tr><td class="col1"><b>6</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Hamilton, Alexander, 1757-1804</td><td class="col4"><script type="text/javascript">
+                                    add_6 = function() {
+                                       var span = YAHOO.util.Dom.get('add_6');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=MSS24612',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_6"><a href="javascript:add_6()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=ead/hamilton/hamilton.xml;query=;brand=default">Papers of Alexander Hamilton 
+        1708-1903
+            (bulk 1777-1804)</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_ead.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1997</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Finance, Public--United States;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Finance, Public--United States</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Manufacturing industries--United States;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Manufacturing industries--United States</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=National banks (United States);subject-join=exact;smode=simple;rmode=none;style=;brand=default">National banks (United States)</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Practice of law--New York (State)--New York;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Practice of law--New York (State)--New York</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_6 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_6');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=MSS24612',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_6"><a href="javascript:getMoreLike_6()">Find</a></span></td></tr></table></div><div id="main_7" class="docHit"><table><tr><td class="col1"><b>7</b></td><td class="col2"><b>Author:  </b></td><td class="col3">The World Wide Web Consortium (W3C)</td><td class="col4"><script type="text/javascript">
+                                    add_7 = function() {
+                                       var span = YAHOO.util.Dom.get('add_7');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=css_2.1',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_7"><a href="javascript:add_7()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/html/css_2.1/css_2.1.html">Cascading Style Sheets Level 2 Revision 1 (CSSï¿½2.1) Specification</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_html.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2007</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Cascading Style Sheets;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Cascading Style Sheets</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=HTML;subject-join=exact;smode=simple;rmode=none;style=;brand=default">HTML</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_7 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_7');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=css_2.1',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_7"><a href="javascript:getMoreLike_7()">Find</a></span></td></tr></table></div><div id="main_8" class="docHit"><table><tr><td class="col1"><b>8</b></td><td class="col2"><b>Author:  </b></td><td class="col3">The World Wide Web Consortium (W3C)</td><td class="col4"><script type="text/javascript">
+                                    add_8 = function() {
+                                       var span = YAHOO.util.Dom.get('add_8');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=html401',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_8"><a href="javascript:add_8()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/html/html_4.01/html_4.01.html">HTML 4.01 Specification</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_html.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2000</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=HTML;subject-join=exact;smode=simple;rmode=none;style=;brand=default">HTML</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Hyperlinks;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Hyperlinks</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=World Wide Web;subject-join=exact;smode=simple;rmode=none;style=;brand=default">World Wide Web</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_8 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_8');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=html401',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_8"><a href="javascript:getMoreLike_8()">Find</a></span></td></tr></table></div><div id="main_9" class="docHit"><table><tr><td class="col1"><b>9</b></td><td class="col2"><b>Author:  </b></td><td class="col3">The World Wide Web Consortium (W3C)</td><td class="col4"><script type="text/javascript">
+                                    add_9 = function() {
+                                       var span = YAHOO.util.Dom.get('add_9');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=xhtml_1.0',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_9"><a href="javascript:add_9()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/html/xhtml_1.0/xhtml_1.0.html">XHTML 1.0: The Extensible HyperText Markup Language (Second Edition)</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_html.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2002</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=XHTML;subject-join=exact;smode=simple;rmode=none;style=;brand=default">XHTML</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=HTML;subject-join=exact;smode=simple;rmode=none;style=;brand=default">HTML</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=XML;subject-join=exact;smode=simple;rmode=none;style=;brand=default">XML</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=World Wide Web;subject-join=exact;smode=simple;rmode=none;style=;brand=default">World Wide Web</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_9 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_9');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=xhtml_1.0',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_9"><a href="javascript:getMoreLike_9()">Find</a></span></td></tr></table></div><div id="main_10" class="docHit"><table><tr><td class="col1"><b>10</b></td><td class="col2"><b>Author:  </b></td><td class="col3">The World Wide Web Consortium (W3C)</td><td class="col4"><script type="text/javascript">
+                                    add_10 = function() {
+                                       var span = YAHOO.util.Dom.get('add_10');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=REC-xml11-20060816',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_10"><a href="javascript:add_10()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/html/xml_1.1/xml_1.1.html">Extensible Markup Language (XML) 1.1 (Second Edition)</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_html.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2006</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=XML;subject-join=exact;smode=simple;rmode=none;style=;brand=default">XML</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Markup Languages;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Markup Languages</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=World Wide Web;subject-join=exact;smode=simple;rmode=none;style=;brand=default">World Wide Web</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_10 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_10');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=REC-xml11-20060816',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_10"><a href="javascript:getMoreLike_10()">Find</a></span></td></tr></table></div><div id="main_11" class="docHit"><table><tr><td class="col1"><b>11</b></td><td class="col2"><b>Author:  </b></td><td class="col3">The World Wide Web Consortium (W3C)</td><td class="col4"><script type="text/javascript">
+                                    add_11 = function() {
+                                       var span = YAHOO.util.Dom.get('add_11');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=xpath_2.0',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_11"><a href="javascript:add_11()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/html/xpath_2.0/xpath_2.0.html">XML Path Language (XPath) 2.0</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_html.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2007</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=XPATH;subject-join=exact;smode=simple;rmode=none;style=;brand=default">XPATH</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=XML;subject-join=exact;smode=simple;rmode=none;style=;brand=default">XML</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Expressions Language;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Expressions Language</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_11 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_11');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=xpath_2.0',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_11"><a href="javascript:getMoreLike_11()">Find</a></span></td></tr></table></div><div id="main_12" class="docHit"><table><tr><td class="col1"><b>12</b></td><td class="col2"><b>Author:  </b></td><td class="col3">The World Wide Web Consortium (W3C)</td><td class="col4"><script type="text/javascript">
+                                    add_12 = function() {
+                                       var span = YAHOO.util.Dom.get('add_12');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=xslt20',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_12"><a href="javascript:add_12()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/html/xslt_2.0/xslt_2.0.html">XSL Transformations (XSLT) Version 2.0</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_html.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2007</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=XSLT;subject-join=exact;smode=simple;rmode=none;style=;brand=default">XSLT</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=XSL;subject-join=exact;smode=simple;rmode=none;style=;brand=default">XSL</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=XSLFO;subject-join=exact;smode=simple;rmode=none;style=;brand=default">XSLFO</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=XML;subject-join=exact;smode=simple;rmode=none;style=;brand=default">XML</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Stylesheet Language;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Stylesheet Language</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_12 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_12');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=xslt20',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_12"><a href="javascript:getMoreLike_12()">Find</a></span></td></tr></table></div><div id="main_13" class="docHit"><table><tr><td class="col1"><b>13</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Indap, Amit R</td><td class="col4"><script type="text/javascript">
+                                    add_13 = function() {
+                                       var span = YAHOO.util.Dom.get('add_13');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=1471-2105-6-303',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_13"><a href="javascript:add_13()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=nlm/bmc/bmc.xml;query=;brand=default">Analysis of concordance of different haplotype block partitioning algorithms</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_nlm.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2005</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Research Article;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Research Article</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_13 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_13');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=1471-2105-6-303',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_13"><a href="javascript:getMoreLike_13()">Find</a></span></td></tr></table></div><div id="main_14" class="docHit"><table><tr><td class="col1"><b>14</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Freeman, George K</td><td class="col4"><script type="text/javascript">
+                                    add_14 = function() {
+                                       var span = YAHOO.util.Dom.get('add_14');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=jBMJ.v324.i7342.pg880',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_14"><a href="javascript:add_14()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=nlm/bmj/bmj.xml;query=;brand=default">Evolving general practice consultation in Britain: issues of length and context</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_nlm.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2002</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Primary care: 190 10 218 219 355 357;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Primary care: 190 10 218 219 355 357</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_14 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_14');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=jBMJ.v324.i7342.pg880',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_14"><a href="javascript:getMoreLike_14()">Find</a></span></td></tr></table></div><div id="main_15" class="docHit"><table><tr><td class="col1"><b>15</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Shidham, Vinod B</td><td class="col4"><script type="text/javascript">
+                                    add_15 = function() {
+                                       var span = YAHOO.util.Dom.get('add_15');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=1746-1596-1-32',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_15"><a href="javascript:add_15()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=nlm/dia/dia.xml;query=;brand=default">Prevention of an additional surgery for regional lymphadenectomy in melanoma: rapid intraoperative immunostaining of sentinel lymph node imprint smears</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_nlm.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2006</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Review;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Review</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_15 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_15');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=1746-1596-1-32',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_15"><a href="javascript:getMoreLike_15()">Find</a></span></td></tr></table></div><div id="main_16" class="docHit"><table><tr><td class="col1"><b>16</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Hsuan, Justin</td><td class="col4"><script type="text/javascript">
+                                    add_16 = function() {
+                                       var span = YAHOO.util.Dom.get('add_16');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=gb-2001-2-9-reviews3011',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_16"><a href="javascript:add_16()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=nlm/gen/gen.xml;query=;brand=default">The PITP family of phosphatidylinositol transfer proteins</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_nlm.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2001</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Protein Family Review;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Protein Family Review</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_16 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_16');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=gb-2001-2-9-reviews3011',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_16"><a href="javascript:getMoreLike_16()">Find</a></span></td></tr></table></div><div id="main_17" class="docHit"><table><tr><td class="col1"><b>17</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Mintzes, Barbara</td><td class="col4"><script type="text/javascript">
+                                    add_17 = function() {
+                                       var span = YAHOO.util.Dom.get('add_17');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=journal.pmed.0030198',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_17"><a href="javascript:add_17()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=nlm/plo/plo.xml;query=;brand=default">Disease Mongering in Drug Promotion: Do Governments Have a Regulatory Role?</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_nlm.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2006</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Policy Forum;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Policy Forum</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Other Pharmacology/Drug Discovery Epidemiology/Public Health Health Policy;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Other Pharmacology/Drug Discovery Epidemiology/Public Health Health Policy</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Regulation Drugs and Adverse Drug Reactions Public Health Health Education (Including Prevention and Promotion) Patients;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Regulation Drugs and Adverse Drug Reactions Public Health Health Education (Including Prevention and Promotion) Patients</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_17 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_17');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=journal.pmed.0030198',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_17"><a href="javascript:getMoreLike_17()">Find</a></span></td></tr></table></div><div id="main_18" class="docHit"><table><tr><td class="col1"><b>18</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Sullivan, Amy D.</td><td class="col4"><script type="text/javascript">
+                                    add_18 = function() {
+                                       var span = YAHOO.util.Dom.get('add_18');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=pnas.181325198',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_18"><a href="javascript:add_18()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=nlm/pnas/pnas.xml;query=;brand=default">The coreceptor mutation CCR5Δ32 influences the dynamics of HIV epidemics and is selected for by HIV</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_nlm.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2001</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Physical Sciences: Applied Mathematics;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Physical Sciences: Applied Mathematics</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Biological Sciences: Genetics;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Biological Sciences: Genetics</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_18 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_18');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=pnas.181325198',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_18"><a href="javascript:getMoreLike_18()">Find</a></span></td></tr></table></div><div id="main_19" class="docHit"><table><tr><td class="col1"><b>19</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Rachael E. Goodhue</td><td class="col4"><script type="text/javascript">
+                                    add_19 = function() {
+                                       var span = YAHOO.util.Dom.get('add_19');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=calag56-3',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_19"><a href="javascript:add_19()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/pdf/calag56-3/calag56-3.pdf">Contract use widespread in wine grape industry</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_pdf.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2002</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Wine;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Wine</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=winery;subject-join=exact;smode=simple;rmode=none;style=;brand=default">winery</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=grape;subject-join=exact;smode=simple;rmode=none;style=;brand=default">grape</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=grapes;subject-join=exact;smode=simple;rmode=none;style=;brand=default">grapes</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=agricultural contracts;subject-join=exact;smode=simple;rmode=none;style=;brand=default">agricultural contracts</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=contracts;subject-join=exact;smode=simple;rmode=none;style=;brand=default">contracts</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=economics;subject-join=exact;smode=simple;rmode=none;style=;brand=default">economics</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=agriculture;subject-join=exact;smode=simple;rmode=none;style=;brand=default">agriculture</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_19 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_19');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=calag56-3',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_19"><a href="javascript:getMoreLike_19()">Find</a></span></td></tr></table></div><div id="main_20" class="docHit"><table><tr><td class="col1"><b>20</b></td><td class="col2"><b>Author:  </b></td><td class="col3">Deborah A. Golino</td><td class="col4"><script type="text/javascript">
+                                    add_20 = function() {
+                                       var span = YAHOO.util.Dom.get('add_20');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=calag56-6',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_20"><a href="javascript:add_20()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/pdf/calag56-6/calag56-6.pdf">California mealybugs can spread grapevine leafroll disease</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_pdf.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2002</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=grapevine leafroll disease;subject-join=exact;smode=simple;rmode=none;style=;brand=default">grapevine leafroll disease</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=GLRaV;subject-join=exact;smode=simple;rmode=none;style=;brand=default">GLRaV</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=grape;subject-join=exact;smode=simple;rmode=none;style=;brand=default">grape</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=graft;subject-join=exact;smode=simple;rmode=none;style=;brand=default">graft</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=grapevine;subject-join=exact;smode=simple;rmode=none;style=;brand=default">grapevine</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Foundation Plant Materials Service;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Foundation Plant Materials Service</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=ELISA;subject-join=exact;smode=simple;rmode=none;style=;brand=default">ELISA</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=PCR;subject-join=exact;smode=simple;rmode=none;style=;brand=default">PCR</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=mealybug;subject-join=exact;smode=simple;rmode=none;style=;brand=default">mealybug</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=virus;subject-join=exact;smode=simple;rmode=none;style=;brand=default">virus</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_20 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_20');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=calag56-6',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_20"><a href="javascript:getMoreLike_20()">Find</a></span></td></tr></table></div></td></tr><tr><td colspan="2" class="center">Page: 1 <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes;startDoc=21">2</a> <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes;startDoc=41">3</a>  <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes;startDoc=21">Next</a></td></tr></table></div><div class="footer">
+         <a href="mailto:you@yourserver.com">Comments? Questions?</a>
+      </div></body></html>
