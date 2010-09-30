@@ -238,19 +238,23 @@
    <!-- ====================================================================== -->
    
    <xsl:template name="toc" exclude-result-prefixes="#all">
-      <html xml:lang="en" lang="en">
-         <head>
-            <title>
-               <xsl:value-of select="$doc.title"/>
-            </title>
-            <link rel="stylesheet" type="text/css" href="{$css.path}toc.css"/>
-         </head>
-         <body>
-            <div class="toc">
-               <xsl:call-template name="book.autotoc"/>
-            </div>
-         </body>
-      </html>
+      <xsl:call-template name="translate">
+         <xsl:with-param name="resultTree">
+            <html xml:lang="en" lang="en">
+               <head>
+                  <title>
+                     <xsl:value-of select="$doc.title"/>
+                  </title>
+                  <link rel="stylesheet" type="text/css" href="{$css.path}toc.css"/>
+               </head>
+               <body>
+                  <div class="toc">
+                     <xsl:call-template name="book.autotoc"/>
+                  </div>
+               </body>
+            </html>
+         </xsl:with-param>
+      </xsl:call-template>
    </xsl:template>
    
    <!-- ====================================================================== -->

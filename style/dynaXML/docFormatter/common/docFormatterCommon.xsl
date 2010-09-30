@@ -41,6 +41,12 @@
    -->
    
    <!-- ====================================================================== -->
+   <!-- Import Stylesheets                                                     -->
+   <!-- ====================================================================== -->
+   
+   <xsl:import href="../../../xtfCommon/xtfCommon.xsl"/>
+   
+   <!-- ====================================================================== -->
    <!-- Global Keys                                                            -->
    <!-- ====================================================================== -->
    
@@ -153,64 +159,69 @@
    <!-- WARNING: Inclusion of 'Wget' is for testing only, please remove before going into production -->
    <xsl:param name="robots" select="'Googlebot|Slurp|msnbot|Teoma|Wget'"/>
    
-   
    <!-- ====================================================================== -->
    <!-- Button Bar Templates                                                   -->
    <!-- ====================================================================== -->
    
    <xsl:template name="bbar">
-      <html xml:lang="en" lang="en">
-         <head>
-            <title>
-               <xsl:value-of select="$doc.title"/>
-            </title>
-            <link rel="stylesheet" type="text/css" href="{$css.path}bbar.css"/>
-         </head>
-         <body>
-            <div class="bbar">
-               <table border="0" cellpadding="0" cellspacing="0">
-                  <tr>
-                     <td colspan="3" align="center">
-                        <xsl:copy-of select="$brand.header"/>
-                     </td>
-                  </tr>
-                  <tr>
-                     <td class="left">
-                        <a href="{$xtfURL}search" target="_top">Home</a><xsl:text> | </xsl:text>
-                        <xsl:choose>
-                           <xsl:when test="session:getData('queryURL')">
-                              <a href="{session:getData('queryURL')}" target="_top">Return to Search Results</a>
-                           </xsl:when>
-                           <xsl:otherwise>
-                              <span class="notActive">Return to Search Results</span>
-                           </xsl:otherwise>
-                        </xsl:choose>
-                     </td>
-                     <td width="34%" class="center">
-                        <form action="{$xtfURL}{$dynaxmlPath}" target="_top" method="get">
-                           <input name="query" type="text" size="15"/>
-                           <input type="hidden" name="docId" value="{$docId}"/>
-                           <input type="hidden" name="chunk.id" value="{$chunk.id}"/>
-                           <input type="submit" value="Search this Item"/>
-                        </form>
-                     </td>
-                     <td class="right">
-                        <a>
-                           <xsl:attribute name="href">javascript://</xsl:attribute>
-                           <xsl:attribute name="onclick">
-                              <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/><xsl:text>?docId=</xsl:text><xsl:value-of
-                                 select="$docId"/><xsl:text>;doc.view=citation</xsl:text><xsl:text>','popup','width=800,height=400,resizable=yes,scrollbars=no')</xsl:text>
-                           </xsl:attribute>
-                           <xsl:text>Citation</xsl:text>
-                        </a>
-                        <xsl:text> | </xsl:text>
-                        <a href="{$doc.path}&#038;doc.view=print;chunk.id={$chunk.id}" target="_top">Print View</a>
-                     </td>
-                  </tr>
-               </table>
-            </div>
-         </body>
-      </html>
+      <xsl:call-template name="translate">
+         <xsl:with-param name="resultTree">
+            <html xml:lang="en" lang="en">
+               <head>
+                  <title>
+                     <xsl:value-of select="$doc.title"/>
+                  </title>
+                  <link rel="stylesheet" type="text/css" href="{$css.path}bbar.css"/>
+               </head>
+               <body>
+                  <div class="bbar">
+                     <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                           <td colspan="3" align="center">
+                              <xsl:copy-of select="$brand.header"/>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td class="left">
+                              <a href="{$xtfURL}search" target="_top">Home</a><xsl:text> | </xsl:text>
+                              <xsl:choose>
+                                 <xsl:when test="session:getData('queryURL')">
+                                    <a href="{session:getData('queryURL')}" target="_top">Return to Search Results</a>
+                                 </xsl:when>
+                                 <xsl:otherwise>
+                                    <span class="notActive">Return to Search Results</span>
+                                 </xsl:otherwise>
+                              </xsl:choose>
+                           </td>
+                           <td width="34%" class="center">
+                              <form action="{$xtfURL}{$dynaxmlPath}" target="_top" method="get">
+                                 <input name="query" type="text" size="15"/>
+                                 <input type="hidden" name="docId" value="{$docId}"/>
+                                 <input type="hidden" name="chunk.id" value="{$chunk.id}"/>
+                                 <input type="submit" value="Search this Item"/>
+                              </form>
+                           </td>
+                           <td class="right">
+                              <a>
+                                 <xsl:attribute name="href">javascript://</xsl:attribute>
+                                 <xsl:attribute name="onclick">
+                                    <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/><xsl:text>?docId=</xsl:text><xsl:value-of
+                                       select="$docId"/><xsl:text>;doc.view=citation</xsl:text><xsl:text>','popup','width=800,height=400,resizable=yes,scrollbars=no')</xsl:text>
+                                 </xsl:attribute>
+                                 <xsl:text>Citation</xsl:text>
+                              </a>
+                              <xsl:text> | </xsl:text>
+                              <a href="{$doc.path}&#038;doc.view=print;chunk.id={$chunk.id}" target="_top">Print View</a>
+                              <xsl:text> | </xsl:text>
+                              <a href="javascript://" onclick="javascript:window.open('/xtf/search?smode=getLang','popup','width=500,height=200,resizable=no,scrollbars=no')">Choose Language</a>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+               </body>
+            </html>
+         </xsl:with-param>
+      </xsl:call-template>
    </xsl:template>
    
    <!-- ====================================================================== -->
@@ -270,26 +281,5 @@
    <xsl:template match="text()" mode="robot">
       <xsl:value-of select="."/><xsl:text> </xsl:text>
    </xsl:template>
-   
-   <!-- ====================================================================== -->
-   <!-- URL encoding for OpenURLs                                              -->
-   <!-- ====================================================================== -->
-   
-   <xsl:function name="xtf:urlEncode">
-      <xsl:param name="string"/>
-      <xsl:variable name="string1" select="replace(replace($string,'^ +',''),' +$','')"/>
-      <xsl:variable name="string2" select="replace($string1,'%','%25')"/>
-      <xsl:variable name="string3" select="replace($string2,' +','%20')"/>
-      <xsl:variable name="string4" select="replace($string3,'#','%23')"/>
-      <xsl:variable name="string5" select="replace($string4,'&amp;','%26')"/>
-      <xsl:variable name="string6" select="replace($string5,'\+','%2B')"/>
-      <xsl:variable name="string7" select="replace($string6,'/','%2F')"/>
-      <xsl:variable name="string8" select="replace($string7,'&lt;','%3C')"/>
-      <xsl:variable name="string9" select="replace($string8,'=','%3D')"/>
-      <xsl:variable name="string10" select="replace($string9,'>','%3E')"/>
-      <xsl:variable name="string11" select="replace($string10,'\?','%3F')"/>
-      <xsl:variable name="string12" select="replace($string11,':','%3A')"/>
-      <xsl:value-of select="$string12"/>
-   </xsl:function>
    
 </xsl:stylesheet>
