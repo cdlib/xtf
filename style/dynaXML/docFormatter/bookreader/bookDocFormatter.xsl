@@ -206,7 +206,7 @@
                <!-- If no query, start on the title page if there is one -->
                <xsl:for-each select="/*/leaf[@access='true']">
                   <xsl:if test="@type = 'Title Page'">
-                     br.titleLeaf = <xsl:value-of select="position()"/>;
+                     br.titleLeaf = <xsl:value-of select="@leafNum"/>;
                   </xsl:if>
                </xsl:for-each>
                
@@ -263,11 +263,14 @@
                // Use the Djatoka image server to convert and scale the JP2 page files.
                br.getPageURI = function(index, reduce, rotate) {
                   var page = this.indexToPage[index];
+                  if (page === undefined)
+                     return undefined;
+                     
                   // Scaling by maximum dimension seems to be faster in Djatoka for some reason.
                   var maxDim = Math.max(page.w, page.h);
                   var scale = parseInt(maxDim / reduce);
                   var amp = String.fromCharCode(38); // raw ampersands are tough to output in XSLT
-                  return "http://localhost:8080/adore-djatoka/resolver?url_ver=Z39.88-2004"
+                  return "<xsl:value-of select="replace($root.URL, '(http://[^/]+).*$', '$1')"/>/adore-djatoka/resolver?url_ver=Z39.88-2004"
                          + amp + "rft_id=file:" + encodeURIComponent("<xsl:value-of select="concat($servlet.dir, 'data/', $docPath)"/>" + this.indexToPage[index].imgFile)
                          + amp + "svc_id=info:lanl-repo/svc/getRegion"
                          + amp + "svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000"
@@ -376,8 +379,8 @@
                
                br.numLeafs /*sic*/ = br.pages.length;
                
-               br.bookTitle= 'Fighting France; from Dunkerque to Belfort';
-               br.bookUrl  = 'http://www.archive.org/details/fightingfrancefr00whariala';
+               br.bookTitle= '<xsl:value-of select="$doc.title"/>';
+               br.bookUrl  = '<xsl:value-of select="concat($xtfURL, $dynaxmlPath, ';docId=', $docId)"/>';
                
                br.imagesBaseURL = "css/bookreader/images";
                
@@ -471,7 +474,7 @@
       -->
       <!-- Spit out the leaf number and context. The context comes from the snippet element at the doc top -->
       { 'leaf':<xsl:value-of select="$leaf/@leafNum"/>,
-        'context':'<xsl:apply-templates select="/*/xtf:snippets/xtf:snippet[@hitNum=$hitNum]" mode="hit-context"/>',
+        'context':"<xsl:apply-templates select="/*/xtf:snippets/xtf:snippet[@hitNum=$hitNum]" mode="hit-context"/>",
         'clientKey':<xsl:value-of select="if ($hit.rank) then @rank else @hitNum"/>,
         'l': <xsl:value-of select="max((0,            $left   - 10))"/>,
         't': <xsl:value-of select="max((0,            $top    - 10))"/>,
@@ -516,7 +519,7 @@
    </xsl:template>
    
    <xsl:template match="text()" mode="hit-context">
-      <xsl:variable name="quote" select="'xx&quot;'"/>
+      <xsl:variable name="quote" select="'&quot;'"/>
       <xsl:value-of select="replace(., $quote, '')"/>
    </xsl:template>
    
