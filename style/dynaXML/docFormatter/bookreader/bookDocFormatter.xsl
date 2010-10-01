@@ -3,6 +3,7 @@
    xmlns:xtf="http://cdlib.org/xtf"
    xmlns:session="java:org.cdlib.xtf.xslt.Session"
    xmlns:editURL="http://cdlib.org/xtf/editURL"
+   xmlns:local="http://local"
    xmlns="http://www.w3.org/1999/xhtml"
    extension-element-prefixes="session"
    exclude-result-prefixes="#all">
@@ -379,7 +380,7 @@
                
                br.numLeafs /*sic*/ = br.pages.length;
                
-               br.bookTitle= '<xsl:value-of select="$doc.title"/>';
+               br.bookTitle= "<xsl:value-of select="local:unquote($doc.title)"/>";
                br.bookUrl  = '<xsl:value-of select="concat($xtfURL, $dynaxmlPath, ';docId=', $docId)"/>';
                
                br.imagesBaseURL = "css/bookreader/images";
@@ -519,9 +520,14 @@
    </xsl:template>
    
    <xsl:template match="text()" mode="hit-context">
-      <xsl:variable name="quote" select="'&quot;'"/>
-      <xsl:value-of select="replace(., $quote, '')"/>
+      <xsl:value-of select="local:unquote(.)"/>
    </xsl:template>
+   
+   <xsl:function name="local:unquote">
+      <xsl:param name="str"/>
+      <xsl:variable name="quote" select="'&quot;'"/>
+      <xsl:value-of select="replace($str, $quote, '')"/>
+   </xsl:function>
    
    <!-- ====================================================================== -->
    <!-- Print Template                                                         -->
