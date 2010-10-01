@@ -60,7 +60,7 @@
    <xsl:variable name="metsMeta" select="//METS:xmlData/metadata"/>
    
    <xsl:variable name="pageAssertions">
-      <xsl:for-each select="//scribe:pageNumData/scribe:assertion">
+      <xsl:for-each select="//scribe:pageNumData/scribe:assertion[matches(scribe:pageNum/string(), '^[0-9]+$')]">
          <xsl:sort select="number(scribe:pageNum/string())"/>
          <assertion pageNum="{scribe:pageNum/string()}" leafNum="{scribe:leafNum/string()}"/>
       </xsl:for-each>
