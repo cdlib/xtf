@@ -1,0 +1,35 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8; charset=UTF-8" /><title>XTF: Search Results</title><link rel="stylesheet" href="css/default/results.css" type="text/css" /><script src="script/yui/yahoo-dom-event.js" type="text/javascript"></script><script src="script/yui/connection-min.js" type="text/javascript"></script></head><body><div class="header">
+         <img src="icons/default/xtf_logo.gif" width="302" height="18" alt="eXtensible Text Framework" class="xtf-logo" />
+         <img src="icons/default/your_logo.gif" width="100" height="40" alt="graphic" class="your-logo" />
+         <br class="clear" />
+      </div><div class="resultsHeader"><table><tr><td colspan="2" class="right"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?smode=showBag">Bookbag</a>
+                        (<span id="bagCount">0</span>)
+                     </td></tr><tr><td><b>Browse by: </b>Author</td><td class="right"><a href="http://espresso.ad.ucop.edu:8084/xtf/search">New Search</a></td></tr><tr><td><b>Results: </b>1 Item</td><td class="right">Browse by <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes">Facet</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-title=first;sort=title">Title</a>  | Author</td></tr><tr><td colspan="2" class="center"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=aa;sort=creator">A</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=bb;sort=creator">B</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=cc;sort=creator">C</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=dd;sort=creator">D</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ee;sort=creator">E</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ff;sort=creator">F</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=gg;sort=creator">G</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=hh;sort=creator">H</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ii;sort=creator">I</a> | J | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=kk;sort=creator">K</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ll;sort=creator">L</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=mm;sort=creator">M</a> | N | <span style="color: red">O</span> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=pp;sort=creator">P</a> | Q | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=rr;sort=creator">R</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ss;sort=creator">S</a> | T | U | V | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ww;sort=creator">W</a> | Y | Z | OTHER</td></tr></table></div><div class="results"><table><tr><td><div id="main_1" class="docHit"><table><tr><td class="col1"> </td><td class="col2"><a name="L"></a><b>Author:  </b></td><td class="col3">Lionel H. Opie</td><td class="col4"><script type="text/javascript">
+                                    add_1 = function() {
+                                       var span = YAHOO.util.Dom.get('add_1');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=1683',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_1"><a href="javascript:add_1()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/text/1683/1683.txt">The red wine hypothesis: from concepts to protective signalling molecules</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_text.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2007</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=wine;subject-join=exact;smode=simple;rmode=none;style=;brand=default">wine</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=alcohol;subject-join=exact;smode=simple;rmode=none;style=;brand=default">alcohol</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_1 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_1');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=1683',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_1"><a href="javascript:getMoreLike_1()">Find</a></span></td></tr></table></div></td></tr></table></div><div class="footer">
+         <a href="mailto:you@yourserver.com">Comments? Questions?</a> | <a href="javascript://" onclick="javascript:window.open('/xtf/search?smode=getLang','popup','width=500,height=200,resizable=no,scrollbars=no')">Choose Language</a>
+      </div></body></html>

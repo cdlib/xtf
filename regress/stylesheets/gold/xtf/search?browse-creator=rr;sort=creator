@@ -1,0 +1,81 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8; charset=UTF-8" /><title>XTF: Search Results</title><link rel="stylesheet" href="css/default/results.css" type="text/css" /><script src="script/yui/yahoo-dom-event.js" type="text/javascript"></script><script src="script/yui/connection-min.js" type="text/javascript"></script></head><body><div class="header">
+         <img src="icons/default/xtf_logo.gif" width="302" height="18" alt="eXtensible Text Framework" class="xtf-logo" />
+         <img src="icons/default/your_logo.gif" width="100" height="40" alt="graphic" class="your-logo" />
+         <br class="clear" />
+      </div><div class="resultsHeader"><table><tr><td colspan="2" class="right"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?smode=showBag">Bookbag</a>
+                        (<span id="bagCount">0</span>)
+                     </td></tr><tr><td><b>Browse by: </b>Author</td><td class="right"><a href="http://espresso.ad.ucop.edu:8084/xtf/search">New Search</a></td></tr><tr><td><b>Results: </b>3 Items</td><td class="right">Browse by <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-all=yes">Facet</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-title=first;sort=title">Title</a>  | Author</td></tr><tr><td colspan="2" class="center"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=aa;sort=creator">A</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=bb;sort=creator">B</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=cc;sort=creator">C</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=dd;sort=creator">D</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ee;sort=creator">E</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ff;sort=creator">F</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=gg;sort=creator">G</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=hh;sort=creator">H</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ii;sort=creator">I</a> | J | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=kk;sort=creator">K</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ll;sort=creator">L</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=mm;sort=creator">M</a> | N | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=oo;sort=creator">O</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=pp;sort=creator">P</a> | Q | <span style="color: red">R</span> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ss;sort=creator">S</a> | T | U | V | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?browse-creator=ww;sort=creator">W</a> | Y | Z | OTHER</td></tr></table></div><div class="results"><table><tr><td><div id="main_1" class="docHit"><table><tr><td class="col1"> </td><td class="col2"><a name="T"></a><b>Author:  </b></td><td class="col3">T.V. Reed</td><td class="col4"><script type="text/javascript">
+                                    add_1 = function() {
+                                       var span = YAHOO.util.Dom.get('add_1');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=ft6p3007r2',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_1"><a href="javascript:add_1()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=tei/ft6p3007r2/ft6p3007r2.xml;query=;brand=default">Fifteen Jugglers, Five Believers: Literary Politics and the Poetics of American Social Movements</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_tei.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1992</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Literature;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Literature</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=American Literature;subject-join=exact;smode=simple;rmode=none;style=;brand=default">American Literature</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Literary Theory and Criticism;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Literary Theory and Criticism</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_1 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_1');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=ft6p3007r2',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_1"><a href="javascript:getMoreLike_1()">Find</a></span></td></tr></table></div><div id="main_2" class="docHit"><table><tr><td class="col1"> </td><td class="col2"><a name="R"></a><b>Author:  </b></td><td class="col3">Roberts, John S.</td><td class="col4"><script type="text/javascript">
+                                    add_2 = function() {
+                                       var span = YAHOO.util.Dom.get('add_2');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=453',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_2"><a href="javascript:add_2()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/data/word/453/453.doc">Winery Design: Energy Requirements</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_word.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">2005</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Wine and wine growing;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Wine and wine growing</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Winery design;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Winery design</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Energy requirements;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Energy requirements</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_2 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_2');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=453',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_2"><a href="javascript:getMoreLike_2()">Find</a></span></td></tr></table></div><div id="main_3" class="docHit"><table><tr><td class="col1"> </td><td class="col2"><a name="R"></a><b>Author:  </b></td><td class="col3">Roy Richard Grinker, III</td><td class="col4"><script type="text/javascript">
+                                    add_3 = function() {
+                                       var span = YAHOO.util.Dom.get('add_3');
+                                       span.innerHTML = "Adding...";
+                                       YAHOO.util.Connect.asyncRequest('GET', 
+                                          'http://espresso.ad.ucop.edu:8084/xtf/search?smode=addToBag;identifier=ft6q2nb3zj',
+                                          {  success: function(o) { 
+                                                span.innerHTML = o.responseText;
+                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
+                                             },
+                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
+                                          }, null);
+                                    };
+                                 </script><span id="add_3"><a href="javascript:add_3()">Add</a></span></td></tr><tr><td class="col1"> </td><td class="col2"><b>Title:  </b></td><td class="col3"><a href="view?docId=tei/ft6q2nb3zj/ft6q2nb3zj.xml;query=;brand=default">Houses in the Rainforest: Ethnicity and Inequality Among Farmers and Foragers in Central Africa</a> <span class="typeIcon"><img src="http://espresso.ad.ucop.edu:8084/xtf/icons/default/i_tei.gif" class="typeIcon" /></span></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Published:  </b></td><td class="col3">1994</td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Subjects:  </b></td><td class="col3"><a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Anthropology;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Anthropology</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=African Studies;subject-join=exact;smode=simple;rmode=none;style=;brand=default">African Studies</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/search?subject=Cultural Anthropology;subject-join=exact;smode=simple;rmode=none;style=;brand=default">Cultural Anthropology</a></td><td class="col4"> </td></tr><tr><td class="col1"> </td><td class="col2"><b>Similar Items:  </b></td><td class="col3" colspan="2"><script type="text/javascript">
+                     getMoreLike_3 = function() {
+                        var span = YAHOO.util.Dom.get('moreLike_3');
+                        span.innerHTML = "Fetching...";
+                        YAHOO.util.Connect.asyncRequest('GET', 
+                           'search?smode=moreLike;docsPerPage=5;identifier=ft6q2nb3zj',
+                           { success: function(o) { span.innerHTML = o.responseText; },
+                             failure: function(o) { span.innerHTML = "Failed!" } 
+                           }, null);
+                     };
+                  </script><span id="moreLike_3"><a href="javascript:getMoreLike_3()">Find</a></span></td></tr></table></div></td></tr></table></div><div class="footer">
+         <a href="mailto:you@yourserver.com">Comments? Questions?</a> | <a href="javascript://" onclick="javascript:window.open('/xtf/search?smode=getLang','popup','width=500,height=200,resizable=no,scrollbars=no')">Choose Language</a>
+      </div></body></html>

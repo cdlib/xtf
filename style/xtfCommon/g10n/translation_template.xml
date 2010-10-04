@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transTable>
+    <trans>
+        <!-- 'Add' as in add to the bookbag (personal citation list) -->
+        <from>Add</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Advanced' as in advanced search -->
+        <from>Advanced</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- part of results sort drop-down -->
+        <from>author</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- item author -->
+        <from>Author</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Bookbag' is our term for a collection of citations maintained by the user -->
+        <from>Bookbag</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Browse' as in browse the site -->
+        <from>Browse</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Browse by' as in browse by subject-->
+        <from>Browse by</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Choose language' as in choose the language for display-->
+        <from>Choose Language</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Citation' as in an bibliographic article citation -->
+        <from>Citation</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Clear' as in clear the current vlaues in the search form -->
+        <from>Clear</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Clear Hits' as in to clear the display of hits in an article -->
+        <from>Clear Hits</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Collapse All' as in to collapse an expanded table of contents -->
+        <from>Collapse All</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Comments? Questions?' are links used to illicit feedback form the user -->
+        <from>Comments? Questions?</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- item date-->
+        <from>Date</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- Used when a users query has produced no results and is followed by a term suggestion -->
+        <from>Did you mean to search for</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Expand All' as in to expand an entire TOC -->
+        <from>Expand All</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Facet' as in a term used in faceted browsing -->
+        <from>Facet</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Freeform' as in freeform search (natural language)-->
+        <from>Freeform</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- Label of a form submit button -->
+        <from>Go!</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- home page -->
+        <from>Home</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Keyword' as in keyword search -->
+        <from>Keyword</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Matches' as in the fulltext hits in an article -->
+        <from>Matches</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- edit your search parameters -->
+        <from>Modify Search</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- start a new search -->
+        <from>New Search</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- part of the phrase '109 occurrences of africa in this article' -->
+        <from>occurrences of</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- 'Page' as in pages of hits -->
+        <from>Page</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- print view of article -->
+        <from>Print View</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- part of results sort drop-down -->
+        <from>publication date</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- article publication info label-->
+        <from>Published</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- part of results sort drop-down -->
+        <from>relevance</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- search results -->
+        <from>Results</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!--link back to search results -->
+        <from>Return to Search Results</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- part of results sort drop-down -->
+        <from>reverse date</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- submit button label -->
+        <from>Search</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- submit button label -->
+        <from>Search this Item</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- Add back &#160; -->
+        <!-- a link to a related item search -->
+        <from>Similar Items</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- part of phrase 'sorted by author' -->
+        <from>Sorted by</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- label of subject facet list -->
+        <from>Subject</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- article subjects label -->
+        <from>Subjects</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- part of results sort drop-down -->
+        <from>title</from>
+        <to></to>
+    </trans>
+    <trans>
+        <!-- article title label -->
+        <from>Title</from>
+        <to></to>
+    </trans>
+</transTable>
