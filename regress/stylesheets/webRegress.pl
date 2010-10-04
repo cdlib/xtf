@@ -17,7 +17,7 @@ while (<INFILE>) {
         chomp($url);
         print "URL: $url\n";
         print OUTFILE "URL: $url\n";
-        `wget -q -r -l2 -nH -e robots=off '$url'`
+        `wget -q -r -l2 -nH --user-agent="" -e robots=off '$url'`;
     }
 }
 

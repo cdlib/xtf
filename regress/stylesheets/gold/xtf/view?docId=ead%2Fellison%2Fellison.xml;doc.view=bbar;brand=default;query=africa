@@ -30,7 +30,8 @@
                </td>
                <td class="right"><a href="javascript://"
                      onclick="javascript:window.open('http://espresso.ad.ucop.edu:8084/xtf/view?docId=ead/ellison/ellison.xml;doc.view=citation','popup','width=800,height=400,resizable=yes,scrollbars=no')">Citation</a> | <a href="http://espresso.ad.ucop.edu:8084/xtf/view?docId=ead/ellison/ellison.xml&amp;doc.view=print;chunk.id=c01_1P"
-                     target="_top">Print View</a></td>
+                     target="_top">Print View</a> | <a href="javascript://"
+                     onclick="javascript:window.open('/xtf/search?smode=getLang','popup','width=500,height=200,resizable=no,scrollbars=no')">Choose Language</a></td>
             </tr>
          </table>
       </div>

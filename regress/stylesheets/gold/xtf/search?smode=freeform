@@ -9,5 +9,5 @@
                            Search items with 'africa' in title but not 'politics' in subject.
                            Note '-' must follow ':'
                         </td></tr><tr><td class="sampleQuery">title:-south</td><td class="sampleDescrip">Match all items without 'south' in title</td></tr><tr><td class="sampleQuery">-africa</td><td class="sampleDescrip">Match all items without 'africa' in keywords</td></tr><tr><td class="sampleQuery">south (africa OR america)</td><td class="sampleDescrip">Search keywords for 'south' AND either 'africa' OR 'america'</td></tr><tr><td class="sampleQuery">south africa OR america</td><td class="sampleDescrip">(same, due to precedence)</td></tr></table></td></tr></table></form></div></td></tr></table></div></div><div class="footer">
-         <a href="mailto:you@yourserver.com">Comments? Questions?</a>
+         <a href="mailto:you@yourserver.com">Comments? Questions?</a> | <a href="javascript://" onclick="javascript:window.open('/xtf/search?smode=getLang','popup','width=500,height=200,resizable=no,scrollbars=no')">Choose Language</a>
       </div></body></html>

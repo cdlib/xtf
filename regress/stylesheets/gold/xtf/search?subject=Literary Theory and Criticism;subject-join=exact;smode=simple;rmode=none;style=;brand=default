@@ -47,5 +47,5 @@
                            }, null);
                      };
                   </script><span id="moreLike_1"><a href="javascript:getMoreLike_1()">Find</a></span></td></tr></table></div></td></tr></table></div><div class="footer">
-         <a href="mailto:you@yourserver.com">Comments? Questions?</a>
+         <a href="mailto:you@yourserver.com">Comments? Questions?</a> | <a href="javascript://" onclick="javascript:window.open('/xtf/search?smode=getLang','popup','width=500,height=200,resizable=no,scrollbars=no')">Choose Language</a>
       </div></body></html>
