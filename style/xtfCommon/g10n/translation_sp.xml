@@ -2,166 +2,166 @@
 <transTable>
     <trans>
         <from>Add</from>
-        <to></to>
+        <to>Añadir</to>
     </trans>
     <trans>
         <from>Advanced</from>
-        <to></to>
+        <to>Avanzado</to>
     </trans>
     <trans>
         <from>author</from>
-        <to></to>
+        <to>autor</to>
     </trans>
     <trans>
         <from>Author</from>
-        <to></to>
+        <to>Autor</to>
     </trans>
     <trans>
         <from>Bookbag</from>
-        <to></to>
+        <to>Mis referencias</to>
     </trans>
     <trans>
         <from>Browse</from>
-        <to></to>
+        <to>Navegar</to>
     </trans>
     <trans>
         <from>Browse by</from>
-        <to></to>
+        <to>Navegar por </to>
     </trans>
     <trans>
         <from>Choose Language</from>
-        <to></to>
+        <to>Idioma</to>
     </trans>
     <trans>
         <from>Citation</from>
-        <to></to>
+        <to>Citación</to>
     </trans>
     <trans>
         <from>Clear</from>
-        <to></to>
+        <to>Borrar</to>
     </trans>
     <trans>
         <from>Clear Hits</from>
-        <to></to>
+        <to>Borrar citaciones</to>
     </trans>
     <trans>
         <from>Collapse All</from>
-        <to></to>
+        <to>Colapsar todos</to>
     </trans>
     <trans>
         <from>Comments? Questions?</from>
-        <to></to>
+        <to>Comentarios?</to>
     </trans>
     <trans>
         <from>Date</from>
-        <to></to>
+        <to>Fecha</to>
     </trans>
     <trans>
         <from>Did you mean to search for</from>
-        <to></to>
+        <to>¿Te refieres a la búsqueda de</to>
     </trans>
     <trans>
         <from>Expand All</from>
-        <to></to>
+        <to>Ampliar todos</to>
     </trans>
     <trans>
         <from>Facet</from>
-        <to></to>
+        <to>Faceta</to>
     </trans>
     <trans>
         <from>Freeform</from>
-        <to></to>
+        <to>Forma libre</to>
     </trans>
     <trans>
         <from>Go!</from>
-        <to></to>
+        <to>Intro</to>
     </trans>
     <trans>
         <from>Home</from>
-        <to></to>
+        <to>Página de inicio</to>
     </trans>
     <trans>
         <from>Keyword</from>
-        <to></to>
+        <to>Palabras clave</to>
     </trans>
     <trans>
         <from>Matches</from>
-        <to></to>
+        <to>Resultados</to>
     </trans>
     <trans>
         <from>Modify Search</from>
-        <to></to>
+        <to>Modificar Búsqueda</to>
     </trans>
     <trans>
         <from>New Search</from>
-        <to></to>
+        <to>Nueva Búsqueda</to>
     </trans>
     <trans>
-        <from>occurences of</from>
-        <to></to>
+        <from>occurrences of</from>
+        <to>casos de </to>
     </trans>
     <trans>
         <from>Page</from>
-        <to></to>
+        <to>Página</to>
     </trans>
     <trans>
         <from>Print View</from>
-        <to></to>
+        <to>Vista de impresión</to>
     </trans>
     <trans>
         <from>publication date</from>
-        <to></to>
+        <to>Fecha de publicación</to>
     </trans>
     <trans>
         <from>Published</from>
-        <to></to>
+        <to>Publicado</to>
     </trans>
     <trans>
         <from>relevance</from>
-        <to></to>
+        <to>relevancia</to>
     </trans>
     <trans>
         <from>Results</from>
-        <to></to>
+        <to>Resultados</to>
     </trans>
     <trans>
         <from>Return to Search Results</from>
-        <to></to>
+        <to>Volver a Resultados</to>
     </trans>
     <trans>
         <from>reverse date</from>
-        <to></to>
+        <to>Fecha inversa</to>
     </trans>
     <trans>
         <from>Search</from>
-        <to></to>
+        <to>Busqueda</to>
     </trans>
     <trans>
-        <from>Search this item</from>
-        <to></to>
+        <from>Search this Item</from>
+        <to>Buscar en este</to>
     </trans>
     <trans>
-        <from>Similar Items</from>
-        <to></to>
+        <from>Similar&#160;Items</from>
+        <to>Similares</to>
     </trans>
     <trans>
         <from>Sorted by</from>
-        <to></to>
+        <to>Ordenado por</to>
     </trans>
     <trans>
         <from>Subject</from>
-        <to></to>
+        <to>Tema</to>
     </trans>
     <trans>
         <from>Subjects</from>
-        <to></to>
+        <to>Temas</to>
     </trans>
     <trans>
         <from>title</from>
-        <to></to>
+        <to>título</to>
     </trans>
     <trans>
         <from>Title</from>
-        <to></to>
+        <to>Título</to>
     </trans>
 </transTable>
