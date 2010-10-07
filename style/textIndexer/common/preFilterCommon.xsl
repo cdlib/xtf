@@ -161,23 +161,25 @@
    
    <!-- Generate facet-date -->
    <xsl:template match="*:date" mode="facet">
-      <facet-date>
-         <xsl:attribute name="xtf:meta" select="'true'"/>
-         <xsl:attribute name="xtf:facet" select="'yes'"/>
-         <xsl:choose>
-            <xsl:when test="matches(.,'[0-9]{2}-[0-9]{2}-[0-9]{4}')">
+      <xsl:choose>
+         <xsl:when test="matches(.,'[0-9]{2}-[0-9]{2}-[0-9]{4}')">
+            <facet-date xtf:meta="true" xtf:facet="yes">
                <xsl:value-of select="replace(.,'([0-9]{2})-([0-9]{2})-([0-9]{4})','$3::$1::$2')"/>
-            </xsl:when>
-            <xsl:when test="matches(.,'[0-9]{4}-[0-9]{2}-[0-9]{2}')">
+            </facet-date>
+         </xsl:when>
+         <xsl:when test="matches(.,'[0-9]{4}-[0-9]{2}-[0-9]{2}')">
+            <facet-date xtf:meta="true" xtf:facet="yes">
                <xsl:value-of select="replace(.,'-','::')"/>
-            </xsl:when>
-            <xsl:otherwise>
-               <xsl:for-each select="parse:year(string(.))">
+            </facet-date>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:for-each select="parse:year(string(.))">
+               <facet-date xtf:meta="true" xtf:facet="yes">
                   <xsl:value-of select="concat(.,'::01::01')"/>
-               </xsl:for-each>
-            </xsl:otherwise>
-         </xsl:choose>
-      </facet-date>
+               </facet-date>
+            </xsl:for-each>
+         </xsl:otherwise>
+      </xsl:choose>
    </xsl:template>
    
    <!-- Generate facet-subject -->

@@ -618,8 +618,9 @@
             </xsl:otherwise>
          </xsl:choose>
       </xsl:variable>
-      
-      <xsl:value-of select="concat($dynaxmlPath, '?docId=', $docId, ';query=', replace($query, ';', '%26'))"/>
+
+      <!-- Must protect value of $docId in the URL, in case it contains special chars. -->
+      <xsl:value-of select="concat($dynaxmlPath, '?docId=', editURL:protectValue($docId), ';query=', replace($query, ';', '%26'))"/>
       <!-- -join & -prox are mutually exclusive -->
       <xsl:choose>
          <xsl:when test="$text-prox">
