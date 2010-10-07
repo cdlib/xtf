@@ -90,54 +90,6 @@
    </xsl:template>
    
    <!-- ====================================================================== -->
-   <!-- Book METS Indexing                                                     -->
-   <!-- ====================================================================== -->
-   
-   <!-- Ignored Elements -->
-   <xsl:template match="journal-meta">
-      <xsl:copy>
-         <xsl:copy-of select="@*"/>
-         <xsl:attribute name="xtf:index" select="'no'"/>
-         <xsl:apply-templates/>
-      </xsl:copy>
-   </xsl:template>
-   
-   <xsl:template match="article-meta">
-      <xsl:copy>
-         <xsl:copy-of select="@*"/>
-         <xsl:attribute name="xtf:index" select="'no'"/>
-         <xsl:apply-templates/>
-      </xsl:copy>
-   </xsl:template>
-   
-   
-   <!-- sectionType Indexing and Element Boosting -->
-   <xsl:template match="title[parent::sec]">
-      <xsl:copy>
-         <xsl:copy-of select="@*"/>
-         <xsl:attribute name="xtf:sectionType" select="concat('head ', @type)"/>
-         <xsl:attribute name="xtf:wordBoost" select="2.0"/>
-         <xsl:apply-templates/>
-      </xsl:copy>
-   </xsl:template>
-   
-   <xsl:template match="citation">
-      <xsl:copy>
-         <xsl:copy-of select="@*"/>
-         <xsl:attribute name="xtf:sectionType" select="'citation'"/>
-         <xsl:apply-templates/>
-      </xsl:copy>
-   </xsl:template>
-   
-   <xsl:template match="article-title[parent::title-group]">
-      <xsl:copy>
-         <xsl:copy-of select="@*"/>
-         <xsl:attribute name="xtf:wordBoost" select="100.0"/>
-         <xsl:apply-templates/>
-      </xsl:copy>
-   </xsl:template>
-   
-   <!-- ====================================================================== -->
    <!-- Metadata Indexing                                                      -->
    <!-- ====================================================================== -->
    
@@ -280,7 +232,7 @@
    
    <!-- type -->
    <xsl:template name="get-book-type">
-      <type xtf:meta="true">book</type>
+      <type xtf:meta="true">ebook</type>
    </xsl:template>
    
    <!-- format -->
