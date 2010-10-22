@@ -230,7 +230,7 @@
                br.numLeafs /*sic*/ = br.pages.length;
                
                br.bookTitle= "<xsl:value-of select="local:unquote($doc.title)"/>";
-               br.bookUrl  = '<xsl:value-of select="concat($xtfURL, $dynaxmlPath, ';docId=', $docId)"/>';
+               br.bookUrl  = '<xsl:value-of select="concat($xtfURL, $dynaxmlPath, '?docId=', editURL:protectValue($docId))"/>';
                
                br.init();
                
