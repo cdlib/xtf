@@ -6,7 +6,7 @@
     </trans>
     <trans>
         <from>Advanced</from>
-        <to>Fortgeschritten</to>
+        <to>Erweiterte Suche</to>
     </trans>
     <trans>
         <from>author</from>
@@ -18,19 +18,19 @@
     </trans>
     <trans>
         <from>Bookbag</from>
-        <to>Buch-Tasche</to>
+        <to>Zwischenablage</to>
     </trans>
     <trans>
         <from>Browse</from>
-        <to>Navigieren</to>
+        <to>Browsen</to>
     </trans>
     <trans>
         <from>Browse by</from>
-        <to>Navigieren nach</to>
+        <to>Browsen:</to>
     </trans>
     <trans>
         <from>Choose Language</from>
-        <to>Sprache Wählen</to>
+        <to>Wählen Sie eine Sprache</to>
     </trans>
     <trans>
         <from>Citation</from>
@@ -38,11 +38,11 @@
     </trans>
     <trans>
         <from>Clear</from>
-        <to>Löschen</to>
+        <to>Reset</to>
     </trans>
     <trans>
         <from>Clear Hits</from>
-        <to>Löschen Erfolge</to>
+        <to>Reset</to>
     </trans>
     <trans>
         <from>Collapse All</from>
@@ -54,11 +54,11 @@
     </trans>
     <trans>
         <from>Date</from>
-        <to>Datum</to>
+        <to>Erscheinungsjahr</to>
     </trans>
     <trans>
         <from>Did you mean to search for</from>
-        <to>Meinten Sie für die Suche nach</to>
+        <to>Meinten Sie</to>
     </trans>
     <trans>
         <from>Expand All</from>
@@ -66,7 +66,7 @@
     </trans>
     <trans>
         <from>Facet</from>
-        <to>Facette</to>
+        <to>Suche verfeinern</to>
     </trans>
     <trans>
         <from>Freeform</from>
@@ -74,11 +74,11 @@
     </trans>
     <trans>
         <from>Go!</from>
-        <to>Versuch!</to>
+        <to>Los!</to>
     </trans>
     <trans>
         <from>Home</from>
-        <to>Heim</to>
+        <to>Startseite</to>
     </trans>
     <trans>
         <from>Keyword</from>
@@ -86,7 +86,7 @@
     </trans>
     <trans>
         <from>Matches</from>
-        <to>Paarungen</to>
+        <to>Suchergebnisse</to>
     </trans>
     <trans>
         <from>Modify Search</from>
@@ -110,11 +110,11 @@
     </trans>
     <trans>
         <from>publication date</from>
-        <to>datum der veröffentlichung</to>
+        <to>Erscheinungsdatum</to>
     </trans>
     <trans>
         <from>Published</from>
-        <to>Veröffentlicht</to>
+        <to>Erscheint</to>
     </trans>
     <trans>
         <from>relevance</from>
@@ -122,11 +122,11 @@
     </trans>
     <trans>
         <from>Results</from>
-        <to>Suchergebnisse</to>
+        <to>Ergebnisliste</to>
     </trans>
     <trans>
         <from>Return to Search Results</from>
-        <to>Zurück zu den Suchergebnissen</to>
+        <to>Züruck zur Ergebnisliste</to>
     </trans>
     <trans>
         <from>reverse date</from>
@@ -142,7 +142,7 @@
     </trans>
     <trans>
         <from>Similar&#160;Items</from>
-        <to>Ähnliche&#160;Artikel</to>
+        <to>Ähnliche:</to>
     </trans>
     <trans>
         <from>Sorted by</from>
@@ -154,7 +154,7 @@
     </trans>
     <trans>
         <from>Subjects</from>
-        <to>Theman</to>
+        <to>Themen</to>
     </trans>
     <trans>
         <from>title</from>
