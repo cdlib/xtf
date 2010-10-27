@@ -161,8 +161,6 @@ public class IndexDump
         Vector fieldNames = new Vector();
         while (startArg < args.length)
         {
-          System.out.println(args[startArg]);
-          
           // Is term frequency mode enabled?
           if (args[startArg].equalsIgnoreCase("-termFreq")) 
           {
@@ -209,7 +207,6 @@ public class IndexDump
         }
 
         // Do a little checking for sanity
-        System.out.format("\nallFields:%b, fieldNames:%s\n", allFieldsMode, fieldNames.toString());
         if ((allFieldsMode && !fieldNames.isEmpty()) ||
             (!allFieldsMode && fieldNames.isEmpty()))
           showUsage = true;
