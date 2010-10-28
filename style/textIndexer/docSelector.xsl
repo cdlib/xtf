@@ -177,7 +177,7 @@
                         <!-- Look for METS-encoded scanned books, skip other METS files as likely subordinate -->
                         <xsl:when test="matches($root-element-name,'^METS')">
                            <xsl:variable name="metsData" select="document($file)"/>
-                           <xsl:if test="$metsData//scribe:book" xmlns:scribe="http://archive.org/scribe/xml">
+                           <xsl:if test="$metsData//*:book">
                               <indexFile fileName="{$fileName}"
                                  preFilter="style/textIndexer/bookreader/bookPreFilter.xsl"
                                  displayStyle="style/dynaXML/docFormatter/bookreader/bookDocFormatter.xsl"/>

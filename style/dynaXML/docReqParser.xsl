@@ -130,7 +130,7 @@
                </xsl:when>
                <!-- Look for METS-encoded scanned books -->
                <xsl:when test="matches($root-element-name,'^METS') and 
-                               document($file)//scribe:book" xmlns:scribe="http://archive.org/scribe/xml">
+                               document($file)//*:book">
                   <xsl:value-of select="'book'"/>
                </xsl:when>
                <!-- Default processing for XML files -->

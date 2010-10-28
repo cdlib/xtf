@@ -60,13 +60,13 @@
    <xsl:variable name="metsMeta" select="//METS:xmlData/metadata"/>
    
    <xsl:variable name="pageAssertions">
-      <xsl:for-each select="//scribe:pageNumData/scribe:assertion[matches(scribe:pageNum/string(), '^[0-9]+$')]">
-         <xsl:sort select="number(scribe:pageNum/string())"/>
-         <assertion pageNum="{scribe:pageNum/string()}" leafNum="{scribe:leafNum/string()}"/>
+      <xsl:for-each select="//*:pageNumData/*:assertion[matches(*:pageNum/string(), '^[0-9]+$')]">
+         <xsl:sort select="number(*:pageNum/string())"/>
+         <assertion pageNum="{*:pageNum/string()}" leafNum="{*:leafNum/string()}"/>
       </xsl:for-each>
    </xsl:variable>
    
-   <xsl:variable name="numLeaves" select="count(//scribe:pageData/scribe:page)"/>
+   <xsl:variable name="numLeaves" select="count(//*:pageData/*:page)"/>
       
    <xsl:variable name="leafToPage">
       <xsl:call-template name="makeLeafToPage">
@@ -396,7 +396,7 @@
          <xsl:message><xsl:copy-of select="."/></xsl:message>
          </xsl:for-each>-->
       
-      <xsl:for-each select="//scribe:pageData/scribe:page">
+      <xsl:for-each select="//*:pageData/*:page">
          <xsl:call-template name="processPage"/>
       </xsl:for-each>
    </xsl:template>
@@ -405,8 +405,8 @@
    <xsl:template name="processPage">
       <xsl:variable name="leafNum" select="number(@leafNum)"/>
       <leaf leafNum="{$leafNum}" 
-            type="{scribe:pageType}"
-            access="{scribe:addToAccessFormats}">
+            type="{*:pageType}"
+            access="{*:addToAccessFormats}">
          
          <!-- Associate a logical page number, if any. -->
          <xsl:if test="$leafToPage/mapping[@leafNum = $leafNum]/@pageNum">
@@ -423,12 +423,12 @@
          </xsl:if>
          
          <!-- Copy the crop box dimensions -->
-         <xsl:if test="scribe:cropBox">
+         <xsl:if test="*:cropBox">
             <cropBox 
-               x="{replace(scribe:cropBox/scribe:x, '\.0$', '')}"
-               y="{replace(scribe:cropBox/scribe:y, '\.0$', '')}"
-               w="{replace(scribe:cropBox/scribe:w, '\.0$', '')}"
-               h="{replace(scribe:cropBox/scribe:h, '\.0$', '')}"/>
+               x="{replace(*:cropBox/*:x, '\.0$', '')}"
+               y="{replace(*:cropBox/*:y, '\.0$', '')}"
+               w="{replace(*:cropBox/*:w, '\.0$', '')}"
+               h="{replace(*:cropBox/*:h, '\.0$', '')}"/>
          </xsl:if>
          
          <!-- Now process the DJVU XML -->
