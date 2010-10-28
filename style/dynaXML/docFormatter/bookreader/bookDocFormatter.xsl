@@ -127,6 +127,7 @@
             <title>
                <xsl:value-of select="$doc.title"/>
             </title>
+            <link rel="shortcut icon" href="icons/default/favicon.ico" />
             <link rel="stylesheet" type="text/css" href="{$root.URL}css/bookreader/BookReader.css"/>
             <link rel="stylesheet" type="text/css" href="{$root.URL}css/bookreader/BookReaderXTF.css"/>
             <script type="text/javascript" src="{$root.URL}script/bookreader/jquery-1.2.6.min.js"></script>
@@ -266,6 +267,7 @@
             <title>
                <xsl:value-of select="$doc.title"/>
             </title>
+            <link rel="shortcut icon" href="icons/default/favicon.ico" />
             <link rel="stylesheet" type="text/css" href="{$root.URL}/css/bookreader/BookReader.css"/>
          </head>
          <body bgcolor="white">
