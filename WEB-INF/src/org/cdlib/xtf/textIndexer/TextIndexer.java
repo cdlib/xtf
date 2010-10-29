@@ -124,10 +124,10 @@ import org.cdlib.xtf.util.Trace;
 public class TextIndexer 
 {
   /** The version to be shown to the user (does not need to string compare as higher than prev.) */
-  public static final String SHOW_VERSION = "2.2";
+  public static final String SHOW_VERSION = "3.0a";
   
   /** The version of the text indexer (placed into any indexes created) */
-  public static final String CURRENT_VERSION = "2.2b";
+  public static final String CURRENT_VERSION = "3.0a";
   
   /** The minimum index version that we can read */
   public static final String REQUIRED_VERSION = "2.2b";
