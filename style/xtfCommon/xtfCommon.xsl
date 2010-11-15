@@ -8,7 +8,7 @@
     exclude-result-prefixes="#all"
     version="2.0">
     
-    <xsl:param name="lang" select="session:getData('lang')"/>
+    <xsl:param name="lang" select="if (normalize-space(session:getData('lang')) != '') then session:getData('lang') else 'en'"/>
     <xsl:param name="transTable" select="document(concat('g10n/translation_', $lang, '.xml'))"/>
     
     <!-- ====================================================================== -->
@@ -40,7 +40,7 @@
     <xsl:template name="translate">
         <xsl:param name="resultTree"/>
         <xsl:choose>
-            <xsl:when test="$lang='en' or $lang=''">
+            <xsl:when test="$lang='en'">
                 <xsl:copy-of select="$resultTree"/>
             </xsl:when>
             <xsl:otherwise>
@@ -99,7 +99,7 @@
     </xsl:template>
     
     <xsl:template name="getLang">
-        <xsl:variable name="lang" select="session:getData('lang')"/>
+        <!--<xsl:variable name="lang" select="session:getData('lang')"/>-->
         <html xml:lang="en" lang="en">
             <head>
                 <title>XTF: Set Language</title>
@@ -109,10 +109,10 @@
             <body>
                 <xsl:copy-of select="$brand.header"/>
                 <div>
-                    <h2>Set Language</h2>
+                    <h2>Set Language |<xsl:value-of select="$lang"/>|</h2>
                     <form action="/xtf/search" method="get">
                         <input type="radio" name="lang" value="en">
-                            <xsl:if test="$lang='en' or $lang=''"><xsl:attribute name="checked" select="'checked'"/></xsl:if>
+                            <xsl:if test="$lang='en'"><xsl:attribute name="checked" select="'checked'"/></xsl:if>
                             <xsl:text>Engish</xsl:text>
                         </input>&#160;&#160;
                         <input type="radio" name="lang" value="sp">
