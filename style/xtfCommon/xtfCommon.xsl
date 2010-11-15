@@ -216,7 +216,7 @@
             <body>
                 <xsl:copy-of select="$brand.header"/>
                 <div>
-                    <h2>Set Language |<xsl:value-of select="$lang"/>|</h2>
+                    <h2>Set Language</h2>
                     <form action="/xtf/search" method="get">
                         <input type="radio" name="lang" value="en">
                             <xsl:if test="$lang='en'"><xsl:attribute name="checked" select="'checked'"/></xsl:if>
