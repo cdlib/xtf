@@ -173,9 +173,9 @@ public class IndexWarmer
       {
         for (Entry ent : warmer.entries.values()) 
         {
-          // Retry failed entries every 5 minutes or so.
+          // Retry failed entries every minute or so.
           if (ent.exception != null) {
-            if (System.currentTimeMillis() - ent.exceptionTime < 5000)
+            if (System.currentTimeMillis() - ent.exceptionTime < 60000)
               continue;
             ent.exception = null;
           }
@@ -194,6 +194,7 @@ public class IndexWarmer
                 return ent;
             } catch (IOException e) {
               ent.exception = e;
+              ent.exceptionTime = System.currentTimeMillis();
               Trace.error(String.format("Error checking index '%s': %s", ent.indexPath, e.toString()));
             }
           }
