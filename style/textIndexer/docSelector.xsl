@@ -117,7 +117,11 @@
             <xsl:choose>
                <!-- Skip document-less METS and DC files -->
                <xsl:when test="ends-with(@fileName, '.mets.xml') or ends-with(@fileName, '.dc.xml')"/>
+
+               <!-- Skip bookreader page files -->
+               <xsl:when test="matches($dirPath, '^.*bookreader') and matches(@fileName, '\d{8}\.xml')"/>
                
+               <!-- All other XML files -->
                <xsl:otherwise>
                   
                   <xsl:variable name="fileName" select="@fileName"/>
