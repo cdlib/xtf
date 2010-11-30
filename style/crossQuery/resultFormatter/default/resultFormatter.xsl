@@ -49,6 +49,7 @@
    <!-- ====================================================================== -->
    
    <xsl:import href="../common/resultFormatterCommon.xsl"/>
+   <xsl:import href="rss.xsl"/>
    <xsl:include href="searchForms.xsl"/>
    
    <!-- ====================================================================== -->
@@ -76,59 +77,82 @@
    <!-- ====================================================================== -->
    
    <xsl:template match="/" exclude-result-prefixes="#all">
-      <!-- may be a little overboard to wrap all this. maybe just results? -->
-      <xsl:call-template name="translate">
-         <xsl:with-param name="resultTree">
-            <xsl:choose>
-               <!-- robot response -->
-               <xsl:when test="matches($http.user-agent,$robots)">
-                  <xsl:apply-templates select="crossQueryResult" mode="robot"/>
-               </xsl:when>
-               <xsl:when test="$smode = 'showBag'">
-                  <xsl:apply-templates select="crossQueryResult" mode="results"/>
-               </xsl:when>
-               <!-- book bag -->
-               <xsl:when test="$smode = 'addToBag'">
-                  <span>Added</span>
-               </xsl:when>
-               <xsl:when test="$smode = 'removeFromBag'">
-                  <!-- no output needed -->
-               </xsl:when>
-               <xsl:when test="$smode='getAddress'">
-                  <xsl:call-template name="getAddress"/>
-               </xsl:when>
-               <xsl:when test="$smode='getLang'">
-                  <xsl:call-template name="getLang"/>
-               </xsl:when>
-               <xsl:when test="$smode='setLang'">
-                  <xsl:call-template name="setLang"/>
-               </xsl:when>
-               <xsl:when test="$smode='emailFolder'">
+      <xsl:choose>
+         <!-- robot response -->
+         <xsl:when test="matches($http.user-agent,$robots)">
+            <xsl:apply-templates select="crossQueryResult" mode="robot"/>
+         </xsl:when>
+         <xsl:when test="$smode = 'showBag'">
+            <xsl:apply-templates select="crossQueryResult" mode="results"/>
+         </xsl:when>
+         <!-- book bag -->
+         <xsl:when test="$smode = 'addToBag'">
+            <span>Added</span>
+         </xsl:when>
+         <xsl:when test="$smode = 'removeFromBag'">
+            <!-- no output needed -->
+         </xsl:when>
+         <xsl:when test="$smode='getAddress'">
+            <xsl:call-template name="getAddress"/>
+         </xsl:when>
+         <xsl:when test="$smode='getLang'">
+            <xsl:call-template name="getLang"/>
+         </xsl:when>
+         <xsl:when test="$smode='setLang'">
+            <xsl:call-template name="setLang"/>
+         </xsl:when>
+         <!-- rss feed -->
+         <xsl:when test="$rmode='rss'">
+            <xsl:apply-templates select="crossQueryResult" mode="rss"/>
+         </xsl:when>
+         <xsl:when test="$smode='emailFolder'">
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
                   <xsl:apply-templates select="crossQueryResult" mode="emailFolder"/>
-               </xsl:when>
-               <!-- similar item -->
-               <xsl:when test="$smode = 'moreLike'">
+               </xsl:with-param>
+            </xsl:call-template>
+         </xsl:when>
+         <!-- similar item -->
+         <xsl:when test="$smode = 'moreLike'">
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
                   <xsl:apply-templates select="crossQueryResult" mode="moreLike"/>
-               </xsl:when>
-               <!-- modify search -->
-               <xsl:when test="contains($smode, '-modify')">
+               </xsl:with-param>
+            </xsl:call-template>
+         </xsl:when>
+         <!-- modify search -->
+         <xsl:when test="contains($smode, '-modify')">
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
                   <xsl:apply-templates select="crossQueryResult" mode="form"/>
-               </xsl:when>
-               <!-- browse pages -->
-               <xsl:when test="$browse-title or $browse-creator">
+               </xsl:with-param>
+            </xsl:call-template>
+         </xsl:when>
+         <!-- browse pages -->
+         <xsl:when test="$browse-title or $browse-creator">
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
                   <xsl:apply-templates select="crossQueryResult" mode="browse"/>
-               </xsl:when>
-               <!-- show results -->
-               <xsl:when test="crossQueryResult/query/*/*">
+               </xsl:with-param>
+            </xsl:call-template>
+         </xsl:when>
+         <!-- show results -->
+         <xsl:when test="crossQueryResult/query/*/*">
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
                   <xsl:apply-templates select="crossQueryResult" mode="results"/>
-               </xsl:when>
-               <!-- show form -->
-               <xsl:otherwise>
+               </xsl:with-param>
+            </xsl:call-template>
+         </xsl:when>
+         <!-- show form -->
+         <xsl:otherwise>
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
                   <xsl:apply-templates select="crossQueryResult" mode="form"/>
-               </xsl:otherwise>
-            </xsl:choose>
-         </xsl:with-param>
-      </xsl:call-template>
+               </xsl:with-param>
+            </xsl:call-template>
+         </xsl:otherwise>
+      </xsl:choose>
    </xsl:template>
    
    <!-- ====================================================================== -->
@@ -223,6 +247,7 @@
                      <td>
                         <b><xsl:value-of select="if($smode='showBag') then 'Bookbag' else 'Results'"/>:</b>&#160;
                         <xsl:variable name="items" select="@totalDocs"/>
+                        <xsl:variable name="cleanString" select="replace(replace($queryString,';*smode=docHits',''),'^;','')"/>
                         <xsl:choose>
                            <xsl:when test="$items = 1">
                               <span id="itemCount">1</span>
@@ -235,6 +260,9 @@
                               <xsl:text> Items</xsl:text>
                            </xsl:otherwise>
                         </xsl:choose>
+                        <xsl:if test="docHit">
+                           &#160;&#160;&#160;&#160;<a href="search?{$cleanString};docsPerPage=100;rmode=rss;sort=rss">RSS</a>
+                        </xsl:if>
                      </td>
                      <td class="right">
                         <xsl:text>Browse by </xsl:text>

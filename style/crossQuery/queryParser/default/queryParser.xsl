@@ -97,7 +97,10 @@
                   </xsl:when>
                   <xsl:when test="$sort='publisher'">
                      <xsl:value-of select="'sort-publisher,sort-title,sort-year'"/>
-                  </xsl:when>              
+                  </xsl:when>     
+                  <xsl:when test="$sort='rss'">
+                     <xsl:value-of select="'-sort-date,sort-title'"/>
+                  </xsl:when>         
                </xsl:choose>
             </xsl:attribute>
          </xsl:if>
