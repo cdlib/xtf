@@ -215,6 +215,13 @@
                         </xsl:choose>
                      </td>
                      <td class="right">
+                        <xsl:if test="docHit">
+                           <xsl:variable name="cleanString" select="replace(replace($queryString,';*smode=docHits',''),'^;','')"/>
+                           <span style="vertical-align:bottom"><img src="{$icon.path}/i_rss.png" alt="rss icon"/></span>
+                           <xsl:text>&#160;</xsl:text>
+                           <a href="search?{$cleanString};docsPerPage=100;rmode=rss;sort=rss">RSS</a>
+                           <xsl:text>&#160;|&#160;</xsl:text>
+                        </xsl:if>
                         <xsl:if test="$smode != 'showBag'">
                            <a href="{$xtfURL}{$crossqueryPath}?{$modifyString}">
                               <xsl:text>Modify Search</xsl:text>
@@ -247,7 +254,6 @@
                      <td>
                         <b><xsl:value-of select="if($smode='showBag') then 'Bookbag' else 'Results'"/>:</b>&#160;
                         <xsl:variable name="items" select="@totalDocs"/>
-                        <xsl:variable name="cleanString" select="replace(replace($queryString,';*smode=docHits',''),'^;','')"/>
                         <xsl:choose>
                            <xsl:when test="$items = 1">
                               <span id="itemCount">1</span>
@@ -260,9 +266,6 @@
                               <xsl:text> Items</xsl:text>
                            </xsl:otherwise>
                         </xsl:choose>
-                        <xsl:if test="docHit">
-                           &#160;&#160;&#160;&#160;<a href="search?{$cleanString};docsPerPage=100;rmode=rss;sort=rss">RSS</a>
-                        </xsl:if>
                      </td>
                      <td class="right">
                         <xsl:text>Browse by </xsl:text>
