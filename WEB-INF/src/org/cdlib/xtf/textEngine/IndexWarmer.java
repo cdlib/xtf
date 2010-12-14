@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.Trace;
@@ -103,24 +102,27 @@ public class IndexWarmer
     // If we don't have a searcher, warm this index immediately (in foreground).
     if (ent.curSearcher == null) 
     {
-      if (!IndexReader.indexExists(indexPath))
-        throw new IOException(String.format("Directory '%s' is missing or does not contain a valid index.", indexPath));
-      
-      // Read the index and ancillary files (plural/accent map, spelling, etc.)
-      ent.curSearcher = new XtfSearcher(indexPath, 0); // disable update check
-      
-      // NOTE: We cannot validate in the foreground thread, because it messes up
-      //       the thread-local variables that keep track of the current HTTP
-      //       request, current servlet, etc.
-      //
-      // Actually, we don't want to validate this anyway. When we start up, we
-      // really need to use something, whether it validates or not.
-      //
-      ;
-      // TODO: Figure a way to rotate in a brand-new index without waiting for 
-      //       the background warmer to pick it up. Tricky, since this method
-      //       is synchronized, so the background thread can't do anything.
-      ;
+      if (bgThread != null && !indexPath.endsWith("-new"))
+      {
+        // Ensure the background thread isn't warming while we are
+        synchronized(bgThread.warmer) 
+        {
+          // NOTE: We cannot validate in the foreground thread, because it messes up
+          //       the thread-local variables that keep track of the current HTTP
+          //       request, current servlet, etc.
+          //
+          // Actually, we don't want to validate this anyway. When we start up, we
+          // really need to use something, whether it validates or not.
+          //
+          bgThread.warm(ent, false);
+        }
+      }
+      else {
+        // Read the index and ancillary files (plural/accent map, spelling, etc.)
+        ent.curSearcher = new XtfSearcher(indexPath, 0); // disable update check
+      }
+            
+      assert ent.curSearcher != null;
     }
     
     // All done.
@@ -159,7 +161,7 @@ public class IndexWarmer
           // Space our updates so we aren't constantly warming.
           long curTime = System.currentTimeMillis();
           if (curTime - prevWarmTime >= (warmer.updateInterval * 1000)) {
-            warm(toUpdate);
+            warm(toUpdate, true);
             prevWarmTime = curTime;
           }
         }
@@ -206,7 +208,7 @@ public class IndexWarmer
     /**
      * Does the work of warming up an index.
      */
-    private void warm(Entry ent) 
+    private void warm(Entry ent, boolean validateOk) 
     {
       try 
       {
@@ -234,15 +236,18 @@ public class IndexWarmer
         ent.newSearcher = new XtfSearcher(indexPath.toString(), dir, 0);
         
         // Validate this new index. If it fails, don't flip.
-        IndexValidator val = new IndexValidator();
-        if (!val.validate(warmer.xtfHome, indexPath.toString(), ent.newSearcher.indexReader()))
+        if (validateOk)
         {
-          // We used to abort the warming here, but it actually doesn't make
-          // much sense. If somebody went to the trouble of manually rotating
-          // the index in (after the indexer presumably failed validating it)
-          // then we should obey and go ahead.
-          //
-          Trace.warning("Index validation failed; using index anyway.");
+          IndexValidator val = new IndexValidator();
+          if (!val.validate(warmer.xtfHome, indexPath.toString(), ent.newSearcher.indexReader()))
+          {
+            // We used to abort the warming here, but it actually doesn't make
+            // much sense. If somebody went to the trouble of manually rotating
+            // the index in (after the indexer presumably failed validating it)
+            // then we should obey and go ahead.
+            //
+            Trace.warning("Index validation failed; using index anyway.");
+          }
         }
         
         // Ready to flip! Make sure everybody is locked out while we do it.
