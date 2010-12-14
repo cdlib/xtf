@@ -81,6 +81,20 @@ public class ProcessRunner
   public static byte[] runAndGrab(String[] argArray, byte[] inputBytes, int timeout)
       throws InterruptedException, CommandFailedException, IOException 
   {
+    // Empty arguments would result in very weird rsync behavior
+    for (String arg : argArray)
+      assert arg != null && arg.length() > 0;
+      
+    // Output a trace message showing the rsync command (debug mode only)
+    if (Trace.getOutputLevel() >= Trace.debug)
+    {
+      StringBuilder buf = new StringBuilder();
+      buf.append("Running command: ");
+      for (String arg : argArray)
+        buf.append(arg + " ");
+      Trace.debug(buf.toString());
+    }
+    
     // Get ready to go
     Process process = null;
   
@@ -306,6 +320,14 @@ public class ProcessRunner
 
           // Save it up.
           buffer.write(tmp, 0, got);
+          
+          // If in debug trace mode, write it to stdout.
+          if (Trace.getOutputLevel() >= Trace.debug) {
+            try {
+              Trace.more(Trace.debug, new String(tmp, 0, got));
+            }
+            catch (Throwable t) { /* ignore charset translation problems */ }
+          }
         }
 
         // Get a byte array that the caller can process.

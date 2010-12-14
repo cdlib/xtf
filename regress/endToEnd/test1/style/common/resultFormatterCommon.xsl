@@ -190,14 +190,7 @@
    
    <!-- Retrieve Branding Nodes -->
    <xsl:variable name="brand.file">
-      <xsl:choose>
-         <xsl:when test="$brand != ''">
-            <xsl:copy-of select="document(concat('../../../../brand/',$brand,'.xml'))"/>
-         </xsl:when>
-         <xsl:otherwise>
-            <xsl:copy-of select="document('../../../../brand/default.xml')"/>
-         </xsl:otherwise>
-      </xsl:choose>
+      <brand/>
    </xsl:variable>
    
    <xsl:param name="brand.links" select="$brand.file//links/*" xpath-default-namespace="http://www.w3.org/1999/xhtml"/>
