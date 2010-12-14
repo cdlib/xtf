@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<!-- URLs used to validate an index, whether newly created or incrementally -->
+<!-- updated.                                                               -->
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+<index-validation>
+  <crossQuery minHits="1">http://myserver.org/search?browse-all=yes</crossQuery>
+  <dynaXML minHits="1">http://myserver.org/view?docId=doc1.xml;query=a*ica</dynaXML>
+</index-validation>
