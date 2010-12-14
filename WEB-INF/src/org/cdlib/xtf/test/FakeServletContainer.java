@@ -1,7 +1,6 @@
 package org.cdlib.xtf.test;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
