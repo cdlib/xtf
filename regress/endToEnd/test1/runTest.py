@@ -133,14 +133,26 @@ assert re.search('The Global Relevance of South <xtf:hit[^>]*><xtf:term>America<
 os.remove(pjoin(scriptDir, "data", "doc1.xml"))
 shutil.copyfile(pjoin(scriptDir, "data", "doc1.xml.ver3"), pjoin(scriptDir, "data", "doc1.xml"))
 
+# Create a foo file in the new index so we can check it doesn't get copied later
+foodir = pjoin(scriptDir, 'index-new', 'lazy', 'foo')
+os.mkdir(foodir)
+foofile = pjoin(foodir, 'foofile.txt')
+shutil.copyfile(pjoin(scriptDir, 'index-new', 'tokenizedFields.txt'), foofile)
+assert path.exists(foofile)
+
 # Do an incremental index
 result = do(javaCmd + "org.cdlib.xtf.textIndexer.TextIndexer -trace debug -index default")
 
 # Make sure only a partial rsync occurred
+assert path.exists(pjoin(scriptDir, 'index-pending', 'lazy', 'foo', 'foofile.txt'))
+assert not path.exists(pjoin(scriptDir, 'index-new', 'lazy', 'foo', 'foofile.txt'))
+assert not path.exists(pjoin(scriptDir, 'index', 'lazy', 'foo', 'foofile.txt'))
+
 assert re.search("--relative [^ ]+/regress/endToEnd/test1/index-new/./lazy/default " +
                  "[^ ]+/regress/endToEnd/test1/index-new/./spellDict", result)
 assert re.search("^lazy/default/doc1.xml.lazy$", result, re.MULTILINE)
 assert re.search("^spellDict/edmap.dat$", result, re.MULTILINE)
+assert not "foofile" in result
 
 # Verify pre-rotation status
 assert os.path.exists(pjoin(scriptDir, "index-pending"))
@@ -155,6 +167,10 @@ assert 'Options for the New South <span class="hit">Antarctica</span>' in result
 assert not os.path.exists(pjoin(scriptDir, "index-pending"))
 assert os.path.exists(pjoin(scriptDir, "index"))
 assert os.path.exists(pjoin(scriptDir, "index-spare"))
+
+assert path.exists(pjoin(scriptDir, 'index', 'lazy', 'foo', 'foofile.txt'))
+assert not path.exists(pjoin(scriptDir, 'index-new', 'lazy', 'foo', 'foofile.txt'))
+assert not path.exists(pjoin(scriptDir, 'index-spare', 'lazy', 'foo', 'foofile.txt'))
 
 # And then in dynaXML
 result = do(javaCmd + "org.cdlib.xtf.test.FakeServletContainer 'http://foo/view?docId=doc1.xml;query=antarctica'")
