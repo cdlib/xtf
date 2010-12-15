@@ -79,11 +79,18 @@ public class DirSync
     // just rsync the entire source to the dest.
     //
     if (filter == null || filter.size() > MAX_SELECTIVE_SYNC)
-      runRsync(srcDir, dstDir, null, null);
+      runRsync(srcDir, dstDir, null, new String[] { "--exclude=scanDirs.list" });
     
     // Otherwise do a selective sync.
     else
       selectiveSync(srcDir, dstDir);
+    
+    // Always do the scanDirs.list file last, since it governs incremental syncing.
+    // If it were done before other files, and the sync process aborted, we might
+    // mistakenly think two directories were perfectly in sync when in fact they
+    // are different.
+    //
+    runRsync(new File(srcDir, "scanDirs.list"), dstDir, null, null);
   }
   
   /**
@@ -98,7 +105,7 @@ public class DirSync
     throws IOException
   {
     // First, sync the top-level files (no sub-dirs)
-    runRsync(srcDir, dstDir, null, new String[] { "--exclude=/*/" });
+    runRsync(srcDir, dstDir, null, new String[] { "--exclude=/*/", "--exclude=scanDirs.list" });
     
     // Now sync the subdirectories in batches, not to exceed the batch limit
     if (!filter.isEmpty())
@@ -120,20 +127,20 @@ public class DirSync
       
       // Finish the last batch of subdirs (if any)
       if (!dirBatch.isEmpty())
-        runRsync(srcDir, dstDir, dirBatch, null);
+        runRsync(srcDir, dstDir, dirBatch, new String[] { "--exclude=scanDirs.list" });
     }
   }
   
   /**
    * Run an rsync command with the standard arguments plus the
-   * specified subdirectories.
+   * specified subdirectories and optional extra args.
    *
-   * @param srcDir       Directory to match
-   * @param dstDir       Directory to modify
+   * @param src          Directory (or file) to match
+   * @param dst          Directory (or file) to modify
    * @param subDirs      Sub-directories to rsync (null for all)
    * @throws IOException If anything goes wrong
    */
-  public void runRsync(File srcDir, File dstDir, 
+  public void runRsync(File src, File dst, 
                        List<String> subDirs,
                        String[] extraArgs) 
     throws IOException
@@ -154,7 +161,8 @@ public class DirSync
       }
 
       // We want to hard link dest files to the source
-      args.add("--link-dest=" + srcDir.getAbsolutePath() + "/");
+      if (src.isDirectory())
+        args.add("--link-dest=" + src.getAbsolutePath() + "/");
       
       // For the source, add in the weird "./" syntax for relative syncing, e.g.
       // rsync --relative server.org:data/13030/pairtree_root/qt/00/./{01/d5,04/k4} data/13030/pairtree_root/qt/00/
@@ -162,13 +170,13 @@ public class DirSync
       if (subDirs != null) { 
         args.add("--relative");
         for (String subDir : subDirs)
-          args.add(srcDir.getAbsolutePath() + "/./" + subDir);
+          args.add(src.getAbsolutePath() + "/./" + subDir);
       }
       else
-        args.add(srcDir.getAbsolutePath() + "/");
+        args.add(src.getAbsolutePath() + (src.isDirectory() ? "/" : ""));
 
       // Finally add the destination path
-      args.add(dstDir.getAbsolutePath() + "/");
+      args.add(dst.getAbsolutePath() + (dst.isDirectory() ? "/" : ""));
 
       // And run the command
       String[] argArray = args.toArray(new String[args.size()]);
