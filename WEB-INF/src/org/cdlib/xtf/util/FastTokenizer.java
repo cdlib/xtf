@@ -284,7 +284,8 @@ public class FastTokenizer extends Tokenizer
     {
       if ((start + 1 >= source.length) || (charType[source[start + 1]] != 'a')) {
         pos = start + 1;
-        return new Token("x", start, start + 1, "word");
+        // Was not previously handling the upper-case "X" properly; was accidentally converting to lower-case.
+        return new Token(new String(new char[] {source[start]}), start, start + 1, "word");
       }
     }
 
