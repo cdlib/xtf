@@ -169,8 +169,11 @@ public class DirSync
       //
       if (subDirs != null) { 
         args.add("--relative");
-        for (String subDir : subDirs)
-          args.add(src.getAbsolutePath() + "/./" + subDir);
+        for (String subDir : subDirs) 
+        {
+          if (new File(src.getAbsolutePath(), subDir).canRead())
+            args.add(src.getAbsolutePath() + "/./" + subDir);
+        }
       }
       else
         args.add(src.getAbsolutePath() + (src.isDirectory() ? "/" : ""));
