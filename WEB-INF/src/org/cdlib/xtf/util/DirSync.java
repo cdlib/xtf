@@ -75,11 +75,16 @@ public class DirSync
   public void syncDirs(File srcDir, File dstDir) 
     throws IOException
   {
-    // If there are no directories specified, or there are too many,
-    // just rsync the entire source to the dest.
+    // If there are no directories specified, or there are too many, or if only
+    // the top-level directory is being sync'd, just rsync the entire source to 
+    // the dest.
     //
-    if (filter == null || filter.size() > MAX_SELECTIVE_SYNC)
+    if (filter == null || filter.size() > MAX_SELECTIVE_SYNC ||
+        (filter.size() == 1 && 
+         new File(filter.getTargets().get(0)).getCanonicalFile().equals(srcDir.getCanonicalFile())))
+    {
       runRsync(srcDir, dstDir, null, new String[] { "--exclude=scanDirs.list" });
+    }
     
     // Otherwise do a selective sync.
     else
@@ -115,7 +120,7 @@ public class DirSync
       for (String target : filter.getTargets()) 
       {
         String targetPath = new File(target).getCanonicalPath();
-        assert targetPath.startsWith(basePath);
+        assert targetPath.startsWith(basePath) : ("targetPath '" + targetPath.toString() + "' should start with basePAth '" + basePath.toString() + "'");
         targetPath = targetPath.substring(basePath.length());
         
         dirBatch.add(targetPath);
