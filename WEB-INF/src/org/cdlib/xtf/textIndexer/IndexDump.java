@@ -316,6 +316,11 @@ public class IndexDump
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<xtfIndexDocuments>\n");
     }
+
+    // Placeholders for empty values
+    Field[] emptyFields = new Field[fieldNames.length];
+    for (int j = 0; j < fieldNames.length; j++)
+      emptyFields[j] = new Field(fieldNames[j], "", Field.Store.YES, Field.Index.NO);
       
     // Iterate every document.
     int maxDoc = indexReader.maxDoc();
@@ -349,6 +354,8 @@ public class IndexDump
           Field[] got = doc.getFields(fieldNames[j]);
           if (got != null)
             toPrint.addAll(Arrays.asList(got));
+          else
+            toPrint.add(emptyFields[j]);
         }
       }
       
