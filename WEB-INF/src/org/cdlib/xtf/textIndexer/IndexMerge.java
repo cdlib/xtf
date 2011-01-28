@@ -80,7 +80,7 @@ public class IndexMerge
    */
   public static void main(String[] args) 
   {
-    Trace.info("IndexMerge v. 3.0a");
+    Trace.info("IndexMerge v. 3.0b");
 
     try 
     {
