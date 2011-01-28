@@ -1,10 +1,14 @@
 ^data/
 ^index/
+^index-new/
+^index-pending/
+^index-spare/
 ^WEB-INF/classes/
 ^WEB-INF/lib/src/
 ^WEB-INF/dist/
 ^WEB-INF/javadoc/
 ^regress/.*/IndexDB/
 ^regress/.*/actual/
+^regress/.*/.*\.log$
 .*\.swp$
 .*.orig$

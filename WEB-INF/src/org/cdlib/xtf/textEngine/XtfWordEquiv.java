@@ -77,8 +77,8 @@ public class XtfWordEquiv implements WordEquiv
       }
 
       // Then ignore plurals.
-      tmp = pluralMap.lookup(out);
       if (pluralMap != null) {
+        tmp = pluralMap.lookup(out);
         if (tmp != null)
           out = tmp;
         recent.put(in, out);

@@ -49,6 +49,7 @@
    <!-- ====================================================================== -->
    
    <xsl:import href="../common/resultFormatterCommon.xsl"/>
+   <xsl:import href="rss.xsl"/>
    <xsl:include href="searchForms.xsl"/>
    
    <!-- ====================================================================== -->
@@ -94,28 +95,62 @@
          <xsl:when test="$smode='getAddress'">
             <xsl:call-template name="getAddress"/>
          </xsl:when>
+         <xsl:when test="$smode='getLang'">
+            <xsl:call-template name="getLang"/>
+         </xsl:when>
+         <xsl:when test="$smode='setLang'">
+            <xsl:call-template name="setLang"/>
+         </xsl:when>
+         <!-- rss feed -->
+         <xsl:when test="$rmode='rss'">
+            <xsl:apply-templates select="crossQueryResult" mode="rss"/>
+         </xsl:when>
          <xsl:when test="$smode='emailFolder'">
-            <xsl:apply-templates select="crossQueryResult" mode="emailFolder"/>
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
+                  <xsl:apply-templates select="crossQueryResult" mode="emailFolder"/>
+               </xsl:with-param>
+            </xsl:call-template>
          </xsl:when>
          <!-- similar item -->
          <xsl:when test="$smode = 'moreLike'">
-            <xsl:apply-templates select="crossQueryResult" mode="moreLike"/>
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
+                  <xsl:apply-templates select="crossQueryResult" mode="moreLike"/>
+               </xsl:with-param>
+            </xsl:call-template>
          </xsl:when>
          <!-- modify search -->
          <xsl:when test="contains($smode, '-modify')">
-            <xsl:apply-templates select="crossQueryResult" mode="form"/>
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
+                  <xsl:apply-templates select="crossQueryResult" mode="form"/>
+               </xsl:with-param>
+            </xsl:call-template>
          </xsl:when>
          <!-- browse pages -->
          <xsl:when test="$browse-title or $browse-creator">
-            <xsl:apply-templates select="crossQueryResult" mode="browse"/>
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
+                  <xsl:apply-templates select="crossQueryResult" mode="browse"/>
+               </xsl:with-param>
+            </xsl:call-template>
          </xsl:when>
          <!-- show results -->
          <xsl:when test="crossQueryResult/query/*/*">
-            <xsl:apply-templates select="crossQueryResult" mode="results"/>
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
+                  <xsl:apply-templates select="crossQueryResult" mode="results"/>
+               </xsl:with-param>
+            </xsl:call-template>
          </xsl:when>
          <!-- show form -->
          <xsl:otherwise>
-            <xsl:apply-templates select="crossQueryResult" mode="form"/>
+            <xsl:call-template name="translate">
+               <xsl:with-param name="resultTree">
+                  <xsl:apply-templates select="crossQueryResult" mode="form"/>
+               </xsl:with-param>
+            </xsl:call-template>
          </xsl:otherwise>
       </xsl:choose>
    </xsl:template>
@@ -180,6 +215,13 @@
                         </xsl:choose>
                      </td>
                      <td class="right">
+                        <xsl:if test="docHit">
+                           <xsl:variable name="cleanString" select="replace(replace($queryString,';*smode=docHits',''),'^;','')"/>
+                           <span style="vertical-align:bottom"><img src="{$icon.path}/i_rss.png" alt="rss icon"/></span>
+                           <xsl:text>&#160;</xsl:text>
+                           <a href="search?{$cleanString};docsPerPage=100;rmode=rss;sort=rss">RSS</a>
+                           <xsl:text>&#160;|&#160;</xsl:text>
+                        </xsl:if>
                         <xsl:if test="$smode != 'showBag'">
                            <a href="{$xtfURL}{$crossqueryPath}?{$modifyString}">
                               <xsl:text>Modify Search</xsl:text>

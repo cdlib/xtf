@@ -137,6 +137,8 @@
     <head>
       <title><xsl:value-of select="$reason"/></title>
       <link type="text/css" rel="stylesheet" href="css/default/content.css"/>
+      <link rel="shortcut icon" href="icons/default/favicon.ico" />
+
     </head>
 
     <body>

@@ -63,7 +63,7 @@
             <center>
                <img src="yourlogo.gif"></img>
             </center>
-
+            
             <xsl:choose>
                <xsl:when test="$chunk.id = 'headerlink'">
                   <xsl:apply-templates select="eadheader"/>

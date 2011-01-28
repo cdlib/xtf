@@ -32,7 +32,9 @@ package org.cdlib.xtf.util;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,10 +46,10 @@ import java.util.HashSet;
  * qualifies. That is, ancestors and cousins of the set directories will be
  * indexed, but not necessarily all the cousins, nephews, nieces, etc.
  */
-public class SubDirFilter 
+public class SubDirFilter
 {
-  private HashSet targets   = new HashSet();
-  private HashSet ancestors = new HashSet();
+  private HashSet<String> targets   = new HashSet();
+  private HashSet<String> ancestors = new HashSet();
 
   /** Tell if nothing has been added yet */
   public boolean isEmpty() {
@@ -64,7 +66,25 @@ public class SubDirFilter
         break;
     }
   }
+  
+  /**
+   * Returns the number of targets that have been added to the filter.
+   */
+  public int size()
+  {
+    return targets.size();
+  }
 
+  /**
+   * Get a list of all targets in lexicographic order.
+   */
+  public List<String> getTargets() 
+  {
+    ArrayList<String> list = new ArrayList(targets);
+    Collections.sort(list);
+    return list;
+  }
+  
   /**
    * Checks if the given directory is in the set, where "in" is defined as
    * having an ancestor or descendant within the set.

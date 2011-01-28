@@ -1,0 +1,9 @@
+/*
+ * Custom overrides for bookreader in XTF
+ */
+
+/* Hide some navigation buttons */
+#BRtoolbar .logo,.print,.embed {
+    display: none;
+}
+

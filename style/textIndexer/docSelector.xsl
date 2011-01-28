@@ -117,7 +117,11 @@
             <xsl:choose>
                <!-- Skip document-less METS and DC files -->
                <xsl:when test="ends-with(@fileName, '.mets.xml') or ends-with(@fileName, '.dc.xml')"/>
+
+               <!-- Skip bookreader page files -->
+               <xsl:when test="matches($dirPath, '^.*bookreader') and matches(@fileName, '\d{8}\.xml')"/>
                
+               <!-- All other XML files -->
                <xsl:otherwise>
                   
                   <xsl:variable name="fileName" select="@fileName"/>
@@ -170,6 +174,19 @@
                               preFilter="style/textIndexer/tei/teiPreFilter.xsl"
                               displayStyle="style/dynaXML/docFormatter/tei/teiDocFormatter.xsl"/>
                         </xsl:when>
+                        <!-- DjVu files are typically subordinate to a main doc -->
+                        <xsl:when test="matches($root-element-name, 'DjVuXML')">
+                           <!-- skip -->
+                        </xsl:when>
+                        <!-- Look for METS-encoded scanned books, skip other METS files as likely subordinate -->
+                        <xsl:when test="matches($root-element-name,'^METS')">
+                           <xsl:variable name="metsData" select="document($file)"/>
+                           <xsl:if test="$metsData//*:book">
+                              <indexFile fileName="{$fileName}"
+                                 preFilter="style/textIndexer/bookreader/bookPreFilter.xsl"
+                                 displayStyle="style/dynaXML/docFormatter/bookreader/bookDocFormatter.xsl"/>
+                           </xsl:if>
+                        </xsl:when>
                         <!-- Default processing for XML files -->
                         <xsl:otherwise>
                            <indexFile fileName="{$fileName}" 
@@ -204,8 +221,8 @@
                preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
          </xsl:when>
          
-         <!-- Plain text files -->
-         <xsl:when test="ends-with(@fileName, '.txt')">
+         <!-- Plain text files. Exception: skip book/*.txt as they're typically subordinate. -->
+         <xsl:when test="ends-with(@fileName, '.txt') and not(matches($dirPath, '/bookreader/'))">
             <indexFile fileName="{@fileName}" 
                type="text"
                preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>

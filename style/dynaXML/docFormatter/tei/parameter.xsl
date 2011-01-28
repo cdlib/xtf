@@ -41,17 +41,17 @@
    
    <xsl:param name="fig.ent" select="'0'"/>
    
-   <xsl:param name="doc.title" select="replace(/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']//*[local-name()='titlePart'][@type='main'], ',$', '')"/>
+   <xsl:param name="doc.title" select="replace(/*/*:text/*:front/*:titlePage//*:titlePart[@type='main'], ',$', '')"/>
    
-   <xsl:param name="doc.subtitle" select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']//*[local-name()='titlePart'][@type='subtitle']"/>
+   <xsl:param name="doc.subtitle" select="/*/*:text/*:front/*:titlePage//*:titlePart[@type='subtitle']"/>
    
    <xsl:param name="doc.author">
       <xsl:choose>
-         <xsl:when test="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']/*[local-name()='docAuthor'][1]/name">
-            <xsl:value-of select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']/*[local-name()='docAuthor'][1]/*[local-name()='name']"/>
+         <xsl:when test="/*/*:text/*:front/*:titlePage/*:docAuthor[1]/name">
+            <xsl:value-of select="/*/*:text/*:front/*:titlePage/*:docAuthor[1]/*:name"/>
          </xsl:when>
          <xsl:otherwise>
-            <xsl:value-of select="/*/*[local-name()='text']/*[local-name()='front']/*[local-name()='titlePage']/*[local-name()='docAuthor'][1]"/>
+            <xsl:value-of select="/*/*:text/*:front/*:titlePage/*:docAuthor[1]"/>
          </xsl:otherwise>
       </xsl:choose>
    </xsl:param>

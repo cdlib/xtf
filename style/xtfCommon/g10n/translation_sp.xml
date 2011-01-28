@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transTable>
+    <trans>
+        <from>Add</from>
+        <to>Añadir</to>
+    </trans>
+    <trans>
+        <from>Advanced</from>
+        <to>Avanzado</to>
+    </trans>
+    <trans>
+        <from>author</from>
+        <to>autor</to>
+    </trans>
+    <trans>
+        <from>Author</from>
+        <to>Autor</to>
+    </trans>
+    <trans>
+        <from>Bookbag</from>
+        <to>Mis referencias</to>
+    </trans>
+    <trans>
+        <from>Browse</from>
+        <to>Navegar</to>
+    </trans>
+    <trans>
+        <from>Browse by</from>
+        <to>Navegar por </to>
+    </trans>
+    <trans>
+        <from>Choose Language</from>
+        <to>Idioma</to>
+    </trans>
+    <trans>
+        <from>Citation</from>
+        <to>Citación</to>
+    </trans>
+    <trans>
+        <from>Clear</from>
+        <to>Borrar</to>
+    </trans>
+    <trans>
+        <from>Clear Hits</from>
+        <to>Borrar citaciones</to>
+    </trans>
+    <trans>
+        <from>Collapse All</from>
+        <to>Colapsar todos</to>
+    </trans>
+    <trans>
+        <from>Comments? Questions?</from>
+        <to>Comentarios?</to>
+    </trans>
+    <trans>
+        <from>Date</from>
+        <to>Fecha</to>
+    </trans>
+    <trans>
+        <from>Did you mean to search for</from>
+        <to>¿Te refieres a la búsqueda de</to>
+    </trans>
+    <trans>
+        <from>Expand All</from>
+        <to>Ampliar todos</to>
+    </trans>
+    <trans>
+        <from>Facet</from>
+        <to>Faceta</to>
+    </trans>
+    <trans>
+        <from>Freeform</from>
+        <to>Forma libre</to>
+    </trans>
+    <trans>
+        <from>Go!</from>
+        <to>Intro</to>
+    </trans>
+    <trans>
+        <from>Home</from>
+        <to>Página de inicio</to>
+    </trans>
+    <trans>
+        <from>Keyword</from>
+        <to>Palabras clave</to>
+    </trans>
+    <trans>
+        <from>Matches</from>
+        <to>Resultados</to>
+    </trans>
+    <trans>
+        <from>Modify Search</from>
+        <to>Modificar Búsqueda</to>
+    </trans>
+    <trans>
+        <from>New Search</from>
+        <to>Nueva Búsqueda</to>
+    </trans>
+    <trans>
+        <from>occurrences of</from>
+        <to>casos de </to>
+    </trans>
+    <trans>
+        <from>Page</from>
+        <to>Página</to>
+    </trans>
+    <trans>
+        <from>Print View</from>
+        <to>Vista de impresión</to>
+    </trans>
+    <trans>
+        <from>publication date</from>
+        <to>Fecha de publicación</to>
+    </trans>
+    <trans>
+        <from>Published</from>
+        <to>Publicado</to>
+    </trans>
+    <trans>
+        <from>relevance</from>
+        <to>relevancia</to>
+    </trans>
+    <trans>
+        <from>Results</from>
+        <to>Resultados</to>
+    </trans>
+    <trans>
+        <from>Return to Search Results</from>
+        <to>Volver a Resultados</to>
+    </trans>
+    <trans>
+        <from>reverse date</from>
+        <to>Fecha inversa</to>
+    </trans>
+    <trans>
+        <from>Search</from>
+        <to>Busqueda</to>
+    </trans>
+    <trans>
+        <from>Search this Item</from>
+        <to>Buscar en este</to>
+    </trans>
+    <trans>
+        <from>Similar&#160;Items</from>
+        <to>Similares</to>
+    </trans>
+    <trans>
+        <from>Sorted by</from>
+        <to>Ordenado por</to>
+    </trans>
+    <trans>
+        <from>Subject</from>
+        <to>Tema</to>
+    </trans>
+    <trans>
+        <from>Subjects</from>
+        <to>Temas</to>
+    </trans>
+    <trans>
+        <from>title</from>
+        <to>título</to>
+    </trans>
+    <trans>
+        <from>Title</from>
+        <to>Título</to>
+    </trans>
+</transTable>

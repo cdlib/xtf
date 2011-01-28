@@ -1,0 +1,2 @@
+/xtf/search?keyword=africa
+/xtf/view?docId=tei/ft958009mm/ft958009mm.xml;query=africa;brand=default

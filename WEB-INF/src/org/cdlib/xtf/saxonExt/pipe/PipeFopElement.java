@@ -166,7 +166,7 @@ public class PipeFopElement extends ElementWithContent
       
       // Merge mode (if any)
       MergeMode mergeMode = MergeMode.SEQUENTIAL;
-      String tmp = getAttribStr("mergeMode", context);
+      String tmp = getAttribStr("mergeMode", context, "sequential");
       if (tmp.equalsIgnoreCase("sequential"))
         mergeMode = MergeMode.SEQUENTIAL;
       else if (tmp.equalsIgnoreCase("overlay"))
@@ -174,18 +174,18 @@ public class PipeFopElement extends ElementWithContent
       else if (tmp.equalsIgnoreCase("underlay"))
         mergeMode = MergeMode.UNDERLAY;
       else
-        dynamicError("Unrecognized merge mode '" + tmp + "'", "PIPE_FOP_008", context);
+        dynamicError("Unrecognized mergeMode '" + tmp + "'", "PIPE_FOP_008", context);
         
       // Merge location (if any)
       MergeAt mergeAt = MergeAt.START;
-      tmp = getAttribStr("mergeAt", context);
+      tmp = getAttribStr("mergeAt", context, "start");
       if (tmp.equalsIgnoreCase("start"))
         mergeAt = MergeAt.START;
       else if (tmp.equalsIgnoreCase("end"))
         mergeAt = MergeAt.END;
       else
-        dynamicError("Unrecognized merge at '" + tmp + "'", "PIPE_FOP_009", context);
-      
+        dynamicError("Unrecognized mergeAt '" + tmp + "'", "PIPE_FOP_009", context);
+        
       try {
 
         // Interesting workaround: using FOP normally results in an AWT "Window"

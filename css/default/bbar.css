@@ -16,7 +16,7 @@ form {
 div.header {
 	 border-bottom: 0;
 	 margin: 0 auto;
-	 background-color: #63718d;
+	 background-color: #B1B8C6;
 	 height: 100%;
 }
 
@@ -26,7 +26,6 @@ div.header img {
 
 div.header img.xtf-logo {
 	float: left;
-	margin: 21px 0 0 15px
 }
 
 div.header img.your-logo {

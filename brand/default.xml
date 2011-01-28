@@ -4,15 +4,19 @@
    
    <links>
       <link rel="stylesheet" href="css/default/results.css" type="text/css"/>
+	  <link rel="shortcut icon" href="icons/default/favicon.ico" />
    </links>
    
    <dynaxml.links>
       <link rel="stylesheet" href="css/default/content.css" type="text/css"/>
+      <link rel="shortcut icon" href="icons/default/favicon.ico" />
+
+
    </dynaxml.links>
    
    <header>
       <div class="header">
-         <img src="icons/default/xtf_logo.gif" width="302" height="18" alt="eXtensible Text Framework" class="xtf-logo"/>
+         <img src="icons/default/xtf_logo.gif" alt="eXtensible Text Framework" class="xtf-logo"/>
          <img src="icons/default/your_logo.gif" width="100" height="40" alt="graphic" class="your-logo" />
          <br class="clear" />
       </div>
@@ -20,7 +24,7 @@
    
    <dynaxml.header>
       <div class="header">
-         <img src="icons/default/xtf_logo.gif" width="302" height="18" alt="eXtensible Text Framework" class="xtf-logo"/>
+         <img src="icons/default/xtf_logo.gif" alt="eXtensible Text Framework" class="xtf-logo"/>
          <img src="icons/default/your_logo.gif" width="100" height="40" alt="graphic" class="your-logo" />
          <br class="clear" />
       </div>
@@ -28,7 +32,7 @@
    
    <footer>
       <div class="footer">
-         <a href="mailto:you@yourserver.com">Comments? Questions?</a>
+         <a href="mailto:you@yourserver.com">Comments? Questions?</a> | <a href="javascript://" onclick="javascript:window.open('/xtf/search?smode=getLang','popup','width=500,height=200,resizable=no,scrollbars=no')">Choose Language</a>
       </div>
    </footer>
    
