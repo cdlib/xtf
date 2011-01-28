@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" maxSnippets="3" contextChars="80" indexPath="IndexDB">
+  <orNear field="text" slop="20">
+    <!-- Query for Unicode normalization. The text below is actually normalized, but
+         should still match the non-normalized terms in the document that was indexed. -->
+    <term>São</term>
+    <term>Paulo</term>
+    <term>Falência</term>
+    <term>Liquidação</term>
+    <term>Própria</term>
+    <term>Obrigações</term>
+  </orNear>
+</query>

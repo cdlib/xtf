@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+  <all>
+
+    <!-- Data for testing Unicode normalization. The text below *looks* normal, but
+         actually the diacritics are encoded as combining marks rather than just
+         using the combined main character. These should get normalized at index
+         time (and query time). -->
+    <testMeta xtf:meta="true">
+      São Paulo
+      Falência
+      Liquidação
+      Própria
+      Obrigações
+    </testMeta>
+
+    <!-- Test in full text (outside metadata) as well -->
+    São Paulo
+    Falência
+    Liquidação
+    Própria
+    Obrigações
+
+  </all>
+</document>

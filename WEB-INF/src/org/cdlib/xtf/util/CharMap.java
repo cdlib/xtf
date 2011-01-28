@@ -67,7 +67,7 @@ public class CharMap
   private static final int CACHE_SIZE = 5000;
 
   /** Keep a cache of lookups performed to-date */
-  private FastStringCache cache = new FastStringCache(CACHE_SIZE);
+  private FastCache cache = new FastCache(CACHE_SIZE);
 
   /** Construct a char map by reading in a file. */
   public CharMap(File f)

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc1.xml" totalHits="0">
+      <meta>
+         <testMeta>
+            <snippet rank="1">
+               <hit>
+                  <term>São</term>
+               </hit>
+            </snippet> 
+            <snippet rank="2">
+               <hit>
+                  <term>Paulo</term>
+               </hit>
+            </snippet>
+            <snippet rank="3">
+               <hit>
+                  <term>Falência</term>
+               </hit>
+            </snippet>
+            <snippet rank="4">
+               <hit>
+                  <term>Liquidação</term>
+               </hit>
+            </snippet>
+            <snippet rank="5">
+               <hit>
+                  <term>Própria</term>
+               </hit>
+            </snippet>
+            <snippet rank="6">
+               <hit>
+                  <term>Obrigações</term>
+               </hit>
+            </snippet>
+         </testMeta>
+      </meta>
+   </docHit>
+</crossQueryResult>

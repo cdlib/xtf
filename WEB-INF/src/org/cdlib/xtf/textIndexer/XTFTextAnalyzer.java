@@ -296,6 +296,9 @@ public class XTFTextAnalyzer extends Analyzer
     // If adding to a spelling dictionary, put an adder in the chain.
     if (spellWriter != null && !misspelledFields.contains(fieldName))
       result = new SpellWritingFilter(result, spellWriter);
+    
+    // Map non-normalized Unicode to normalized form C ("NFC")
+    result = new UnicodeNormalizingFilter(result);
 
     // If an accent map was specified, fold accented and unaccented chars
     // together. We need to do this before plural mapping so that if a word

@@ -235,6 +235,9 @@ public class DefaultQueryProcessor extends QueryProcessor
     // remove apostrophes, etc.
     //
     query = new StdTermRewriter(tokFields).rewriteQuery(query);
+    
+    // Normalize all Unicode encoding to normalized form C (NFC)
+    query = new UnicodeNormalizingRewriter(tokFields).rewriteQuery(query);
 
     // If an accent map is present, remove diacritics.
     if (accentMap != null)
