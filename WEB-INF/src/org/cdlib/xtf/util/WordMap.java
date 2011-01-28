@@ -57,7 +57,7 @@ public class WordMap
   private static final int CACHE_SIZE = 5000;
 
   /** Keep a cache of lookups performed to-date */
-  private FastStringCache cache = new FastStringCache(CACHE_SIZE);
+  private FastCache cache = new FastCache(CACHE_SIZE);
 
   /** Map of blocks, keyed by the first word in each block */
   private HashMap blockMap = new HashMap(100);

@@ -31,18 +31,18 @@ package org.cdlib.xtf.util;
  */
 
 /**
- * A fast but inflexible cache where the keys are strings, the size
+ * A fast but inflexible cache where the keys are anything, the size
  * is fixed, and a crude LRU policy is enforced. Handles consecutive keys
  * gracefully. Doesn't support resizing, deletion, or iteration (not that these
  * operations would be hard, just that they haven't been needed so far.)
  *
  * @author Martin Haye
  */
-public class FastStringCache<T>
+public class FastCache<K, V>
 {
   private int size;
-  private StringHash<T> oldHash;
-  private StringHash<T> newHash;
+  private FastHashMap<K, V> oldHash;
+  private FastHashMap<K, V> newHash;
 
   /**
    * Construct a new cache. Basically, two hash tables are used, each with
@@ -52,27 +52,27 @@ public class FastStringCache<T>
    *
    * @param size  How large to make each of the two internal hash tables.
    */
-  public FastStringCache(int size) {
+  public FastCache(int size) {
     this.size = size;
     clear();
   } // FastCache()
 
   /** Clears all entries from the cache */
   public void clear() {
-    oldHash = new StringHash(1);
-    newHash = new StringHash(size);
+    oldHash = new FastHashMap(1);
+    newHash = new FastHashMap(size);
   }
 
   /** Check whether the given key is present in the cache */
-  public boolean contains(String key) {
+  public boolean contains(K key) {
     return newHash.contains(key) || oldHash.contains(key);
   }
 
   /** Retrieve the value for the given key, or null if not found. */
-  public T get(String key) 
+  public V get(K key) 
   {
     // First, check the new hash
-    T retVal = newHash.get(key);
+    V retVal = newHash.get(key);
     if (retVal == null) 
     {
       // Darn. Check the old hash. If it's there, put it into the new hash
@@ -93,12 +93,12 @@ public class FastStringCache<T>
    * Add a key/value pair to the cache. May result in pushing older items
    * out of the cache.
    */
-  public void put(String key, T val) 
+  public void put(K key, V val) 
   {
     // If the new hash is full, swap and create a new empty hash.
     if (newHash.size() >= size) {
       oldHash = newHash;
-      newHash = new StringHash(size);
+      newHash = new FastHashMap(size);
     }
 
     // Now that we're sure there's room, put it in the new hash.
@@ -108,13 +108,13 @@ public class FastStringCache<T>
   /**
    * Basic regression test
    */
-  public static final Tester tester = new Tester("FastStringCache") 
+  public static final Tester tester = new Tester("FastCache") 
   {
     protected void testImpl() 
     {
-      StringHash.tester.test();
+      FastHashMap.tester.test();
 
-      FastStringCache cache = new FastStringCache(3);
+      FastCache cache = new FastCache(3);
 
       cache.put("1", "a");
       cache.put("2", "b");
@@ -133,4 +133,4 @@ public class FastStringCache<T>
       assert cache.contains("6");
     } // testImpl()
   };
-} // class FastStringCache
+} // class FastCache

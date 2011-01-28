@@ -73,7 +73,7 @@ import org.cdlib.xtf.textIndexer.TextIndexer;
 import org.cdlib.xtf.util.CircularQueue;
 import org.cdlib.xtf.util.DiskHashWriter;
 import org.cdlib.xtf.util.FastIntCache;
-import org.cdlib.xtf.util.FastStringCache;
+import org.cdlib.xtf.util.FastCache;
 import org.cdlib.xtf.util.IntHash;
 import org.cdlib.xtf.util.IntMultiMap;
 import org.cdlib.xtf.util.Path;
@@ -126,7 +126,7 @@ public class RegressTest
     }
 
     // Test the libraries we depend on.
-    Path.tester.test();
+    /*Path.tester.test();
     StructuredFile.tester.test();
     IntHash.tester.test();
     DiskHashWriter.tester.test();
@@ -137,6 +137,7 @@ public class RegressTest
     FastStringCache.tester.test();
     TagArray.tester.test();
     IntMultiMap.tester.test();
+    */
 
     // Go for it.
     RegressTest test = new RegressTest();

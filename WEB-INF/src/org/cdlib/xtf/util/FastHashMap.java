@@ -39,7 +39,7 @@ import org.apache.lucene.util.Prime;
  *
  * @author Martin Haye
  */
-public class StringHash<T>
+public class FastHashMap<K, V>
 {
   private final int hashSize;
   private final Ent[] ents;
@@ -52,7 +52,7 @@ public class StringHash<T>
    *
    * @param maxSize  Max # of entries
    */
-  public StringHash(int maxSize) {
+  public FastHashMap(int maxSize) {
     this.hashSize = Prime.findAfter(maxSize * 2);
     ents = new Ent[hashSize];
     curSize = 0;
@@ -63,12 +63,12 @@ public class StringHash<T>
    * value is replaced. Using null for the value can be useful if one only
    * needs to check for key presence using contains().
    */
-  public void put(String key, T val) 
+  public void put(K key, V val) 
   {
     int bucket = hashSlot(key);
 
     // Is there already an entry for this key?
-    Ent e;
+    Ent<K,V> e;
     for (e = ents[bucket]; e != null; e = e.next) 
     {
       if (key.equals(e.key)) {
@@ -91,7 +91,7 @@ public class StringHash<T>
   } // put()
 
   /** Calculate the hash slot for a given key */
-  private final int hashSlot(String key) {
+  private final int hashSlot(K key) {
     int code = key.hashCode();
     if (code >= 0)
       return code % hashSize;
@@ -101,7 +101,7 @@ public class StringHash<T>
   /**
    * Checks if the hash contains an entry for the given key.
    */
-  public boolean contains(String key) {
+  public boolean contains(K key) {
     for (Ent e = ents[hashSlot(key)]; e != null; e = e.next)
       if (key.equals(e.key))
         return true;
@@ -114,8 +114,8 @@ public class StringHash<T>
    * @param key   Key to look for
    * @return      The associated value, or null if not found.
    */
-  public T get(String key) {
-    for (Ent<T> e = ents[hashSlot(key)]; e != null; e = e.next)
+  public V get(K key) {
+    for (Ent<K, V> e = ents[hashSlot(key)]; e != null; e = e.next)
       if (key.equals(e.key))
         return e.val;
     return null;
@@ -130,20 +130,20 @@ public class StringHash<T>
    * Keeps track of a single entry in the hash table. Can be linked to form
    * a chain.
    */
-  private static class Ent<T> {
-    String key;
-    T val;
+  private static class Ent<K, V> {
+    K key;
+    V val;
     Ent next;
   } // private class Ent
 
   /**
    * Basic regression test
    */
-  public static final Tester tester = new Tester("StringHash") 
+  public static final Tester tester = new Tester("FastHashMap") 
   {
     protected void testImpl() 
     {
-      StringHash hash = new StringHash(5);
+      FastHashMap hash = new FastHashMap(5);
 
       hash.put("100", "hello");
       assert hash.contains("100");
@@ -164,4 +164,4 @@ public class StringHash<T>
       assert hash.get("211").equals("bar");
     } // testImpl()
   };
-} // class StringHash
+} // class FastHashMap

@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.cdlib.xtf.util.FastStringCache;
+import org.cdlib.xtf.util.FastCache;
 import org.cdlib.xtf.util.Normalizer;
 
 /**
@@ -16,15 +16,15 @@ import org.cdlib.xtf.util.Normalizer;
  * 
  * @author Marcos Fragomeni
  */
-public class UnicodeNormalizationFilter extends TokenFilter 
+public class UnicodeNormalizingFilter extends TokenFilter 
 {
     /** How many recent mappings to maintain */
     private static final int CACHE_SIZE = 5000;
   
     /** Keep a cache of lookups performed to-date */
-    private FastStringCache<String> cache = new FastStringCache(CACHE_SIZE);
+    private FastCache<String, String> cache = new FastCache(CACHE_SIZE);
   
-    public UnicodeNormalizationFilter(TokenStream input) {
+    public UnicodeNormalizingFilter(TokenStream input) {
         super(input);
     }
 
