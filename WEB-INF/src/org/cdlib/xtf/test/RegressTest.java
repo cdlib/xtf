@@ -325,12 +325,13 @@ public class RegressTest
     // It may also contain a marker telling us to do a search-annotated
     // tree rather than a CrossQuery-style output.
     //
+    IndexWarmer indexWarmer = null;
     try 
     {
       String inSpec = readFile(inFile);
       QueryProcessor processor = new DefaultQueryProcessor();
       processor.setXtfHome(dir);
-      IndexWarmer indexWarmer = new IndexWarmer(Path.normalizePath(dir), 5);
+      indexWarmer = new IndexWarmer(Path.normalizePath(dir), 5);
       processor.setIndexWarmer(indexWarmer);
       QueryRequest request = new QueryRequestParser().parseRequest(queryDoc,
                                                                    new File(dir));
@@ -409,6 +410,12 @@ public class RegressTest
         new OutputStreamWriter(new FileOutputStream(testFile), "UTF-8"));
       out.println("Exception encountered:\n" + e);
       out.close();
+    }
+    finally 
+    {
+      // Shut down the index warmer's background thread.
+      if (indexWarmer != null)
+        indexWarmer.close();
     }
 
     // See if there's a gold file, and if so, compare it.

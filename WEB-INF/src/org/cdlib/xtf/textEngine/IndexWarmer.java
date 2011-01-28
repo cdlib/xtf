@@ -73,6 +73,16 @@ public class IndexWarmer
     }
   }
   
+  /** Shuts down the background thread, if it's running. */
+  public void close()
+  {
+    if (bgThread != null)
+    {
+      bgThread.shouldStop = true;
+      bgThread.interrupt();
+    }
+  }
+  
   /**
    * Get a searcher for the given index path. If there isn't one already,
    * we create one in the foreground (we don't return til it's ready).
@@ -137,6 +147,7 @@ public class IndexWarmer
   {
     private IndexWarmer warmer;
     private long prevWarmTime = 0;
+    private boolean shouldStop = false;
     
     BgThread(IndexWarmer warmer) {
       this.warmer = warmer;
@@ -145,7 +156,7 @@ public class IndexWarmer
     @Override
     public void run()
     {
-      while (true)
+      while (!shouldStop)
       {
         // Wait a while.
         try {
