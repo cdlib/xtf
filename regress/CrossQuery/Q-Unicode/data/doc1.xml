@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+  <all>
+    <!-- Data for testing Unicode normalization -->
+    <testMeta xtf:meta="true">
+      São Paulo
+      Falência
+      Liquidação
+      Própria
+      Obrigações
+    </testMeta>
+  </all>
+</document>
