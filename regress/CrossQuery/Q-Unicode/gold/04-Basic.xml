@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc1.xml" totalHits="1">
+      <meta>
+         <testMeta>São Paulo
+      Falência
+      Liquidação
+      Própria
+      Obrigações</testMeta>
+      </meta>
+      <snippet rank="1">
+         <hit>
+            <term>São</term> 
+            <term>Paulo</term> 
+            <term>Falência</term> 
+            <term>Liquidação</term> 
+            <term>Própria</term> 
+            <term>Obrigações</term>
+         </hit>
+      </snippet>
+   </docHit>
+</crossQueryResult>

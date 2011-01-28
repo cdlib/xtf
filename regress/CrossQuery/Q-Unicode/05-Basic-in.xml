@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" maxSnippets="3" contextChars="80" indexPath="IndexDB">
+  <and fields="testMeta,text" slop="20">
+    <!-- Query for Unicode normalization. The text below *looks* normal, but
+         actually the diacritics are encoded as combining marks rather than just
+         using the combined main character. These should get normalized at index
+         time (and query time). -->
+    <term>São</term>
+    <term>Paulo</term>
+    <term>Falência</term>
+    <term>Liquidação</term>
+    <term>Própria</term>
+    <term>Obrigações</term>
+  </and>
+</query>
