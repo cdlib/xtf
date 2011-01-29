@@ -67,10 +67,19 @@ import org.cdlib.xtf.textEngine.QueryProcessor;
 import org.cdlib.xtf.textEngine.QueryRequest;
 import org.cdlib.xtf.textEngine.QueryRequestParser;
 import org.cdlib.xtf.textEngine.QueryResult;
+import org.cdlib.xtf.textEngine.XtfBigramQueryRewriter;
+import org.cdlib.xtf.textIndexer.TagFilter;
 import org.cdlib.xtf.textIndexer.TextIndexer;
+import org.cdlib.xtf.util.CircularQueue;
+import org.cdlib.xtf.util.DiskHashWriter;
+import org.cdlib.xtf.util.FastIntCache;
+import org.cdlib.xtf.util.FastCache;
+import org.cdlib.xtf.util.IntHash;
+import org.cdlib.xtf.util.IntMultiMap;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredFile;
 import org.cdlib.xtf.util.StructuredStore;
+import org.cdlib.xtf.util.TagArray;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.XMLWriter;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
@@ -117,7 +126,7 @@ public class RegressTest
     }
 
     // Test the libraries we depend on.
-    /*Path.tester.test();
+    Path.tester.test();
     StructuredFile.tester.test();
     IntHash.tester.test();
     DiskHashWriter.tester.test();
@@ -125,10 +134,9 @@ public class RegressTest
     XtfBigramQueryRewriter.tester.test();
     TagFilter.tester.test();
     FastIntCache.tester.test();
-    FastStringCache.tester.test();
+    FastCache.tester.test();
     TagArray.tester.test();
     IntMultiMap.tester.test();
-    */
 
     // Go for it.
     RegressTest test = new RegressTest();
