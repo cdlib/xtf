@@ -103,7 +103,6 @@ public class DirSync
    * 
    * @param srcDir      Directory to match
    * @param dstDir      Directory to modify
-   * @param subDirs     Sub-directories to rsync
    * @throws IOException If anything goes wrong
    */
   private void selectiveSync(File srcDir, File dstDir) 

@@ -122,7 +122,7 @@ public class SnippetMaker
    * @param accentMap     Accented chars to remove diacritics from
    * @param maxContext    Target # chars for hit + context
    * @param termMode      Where to mark terms (all, only in spans, etc.)
-   * @param string 
+   * @param returnMetaFields  Optional comma-delimited subset of fields to return (instead of all by default). 
    */
   public SnippetMaker(IndexReader reader, DocNumMap docNumMap, Set stopSet,
                       WordMap pluralMap, CharMap accentMap, Set tokFields,
