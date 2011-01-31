@@ -1,0 +1,458 @@
+<!-- Note: we use this file as the source for the change log on the web page, because WordPress has a habit of radically rearranging the view in its HTML editor. So edit here, then copy/paste to there. -->
+
+Below is a list of all the XTF releases, in reverse chronological order. Click on a release to see new features, bug fixes, and changes for each release.
+
+<a href="#3.0-beta">Version 3.0-beta</a>
+<a href="#2.2">Version 2.2</a>
+<a href="#2.1.1">Version 2.1.1</a>
+<a href="#2.1">Version 2.1</a>
+<a href="#2.0">Version 2.0</a>
+<a href="#1.9">Version 1.9</a>
+<a href="#1.8">Version 1.8</a>
+<a href="#1.8-beta">Version 1.8-beta</a>
+<a href="#1.7">Version 1.7</a>
+<a href="#1.6.1">Version 1.6.1</a>
+<a href="#1.6.0">Version 1.6.0</a>
+<a href="#1.5.1">Version 1.5.1</a>
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="2.2">Version 3.0-beta</a></h1>
+
+Release date: January 31, 2011
+
+<h2>Highlights</h2>
+<ul>
+    <li>Scanned book display support in default UI</li>
+    <li>Stability improvements to index rotation support</li>
+    <li>Globalization and RSS support</li>
+    <li>More Unicode improvements</li>
+    <li>Many bug fixes</li>
+</ul>
+<h2>Changes</h2>
+<ul>
+<li>Added an end-to-end test of index rotation.</li>
+    <li>Unicode is now stored in normalized form C (NFC) in the index, and queries are also normalized internally. This way, a query for "a" followed by a combining diacritic "umlaut" (which is not normalized) will still match the combined "a-umlaut" character (which is normalized). Thanks to Marcos Fragomeni for finding the problem and suggesting a fix.</li>
+    <li>New attribute can be specified on a query: returnMetaFields="field1,field2,..." which can cut down on processing and/or transmission time for a query that has lots of hits on docs with lots of fields in them.</li>
+    <li>indexDump utility now supports an optional "-xml" mode, and an "-allFields" flag to obviate the need to list every field explicitly on the command line.</li>
+    <li>Index version bumped to "3.0b" but should still work with XTF 2.2 indexes. Still, it's generally a good idea to re-index after upgrading.</li>
+    <li>Switched to nicer XTF logo in the default UI.</li>
+    <li>Added default interface support for scanned books using the Open Library BookReader.</li>
+    <li>Centralized some XSL utility functions in xtfCommon stylesheet directory.</li>
+    <li>Added globalization feature: can now supply strings to present the UI in various languages, and allow the user to pick a language. Note: the individual translations are all incomplete and meant as a starting point only. We love contributions!</li>
+    <li>Added a link to get an RSS feed from a search (along with recognizable RSS icon).</li>
+    <li>Changed old way of matching element names with any namespace, "matches(local-name(), 'foo')" to more elegant syntax, "*:foo". This was especially prevalent in the TEI stylesheets.</li>
+</ul>
+<h2>Bug Fixes</h2>
+<ul>
+    <li>Downgraded iText library (used for PDF combining only) to ver 2.1.7, since in a blatantly commercial move the iText people changed (unbeknownst to me when I upgraded to the 5.x line) from a friendly LGPL license to an unfriendly Affero GPL, making it incompatible with XTF's license stable.</li>
+    <li>Index rotation now uses rsync instead of a giant Perl command, which should eliminate crashing problems when large numbers of documents are changed in an index.</li>
+    <li>Fixed bug when warming indexes in background: if an index failed to open once (e.g. if it's still under construction) the warmer thread would crash and never warm again.</li>
+    <li>Fixed handling of empty facet values.</li>
+    <li>Fixed inconsistent tokenization of "sectionType" values -- now they are always uniformly tokenized.</li>
+    <li>Fixed crash bug if no pluralization map is used.</li>
+    <li>Fixed a bug: tokenizer was incorrectly and bizarrely lower-casing "X" between dashes.</li>
+    <li>Accent maps and plural maps now play better together. Thanks to Marcos Fragomeni for finding the bug and posting a fix.</li>
+    <li>Fixed URL handling for document IDs containing special characters.</li>
+    <li>Fixed prefilter bug for any item with multiple dates.</li>
+</ul>
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="2.2">Version 2.2</a></h1>
+
+Release date: June 8, 2010
+
+This is a fairly major release containing several features as well as bug fixes and stability improvements.
+<h2 id="Highlights">Highlights</h2>
+<ul>
+    <li>Index-related improvements: solid incremental indexing, index rotation, validation and background warming.</li>
+    <li>Popular new "sub-document" feature for fine-grained searching of structured texts.</li>
+    <li>Many smaller changes and bug fixes.</li>
+    <li>As always the core of XTF 2.2 is compatible with all prior XTF stylesheets and config files.</li>
+</ul>
+<h2 id="Features">Features</h2>
+<ul>
+    <li>Sub-documents: A single document can now be broken into logical "sub-documents" that come up individually in crossQuery but all together in dynaXML. Useful for documents with many unrelated parts (e.g. a book of poetry.) Sub-documents inherit their parent document's meta-data, and can add their own (or override.)</li>
+    <li>Stylesheet profiling now enabled for crossQuery (not just dynaXML)</li>
+    <li>New cacheControl configuration option for crossQuery and dynaXML. Default out-of-the-box is to disable browser caching of all requests because they're dynamic. Previous behavior maintained if flag is omitted to maintain backward compatibility.</li>
+    <li>textIndexer and servlets support index rotation, so that a partially completed index won't be displayed. This advanced feature is disabled by default as it's best used in final deployment only. Note that index rotation depends on Perl and on hard links; thus it probably won't work on Windows.</li>
+    <li>textIndexer can now perform simple validation on the index. Validation tests include number of hits in crossQuery and/or dynaXML. If an index fails validation, it won't rotate (servlets will continue to use the old but good index.)</li>
+    <li>With validation enabled, servlets can use it to "warm up" an index in the background while serving up the prior version; once validation is done, they switch instantly to the new index. This way frequent incremental indexing runs do not cause lag for users.</li>
+    <li>New sorting option for crossQuery results: "totalHits" which sorts the documents by the number of hits within them. Note that sorting this way is somewhat slower but it shouldn't be noticeable for small to medium collections.</li>
+    <li>New servlet parameter is available to all servlet stylesheets: "http.rawURL" which contains the original URL with all its un-escaped percent codes intact.</li>
+    <li>New indexer option ("-force") to force indexing regardless of whether objects have changed. This way one does not have to "touch" a bunch of files to redo them.</li>
+    <li>Code is now in Mercurial (hg) easing development as well as making it possible for XTF users to maintain a unified code base with the main XTF code in the default branch and their changes in another, allowing for more seamless upgrades.</li>
+    <li>New extension functions to:
+        <ul>
+            <li>Create a temporary file that will be automatically deleted after the current request: FileUtils:createTempFile(prefixStr, suffixStr)</li>
+            <li>Apply an accent map (as used by textIndexer) during stylesheet processing: CharUtils:applyAccentMap(pathToMapFile, stringToMap)</li>
+            <li>Stylesheets can now optionally produce a PDF file instead of an HTML page, using XSL FO (Formatting Objects) with the Apache FOP library. Additionally they can glue on an existing PDF file before or after the FOP-generated PDF.</li>
+            <li>Run an external command which is expected to produce a PNG or JPEG image on stdout. That image is in turn streamed directly to the client via the servlet's output stream.</li>
+            <li>Pipe the contents of a file directly to the client via the servlet's output stream.</li>
+            <li>Create an HTTP error (e.g. 500) directly from a stylesheet.</li>
+            <li>Generate an HTTP redirect (either temporary or permanent) from a stylesheet.</li>
+            <li>Convert the size of a file to a human-readable string, e.g. "36 Kb", "1.2 Mb", etc.</li>
+            <li>Calculate the MD5 hash of a string</li>
+            <li>Compute the number of days, hours or minutes that have elapsed between a given time and now.</li>
+        </ul>
+    </li>
+</ul>
+<h2 id="Changes">Changes</h2>
+<ul>
+    <li>textIndexer now defaults to traversing all input directories instead of only those with no files above them. This is enabled by a setting in the config file, and in the default distribution it is set. Old behavior can still be obtained by removing the flag (maintaining backward compatibility.)</li>
+    <li>Index tokenization now recognizes the paragraph symbol "§" as a queryable word.</li>
+    <li>Speed optimizations in the default crossQuery resultFormatter.xsl</li>
+    <li>EAD stylesheets now support "chunking" like the TEI stylesheets, allowing them to handle very large EAD files. Hits now have linking arrows to take the user to the next or previous hit even if it's in a different chunk.</li>
+    <li>Changed EAD docFormatter to be able to handle top-level C02 elements.</li>
+    <li>Optimized key creation to skip dynamic keys during indexing.</li>
+    <li>Socket exceptions are no longer treated as severe errors since clients often disconnect prematurely from the server.</li>
+    <li>Changed error reporting to avoid a Java stack trace for Saxon errors. Still reports the XSLT file and line number of course.</li>
+    <li>URL parameters are now passed to the stylesheet in the same order they were specified in the URL (rather than alphabetical).</li>
+    <li>iText (used for MS Word text extraction) upgraded to version 5.0.1</li>
+    <li>PDFBox (used for PDF text extraction) upgraded to version 1.1.0</li>
+</ul>
+<h2 id="Bugfixes">Bug fixes</h2>
+<ul>
+    <li>Fixed default sorting of author and title browse pages (stylesheet fixes only.)</li>
+    <li>Minor queryParser and resultFormatter fixes for OAI interface validation</li>
+    <li>Fixed stylesheet error causing max # of result pages to be one short of the correct number.</li>
+    <li>Fixed stylesheets to deal properly with documents containing multiple dates.</li>
+    <li>Many fixes in the stylesheets and within the Java code to support special symbols in metadata values (including facet values). These characters include "&lt;", "&gt;", "&amp;", "=", non-latin symbols, etc.</li>
+    <li>If a document fails during indexing due to an XSLT exception, its chunks are now rolled back (previously they were tacked onto the start of the next document producing bizarre search results.)</li>
+    <li>Accent maps and plural maps weren't playing together properly. Now plural words will be depluralized whether or not they started out accented. Thanks to Marcos Fragomeni for the fix suggestion.</li>
+    <li>Made some fixes to CJK (Chinese/Japanese/Korean) tokenization.</li>
+    <li>A few fixes for hit and note links in TEI display.</li>
+    <li>More robust in the facet of minor indexing errors.</li>
+    <li>Fixed to roll back chunks of a document if it suffers an XSLT failure part-way through being indexed.</li>
+    <li>More descriptive message if xtf:tokenize is inconsistently applied for a given field by the various index preFilter stylesheets.</li>
+    <li>Fixed latency cutoff reporting to be more accurate.</li>
+    <li>Added descriptive error message if one tries a "more-like-this" query on full text (which we don't support... yet anyway.)</li>
+    <li>Fixed crash in query request parsing logic when query consists of nothing but stop words.</li>
+    <li>Lazy files are no longer created for non-XML files during indexing.</li>
+    <li>Fixed bug where stored keys in lazy files would occasionally be corrupted.</li>
+    <li>Fixed <a class="missing wiki">NullPointerException?</a> when reading XML stubs that have certain kinds of DTD declarations.</li>
+</ul>
+<h2 id="Experimentaladditions">Experimental additions</h2>
+<ul>
+    <li>Support for Dublin Core Kernel/ERC metadata output from crossQuery</li>
+    <li>Support for OpenURL resolving in crossQuery stylesheets.</li>
+</ul>
+<h2 id="Knownissues">Known issues</h2>
+<ul>
+    <li>Many new functions from XTF 2.1 and 2.2 are not yet documented. For now, a message to the xtf-user list, or examining the code, are the only ways to learn how to use these new features.</li>
+</ul>
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="2.1.1">Version 2.1.1</a></h1>
+
+Release date: June 18, 2008
+
+This is a minor release containing bug fixes and stability improvements.
+<h2 id="Changes">Changes</h2>
+<ul>
+    <li>By default, dynaXML will no longer build lazy trees by itself, instead depending upon textIndexer to build them. This is generally better as the lazy files are kept in sync with the index, but the old behavior can be enabled with the &lt;lazyTrees&gt; configuration option in dynaXML.conf.</li>
+    <li>Small stylesheet tweaks for EAD viewing, and for author and title browsing.</li>
+    <li>Search robot handling has been revised to be friendlier to robots, presenting a much flatter (and thus more easily crawled) view of the document set.</li>
+</ul>
+<h2 id="Bugfixes">Bug fixes</h2>
+<ul>
+    <li>When running the indexer in <tt>-clean</tt> mode, previously it could fail mysteriously (or possibly create a corrupt index) if it was unable to delete any part of the old index. It will now fail consistently with a comprehensible error message.</li>
+    <li>In previous versions, the indexer attached a list of tokenized fields to the first document indexed. Unfortunately, if that document were later updated or deleted, the list was lost. XTF now stores the list in a separate file to avoid this problem (it still reads lists in existing indexes for backward compatibility.)</li>
+    <li>There were two bugs in the IP authentication code for dynaXML. If overlapping ranges were specified, or a single range with a range in the second or third component, dynaXML would incorrectly place addresses as in/out of the list.</li>
+    <li>HTTP headers were inconsistently named; on Resin they'd be mixed case (e.g. "User-Agent") while on Tomcat they'd be lower-case (e.g. user-agent). Hence, it was difficult for stylesheets to reliably switch on them. Now they're always available with the lower-case name (with the mixed-case name present as well for backward compatibility).</li>
+    <li>Footnote links within TEI documents were not properly linking to the associated notes, due to namespace matching problems.</li>
+</ul>
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="2.1">Version 2.1</a></h1>
+
+Release date: June 12, 2008
+
+While the last version focused on getting the documentation in order, this is a major new feature release with special focus on the default stylesheets and user interface.
+<h2 id="Highlights">Highlights</h2>
+<ul>
+    <li>Extensive UI improvements, including new search forms, built-in faceted browsing, and a crisp new look.</li>
+    <li>Built-in XHTML and OAI/PMH output, NLM article in/out, and Microsoft Word in.</li>
+    <li>For those starting fresh with XTF the stylesheets are now easier to understand and adapt. For existing implementations, 2.1 is compatible with all prior XTF stylesheets and config files.</li>
+    <li>Experimental "freeform" boolean query language.</li>
+    <li>Many bug fixes and minor changes/features.</li>
+</ul>
+<h2 id="Features">Features</h2>
+<ul>
+    <li>Revised default stylesheets:
+        <ul>
+            <li>Faceted browsing and query drill-down</li>
+            <li>Improved look and feel</li>
+            <li>Simple and Advanced search</li>
+            <li>Browse by Author or Title</li>
+            <li>Improved bookbag</li>
+            <li>Support for searching and navigating NLM-formatted XML articles</li>
+            <li>Support for searching most Microsoft Word documents</li>
+            <li>docSelector.xsl uses ReadXMLStub extension (below) to decide how to index XML docs, rather than relying on file/directory name.</li>
+            <li>Now uses web-standard YUI library for AJAX instead of custom Javascript code.</li>
+            <li>Basic OAI/PMH support now included.</li>
+            <li>Support for efficiently handling robot crawling (e.g. Googlebot)</li>
+            <li>Stylesheet code has been streamlined.</li>
+        </ul>
+    </li>   
+    <li>New extension functions to:
+        <ul>
+            <li>Send email from a stylesheet.</li>
+            <li>Quickly read in the first part of an XML file.</li>
+            <li>Check if cookies are enabled.</li>
+            <li>Read and "tidy" HTML documents into XHTML documents (helpful for screen scraping and similar activities)</li>
+        </ul>
+    </li>
+    <li>A new query type is supported: <tt>&lt;allDocs&gt;</tt>. This is mainly for convenience in browsing the entire collection (usually used with facets)</li>
+    <li>Ability to index most Microsoft Word documents</li>
+    <li>New "field:emptyFirst" and "field:emptyLast" doc sort modifiers; emptyLast is default instead of inscrutable behavior.</li>
+    <li>Also support "field:ascending" and "field:descending" sort modifiers, as a more verbose form of "+field" and "-field".</li>
+    <li>New facet sorting option: reverseValue (useful for date field).</li>
+    <li>New facet selection operator: singleton (useful for auto-expanding single selections in a hierarchical facet).</li>
+</ul>
+<h2 id="Changes">Changes</h2>
+<ul>
+    <li>Expanded set of sample documents.</li>
+    <li>Session tracking is now enabled by default. Cookie-less mode is deprecated.</li>
+    <li>Improved error reporting includes file name and line number for all XSLT errors.</li>
+    <li>Changed to avoid loading DTD associated with documents. This can greatly boost speed, and also makes the system more reliable as it no longer depends on external web servers.</li>
+    <li>Upgraded to new version of PDFBox which is faster and less buggy.</li>
+    <li>There was previously no way to select facet values containing parentheses, brackets, asterisks, and other special characters. You can now use quotes to disambiguate these in a facet select expression.</li>
+    <li>You can now explicitly specify 'score' (or synonym 'relevance') in sortDocsBy on meta-data fields. Score sorting has always been the default, but this enables one to make it obvious.</li>
+</ul>
+<h2 id="Bugfixes"><strong>Bug fixes</strong></h2>
+<ul>
+    <li>Fixed occasional NullPointer exception in crossQuery when 'raw' mode was used.</li>
+    <li>Fixed other exception handling problems. Thanks to Jakob Saternus for finding these and submitting patches.</li>
+    <li>Fixed rare NullPointerException when trying to scan attributes of a lazy document.</li>
+    <li>Fixed bug in facet sorting: would sometimes drop single subgroup and all its descendants.</li>
+    <li>Fixed HTML text extraction to remove or map illegal characters.</li>
+    <li>Fixed bug in path processing: XTF would often erroneously remove "../.." from a path name.</li>
+    <li>Fixed bug that caused an exception if non-XTF attributes were placed on an untokenized meta-data element. Thanks to Richard Padley for reporting this.</li>
+    <li>Fixed potential out-of-memory situation if multiple threads simultaneously load facet data.</li>
+    <li>Fixed NullPointer exception when using wildcards in a &lt;near&gt;...&lt;not&gt; query. Thanks to Seth Cherney for reporting this.</li>
+    <li>XTF would fail mysteriously if certain names were used for meta-data fields, such as "text" and "key". A descriptive error is now reported instead.</li>
+    <li>In high-volume situations when a new or changed index was loaded, it was possible for multiple threads to load the same facet data at the same time, wasting time and possibly causing an out-of-memory situation. These are now synchronized to be in strict sequence instead of parallel.</li>
+    <li>A stack trace was being reported for TermLimit exceptions, but isn't needed.</li>
+    <li>Fixed bug: sometimes Saxon on Windows would report include "%20" in a system-id() path instead of space, which caused FIleUtils.exists() to fail. FileUtils now handles this case.</li>
+    <li>Fixed handling of multiple values for the same parameter name in the URL. XTF servlets now pass these correctly to stylesheets (which can deal correctly with them, or not, as they wish.)</li>
+    <li>Fixed assertion failure when a single stop word is specified as a keyword query.</li>
+    <li>Fixed bug: single-term, single-field keyword queries were failing mysteriously.</li>
+    <li>Fixed handling of drive-letter paths on Windows under Java 6 that caused the textIndexer to crash on start-up.</li>
+    <li>Corrected handling of &lt;xsl:result-document&gt; in servlets, so that it can change the output format during the transformation. Needed for XHTML/Frameset output.</li>
+    <li>Took out dynaXML caching of docSelector output. This cache didn't actually enhance performance, and caused tricky multi-threading bugs to occur.</li>
+    <li>Removed obsolete DirectSearch and PreviewXML servlets (these were never used in XTF)</li>
+    <li>Fixed crossQuery problems relating to query terms containing ampersands. Thanks to Richard Padley for submitting these.</li>
+</ul>
+<h2 id="Experimentaladditions"><strong>Experimental additions</strong></h2>
+<ul>
+    <li>"Freeform" query language which allows users to type in fielded boolean queries similar to those supported by Google's advanced search.</li>
+    <li>RawQuery servlet, which receives a single XML query in the URL, runs it, and returns XML results.</li>
+    <li>Extension to read a PNG file, extract a piece of it, add yellow highlights, and send image over HTTP. Eventually may be used to implement image page flipping with hits in context (e.g. PDFs, scanned texts, etc.)</li>
+    <li>Support for alternate URL parameter tokenizers in crossQuery and dynaXML.</li>
+</ul>   
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="2.0">Version 2.0</a></h1>
+
+Release date: December 14, 2007
+
+The main changes in XTF 2.0 are under the hood (mainly upgrades to the underlying Lucene and Saxon engines) but a major new feature has been added: multi-word spelling correction. Additionally, the XTF code has been reformatted to make it easier for the main developers and outside parties to work on it and collaborate. Finally, several bugs have been fixed and the documentation has been updated.
+
+As always, every effort has been made to maintain compatibility with existing stylesheets and configuration files. No changes should be necessary (though note that queries with upper case letters are handled slightly differently now).
+
+Following are details on all the changes in this version.   
+<ul>
+    <li>A robust and efficient spelling correction engine is now available and enabled by default for all queries in crossQuery. Programming, reference, and under the hood documentation is provided.</li>
+    <li>XTF now uses the <a class="ext-link" href="http://java.sun.com/j2se/1.5.0/">Java 1.5 / 5.0</a> platform, which provides better XML parsing, enhanced performance, and support for handy programming constructs. If you are using Java 1.4.x, you'll need to upgrade before using this version of XTF.</li>
+    <li>The latest versions of <a class="ext-link" href="http://saxon.sourceforge.net/">Saxon</a> (8.9) and <a class="ext-link" href="http://lucene.apache.org/">Lucene</a> (2.1) are now included with XTF. These provide better performance and many bug fixes, as well as opportunities for to integrate new features into XTF.</li>
+    <li>Servlets in XTF now detect the output method specified in the &lt;xsl:output&gt; stylesheet tag and automatically set the HTTP mime type appropriately. Previously the mime type was always set to "text/html" which is incorrect for XML documents.</li>
+    <li>Documented the xtf:sectionTypeAdd prefilter attribute, which has existed for quite some time and comes in handy storing hierarchical section types.</li>
+    <li>XTF now inserts version numbers into index and lazy tree files, and checks them to verify compatibility. This should prevent problems encountered by users trying to use indexes generated by previous versions of XTF.</li>
+    <li>Multi-character diacritics as well as non-spacing marks are now removed by default during index tokenization and query processing. Previously only single base/diacritic characters were being handled. Thanks to Joao Lima for pointing this out and testing the fix.</li>
+    <li>The redirect:send, Saxon extension now properly handles attribute-value templates.</li>
+    <li>There were several situations where errors during indexing could result in empty or corrupt lazy tree files. These have been fixed. Thanks to Jakob Saternus for pointing this out and sending fixes. Also, lazy files that are generated by dynaXML will be automatically re-generated if the source file changes (this would not work for lazy files generated by the textIndexer since they would then be out of sync with the index.)</li>
+    <li>Certain tokens (such as identifiers) containing underscores were tokenized differently by the textIndexer as opposed to the query parser, making it impossible to query for them. Now they are tokenized consistently.</li>
+    <li>Fixed a bug in the "book bag" Javascript code that prevented removing books from the bag.</li>
+    <li>In the default stylesheets, most instances of "&amp;amp;" are now replaced with a simple semicolon. Semicolons work just as well and make the code and URLs more compact.</li>
+    <li>The input and output tags for the Query Router stylesheet (only needed by advanced users) are now documented.</li>
+    <li>Broken links and missing images in the documentation have been fixed.</li>
+    <li>When lazy files are generated by the textIndexer, the printed count of stored XSL keys is now correct; previously it was always one higher than the actual count.</li>
+    <li>The servlets and indexer now properly handle ampersand and other special characters within filenames. However, the default stylesheets don't produce correct dynaXML links yet. Fixing this would take a lot of work, and it's not clear that it would be worth it. So for now, these files work in crossQuery only.</li>
+    <li>Added a new section on Optimizing Performance to XTF Tips &amp; Tricks. This covers stylesheet tips, profiling, and adjusting Java's virtual memory.</li>
+    <li>Stylesheets can use a new extension function to get the current date and time.</li>
+    <li>URL parameter tokens are no longer converted to lower case before passing them to the stylesheets, which enables one to echo a user's query in the same case they typed it. Case mapping is now handled internally in the text engine, after the query has been parsed.</li>
+</ul>
+    
+<!---------------------------------------------------------------------------->
+
+<h1><a name="1.9">Version 1.9</a></h1>
+
+Release date: April 25, 2007
+
+The main goal of XTF 1.9 was to update the documentation, attempting to cover all features and enhancements made in the past year. Here's a summary of the new documentation:
+    
+<ul>
+    <li> An extensive Tips &amp; Tricks guide has been added, covering topics such as various handy ways to debug stylesheets, setting up XTF to work in external tools such as &lt;oXygen/&gt; and Eclipse, and other helpful tips.</li>
+    <li> Multi-field &lt;and&gt; queries have been added. This is a powerful way to provide a simple "keyword" search that automatically searches for <em>all</em> of the terms in <em>any</em> of the specified fields. For instance, this would give good results for a query spanning title and author such as against all enemies clarke.</li>
+    <li> A hybrid &lt;orNear&gt; query operator has been added, that operates like an &lt;or&gt; query but uses proximity for better scoring.</li>
+    <li> New useProximity attribute is available on &lt;and&gt; queries.</li>
+    <li> Completely rewrote the Hit Scoring section in XTF Under the Hood to reflect how XTF actually scores and ranks document hits (which has changed dramatically from the old versions that were previously documented.)</li>
+    <li> Documented the explainScores attribute that enables comprehensive (if sometimes obscure) output of the score factors used by XTF to score a particular document hit.</li>
+    <li> Wrote up the experimental &lt;moreLike&gt; query that searches for documents similar to a given one.</li>
+    <li> Faceted browsing has graduated from experimental status into the permanent documents. The main description can now be found in the Faceted Browsing section of the Programming Guide.</li>
+    <li> Documentation has been restructured, simplifying filenames and adding this main index page.</li>
+    <li> The experimental Spelling Correction feature is now documented.</li>
+    <li> XTF's very experimental support for dynamic creation of FRBR "work sets" has been documented, at least in basic form.</li>
+    <li> Documented XTF extensions to call command-line programs from stylesheets, and to check a file's existence, length, and modification time.</li>
+    <li> An Saxon extension instruction, redirect:send, has been added to allow a stylesheet to force an immediate HTTP redirect.</li>
+    <li> For clarity, the documentation now refers to "bi-grams" instead of "n-grams", since XTF exclusively uses two-word n-grams.</li>
+    <li> The new xtf:store attribute is available for meta-data fields at index time. Additionally, xtf:index can now be specified for meta-data fields as well (it used to only apply to text.)</li>
+    <li> An option for numeric range searching is now available, which allows efficient processing of very granular numeric data, as long as it is in a fixed, consistent format.</li>
+    <li> Some of the error tags that dynaXML could send to the <strong>Error Generator Stylesheet</strong> were not previously documented: &lt;InvalidDocument&gt; and &lt;NoPermission&gt;.</li>
+    <li> Documented how to specify multiple pre-filters in the &lt;file&gt; tag produced by the <strong>Document Selector Stylesheet</strong>. The pre-filters are chained together in the order listed.</li>
+    <li> Experimental support for MARC record parsing is now documented.</li>
+    <li>Pass-through configuration parameters have been supported for a long time, but are now properly documented.</li>
+</ul>
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="1.8">Version 1.8</a></h1>
+
+Release date: September 8, 2006
+
+<ul>
+    <li>The default dynaXML docFormatterCommon.xsl stylesheet was not properly computing the path for figure references if the doc source is external (e.g. specified by <tt>source=http://</tt><em>xxx</em> in  the URL).</li>
+    <li>The sample "book bag" and "more like this" features were broken, due to missing script files in the distribution. Also, a few source files needed to rebuild the internal JavaCC parsers in XTF were missing.</li>
+</ul>
+
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="1.8-beta">Version 1.8-beta</a></h1>
+
+<ul>
+    <li>Many users have requested EAD support in XTF out-of-the-box.  While XTF has always been capable of handling these, the  default stylesheets were very TEI-centric. This release contains  brand new stylesheets that support TEI, EAD, PDF, HTML, and Text. Flexible meta-data handling will use *.dc files if present. If  not present, will look inside TEI and EAD documents. Also, the confusing reliance on *.mets files has been completely removed.</li>
+    <li>Disabled non-standard whitespace stripping while building lazy tree files. Previously, XTF stripped whitespace between elements, which caused differing results from the same stylesheets run through Saxon from the command-line. If absolutely necessary, there is an undocumented index config flag to turn stripping back on: &lt;whitespace strip="yes"/&gt;</li>
+    <li>Upgraded PDFBox to most recent version (0.7.2) which offers greater speed and stability, and better results.</li>
+    <li>Fixed FileUtils.exists() function called by some stylesheets to automatically handle a "file:" prefix if present.</li>
+    <li>Fixed PDF filter in indexer to automatically escape XML characters such as '&lt;', and to strip out invalid characters.</li>
+    <li>Same fix for text files.</li>
+    <li>Certain unusual queries caused an assertion in FieldSpanSource: "kept span was cancelled". Fixed.</li>
+    <li>Fixed problem that kept JavaDocs from building.</li>
+    <li>XTF now avoids loading external DTDs for documents pulled in through the Saxon document() function. This helps speed the processing, and reduces external dependencies.</li>
+    <li>Fixed bug that caused indexer to crash if resulting index is empty (e.g. if no docs found).</li>
+    <li>Fixed bug: indexDump would only output first of multiple un-tokenized values for a field.</li>
+    <li>Experimental support for spelling correction has been added. Documentation to follow.</li>
+    <li>Experimental new query operator added: &lt;orNear&gt;, which is like a standard OR query except that it will take proximity into account when multiple terms are present in one document.</li>
+    <li>Improvements to the experimental "more like this" query. It may be getting close to prime-time.</li>
+    <li>The XTF icon has been changed to be more descriptive, less confusing, and arguably less fun. "XTF Man" is gone.</li>
+</ul>
+
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="1.7">Version 1.7</a></h1>
+
+Release date: June 1, 2006
+
+<ul>
+    <li>Change log now contains item numbers from the SourceForge trackers ("Feature Requests" or "Bugs") which can be referenced for more detailed information.</li>
+    <li>Added new front end to crossQuery servlet. The new "query router" stylesheet allows the use of multiple query parsers. Those just starting out, or who only need one parser, can use the default queryRouter.xsl without change.</li>
+    <li>textIndexer now allows "deep" section type indexing. A new attribute "sectionTypeAdd" can be inserted by the prefilter stylesheet. This causes the text in that section to inherit its parent's sectionType and add the specified text. This allows simple processing of hierarchical sections without complex prefilter code.</li>
+    <li>Many users have expressed confusion over the way document IDs were handled in dynaXML, and observed that much CDL-centric code is present in the default stylesheets. These have been refactored, and document IDs are now simply the path from the data directory to each document, instead of a strict 10-character code.</li>
+    <li>XTF now allows stylesheets to track data on a per-user-session basis. A simple API is provided to get and set state data. The session identifier is tracked using cookies, or if the user has cookies disabled, though URL rewriting.</li>
+    <li>Default stylesheets now expose "Book Bag" and "More Like This" functionality. The former is based on the session state API, the latter on the new &lt;moreLikeThis&gt; query operator. These also demonstrate an AJAX style of programming, updating pages on the fly.</li>
+    <li>New "exact" query operator added. To match, the field must contain exactly the query phrase; no more, no less.</li>
+    <li>Added new "moreLike" query operator which uses a simple index-based algorithm to locate additional documents that resemble a specified document. This feature is considered experimental and subject to improvement/change. [Feature Req 1470968]</li>
+    <li>Made minor changes to the experimental "boost set" facility.</li>
+    <li>Fixed bug in phrase query if stop-words appeared at start or end of a meta-data field.</li>
+    <li>Fixed bug with where apostrophe and other combined words at start or end of a meta-data field would cause queries to not match.</li>
+    <li>Fixed bug causing boost values to have no effect on an &lt;or&gt; query.</li>
+    <li>Refactored Lucene integration. The result is more modular, which will help in upgrading to Lucene 1.9 and 2.0. Back-ported selected classes to improve span processing on indexes with millions of records.</li>
+    <li>Config file parameters are now case insensitive. Also, boolean parameters all uniformly accept "true", "yes", "1" as synonyms, and "false", "no", and "0" as synonyms.</li>
+    <li>Added ability to display non-normalized scores (or raw) scores in crossQuery.</li>
+    <li>Added optional "score explanation" in crossQuery, to give a very detailed description of how each document's score was computed.</li>
+    <li>Made several changes and fixes to the experimental 'facet' feature.</li>
+    <li>Multiple index prefilters may now be specified for one document by the docSelector stylesheet. The prefilters will be run in a chain.</li>
+    <li>Added support for parsing MARC21 data files. The indexer will break them into records, convert them to MARCXML format, and pass each converted record to the prefilter(s). Very large files are supported, and the indexer will try to skip bad records and recover.</li>
+    <li>Fixed null pointer exception in dynaXML when an empty query was specified.</li>
+    <li>Servlets now allow ";" to separate URL parameters. This can be quite handy as opposed to "&amp;", since the latter requires special escaping in stylesheets. Both are now supported interchangeably.</li>
+    <li>All references to "ngrams" have been changed to the more specific term "bigrams".</li>
+    <li>Improved efficiency of span collection in the Text Engine.</li>
+    <li>Vastly reduced memory usage of cached sorting arrays for indexes that contain only meta-data.</li>
+    <li>All servlets now pass a "servlet.dir" parameter to stylesheets. This is the home directory of the XTF installation, and can be used by stylesheets to locate data files or for other purposes.</li>
+    <li>crossQueryResult input to resultFormatter stylesheet now contains the original parsed URL parameters, and the query that resulted from the queryParser stylesheet. Both of these can be quite useful in result formatting.</li>
+    <li>Queries output from queryParser stylesheet may now optionally contain &lt;resultData&gt; elements. These are ignored by the Text Engine, but passed on to the result formatter stylesheet. They're a handy way for the query parser to pass data directly to the result formatter.</li>
+    <li>Meta-data fields can now be marked in index prefilter as xtf:store="no", which prevents them from showing up in query results. The field is still indexed, just not stored or displayed.</li>
+    <li>Similarly, the index prefilter can mark a field with xtf:index="no", causing it to not be indexed (and this not searchable) but still be stored and displayed.</li>
+    <li>Improved efficiency of textIndexer's culling phase. In particular, it no longer runs out of memory and crashes on indexes with millions of documents.</li>
+    <li>'indexStats' tool is now much faster, and attempts to provide as much information early in the process as possible. Also, doesn't crash on large indexes.</li>
+    <li>Added new 'indexDump' tool, which can dump selected meta-data fields from all documents in an index.</li>
+    <li>Fixed bug where indexer would occasionally crash when trying to create a lazy tree file without creating its directory first.</li>
+    <li>Fixed bug that caused XML namespace declarations to be dropped from the beginning of in lazy tree files.</li>
+    <li>textIndexer now tracks and displays the elapsed time of each indexing run.</li>
+    <li>crossQuery wasn't paying attention to the MIME type specified by Result Formatter stylesheet output specification. Now the default is (text/html) is only used if none specified.</li>
+    <li>Fixed assertion failure when a &lt;not&gt; clause appeared within a &lt;near&gt; query.</li>
+    <li>Fixed a bug in the internal simplification of boolean queries that caused an assertion failure when searching for "the".</li>
+    <li>Fixed bug in dynaXML that gave an unenlightening error message if the source file specified by the docReqParser is actually a directory.</li>
+</ul>
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="1.6.1">Version 1.6.1</a></h1>
+
+<ul>
+    <li>New "debug step" mode added, which can be very handy both to understand crossQuery and to debug stylesheet problems. This is enabled by adding "&amp;debugStep=1" to the crossQuery URL. This also works in the experimental SRU servlet.</li>
+    <li>Added optional ability to turn on a "runaway" timer, that will report and optionally kill off requests that exceed specified time limits. This can help in tracking down intermittent server slowdowns. This is configured in conf/crossQuery.conf and conf/dynaXML.conf.</li>
+    <li>Added optional cutoff size for latency reporting. After a request has exceeded this amount of data, the servlet will report the latency immediately. When the request finally finishes, the final latency is also reported. This is configured in conf/crossQuery.conf and conf/dynaXML.conf.</li>
+    <li>Minor improvements to paging behavior in crossQuery resultFormatterCommon.xsl.</li>
+    <li>Fixed "Modify Query" link in crossQuery default/resultFormatter.xsl.</li>
+    <li>Fixed bug that caused the Content-Type of "raw" mode output from dynaXML to be "text/html" instead of the proper "text/xml".</li>
+    <li>Fixed a potential thread synchronization issue in lazy file access.</li>
+    <li>Changed timestamp output to be more compatible with Resin and Tomcat.</li>
+    <li>Fixed thread contention issue with query rewriting.</li>
+    <li>Fixed memory leak with performing searches in dynaXML.</li>
+    <li>Fixed handling of '&amp;quot;' and '&amp;amp;' characters in meta-data fields during indexing (was throwing an exception instead of passing these through.)</li>
+    <li>Switched indexer to using Lucene's "compound files" mode. This results in indexes that have many fewer files, and thus avoids problems with running out of filesystem handles. The indexes are compatible, and the indexer will silently upgrade older indexes to the new compound files.</li>
+    <li>TextIndexer now outputs the XTF version number (1.6.1) instead of the perpetual "1.0".</li>
+    <li>Reduced memory usage of accent and plural mapping facilities.</li>
+    <li>Clarified error message when an exception is encountered during Saxon processing.</li>
+    <li>Minor documentation updates to reflect new features above, but a full documentation revision will have to wait until the 1.7 release.</li>
+</ul>
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="1.6.0">Version 1.6.0</a></h1>
+
+<ul>
+    <li>Fixed caching problem that caused sort/group data to be reloaded on each query, rather than cached between queries as was intended.</li>
+    <li>Fixed static variable problem that was causing the SRU and crossQuery servlets to conflict with each other.</li>
+    <li>Fixed multi-threading bug: when many simultaneous crossQuery threads tried to access the same index, they would sometimes corrupt each others' span results.</li>
+    <li>Fixed bug: for apps that use the QueryProcessor Java API, the hit count and score normalization were not being reset from one use to the next. This bug did not affect crossQuery or dynaXML, which make a new QueryProcessor for every request.</li>
+    <li>Fixed to avoid marking terms specified in a &lt;not&gt; query.</li>
+    <li>Fixed a bug causing the indexer to crash when tokenizing certain fields ending in "."</li>
+    <li>Fixed 'textIndexer' and 'indexStats' scripts to work properly under Microsoft Windows.</li>
+    <li>Fixed a bug in handling of '&amp;', '&lt;', and '&gt;' in source documents: they were being double-escaped. For instance, '&amp;' would become '&amp;amp;amp' instead of '&amp;amp;'.</li>
+    <li>Fixed a bug in handling of the XSLT 'previous::*' axis. The axis would operate incorrectly on lazy trees, essentially acting just like 'previous-sibling::*'.</li>
+    <li>The SRU servlet was completely broken, but is now working again.</li>
+    <li>Sample stylesheets now provide an option to reverse the order of sort-by-year.</li>
+    <li>Added a new feature (as yet undocumented) that allows stylesheets to call out to external command-line tools. Robustly handles XML input and output, and allows a timeout specification. See regress/CrossQuery/K-External for examples of how to use this facility.</li>
+    <li>Distribution now available as either a full distribution as before, or split into "core" and "example" pieces. The "core" piece is especially useful for existing users to upgrade the core while leaving all their stylesheets and configuration files intact.</li>
+    <li>Minor documentation corrections.</li>
+</ul>
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="1.5.1">Version 1.5.1</a></h1>
+<ul>
+    <li>Now works again under Java 1.4 (was using Integer.valueOf(int), which is only present in Java 1.5)</li>
+    <li>Corrected problem where dynaXML wouldn't run unless an index was present (tried to create lazy file in a directory that didn't exist yet.)</li>
+    <li>Fixed textIndexer and indexStats scripts to allow spaces in the XTF_HOME path, and to properly switch between ":" classpath separation on Unix and ";" on Windows.</li>
+    <li>crossQuery servlet now passes the time (in seconds) it took to parse and process the query to the resultFormatter stylesheet. Documentation reflects this.</li>
+    <li>Installation procedures corrected and simplified. Please see new documentation for more details.</li>
+</ul>
