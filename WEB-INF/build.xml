@@ -139,7 +139,7 @@
 
         <include name="conf/**/*"/>
 
-        <include name="css/default/**/*"/>
+        <include name="css/**/*"/>
 
         <include name="icons/default/**/*"/>
 
