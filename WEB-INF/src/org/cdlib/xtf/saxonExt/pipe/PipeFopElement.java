@@ -490,26 +490,46 @@ public class PipeFopElement extends ElementWithContent
 
       for (int i = 0; i < nOutPages; i++)
       {
-        PageInfo base = basePages[i];
-        base.impPage = pdfWriter.getImportedPage(base.reader, base.pageNum);
+        PageInfo basePage = basePages[i];
+        PageInfo mergePage = mergePages[i];
+        boolean over = mergeMode == MergeMode.OVERLAY;
+
+        basePage.impPage = pdfWriter.getImportedPage(basePage.reader, basePage.pageNum);
         
-        if (mergePages[i] != null)
+        if (mergePage != null)
         {
-          PageStamp ps = pdfWriter.createPageStamp(base.impPage);
+          PageStamp ps = pdfWriter.createPageStamp(basePage.impPage);
           PdfContentByte contentBuf = null;
-          if (mergeMode == MergeMode.OVERLAY)
+          if (over)
             contentBuf = ps.getOverContent();
-          else if (mergeMode == MergeMode.UNDERLAY)
-            contentBuf = ps.getUnderContent();
           else
-            assert false : "page offset calculations were wrong";
+            contentBuf = ps.getUnderContent();
           
-          Image img = Image.getInstance(mergePages[i].image); // this is the trick
-          contentBuf.addImage(img, base.impPage.getWidth(), 0, 0, base.impPage.getHeight(), 0, 0);
+          Image img = Image.getInstance(mergePage.image); // this is the trick
+          
+          // When adding the image, we need to construct a matrix that will properly orient it.
+          int rotation = mergePage.reader.getPageRotation(mergePage.pageNum);
+          float w = basePage.impPage.getWidth();
+          float h = basePage.impPage.getHeight();
+          switch (rotation)
+          {
+            case 0:
+              contentBuf.addImage(img, w, 0, 0, h, 0, 0);
+              break;
+            case 90:
+              contentBuf.addImage(img, 0, -h, w, 0, 0, h);
+              break;
+            case 180:
+              contentBuf.addImage(img, -w, 0, 0, -h, w, h);
+              break;
+            case 270:
+              contentBuf.addImage(img, 0, h, -w, 0, w, 0);
+              break;
+          }
           ps.alterContents();
         }
         
-        pdfWriter.addPage(base.impPage);
+        pdfWriter.addPage(basePage.impPage);
       }
             
       // Set the combined bookmarks.
