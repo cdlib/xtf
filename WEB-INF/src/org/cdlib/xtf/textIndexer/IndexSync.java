@@ -132,7 +132,7 @@ public class IndexSync
       }
     }
     
-    if (filter.isEmpty()) {
+    if (filter.isEmpty() || filter.size() > DirSync.MAX_SELECTIVE_SYNC) {
       Trace.info("Syncing entire source directory.");
       filter.add(srcDir);
     }

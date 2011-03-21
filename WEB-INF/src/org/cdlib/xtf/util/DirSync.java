@@ -45,7 +45,7 @@ import org.cdlib.xtf.util.ProcessRunner.CommandFailedException;
  */
 public class DirSync 
 {
-  private static final int MAX_SELECTIVE_SYNC = 500;
+  public static final int MAX_SELECTIVE_SYNC = 500;
   private static final int MAX_RSYNC_BATCH = 2;
   private SubDirFilter filter;
 
