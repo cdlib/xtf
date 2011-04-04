@@ -6,7 +6,7 @@ if not exist "%XTF_HOME%" goto NEED_HOME
 
 :: Make a classpath containing all the jars in XTF_HOME\WEB-INF\lib
 setlocal enabledelayedexpansion
-set XTFCP=%CLASSPATH%
+set XTFCP=%CLASSPATH%;%XTF_HOME%\WEB-INF\classes
 for %%i in ("%XTF_HOME%"\WEB-INF\lib\*.jar) do set XTFCP=!XTFCP!;%%i
 
 :: And fire off the command.
