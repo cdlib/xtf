@@ -70,22 +70,31 @@ public class AccentFoldingFilter extends TokenFilter
   public Token next()
     throws IOException 
   {
-    // Get the next token. If we're at the end of the stream, get out.
-    Token t = input.next();
-    if (t == null)
-      return t;
-
-    // Does the word have any accented chars? If not, return it unchanged.
-    String term = t.termText();
-    String mapped = accentMap.mapWord(term);
-    if (mapped == null)
-      return t;
-
-    // Okay, we gotta make a new token that's the same in every respect
-    // except the word.
-    //
-    Token newToken = new Token(mapped, t.startOffset(), t.endOffset(), t.type());
-    newToken.setPositionIncrement(t.getPositionIncrement());
-    return newToken;
+    while (true)
+    {
+      // Get the next token. If we're at the end of the stream, get out.
+      Token t = input.next();
+      if (t == null)
+        return t;
+  
+      // Does the word have any accented chars? If not, return it unchanged.
+      String term = t.termText();
+      String mapped = accentMap.mapWord(term);
+      if (mapped == null)
+        return t;
+      
+      // Special case: if the term is only combining marks or spaces, skip to the next
+      // token.
+      //
+      if (mapped.length() == 0)
+        continue;
+  
+      // Okay, we gotta make a new token that's the same in every respect
+      // except the word.
+      //
+      Token newToken = new Token(mapped, t.startOffset(), t.endOffset(), t.type());
+      newToken.setPositionIncrement(t.getPositionIncrement());
+      return newToken;
+    }
   } // next()
 } // class AccentFoldingFilter
