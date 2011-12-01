@@ -138,8 +138,8 @@ public class StaticGroupData extends GroupData
     int nLinks = 0;
 
     // Add a default root group.
-    groupVec.add("".intern());
-    groupMap.put("".intern(), Integer.valueOf(0));
+    groupVec.add("");
+    groupMap.put("", Integer.valueOf(0));
 
     // Make an entry for each document and each term. Ensure that
     // there is only one term in this field per document.
@@ -242,7 +242,7 @@ public class StaticGroupData extends GroupData
     while (true) 
     {
       // Find or make a key for the current name.
-      String parentName = curName.intern();
+      String parentName = curName;
       Integer parentKey = (Integer)groupMap.get(parentName);
       if (parentKey == null) {
         parentKey = Integer.valueOf(groupVec.size());
@@ -449,11 +449,10 @@ public class StaticGroupData extends GroupData
   /** Locate a group by name and return its index, or -1 if not found */
   public final int findGroup(String name) 
   {
-    name = name.intern();
     for (int i = 0; i < groups.length; i++) {
-      if (name == groups[i])
+      if (name.equals(groups[i]))
         return i;
     }
     return -1;
   }
-} // GroupData
+}
