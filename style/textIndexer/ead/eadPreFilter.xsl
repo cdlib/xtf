@@ -5,7 +5,7 @@
    exclude-result-prefixes="#all">
    
    <!--
-      Copyright (c) 2008, Regents of the University of California
+      Copyright (c) 2011, Regents of the University of California
       All rights reserved.
       
       Redistribution and use in source and binary forms, with or without 
@@ -39,6 +39,8 @@
    <!-- ====================================================================== -->
    
    <xsl:import href="../common/preFilterCommon.xsl"/>
+   <xsl:import href="./supplied-headings.xsl"/>
+   <!-- xmlns:oac="http://oac.cdlib.org" oac:supply-heading -->
    
    <!-- ====================================================================== -->
    <!-- Output parameters                                                      -->
@@ -165,6 +167,12 @@
                <xsl:if test="not(@id)">
                   <xsl:attribute name="id" select="concat(local-name(), '_', $chunk.id)"/>
                </xsl:if>
+               <xsl:if test="not($node/head)">
+                  <xsl:variable name="heading" select="oac:supply-heading($node)" xmlns:oac="http://oac.cdlib.org"/>
+                  <xsl:if test="$heading!=''">
+                     <head><xsl:value-of select="$heading"/></head>
+                  </xsl:if>
+               </xsl:if>
                <xsl:for-each select="node()">
                   <xsl:call-template name="ead-copy">
                      <xsl:with-param name="node" select="."/>
@@ -228,7 +236,7 @@
          <xsl:apply-templates/>
       </xsl:copy>
    </xsl:template>
-   
+
    <!-- ====================================================================== -->
    <!-- Metadata Indexing                                                      -->
    <!-- ====================================================================== -->
