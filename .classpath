@@ -17,7 +17,7 @@
 	<classpathentry kind="lib" path="WEB-INF/lib/fop-core-0.94.jar" sourcepath="WEB-INF/lib/src/fop-src"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/fop-libs-0.94.jar" sourcepath="WEB-INF/lib/src/fop-src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Tomcat 6"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/iText.jar" sourcepath="/Users/mhaye/Projects/iText-5.0.1/src/core"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/iText.jar" sourcepath="/Users/mhaye/Projects/ext-source/iText-2.1.7"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/fontBox.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/pdfBox.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>

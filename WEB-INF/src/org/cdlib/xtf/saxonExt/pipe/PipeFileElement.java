@@ -121,10 +121,26 @@ public class PipeFileElement extends ElementWithContent
     throws IOException
   {
     InputStream fileIn = null;
-    byte[] buf = null;
     try
     {
       fileIn = new FileInputStream(inFilePath);
+      copyStreamToStream(fileIn, outStream);
+    } 
+    finally 
+    {
+      // Clean up after ourselves.
+      if (fileIn != null)
+        try { fileIn.close(); } catch (IOException e) { /* ignore */ }
+    }
+  }
+  
+  /** Utility method to copy the entire contents of an input stream into an output stream */
+  public static void copyStreamToStream(InputStream fileIn, OutputStream outStream) 
+    throws IOException
+  {
+    byte[] buf = null;
+    try
+    {
       buf = PipeBufferPool.allocBuffer();
       int got;
       while ((got = fileIn.read(buf)) >= 0)
@@ -136,8 +152,6 @@ public class PipeFileElement extends ElementWithContent
       // Clean up after ourselves.
       if (buf != null)
         PipeBufferPool.deallocBuffer(buf);
-      if (fileIn != null)
-        try { fileIn.close(); } catch (IOException e) { /* ignore */ }
     }
   }
 }
