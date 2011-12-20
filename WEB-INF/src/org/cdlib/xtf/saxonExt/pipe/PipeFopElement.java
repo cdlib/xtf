@@ -213,7 +213,6 @@ public class PipeFopElement extends ElementWithContent
         // can be quite huge.
         //
         File tempFile = new File(FileUtils.createTempFile(context, "xtfFop.", ".tmp"));
-        System.out.println("\ntempFile: " + tempFile.toString());
         FileOutputStream fopOut = new FileOutputStream(tempFile);
         
         // According to the Apache docs, FOP may not be thread-safe. So, we need to
