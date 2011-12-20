@@ -81,6 +81,25 @@ public class IndexWarmer
       bgThread.shouldStop = true;
       bgThread.interrupt();
     }
+    
+    // Close all open indexes.
+    for (Entry e : entries.values()) 
+    {
+      if (e.curSearcher != null) {
+        try {
+          e.curSearcher.close();
+        } catch (IOException e1) {
+          // ignore close problems
+        }
+      }
+      if (e.newSearcher != null) {
+        try {
+          e.curSearcher.close();
+        } catch (IOException e1) {
+          // ignore close problems
+        }
+      }
+    }
   }
   
   /**
