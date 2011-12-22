@@ -467,10 +467,10 @@ public class FileUtils
   {
     ArrayList<File> files = tempFiles.get();
     if (files != null) {
-      for (File f : files) {
-        if (f.delete())
-          files.remove(f);
-      }
+      for (File f : files)
+        f.delete();
+      files.clear();
+      tempFiles.set(null);
     }
   }
   

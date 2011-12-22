@@ -32,6 +32,7 @@ package org.cdlib.xtf.util;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -66,7 +67,7 @@ public class PackedByteBuf {
   private int uncompLen = 0;
 
   /** Used to compress/decompress data */
-  private static ThreadLocal compressInfo = new ThreadLocal();
+  private static ThreadLocal<WeakReference<CompressInfo>> compressInfo = new ThreadLocal();
 
   /** Special marker used to denote a compressed buffer */
   private static final byte compressMarker = (byte)0xBF;
@@ -179,11 +180,7 @@ public class PackedByteBuf {
     }
 
     // Get the thread-local compression info.
-    CompressInfo info = (CompressInfo)compressInfo.get();
-    if (info == null) {
-      info = new CompressInfo();
-      compressInfo.set(info);
-    }
+    CompressInfo info = getCompressInfo();
     if (info.inflater == null)
       info.inflater = new Inflater(true); // no header info
 
@@ -206,6 +203,20 @@ public class PackedByteBuf {
     bytes = outBuf;
     pos = 0;
   } // decompress()
+
+  /**
+   * Obtain thread-local compression info, cached for speed.
+   */
+  private CompressInfo getCompressInfo() 
+  {
+    WeakReference<CompressInfo> ref = compressInfo.get();
+    CompressInfo info = (ref != null) ? ref.get() : null;
+    if (info == null) {
+      info = new CompressInfo();
+      compressInfo.set(new WeakReference<CompressInfo>(info));
+    }
+    return info;
+  }
 
   /**
    * Obtain a copy of this buffer (with only the valid bytes)
@@ -387,11 +398,7 @@ public class PackedByteBuf {
     compressTried = true;
 
     // Get the thread-local compression info.
-    CompressInfo info = (CompressInfo)compressInfo.get();
-    if (info == null) {
-      info = new CompressInfo();
-      compressInfo.set(info);
-    }
+    CompressInfo info = getCompressInfo();
     if (info.deflater == null)
       info.deflater = new Deflater(9, true); // no header info
 
