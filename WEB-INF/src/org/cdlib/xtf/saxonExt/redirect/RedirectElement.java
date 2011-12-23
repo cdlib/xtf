@@ -109,7 +109,12 @@ public class RedirectElement extends ExtensionInstruction
     {
       HttpServletResponse res = TextServlet.getCurResponse();
       String url = urlExp.evaluateAsString(context);
-      String encodedUrl = res.encodeRedirectURL(url);
+      String encodedUrl;
+      // Tomcat, starting around ver 6.0.21, started adding jsessionid everywhere. Stop that!
+      if (TextServlet.getCurServlet().getConfig().sessionEncodeURLPattern == null)
+        encodedUrl = url;
+      else
+        encodedUrl = res.encodeRedirectURL(url);
       String permanentStr = "no";
       if (permanentExp != null)
         permanentStr = permanentExp.evaluateAsString(context);

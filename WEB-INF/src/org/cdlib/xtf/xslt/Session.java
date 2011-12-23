@@ -120,6 +120,9 @@ public class Session
 
   /** Function to encode a URL, adding session ID if necessary. */
   public static String encodeURL(XPathContext context, String origURL) {
+    // Tomcat, starting around ver 6.0.21, started adding jsessionid everywhere. Stop that!
+    if (TextServlet.getCurServlet().getConfig().sessionEncodeURLPattern == null)
+      return origURL;
     HttpServletResponse res = TextServlet.getCurResponse();
     String mappedURL = res.encodeURL(origURL);
     return mappedURL;
