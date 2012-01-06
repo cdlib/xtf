@@ -181,7 +181,7 @@
   </xsl:choose>
 </xsl:template>
 
-<xsl:template match="@*">
+<xsl:template match="@*" mode="at2oac">
   <xsl:choose>
     <xsl:when test="$namespace!=''">
       <xsl:copy/>
