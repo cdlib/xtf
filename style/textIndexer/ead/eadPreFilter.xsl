@@ -5,7 +5,7 @@
    exclude-result-prefixes="#all">
    
    <!--
-      Copyright (c) 2011, Regents of the University of California
+      Copyright (c) 2012, Regents of the University of California
       All rights reserved.
       
       Redistribution and use in source and binary forms, with or without 
@@ -39,8 +39,14 @@
    <!-- ====================================================================== -->
    
    <xsl:import href="../common/preFilterCommon.xsl"/>
+
+   <!-- ====================================================================== -->
+   <!-- Import OAC EAD templates and functions                                 -->
+   <!-- ====================================================================== -->
+   
    <xsl:import href="./supplied-headings.xsl"/>
    <!-- xmlns:oac="http://oac.cdlib.org" oac:supply-heading -->
+   <xsl:import href="./at2oac.xsl"/>
    
    <!-- ====================================================================== -->
    <!-- Output parameters                                                      -->
@@ -49,6 +55,14 @@
    <xsl:output method="xml" 
       indent="yes" 
       encoding="UTF-8"/>
+
+   <!-- ====================================================================== -->
+   <!-- normalize the file to the EAD 2002 DTD                                 -->
+   <!-- ====================================================================== -->
+
+   <xsl:variable name="dtdVersion">
+        <xsl:apply-templates mode="at2oac"/>
+   </xsl:variable>
    
    <!-- ====================================================================== -->
    <!-- Default: identity transformation                                       -->
@@ -65,6 +79,10 @@
    <!-- ====================================================================== -->
    
    <xsl:template match="/*">
+         <xsl:apply-templates select="$dtdVersion" mode="root"/>
+   </xsl:template>
+
+   <xsl:template match="ead" mode="root">
       <xsl:copy>
          <xsl:namespace name="xtf" select="'http://cdlib.org/xtf'"/>
          <xsl:copy-of select="@*"/>
@@ -286,14 +304,14 @@
    <!-- title --> 
    <xsl:template name="get-ead-title">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/unittitle">
+         <xsl:when test="($dtdVersion)/ead/archdesc/did/unittitle">
             <title xtf:meta="true">
-               <xsl:value-of select="/ead/archdesc/did/unittitle"/>
+               <xsl:value-of select="($dtdVersion)/ead/archdesc/did/unittitle"/>
             </title>
          </xsl:when>
-         <xsl:when test="/ead/eadheader/filedesc/titlestmt/titleproper">
-            <xsl:variable name="titleproper" select="string(/ead/eadheader/filedesc/titlestmt/titleproper)"/>
-            <xsl:variable name="subtitle" select="string(/ead/eadheader/filedesc/titlestmt/subtitle)"/>
+         <xsl:when test="($dtdVersion)/ead/eadheader/filedesc/titlestmt/titleproper">
+            <xsl:variable name="titleproper" select="string(($dtdVersion)/ead/eadheader/filedesc/titlestmt/titleproper)"/>
+            <xsl:variable name="subtitle" select="string(($dtdVersion)/ead/eadheader/filedesc/titlestmt/subtitle)"/>
             <title xtf:meta="true">
                <xsl:value-of select="$titleproper"/>
                <xsl:if test="$subtitle">
@@ -316,14 +334,14 @@
    <!-- creator -->
    <xsl:template name="get-ead-creator">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/origination[starts-with(@label, 'Creator')]">
+         <xsl:when test="($dtdVersion)/ead/archdesc/did/origination[starts-with(@label, 'Creator')]">
             <creator xtf:meta="true">
-               <xsl:value-of select="string(/ead/archdesc/did/origination[@label, 'Creator'][1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/archdesc/did/origination[@label, 'Creator'][1])"/>
             </creator>
          </xsl:when>
-         <xsl:when test="/ead/eadheader/filedesc/titlestmt/author">
+         <xsl:when test="($dtdVersion)/ead/eadheader/filedesc/titlestmt/author">
             <creator xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/filedesc/titlestmt/author[1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/eadheader/filedesc/titlestmt/author[1])"/>
             </creator>
          </xsl:when>
          <xsl:otherwise>
@@ -338,15 +356,15 @@
    <!-- Note: we use for-each-group below to remove duplicate entries. -->
    <xsl:template name="get-ead-subject">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc//controlaccess/subject">
-            <xsl:for-each-group select="/ead/archdesc//controlaccess/subject" group-by="string()">
+         <xsl:when test="($dtdVersion)/ead/archdesc//controlaccess/subject">
+            <xsl:for-each-group select="($dtdVersion)/ead/archdesc//controlaccess/subject" group-by="string()">
                <subject xtf:meta="true">
                   <xsl:value-of select="."/>
                </subject>
             </xsl:for-each-group>
          </xsl:when>
-         <xsl:when test="/ead/eadheader/filedesc/notestmt/subject">
-            <xsl:for-each-group select="/ead/eadheader/filedesc/notestmt/subject" group-by="string()">
+         <xsl:when test="($dtdVersion)/ead/eadheader/filedesc/notestmt/subject">
+            <xsl:for-each-group select="($dtdVersion)/ead/eadheader/filedesc/notestmt/subject" group-by="string()">
                <subject xtf:meta="true">
                   <xsl:value-of select="."/>
                </subject>
@@ -358,14 +376,14 @@
    <!-- description --> 
    <xsl:template name="get-ead-description">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/abstract">
+         <xsl:when test="($dtdVersion)/ead/archdesc/did/abstract">
             <description xtf:meta="true">
-               <xsl:value-of select="string(/ead/archdesc/did/abstract[1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/archdesc/did/abstract[1])"/>
             </description>
          </xsl:when>
-         <xsl:when test="/ead/eadheader/filedesc/notestmt/note">
+         <xsl:when test="($dtdVersion)/ead/eadheader/filedesc/notestmt/note">
             <description xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/filedesc/notestmt/note[1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/eadheader/filedesc/notestmt/note[1])"/>
             </description>
          </xsl:when>
       </xsl:choose>
@@ -374,14 +392,14 @@
    <!-- publisher -->
    <xsl:template name="get-ead-publisher">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/repository">
+         <xsl:when test="($dtdVersion)/ead/archdesc/did/repository">
             <publisher xtf:meta="true">
-               <xsl:value-of select="string(/ead/archdesc/did/repository[1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/archdesc/did/repository[1])"/>
             </publisher>
          </xsl:when>
-         <xsl:when test="/ead/eadheader/filedesc/publicationstmt/publisher">
+         <xsl:when test="($dtdVersion)/ead/eadheader/filedesc/publicationstmt/publisher">
             <publisher xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/filedesc/publicationstmt/publisher[1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/eadheader/filedesc/publicationstmt/publisher[1])"/>
             </publisher>
          </xsl:when>
          <xsl:otherwise>
@@ -395,9 +413,9 @@
    <!-- contributor -->
    <xsl:template name="get-ead-contributor">
       <xsl:choose>
-         <xsl:when test="/ead/eadheader/filedesc/titlestmt/author">
+         <xsl:when test="($dtdVersion)/ead/eadheader/filedesc/titlestmt/author">
             <contributor xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/filedesc/titlestmt/author[1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/eadheader/filedesc/titlestmt/author[1])"/>
             </contributor>
          </xsl:when>
          <xsl:otherwise>
@@ -411,9 +429,9 @@
    <!-- date --> 
    <xsl:template name="get-ead-date">
       <xsl:choose>
-         <xsl:when test="/ead/eadheader/filedesc/publicationstmt/date">
+         <xsl:when test="($dtdVersion)/ead/eadheader/filedesc/publicationstmt/date">
             <date xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/filedesc/publicationstmt/date[1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/eadheader/filedesc/publicationstmt/date[1])"/>
             </date>
          </xsl:when>
          <xsl:otherwise>
@@ -437,14 +455,14 @@
    <!-- identifier --> 
    <xsl:template name="get-ead-identifier">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/unitid">
+         <xsl:when test="($dtdVersion)/ead/archdesc/did/unitid">
             <identifier xtf:meta="true" xtf:tokenize="no">
                <xsl:value-of select="string(/ead/archdesc/did/unitid[1])"/>
             </identifier>
          </xsl:when>
-         <xsl:when test="/ead/eadheader/eadid" xtf:tokenize="no">
+         <xsl:when test="($dtdVersion)/ead/eadheader/eadid" xtf:tokenize="no">
             <identifier xtf:meta="true" xtf:tokenize="no">
-               <xsl:value-of select="string(/ead/eadheader/eadid[1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/eadheader/eadid[1])"/>
             </identifier>
          </xsl:when>
          <xsl:otherwise>
@@ -463,9 +481,9 @@
    <!-- language -->
    <xsl:template name="get-ead-language">
       <xsl:choose>
-         <xsl:when test="/ead/eadheader/profiledesc/langusage/language">
+         <xsl:when test="($dtdVersion)/ead/eadheader/profiledesc/langusage/language">
             <language xtf:meta="true">
-               <xsl:value-of select="string(/ead/eadheader/profiledesc/langusage/language[1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/eadheader/profiledesc/langusage/language[1])"/>
             </language>
          </xsl:when>
          <xsl:otherwise>
@@ -484,9 +502,9 @@
    <!-- coverage -->
    <xsl:template name="get-ead-coverage">
       <xsl:choose>
-         <xsl:when test="/ead/archdesc/did/unittitle/unitdate">
+         <xsl:when test="($dtdVersion)/ead/archdesc/did/unittitle/unitdate">
             <coverage xtf:meta="true">
-               <xsl:value-of select="string(/ead/archdesc/did/unittitle/unitdate[1])"/>
+               <xsl:value-of select="string(($dtdVersion)/ead/archdesc/did/unittitle/unitdate[1])"/>
             </coverage>
          </xsl:when>
          <xsl:otherwise>
@@ -506,8 +524,8 @@
    <xsl:template name="oai-datestamp">
       <dateStamp xtf:meta="true" xtf:tokenize="no">
          <xsl:choose>
-            <xsl:when test="/ead/eadheader/filedesc/publicationstmt/date">
-               <xsl:value-of select="concat(parse:year(string(/ead/eadheader/filedesc/publicationstmt/date[1])),'-01-01')"/>
+            <xsl:when test="($dtdVersion)/ead/eadheader/filedesc/publicationstmt/date">
+               <xsl:value-of select="concat(parse:year(string(($dtdVersion)/ead/eadheader/filedesc/publicationstmt/date[1])),'-01-01')"/>
             </xsl:when>
             <xsl:otherwise>
                <!-- I don't know, what would you put? -->
@@ -519,12 +537,12 @@
    
    <!-- OAI sets -->
    <xsl:template name="oai-set">
-      <xsl:for-each-group select="/ead/archdesc//controlaccess/subject" group-by="string()">
+      <xsl:for-each-group select="($dtdVersion)/ead/archdesc//controlaccess/subject" group-by="string()">
          <set xtf:meta="true">
             <xsl:value-of select="."/>
          </set>
       </xsl:for-each-group>
-      <xsl:for-each-group select="/ead/eadheader/filedesc/notestmt/subject" group-by="string()">
+      <xsl:for-each-group select="($dtdVersion)/ead/eadheader/filedesc/notestmt/subject" group-by="string()">
          <set xtf:meta="true">
             <xsl:value-of select="."/>
          </set>
@@ -533,5 +551,5 @@
          <xsl:value-of select="'public'"/>
       </set>
    </xsl:template>
-   
+
 </xsl:stylesheet>
