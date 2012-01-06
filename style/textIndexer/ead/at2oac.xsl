@@ -184,9 +184,7 @@
 <xsl:template match="@*">
   <xsl:choose>
     <xsl:when test="$namespace!=''">
-      <xsl:copy>
-        <xsl:apply-templates select="@*|node()" mode="at2oac"/>
-      </xsl:copy>
+      <xsl:copy/>
     </xsl:when>
     <xsl:otherwise>
       <xsl:attribute name="{local-name()}">
@@ -208,9 +206,7 @@
   <xsl:choose>
     <xsl:when test="$namespace!=''">
       <!-- keep the @xlink: attributes if we are not nuking namespaces -->
-      <xsl:copy>
-        <xsl:apply-templates select="@*|node()" mode="at2oac"/>
-      </xsl:copy>
+      <xsl:copy/>
     </xsl:when>
     <xsl:otherwise>
       <xsl:attribute name='linktype'>
@@ -224,9 +220,7 @@
   <xsl:choose>
     <xsl:when test="$namespace!=''">
       <!-- keep the @xlink: attributes if we are not nuking namespaces -->
-      <xsl:copy>
-        <xsl:apply-templates select="@*|node()" mode="at2oac"/>
-      </xsl:copy>
+      <xsl:copy/>
     </xsl:when>
     <xsl:otherwise>
       <!-- hack @xlink: attributes to be EAD 2002 DTD link attributes -->
@@ -254,9 +248,7 @@
 <xsl:template match="@xsi:*" mode="at2oac">
   <xsl:choose>
     <xsl:when test="$namespace!=''">
-      <xsl:copy>
-        <xsl:apply-templates select="@*|node()" mode="at2oac"/>
-      </xsl:copy>
+      <xsl:copy/>
     </xsl:when>
     <xsl:otherwise/>
   </xsl:choose>
