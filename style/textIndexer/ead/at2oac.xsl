@@ -1,3 +1,5 @@
+<!-- Copyright 2012 UC Regents all Rights Reserved -->
+<!-- BSD License at botton of file -->
 <xsl:stylesheet 
   version="1.0" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -51,31 +53,31 @@
 </xsl:variable>
 
 <!-- root template -->
-<xsl:template match="/|comment()|processing-instruction()">
+<xsl:template match="/|comment()|processing-instruction()" mode="at2oac">
     <xsl:copy>
-      <xsl:apply-templates/>
+      <xsl:apply-templates mode="at2oac"/>
     </xsl:copy>
 </xsl:template>
 
 <!-- add dsc/@type -->
-<xsl:template match="ead:dsc[parent::ead:archdesc and position()=1]">
+<xsl:template match="ead:dsc[parent::ead:archdesc and position()=1]" mode="at2oac">
   <xsl:element name="{name()}" namespace="{$namespace}">
-    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates select="@*" mode="at2oac"/>
     <xsl:if test="not(@type) and $dsc-type!=''">
       <xsl:attribute name="type">
         <xsl:value-of select="$dsc-type"/>
       </xsl:attribute>
     </xsl:if>
-    <xsl:apply-templates/>
+    <xsl:apply-templates mode="at2oac"/>
   </xsl:element>
 </xsl:template>
 
 <!-- copy repositorycode and countrycode from eadid to unitid in
      archdesc/did/unittitle
 -->
-<xsl:template match="ead:unitid[parent::ead:did and not(ancestor::ead:dsc)]">
+<xsl:template match="ead:unitid[parent::ead:did and not(ancestor::ead:dsc)]" mode="at2oac">
   <xsl:element name="{name()}" namespace="{$namespace}">
-    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates select="@*" mode="at2oac"/>
     <xsl:if test="not(@repositorycode) and $repositorycode!=''">
       <xsl:attribute name="repositorycode">
         <xsl:value-of select="$repositorycode"/>
@@ -86,12 +88,12 @@
         <xsl:value-of select="$countrycode"/>
       </xsl:attribute>
     </xsl:if>
-    <xsl:apply-templates/>
+    <xsl:apply-templates mode="at2oac"/>
   </xsl:element>
 </xsl:template>
 
 <!-- upper-case the country code -->
-<xsl:template match="@countrycode[parent::ead:eadid]">
+<xsl:template match="@countrycode[parent::ead:eadid]" mode="at2oac">
   <xsl:attribute name="countrycode">
     <xsl:value-of select="$countrycode"/>
   </xsl:attribute>
@@ -99,9 +101,9 @@
 
 <!-- copy overloaded container labels to sibling physdesc -->
 <!-- TODO: specifically target AT @label values? -->
-<xsl:template match="ead:container[@label]">
+<xsl:template match="ead:container[@label]" mode="at2oac">
   <xsl:element name="{name()}" namespace="{$namespace}">
-    <xsl:apply-templates select="@*[name()!='label'] | node() "/>
+    <xsl:apply-templates select="@*[name()!='label'] | node() " mode="at2oac"/>
   </xsl:element>
   <xsl:if test="$label-to-physdesc">
     <xsl:element name="physdesc" namespace="{$namespace}">
@@ -112,19 +114,19 @@
 
 <!-- dao from AT style to MOAC style -->
 
-<xsl:template match="ead:c01|ead:c02|ead:c03|ead:c04|ead:c05|ead:c06|ead:c07|ead:c08|ead:c09|ead:c10|ead:c11|ead:c12">
+<xsl:template match="ead:c01|ead:c02|ead:c03|ead:c04|ead:c05|ead:c06|ead:c07|ead:c08|ead:c09|ead:c10|ead:c11|ead:c12" mode="at2oac">
 <!-- head? , did , (accessrestrict | accruals | acqinfo | altformavail | appraisal | arrangement | bibliography | bioghist | controlaccess | custodhist | descgrp | fileplan | index | odd | originalsloc | otherfindaid | phystech | prefercite | processinfo | relatedmaterial | scopecontent | separatedmaterial | userestrict | dsc | dao | daogrp | note)* , (thead? , c04+) 
 -->
   <xsl:element name="{name()}" namespace="{$namespace}">
-    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates select="@*" mode="at2oac"/>
     <xsl:apply-templates select="ead:head | ead:did | ead:accessrestrict | ead:accruals
       | ead:acqinfo | ead:altformavail | ead:appraisal | ead:arrangement | ead:bibliography 
       | ead:bioghist | ead:controlaccess | ead:custodhist | ead:descgrp | ead:fileplan | ead:index
       | ead:odd | ead:originalsloc | ead:otherfindaid | ead:phystech | ead:prefercite 
       | ead:processinfo | ead:relatedmaterial | ead:scopecontent | ead:separatedmaterial 
       | ead:userestrict | ead:dsc | ead:daogrp | ead:note | ead:thead"/>
-    <xsl:apply-templates select="ead:dao" mode="convert"/>
-    <xsl:apply-templates select="ead:c01|ead:c02|ead:c03|ead:c04|ead:c05|ead:c06|ead:c07|ead:c08|ead:c09|ead:c10|ead:c11|ead:c12"/>
+    <xsl:apply-templates select="ead:dao" mode="convert" />
+    <xsl:apply-templates select="ead:c01|ead:c02|ead:c03|ead:c04|ead:c05|ead:c06|ead:c07|ead:c08|ead:c09|ead:c10|ead:c11|ead:c12" mode="at2oac"/>
 
   </xsl:element>
 </xsl:template>
@@ -164,16 +166,16 @@
 
 <!-- modified identity templates -->
 
-<xsl:template match="*">
+<xsl:template match="*" mode="at2oac">
   <xsl:choose>
     <xsl:when test="$namespace!=''">
       <xsl:copy>
-        <xsl:apply-templates select="@*|node()"/>
+        <xsl:apply-templates select="@*|node()" mode="at2oac"/>
       </xsl:copy>
     </xsl:when>
     <xsl:otherwise>
       <xsl:element name="{local-name()}" namespace="{$namespace}">
-        <xsl:apply-templates select="@*|node()"/>
+        <xsl:apply-templates select="@*|node()" mode="at2oac"/>
       </xsl:element>
     </xsl:otherwise>
   </xsl:choose>
@@ -183,7 +185,7 @@
   <xsl:choose>
     <xsl:when test="$namespace!=''">
       <xsl:copy>
-        <xsl:apply-templates select="@*|node()"/>
+        <xsl:apply-templates select="@*|node()" mode="at2oac"/>
       </xsl:copy>
     </xsl:when>
     <xsl:otherwise>
@@ -202,12 +204,12 @@
       http://www.loc.gov/ead/tglib/att_link.html -->
 
 <!-- rename xlink:type to linktype (or copy as is) -->
-<xsl:template match="@xlink:type">
+<xsl:template match="@xlink:type" mode="at2oac">
   <xsl:choose>
     <xsl:when test="$namespace!=''">
       <!-- keep the @xlink: attributes if we are not nuking namespaces -->
       <xsl:copy>
-        <xsl:apply-templates select="@*|node()"/>
+        <xsl:apply-templates select="@*|node()" mode="at2oac"/>
       </xsl:copy>
     </xsl:when>
     <xsl:otherwise>
@@ -218,12 +220,12 @@
   </xsl:choose>
 </xsl:template>
 
-<xsl:template match="@xlink:actuate | @xlink:show">
+<xsl:template match="@xlink:actuate | @xlink:show" mode="at2oac">
   <xsl:choose>
     <xsl:when test="$namespace!=''">
       <!-- keep the @xlink: attributes if we are not nuking namespaces -->
       <xsl:copy>
-        <xsl:apply-templates select="@*|node()"/>
+        <xsl:apply-templates select="@*|node()" mode="at2oac"/>
       </xsl:copy>
     </xsl:when>
     <xsl:otherwise>
@@ -249,11 +251,11 @@
   </xsl:choose>
 </xsl:template>
 
-<xsl:template match="@xsi:*">
+<xsl:template match="@xsi:*" mode="at2oac">
   <xsl:choose>
     <xsl:when test="$namespace!=''">
       <xsl:copy>
-        <xsl:apply-templates select="@*|node()"/>
+        <xsl:apply-templates select="@*|node()" mode="at2oac"/>
       </xsl:copy>
     </xsl:when>
     <xsl:otherwise/>
@@ -263,7 +265,7 @@
 </xsl:stylesheet>
 <!--
 
-Copyright (c) 2010, Regents of the University of California
+Copyright (c) 2012, Regents of the University of California
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
