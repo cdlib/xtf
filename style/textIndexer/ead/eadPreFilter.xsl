@@ -177,8 +177,13 @@
    <xsl:template name="ead-copy">
       <xsl:param name="node"/>
       <xsl:param name="chunk.id"/>
-
-      <xsl:copy>
+      <xsl:variable 
+         name="name" 
+         select="if (name(.)='c') 
+                 then concat('c',count(ancestor::c))
+                 else name(.)"
+      />
+      <xsl:element name="{name(.)}">
          <xsl:copy-of select="@*"/>
          <xsl:choose>
             <xsl:when test="self::c01 or self::c02 or (self::* and (parent::archdesc or parent::ead))">
@@ -202,7 +207,7 @@
                <xsl:apply-templates select="node()"/>
             </xsl:otherwise>
          </xsl:choose>
-      </xsl:copy>
+      </xsl:element>
    </xsl:template>
    
    <!-- Used to generate compact IDs by encoding numbers 1..26 as letters instead -->
