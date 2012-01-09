@@ -1,7 +1,7 @@
 package org.cdlib.xtf.saxonExt.pipe;
 
 /*
- * Copyright (c) 2009, Regents of the University of California
+ * Copyright (c) 2012, Regents of the University of California
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -387,7 +387,7 @@ public class PipeFopElement extends ElementWithContent
       fopFactories.put(fontDirs, factory);
       return factory;
     }
-
+    
     /** 
      * Do the work of joining the FOP output and a PDF together. This involves
      * several steps:
@@ -405,15 +405,26 @@ public class PipeFopElement extends ElementWithContent
                            OutputStream outStream)
       throws IOException, DocumentException, BadPdfFormatException, XPathException
     {
+      RandomAccessFileOrArray[] randFiles = new RandomAccessFileOrArray[2];
       PdfReader[] readers = new PdfReader[2];
       HashMap<String,String>[] infos = new HashMap[2];
       int[] nInPages = new int[2];
       int[] pageOffsets = new int[2];
       int nOutPages = 0;
       
+      // For large PDFs, use a buffered random access file rather than the default
+      // memory-mapped file that iText assumes.
+      //
+      randFiles[0] = (origPdfData.length() > 1024*1024) ? 
+                     new BufferedRandomAccessFile(origPdfData.toString()) : 
+                     new RandomAccessFileOrArray(origPdfData.toString());
+      randFiles[1] = (fileToAppend.length() > 1024*1024) ? 
+                     new BufferedRandomAccessFile(fileToAppend.toString()) : 
+                     new RandomAccessFileOrArray(fileToAppend.toString());
+                     
       // Read in the PDF that FOP generated and the one we're merging
-      readers[0] = new PdfReader(new RandomAccessFileOrArray(origPdfData.toString(), false, origPdfData.length() > 1024*1024), null);
-      readers[1] = new PdfReader(new RandomAccessFileOrArray(fileToAppend.toString(), false, fileToAppend.length() > 1024*1024), null);
+      readers[0] = new PdfReader(randFiles[0], null);
+      readers[1] = new PdfReader(randFiles[1], null);
       
       // Perform processing that's identical for both
       for (int i=0; i<2; i++) 
