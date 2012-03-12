@@ -70,6 +70,7 @@ public class AccentFoldingFilter extends TokenFilter
   public Token next()
     throws IOException 
   {
+    int bumpAccum = 0;
     while (true)
     {
       // Get the next token. If we're at the end of the stream, get out.
@@ -80,20 +81,26 @@ public class AccentFoldingFilter extends TokenFilter
       // Does the word have any accented chars? If not, return it unchanged.
       String term = t.termText();
       String mapped = accentMap.mapWord(term);
-      if (mapped == null)
-        return t;
+      if (mapped == null) {
+        if (bumpAccum == 0)
+          return t;
+        mapped = term; // We have accumulated bump to apply; must make new token.
+      }
       
       // Special case: if the term is only combining marks or spaces, skip to the next
-      // token.
+      // token. Be sure to retain any position bump though.
       //
-      if (mapped.length() == 0)
+      if (mapped.length() == 0) {
+        bumpAccum += t.getPositionIncrement() - 1;
         continue;
+      }
   
       // Okay, we gotta make a new token that's the same in every respect
-      // except the word.
+      // except the word. If we skipped terms because they were only combining marks
+      // or spaces, be sure to include their accumulated position increment.
       //
       Token newToken = new Token(mapped, t.startOffset(), t.endOffset(), t.type());
-      newToken.setPositionIncrement(t.getPositionIncrement());
+      newToken.setPositionIncrement(t.getPositionIncrement() + bumpAccum);
       return newToken;
     }
   } // next()

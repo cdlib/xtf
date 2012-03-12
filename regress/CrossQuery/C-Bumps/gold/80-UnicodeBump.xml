@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc1.xml" totalHits="1">
+      <meta>
+         <testMeta>x</testMeta>
+      </meta>
+      <snippet rank="1" sectionType="80">l1 l2 l3 l4 l5 l6 l7 l8 l9 l10 <hit>
+            <term>MURI</term>
+         </hit> program of th ͑U.S. ͒ Army Research Ofﬁce</snippet>
+   </docHit>
+</crossQueryResult>
