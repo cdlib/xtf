@@ -66,6 +66,7 @@ import org.cdlib.xtf.util.CheckingTokenStream;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.FastStringReader;
 import org.cdlib.xtf.util.FastTokenizer;
+import org.cdlib.xtf.util.Normalizer;
 import org.cdlib.xtf.util.StructuredStore;
 import org.cdlib.xtf.util.Trace;
 import org.cdlib.xtf.util.WordMap;
@@ -710,20 +711,34 @@ public class SearchTree extends LazyDocument
       if (token != null && snippet != null && snippet.startNode == num)
         endChar = token.startOffset();
 
-      // Convert the term to lower-case, and depluralize if necessary.
+      // Convert the term to lower-case, depluralize if necessary, etc. This
+      // has to match the order of XTFTextAnalyzer.
+      //
       String mappedTerm = null;
       if (token != null) 
       {
         mappedTerm = token.termText().toLowerCase();
-        if (pluralMap != null) {
-          String singular = pluralMap.lookup(mappedTerm);
-          if (singular != null)
-            mappedTerm = singular;
-        }
+        
+        // Map non-normalized Unicode to normalized form C ("NFC")
+        mappedTerm = Normalizer.normalize(mappedTerm);
+        
+        // If an accent map was specified, fold accented and unaccented chars
+        // together. We need to do this before plural mapping so that if a word
+        // is both accented and plural, it gets mapped correctly. For instance,
+        // publicos, publico and their accented counterparts should all end up mapping
+        // to "publico" (assuming the plural mapping publicos|publico is present.)
+        //
         if (accentMap != null) {
           String unaccented = accentMap.mapWord(mappedTerm);
           if (unaccented != null)
             mappedTerm = unaccented;
+        }
+        
+        // If a plural map was specified, fold plural and singular words together.
+        if (pluralMap != null) {
+          String singular = pluralMap.lookup(mappedTerm);
+          if (singular != null)
+            mappedTerm = singular;
         }
       }
 

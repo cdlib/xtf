@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- regress-search-tree="data/doc1.xml" -->
+
+<query style="NullStyle.xsl" startDoc="0" maxDocs="10" indexPath="IndexDB" maxSnippets="3" contextChars="80">
+  <term field="text">públicos</term>
+</query>

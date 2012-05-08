@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xtf="http://cdlib.org/xtf" xtf:hitCount="1" xtf:firstHit="1">
+   <xtf:snippets totalHitCount="1" hitCount="1">
+      <xtf:snippet rank="1" hitNum="1">
+         <xtf:hit>
+            <xtf:term>São</xtf:term> 
+            <xtf:term>Paulo</xtf:term> 
+            <xtf:term>Falência</xtf:term> 
+            <xtf:term>Liquidação</xtf:term> 
+            <xtf:term>Própria</xtf:term> 
+            <xtf:term>Obrigações</xtf:term>
+         </xtf:hit>
+      </xtf:snippet>
+   </xtf:snippets>
+  <all xtf:hitCount="1" xtf:firstHit="1">
+
+    
+      <testMeta xtf:meta="true">
+      São Paulo
+      Falência
+      Liquidação
+      Própria
+      Obrigações
+    </testMeta>
+
+    
+      <xtf:hit rank="1" hitNum="1" more="no">
+         <xtf:term>São</xtf:term> 
+         <xtf:term>Paulo</xtf:term>
+         <xtf:term>Falência</xtf:term>
+         <xtf:term>Liquidação</xtf:term>
+         <xtf:term>Própria</xtf:term>
+         <xtf:term>Obrigações</xtf:term>
+      </xtf:hit>
+
+  </all>
+</document>
