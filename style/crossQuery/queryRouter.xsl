@@ -53,6 +53,7 @@
    <!-- ====================================================================== -->
    
    <xsl:param name="http.URL"/>
+   <xsl:param name="smode"/>
    
    <xsl:template match="/">
       
@@ -67,6 +68,10 @@
                </xsl:if>
                <queryParser path="style/crossQuery/queryParser/oai/queryParser.xsl"/>
                <errorGen path="style/crossQuery/oaiErrorGen.xsl"/>
+            </xsl:when>
+            <!-- sitemap -->
+            <xsl:when test="matches($smode,'siteMap')">
+               <queryParser path="style/crossQuery/queryParser/siteMap/queryParser.xsl"/>
             </xsl:when>
             <!-- default -->
             <xsl:otherwise>
