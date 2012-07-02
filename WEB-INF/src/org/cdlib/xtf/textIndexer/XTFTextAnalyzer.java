@@ -309,6 +309,10 @@ public class XTFTextAnalyzer extends Analyzer
     if (accentMap != null)
       result = new AccentFoldingFilter(result, accentMap);
 
+    // If a plural map was specified, fold plural and singular words together.
+    if (pluralMap != null)
+      result = new PluralFoldingFilter(result, pluralMap);
+
     // Convert stop-words to bi-grams (if any stop words were specified). We must
     // do this after XtfSpecialTokensFilter to ensure that special tokens don't
     // become part of any bi-grams. Also, we must do it after the lower-case
@@ -337,13 +341,6 @@ public class XTFTextAnalyzer extends Analyzer
         };
       }
     }
-
-    // If a plural map was specified, fold plural and singular words together.
-    // This needs to be done after stop-word removal, otherwise "wills" (a proper
-    // name) would get folded to "will" and then treated as a stop-word.
-    //
-    if (pluralMap != null)
-      result = new PluralFoldingFilter(result, pluralMap);
 
     // Index with and without the special start-of-field/end-of-field markers.
     // If there aren't any, the filter doesn't do any harm. Also, there'll never
