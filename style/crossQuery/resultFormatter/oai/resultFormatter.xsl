@@ -56,6 +56,8 @@
    
    <!-- entire url -->
    <xsl:param name="http.URL"/>
+   <!-- entire url, escaped as it came in -->
+   <xsl:param name="http.rawURL"/>
    <!-- verb param -->
    <xsl:param name="verb"/>
    <!-- identifier param -->
@@ -69,20 +71,11 @@
    <!-- resumptionToken param -->
    <xsl:param name="resumptionToken"/>
    <!-- startDoc param -->
-   <xsl:param name="startDoc">
-      <xsl:choose>
-         <xsl:when test="$resumptionToken">
-            <xsl:value-of select="$resumptionToken"/>
-         </xsl:when>
-         <xsl:otherwise>
-            <xsl:value-of select="1"/>
-         </xsl:otherwise>
-      </xsl:choose>
-   </xsl:param>
+   <xsl:param name="startDoc" select="1"/>
    <!-- totalDocs param -->
    <xsl:param name="totalDocs" select="/crossQueryResult/@totalDocs"/>
    <!-- nextPage param -->
-   <xsl:param name="nextPage" select="$startDoc + 20"/>
+   <xsl:param name="nextPage" select="number($startDoc) + 20"/>
    <!-- cursor param -->
    <xsl:param name="cursor" select="$nextPage - 21"/>
    
@@ -102,6 +95,19 @@
    <xsl:variable name="noRecordsMatchMessage">
       <xsl:text>The combination of the values of the from, until, set and metadataPrefix arguments results in an empty list.</xsl:text>
    </xsl:variable>
+   
+   <!-- resumption token for next page of ListIdentifiers or ListRecords -->
+   <xsl:variable name="nextResumptionToken">
+      <xsl:variable name="params" select="replace(replace(replace(replace(replace(replace($http.URL,
+         'http(s?)://[^\?]+\?', ''),
+         'verb=[^;&amp;]+', ''),
+         'resumptionToken=[^;&amp;]+', ''),
+         'startDoc=[^;&amp;]+', ''),
+         '[;&amp;]+', '&amp;'),
+         '^[;&amp;]+|[;&amp;]$', '')"/>
+      <xsl:value-of select="encode-for-uri(concat($params,'&amp;startDoc=',$nextPage))"/>
+   </xsl:variable>
+      
    
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
@@ -140,8 +146,8 @@
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
                <responseDate><xsl:value-of select="$responseDate"/></responseDate>
-               <request identifier="{$identifier}" metadataPrefix="oai_dc" verb="GetRecord">
-                  <xsl:value-of select="$http.URL"/>
+               <request identifier="{$identifier}" metadataPrefix="{$metadataPrefix}" verb="GetRecord">
+                  <xsl:value-of select="$http.rawURL"/>
                </request>
                <GetRecord>
                   <xsl:apply-templates select="crossQueryResult/docHit"/>
@@ -169,7 +175,7 @@
          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
          <responseDate><xsl:value-of select="$responseDate"/></responseDate>
          <request verb="Identify">
-            <xsl:value-of select="$http.URL"/>
+            <xsl:value-of select="$http.rawURL"/>
          </request>
          <Identify>
             <repositoryName>XTF Sample Repository</repositoryName>
@@ -197,17 +203,33 @@
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
                <responseDate><xsl:value-of select="$responseDate"/></responseDate>
-               <request metadataPrefix="oai_dc" verb="ListIdentifiers">
-                  <xsl:value-of select="$http.URL"/>
+               <xsl:choose>
+                  <xsl:when test="string-length($resumptionToken) &gt; 0">
+                     <!-- Form a new request using the contents of the resumption token, and fetch it -->
+                     <xsl:variable name="url" select="concat(replace($http.rawURL, '[;&amp;]resumptionToken=[^;&amp;]+', ''), '&amp;', $resumptionToken)"/>
+                     <xsl:variable name="result" select="document($url)/*:OAI-PMH"/>
+                     <!-- Pick out the pieces for our final result -->
+                     <request metadataPrefix="{$result/*:request/@metadataPrefix}" verb="ListIdentifiers">
+                        <xsl:value-of select="$http.rawURL"/>
+                     </request>
+                     <ListIdentifiers>
+                        <xsl:copy-of select="$result/*:ListIdentifiers/*"/>
+                     </ListIdentifiers>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <request metadataPrefix="{$metadataPrefix}" verb="ListIdentifiers">
+                        <xsl:value-of select="$http.rawURL"/>
                </request>
                <ListIdentifiers>
                   <xsl:apply-templates select="crossQueryResult/docHit" mode="idOnly"/>
                <xsl:if test="$totalDocs > $nextPage">
                   <resumptionToken completeListSize="{$totalDocs}" cursor="{$cursor}">
-                     <xsl:value-of select="concat(replace($http.URL,'[;&amp;]resumptionToken=[0-9]+',''),'::',$nextPage)"/>
+                              <xsl:value-of select="$nextResumptionToken"/>
                   </resumptionToken>
                </xsl:if>
                </ListIdentifiers>
+                  </xsl:otherwise>
+               </xsl:choose>
             </OAI-PMH>
          </xsl:when>
          <xsl:otherwise>
@@ -229,7 +251,7 @@
          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
          <responseDate><xsl:value-of select="$responseDate"/></responseDate>
          <request verb="ListMetadataFormats" identifier="{$identifier}">
-            <xsl:value-of select="$http.URL"/>
+            <xsl:value-of select="$http.rawURL"/>
          </request>
          <ListMetadataFormats>
             <metadataFormat>
@@ -251,17 +273,33 @@
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
                <responseDate><xsl:value-of select="$responseDate"/></responseDate>
-               <request metadataPrefix="oai_dc" verb="ListRecords">
-                  <xsl:value-of select="$http.URL"/>
-               </request>
-               <ListRecords>
-                  <xsl:apply-templates select="crossQueryResult/docHit"/>
-               <xsl:if test="$totalDocs > $nextPage">
-                  <resumptionToken completeListSize="{$totalDocs}" cursor="{$cursor}">
-                     <xsl:value-of select="concat(replace($http.URL,'[;&amp;]resumptionToken=[0-9]+',''),'::',$nextPage)"/>
-                  </resumptionToken>
-               </xsl:if>
-               </ListRecords>
+               <xsl:choose>
+                  <xsl:when test="string-length($resumptionToken) &gt; 0">
+                     <!-- Form a new request using the contents of the resumption token, and fetch it -->
+                     <xsl:variable name="url" select="concat(replace($http.rawURL, '[;&amp;]resumptionToken=[^;&amp;]+', ''), '&amp;', $resumptionToken)"/>
+                     <xsl:variable name="result" select="document($url)/*:OAI-PMH"/>
+                     <!-- Pick out the pieces for our final result -->
+                     <request metadataPrefix="{$result/*:request/@metadataPrefix}" verb="ListRecords">
+                        <xsl:value-of select="$http.rawURL"/>
+                     </request>
+                     <ListRecords>
+                        <xsl:copy-of select="$result/*:ListRecords/*"/>
+                     </ListRecords>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <request metadataPrefix="{$metadataPrefix}" verb="ListRecords">
+                        <xsl:value-of select="$http.rawURL"/>
+                     </request>
+                     <ListRecords>
+                        <xsl:apply-templates select="crossQueryResult/docHit"/>
+                        <xsl:if test="$totalDocs > $nextPage">
+                           <resumptionToken completeListSize="{$totalDocs}" cursor="{$cursor}">
+                              <xsl:value-of select="$nextResumptionToken"/>
+                           </resumptionToken>
+                        </xsl:if>
+                     </ListRecords>
+                  </xsl:otherwise>
+               </xsl:choose>
             </OAI-PMH>
          </xsl:when>
          <xsl:otherwise>
@@ -282,7 +320,7 @@
          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
          <responseDate><xsl:value-of select="$responseDate"/></responseDate>
          <request verb="ListSets">
-            <xsl:value-of select="$http.URL"/>
+            <xsl:value-of select="$http.rawURL"/>
          </request>
          <ListSets>
             <xsl:apply-templates select="crossQueryResult/facet/group"/>

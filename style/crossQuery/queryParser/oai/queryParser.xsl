@@ -72,16 +72,7 @@
    <xsl:param name="until"/>
    
    <!-- startDoc param -->
-   <xsl:param name="startDoc">
-      <xsl:choose>
-         <xsl:when test="$resumptionToken">
-            <xsl:value-of select="$resumptionToken"/>
-         </xsl:when>
-         <xsl:otherwise>
-            <xsl:value-of select="1"/>
-         </xsl:otherwise>
-      </xsl:choose>
-   </xsl:param>
+   <xsl:param name="startDoc" select="1"/>
    
    <!-- ====================================================================== -->
    <!-- Local parameters                                                       -->
@@ -128,12 +119,15 @@
    
    <xsl:template match="/">
       
-      <!-- illegal params -->
+      <!-- illegal params. 
+           Note startDoc is internal only (used by recursive resumption token processing)
+      -->
       <xsl:variable name="queryParams" select="//param[count(*) &gt; 0 
          and not(@name='verb') 
          and not(@name='identifier') 
          and not(@name='metadataPrefix') 
          and not(@name='resumptionToken') 
+         and not(@name='startDoc')
          and not(@name='set') 
          and not(@name='from') 
          and not(@name='until')]"/>
@@ -173,17 +167,27 @@
             <error message="OAI::{$verb}::badArgument::{$badArgumentMessage}"/>
          </xsl:when>
          
+         <!-- If resumption token specified, no error checking until the recursive re-query -->
+         <xsl:when test="$resumptionToken and not(matches($resumptionToken,'[\w%.&amp;]*startDoc=\d+'))">
+            <error message="OAI::{$verb}::badResumptionToken::{$badResumptionTokenMessage}"/>
+         </xsl:when>
+         <xsl:when test="string-length($resumptionToken) &gt; 0">
+            <query indexPath="index" maxDocs="1" startDoc="1"  style="style/crossQuery/resultFormatter/oai/resultFormatter.xsl">
+               <allDocs/>
+            </query>
+         </xsl:when>
+         
          <!-- verb: GetRecord -->
          <xsl:when test="$verb='GetRecord'">
             <xsl:choose>
                <xsl:when test="not($identifier) or not($metadataPrefix)">
-                  <error message="OAI::GetRecord::badArgument::{$badArgumentMessage}"/>
+                  <error message="OAI::{$verb}::badArgument::{$badArgumentMessage}"/>
                </xsl:when>
                <xsl:when test="$metadataPrefix != 'oai_dc'">
-                  <error message="OAI::cannotDisseminateFormat::badArgument::{$cannotDisseminateFormatMessage}"/>
+                  <error message="OAI::{$verb}::cannotDisseminateFormat::{$cannotDisseminateFormatMessage}"/>
                </xsl:when>
                <xsl:when test="not(matches($identifier,'^[a-z0-9]{10}$'))">
-                  <error message="OAI::ListIdentifiers::idDoesNotExist::{$idDoesNotExistMessage}"/>
+                  <error message="OAI::{$verb}::idDoesNotExist::{$idDoesNotExistMessage}"/>
                </xsl:when>
                <xsl:otherwise>
                   <xsl:call-template name="query"/>
@@ -195,7 +199,7 @@
          <xsl:when test="$verb='Identify'">
             <xsl:choose>
                <xsl:when test="$identifier or $metadataPrefix or $resumptionToken or $set or $from or $until">
-                  <error message="OAI::Identify::badArgument::{$badArgumentMessage}"/>
+                  <error message="OAI::{$verb}::badArgument::{$badArgumentMessage}"/>
                </xsl:when>
                <xsl:otherwise>
                   <xsl:call-template name="query"/>
@@ -207,16 +211,13 @@
          <xsl:when test="$verb='ListIdentifiers'">
             <xsl:choose>
                <xsl:when test="($from and not($until)) or ($until and not($from))">
-                  <error message="OAI::ListIdentifiers::badArgument::{$badArgumentMessage}"/>
-               </xsl:when>
-               <xsl:when test="$resumptionToken and not(matches($resumptionToken,'[0-9]+'))">
-                  <error message="OAI::{$verb}::badResumptionToken::{$badResumptionTokenMessage}"/>
+                  <error message="OAI::{$verb}::badArgument::{$badArgumentMessage}"/>
                </xsl:when>
                <xsl:when test="not($metadataPrefix)">
-                  <error message="OAI::ListIdentifiers::badArgument::{$badArgumentMessage}"/>
+                  <error message="OAI::{$verb}::badArgument::{$badArgumentMessage}"/>
                </xsl:when>
                <xsl:when test="$metadataPrefix != 'oai_dc'">
-                  <error message="OAI::ListIdentifiers::cannotDisseminateFormat::{$cannotDisseminateFormatMessage}"/>
+                  <error message="OAI::{$verb}::cannotDisseminateFormat::{$cannotDisseminateFormatMessage}"/>
                </xsl:when>
                <xsl:otherwise>
                   <xsl:call-template name="query"/>
@@ -228,10 +229,10 @@
          <xsl:when test="$verb='ListMetadataFormats'">
             <xsl:choose>
                <xsl:when test="$metadataPrefix or $resumptionToken or $set or $from or $until">
-                  <error message="OAI::ListMetadataFormats::badArgument::{$badArgumentMessage}"/>
+                  <error message="OAI::{$verb}::badArgument::{$badArgumentMessage}"/>
                </xsl:when>
                <xsl:when test="$identifier and not(matches($identifier,'^[a-z0-9]{10}$'))">
-                  <error message="OAI::ListIdentifiers::idDoesNotExist::{$idDoesNotExistMessage}"/>
+                  <error message="OAI::{$verb}::idDoesNotExist::{$idDoesNotExistMessage}"/>
                </xsl:when>
                <xsl:otherwise>
                   <xsl:call-template name="query"/>
@@ -243,16 +244,13 @@
          <xsl:when test="$verb='ListRecords'">
             <xsl:choose>
                <xsl:when test="($from and not($until)) or ($until and not($from))">
-                  <error message="OAI::ListIdentifiers::badArgument::{$badArgumentMessage}"/>
-               </xsl:when>
-               <xsl:when test="$resumptionToken and not(matches($resumptionToken,'[0-9]+'))">
-                  <error message="OAI::{$verb}::badResumptionToken::{$badResumptionTokenMessage}"/>
+                  <error message="OAI::{$verb}::badArgument::{$badArgumentMessage}"/>
                </xsl:when>
                <xsl:when test="not($metadataPrefix)">
-                  <error message="OAI::ListRecords::badArgument::{$badArgumentMessage}"/>
+                  <error message="OAI::{$verb}::badArgument::{$badArgumentMessage}"/>
                </xsl:when>
                <xsl:when test="$metadataPrefix != 'oai_dc'">
-                  <error message="OAI::ListIdentifiers::cannotDisseminateFormat::{$cannotDisseminateFormatMessage}"/>
+                  <error message="OAI::{$verb}::cannotDisseminateFormat::{$cannotDisseminateFormatMessage}"/>
                </xsl:when>
                <xsl:otherwise>
                   <xsl:call-template name="query"/>
@@ -264,7 +262,7 @@
          <xsl:when test="$verb='ListSets'">
             <xsl:choose>
                <xsl:when test="$identifier or $metadataPrefix or $from or $until">
-                  <error message="OAI::Identify::badArgument::{$badArgumentMessage}"/>
+                  <error message="OAI::{$verb}::badArgument::{$badArgumentMessage}"/>
                </xsl:when>
                <xsl:otherwise>
                   <xsl:call-template name="query"/>
