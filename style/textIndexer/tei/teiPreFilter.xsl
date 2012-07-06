@@ -2,7 +2,8 @@
    xmlns:date="http://exslt.org/dates-and-times"
    xmlns:parse="http://cdlib.org/xtf/parse"
    xmlns:xtf="http://cdlib.org/xtf"
-   extension-element-prefixes="date"
+   xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils"
+   extension-element-prefixes="date FileUtils"
    exclude-result-prefixes="#all">
    
    <!--
@@ -375,17 +376,10 @@
    </xsl:template>
    
    <!-- OAI dateStamp -->
-   <xsl:template name="oai-datestamp">
+   <xsl:template name="oai-datestamp" xmlns:FileUtils="java:org.cdlib.xtf.xslt.FileUtils">
+      <xsl:variable name="filePath" select="saxon:system-id()" xmlns:saxon="http://saxon.sf.net/"/>
       <dateStamp xtf:meta="true" xtf:tokenize="no">
-         <xsl:choose>
-            <xsl:when test="//*:fileDesc/*:publicationStmt/*:date">
-               <xsl:value-of select="concat(parse:year(string(//*:fileDesc/*:publicationStmt/*:date[1])),'-01-01')"/>
-            </xsl:when>
-            <xsl:otherwise>
-               <!-- I don't know, what would you put? -->
-               <xsl:value-of select="'1950-01-01'"/>
-            </xsl:otherwise>
-         </xsl:choose>
+         <xsl:value-of select="FileUtils:lastModified($filePath, 'yyyy-MM-dd')"/>
       </dateStamp>
    </xsl:template>
    
