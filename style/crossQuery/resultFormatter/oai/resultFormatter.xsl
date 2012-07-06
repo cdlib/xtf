@@ -108,6 +108,12 @@
       <xsl:value-of select="encode-for-uri(concat($params,'&amp;startDoc=',$nextPage))"/>
    </xsl:variable>
       
+   <!-- Some OAI harvesters double-escape our percent encoding, some need it -->
+   <xsl:variable name="decodedResumpToken" xmlns:decoder="java:java.net.URLDecoder"
+      select="if ($resumptionToken)
+      then decoder:decode(decoder:decode($resumptionToken,'UTF-8'),'UTF-8') 
+      else $resumptionToken" />
+   
    
    <!-- ====================================================================== -->
    <!-- Root Template                                                          -->
@@ -179,8 +185,7 @@
          </request>
          <Identify>
             <repositoryName>XTF Sample Repository</repositoryName>
-            <!-- CHANGE -->
-            <baseURL>http://www.server.org/default/oai</baseURL>
+            <baseURL><xsl:value-of select="replace($http.rawURL, '/oai.*', '/oai')"/></baseURL>
             <protocolVersion>2.0</protocolVersion>
             <!-- CHANGE -->
             <adminEmail>admin@server.org</adminEmail>
@@ -206,7 +211,7 @@
                <xsl:choose>
                   <xsl:when test="string-length($resumptionToken) &gt; 0">
                      <!-- Form a new request using the contents of the resumption token, and fetch it -->
-                     <xsl:variable name="url" select="concat(replace($http.rawURL, '[;&amp;]resumptionToken=[^;&amp;]+', ''), '&amp;', $resumptionToken)"/>
+                     <xsl:variable name="url" select="concat(replace($http.rawURL, '[;&amp;]resumptionToken=[^;&amp;]+', ''), '&amp;', $decodedResumpToken)"/>
                      <xsl:variable name="result" select="document($url)/*:OAI-PMH"/>
                      <!-- Pick out the pieces for our final result -->
                      <request metadataPrefix="{$result/*:request/@metadataPrefix}" verb="ListIdentifiers">
