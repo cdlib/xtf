@@ -113,8 +113,8 @@
       <xsl:text>There are no metadata formats available for the specified item.</xsl:text>
    </xsl:variable>
    
-   <!-- Valid identifier pattern -->
-   <xsl:variable name="idPattern" select="'^[\w_\-.]+$'"/>
+   <!-- this regex allows only identifiers compliant with the oai-identifer schema (well almost) -->
+   <xsl:variable name="idPattern" select="'^[A-Za-z0-9\.\?\*\+\(\)\-\$,;/:@&amp;=_!~'']+$'"/>
    
    <!-- Some OAI harvesters double-escape our percent encoding, some need it -->
    <xsl:variable name="decodedResumpToken" xmlns:decoder="java:java.net.URLDecoder"
