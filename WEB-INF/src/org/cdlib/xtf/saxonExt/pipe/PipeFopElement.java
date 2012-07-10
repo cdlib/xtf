@@ -412,154 +412,163 @@ public class PipeFopElement extends ElementWithContent
       int[] pageOffsets = new int[2];
       int nOutPages = 0;
       
-      // For large PDFs, use a buffered random access file rather than the default
-      // memory-mapped file that iText assumes.
-      //
-      randFiles[0] = (origPdfData.length() > 1024*1024) ? 
-                     new BufferedRandomAccessFile(origPdfData.toString()) : 
-                     new RandomAccessFileOrArray(origPdfData.toString());
-      randFiles[1] = (fileToAppend.length() > 1024*1024) ? 
-                     new BufferedRandomAccessFile(fileToAppend.toString()) : 
-                     new RandomAccessFileOrArray(fileToAppend.toString());
-                     
-      // Read in the PDF that FOP generated and the one we're merging
-      readers[0] = new PdfReader(randFiles[0], null);
-      readers[1] = new PdfReader(randFiles[1], null);
-      
-      // Perform processing that's identical for both
-      for (int i=0; i<2; i++) 
+      try
       {
-        readers[i].consolidateNamedDestinations();
-        infos[i] = readers[i].getInfo();
-        nInPages[i] = readers[i].getNumberOfPages();
-      }
-      
-      // Calculate page offsets depending on the merge mode.
-      switch (mergeMode) 
-      {
-        case SEQUENTIAL:
-          nOutPages = nInPages[0] + nInPages[1];
-          switch (mergeAt) {
-            case START:
-              pageOffsets[0] = nInPages[1];
-              pageOffsets[1] = 0;
-              break;
-            case END:
-              pageOffsets[0] = 0;
-              pageOffsets[1] = nInPages[0];
-              break;
-          }
-          break;
-          
-        case OVERLAY:
-        case UNDERLAY:
-          nOutPages = Math.max(nInPages[0], nInPages[1]);
-          pageOffsets[0] = 0;
-          if (mergeAt == MergeAt.END)
-            pageOffsets[1] = Math.max(0, nInPages[0] - nInPages[1]);
-          else
-            pageOffsets[1] = 0;
-          break;
-      }
-      
-      // Construct the copying writer
-      Document pdfDocument = new Document(readers[0].getPageSizeWithRotation(1));
-      PdfCopy pdfWriter = new PdfCopy(pdfDocument, outStream);
-      pdfDocument.open();
-      
-      // Merge the metadata
-      mergeMetadata(infos, pdfWriter, context);
-      
-      // Copy bookmarks from both PDFs
-      ArrayList allBookmarks = new ArrayList();
-      for (int i=0; i<2; i++) {
-        List bookmarks = SimpleBookmark.getBookmark(readers[i]);
-        if (bookmarks != null) {
-          if (pageOffsets[i] != 0)
-            SimpleBookmark.shiftPageNumbers(bookmarks, pageOffsets[i], null);
-          allBookmarks.addAll(bookmarks);
-        }
-      }
-      
-      PageInfo[] basePages = new PageInfo[nOutPages];
-      PageInfo[] mergePages = new PageInfo[nOutPages];
-      
-      // Gather all the info we'll need to merge the pages. For some reason,
-      // iText needs us to make all the template images before using any
-      // of them.
-      //
-      for (int i = 0; i < nOutPages; i++)
-      {
-        for (int j=0; j<2; j++)
-        {
-          int inPageNum = i - pageOffsets[j];
-          if (inPageNum < 0 || inPageNum >= nInPages[j])
-            continue;
-          
-          PageInfo info = new PageInfo();
-          info.reader = readers[j];
-          info.pageNum = inPageNum+1;
-          
-          if (basePages[i] == null)
-            basePages[i] = info;
-          else {
-            info.impPage = pdfWriter.getImportedPage(info.reader, info.pageNum);
-            info.image = Image.getInstance(info.impPage);
-            mergePages[i] = info;
-          }
-        }
-      }
-
-      for (int i = 0; i < nOutPages; i++)
-      {
-        PageInfo basePage = basePages[i];
-        PageInfo mergePage = mergePages[i];
-        boolean over = mergeMode == MergeMode.OVERLAY;
-
-        basePage.impPage = pdfWriter.getImportedPage(basePage.reader, basePage.pageNum);
+        // For large PDFs, use a buffered random access file rather than the default
+        // memory-mapped file that iText assumes.
+        //
+        randFiles[0] = (origPdfData.length() > 1024*1024) ? 
+                       new BufferedRandomAccessFile(origPdfData.toString()) : 
+                       new RandomAccessFileOrArray(origPdfData.toString());
+        randFiles[1] = (fileToAppend.length() > 1024*1024) ? 
+                       new BufferedRandomAccessFile(fileToAppend.toString()) : 
+                       new RandomAccessFileOrArray(fileToAppend.toString());
+                       
+        // Read in the PDF that FOP generated and the one we're merging
+        readers[0] = new PdfReader(randFiles[0], null);
+        readers[1] = new PdfReader(randFiles[1], null);
         
-        if (mergePage != null)
+        // Perform processing that's identical for both
+        for (int i=0; i<2; i++) 
         {
-          PageStamp ps = pdfWriter.createPageStamp(basePage.impPage);
-          PdfContentByte contentBuf = null;
-          if (over)
-            contentBuf = ps.getOverContent();
-          else
-            contentBuf = ps.getUnderContent();
-          
-          Image img = Image.getInstance(mergePage.image); // this is the trick
-          
-          // When adding the image, we need to construct a matrix that will properly orient it.
-          int rotation = mergePage.reader.getPageRotation(mergePage.pageNum);
-          float w = basePage.impPage.getWidth();
-          float h = basePage.impPage.getHeight();
-          switch (rotation)
-          {
-            case 0:
-              contentBuf.addImage(img, w, 0, 0, h, 0, 0);
-              break;
-            case 90:
-              contentBuf.addImage(img, 0, -h, w, 0, 0, h);
-              break;
-            case 180:
-              contentBuf.addImage(img, -w, 0, 0, -h, w, h);
-              break;
-            case 270:
-              contentBuf.addImage(img, 0, h, -w, 0, w, 0);
-              break;
-          }
-          ps.alterContents();
+          readers[i].consolidateNamedDestinations();
+          infos[i] = readers[i].getInfo();
+          nInPages[i] = readers[i].getNumberOfPages();
         }
         
-        pdfWriter.addPage(basePage.impPage);
-      }
+        // Calculate page offsets depending on the merge mode.
+        switch (mergeMode) 
+        {
+          case SEQUENTIAL:
+            nOutPages = nInPages[0] + nInPages[1];
+            switch (mergeAt) {
+              case START:
+                pageOffsets[0] = nInPages[1];
+                pageOffsets[1] = 0;
+                break;
+              case END:
+                pageOffsets[0] = 0;
+                pageOffsets[1] = nInPages[0];
+                break;
+            }
+            break;
             
-      // Set the combined bookmarks.
-      if (!allBookmarks.isEmpty())
-        pdfWriter.setOutlines(allBookmarks);
-      
-      // And we're done.
-      pdfDocument.close();
+          case OVERLAY:
+          case UNDERLAY:
+            nOutPages = Math.max(nInPages[0], nInPages[1]);
+            pageOffsets[0] = 0;
+            if (mergeAt == MergeAt.END)
+              pageOffsets[1] = Math.max(0, nInPages[0] - nInPages[1]);
+            else
+              pageOffsets[1] = 0;
+            break;
+        }
+        
+        // Construct the copying writer
+        Document pdfDocument = new Document(readers[0].getPageSizeWithRotation(1));
+        PdfCopy pdfWriter = new PdfCopy(pdfDocument, outStream);
+        pdfDocument.open();
+        
+        // Merge the metadata
+        mergeMetadata(infos, pdfWriter, context);
+        
+        // Copy bookmarks from both PDFs
+        ArrayList allBookmarks = new ArrayList();
+        for (int i=0; i<2; i++) {
+          List bookmarks = SimpleBookmark.getBookmark(readers[i]);
+          if (bookmarks != null) {
+            if (pageOffsets[i] != 0)
+              SimpleBookmark.shiftPageNumbers(bookmarks, pageOffsets[i], null);
+            allBookmarks.addAll(bookmarks);
+          }
+        }
+        
+        PageInfo[] basePages = new PageInfo[nOutPages];
+        PageInfo[] mergePages = new PageInfo[nOutPages];
+        
+        // Gather all the info we'll need to merge the pages. For some reason,
+        // iText needs us to make all the template images before using any
+        // of them.
+        //
+        for (int i = 0; i < nOutPages; i++)
+        {
+          for (int j=0; j<2; j++)
+          {
+            int inPageNum = i - pageOffsets[j];
+            if (inPageNum < 0 || inPageNum >= nInPages[j])
+              continue;
+            
+            PageInfo info = new PageInfo();
+            info.reader = readers[j];
+            info.pageNum = inPageNum+1;
+            
+            if (basePages[i] == null)
+              basePages[i] = info;
+            else {
+              info.impPage = pdfWriter.getImportedPage(info.reader, info.pageNum);
+              info.image = Image.getInstance(info.impPage);
+              mergePages[i] = info;
+            }
+          }
+        }
+  
+        for (int i = 0; i < nOutPages; i++)
+        {
+          PageInfo basePage = basePages[i];
+          PageInfo mergePage = mergePages[i];
+          boolean over = mergeMode == MergeMode.OVERLAY;
+  
+          basePage.impPage = pdfWriter.getImportedPage(basePage.reader, basePage.pageNum);
+          
+          if (mergePage != null)
+          {
+            PageStamp ps = pdfWriter.createPageStamp(basePage.impPage);
+            PdfContentByte contentBuf = null;
+            if (over)
+              contentBuf = ps.getOverContent();
+            else
+              contentBuf = ps.getUnderContent();
+            
+            Image img = Image.getInstance(mergePage.image); // this is the trick
+            
+            // When adding the image, we need to construct a matrix that will properly orient it.
+            int rotation = mergePage.reader.getPageRotation(mergePage.pageNum);
+            float w = basePage.impPage.getWidth();
+            float h = basePage.impPage.getHeight();
+            switch (rotation)
+            {
+              case 0:
+                contentBuf.addImage(img, w, 0, 0, h, 0, 0);
+                break;
+              case 90:
+                contentBuf.addImage(img, 0, -h, w, 0, 0, h);
+                break;
+              case 180:
+                contentBuf.addImage(img, -w, 0, 0, -h, w, h);
+                break;
+              case 270:
+                contentBuf.addImage(img, 0, h, -w, 0, w, 0);
+                break;
+            }
+            ps.alterContents();
+          }
+          
+          pdfWriter.addPage(basePage.impPage);
+        }
+            
+        // Set the combined bookmarks.
+        if (!allBookmarks.isEmpty())
+          pdfWriter.setOutlines(allBookmarks);
+        
+        // And we're done.
+        pdfDocument.close();
+      }      
+      finally {
+        if (randFiles[0] != null)
+          try { randFiles[0].close(); } catch (Exception e) { }
+        if (randFiles[1] != null)
+          try { randFiles[1].close(); } catch (Exception e) { }
+      }
     }
 
     /**
