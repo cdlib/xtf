@@ -492,11 +492,16 @@ public class FileUtils
     // Now read it in, up to the first close-element marker.
     XMLStubReader xmlReader = new XMLStubReader();
     BufferedInputStream bufStream = new BufferedInputStream(new FileInputStream(file));
-    InputSource inputSrc = new InputSource(bufStream);
-    inputSrc.setSystemId(file.toURI().toString());
-    Source saxSrc = new SAXSource(xmlReader, inputSrc);
-    DocumentInfo doc = context.getConfiguration().buildDocument(saxSrc);
-    return doc;
+    try {
+      InputSource inputSrc = new InputSource(bufStream);
+      inputSrc.setSystemId(file.toURI().toString());
+      Source saxSrc = new SAXSource(xmlReader, inputSrc);
+      DocumentInfo doc = context.getConfiguration().buildDocument(saxSrc);
+      return doc;
+    }
+    finally {
+      bufStream.close();
+    }
   }
   
   /**
