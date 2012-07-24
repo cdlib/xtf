@@ -220,7 +220,7 @@
                     <form action="/xtf/search" method="get">
                         <input type="radio" name="lang" value="en">
                             <xsl:if test="$lang='en'"><xsl:attribute name="checked" select="'checked'"/></xsl:if>
-                            <xsl:text>Engish</xsl:text>
+                            <xsl:text>English</xsl:text>
                         </input>&#160;&#160;
                         <input type="radio" name="lang" value="sp">
                             <xsl:if test="$lang='sp'"><xsl:attribute name="checked" select="'checked'"/></xsl:if>
