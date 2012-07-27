@@ -2,6 +2,7 @@
 
 Below is a list of all the XTF releases, in reverse chronological order. Click on a release to see new features, bug fixes, and changes for each release.
 
+<a href="#3.1">Version 3.1</a>
 <a href="#3.0">Version 3.0</a>
 <a href="#3.0-beta">Version 3.0-beta</a>
 <a href="#2.2">Version 2.2</a>
@@ -15,6 +16,53 @@ Below is a list of all the XTF releases, in reverse chronological order. Click o
 <a href="#1.6.1">Version 1.6.1</a>
 <a href="#1.6.0">Version 1.6.0</a>
 <a href="#1.5.1">Version 1.5.1</a>
+
+<!---------------------------------------------------------------------------->
+
+<h1><a name="3.1">Version 3.1</a></h1>
+
+Release date: July 27, 2012
+<h2>Highlights</h2>
+<ul>
+    <li>Improved schema handling for EAD</li>
+    <li>Better OAI 2.0 conformance</li>
+    <li>Dynamic site maps</li>
+    <li>Several bug fixes</li>
+</ul>
+<h2>Changes</h2>
+<ul>
+    <li>Improvements to default EAD stylesheets. Now handles EAD with either DTD or Schema 
+        with equal aplomb. Also fills in missing headings for the table of contents if they are missing.
+        Thanks to Brian Tingle for this big contribution.</li>
+    <li>XTF now produces a comprehensible error message if you run CrossQuery without first 
+        creating an index.</li>
+    <li>Improved datestamps in the default OAI stylesheets. Thanks to Bridger Dyson this patch.</li>
+    <li>Better OAI 2.0 conformance in the default stylesheets. In particular, resumption tokens
+        are not strange and thus easier for some harvesters to digest.</li>
+    <li>Default implementation of dynamic site maps. Okay for small-to-medium sites;
+        implementation for a large site would require breaking this down into sub-pages.
+        Thanks to Kirk Hastings for this change.</li>
+</ul>
+<h2>Bug Fixes</h2>
+<ul>
+    <li>Fixed two problems with the FileUtils:ReadXMLStub() extension: (1) now explicitly closes
+        the file, so the system won't run out of file handles when indexing a directory with
+        many files; (2) handles malformed DTD declarations without crashing. Thanks to Brian Tingle 
+        to an anonymous SourceForge user for reporting these and providing patches.</li>
+    <li>Fixed typo in xtfCommon.xsl: "English" was misspelled "Engish". Thanks to Perry Willett 
+        for reporting this one.</li>
+    <li>Fixed another problem with leaving file handles open, this time in PipeFop.</li>
+    <li>Fixed bug: "first hit token must be in search terms" assertion. This was caused by
+        accent and plural folding being performed in different orders at index vs. search time.</li>
+    <li>Fixed bug: tokens consisting of only a combining mark (e.g. this can happen if a space
+        is followed by a combining mark) would cause obscrure errors with very deep Lucene call stacks.</li>
+    <li>Pipe-FOP support now uses buffering for large files to avoid out-of-memory problems.</li>
+    <li>Fixed jsessionid appearing in URLs in newer versions of Tomcat.</li>
+    <li>Fixed memory leak in the old Lucene TermInfosReader related to thread locals.</li>
+    <li>Facet code no longer interns strings. These are generally a bad idea as they quickly
+        consume Java's limited "permanent generation" heap space.</li>
+    <li>Fixed thread-synchronization problem when dynaXML creates lazy stores.</li>
+</ul>
 
 <!---------------------------------------------------------------------------->
 
