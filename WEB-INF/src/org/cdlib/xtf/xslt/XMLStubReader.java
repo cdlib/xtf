@@ -115,8 +115,14 @@ class XMLStubReader extends DTDSuppressingXMLReader
     throws SAXException 
     {
       out.startDTD(name, publicId, systemId);
-      if (out instanceof DTDHandler && systemId != null)
-        ((DTDHandler)out).unparsedEntityDecl(name, publicId, systemId, null);
+      if (out instanceof DTDHandler && systemId != null) {
+        try {
+          ((DTDHandler)out).unparsedEntityDecl(name, publicId, systemId, null);
+        }
+        catch (Exception e) {
+          // ignore
+        }
+      }
     }
   
     /////////////// Pass-through delegate methods /////////////////

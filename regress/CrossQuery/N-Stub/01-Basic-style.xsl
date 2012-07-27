@@ -31,6 +31,9 @@
       <xsl:call-template name="identify">
         <xsl:with-param name="file" select="'filesToID/ft6p3007r2.dc.xml'"/>        
       </xsl:call-template>
+      <xsl:call-template name="identify">
+        <xsl:with-param name="file" select="'filesToID/AbeGruber.xml'"/>        
+      </xsl:call-template>
     </documents>
   </xsl:template>
 

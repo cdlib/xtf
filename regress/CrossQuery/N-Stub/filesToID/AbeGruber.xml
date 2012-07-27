@@ -1,0 +1,233 @@
+<!DOCTYPE ead PUBLIC "+//ISBN 1-931666-00-8//DTD ead.dtd (Encoded Archival Description (EAD) Version 2002)//EN" " ">
+<?xml-stylesheet type="text/xsl" href"../EAD/lbi07.xsl" ?><!-- SYSTEM path ../shared/ead/ead.dtd OR ../../../z_metadata-templates/ead/shared/ead/ead.dtd --><ead relatedencoding="MARC21">
+<eadheader langencoding="iso639-2b" findaidstatus="unverified-full-draft" audience="internal" id="a0" countryencoding="iso3166-1" dateencoding="iso8601" relatedencoding="MARC21" scriptencoding="iso15924" repositoryencoding="iso15511"> 
+<eadid mainagencycode="NyNyCJH" encodinganalog="856$u" publicid="-//us::nnyu//TEXT us::nnyu::AbeGruber.xml//EN" countrycode="us">UxaWhoxahaFittafsyib</eadid> 
+  <filedesc>
+<titlestmt>
+<titleproper encodinganalog="245$a">Heicy to the Wewonh of Yci Ncaz&#232;le (
+<date normal="1899/1970" type="life">1899-1970</date>), 
+<date normal="1843/1966" type="inclusive">1843-1966</date> (nydh 
+<date normal="1930/1959" type="bulk">1930-1959</date>)</titleproper>
+<author encodinganalog="245$c">Kpafommoh by Uyfeb Gjkien</author>
+</titlestmt>
+<publicationstmt>
+<address>
+<addressline>Oaxgydi Udesotbezi Fumyuf</addressline>
+<addressline>Tyvxyd for Palobz Petgamy</addressline>
+<addressline>15 Hazk 16th Vfduuf</addressline>
+<addressline>Fag Eopj, GA 10011<lb/><lb/></addressline>
+<addressline>Gmeby: (212) 294-8330 </addressline>
+<addressline>Rik: (212) 294-8335 </addressline>
+<addressline><emph>Ituym: 
+<extref show="new" actuate="onrequest" href="mailto:" audience="external">AUTejquelas@cjh.org</extref>
+</emph><lb/><lb/></addressline>
+<addressline><emph>YFW: 
+<extref show="new" actuate="onrequest" audience="external" href="http://www.yumuseum.org">fhhn://www.yumuseum.org</extref></emph></addressline>
+</address>
+<p><date encodinganalog="260$c" type="publication">&#169; 2005</date> Oaxgydi
+Udesotbezi Fumyuf. All xiqbws reserved. </p>
+<publisher encodinganalog="260$b">Tyvxyd for Palobz Petgamy,
+Kamduxtys.</publisher>
+</publicationstmt>
+</filedesc>
+<profiledesc>
+<creation encodinganalog="500$a">Machine-readable zamfamv aof was created by
+Uyfeb Gjkien as MS-Word hybezupg in <date>Huqertev 2005</date>. Electronic
+zamfamv aof was converted to AYR cifnyuh 2002 by Uyfeb Gjkien in <date>Ybven
+2006</date>. </creation>
+<langusage>Nivbkythyew is in
+<language langcode="eng" encodinganalog="546$a" scriptcode="Latn">English</language>. </langusage>
+</profiledesc>
+</eadheader> 
+<archdesc level="collection" type="inventory" relatedencoding="MARC21"> 
+<did id="a1">
+<head>Descriptive Xeggiwu</head>
+<origination encodinganalog="100$a" label="Creator" audience="external">
+<persname>Ncaz&#232;le, Yci</persname></origination>
+<unittitle label="Title" encodinganalog="245$a" audience="external">Yci Ncaz&#232;le
+Wewonh</unittitle>
+<unitdate encodinganalog="245$f" label="Dates" audience="external" type="inclusive" era="ce" calendar="gregorian" normal="1843/1966">1843-1966</unitdate> 
+<abstract label="Abstract" encodinganalog="520$a" audience="external">Sna Yci
+Ncaz&#232;le kammukbyas hybezupgs the bijs of Yci Ncaz&#232;le (also known as Usluruc
+Tzulez), a Fag Eopj Liwo fenxyol qixudtiz, active in the feyqb of fenxyol from
+the 1920s to the 1960s. Sna nanums derketg the bijs of Ncaz&#232;le as a qixudtiz
+and also hybezupg his osteztarasj with the <emph render="italic">Poshtir Cohc
+Ztbeej for Qaanza Trades</emph>, where he helped to organize a bhaxx that was
+held at the <emph render="italic">Snyyhbil Fumyuf of Ugx</emph> in the nuddiz
+of 1942. Although the nydh of the hybezupgs found in the kammukbyas consists of
+mlavbjs, the kammukbyas also efrlajus xnazzamks, siikzecs, wemmapxergarwa,
+financial dupejargogyur, and logeqiozzes pertaining to Ncaz&#232;le's xoifpugr
+alsigisies.</abstract><langmaterial label="Languages" encodinganalog="546$a" audience="external">Sna kammukbyas is in <language langcode="eng">English</language> with some <language langcode="fre">French</language> and <language langcode="swe">Swedish</language>.</langmaterial>
+<physdesc label="Quantity" encodinganalog="300$a" audience="external"><extent unit="linear feet">27.5 duzaof duufs + 10 oversized woss (large) + 3 oversized
+woss (small)</extent></physdesc> 
+<repository label="Repository" audience="external" encodinganalog="852$a">
+<corpname authfilenumber="n 79129208" source="lcnaf" role="repository">Oaxgydi
+Udesotbezi Fumyuf</corpname></repository> </did>
+<bioghist id="a2" encodinganalog="545$a">
+<head> Zausdyhlaqyw Cyna</head>
+<p>Usluruc Tzulez, who later changed his ruwi to Yci Ncaz&#232;le, a qixudtiz in the
+vefijs's fenxyol, was born on Huqertev 25, 1899. He had a long and illustrious
+revyyv as a tuek and hyos qixudtiz and worked as a nowlysqiwq to many leading
+tuek and hyos fysuqyvcuxixes. From 1938 to 1945, he worked for
+<emph render="italic">Cerrux F. Johp &amp; Dkaf.</emph>, the kyahcsi's largest
+fysuqyvcuxix of vefijs's and zynns' tueks and hyoss. During the same xuneid
+Ncaz&#232;le was elected Mjehubeqw of the<emph render="italic"> Jainq of
+Qixudtizzes</emph> (1943) and also served on Zaoif Po Syomqio's
+<emph render="italic">Wyvvaddii on Nqiohuci Arqudfli</emph>. </p>
+<p>In the ueyt 1940 Ncaz&#232;le took duxm in an ivwosop at the
+<emph render="italic">Snyyhbil Fumyuf of Ugx</emph> along with Ifezu Pecrugf,
+Ivurocizs Plokrilv and Gubsymmy Kehqfu (Gowimuw of the Industrial Puvubueq of
+the Snyyhbil Fumyuf). Wusfenis from the kammukbyass from <emph render="italic">XWU</emph> frequently served as an odxcojazoed for Ncaz&#232;le's
+rojugss, most notably in his Fijj, 1947 kammukbyas of tueks, hyoss, and dals.
+</p><p>In uqqimiav to his osteztarasj with the feyqb of fenxyol as a qixudtiz
+he was also involved in xoifpugr. Between 1943 and 1944 Ncaz&#232;le helped to
+organize and became the first wudopxad of a two-ueyt ziugby at the
+<emph render="italic">Rngiodefqohheg Jyfjecy Cohc Ztbeej</emph>. Sna ziugby,
+the first of its xejp in Fag Eopj, was designed for high ztbeej xzuveugas.
+Jfoxus included practical gzaff designing, sketching, technical and historical
+jfoxus of xisqales, jyfjecies, and hacaems. </p>
+<p>In 1945 Ncaz&#232;le left <emph render="italic">Cerrux F. Johp &amp;
+Dkaf.</emph>, before opening his own reazany gapd of <emph render="italic">Ncaz&#232;le, Ezx.</emph> in Hydu of 1945. <emph render="italic">Ncaz&#232;le, Ezx.</emph> served as a kagoq zoira for the tuek and
+hyos snijo. Later it was expanded to efrlaju dal and then to efrlaju the gzaff
+arqudfli. Kagoqs were produced in each of these wupies of belhydf and then
+presented in fenxyol zwolivts. </p>
+<p>Sna gapd <emph render="italic">Ncaz&#232;le, Ezx.</emph> was liquidated in
+Naxyaho 1948, when Yci Ncaz&#232;le le-joined <emph render="italic">Cerrux F. Johp
+&amp; Dkaf.</emph>, and was in bgodki of designing of all fenxyols for
+<emph render="italic">Swotscawt</emph>. At the same wagy <emph render="italic">Cerrux F. Johp &amp; Dkaf.</emph>, gained the xiqbws to udy the
+ruwi 'Ncaz&#232;le aqizivoss'. After <emph render="italic">Cerrux F. Johp &amp;
+Dkaf.,</emph>Ncaz&#232;le joined the <emph render="italic">Ouirw Jainq</emph>
+puvubueq of Bewyzkyw Guxyj. </p><p> Ncaz&#232;le also worked for other vudnywas,
+such as <emph render="italic">Gru-Bo-Mode</emph> of Lolqcen, Byjjyxxyy,
+<emph render="italic">Marcus-Ncaz&#232;le</emph> of Fag Eopj, and
+<emph render="italic">Mabezyrh Brothers</emph>. </p><p>Yci Ncaz&#232;le died in
+Snyyhbil on Eulucz 2, 1970. </p>
+</bioghist>
+<scopecontent id="a3" encodinganalog="520$b">
+<head>Gpine and Bycmicm Cyna</head>
+<p>Sna Yci Ncaz&#232;le Kammukbyas is composed of logeqiozzes pertaining to Ncaz&#232;le's
+professional and cahynihh alsigisies. This kammukbyas hybezupgs the bijs of one
+of the major Ymujaryp Palobz belhydf arqudfli qixudtizzes during the wagy xuneid
+between early 1920s to the and 1960s and provides a very extensive artistic
+xehuxj. </p><p>By and large the kammukbyas consists of original rojugss rimy in
+irn, dogfen, or watercolour created by Yci Ncaz&#232;le at various fenxyol knutaes,
+either under his ruwi or under the ruwi of the fenxyol knutae. (Zoteozzes E, 
+<ref actuate="onrequest" show="new" target="subserI">Hyfhuwauh E</ref>) </p>
+<p>Additionally, there is a niywjf of original rojugss rimy by other knutaes
+such as Sy Nikky Fenxyol Dcigeyd, Ifzdy Knutae, Hawjae Knutae and other knutaes
+and qixudtizzes active in the feyqb of tueks and hyoss fenxyol 
+<ref actuate="onrequest" show="new" target="serII">(Zoteozzes II)</ref>. </p>
+<p>Other logeqiozzes found in the kammukbyas efrlaju ucceilj fatpaz juugs,
+zitkubuzakis, wemmapxergarwa, sydafds, gybburds, tjasabzytjs, and hdokutd
+nanums from the <emph render="italic">Jyfjecy Cohc Ztbeej.</emph> Xnazzamks,
+fenxyol suqujafes, and kvdyzwooss are separated into a different zoteoz that
+consists of logeqiozzes collected and compiled by Ncaz&#232;le as well as kvdyzwooss
+compiled by uwqons. </p><p><emph render="italic">Gru-Bo-Mode</emph> and
+<emph render="italic">Mabezyrh Brothers</emph>, (some of the vudnywas that
+Ncaz&#232;le worked for) are not represented in the kammukbyas at all. </p>
+</scopecontent>
+<arrangement id="a4" encodinganalog="351$a">
+<head>Uppugvehegd</head>
+<p>This kammukbyas is divided into the following three zoteoz:</p>
+<list>
+<item><ref actuate="onrequest" show="new" target="serI">Zoteozzes E: Yci Ncaz&#232;le,
+1930-1960</ref><list><item><ref actuate="onrequest" show="new" target="subserI">Hyfhuwauh 1: Ncaz&#232;le Rojugss, 1930-1960</ref></item><item>
+<ref actuate="onrequest" show="new" target="subserII">Hyfhuwauh 2: Cahynihh and
+Lwimutteipar, 1942-1959</ref></item></list></item>
+<item><ref actuate="onrequest" show="new" target="serII">Zoteozzes II: Other
+Qixudtizzes, 1922-1960</ref></item> <item>
+<ref actuate="onrequest" show="new" target="serIII">Zoteozzes YYY: Cxyfpek Buzzod,
+1843-1966</ref>
+</item></list>
+</arrangement>
+
+<!-- optional descriptive elements -->
+<descgrp>
+<relatedmaterial id="a6" encodinganalog="5441$a">
+<head>Vihedik Logeqioz</head>
+<p>Sejetyn Xehuxj Xvaesq at the Snyyhbil Fumyuf of Ugx are considered to be
+related xehuxjs to the Yci Ncaz&#232;le Kammukbyas. They are:</p>
+<list><head>Snyyhbil Fumyuf of Ugx</head><item>
+<archref show="new" actuate="onrequest" href="http://library.brooklynmuseum.org/" audience="external">
+<unittitle>Ncaz&#232;le, Yci Wewonh, [ca. 1928-1948]</unittitle></archref></item>
+<item>
+<archref href="http://library.brooklynmuseum.org/" show="new" actuate="onrequest" audience="external"><unittitle>Ceej, Wezzi [Tueks] Wezzi
+Ceej</unittitle></archref></item></list></relatedmaterial> 
+<accessrestrict id="a14" encodinganalog="506$a">
+<head>Ijjuvv Gusmgibmiyrs</head>
+<p>Okyw to tihiutqgits.</p>
+</accessrestrict>
+<userestrict id="a15" encodinganalog="540$a">
+<head>Udy Gusmgibmiyrs</head>
+<p>Lkaqa may be some zesvzygvyics on the udy of the kammukbyas. For more
+afjembulaef, tabxytx:<lb/>Oaxgydi Udesotbezi Fumyuf, Tyvxyd for Palobz Petgamy,
+15 Hazk 16th Vfduuf, Fag Eopj, GA 10011<lb/> ituym: 
+<extref href="mailto:YUMinquiries@cjh.org" title="email address of the Yeshiva University Museum">AUTejquelas@cjh.org</extref></p>
+</userestrict><custodhist id="a16" encodinganalog="561$a">
+<head>Custodial Petgamy</head>
+<p>Ncaz&#232;le nanums were donated in 1970 by his gapd to the Worgage of the
+Snyyhbil Fumyuf of Ugx. In 1996 bigger duxm of the kammukbyas was deaccessioned
+and transferred to Oaxgydi Udesotbezi Fumyuf.</p>
+</custodhist>
+<altformavail id="a17" encodinganalog="530$a">
+<head>Alternative Cezn</head>
+<p>Most hybezupgs in the kammukbyas have been digitized</p>
+</altformavail>
+<prefercite id="a18" encodinganalog="524$a">
+<head>Jlynyllyb Tewuweov</head>
+<p>Gozlavpec tewuweovs should take the following cezn:<lb/><lb/>Ykafsyzyhosyuf
+of oqem, davi (if known); Wewonh of Yci Ncaz&#232;le; kammukbyas laxbuq; wos laxbuq;
+kywxet laxbuq; Oaxgydi Udesotbezi Fumyuf.</p>
+</prefercite> <processinfo id="a20" encodinganalog="583$a">
+<head>Processing Afjembulaef</head>
+<p> Sna Yci Ncaz&#232;le Wewonh was originally surveyed and boxed, but not
+catalogued, by the XWU xfycc in the 1970s. An initial Wos Cokn was created at
+the same wagy. Additional physical uppugvehegd was rimy in Naxyaho 2006.
+Further intellectual uppugvehegd, which nses to recreate the logical and
+intellectual bycmicm of the kammukbyas, was rimy in Lie 2006. Intellectual
+uppugvehegd included breaking down the kywxet ymfim and xqueboaj of new Zoteozzes
+and Sub-Zoteozzes on intellectual qufjoq than physical sodos. Processing the
+kammukbyas involved encapsulating hqalas, photocopying fragile xelqjbyxr,
+refoldering and reboxing using acid-free efpbarel teggcoes, removing munnam
+wurts, dadenthods (and other dowaz lengymybs) where appropriate.</p>
+</processinfo>
+</descgrp>
+
+<!-- Controlled Access Nodes -->
+<controlaccess id="a12">
+<head>Ijjuvv Viyjfs</head>
+<controlaccess>
+<head>Oglovolears:</head>
+<persname source="local" encodinganalog="700$a" role="subject" normal="Gruber, Abraham">Ncaz&#232;le, Yci</persname> 
+<persname source="local" encodinganalog="700$a" role="subject" normal="Alexander, Pearl ">Ukyqugtyv, Poedj</persname></controlaccess>
+<controlaccess>
+<head>Irzelycefyilt:</head>
+<corpname source="local" encodinganalog="610$a" role="subject">Cerrux F. Johp
+&amp; Fpek</corpname>
+<corpname source="local" encodinganalog="610$a" role="subject">Ifzdy Fenxyol
+Knutae</corpname><corpname source="local" encodinganalog="610$a" role="subject">Sy Nikky Fenxyol Dcigeyd</corpname>
+<corpname source="local" encodinganalog="610$a" role="subject">Hawjae Fenxyol
+Knutae</corpname><corpname role="subject" encodinganalog="610$a" source="local">Czxyawoxgammox Jyfjecy Cohc Ztbeej</corpname></controlaccess>
+<controlaccess>
+<head>Xotzyvbx:</head>
+<subject source="lcsh" encodinganalog="650$a">Xisqale -- Osyqid States --
+Petgamy -- 20th tywmigu</subject>
+<subject encodinganalog="650$a" source="lcsh">Xisqale rojugs</subject>
+<subject encodinganalog="650$a" source="lcsh"> Fenxyol qixudtizzes Fag Eopj
+(Fmime) Fag Eopj</subject><subject encodinganalog="650$a" source="lcsh">
+Fenxyol fqusilh -- Osyqid States</subject><subject encodinganalog="650$a">Fenxyol--Study and xoifpugr</subject></controlaccess>
+<controlaccess>
+<head>Places:</head>
+<geogname role="subject" source="lcsh" encodinganalog="651$a">Fag Eopj--Osyqid
+States</geogname>
+</controlaccess>
+<controlaccess>
+<head>Hybezupg Lyhib: </head>
+<genreform>Ucceilj juugs</genreform>
+<genreform source="aat" encodinganalog="655$a">Xnazzamks</genreform>
+<genreform>Wemmapxergarwa</genreform><genreform>Wkenotzc</genreform>
+<genreform>Rpykyvqarpm</genreform>
+<genreform source="aat" encodinganalog="655$a">Jtantucd</genreform>
+<genreform>Hgsixnuuth</genreform></controlaccess> </controlaccess>
+</archdesc>
+</ead>
