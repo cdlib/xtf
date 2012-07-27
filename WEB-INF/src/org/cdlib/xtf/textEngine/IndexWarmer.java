@@ -151,7 +151,8 @@ public class IndexWarmer
         ent.curSearcher = new XtfSearcher(indexPath, 0); // disable update check
       }
             
-      assert ent.curSearcher != null;
+      if (ent.curSearcher == null)
+        throw new RuntimeException("Error opening XTF search index. Perhaps you need to run the textIndexer?");
     }
     
     // All done.
