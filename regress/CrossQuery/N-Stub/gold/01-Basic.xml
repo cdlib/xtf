@@ -56,4 +56,20 @@
          </dc>
       </x>
    </doc>
+   <doc name="filesToID/AbeGruber.xml">
+      <ead relatedencoding="MARC21">
+         <eadheader langencoding="iso639-2b" findaidstatus="unverified-full-draft"
+                    audience="internal"
+                    id="a0"
+                    countryencoding="iso3166-1"
+                    dateencoding="iso8601"
+                    relatedencoding="MARC21"
+                    scriptencoding="iso15924"
+                    repositoryencoding="iso15511"> 
+            <eadid mainagencycode="NyNyCJH" encodinganalog="856$u"
+                   publicid="-//us::nnyu//TEXT us::nnyu::AbeGruber.xml//EN"
+                   countrycode="us">UxaWhoxahaFittafsyib</eadid>
+         </eadheader>
+      </ead>
+   </doc>
 </documents>
