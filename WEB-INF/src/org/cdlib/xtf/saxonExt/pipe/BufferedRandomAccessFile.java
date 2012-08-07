@@ -56,10 +56,12 @@ class BufferedRandomAccessFile extends RandomAccessFileOrArray
   int bufferLength = 0;
   int bufferPos = 0;
   int bufferFilePointer = 0;
+  String filename;
 
   /* Constructor - open up the file and initialize the file pointer to zero */
   public BufferedRandomAccessFile(String filename) throws IOException {
     super(filename, false, true);
+    this.filename = filename;
     baseFile = new RandomAccessFile(filename, "r");
   }
 
@@ -156,7 +158,16 @@ class BufferedRandomAccessFile extends RandomAccessFileOrArray
   
   @Override
   public void reOpen() throws IOException {
+    if (filename != null && baseFile == null)
+      baseFile = new RandomAccessFile(filename, "r");
     seek(0);
+  }
+
+  @Override
+  protected void insureOpen() throws IOException {
+    if (filename != null && baseFile == null) {
+        reOpen();
+    }
   }
   
   @Override
@@ -186,12 +197,14 @@ class BufferedRandomAccessFile extends RandomAccessFileOrArray
   
   @Override
   public int length() throws IOException {
+    insureOpen();
     return (int) baseFile.length() - startOffset;
   }
   
   @Override
   public void seek(int pos) throws IOException 
   {
+    insureOpen();
     havePrevByte = false;
     if (pos >= bufferFilePointer && (pos - bufferFilePointer) < bufferLength) {
       bufferPos = pos - bufferFilePointer;
@@ -209,6 +222,7 @@ class BufferedRandomAccessFile extends RandomAccessFileOrArray
   
   @Override
   public int getFilePointer() throws IOException {
+    insureOpen();
     return bufferFilePointer + bufferPos - startOffset - (havePrevByte ? 1 : 0);
   }
   
