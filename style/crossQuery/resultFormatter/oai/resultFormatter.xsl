@@ -281,7 +281,7 @@
                <xsl:choose>
                   <xsl:when test="string-length($resumptionToken) &gt; 0">
                      <!-- Form a new request using the contents of the resumption token, and fetch it -->
-                     <xsl:variable name="url" select="concat(replace($http.rawURL, '[;&amp;]resumptionToken=[^;&amp;]+', ''), '&amp;', $resumptionToken)"/>
+                     <xsl:variable name="url" select="concat(replace($http.rawURL, '[;&amp;]resumptionToken=[^;&amp;]+', ''), '&amp;', $decodedResumpToken)"/>
                      <xsl:variable name="result" select="document($url)/*:OAI-PMH"/>
                      <!-- Pick out the pieces for our final result -->
                      <request metadataPrefix="{$result/*:request/@metadataPrefix}" verb="ListRecords">
