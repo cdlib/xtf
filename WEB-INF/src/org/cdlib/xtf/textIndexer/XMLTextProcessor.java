@@ -1307,6 +1307,7 @@ public class XMLTextProcessor extends DefaultHandler
       IndexUtil.applyPreFilters(prefilters,
                                 xmlParser.getXMLReader(),
                                 xmlSource,
+                                indexInfo.passThroughAttribs,
                                 new SAXResult(this));
     } // try
 

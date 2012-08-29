@@ -317,6 +317,7 @@ public class DefaultDocLocator implements DocLocator
           IndexUtil.applyPreFilters(array,
                                     xmlParser.getXMLReader(),
                                     inSrc,
+                                    null,
                                     new SAXResult(passthru));
         }
         catch (Exception e) {

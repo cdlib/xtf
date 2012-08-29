@@ -2,6 +2,8 @@ package org.cdlib.xtf.textIndexer;
 
 import java.util.ArrayList;
 
+import org.cdlib.xtf.util.AttribList;
+
 
 /**
  * Copyright (c) 2004, Regents of the University of California
@@ -235,6 +237,9 @@ public class IndexInfo
   public final static String defaultStopWords = "a an and are as at be but by for if in into is it no not of on or s " +
                                                 "such t that the their then there these they this to was will with";
 
+  /** Pass-through attributes in the form of name/value pairs */
+  public AttribList passThroughAttribs = new AttribList();
+  
   //////////////////////////////////////////////////////////////////////////// 
 
   /**

@@ -32,6 +32,8 @@ package org.cdlib.xtf.textEngine;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -44,10 +46,14 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import net.sf.saxon.Filter;
+import net.sf.saxon.value.StringValue;
+
 import org.cdlib.xtf.saxonExt.sql.SQLConnect;
 import org.cdlib.xtf.textIndexer.CrimsonBugWorkaround;
 import org.cdlib.xtf.textIndexer.IndexInfo;
 import org.cdlib.xtf.textIndexer.IndexerConfig;
+import org.cdlib.xtf.util.Attrib;
+import org.cdlib.xtf.util.AttribList;
 import org.cdlib.xtf.util.DocTypeDeclRemover;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.XTFSaxonErrorListener;
@@ -448,6 +454,7 @@ public class IndexUtil
    */
   public static void applyPreFilters(Templates[] prefilterStylesheets,
                                      XMLReader reader, InputSource xmlSource,
+                                     AttribList passThroughAttribs,
                                      Result ultimateResult)
     throws SAXException, TransformerException, TransformerConfigurationException 
   {
@@ -462,6 +469,17 @@ public class IndexUtil
       // Create an XMLFilter from the stylesheet
       Filter filter = (Filter)stf.newXMLFilter(prefilterStylesheets[i]);
       Transformer trans = filter.getTransformer();
+      
+      // Give it the pass-through attributes.
+      if (passThroughAttribs != null)
+      {
+        for (Iterator iter = passThroughAttribs.iterator(); iter.hasNext();) {
+          Attrib a = (Attrib)iter.next();
+          if (a.value == null || a.value.length() == 0)
+            continue;
+          trans.setParameter(a.key, new StringValue(a.value));
+        }
+      }
 
       // Make sure errors get directed to the right place.
       if (!(trans.getErrorListener() instanceof XTFSaxonErrorListener))

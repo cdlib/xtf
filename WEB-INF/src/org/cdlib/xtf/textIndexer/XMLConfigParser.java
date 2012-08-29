@@ -542,9 +542,9 @@ public class XMLConfigParser extends DefaultHandler
 
       return;
     }
-
-    Trace.error("Unknown config option: '" + qName + "'");
-    System.exit(1);
+    
+    // If we don't recognize it, just record it as a pass-through to the stylesheets.
+    configInfo.indexInfo.passThroughAttribs.put(qName, atts.getValue("value"));
   } // public startElement()
 
   ////////////////////////////////////////////////////////////////////////////

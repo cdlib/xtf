@@ -42,12 +42,14 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.sax.SAXSource;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
+import net.sf.saxon.value.StringValue;
 
 import org.apache.lucene.util.StringUtil;
 import org.cdlib.xtf.cache.Dependency;
 import org.cdlib.xtf.cache.FileDependency;
 import org.cdlib.xtf.servletBase.StylesheetCache;
 import org.cdlib.xtf.textEngine.IndexUtil;
+import org.cdlib.xtf.util.Attrib;
 import org.cdlib.xtf.util.EasyNode;
 import org.cdlib.xtf.util.Path;
 import org.cdlib.xtf.util.StructuredStore;
@@ -378,6 +380,15 @@ public class SrcTreeProcessor
 
       TreeBuilder tree = new TreeBuilder();
       Transformer docSelectorTrans = docSelector.newTransformer();
+      
+      // Handle pass-through attributes from the config file.
+      for (Iterator i = cfgInfo.indexInfo.passThroughAttribs.iterator(); i.hasNext();) {
+        Attrib a = (Attrib)i.next();
+        if (a.value == null || a.value.length() == 0)
+          continue;
+        docSelectorTrans.setParameter(a.key, new StringValue(a.value));
+      }
+
       docSelectorTrans.transform(new SAXSource(docSelectorInput), tree);
       NodeInfo result = tree.getCurrentRoot();
 
