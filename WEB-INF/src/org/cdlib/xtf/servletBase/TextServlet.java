@@ -946,7 +946,7 @@ public abstract class TextServlet extends HttpServlet
         String xtfHome = Path.normalizePath(TextServlet.getCurServlet().getRealPath(""));
         warmer = indexWarmers.get(xtfHome);
         if (warmer == null) {
-          warmer = new IndexWarmer(xtfHome, 60); // TODO: Make interval configurable
+          warmer = new IndexWarmer(xtfHome, getConfig().indexWarmingUpdateInterval);
           indexWarmers.put(xtfHome, warmer);
         }
       }

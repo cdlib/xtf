@@ -113,6 +113,9 @@ public abstract class TextConfig
    */
   public Map tokenizerMap = new HashMap();
   
+  /** Interval for index warming. Default: 60 (seconds) */
+  public int indexWarmingUpdateInterval = 60;
+  
   /** All the configuration attributes in the form of name/value pairs */
   public AttribList attribs = new AttribList();
 
@@ -285,6 +288,10 @@ public abstract class TextConfig
     }
     else if (tagAttr.equalsIgnoreCase("cacheControl.allowBrowserCaching")) {
       allowBrowserCaching = parseBoolean(tagAttr, strVal);
+      return true;
+    }
+    else if (tagAttr.equalsIgnoreCase("indexWarming.updateInterval")) {
+      indexWarmingUpdateInterval = parseInt(tagAttr, strVal);
       return true;
     }
 
