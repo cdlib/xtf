@@ -13,7 +13,7 @@ if ($home eq "") {
 }
 
 # Figure out what character Java is using for classpath separation
-$joiner = `java`;
+$joiner = `java 2>&1`; # grab stdout and stderr, for JDK 6 and JDK 7 respectively
 $joiner =~ /A (.) separated list of directories/;
 if ($1 eq "") { $joiner =~ /files separated by (.)/; }
 $joiner = $1;
