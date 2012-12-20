@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossQueryResult totalDocs="1" startDoc="1" endDoc="1">
+   <docHit rank="1" file="doc6.xml" totalHits="0">
+      <meta>
+         <struct2 attr="something">
+      Now we are <a href="http://foo?x=1&amp;y=2">testing attributes with &amp; ampersands "in &amp; quotes"</a>.</struct2>
+      </meta>
+   </docHit>
+</crossQueryResult>

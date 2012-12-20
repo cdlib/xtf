@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<document xmlns:xtf="http://cdlib.org/xtf">
+    <struct2 xtf:meta="true" attr="something">
+      Now we are <a href="http://foo?x=1&amp;y=2">testing attributes with &amp; ampersands "in &amp; quotes"</a>.
+    </struct2>
+</document>

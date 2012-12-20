@@ -1643,12 +1643,14 @@ public class XMLTextProcessor extends DefaultHandler
       if (attrUri.equals(xtfUri))
         continue;
 
-      // Found one. Add it to the buffer.
+      // Found one. Add it to the buffer, being certain to map special chars
+      // (e.g. attribute values with ampersands in the string).
+      //
       if (buf.length() > 0)
         buf.append(' ');
       String name = atts.getLocalName(i);
       String value = atts.getValue(i);
-      buf.append(name + "=\"" + value + "\"");
+      buf.append(name + "=\"" + mapXMLChars(value) + "\"");
     } // for i
 
     // All done.
@@ -2050,12 +2052,7 @@ public class XMLTextProcessor extends DefaultHandler
       // Map special XML characters to entities, so we can tell the difference
       // between these and embedded XML in the meta-data.
       //
-      if (tmp.indexOf('&') >= 0)
-        tmp = tmp.replaceAll("&", "&amp;");
-      if (tmp.indexOf('<') >= 0)
-        tmp = tmp.replaceAll("<", "&lt;");
-      if (tmp.indexOf('>') >= 0)
-        tmp = tmp.replaceAll(">", "&gt;");
+      tmp = mapXMLChars(tmp);
       metaBuf.append(tmp);
       return;
     }
@@ -2282,6 +2279,20 @@ public class XMLTextProcessor extends DefaultHandler
     // Trim all the trailing spaces off the accumulated text buffer.
     trimAccumText(false);
   } // public characters()
+  
+  /**
+   * Map special characters in XML to their entity equivalents.
+   */
+  private String mapXMLChars(String str)
+  {
+    if (str.indexOf('&') >= 0)
+      str = str.replaceAll("&", "&amp;");
+    if (str.indexOf('<') >= 0)
+      str = str.replaceAll("<", "&lt;");
+    if (str.indexOf('>') >= 0)
+      str = str.replaceAll(">", "&gt;");
+    return str;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
