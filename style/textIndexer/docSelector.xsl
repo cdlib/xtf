@@ -227,6 +227,13 @@
                type="text"
                preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
          </xsl:when>
+
+         <!-- MARC files -->
+         <xsl:when test="ends-with(@fileName, '.mrc')">
+            <indexFile fileName="{@fileName}" 
+               type="MARC"
+               preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+         </xsl:when>
       </xsl:choose>
       
    </xsl:template>
