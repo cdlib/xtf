@@ -380,7 +380,17 @@ public class MARCIndexSource extends IndexSource
       // Pass the newly parsed record to the main thread.
       synchronized (this) 
       {
-        // Wait for the previous record to be consumed.
+        // Put up the new record, and notify the main thread.
+        assert parsedMarcXML == null; // invalid state?
+        parsedMarcXML = buffer.toString();
+        ++recordNum;
+        notifyAll();
+
+        // Now wait for it to be consumed. Previously this wait was before
+        // putting up the new record, and that caused the last record of
+        // the file to be missed because by the time the main thread got
+        // around to looking, our isDone flag would already be set.
+        //
         while (parsedMarcXML != null) 
         {
           try {
@@ -390,11 +400,6 @@ public class MARCIndexSource extends IndexSource
             throw new RuntimeException(e);
           }
         }
-
-        // Put up the new record, and notify the main thread.
-        parsedMarcXML = buffer.toString();
-        ++recordNum;
-        notifyAll();
       }
     } // endChunk()
 
