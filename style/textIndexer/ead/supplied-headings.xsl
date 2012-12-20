@@ -18,7 +18,7 @@
 		<xsl:when test="$element-name = 'accessrestrict'">
 			<xsl:text>Access Information</xsl:text>
 		</xsl:when>
-		<xsl:when test="$element-name = 'accurals'">
+		<xsl:when test="$element-name = 'accruals'">
 			<xsl:text>Future Additions</xsl:text>
 		</xsl:when>
 		<xsl:when test="$element-name = 'acquinfo'">

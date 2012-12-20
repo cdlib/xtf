@@ -242,7 +242,7 @@
    <!-- language -->
    <xsl:template name="get-htm-language">
       <xsl:choose>
-         <xsl:when test="//*:meta[@name='dc.date']">
+         <xsl:when test="//*:meta[@name='dc.source']">
             <language xtf:meta="true">
                <xsl:value-of select="//*:meta[@name='dc.source'][1]/@content"/>
             </language>
