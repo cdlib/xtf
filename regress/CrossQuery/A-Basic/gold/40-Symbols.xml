@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="2" startDoc="1" endDoc="2">
-   <docHit rank="1" file="doc4.xml" totalHits="2">
+   <docHit rank="1" file="doc2.xml" totalHits="4">
+      <meta>
+         <testMeta>test</testMeta>
+      </meta>
+      <snippet rank="1">Pardon me sir, our bill is <hit>
+            <term>£</term>
+            <term>200</term>
+         </hit>. Courtesy Holmes &amp; Watson.</snippet>
+      <snippet rank="2">A greek word: <hit>
+            <term>παροψίς</term>
+         </hit>
+      </snippet>
+      <snippet rank="3">Gimme $1000 or I'll shoot. Copyright <hit>
+            <term>©</term>
+         </hit> 2005. 2 &lt; 5 &gt; 3.</snippet>
+      <snippet rank="4">Eat a new WhizBangKlap® today! How full -- ¼, ½, or <hit>
+            <term>¾</term>? What is 42<term>÷</term>
+         </hit>6?</snippet>
+   </docHit>
+   <docHit rank="2" file="doc4.xml" totalHits="2">
       <meta>
          <testMeta>test</testMeta>
       </meta>
@@ -10,20 +29,5 @@
       <snippet rank="2">ta tb tc<hit>
             <term>§</term>
          </hit>td te tf</snippet>
-   </docHit>
-   <docHit rank="2" file="doc2.xml" totalHits="3">
-      <meta>
-         <testMeta>test</testMeta>
-      </meta>
-      <snippet rank="1">Pardon me sir, our bill is <hit>
-            <term>£</term>
-            <term>200</term>
-         </hit>. Courtesy Holmes &amp; Watson.</snippet>
-      <snippet rank="2">Gimme $1000 or I'll shoot. Copyright <hit>
-            <term>©</term>
-         </hit> 2005. 2 &lt; 5 &gt; 3.</snippet>
-      <snippet rank="3">Eat a new WhizBangKlap® today! How full -- ¼, ½, or <hit>
-            <term>¾</term>? What is 42<term>÷</term>
-         </hit>6?</snippet>
    </docHit>
 </crossQueryResult>

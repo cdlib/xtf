@@ -6,5 +6,6 @@
     <term>©</term>
     <near slop="10"><term>¾</term><term>÷</term></near>
     <term>§</term>
+    <term>παροψίς</term> <!-- changed 2012-12-20: pi should now be considered a letter -->
   </or>
 </query>

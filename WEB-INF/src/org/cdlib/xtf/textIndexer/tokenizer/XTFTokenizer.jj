@@ -167,7 +167,6 @@ TOKEN : {					  // token patterns
       "\u221e", // infinity
       "\u2202", // partial differential
       "\u220f", // product
-      "\u03c0", // lower-case greek pi
       "\u222b", // integral
       "\u2126", // ohm
       "\u221a", // radical
@@ -204,7 +203,8 @@ TOKEN : {					  // token patterns
        "\u00c0"-"\u00d6",
        "\u00d8"-"\u00f6",
        "\u00f8"-"\u00ff",
-       "\u0100"-"\u1fff"
+       "\u0100"-"\u1fff",
+       "\u03c0"                   // lower-case greek pi
       ]
   >
 | < CJK:                                          // non-alphabets

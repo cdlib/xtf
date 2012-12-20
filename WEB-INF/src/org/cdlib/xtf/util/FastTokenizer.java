@@ -80,6 +80,7 @@ public class FastTokenizer extends Tokenizer
     setCharType('a', '\u00d8', '\u00f6');
     setCharType('a', '\u00f8', '\u00ff');
     setCharType('a', '\u0100', '\u1fff');
+    charType['\u03c0'] = 'a'; // lower-case greek pi
 
     // ...num
     setCharType('a', '\u0030', '\u0039');
@@ -178,7 +179,6 @@ public class FastTokenizer extends Tokenizer
     charType['\u221e'] = 's'; // infinity
     charType['\u2202'] = 's'; // partial differential
     charType['\u220f'] = 's'; // product
-    charType['\u03c0'] = 's'; // lower-case greek pi
     charType['\u222b'] = 's'; // integral
     charType['\u2126'] = 's'; // ohm
     charType['\u221a'] = 's'; // radical
