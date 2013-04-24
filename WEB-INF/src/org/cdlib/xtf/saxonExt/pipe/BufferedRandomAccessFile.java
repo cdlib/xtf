@@ -93,7 +93,7 @@ class BufferedRandomAccessFile extends RandomAccessFileOrArray
       if (bufferPos >= bufferLength)
         return -1;
     }
-    return buffer[bufferPos++];
+    return buffer[bufferPos++] & 0xff;
   }
   
   @Override
@@ -104,7 +104,7 @@ class BufferedRandomAccessFile extends RandomAccessFileOrArray
     // If there was a pushback, use it.
     if (havePrevByte && len > 0) {
       havePrevByte = false;
-      b[0] = prevByte;
+      b[off] = prevByte;
       ++off;
       --len;
     }
