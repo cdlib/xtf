@@ -314,6 +314,8 @@ public class IndexUtil
     synchronized (saxParserFactory) 
     {
       try {
+        // Patch from Steve Majewski to enable XInclude processing
+        saxParserFactory.setXIncludeAware(true);
         SAXParser xmlParser = saxParserFactory.newSAXParser();
         XMLReader xmlReader = xmlParser.getXMLReader();
         xmlReader.setFeature("http://xml.org/sax/features/namespaces", true);
