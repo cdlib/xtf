@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns:xtf="http://cdlib.org/xtf" xtf:hitCount="7" xtf:firstHit="1">
    <xtf:snippets totalHitCount="7" hitCount="7">
-      <xtf:snippet rank="1" hitNum="7" subDocument="10-a">i3 <xtf:hit>
+      <xtf:snippet rank="1" hitNum="2" subDocument="10-a">i3 <xtf:hit>
             <xtf:term>ix</xtf:term>
          </xtf:hit> i4</xtf:snippet>
-      <xtf:snippet rank="2" hitNum="1" subDocument="10-a1">i3a <xtf:hit>
+      <xtf:snippet rank="2" hitNum="3" subDocument="10-a1">i3a <xtf:hit>
             <xtf:term>ix</xtf:term>
          </xtf:hit> i4a</xtf:snippet>
-      <xtf:snippet rank="3" hitNum="1">i7 <xtf:hit>
+      <xtf:snippet rank="3" hitNum="6">i7 <xtf:hit>
             <xtf:term>ix</xtf:term>
          </xtf:hit> i8</xtf:snippet>
-      <xtf:snippet rank="4" hitNum="1" subDocument="10-c">i9 <xtf:hit>
+      <xtf:snippet rank="4" hitNum="7" subDocument="10-c">i9 <xtf:hit>
             <xtf:term>ix</xtf:term>
          </xtf:hit> iA</xtf:snippet>
-      <xtf:snippet rank="5" hitNum="1" subDocument="10-a2">i3b <xtf:hit>
+      <xtf:snippet rank="5" hitNum="4" subDocument="10-a2">i3b <xtf:hit>
             <xtf:term>ix</xtf:term>
          </xtf:hit> i4b</xtf:snippet>
       <xtf:snippet rank="6" hitNum="1">i1 <xtf:hit>
             <xtf:term>ix</xtf:term>
          </xtf:hit> i2</xtf:snippet>
-      <xtf:snippet rank="7" hitNum="1" subDocument="10-b">i5 <xtf:hit>
+      <xtf:snippet rank="7" hitNum="5" subDocument="10-b">i5 <xtf:hit>
             <xtf:term>ix</xtf:term>
          </xtf:hit> i6</xtf:snippet>
    </xtf:snippets>
@@ -30,7 +30,7 @@
     
     
         
-        i1 <xtf:hit rank="1" hitNum="1" more="no">
+        i1 <xtf:hit rank="6" hitNum="1" more="no">
          <xtf:term>ix</xtf:term>
       </xtf:hit> i2
         
@@ -40,14 +40,14 @@
             <xtf:term>ix</xtf:term>
          </xtf:hit> i4
             <unitA1 xtf:subDocument="10-a1" xtf:hitCount="1" xtf:firstHit="3">
-                i3a <xtf:hit rank="1" hitNum="3" more="no">
+                i3a <xtf:hit rank="2" hitNum="3" more="no">
                <xtf:term>ix</xtf:term>
             </xtf:hit> i4a
                 <field3 xtf:meta="true">value3-1</field3>
             </unitA1>
             <unitA2 xtf:subDocument="10-a2" xtf:noInheritMeta="true" xtf:hitCount="1"
                  xtf:firstHit="4">
-                i3b <xtf:hit rank="1" hitNum="4" more="no">
+                i3b <xtf:hit rank="5" hitNum="4" more="no">
                <xtf:term>ix</xtf:term>
             </xtf:hit> i4b
                 <field3 xtf:meta="true">value3-2</field3>
@@ -56,19 +56,19 @@
 
         <unitB xtf:subDocument="10-b" xtf:inheritMeta="no" xtf:hitCount="1" xtf:firstHit="5">
             <field2 xtf:meta="true">value2-b</field2>
-            i5 <xtf:hit rank="1" hitNum="5" more="no">
+            i5 <xtf:hit rank="7" hitNum="5" more="no">
             <xtf:term>ix</xtf:term>
          </xtf:hit> i6
         </unitB>
 
         
-        i7 <xtf:hit rank="1" hitNum="6" more="no">
+        i7 <xtf:hit rank="3" hitNum="6" more="no">
          <xtf:term>ix</xtf:term>
       </xtf:hit> i8
         
         <unitC xtf:subDocument="10-c" xtf:hitCount="1" xtf:firstHit="7">
             <field2 xtf:meta="true">value2-c</field2>
-            i9 <xtf:hit rank="1" hitNum="7" more="no">
+            i9 <xtf:hit rank="4" hitNum="7" more="no">
             <xtf:term>ix</xtf:term>
          </xtf:hit> iA
         </unitC>

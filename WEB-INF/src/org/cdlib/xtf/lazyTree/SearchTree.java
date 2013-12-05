@@ -388,6 +388,7 @@ public class SearchTree extends LazyDocument
         hitsToDocHit[n] = docHit;
         hitsToDocHitNum[n] = j;
         hitsByScore[n] = docHit.snippet(j, false);
+        hitsByScore[n].rank = n;
         n++;
       }
     }
