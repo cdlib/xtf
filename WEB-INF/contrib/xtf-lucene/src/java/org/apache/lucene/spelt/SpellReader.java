@@ -255,6 +255,14 @@ public class SpellReader
   public void setDebugWriter(PrintWriter w) {
     debugWriter = w;
   }
+  
+  private static String rtrim(String s) {
+    int i = s.length()-1;
+    while (i >= 0 && Character.isWhitespace(s.charAt(i))) {
+        i--;
+    }
+    return s.substring(0, i+1);
+  }
 
   /**
    * Read the list of edit-map words for the given 4-character key.
@@ -284,7 +292,11 @@ public class SpellReader
       throw new IOException("error reading from edMap file");
 
     // Decode the string data from UTF-8
-    String line = edMapDecoder.decode(ByteBuffer.wrap(bytes)).toString().trim();
+    //
+    // MH 2013-12-05: Do not trim the left side of the string, because some valid keys 
+    // begin with a space character, e.g. the (&127) encoding for certain Unicode chars.
+    //
+    String line = rtrim(edMapDecoder.decode(ByteBuffer.wrap(bytes)).toString());
 
     // Break up all the tokens, and validate the amount.
     String[] tokens = splitPat.split(line);
