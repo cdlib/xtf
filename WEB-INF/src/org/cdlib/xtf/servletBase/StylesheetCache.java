@@ -187,7 +187,7 @@ public class StylesheetCache extends GeneratingCache
    * We do it by implementing a pass-through URIResolver that adds a
    * dependency and then does the normal URIResolver work.
    */
-  private class DepResolver implements URIResolver 
+  private static class DepResolver implements URIResolver 
   {
     /**
      * Constructor.
@@ -195,7 +195,7 @@ public class StylesheetCache extends GeneratingCache
      * @param cache         The cache to add dependencies to
      * @param realResolver  The URIResolver that does the resolution
      */
-    DepResolver(GeneratingCache cache, URIResolver realResolver) {
+    DepResolver(StylesheetCache cache, URIResolver realResolver) {
       this.cache = cache;
       this.realResolver = realResolver;
     }
@@ -220,14 +220,23 @@ public class StylesheetCache extends GeneratingCache
       Source src = realResolver.resolve(href, base);
 
       // If it's a file, add a dependency on it.
-      if (src != null && dependencyReceiver != null) 
+      if (src != null) 
       {
         String sysId = src.getSystemId();
-        if (sysId != null && sysId.startsWith("file:")) {
-          String path = sysId.substring("file:".length());
-          while (path.startsWith("//"))
-            path = path.substring(1);
-          dependencyReceiver.addDependency(new FileDependency(path));
+        if (sysId != null && sysId.startsWith("file:")) 
+        {
+          // Be careful to pay attention if the cache is locked, so as to 
+          // avoid leaking dependencies between threads.
+          //
+          synchronized (cache)
+          {
+            if (cache.dependencyReceiver != null) {
+              String path = sysId.substring("file:".length());
+              while (path.startsWith("//"))
+                path = path.substring(1);
+              cache.dependencyReceiver.addDependency(new FileDependency(path));
+            }
+          }
         }
       }
 
@@ -236,7 +245,7 @@ public class StylesheetCache extends GeneratingCache
     } // resolve()
 
     /** The cache to add dependencies to */
-    GeneratingCache cache;
+    StylesheetCache cache;
 
     /** Does the work of resolving the URI's */
     URIResolver realResolver;
