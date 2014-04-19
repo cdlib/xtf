@@ -87,10 +87,10 @@
          </xsl:when>
          <!-- book bag -->
          <xsl:when test="$smode = 'addToBag'">
-            <span>Added</span>
+            <a href="#">Delete</a>
          </xsl:when>
          <xsl:when test="$smode = 'removeFromBag'">
-            <!-- no output needed -->
+            <a href="#">Add</a>
          </xsl:when>
          <xsl:when test="$smode='getAddress'">
             <xsl:call-template name="getAddress"/>
@@ -171,8 +171,9 @@
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <xsl:copy-of select="$brand.links"/>
             <!-- AJAX support -->
-            <script src="script/yui/yahoo-dom-event.js" type="text/javascript"/> 
-            <script src="script/yui/connection-min.js" type="text/javascript"/> 
+            <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"/>
+            <script src="{$xtfURL}script/bookbag.js" type="text/javascript"/>
+            <script src="{$xtfURL}script/moreLike.js" type="text/javascript"/>
          </head>
          <body>
             
@@ -458,8 +459,7 @@ Item number <xsl:value-of select="$num"/>:
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <xsl:copy-of select="$brand.links"/>
             <!-- AJAX support -->
-            <script src="script/yui/yahoo-dom-event.js" type="text/javascript"/> 
-            <script src="script/yui/connection-min.js" type="text/javascript"/> 
+            <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"/> 
          </head>
          <body>
             
@@ -592,7 +592,6 @@ Item number <xsl:value-of select="$num"/>:
       
       <xsl:variable name="identifier" select="meta/identifier[1]"/>
       <xsl:variable name="quotedID" select="concat('&quot;', $identifier, '&quot;')"/>
-      <xsl:variable name="indexId" select="replace($identifier, '.*/', '')"/>
       
       <!-- scrolling anchor -->
       <xsl:variable name="anchor">
@@ -612,7 +611,9 @@ Item number <xsl:value-of select="$num"/>:
                <td class="col1">
                   <xsl:choose>
                      <xsl:when test="$sort = ''">
-                        <b><xsl:value-of select="@rank"/></b>
+                        <b>
+                           <xsl:value-of select="@rank"/>
+                        </b>
                      </xsl:when>
                      <xsl:otherwise>
                         <xsl:text>&#160;</xsl:text>
@@ -634,61 +635,25 @@ Item number <xsl:value-of select="$num"/>:
                   </xsl:choose>
                </td>
                <td class="col4">
-                  <!-- Add/remove logic for the session bag (only if session tracking enabled) -->
-                  <xsl:if test="session:isEnabled()">
-                     <xsl:choose>
-                        <xsl:when test="$smode = 'showBag'">
-                           <script type="text/javascript">
-                              remove_<xsl:value-of select="@rank"/> = function() {
-                                 var span = YAHOO.util.Dom.get('remove_<xsl:value-of select="@rank"/>');
-                                 span.innerHTML = "Deleting...";
-                                 YAHOO.util.Connect.asyncRequest('GET', 
-                                    '<xsl:value-of select="concat($xtfURL, $crossqueryPath, '?smode=removeFromBag;identifier=', $identifier)"/>',
-                                    {  success: function(o) { 
-                                          var main = YAHOO.util.Dom.get('main_<xsl:value-of select="@rank"/>');
-                                          main.parentNode.removeChild(main);
-                                          --(YAHOO.util.Dom.get('itemCount').innerHTML);
-                                       },
-                                       failure: function(o) { span.innerHTML = 'Failed to delete!'; }
-                                    }, null);
-                              };
-                           </script>
-                           <span id="remove_{@rank}">
-                              <a href="javascript:remove_{@rank}()">Delete</a>
-                           </span>
-                        </xsl:when>
-                        <xsl:when test="session:noCookie()">
-                           <span><a href="javascript:alert('To use the bag, you must enable cookies in your web browser.')">Requires cookie*</a></span>                                 
-                        </xsl:when>
-                        <xsl:otherwise>
-                           <xsl:choose>
-                              <xsl:when test="session:getData('bag')/bag/savedDoc[@id=$indexId]">
-                                 <span>Added</span>
-                              </xsl:when>
-                              <xsl:otherwise>
-                                 <script type="text/javascript">
-                                    add_<xsl:value-of select="@rank"/> = function() {
-                                       var span = YAHOO.util.Dom.get('add_<xsl:value-of select="@rank"/>');
-                                       span.innerHTML = "Adding...";
-                                       YAHOO.util.Connect.asyncRequest('GET', 
-                                          '<xsl:value-of select="concat($xtfURL, $crossqueryPath, '?smode=addToBag;identifier=', $identifier)"/>',
-                                          {  success: function(o) { 
-                                                span.innerHTML = o.responseText;
-                                                ++(YAHOO.util.Dom.get('bagCount').innerHTML);
-                                             },
-                                             failure: function(o) { span.innerHTML = 'Failed to add!'; }
-                                          }, null);
-                                    };
-                                 </script>
-                                 <span id="add_{@rank}">
-                                    <a href="javascript:add_{@rank}()">Add</a>
-                                 </span>
-                              </xsl:otherwise>
-                           </xsl:choose>
-                           <xsl:value-of select="session:setData('queryURL', concat($xtfURL, $crossqueryPath, '?', $queryString))"/>
-                        </xsl:otherwise>
-                     </xsl:choose>
-                  </xsl:if>
+                  <xsl:choose>
+                     <xsl:when test="$smode='showBag'">
+                        <a href="#" class="bookbag" data-identifier="{$identifier}">
+                           <xsl:text>Delete</xsl:text>
+                        </a>
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <xsl:choose>
+                           <xsl:when test="session:getData('bag')/bag/savedDoc[@id=$identifier]">
+                              <span>Added</span>
+                           </xsl:when>
+                           <xsl:otherwise>
+                              <a href="#" class="bookbag" data-identifier="{$identifier}">
+                                 <xsl:text>Add</xsl:text>
+                              </a>
+                           </xsl:otherwise>
+                        </xsl:choose>
+                     </xsl:otherwise>
+                  </xsl:choose>
                </td>
             </tr>
             <tr>
@@ -797,20 +762,7 @@ Item number <xsl:value-of select="$num"/>:
                   <b>Similar&#160;Items:&#160;&#160;</b>
                </td>
                <td class="col3" colspan="2">
-                  <script type="text/javascript">
-                     getMoreLike_<xsl:value-of select="@rank"/> = function() {
-                        var span = YAHOO.util.Dom.get('moreLike_<xsl:value-of select="@rank"/>');
-                        span.innerHTML = "Fetching...";
-                        YAHOO.util.Connect.asyncRequest('GET', 
-                           '<xsl:value-of select="concat('search?smode=moreLike;docsPerPage=5;identifier=', $identifier)"/>',
-                           { success: function(o) { span.innerHTML = o.responseText; },
-                             failure: function(o) { span.innerHTML = "Failed!" } 
-                           }, null);
-                     };
-                  </script>
-                  <span id="moreLike_{@rank}">
-                     <a href="javascript:getMoreLike_{@rank}()">Find</a>
-                  </span>
+                  <a href="#" class="moreLike" data-identifier="{$identifier}">Find</a>
                </td>
             </tr>
             
