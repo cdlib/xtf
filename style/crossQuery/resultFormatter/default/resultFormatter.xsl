@@ -171,7 +171,7 @@
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <xsl:copy-of select="$brand.links"/>
             <!-- AJAX support -->
-            <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"/>
+            <script src="//code.jquery.com/jquery-latest.min.js" type="text/javascript"/>
             <script src="{$xtfURL}script/bookbag.js" type="text/javascript"/>
             <script src="{$xtfURL}script/moreLike.js" type="text/javascript"/>
          </head>
@@ -459,7 +459,9 @@ Item number <xsl:value-of select="$num"/>:
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <xsl:copy-of select="$brand.links"/>
             <!-- AJAX support -->
-            <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"/> 
+            <script src="//code.jquery.com/jquery-latest.min.js" type="text/javascript"/>
+            <script src="{$xtfURL}script/bookbag.js" type="text/javascript"/>
+            <script src="{$xtfURL}script/moreLike.js" type="text/javascript"/>
          </head>
          <body>
             
