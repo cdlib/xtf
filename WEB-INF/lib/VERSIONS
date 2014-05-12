@@ -4,8 +4,8 @@ iText version: 2.1.7
   Note: We cannot use 5.x iText since its Aferro GPL is incompatible with BSD/LGPL/Apache.
         Can I just complain here how evil it is to take a free tool and commercialize it?
 
-PDFBox version: 1.1.0
+PDFBox version: 1.8.5
   pdfBox.jar
 
-FontBox version: 1.1.0
+FontBox version: 1.8.5
   fontBox.jar
