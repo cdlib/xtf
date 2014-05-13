@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crossQueryResult totalDocs="2" startDoc="1" endDoc="2">
    <docHit rank="1" file="doc4.pdf" totalHits="13">
-      <snippet rank="1">out the hidden complexities of <hit>
-            <term>image</term> 
-            <term>capture</term>
-         </hit> and project planning, without ever</snippet>
-      <snippet rank="2">at the end of this document. Because <hit>
+      <snippet rank="1">at the end of this document. Because <hit>
             <term>image</term> 
             <term>capture</term>
          </hit> capabilities are changing so</snippet>
-      <snippet rank="3">are created as the direct result of <hit>
+      <snippet rank="2">are created as the direct result of <hit>
             <term>image</term> 
             <term>capture</term>
          </hit>. The digital master should</snippet>
+      <snippet rank="3">and enhanced by the UC Berkeley <hit>
+            <term>Image</term> 
+            <term>Capture</term>
+         </hit> and Presentation Task Force (</snippet>
    </docHit>
    <docHit rank="2" file="doc2.htm" totalHits="1">
       <snippet rank="1">Type in your search using <hit>
