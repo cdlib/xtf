@@ -21,7 +21,7 @@
 		<xsl:when test="$element-name = 'accruals'">
 			<xsl:text>Future Additions</xsl:text>
 		</xsl:when>
-		<xsl:when test="$element-name = 'acquinfo'">
+		<xsl:when test="$element-name = 'acquinfo' or $element-name = 'acqinfo'">
 			<xsl:text>Acquisition Information</xsl:text>
 		</xsl:when>
 		<xsl:when test="$element-name = 'altformavail'">
@@ -66,7 +66,7 @@
 		<xsl:when test="$element-name = 'phystech'">
 			<xsl:text>Technical Details</xsl:text>
 		</xsl:when>
-		<xsl:when test="$element-name = 'perfercite'">
+		<xsl:when test="$element-name = 'perfercite' or $element-name = 'prefercite'">
 			<xsl:text>How to Cite</xsl:text>
 		</xsl:when>
 		<xsl:when test="$element-name = 'processinfo'">
@@ -78,7 +78,7 @@
 		<xsl:when test="$element-name = 'scopecontent'">
 			<xsl:text>Scope and Content Note</xsl:text>
 		</xsl:when>
-		<xsl:when test="$element-name = 'seperatedmaterial'">
+		<xsl:when test="$element-name = 'seperatedmaterial' or $element-name = 'separatedmaterial'">
 			<xsl:text>Removed or Separated Material</xsl:text>
 		</xsl:when>
 		<xsl:when test="$element-name = 'userestrict'">
