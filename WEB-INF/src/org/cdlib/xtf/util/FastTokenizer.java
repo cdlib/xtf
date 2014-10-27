@@ -116,6 +116,7 @@ public class FastTokenizer extends Tokenizer
     charType['\n'] = 'w';
     charType['\r'] = 'w';
     charType['\f'] = 'w';
+    charType['\u0f0b'] = 'w';   // Tibetan 'tsheg' word separator
 
     // Punctuation
     charType['\''] = 'p';
