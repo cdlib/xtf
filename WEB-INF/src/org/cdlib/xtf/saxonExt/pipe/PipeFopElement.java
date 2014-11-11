@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -470,13 +471,14 @@ public class PipeFopElement extends ElementWithContent
         
         // If one of the documents has XMP metadata, retain it. If both do, we will prefer
         // the second one.
+        boolean override = getAttribBool("overrideMetadata", context, false);
         byte[] xmpMetadata = null;
         for (int i=0; i<2; i++) {  
           PdfDictionary catalog = readers[i].getCatalog();
           PdfObject xmpo = PdfReader.getPdfObject(catalog.get(PdfName.METADATA));
           if (xmpo != null && xmpo.isStream()) {
-            if (xmpMetadata != null)
-              Trace.warning("Warning: Trying to merge PDF files both of which have XMP metadata. Picking one.");
+            if (xmpMetadata != null && override)
+              continue;
             xmpMetadata = PdfReader.getStreamBytesRaw((PRStream)xmpo);
             PdfReader.killIndirect(catalog.get(PdfName.METADATA));
           }
