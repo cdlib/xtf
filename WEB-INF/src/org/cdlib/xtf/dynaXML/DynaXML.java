@@ -150,9 +150,10 @@ public class DynaXML extends TextServlet
       config.reverseProxyIP + "\"");
 
     // If it matches the configured address of the reverse proxy, we have
-    // to un-map it.
+    // to un-map it. Allow "*" for the reverseProxyIP for servers that are
+    // behind a load balancer that has variable IP addresses.
     //
-    if (ip.equals(config.reverseProxyIP)) 
+    if (ip.equals(config.reverseProxyIP) || "*".equals(config.reverseProxyIP)) 
     {
       Trace.debug("...matches reverseProxyIP");
 
