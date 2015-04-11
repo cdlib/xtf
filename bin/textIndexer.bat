@@ -2,6 +2,8 @@
 
 :: set the home directory
 @echo off
+set _=%cd%
+cd %~dp0
 pushd ..
 set XTF_HOME=%cd%
 popd
@@ -15,4 +17,5 @@ for %%i in ("%XTF_HOME%"\WEB-INF\lib\*.jar) do set XTFCP=!XTFCP!;%%i
 java -cp "%XTFCP%" -Xms150m -Xmx1500m -Dxtf.home="%XTF_HOME%" -DentityExpansionLimit=256000 -enableassertions org.cdlib.xtf.textIndexer.TextIndexer %*
 set XTFCP=
 set XTF_HOME=
+cd %_%
 exit
