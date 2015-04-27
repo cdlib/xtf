@@ -188,7 +188,14 @@ public abstract class TextServlet extends HttpServlet
       return partialPath;
     if (!isEmpty(baseDir))
       return Path.resolveRelOrAbs(baseDir, partialPath);
-    return staticContext.getRealPath(partialPath);
+
+    // 2015-04-08 MH:
+    // Tomcat 8 started enforcing an interesting rule: context.getRealPath requires a 
+    // "virtual path", in particular requiring that it start with a "/". This appears
+    // to work in older versions of Tomcat as well, so prepending "/" is fine for all.
+    // See: http://stackoverflow.com/questions/25555541/getservletcontext-getrealpath-in-tomcat-8-returns-wrong-path
+    //
+    return staticContext.getRealPath("/"+partialPath);
   } // getRealPath()
 
   /**
