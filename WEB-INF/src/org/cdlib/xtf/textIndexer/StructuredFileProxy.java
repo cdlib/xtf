@@ -79,17 +79,9 @@ public class StructuredFileProxy implements StructuredStore
   {
     if (realStore != null)
       realStore.close();
-    if (tmpPath != null) {
+    if (tmpPath != null && tmpPath.canRead()) {
       if (!tmpPath.renameTo(finalPath))
-      {
-        // If trouble renaming, it may be because the target file exists or is
-        // being modified by another process in certain scenarios where lazy files
-        // are shared between different indexes. Try deleting it so we can replace
-        // it with this newer version.
-        finalPath.delete();
-        if (!tmpPath.renameTo(finalPath))
-          throw new IOException("Error renaming temporary store to final: " + finalPath);
-      }
+        throw new IOException("Error renaming temporary store to final: " + finalPath);
     }
     realStore = null;
     finalPath = tmpPath = null;
