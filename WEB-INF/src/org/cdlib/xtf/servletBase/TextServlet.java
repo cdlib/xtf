@@ -848,8 +848,8 @@ public abstract class TextServlet extends HttpServlet
         continue;
       }
 
-      // Leave existing entities alone.
-      if (c == '&') 
+      // If we're keeping tags, also leave existing entities alone.
+      if (keepTags && c == '&')
       {
         int j;
         for (j = i + 1; j < s.length(); j++) {
