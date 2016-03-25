@@ -59,9 +59,10 @@ public class LazyDocument extends ParentNodeImpl implements DocumentInfo,
   protected int documentNumber;
 
   /** Determines whether this document is using namespaces. Not sure why
-   *  this works when false, but it does.
+   *  this works when false, but it does. ( It turns out false is what breaks 
+   *  namespace prefixes in the ;raw=1 output. Changed to true. )
    */
-  protected boolean usesNamespaces = false;
+  protected boolean usesNamespaces = true;
 
   /**
    * This structure supports trees whose root is an element node rather than
