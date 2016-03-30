@@ -85,6 +85,16 @@
          <xsl:apply-templates/>
       </xsl:copy>
    </xsl:template>
+
+   <!-- add @id's to all /div* missing them so they are reachable  -->
+   <xsl:template match="*[matches(local-name(), '^div')][not(@id)]">
+      <xsl:copy>
+         <xsl:copy-of select="@*" />
+         <xsl:attribute name="id"><xsl:value-of select="generate-id()"/></xsl:attribute>
+         <xsl:apply-templates />
+      </xsl:copy>
+   </xsl:template>
+
    
    <!-- sectionType Indexing and Element Boosting -->
    <xsl:template match="*:head[parent::*[matches(local-name(),'^div')]]">
