@@ -302,7 +302,7 @@ public class TextIndexer
             Path.resolveRelOrAbs(xtfHomeFile, cfgInfo.indexInfo.indexPath));
         if (firstIndex) 
         {
-          if (!cfgInfo.mustClean) 
+          if (!cfgInfo.mustClean && !cfgInfo.prefilterOnly) 
           {
             Trace.info("");
             Trace.info("Purging Incomplete Documents From Indexes:");
@@ -315,7 +315,7 @@ public class TextIndexer
           }
 
           Trace.info("");
-          Trace.info("Indexing New/Updated Documents:");
+          Trace.info((cfgInfo.prefilterOnly ? "Prefiltering" : "Indexing") + " New/Updated Documents:");
           Trace.tab();
 
           // Indicate that the next pass through this loop is not 
@@ -517,15 +517,18 @@ public class TextIndexer
     // Cull files which are present in the index but missing
     // from the filesystem.
     //
-    IdxTreeCuller culler = new IdxTreeCuller();
+    if (!cfgInfo.prefilterOnly)
+    {
+      IdxTreeCuller culler = new IdxTreeCuller();
 
-    Trace.info("Removing Missing Documents From Index:");
-    Trace.tab();
+      Trace.info("Removing Missing Documents From Index:");
+      Trace.tab();
 
-    culler.cullIndex(new File(cfgInfo.xtfHomePath), cfgInfo.indexInfo, 
-                     srcRootFile, subDirFilter);
+      culler.cullIndex(new File(cfgInfo.xtfHomePath), cfgInfo.indexInfo, 
+                       srcRootFile, subDirFilter);
 
-    Trace.untab();
+      Trace.untab();
+    }
     Trace.info("Done.");
   }
   

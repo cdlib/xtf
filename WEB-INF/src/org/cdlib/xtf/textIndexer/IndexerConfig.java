@@ -134,6 +134,16 @@ public class IndexerConfig
   public boolean skipIndexing;
   
   /**
+   * Flag indicating whether to preprocess only, without indexing. Useful
+   * for quickly debugging index prefilter stylesheets.
+   * <br><br>
+   *
+   *  true  = Prefilter only (outputs prefiltered XML, and skips all steps after prefiltering).  <br>
+   *  false = (default) Index as normal including prefiltering. <br><br>
+   */
+  public boolean prefilterOnly;
+  
+  /**
    * Flag indicating whether or not to perform validation (on indexes which
    * are so marked).
    * <br><br>
@@ -188,6 +198,9 @@ public class IndexerConfig
     // Default to performing the main indexing pass
     skipIndexing = false;
     
+    // Default to normal indexing (not just prefiltering)
+    prefilterOnly = false;
+
     // Default to always validating indexes for which it's enabled
     validate = true;
     
@@ -406,6 +419,16 @@ public class IndexerConfig
       // If the user asked for us to skip the main indexing pass, flag it.
       else if (args[i].equalsIgnoreCase("-skipindexing"))
         skipIndexing = true;
+      
+      // If the user asked for us to only prefilter, flag it.
+      else if (args[i].equalsIgnoreCase("-prefilteronly")) {
+        prefilterOnly = true;
+        buildLazyFiles = false;
+        updateSpellDict = false;
+        validate = false;
+        optimize = false;
+        rotate = false;
+      }
       
       // If the user asked us to validate or not, flag it.
       else if (args[i].equalsIgnoreCase("-validate"))

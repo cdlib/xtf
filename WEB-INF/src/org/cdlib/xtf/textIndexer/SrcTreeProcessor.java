@@ -35,11 +35,14 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import javax.xml.parsers.SAXParser;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamResult;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.TreeBuilder;
 import net.sf.saxon.value.StringValue;
@@ -141,8 +144,10 @@ public class SrcTreeProcessor
     loadCache(cfgInfo);
 
     // Open the Lucene index specified by the config info.
-    textProcessor.open(cfgInfo.xtfHomePath, cfgInfo.indexInfo, cfgInfo.clean,
-        cfgInfo.force);
+    if (!cfgInfo.prefilterOnly) {
+      textProcessor.open(cfgInfo.xtfHomePath, cfgInfo.indexInfo, cfgInfo.clean,
+          cfgInfo.force);
+    }
     cfgInfo.clean = false;
   } // open()
 
@@ -166,8 +171,9 @@ public class SrcTreeProcessor
   public void close()
     throws IOException 
   {
-    // Flush the remaining open documents.    
-    textProcessor.processQueuedTexts();
+    // Flush the remaining open documents.
+    if (!cfgInfo.prefilterOnly)
+      textProcessor.processQueuedTexts();
 
     // Save the doc selector cache. We do this *after* processing the texts,
     // in case something catastrophic happens in there.
@@ -656,10 +662,48 @@ public class SrcTreeProcessor
       throw new RuntimeException("Internal error: code missing support for type");
 
     // Now queue up the file.
-    textProcessor.checkAndQueueText(srcFile);
+    if (cfgInfo.prefilterOnly)
+      outputRaw(srcFile);
+    else
+      textProcessor.checkAndQueueText(srcFile);
 
     // Let the caller know we didn't skip the file.
     return true;
   } // processFile()
+
+  ////////////////////////////////////////////////////////////////////////////
+
+  /** Dump preprocessed source data to stdout; used in prefilterOnly mode. <br><br>
+   *
+   * @param src       The XML index source to dump <br><br>
+   *
+   */
+  private void outputRaw(IndexSource src)
+    throws Exception 
+  {
+    while (true)
+    {
+      IndexRecord record = src.nextRecord();
+      if (record == null)
+        break;
+
+
+      // Instantiate a new XML parser, being sure to get the right one.
+      SAXParser xmlParser = IndexUtil.createSAXParser();
+
+      // Get the input source from the record.
+      InputSource xmlSource = record.xmlSource();
+
+      // Apply the prefilters and write the result to stderr
+      System.err.println(">>> BEGIN prefiltered " + src.key() + ":" + record.recordNum());
+      Templates[] prefilters = src.preFilters();
+      IndexUtil.applyPreFilters(prefilters != null ? prefilters : new Templates[0],
+                                xmlParser.getXMLReader(),
+                                xmlSource,
+                                cfgInfo.indexInfo.passThroughAttribs,
+                                new StreamResult(System.err));
+      System.err.println("\n>>> END prefiltered " + src.key() + ":" + record.recordNum());
+    }
+  } // outputRaw()
   
 } // class SrcTreeProcessor
