@@ -59,6 +59,9 @@ public class BigramStopFilter extends TokenFilter
   /** Tracks the position of input tokens, for debugging */
   private int inputPos = 0;
 
+  /** Limit on position values, for the extremely rare case of fields with > 2000 entries */
+  private final int MAX_POSITION = Integer.MAX_VALUE / 2;
+
   /**
    * Construct a token stream to filter 'stopWords' out of 'input'.
    *
@@ -109,7 +112,8 @@ public class BigramStopFilter extends TokenFilter
   {
     Token t = nextInternal();
     if (t != null) {
-      outputPos += t.getPositionIncrement();
+      // Hack to handle field with > 2000 entries: clamp the position
+      outputPos = Math.min(MAX_POSITION, outputPos + t.getPositionIncrement());
       assert outputPos <= inputPos;
     }
 
@@ -210,8 +214,10 @@ public class BigramStopFilter extends TokenFilter
     throws IOException 
   {
     Token t = input.next();
-    if (t != null)
-      inputPos += t.getPositionIncrement();
+    if (t != null) {
+      // Hack to handle field with > 2000 entries: clamp the position
+      inputPos = Math.min(MAX_POSITION, inputPos + t.getPositionIncrement());
+    }
     return t;
   }
 
