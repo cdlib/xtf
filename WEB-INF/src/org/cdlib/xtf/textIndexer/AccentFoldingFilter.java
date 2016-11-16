@@ -70,7 +70,6 @@ public class AccentFoldingFilter extends TokenFilter
   public Token next()
     throws IOException 
   {
-    int bumpAccum = 0;
     while (true)
     {
       // Get the next token. If we're at the end of the stream, get out.
@@ -81,26 +80,24 @@ public class AccentFoldingFilter extends TokenFilter
       // Does the word have any accented chars? If not, return it unchanged.
       String term = t.termText();
       String mapped = accentMap.mapWord(term);
-      if (mapped == null) {
-        if (bumpAccum == 0)
-          return t;
-        mapped = term; // We have accumulated bump to apply; must make new token.
-      }
+      if (mapped == null)
+        return t;
       
-      // Special case: if the term is only combining marks or spaces, skip to the next
-      // token. Be sure to retain any position bump though.
+      // Special case: if the term is only combining marks or spaces, don't map it.
       //
-      if (mapped.length() == 0) {
-        bumpAccum += t.getPositionIncrement() - 1;
-        continue;
-      }
+      // Previously in this case we deleted the token (combining its position bump
+      // with the next token), but that was insidiously evil because it threw off
+      // chunk word counting.
+      //
+      if (mapped.length() == 0)
+        return t;
   
       // Okay, we gotta make a new token that's the same in every respect
       // except the word. If we skipped terms because they were only combining marks
       // or spaces, be sure to include their accumulated position increment.
       //
       Token newToken = new Token(mapped, t.startOffset(), t.endOffset(), t.type());
-      newToken.setPositionIncrement(t.getPositionIncrement() + bumpAccum);
+      newToken.setPositionIncrement(t.getPositionIncrement());
       return newToken;
     }
   } // next()
