@@ -13,3 +13,4 @@ regress/**/*.log
 *.swp
 *.orig
 .ruby-version
+*.*~
