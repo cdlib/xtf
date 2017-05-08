@@ -181,7 +181,7 @@
             <error message="OAI::{$verb}::badResumptionToken::{$badResumptionTokenMessage}"/>
          </xsl:when>
          <xsl:when test="string-length($resumptionToken) &gt; 0">
-            <query indexPath="index" maxDocs="1" startDoc="1"  style="style/crossQuery/resultFormatter/oai/resultFormatter.xsl">
+            <query indexPath="index" maxDocs="1" startDoc="1"  style="local/style/crossQuery/resultFormatter/oai/resultFormatter.xsl">
                <allDocs/>
             </query>
          </xsl:when>
@@ -290,7 +290,7 @@
    
    <!-- construct query -->
    <xsl:template name="query">
-      <query indexPath="index" maxDocs="{$maxDocs}" startDoc="{$startDoc}" sortMetaFields="dateStamp" style="style/crossQuery/resultFormatter/oai/resultFormatter.xsl" termLimit="1000" workLimit="1000000">
+      <query indexPath="index" maxDocs="{$maxDocs}" startDoc="{$startDoc}" sortMetaFields="dateStamp" style="local/style/crossQuery/resultFormatter/oai/resultFormatter.xsl" termLimit="1000" workLimit="1000000">
          <xsl:choose>
             <xsl:when test="$verb='GetRecord'">
                <and field="identifier">

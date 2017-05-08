@@ -153,8 +153,8 @@
                                         matches($uri,'ead\.dtd') or 
                                         matches($ns,'ead')">
                            <indexFile fileName="{$fileName}"
-                              preFilter="style/textIndexer/ead/eadPreFilter.xsl"
-                              displayStyle="style/dynaXML/docFormatter/ead/eadDocFormatter.xsl"/>
+                              preFilter="local/style/textIndexer/ead/eadPreFilter.xsl"
+                              displayStyle="local/style/dynaXML/docFormatter/ead/eadDocFormatter.xsl"/>
                         </xsl:when>
                         <!-- Look for NLM XML files -->
                         <xsl:when test="matches($root-element-name,'^article$') or
@@ -162,8 +162,8 @@
                                         matches($uri,'journalpublishing\.dtd') or 
                                         matches($ns,'nlm')">
                            <indexFile fileName="{$fileName}"
-                              preFilter="style/textIndexer/nlm/nlmPreFilter.xsl"
-                              displayStyle="style/dynaXML/docFormatter/nlm/nlmDocFormatter.xsl"/>
+                              preFilter="local/style/textIndexer/nlm/nlmPreFilter.xsl"
+                              displayStyle="local/style/dynaXML/docFormatter/nlm/nlmDocFormatter.xsl"/>
                         </xsl:when>
                         <!-- Look for TEI XML file -->
                         <xsl:when test="matches($root-element-name,'^TEI') or 
@@ -171,8 +171,8 @@
                            matches($uri,'tei2\.dtd') or 
                            matches($ns,'tei')">
                            <indexFile fileName="{$fileName}"
-                              preFilter="style/textIndexer/tei/teiPreFilter.xsl"
-                              displayStyle="style/dynaXML/docFormatter/tei/teiDocFormatter.xsl"/>
+                              preFilter="local/style/textIndexer/tei/teiPreFilter.xsl"
+                              displayStyle="local/style/dynaXML/docFormatter/tei/teiDocFormatter.xsl"/>
                         </xsl:when>
                         <!-- DjVu files are typically subordinate to a main doc -->
                         <xsl:when test="matches($root-element-name, 'DjVuXML')">
@@ -183,15 +183,15 @@
                            <xsl:variable name="metsData" select="document($file)"/>
                            <xsl:if test="$metsData//*:book">
                               <indexFile fileName="{$fileName}"
-                                 preFilter="style/textIndexer/bookreader/bookPreFilter.xsl"
-                                 displayStyle="style/dynaXML/docFormatter/bookreader/bookDocFormatter.xsl"/>
+                                 preFilter="local/style/textIndexer/bookreader/bookPreFilter.xsl"
+                                 displayStyle="local/style/dynaXML/docFormatter/bookreader/bookDocFormatter.xsl"/>
                            </xsl:if>
                         </xsl:when>
                         <!-- Default processing for XML files -->
                         <xsl:otherwise>
                            <indexFile fileName="{$fileName}" 
                               type="XML"
-                              preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+                              preFilter="local/style/textIndexer/default/defaultPreFilter.xsl"/>
                            <xsl:message select="'Unrecognized XML structure. Indexing using the default preFilter.'"/>
                         </xsl:otherwise>
                      </xsl:choose>
@@ -204,35 +204,35 @@
          <xsl:when test="ends-with(@fileName, 'html') or ends-with(@fileName, '.xhtml')">
             <indexFile fileName="{@fileName}" 
                type="HTML"
-               preFilter="style/textIndexer/html/htmlPreFilter.xsl"/>
+               preFilter="local/style/textIndexer/html/htmlPreFilter.xsl"/>
          </xsl:when>
          
          <!-- PDF files -->
          <xsl:when test="ends-with(@fileName, '.pdf')">
             <indexFile fileName="{@fileName}" 
                type="PDF"
-               preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+               preFilter="local/style/textIndexer/default/defaultPreFilter.xsl"/>
          </xsl:when>
          
          <!-- Microsoft Word documents -->
          <xsl:when test="ends-with(@fileName, '.doc')">
             <indexFile fileName="{@fileName}" 
                type="MSWord"
-               preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+               preFilter="local/style/textIndexer/default/defaultPreFilter.xsl"/>
          </xsl:when>
          
          <!-- Plain text files. Exception: skip book/*.txt as they're typically subordinate. -->
          <xsl:when test="ends-with(@fileName, '.txt') and not(matches($dirPath, '/bookreader/'))">
             <indexFile fileName="{@fileName}" 
                type="text"
-               preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+               preFilter="local/style/textIndexer/default/defaultPreFilter.xsl"/>
          </xsl:when>
 
          <!-- MARC files -->
          <xsl:when test="ends-with(@fileName, '.mrc')">
             <indexFile fileName="{@fileName}" 
                type="MARC"
-               preFilter="style/textIndexer/default/defaultPreFilter.xsl"/>
+               preFilter="local/style/textIndexer/default/defaultPreFilter.xsl"/>
          </xsl:when>
       </xsl:choose>
       
