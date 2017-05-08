@@ -248,7 +248,7 @@
             </publisher>
          </xsl:when>
          <xsl:when test="//*:text/*:front/*:titlePage//*:publisher">
-            <publisher xtf-meta="true">
+            <publisher xtf:meta="true">
                <xsl:value-of select="string(//*:text/*:front/*:titlePage//*:publisher[1])"/>
             </publisher>
          </xsl:when>
@@ -264,7 +264,7 @@
    <xsl:template name="get-tei-contributor">
       <xsl:choose>
          <xsl:when test="//*:fileDesc/*:respStmt/*:name">
-            <contributor xtf-meta="true">
+            <contributor xtf:meta="true">
                <xsl:value-of select="string(//*:fileDesc/*:respStmt/*:name[1])"/>
             </contributor>
          </xsl:when>
@@ -327,7 +327,7 @@
    <xsl:template name="get-tei-source">
       <xsl:choose>
          <xsl:when test="//*:sourceDesc/*:bibl">
-            <source xtf-meta="true">
+            <source xtf:meta="true">
                <xsl:value-of select="string(//*:sourceDesc/*:bibl[1])"/>
             </source>
          </xsl:when>
@@ -343,7 +343,7 @@
    <xsl:template name="get-tei-language">
       <xsl:choose>
          <xsl:when test="//*:profileDesc/*:langUsage/*:language">
-            <language xtf-meta="true">
+            <language xtf:meta="true">
                <xsl:value-of select="string((//*:profileDesc/*:langUsage/*:language)[1])"/>
             </language>
          </xsl:when>
@@ -359,7 +359,7 @@
    <xsl:template name="get-tei-relation">
       <xsl:choose>
          <xsl:when test="//*:fileDesc/*:seriesStmt/*:title">
-            <relation xtf-meta="true">
+            <relation xtf:meta="true">
                <xsl:value-of select="string(//*:fileDesc/*:seriesStmt/*:title)"/>
             </relation>
          </xsl:when>
@@ -380,7 +380,7 @@
    
    <!-- rights -->
    <xsl:template name="get-tei-rights">
-      <rights xtf-meta="true">
+      <rights xtf:meta="true">
          <xsl:value-of select="'public'"/>
       </rights>
    </xsl:template>

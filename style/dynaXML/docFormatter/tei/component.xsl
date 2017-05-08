@@ -594,7 +594,14 @@
    <!-- ====================================================================== -->
    <!-- References                                                             -->
    <!-- ====================================================================== -->
-   
+   <!-- links to absolute HTTP(s) URIs -->
+   <xsl:template match="*:ref[matches(@target, '^https?://')]">
+      <xsl:element name="a">
+         <xsl:attribute name="href" select="@target"/>
+         <xsl:apply-templates/>
+      </xsl:element>
+   </xsl:template>
+ 
    <xsl:template match="*:ref">
       
       <!-- variables -->
