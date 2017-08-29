@@ -93,7 +93,7 @@
    <!-- ====================================================================== -->
    
    <xsl:param name="ID" select="replace($docId,'[A-Za-z0-9]+\.xml$','')"/>
-   <xsl:param name="icon.path" select="concat($xtfURL, 'icons/default/')"/>
+   <xsl:param name="icon.path" select=" 'icons/default/' "/>
    <xsl:param name="doc.title" select="/article/front/article-meta/title-group/article-title[1]"/>
    <xsl:param name="css.path" select="'css/default/'"/>
    <xsl:param name="content.css" select="'nlm.css'"/>
@@ -150,16 +150,16 @@
             <frameset rows="120,*">
                <frame frameborder="1" scrolling="no" title="Navigation Bar">
                   <xsl:attribute name="name">bbar</xsl:attribute>
-                  <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$bbar.href"/></xsl:attribute>
+                  <xsl:attribute name="src">view?<xsl:value-of select="$bbar.href"/></xsl:attribute>
                </frame>
                <frameset cols="25%,75%">
                   <frame frameborder="1" title="Table of Contents">
                      <xsl:attribute name="name">toc</xsl:attribute>
-                     <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$toc.href"/></xsl:attribute>
+                     <xsl:attribute name="src">view?<xsl:value-of select="$toc.href"/></xsl:attribute>
                   </frame>
                   <frame frameborder="1" title="Content">
                      <xsl:attribute name="name">content</xsl:attribute>
-                     <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/>view?<xsl:value-of select="$content.href"/></xsl:attribute>
+                     <xsl:attribute name="src">view?<xsl:value-of select="$content.href"/></xsl:attribute>
                   </frame>
                </frameset>
                <noframes>
@@ -256,7 +256,7 @@
                </xsl:choose>
             </td>
             <td>
-               <a href="{$xtfURL}{$dynaxmlPath}?docId={$docId};query={$query};brand={$brand};anchor.id={@id}" target="_top">
+               <a href="{$dynaxmlPath}?docId={$docId};query={$query};brand={$brand};anchor.id={@id}" target="_top">
                   <xsl:value-of select="title"/>
                </a>
             </td>

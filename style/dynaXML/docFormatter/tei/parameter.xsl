@@ -33,9 +33,9 @@
       POSSIBILITY OF SUCH DAMAGE.
    -->
       
-   <xsl:param name="icon.path" select="concat($xtfURL, 'icons/default/')"/>
+   <xsl:param name="icon.path" select=" 'icons/default/' "/>
    
-   <xsl:param name="css.path" select="concat($xtfURL, 'css/default/')"/>
+   <xsl:param name="css.path" select=" 'css/default/' "/>
    
    <xsl:param name="content.css" select="'tei.css'"/>
    

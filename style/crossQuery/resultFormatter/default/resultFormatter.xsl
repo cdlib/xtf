@@ -67,8 +67,8 @@
    <!-- Local Parameters                                                       -->
    <!-- ====================================================================== -->
    
-   <xsl:param name="css.path" select="concat($xtfURL, 'css/default/')"/>
-   <xsl:param name="icon.path" select="concat($xtfURL, 'icons/default/')"/>
+   <xsl:param name="css.path" select=" 'css/default/' "/>
+   <xsl:param name="icon.path" select=" 'icons/default/' "/>
    <xsl:param name="docHits" select="/crossQueryResult/docHit"/>
    <xsl:param name="email"/>
    
@@ -172,8 +172,8 @@
             <xsl:copy-of select="$brand.links"/>
             <!-- AJAX support -->
             <script src="//code.jquery.com/jquery-latest.min.js" type="text/javascript"/>
-            <script src="{$xtfURL}script/bookbag.js" type="text/javascript"/>
-            <script src="{$xtfURL}script/moreLike.js" type="text/javascript"/>
+            <script src="script/bookbag.js" type="text/javascript"/>
+            <script src="script/moreLike.js" type="text/javascript"/>
          </head>
          <body>
             
@@ -187,7 +187,7 @@
                      <td colspan="2" class="right">
                         <xsl:if test="$smode != 'showBag'">
                            <xsl:variable name="bag" select="session:getData('bag')"/>
-                           <a href="{$xtfURL}{$crossqueryPath}?smode=showBag">Bookbag</a>
+                           <a href="{$crossqueryPath}?smode=showBag">Bookbag</a>
                            (<span id="bagCount"><xsl:value-of select="count($bag/bag/savedDoc)"/></span>)
                         </xsl:if>
                      </td>
@@ -199,8 +199,7 @@
                               <a>
                                  <xsl:attribute name="href">javascript://</xsl:attribute>
                                  <xsl:attribute name="onclick">
-                                    <xsl:text>javascript:window.open('</xsl:text><xsl:value-of
-                                       select="$xtfURL"/>search?smode=getAddress<xsl:text>','popup','width=500,height=200,resizable=no,scrollbars=no')</xsl:text>
+                                    <xsl:text>javascript:window.open('search?smode=getAddress','popup','width=500,height=200,resizable=no,scrollbars=no')</xsl:text>
                                  </xsl:attribute>
                                  <xsl:text>E-mail My Bookbag</xsl:text>
                               </a>
@@ -224,12 +223,12 @@
                            <xsl:text>&#160;|&#160;</xsl:text>
                         </xsl:if>
                         <xsl:if test="$smode != 'showBag'">
-                           <a href="{$xtfURL}{$crossqueryPath}?{$modifyString}">
+                           <a href="{$crossqueryPath}?{$modifyString}">
                               <xsl:text>Modify Search</xsl:text>
                            </a>
                            <xsl:text>&#160;|&#160;</xsl:text>
                         </xsl:if>
-                        <a href="{$xtfURL}{$crossqueryPath}">
+                        <a href="{$crossqueryPath}">
                            <xsl:text>New Search</xsl:text>
                         </a>
                         <xsl:if test="$smode = 'showBag'">
@@ -244,7 +243,7 @@
                      <tr>
                         <td>
                            <xsl:call-template name="did-you-mean">
-                              <xsl:with-param name="baseURL" select="concat($xtfURL, $crossqueryPath, '?', $queryString)"/>
+                              <xsl:with-param name="baseURL" select="concat($crossqueryPath, '?', $queryString)"/>
                               <xsl:with-param name="spelling" select="//spelling"/>
                            </xsl:call-template>
                         </td>
@@ -276,7 +275,7 @@
                   <xsl:if test="docHit">
                      <tr>
                         <td>
-                           <form method="get" action="{$xtfURL}{$crossqueryPath}">
+                           <form method="get" action="{$crossqueryPath}">
                               <b>Sorted by:&#160;</b>
                               <xsl:call-template name="sort.options"/>
                               <xsl:call-template name="hidden.query">
@@ -373,7 +372,7 @@
             <xsl:copy-of select="$brand.header"/>
             <div class="getAddress">
                <h2>E-mail My Bookbag</h2>
-               <form action="{$xtfURL}{$crossqueryPath}" method="get">
+               <form action="{$crossqueryPath}" method="get">
                   <xsl:text>Address: </xsl:text>
                   <input type="text" name="email"/>
                   <xsl:text>&#160;</xsl:text>
@@ -424,7 +423,6 @@ Your XTF Bookbag:
       <xsl:for-each select="$docHits[string(meta/identifier[1]) = $id][1]">
          <xsl:variable name="path" select="@path"/>
          <xsl:variable name="url">
-            <xsl:value-of select="$xtfURL"/>
             <xsl:choose>
                <xsl:when test="matches(meta/display, 'dynaxml')">
                   <xsl:call-template name="dynaxml.url">
@@ -460,8 +458,8 @@ Item number <xsl:value-of select="$num"/>:
             <xsl:copy-of select="$brand.links"/>
             <!-- AJAX support -->
             <script src="//code.jquery.com/jquery-latest.min.js" type="text/javascript"/>
-            <script src="{$xtfURL}script/bookbag.js" type="text/javascript"/>
-            <script src="{$xtfURL}script/moreLike.js" type="text/javascript"/>
+            <script src="script/bookbag.js" type="text/javascript"/>
+            <script src="script/moreLike.js" type="text/javascript"/>
          </head>
          <body>
             
@@ -474,7 +472,7 @@ Item number <xsl:value-of select="$num"/>:
                   <tr>
                      <td colspan="2" class="right">
                         <xsl:variable name="bag" select="session:getData('bag')"/>
-                        <a href="{$xtfURL}{$crossqueryPath}?smode=showBag">Bookbag</a>
+                        <a href="{$crossqueryPath}?smode=showBag">Bookbag</a>
                         (<span id="bagCount"><xsl:value-of select="count($bag/bag/savedDoc)"/></span>)
                      </td>
                   </tr>
@@ -488,7 +486,7 @@ Item number <xsl:value-of select="$num"/>:
                         </xsl:choose>
                      </td>
                      <td class="right">
-                        <a href="{$xtfURL}{$crossqueryPath}">
+                        <a href="{$crossqueryPath}">
                            <xsl:text>New Search</xsl:text>
                         </a>
                         <xsl:if test="$smode = 'showBag'">
@@ -559,27 +557,27 @@ Item number <xsl:value-of select="$num"/>:
       <xsl:choose>
          <xsl:when test="$browse-all">
             <xsl:text>Facet | </xsl:text>
-            <a href="{$xtfURL}{$crossqueryPath}?browse-title=first;sort=title">Title</a>
+            <a href="{$crossqueryPath}?browse-title=first;sort=title">Title</a>
             <xsl:text> | </xsl:text>
-            <a href="{$xtfURL}{$crossqueryPath}?browse-creator=first;sort=creator">Author</a>
+            <a href="{$crossqueryPath}?browse-creator=first;sort=creator">Author</a>
          </xsl:when>
          <xsl:when test="$browse-title">
-            <a href="{$xtfURL}{$crossqueryPath}?browse-all=yes">Facet</a>
+            <a href="{$crossqueryPath}?browse-all=yes">Facet</a>
             <xsl:text> | Title | </xsl:text>
-            <a href="{$xtfURL}{$crossqueryPath}?browse-creator=first;sort=creator">Author</a>
+            <a href="{$crossqueryPath}?browse-creator=first;sort=creator">Author</a>
          </xsl:when>
          <xsl:when test="$browse-creator">
-            <a href="{$xtfURL}{$crossqueryPath}?browse-all=yes">Facet</a>
+            <a href="{$crossqueryPath}?browse-all=yes">Facet</a>
             <xsl:text> | </xsl:text>
-            <a href="{$xtfURL}{$crossqueryPath}?browse-title=first;sort=title">Title</a>
+            <a href="{$crossqueryPath}?browse-title=first;sort=title">Title</a>
             <xsl:text>  | Author</xsl:text>
          </xsl:when>
          <xsl:otherwise>
-            <a href="{$xtfURL}{$crossqueryPath}?browse-all=yes">Facet</a>
+            <a href="{$crossqueryPath}?browse-all=yes">Facet</a>
             <xsl:text> | </xsl:text>
-            <a href="{$xtfURL}{$crossqueryPath}?browse-title=first;sort=title">Title</a>
+            <a href="{$crossqueryPath}?browse-title=first;sort=title">Title</a>
             <xsl:text> | </xsl:text>
-            <a href="{$xtfURL}{$crossqueryPath}?browse-creator=first;sort=creator">Author</a>
+            <a href="{$crossqueryPath}?browse-creator=first;sort=creator">Author</a>
          </xsl:otherwise>
       </xsl:choose>
    </xsl:template>

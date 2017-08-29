@@ -605,7 +605,7 @@
 	<xsl:template name="make-src">
 		<xsl:if test="@xlink:href">
 			<xsl:attribute name="src">
-				<xsl:value-of select="concat($xtfURL,'data/',$ID,'figures/',@xlink:href)"/>
+				<xsl:value-of select="concat('data/',$ID,'figures/',@xlink:href)"/>
 			</xsl:attribute>
 		</xsl:if>
 	</xsl:template>
