@@ -77,7 +77,7 @@
    
    <xsl:param name="query.string" select="concat('docId=', $docId, $sourceStr)"/>
    
-   <xsl:param name="doc.path"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$query.string"/></xsl:param>
+   <xsl:param name="doc.path"><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$query.string"/></xsl:param>
    
    <xsl:variable name="systemId" select="saxon:systemId()" xmlns:saxon="http://saxon.sf.net/"/>
    
@@ -87,7 +87,7 @@
             <xsl:value-of select="replace($systemId, '/[^/]*$', '')"/>
          </xsl:when>
          <xsl:otherwise>
-            <xsl:value-of select="concat($xtfURL, 'data/', $docPath)"/>
+            <xsl:value-of select="concat('data/', $docPath)"/>
          </xsl:otherwise>
       </xsl:choose>
    </xsl:param>
@@ -186,7 +186,7 @@
                         </tr>
                         <tr>
                            <td class="left">
-                              <a href="{$xtfURL}search" target="_top">Home</a><xsl:text> | </xsl:text>
+                              <a href="search" target="_top">Home</a><xsl:text> | </xsl:text>
                               <xsl:choose>
                                  <xsl:when test="session:getData('queryURL')">
                                     <a href="{session:getData('queryURL')}" target="_top">Return to Search Results</a>
@@ -197,7 +197,7 @@
                               </xsl:choose>
                            </td>
                            <td width="34%" class="center">
-                              <form action="{$xtfURL}{$dynaxmlPath}" target="_top" method="get">
+                              <form action="{$dynaxmlPath}" target="_top" method="get">
                                  <input name="query" type="text" size="15"/>
                                  <input type="hidden" name="docId" value="{$docId}"/>
                                  <input type="hidden" name="chunk.id" value="{$chunk.id}"/>
@@ -208,7 +208,7 @@
                               <a>
                                  <xsl:attribute name="href">javascript://</xsl:attribute>
                                  <xsl:attribute name="onclick">
-                                    <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/><xsl:text>?docId=</xsl:text><xsl:value-of
+                                    <xsl:text>javascript:window.open('</xsl:text><xsl:value-of select="$dynaxmlPath"/><xsl:text>?docId=</xsl:text><xsl:value-of
                                        select="$docId"/><xsl:text>;doc.view=citation</xsl:text><xsl:text>','popup','width=800,height=400,resizable=yes,scrollbars=no')</xsl:text>
                                  </xsl:attribute>
                                  <xsl:text>Citation</xsl:text>
@@ -250,7 +250,7 @@
                   <p><xsl:value-of select="/*/*:meta/*:creator[1]"/>. 
                      <xsl:value-of select="/*/*:meta/*:title[1]"/>. 
                      <xsl:value-of select="/*/*:meta/*:year[1]"/>.<br/>
-                     [<xsl:value-of select="concat($xtfURL,$dynaxmlPath,'?docId=',$docId)"/>]</p>
+                     [<xsl:value-of select="concat($dynaxmlPath,'?docId=',$docId)"/>]</p>
                   <a>
                      <xsl:attribute name="href">javascript://</xsl:attribute>
                      <xsl:attribute name="onClick">

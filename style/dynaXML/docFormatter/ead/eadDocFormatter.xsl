@@ -189,16 +189,16 @@
             <frameset rows="120,*">
                <frame frameborder="1" scrolling="no" title="Navigation Bar">
                   <xsl:attribute name="name">bbar</xsl:attribute>
-                  <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$bbar.href"/></xsl:attribute>
+                  <xsl:attribute name="src"><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$bbar.href"/></xsl:attribute>
                </frame>
                <frameset cols="35%,65%">
                   <frame frameborder="1" title="Table of Contents">
                      <xsl:attribute name="name">toc</xsl:attribute>
-                     <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$toc.href"/></xsl:attribute>
+                     <xsl:attribute name="src"><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$toc.href"/></xsl:attribute>
                   </frame>
                   <frame frameborder="1" title="Content">
                      <xsl:attribute name="name">content</xsl:attribute>
-                     <xsl:attribute name="src"><xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/>#X</xsl:attribute>
+                     <xsl:attribute name="src"><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/>#X</xsl:attribute>
                   </frame>
                </frameset>
                <noframes>
@@ -484,7 +484,7 @@
                      <xsl:otherwise>
                         <a>
                            <xsl:attribute name="href">
-                              <xsl:value-of select="$xtfURL"/><xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/>
+                              <xsl:value-of select="$dynaxmlPath"/>?<xsl:value-of select="$content.href"/>
                            </xsl:attribute>
                            <xsl:attribute name="target">_top</xsl:attribute>
                            <xsl:value-of select="$name"/>

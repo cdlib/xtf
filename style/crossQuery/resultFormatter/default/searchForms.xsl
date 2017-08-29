@@ -109,14 +109,14 @@
    
    <!-- simple form -->
    <xsl:template name="simpleForm" exclude-result-prefixes="#all">
-      <form method="get" action="{$xtfURL}{$crossqueryPath}">
+      <form method="get" action="{$crossqueryPath}">
          <table>
             <tr>
                <td>
                   <input type="text" name="keyword" size="40" value="{$keyword}"/>
                   <xsl:text>&#160;</xsl:text>
                   <input type="submit" value="Search"/>
-                  <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
+                  <input type="reset" onclick="location.href='{$crossqueryPath}'" value="Clear"/>
                </td>
             </tr>
             <tr>
@@ -154,7 +154,7 @@
    
    <!-- advanced form -->
    <xsl:template name="advancedForm" exclude-result-prefixes="#all">
-      <form method="get" action="{$xtfURL}{$crossqueryPath}">
+      <form method="get" action="{$crossqueryPath}">
          <table class="top_table">
             <tr>
                <td>
@@ -374,7 +374,7 @@
                         <td>
                            <input type="hidden" name="smode" value="advanced"/>
                            <input type="submit" value="Search"/>
-                           <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}?smode=advanced'" value="Clear"/>
+                           <input type="reset" onclick="location.href='{$crossqueryPath}?smode=advanced'" value="Clear"/>
                         </td>
                      </tr>
                   </table>
@@ -425,7 +425,7 @@
    
    <!-- free-form form -->
    <xsl:template name="freeformForm" exclude-result-prefixes="#all">
-      <form method="get" action="{$xtfURL}{$crossqueryPath}">
+      <form method="get" action="{$crossqueryPath}">
          <table>
             <tr>
                <td>
@@ -433,7 +433,7 @@
                   <input type="text" name="freeformQuery" size="40" value="{$freeformQuery}"/>
                   <xsl:text>&#160;</xsl:text>
                   <input type="submit" value="Search"/>
-                  <input type="reset" onclick="location.href='{$xtfURL}{$crossqueryPath}'" value="Clear"/>
+                  <input type="reset" onclick="location.href='{$crossqueryPath}'" value="Clear"/>
                </td>
             </tr>
             <tr>

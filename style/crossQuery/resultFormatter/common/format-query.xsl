@@ -127,7 +127,7 @@
             </b>
             <xsl:text>&#160;</xsl:text>
             <!-- query removal widget -->
-            <a href="{$xtfURL}{$crossqueryPath}?{editURL:clean($finalString)}">[X]</a>
+            <a href="{$crossqueryPath}?{editURL:clean($finalString)}">[X]</a>
             <br/>
          </xsl:when>
          

@@ -148,7 +148,7 @@
                   </tr>
                   <tr>
                      <td class="left">
-                        <a href="{$xtfURL}search" target="_top">Home</a><xsl:text> | </xsl:text>
+                        <a href="search" target="_top">Home</a><xsl:text> | </xsl:text>
                         <xsl:choose>
                            <xsl:when test="session:getData('queryURL')">
                               <a href="{session:getData('queryURL')}" target="_top">Return to Search Results</a>
@@ -159,7 +159,7 @@
                         </xsl:choose>
                      </td>
                      <td width="34%" class="center">
-                        <form action="{$xtfURL}{$dynaxmlPath}" target="_top" method="get">
+                        <form action="{$dynaxmlPath}" target="_top" method="get">
                            <input name="query" type="text" size="15"/>
                            <input type="hidden" name="docId" value="{$docId}"/>
                            <input type="hidden" name="hit.rank" value="1"/>
