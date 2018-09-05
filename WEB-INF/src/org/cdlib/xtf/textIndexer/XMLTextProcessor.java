@@ -1653,7 +1653,9 @@ public class XMLTextProcessor extends DefaultHandler
         buf.append(' ');
       String name = atts.getLocalName(i);
       String value = atts.getValue(i);
-      buf.append(name + "=\"" + mapXMLChars(value) + "\"");
+      buf.append(name).append("=\"");
+      escapeXml(value, buf, true);
+      buf.append("\"");
     } // for i
 
     // All done.
@@ -2055,8 +2057,7 @@ public class XMLTextProcessor extends DefaultHandler
       // Map special XML characters to entities, so we can tell the difference
       // between these and embedded XML in the meta-data.
       //
-      tmp = mapXMLChars(tmp);
-      metaBuf.append(tmp);
+      escapeXml(tmp, metaBuf, false);
       return;
     }
 
@@ -2285,16 +2286,23 @@ public class XMLTextProcessor extends DefaultHandler
   
   /**
    * Map special characters in XML to their entity equivalents.
+   *
+   * @param charSequence input text
+   * @param buf output buffer
+   * @param quot whether double-quotes also need escaping
    */
-  private String mapXMLChars(String str)
+  private void escapeXml(CharSequence charSequence, StringBuffer buf, boolean quot)
   {
-    if (str.indexOf('&') >= 0)
-      str = str.replaceAll("&", "&amp;");
-    if (str.indexOf('<') >= 0)
-      str = str.replaceAll("<", "&lt;");
-    if (str.indexOf('>') >= 0)
-      str = str.replaceAll(">", "&gt;");
-    return str;
+    for (int i = 0; i < charSequence.length(); i++) {
+      char c = charSequence.charAt(i);
+      switch (c) {
+        case '<': buf.append("&lt;"); break;
+        case '>': buf.append("&gt;"); break;
+        case '&': buf.append("&amp;"); break;
+        case '"': buf.append(quot ? "&quot;" : c); break;
+        default: buf.append(c); break;
+      }
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
