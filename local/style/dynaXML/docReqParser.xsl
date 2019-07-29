@@ -12,7 +12,6 @@
    <xsl:import href="../../../style/dynaXML/docReqParser.xsl"/>
 
    <!--Any declarations in this file take precedence over those in the stylesheet imported above.-->
-   <xsl:import href="../crossQuery/queryParser/default/queryParser.xsl"/>
    <xsl:output method="xml" indent="yes" encoding="utf-8"/>
 </xsl:stylesheet>
 

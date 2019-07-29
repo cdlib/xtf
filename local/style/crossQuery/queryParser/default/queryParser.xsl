@@ -8,7 +8,6 @@
    <xsl:import href="../../../../../style/crossQuery/queryParser/default/queryParser.xsl"/>
 
    <!--Any declarations in this file take precedence over those in the stylesheet imported above.-->
-   <xsl:import href="../common/queryParserCommon.xsl"/>
    <xsl:output method="xml" indent="yes" encoding="utf-8"/>
    <xsl:strip-space elements="*"/>
 </xsl:stylesheet>
