@@ -31,10 +31,10 @@
    <!-- ====================================================================== -->
    
    <xsl:template match="/">
-      <style path="style/dynaXML/docFormatter.xsl"/>
+      <style path="local/style/dynaXML/docFormatter.xsl"/>
       <source path="{concat('data/',$docId)}"/>
       <index configPath="conf/textIndexer.conf" name="default"/>
-      <preFilter path="style/textIndexer/preFilter.xsl"/>
+      <preFilter path="local/style/textIndexer/preFilter.xsl"/>
 
       <xsl:if test="$query != '0' and $query != ''">
          

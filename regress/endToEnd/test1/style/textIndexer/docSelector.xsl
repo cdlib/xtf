@@ -14,8 +14,8 @@
    <xsl:template match="file">
       <xsl:if test="ends-with(@fileName, '.xml')">
          <indexFile fileName="{@fileName}"
-                    preFilter="style/textIndexer/preFilter.xsl"
-                    displayStyle="style/dynaXML/docFormatter.xsl"/>
+                    preFilter="local/style/textIndexer/preFilter.xsl"
+                    displayStyle="local/style/dynaXML/docFormatter.xsl"/>
        </xsl:if>
    </xsl:template>
 

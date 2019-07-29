@@ -16,7 +16,7 @@
    <!-- ====================================================================== -->
    
    <xsl:import href="../common/resultFormatterCommon.xsl"/>
-   <xsl:param name="icon.path" select="concat($xtfURL, 'icons/default/')"/>
+   <xsl:param name="icon.path" select=" 'icons/default/' "/>
    
    <!-- ====================================================================== -->
    <!-- Output                                                                 -->
@@ -40,7 +40,7 @@
 
       <xsl:variable name="identifier" select="meta/identifier"/>
       <xsl:variable name="id" select="replace(@path,'^default:','')"/>
-      <xsl:variable name="loc" select="concat($xtfURL,'view?docId=',$id)"/>
+      <xsl:variable name="loc" select="concat('view?docId=',$id)"/>
 
       <url xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
          <loc xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

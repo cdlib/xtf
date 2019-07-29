@@ -397,14 +397,14 @@
          <!-- Individual Paging -->
          <xsl:if test="($pageNum = 1) and ($pageStart != $start)">
             <xsl:variable name="prevPage" as="xs:integer" select="$start - $perPage"/>
-            <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString};{$startName}={$prevPage}">Prev</a>
+            <a href="{$crossqueryPath}?{$pageQueryString};{$startName}={$prevPage}">Prev</a>
             <xsl:text>&#160;&#160;</xsl:text>
          </xsl:if>
          
          <!-- Paging by Blocks -->
          <xsl:variable name="prevBlock" as="xs:integer" select="(($blockStart - $blockSize) * $perPage) - ($perPage - 1)"/>
          <xsl:if test="($pageNum = 1) and ($prevBlock &gt;= 1)">
-            <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString};{$startName}={$prevBlock}">...</a>
+            <a href="{$crossqueryPath}?{$pageQueryString};{$startName}={$prevBlock}">...</a>
             <xsl:text>&#160;&#160;</xsl:text>
          </xsl:if>
          
@@ -414,7 +414,7 @@
             <xsl:choose>
                <!-- Make a hyperlink if it's not the page we're currently on. -->
                <xsl:when test="($pageStart != $start)">
-                  <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString};{$startName}={$pageStart}">
+                  <a href="{$crossqueryPath}?{$pageQueryString};{$startName}={$pageStart}">
                      <xsl:value-of select="$pageNum"/>
                   </a>
                   <xsl:if test="$pageNum &lt; $showPages">
@@ -434,14 +434,14 @@
          <xsl:variable name="nextBlock" as="xs:integer" select="(($blockStart + $blockSize) * $perPage) - ($perPage - 1)"/>
          <xsl:if test="($pageNum = $showPages) and (($showPages * $perPage) &gt; $nextBlock)">
             <xsl:text>&#160;&#160;</xsl:text>
-            <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString};{$startName}={$nextBlock}">...</a>
+            <a href="{$crossqueryPath}?{$pageQueryString};{$startName}={$nextBlock}">...</a>
          </xsl:if>
          
          <!-- Individual Paging -->      
          <xsl:if test="($pageNum = $showPages) and ($pageStart != $start)">
             <xsl:variable name="nextPage" as="xs:integer" select="$start + $perPage"/>
             <xsl:text>&#160;&#160;</xsl:text>
-            <a href="{$xtfURL}{$crossqueryPath}?{$pageQueryString};{$startName}={$nextPage}">Next</a>
+            <a href="{$crossqueryPath}?{$pageQueryString};{$startName}={$nextPage}">Next</a>
          </xsl:if>
          
       </xsl:for-each>
@@ -453,7 +453,7 @@
    <!-- ====================================================================== -->
    
    <xsl:template match="subject">
-      <a href="{$xtfURL}{$crossqueryPath}?subject={editURL:protectValue(.)};subject-join=exact;smode={$smode};rmode={$rmode};style={$style};brand={$brand}">
+      <a href="{$crossqueryPath}?subject={editURL:protectValue(.)};subject-join=exact;smode={$smode};rmode={$rmode};style={$style};brand={$brand}">
          <xsl:apply-templates/>
       </a>
       <xsl:if test="not(position() = last())">
@@ -476,7 +476,7 @@
          <xsl:when test="(contains($rmode, 'showDescrip')) and (matches($string , '.{500}'))">
             <xsl:apply-templates select="$block"/>
             <xsl:text>&#160;&#160;&#160;</xsl:text>
-            <a href="{$xtfURL}{$crossqueryPath}?{$hideString};startDoc={$startDoc};rmode=hideDescrip#{$identifier}">[brief]</a>         
+            <a href="{$crossqueryPath}?{$hideString};startDoc={$startDoc};rmode=hideDescrip#{$identifier}">[brief]</a>         
          </xsl:when>
          <xsl:otherwise>
             <xsl:apply-templates select="$block" mode="crop">
@@ -497,7 +497,7 @@
          <xsl:when test="matches($string , '.{300}')">
             <xsl:value-of select="replace($string, '(.{300}).+', '$1')"/>
             <xsl:text> . . . </xsl:text>
-            <a href="{$xtfURL}{$crossqueryPath}?{$moreString};startDoc={$startDoc};rmode=showDescrip#{$identifier}">[more]</a>  
+            <a href="{$crossqueryPath}?{$moreString};startDoc={$startDoc};rmode=showDescrip#{$identifier}">[more]</a>  
          </xsl:when>
          <xsl:otherwise>
             <xsl:apply-templates/>
@@ -661,7 +661,7 @@
    <xsl:template name="rawDisplay.url">
       <xsl:param name="path"/>
       <xsl:variable name="file" select="replace($path, '[^:]+:(.*)', '$1')"/>
-      <xsl:value-of select="concat($xtfURL, 'data/', $file)"/>
+      <xsl:value-of select="concat('data/', $file)"/>
    </xsl:template>
    
    <!-- ====================================================================== -->
@@ -811,7 +811,7 @@
             <span style="color: red"><xsl:value-of select="upper-case($alpha)"/></span>
          </xsl:when>
           <xsl:when test="/crossQueryResult/facet[@field=concat('browse-',$browse-name)]/group[@value=$browse-link]">
-            <a href="{$xtfURL}{$crossqueryPath}?browse-{$browse-name}={$browse-link};sort={$browse-name}"><xsl:value-of select="$alpha"/></a>
+            <a href="{$crossqueryPath}?browse-{$browse-name}={$browse-link};sort={$browse-name}"><xsl:value-of select="$alpha"/></a>
          </xsl:when>
          <xsl:otherwise>
             <xsl:value-of select="upper-case($alpha)"/>
@@ -871,7 +871,7 @@
                   <xsl:variable name="NS" select="($NP * 90) + 1"/>
                   
                   <xsl:if test="($NS &lt; $TD) and ($NP &lt; $PM)">
-                     <a href="{$xtfURL}search?startDoc={$NS}"><xsl:value-of select="$NP"/></a>
+                     <a href="search?startDoc={$NS}"><xsl:value-of select="$NP"/></a>
                      <br/>
                   </xsl:if>
                   
@@ -921,7 +921,7 @@
          </div>
          <xsl:if test="$expand=$field">
             <div class="facetLess">
-               <i><a href="{$xtfURL}{$crossqueryPath}?{editURL:remove($queryString,'expand')}">less</a></i>
+               <i><a href="{$crossqueryPath}?{editURL:remove($queryString,'expand')}">less</a></i>
             </div>
          </xsl:if>
          <div class="facetGroup">
@@ -931,7 +931,7 @@
          </div>
          <xsl:if test="$needExpand and not($expand=$field)">
             <div class="facetMore">
-               <i><a href="{$xtfURL}{$crossqueryPath}?{editURL:set($queryString,'expand',$field)}">more</a></i>
+               <i><a href="{$crossqueryPath}?{editURL:set($queryString,'expand',$field)}">more</a></i>
             </div>
          </xsl:if>
       </div>

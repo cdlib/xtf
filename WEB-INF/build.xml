@@ -127,6 +127,7 @@
         <exclude name="**/.*/**/*"/>
         <exclude name="**/CVS/**/*"/>
         <exclude name="style/crossQuery/complexQueryParser.xsl"/>
+        <exclude name="local/style/crossQuery/complexQueryParser.xsl"/>
 
         <include name="bin/classpath.pl"/>
         <include name="bin/textIndexer"/>
@@ -149,7 +150,8 @@
         <include name="script/**/*"/>
 
         <include name="style/**/*"/>
-
+        <include name="local/style/**/*"/>
+        
         <include name="INSTALL"/>
 
         <include name="LICENSE"/>
@@ -202,6 +204,7 @@
         <include name="profiles/**/*"/>
         <include name="script/**/*"/>
         <include name="style/**/*"/>
+        <include name="local/style/**/*"/>
       </fileset>
     </zip>
 

@@ -19,8 +19,7 @@
                     <!-- For these reasons, a feed should contain an atom:link used for this purpose. -->
                     <atom:link rel="self" type="application/rss+xml">
                         <xsl:attribute name="href">
-                            <xsl:value-of select="concat($xtfURL,'search?')"/>
-                            <xsl:value-of select="replace(replace($queryString,' ','%20'),'&quot;','%22')"/>
+                            <xsl:value-of select="concat('search?', replace(replace($queryString,' ','%20'),'&quot;','%22'))"/>
                         </xsl:attribute>
                     </atom:link>
 
@@ -41,7 +40,7 @@
 
                     <!-- RSS 2.0: The URL to the HTML website corresponding to the channel. -->
                     <link>
-                        <xsl:value-of select="concat($xtfURL,'search?')"/>
+                        <xsl:text>search?</xsl:text>
                         <xsl:value-of select="replace(xtf:urlEncode(replace($queryString,';entity-ignore=[A-Za-z0-9_\-]*|;docsPerPage=\d*|;rmode=[A-Za-z0-9_\-]*|;sort=[A-Za-z0-9_\-]*','')),'&quot;','%22')"/>
                     </link>
 
@@ -77,7 +76,6 @@
         <xsl:variable name="href">
             <xsl:choose>
                 <xsl:when test="matches(meta/display, 'dynaxml')">
-                    <xsl:value-of select="$xtfURL"/>
                     <xsl:call-template name="dynaxml.url">
                         <xsl:with-param name="path" select="$path"/>
                     </xsl:call-template>

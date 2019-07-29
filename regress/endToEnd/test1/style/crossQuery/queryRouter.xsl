@@ -4,8 +4,8 @@
    
    <xsl:template match="/">
       <route>
-         <queryParser path="style/crossQuery/queryParser.xsl"/>
-         <errorGen path="style/crossQuery/errorGen.xsl"/>
+         <queryParser path="local/style/crossQuery/queryParser.xsl"/>
+         <errorGen path="local/style/crossQuery/errorGen.xsl"/>
       </route>
    </xsl:template>
    

@@ -143,7 +143,7 @@
                <xsl:otherwise>
                   <xsl:attribute name="target" select="'_top'"/>
                   <xsl:attribute name="href" select="
-                     concat($xtfURL, $dynaxmlPath, '?', $query.string, 
+                     concat($dynaxmlPath, '?', $query.string, 
                             ';hit.num=', $prev, ';brand=', $brand, $search)"/>
                </xsl:otherwise>
             </xsl:choose>
@@ -177,7 +177,7 @@
                <xsl:otherwise>
                   <xsl:attribute name="target" select="'_top'"/>
                   <xsl:attribute name="href" select="
-                     concat($xtfURL, $dynaxmlPath, '?', $query.string, 
+                     concat($dynaxmlPath, '?', $query.string, 
                             ';hit.num=', $next, ';brand=', $brand, $search)"/>
                </xsl:otherwise>
             </xsl:choose>

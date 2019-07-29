@@ -61,16 +61,16 @@
          <xsl:choose>
             <!-- oai -->
             <xsl:when test="matches($http.URL,'oai\?')">
-               <queryParser path="style/crossQuery/queryParser/oai/queryParser.xsl"/>
-               <errorGen path="style/crossQuery/oaiErrorGen.xsl"/>
+               <queryParser path="local/style/crossQuery/queryParser/oai/queryParser.xsl"/>
+               <errorGen path="local/style/crossQuery/oaiErrorGen.xsl"/>
             </xsl:when>
             <!-- sitemap -->
             <xsl:when test="matches($smode,'siteMap')">
-               <queryParser path="style/crossQuery/queryParser/siteMap/queryParser.xsl"/>
+               <queryParser path="local/style/crossQuery/queryParser/siteMap/queryParser.xsl"/>
             </xsl:when>
             <!-- default -->
             <xsl:otherwise>
-               <queryParser path="style/crossQuery/queryParser/default/queryParser.xsl"/>
+               <queryParser path="local/style/crossQuery/queryParser/default/queryParser.xsl"/>
             </xsl:otherwise>
          </xsl:choose>
       </route>
